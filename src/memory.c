@@ -122,7 +122,7 @@ void mem_pool_free(MemoryPool* pool, void* addr) {
     }
 }
 
-void* func_80002D10(u32 size, s32 side) {
+void* MainPool_AllocState(u32 size, s32 side) {
     MainPoolBlock* block;
     void* ptr = NULL;
 
@@ -130,19 +130,19 @@ void* func_80002D10(u32 size, s32 side) {
     ptr = 0;
     block = main_pool_alloc(size, side);
     if (block != NULL) {
-        ptr = func_80002DA4(block, size);
+        ptr = MainPool_InitState(block, size);
     }
     return ptr;
 }
 
-void func_80002D60(struct MemoryBlock* block) {
+void MainPool_FinalizeAllocation(struct MemoryBlock* block) {
     s32 size = ALIGN16(block->size + 0x10);
 
     main_pool_realloc(block, size);
     block->next = (void*)(size - 0x10);
 }
 
-void* func_80002DA4(struct MainPoolState* block, s32 size) {
+void* MainPool_InitState(struct MainPoolState* block, s32 size) {
     void* temp_v1 = (void*)((u8*)block + 0x10);
 
     block->listHeadL = 0;
@@ -152,7 +152,7 @@ void* func_80002DA4(struct MainPoolState* block, s32 size) {
     return block;
 }
 
-void* func_80002DCC(struct MainPoolState* state, s32 arg1, s32 arg2) {
+void* MainPool_AllocAligned(struct MainPoolState* state, s32 arg1, s32 arg2) {
     s32 temp_a2;
     s32 temp_a3;
     s32 var_v0;
@@ -175,14 +175,14 @@ void* func_80002DCC(struct MainPoolState* state, s32 arg1, s32 arg2) {
     return ret;
 }
 
-void func_80002E3C(struct MainPoolState* state, s32 size) {
+void MainPool_ResetStateToOffset(struct MainPoolState* state, s32 size) {
     if ((s32)state->freeSpace >= size) {
         state->listHeadL = size;
         state->prev = (void*)((s32)state->listHeadR + size);
     }
 }
 
-void func_80002E64(struct MainPoolState* state) {
+void MainPool_ResetState(struct MainPoolState* state) {
     void* mem = (u8*)((u32)state + sizeof(struct MainPoolState));
 
     state->listHeadL = 0;

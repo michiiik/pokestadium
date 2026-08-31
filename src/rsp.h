@@ -31,25 +31,25 @@ struct UnkStruct80083BD0 {
     OSMesgQueue queue2;
 };
 
-s32 func_800005C0(void);
-OSPiHandle *func_80000628(void);
-s32 func_800006C4(struct UnkStruct800006C4_2* arg0);
-s32 func_8000074C(struct UnkStruct800006C4_2* arg0);
-s32 func_800007D4(struct UnkStruct800006C4_2* arg0, s32 arg1);
-s32 func_8000087C(struct UnkStruct800006C4_2* arg0);
-s32 func_80000904(struct UnkStruct800006C4_2* arg0);
-s32 func_80000974(struct UnkStruct800006C4_2* arg0);
-void *func_800009C8(void);
-void *func_800009F8(struct UnkStruct800006C4_2* arg0);
-void *func_80000A3C(struct UnkStruct800006C4_2* arg0);
-void *func_80000A80(struct UnkStruct80000A80* arg0);
-void *func_80000AB0(struct UnkStruct80000A80* arg0);
-void *func_80000AE0(struct UnkStruct80000A80* arg0);
-void *func_80000B10(struct UnkStruct80000A80* arg0);
-void *func_80000B74(struct UnkStruct80000A80* arg0);
+s32 Storage_InitializeLeoManager(void);
+OSPiHandle *Storage_GetSramHandle(void);
+s32 Storage_ReadSram(struct UnkStruct800006C4_2* arg0);
+s32 Storage_WriteSram(struct UnkStruct800006C4_2* arg0);
+s32 Storage_ReadRom(struct UnkStruct800006C4_2* arg0, s32 arg1);
+s32 Storage_WriteRom(struct UnkStruct800006C4_2* arg0);
+s32 Storage_ReadFlashArray(struct UnkStruct800006C4_2* arg0);
+s32 Storage_StartFlashWriteBuffer(struct UnkStruct800006C4_2* arg0);
+void *Storage_WaitForIoMessage(void);
+void *Storage_ReadDisk(struct UnkStruct800006C4_2* arg0);
+void *Storage_WriteDisk(struct UnkStruct800006C4_2* arg0);
+void *Storage_ReadDiskId(struct UnkStruct80000A80* arg0);
+void *Storage_SeekDisk(struct UnkStruct80000A80* arg0);
+void *Storage_SetDiskMotor(struct UnkStruct80000A80* arg0);
+void *Storage_ReadRtc(struct UnkStruct80000A80* arg0);
+void *Storage_WriteRtc(struct UnkStruct80000A80* arg0);
 void thread20_rsp(void *arg);
 void rsp_init(void);
-void func_80000DF4(void);
-void func_80000E2C(void* arg0, s32 arg1);
+void Storage_ResetDisk(void);
+void Storage_QueueRequest(void* arg0, s32 arg1);
 
 #endif // _RSP_H_

@@ -1,7 +1,7 @@
 #include "global.h"
 #include "33FE0.h"
-#include "12D80.h"
-#include "32D10.h"
+#include "geo_render.h"
+#include "battle_hud.h"
 
 typedef struct SomeStruct {
     u32 padding[0x0C];
@@ -46,14 +46,14 @@ s32 func_80033410(s32 arg0) {
     return ((u8*)(s32)ptr + (arg0 * 0x10)) - ptr;
 }
 
-f32 func_8003342C(f32 value) {
+f32 Math_FAbs(f32 value) {
     if (value < 0.0f) {
         value = -value;
     }
     return value;
 }
 
-void func_80033450(f32 ax, f32 ay, f32 az, f32 bx, f32 by, f32 bz, f32* cx, f32* cy, f32* cz) {
+void Math_CrossProduct(f32 ax, f32 ay, f32 az, f32 bx, f32 by, f32 bz, f32* cx, f32* cy, f32* cz) {
     *cx = (ay * bz) - (az * by);
     *cy = (az * bx) - (ax * bz);
     *cz = (ax * by) - (ay * bx);
@@ -136,7 +136,7 @@ f32 func_80033568(
 #pragma GLOBAL_ASM("asm/us/nonmatchings/33FE0/func_80033568.s")
 #endif
 
-s16 func_800336F8(s16* table, s32 index) {
+s16 Model_GetVertexClass(s16* table, s32 index) {
     s16 temp;
     s16 slot = table[index];
     
@@ -171,7 +171,7 @@ s16 func_800336F8(s16* table, s32 index) {
     return slot;
 }
 
-s16 func_800337D8(s16* arg0, s32 arg1) {
+s16 Model_GetVertexThreshold(s16* arg0, s32 arg1) {
     s16 temp_v0;
     s16 temp_v1;
 
@@ -185,7 +185,7 @@ s16 func_800337D8(s16* arg0, s32 arg1) {
     return 0;
 }
 
-s16 func_80033810(s16* arg0, s32 arg1) {
+s16 Model_GetVertexJoint(s16* arg0, s32 arg1) {
     s16 temp_v1;
     s16 temp_a2;
     temp_v1 = *(arg0 + arg1);
@@ -193,7 +193,7 @@ s16 func_80033810(s16* arg0, s32 arg1) {
     return temp_a2;
 }
 
-s16 func_80033830(s16* arg0, s32 arg1) {
+s16 Model_GetVertexMergeClass(s16* arg0, s32 arg1) {
     s16 temp_v1;
     s16 temp_a2;
     temp_v1 = *(arg0 + arg1);
@@ -201,7 +201,7 @@ s16 func_80033830(s16* arg0, s32 arg1) {
     return temp_a2;
 }
 
-s16 func_80033850(s16* arg0, s32 arg1) {
+s16 Model_GetVertexTargetClass(s16* arg0, s32 arg1) {
     s16 temp_v1;
     s16 temp_a2;
     temp_v1 = *(arg0 + arg1);
@@ -209,7 +209,7 @@ s16 func_80033850(s16* arg0, s32 arg1) {
     return temp_a2;
 }
 
-s16 func_80033870(s16* arg0, s32 arg1) {
+s16 Model_GetVertexSourceClass(s16* arg0, s32 arg1) {
     s16 temp_v1;
     s16 temp_a2;
     temp_v1 = *(arg0 + arg1);
@@ -217,7 +217,7 @@ s16 func_80033870(s16* arg0, s32 arg1) {
     return temp_a2;
 }
 
-s16 func_80033890(s16* arg0, s32 arg1) {
+s16 Model_GetVertexMatrixClass(s16* arg0, s32 arg1) {
     s16 temp_v1;
     s16 temp_a2;
     temp_v1 = *(arg0 + arg1);
@@ -229,7 +229,7 @@ void func_800338B0(void) {
 
 }
 
-s16 func_800338B8(s16* arg0, s32 arg1) {
+s16 Model_GetVertexHeightClass(s16* arg0, s32 arg1) {
     s16 temp_v1;
     s16 temp_a2;
     temp_v1 = *(arg0 + arg1);
@@ -237,7 +237,7 @@ s16 func_800338B8(s16* arg0, s32 arg1) {
     return temp_a2;
 }
 
-void func_800338D8(StadiumModel* model, MtxF* mtx) {
+void Model_BuildVertexRuntimeData(StadiumModel* model, MtxF* mtx) {
     ModelSegment* segment;
     ModelVertex* base;
     ModelVertex* mvtx;
@@ -278,14 +278,14 @@ void func_800338D8(StadiumModel* model, MtxF* mtx) {
     }
 
     mvtx = base;
-    func_800350E4(segment, mtx, base);
+    Model_InitializeVertexPositions(segment, mtx, base);
 
     var_s3 = 0;
     i = 0;
     while (var_s3 < 0x10) {
         temp_s2 = Memmap_GetSegmentVaddr(segment->tableSegment);
         for (i = 0; i < segment->vertexCount; i++) {
-            u16 temp_v0 = func_80033810(temp_s2, i);
+            u16 temp_v0 = Model_GetVertexJoint(temp_s2, i);
             if (var_s3 == temp_v0) {
                 mvtx->jointIndex = i;
                 mvtx++;
@@ -317,7 +317,7 @@ void func_800338D8(StadiumModel* model, MtxF* mtx) {
 #pragma GLOBAL_ASM("asm/us/nonmatchings/33FE0/func_80033B2C.s")
 
 void func_80033D1C(StadiumModel* model, MtxF* mtx) {
-    func_800338D8(model, mtx);
+    Model_BuildVertexRuntimeData(model, mtx);
     func_800357F4(model);
 }
 
@@ -373,7 +373,7 @@ void func_80034348(ModelSegment*, ModelVertex*);
 void func_80034824(ModelSegment*, StadiumTransform*, s32, ModelVertex*);
 #pragma GLOBAL_ASM("asm/us/nonmatchings/33FE0/func_80034824.s")
 
-void func_80034B28(StadiumModel* model) {
+void Model_ApplyVertexTransforms(StadiumModel* model) {
     ModelSegment* segment;
     s32 count;
     s32 i;
@@ -388,13 +388,13 @@ void func_80034B28(StadiumModel* model) {
     }
 
     func_80035FA8(segment, mvtx);
-    func_800359FC(segment, mvtx, model, 1.0f);
+    Model_ApplyTransformCommands(segment, mvtx, model, 1.0f);
 }
 
 void func_80034BD4(StadiumModel*, StadiumTransform*, s32, ModelVertex*);
 #pragma GLOBAL_ASM("asm/us/nonmatchings/33FE0/func_80034BD4.s")
 
-void func_80034F68(MtxF* mtx, Vec3f* out, Vec3s* in) {
+void Model_TransformPoint(MtxF* mtx, Vec3f* out, Vec3s* in) {
     f32 sp34;
     f32 sp30;
     f32 sp2C;
@@ -410,7 +410,7 @@ void func_80034F68(MtxF* mtx, Vec3f* out, Vec3s* in) {
     out->z = sp2C;
 }
 
-void func_80035000(MtxF* mtx, PosBlend* position, Vec3s* target, f32 alpha) {
+void Model_AccumulateVertexOffset(MtxF* mtx, PosBlend* position, Vec3s* target, f32 alpha) {
     f32 sp44;
     f32 sp40;
     f32 sp3C;
@@ -437,7 +437,7 @@ void func_80035000(MtxF* mtx, PosBlend* position, Vec3s* target, f32 alpha) {
     position->offset.z += dz;
 }
 
-void func_800350E4(ModelSegment* segment, MtxF* mtx, ModelVertex* mvtx) {
+void Model_InitializeVertexPositions(ModelSegment* segment, MtxF* mtx, ModelVertex* mvtx) {
     s16* indexTable;
     s32 i;
     Vec3sPad* var_s3;
@@ -451,16 +451,16 @@ void func_800350E4(ModelSegment* segment, MtxF* mtx, ModelVertex* mvtx) {
     
     for(i = 0; i < segment->vertexCount; i++) {
         position = &tmp->position;
-        switch (func_800336F8(indexTable, i)) {
+        switch (Model_GetVertexClass(indexTable, i)) {
             case 0:
             default:
-                func_80034F68(mtx, &position->base, &var_s3->vec);
+                Model_TransformPoint(mtx, &position->base, &var_s3->vec);
                 position->offset.x = 0.0f;
                 position->offset.y = 0.0f;
                 position->offset.z = 0.0f;
                 break;
             case 4:
-                func_80034F68(mtx + func_80033890(indexTable, i), &position->base, &var_s3->vec);
+                Model_TransformPoint(mtx + Model_GetVertexMatrixClass(indexTable, i), &position->base, &var_s3->vec);
                 position->offset.x = 0.0f;
                 position->offset.y = 0.0f;
                 position->offset.z = 0.0f;
@@ -471,7 +471,7 @@ void func_800350E4(ModelSegment* segment, MtxF* mtx, ModelVertex* mvtx) {
     }
 }
 
-void func_80035208(struct SomeStruct* src, struct SomeStruct* dst) {
+void Model_CopyPositionBuffer(struct SomeStruct* src, struct SomeStruct* dst) {
     *dst = *src;
 }
 
@@ -497,24 +497,24 @@ void func_80035248(ModelSegment* segment, MtxF* mtx, ModelVertex* mvtx) {
     for(i = 0; i < segment->vertexCount; i++) {
         position = &tmp->position;
         if (i == *var_s7) {
-            temp_v0 = func_800336F8(temp_s5, i);
+            temp_v0 = Model_GetVertexClass(temp_s5, i);
             switch (temp_v0) {
             case 0:
-                func_80034F68(mtx, &position->base, &var_s2->vec);
+                Model_TransformPoint(mtx, &position->base, &var_s2->vec);
                 break;
             case 4:
-                func_80034F68(mtx + func_80033890(temp_s5, i), &position->base, &var_s2->vec);
+                Model_TransformPoint(mtx + Model_GetVertexMatrixClass(temp_s5, i), &position->base, &var_s2->vec);
                 break;
             case 1:
-                func_80035000(mtx, position, &var_s2->vec, D_800775D4[func_80033830(temp_s5, i)]);
+                Model_AccumulateVertexOffset(mtx, position, &var_s2->vec, D_800775D4[Model_GetVertexMergeClass(temp_s5, i)]);
                 break;
             case 2:
-                func_80034F68(mtx, &position->base, &var_s2->vec);
-                func_80035208((SomeStruct*)&position->base, &D_800B2F58[func_80033850(temp_s5, i)]);
+                Model_TransformPoint(mtx, &position->base, &var_s2->vec);
+                Model_CopyPositionBuffer((SomeStruct*)&position->base, &D_800B2F58[Model_GetVertexTargetClass(temp_s5, i)]);
                 break;
             case 3:
-                func_80034F68(mtx, &position->base, &var_s2->vec);
-                func_80035208((SomeStruct*)&position->base, &D_800B2F58[func_80033870(temp_s5, i)]);
+                Model_TransformPoint(mtx, &position->base, &var_s2->vec);
+                Model_CopyPositionBuffer((SomeStruct*)&position->base, &D_800B2F58[Model_GetVertexSourceClass(temp_s5, i)]);
                 break;
             }
         }
@@ -528,7 +528,7 @@ void func_80035248(ModelSegment*, MtxF*, ModelVertex*);
 #pragma GLOBAL_ASM("asm/us/nonmatchings/33FE0/func_80035248.s")
 #endif
 
-f32 func_80035434(Vec3f* a, Vec3f* b, Vec3f* scale) {
+f32 Model_ComputeScaledDistance(Vec3f* a, Vec3f* b, Vec3f* scale) {
     f32 dx;
     f32 dy;
     f32 dz;
@@ -537,19 +537,19 @@ f32 func_80035434(Vec3f* a, Vec3f* b, Vec3f* scale) {
     dy = (a->y - b->y) / scale->y;
     dz = (a->z - b->z) / scale->z;
 
-    if (func_8003342C(dx) < D_8007C5D0) {
+    if (Math_FAbs(dx) < D_8007C5D0) {
         dx = 0.0f;
     }
-    if (func_8003342C(dy) < D_8007C5D4) {
+    if (Math_FAbs(dy) < D_8007C5D4) {
         dy = 0.0f;
     }
-    if (func_8003342C(dz) < D_8007C5D8) {
+    if (Math_FAbs(dz) < D_8007C5D8) {
         dz = 0.0f;
     }
     return sqrtf((dx * dx) + (dy * dy) + (dz * dz));
 }
 
-void func_80035538(Vec3s* a, Vec3s* b) {
+void Model_ComputeDistance(Vec3s* a, Vec3s* b) {
     f32 dx;
     f32 dy;
     f32 dz;
@@ -560,7 +560,7 @@ void func_80035538(Vec3s* a, Vec3s* b) {
     sqrtf((dx * dx) + (dy * dy) + (dz * dz));
 }
 
-void func_800355A8(Vec3f* from, Vec3f* to, f32 currentTime, f32 deltaTime, f32 scale) {
+void Model_ExtrapolateVertexPosition(Vec3f* from, Vec3f* to, f32 currentTime, f32 deltaTime, f32 scale) {
     s32 pad;
     f32 temp_fv0;
     f32 temp_fa1;
@@ -600,13 +600,13 @@ void func_80035660(PosBlend* src, PosBlend* dst, f32 totalTime, f32 elapsed, f32
     f32 var_fv0;
 
     if (!(elapsed < D_8007C5E0)) {
-        if (func_8003342C(dst->base.x) < D_8007C5E4) {
+        if (Math_FAbs(dst->base.x) < D_8007C5E4) {
             dst->base.x = 0.0f;
         }
-        if (func_8003342C(dst->base.y) < D_8007C5E8) {
+        if (Math_FAbs(dst->base.y) < D_8007C5E8) {
             dst->base.y = 0.0f;
         }
-        if (func_8003342C(dst->base.z) < D_8007C5EC) {
+        if (Math_FAbs(dst->base.z) < D_8007C5EC) {
             dst->base.z = 0.0f;
         }
         temp_fa1 = dst->base.x;
@@ -640,7 +640,7 @@ void func_80035660(PosBlend*, PosBlend*, f32, f32, f32);
 void func_800357F4(StadiumModel*);
 #pragma GLOBAL_ASM("asm/us/nonmatchings/33FE0/func_800357F4.s")
 
-void func_800359FC(ModelSegment* segment, ModelVertex* vertices, StadiumModel* model, f32 deltaTime) {
+void Model_ApplyTransformCommands(ModelSegment* segment, ModelVertex* vertices, StadiumModel* model, f32 deltaTime) {
     f32 temp_fs0;
     f32 temp_fv0;
     s16 temp_v1;
@@ -681,8 +681,8 @@ void func_800359FC(ModelSegment* segment, ModelVertex* vertices, StadiumModel* m
         }
     
         if ((var_a0 != 0) || (var_a2 != 0)) {
-            temp_fv0 = func_80035434(&temp_a3->position.base, &temp_v0_2->position.base, &model->position);
-            func_800355A8(&temp_a3->position.base, &temp_v0_2->position.base, temp_fs0, temp_fv0, deltaTime);
+            temp_fv0 = Model_ComputeScaledDistance(&temp_a3->position.base, &temp_v0_2->position.base, &model->position);
+            Model_ExtrapolateVertexPosition(&temp_a3->position.base, &temp_v0_2->position.base, temp_fs0, temp_fv0, deltaTime);
         }
         
     }
@@ -691,7 +691,7 @@ void func_800359FC(ModelSegment* segment, ModelVertex* vertices, StadiumModel* m
 void func_80035B20(ModelSegment*, ModelVertex*, StadiumModel*, f32);
 #pragma GLOBAL_ASM("asm/us/nonmatchings/33FE0/func_80035B20.s")
 
-void func_80035C4C(ModelSegment* segment, ModelVertex* vertices, f32 yOffset) {
+void Model_OffsetVertexHeights(ModelSegment* segment, ModelVertex* vertices, f32 yOffset) {
     s16* indexTable;
     s16* remap;
     s32 i;
@@ -701,7 +701,7 @@ void func_80035C4C(ModelSegment* segment, ModelVertex* vertices, f32 yOffset) {
     remap = Memmap_GetSegmentVaddr(segment->remapSegment);
     tmp = vertices;
     for(i = 0; i < segment->vertexCount; i++) {
-        if ((func_800336F8(indexTable, i) != 0) && (i == *remap)) {
+        if ((Model_GetVertexClass(indexTable, i) != 0) && (i == *remap)) {
             tmp->position.base.y += yOffset;
         }
         tmp++;
@@ -723,8 +723,8 @@ void func_80035D08(ModelSegment* segment, ModelVertex* vertices, f32 yOffset) {
     var_s2 = Memmap_GetSegmentVaddr(segment->remapSegment);
     tmp = vertices;
     for(i = 0; i < segment->vertexCount; i++) {
-        if ((func_800336F8(indexTable, i) != 0) && (i == *var_s2)) {
-            temp_v0 = func_800338B8(indexTable, i);
+        if ((Model_GetVertexClass(indexTable, i) != 0) && (i == *var_s2)) {
+            temp_v0 = Model_GetVertexHeightClass(indexTable, i);
             switch (temp_v0) {                  /* irregular */
             case 1:
                 temp_v0_2 = &tmp->position;
@@ -752,7 +752,7 @@ void func_80035D08(ModelSegment*, ModelVertex*, f32);
 void func_800361C4(StadiumModel* model, MtxF*);
 #pragma GLOBAL_ASM("asm/us/nonmatchings/33FE0/func_800361C4.s")
 
-void func_8003658C(StadiumModel* model, Vtx* vtxBuf) {
+void Model_WriteVtxBuffer(StadiumModel* model, Vtx* vtxBuf) {
     ModelSegment* segment;
     ModelVertex* mvtx;
     Vtx* vtx;
@@ -779,14 +779,14 @@ void func_8003658C(StadiumModel* model, Vtx* vtxBuf) {
     }
 }
 
-Gfx* func_800366A4(Gfx* gfx, StadiumModel* model, Vtx* vtxBuf) {
+Gfx* Model_Draw(Gfx* gfx, StadiumModel* model, Vtx* vtxBuf) {
     ModelSegment* segment;
 
     segment = Memmap_GetSegmentVaddr(model->modelSegment);
     if ((s32) segment->type >= 0xC) {
         return gfx;
     }
-    func_8003658C(model, vtxBuf);
+    Model_WriteVtxBuffer(model, vtxBuf);
     gSPSegment(gfx++, 0x0E, vtxBuf);
     gSPMatrix(gfx++, &D_800B3258, G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
     gSPDisplayList(gfx++, segment->displayList);

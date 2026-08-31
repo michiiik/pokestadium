@@ -121,7 +121,7 @@ void Cont_ReadInputs(void) {
             controller->buttonDown = 0;
         }
     }
-    func_8000B330();
+    GbTower_PollPakConnection();
 }
 
 /*

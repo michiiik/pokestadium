@@ -1,7 +1,7 @@
 #include "33E30.h"
-#include "src/30640.h"
-#include "src/6A40.h"
-#include "src/12D80.h"
+#include "src/gallery.h"
+#include "src/gfx_buffer.h"
+#include "src/geo_render.h"
 
 static Gfx D_800762F0[] = {
     gsSPEndDisplayList(),
@@ -50,7 +50,7 @@ void func_80033264(s32 arg0) {
     }
 }
 
-Gfx* func_80033284(Gfx* arg0, Vec3f* arg1, u8 arg2, u8 arg3, u8 arg4, u8 arg5, f32 arg6) {
+Gfx* Gfx_DrawTriangleMarker(Gfx* arg0, Vec3f* arg1, u8 arg2, u8 arg3, u8 arg4, u8 arg5, f32 arg6) {
     f32 sp144;
     f32 sp140;
     f32 sp13C;
@@ -65,11 +65,11 @@ Gfx* func_80033284(Gfx* arg0, Vec3f* arg1, u8 arg2, u8 arg3, u8 arg4, u8 arg5, f
     sp140 = arg1->y;
     sp13C = arg1->z;
 
-    func_80031EF4(&sp34, &D_8006F088->unk_60.mtxf);
+    MtxF_ExtractScale(&sp34, &D_8006F088->unk_60.mtxf);
     guMtxF2L(&sp34, &sp78);
     guScale(&spB8, arg6, arg6, arg6);
     guTranslate(&spF8, sp144, sp140, sp13C);
-    sp138 = func_80005F5C(sizeof(Mtx) * 1);
+    sp138 = Gfx_AllocDisplayList(sizeof(Mtx) * 1);
     guMtxCatL(&spB8, &spF8, sp138);
     guMtxCatL(&sp78, sp138, sp138);
 

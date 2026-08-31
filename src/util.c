@@ -14,8 +14,8 @@ u32 gExpansionRAMStart = FALSE;
 
 MainPool** gMainPool;
 
-void func_80003860(void);
-s32 func_80007A58(void);
+void Dma_InitializeCompletionQueue(void);
+s32 StageContext_IsHighResolution(void);
 
 /**
  * Convert any valid address to its virtual (KSEG0) counterpart.
@@ -68,7 +68,7 @@ void Util_InitMainPools(void) {
         main_pool_init(&gPool, POOL_END_4MB);
         gExpansionRAMStart = 0;
     }
-    func_80003860();
+    Dma_InitializeCompletionQueue();
     gMainPool = mem_pool_try_init(0x10000, 0);
 }
 
@@ -95,7 +95,7 @@ void Util_DrawRect(Gfx** dlist, s32 ulx, s32 lrx, u16 color) {
     s32 lry = 17;
     Gfx* gfx = *dlist;
 
-    if (func_80007A58() != 0) {
+    if (StageContext_IsHighResolution() != 0) {
         ulx <<= 1;
         lrx <<= 1;
         uly <<= 1;

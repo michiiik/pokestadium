@@ -59,9 +59,9 @@ typedef struct JpegDecoderState {
     /* 0x10 */ s16 unk_10;
 } JpegDecoderState; // size = 0x14
 
-s32 JpegDecoder_Decode(JpegDecoder*, u16*, s32, u8, JpegDecoderState*);
-s32 JpegDecoder_ProcessMcu(JpegHuffmanTable*, JpegHuffmanTable*, u16*, s16*);
-s32 JpegDecoder_ParseNextSymbol(JpegHuffmanTable*, s16*, s8*);
-u16 JpegDecoder_ReadBits(u8);
+s32 Jpeg_DecodeMcus(JpegDecoder*, u16*, s32, u8, JpegDecoderState*);
+s32 Jpeg_DecodeBlock(JpegHuffmanTable*, JpegHuffmanTable*, u16*, s16*);
+s32 Jpeg_DecodeHuffmanSymbol(JpegHuffmanTable*, s16*, s8*);
+u16 Jpeg_ReadBits(u8);
 
 #endif // JPEG_DECODER_H

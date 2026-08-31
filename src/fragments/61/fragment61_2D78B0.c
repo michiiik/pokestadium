@@ -1,35 +1,35 @@
-#include "fragment61.h"
-#include "src/19840.h"
-#include "src/1AB70.h"
-#include "src/1CF30.h"
-#include "src/20330.h"
-#include "src/20470.h"
-#include "src/225A0.h"
-#include "src/22630.h"
-#include "src/232C0.h"
-#include "src/26820.h"
-#include "src/29BA0.h"
-#include "src/2C1C0.h"
-#include "src/2E110.h"
-#include "src/3FB0.h"
-#include "src/49790.h"
+#include "rental_team_selection.h"
+#include "src/display_object_textures.h"
+#include "src/poke_icon.h"
+#include "src/graphics_textures.h"
+#include "src/input.h"
+#include "src/ui_graphics.h"
+#include "src/status_icons.h"
+#include "src/gb_data.h"
+#include "src/pokemon_stats.h"
+#include "src/save_data.h"
+#include "src/game_state.h"
+#include "src/session.h"
+#include "src/text_system.h"
+#include "src/jpeg_stream.h"
+#include "src/audio_sfx.h"
 #include "src/DDC0.h"
-#include "src/F420.h"
-#include "src/fragments/61/fragment61.h"
+#include "src/matrix.h"
+#include "src/fragments/61/rental_team_selection.h"
 #include "src/hal_libc.h"
 #include "src/memory.h"
 #include "src/stage_loader.h"
 
 BinArchive* D_84211B30;
 void* D_84211B34;
-unk_D_842168A0_0013C* D_84211B38;
+RentalRoster* D_84211B38;
 char** D_84211B3C;
 char** D_84211B40;
 char** D_84211B44;
 char** D_84211B48;
 char** D_84211B4C;
-unk_D_84211B50 D_84211B50;
-unk_D_842168A0 D_842168A0;
+RentalTeamTray D_84211B50;
+RentalCarouselState D_842168A0;
 unk_D_84229EB0 D_84229EB0;
 unk_D_8423D3A8 D_8423D3A8;
 unk_D_8423D3D8 D_8423D3D8[4];
@@ -42,7 +42,7 @@ u8 D_84210D4C[] = {
     0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0F,
 };
 
-s32 func_84200020(s32 arg0) {
+s32 TeamSelection_CheckCartRemoved(s32 arg0) {
     u32 temp_a0 = osSetIntMask(1);
 
     if (!(IO_READ(PI_STATUS_REG) & (PI_STATUS_DMA_BUSY | PI_STATUS_IO_BUSY)) &&
@@ -53,66 +53,66 @@ s32 func_84200020(s32 arg0) {
     return arg0;
 }
 
-char* func_84200088(s32 arg0) {
-    return func_8002D7C0(NULL, 0, D_84211B3C, arg0 - 1);
+char* TeamSelection_GetTextFromSetA(s32 arg0) {
+    return Text_GetString(NULL, 0, D_84211B3C, arg0 - 1);
 }
 
-char* func_842000C0(s32 arg0) {
-    return func_8002D7C0(NULL, 0, D_84211B40, arg0 - 1);
+char* TeamSelection_GetTextFromSetB(s32 arg0) {
+    return Text_GetString(NULL, 0, D_84211B40, arg0 - 1);
 }
 
-char* func_842000F8(s32 arg0) {
-    return func_8002D7C0(NULL, 0, D_84211B44, func_800219FC(arg0));
+char* TeamSelection_GetModeText(s32 arg0) {
+    return Text_GetString(NULL, 0, D_84211B44, PokemonType_ToDisplayIndex(arg0));
 }
 
-char* func_84200130(s32 arg0) {
-    return func_8002D7C0(NULL, 0, D_84211B48, arg0);
+char* TeamSelection_GetLabelText(s32 arg0) {
+    return Text_GetString(NULL, 0, D_84211B48, arg0);
 }
 
-char* func_84200160(s32 arg0) {
-    return func_8002D7C0(NULL, 0, D_84211B4C, arg0);
+char* TeamSelection_GetInstructionText(s32 arg0) {
+    return Text_GetString(NULL, 0, D_84211B4C, arg0);
 }
 
-char* func_84200190(char* arg0, s32 arg1, s32 arg2) {
-    return func_8002D7C0(arg0, arg1, D_84211B48, arg2);
+char* TeamSelection_FormatText(char* arg0, s32 arg1, s32 arg2) {
+    return Text_GetString(arg0, arg1, D_84211B48, arg2);
 }
 
-void func_842001B8(s16 arg0, s16 arg1, s16 arg2, s16 arg3) {
+void TeamSelection_DrawCornerFrame(s16 arg0, s16 arg1, s16 arg2, s16 arg3) {
     gSPDisplayList(gDisplayListHead++, D_8006F518);
 
-    func_8001CADC(arg0 - 3, arg1 - 3, 8, 8, D_2000340, 8, 0);
-    func_8001CADC((arg0 + arg2) - 5, arg1 - 3, 8, 8, D_2000380, 8, 0);
-    func_8001C330(arg0 + 4, arg1 - 3, arg2 - 8, 8, 0, 0, 0, 0x400, 0);
-    func_8001CADC(arg0 - 3, (arg1 + arg3) - 5, 8, 8, D_20002C0, 8, 0);
-    func_8001C330(arg0 - 3, arg1 + 4, 8, arg3 - 8, 0, 0, 0x400, 0, 0);
-    func_8001CADC((arg0 + arg2) - 5, (arg1 + arg3) - 5, 8, 8, D_2000300, 8, 0);
-    func_8001C330(arg0 + 4, (arg1 + arg3) - 5, arg2 - 8, 8, 0, 0, 0, 0x400, 0);
-    func_8001C330((arg0 + arg2) - 5, arg1 + 4, 8, arg3 - 8, 0, 0, 0x400, 0, 0);
+    Gfx_DrawTextureIa8(arg0 - 3, arg1 - 3, 8, 8, D_2000340, 8, 0);
+    Gfx_DrawTextureIa8((arg0 + arg2) - 5, arg1 - 3, 8, 8, D_2000380, 8, 0);
+    Gfx_DrawTexturedRectClipped(arg0 + 4, arg1 - 3, arg2 - 8, 8, 0, 0, 0, 0x400, 0);
+    Gfx_DrawTextureIa8(arg0 - 3, (arg1 + arg3) - 5, 8, 8, D_20002C0, 8, 0);
+    Gfx_DrawTexturedRectClipped(arg0 - 3, arg1 + 4, 8, arg3 - 8, 0, 0, 0x400, 0, 0);
+    Gfx_DrawTextureIa8((arg0 + arg2) - 5, (arg1 + arg3) - 5, 8, 8, D_2000300, 8, 0);
+    Gfx_DrawTexturedRectClipped(arg0 + 4, (arg1 + arg3) - 5, arg2 - 8, 8, 0, 0, 0, 0x400, 0);
+    Gfx_DrawTexturedRectClipped((arg0 + arg2) - 5, arg1 + 4, 8, arg3 - 8, 0, 0, 0x400, 0, 0);
 
     gSPDisplayList(gDisplayListHead++, D_8006F630);
 }
 
-void func_84200420(s16 arg0, s16 arg1, s16 arg2, s16 arg3, u8 arg4, u8 arg5, u8 arg6, u8 arg7) {
+void TeamSelection_DrawColoredFrame(s16 arg0, s16 arg1, s16 arg2, s16 arg3, u8 arg4, u8 arg5, u8 arg6, u8 arg7) {
     gSPDisplayList(gDisplayListHead++, D_8006F518);
     gDPSetEnvColor(gDisplayListHead++, arg4, arg5, arg6, arg7);
 
-    func_8001CADC(arg0, arg1, 8, 8, D_2000B40, 8, 0);
-    func_8001CADC((arg0 + arg2) - 8, arg1, 8, 8, D_2000B80, 8, 0);
-    func_8001C330(arg0 + 8, arg1, arg2 - 0x10, 8, 0, 0, 0, 0x400, 0);
-    func_8001CADC(arg0, (arg1 + arg3) - 8, 8, 8, D_2000BC0, 8, 0);
-    func_8001C330(arg0, arg1 + 8, 8, arg3 - 0x10, 0, 0, 0x400, 0, 0);
-    func_8001CADC((arg0 + arg2) - 8, (arg1 + arg3) - 8, 8, 8, D_2000C00, 8, 0);
-    func_8001C330(arg0 + 8, (arg1 + arg3) - 8, arg2 - 0x10, 8, 0, 0, 0, 0x400, 0);
-    func_8001C330((arg0 + arg2) - 8, arg1 + 8, 8, arg3 - 0x10, 0, 0, 0x400, 0, 0);
+    Gfx_DrawTextureIa8(arg0, arg1, 8, 8, D_2000B40, 8, 0);
+    Gfx_DrawTextureIa8((arg0 + arg2) - 8, arg1, 8, 8, D_2000B80, 8, 0);
+    Gfx_DrawTexturedRectClipped(arg0 + 8, arg1, arg2 - 0x10, 8, 0, 0, 0, 0x400, 0);
+    Gfx_DrawTextureIa8(arg0, (arg1 + arg3) - 8, 8, 8, D_2000BC0, 8, 0);
+    Gfx_DrawTexturedRectClipped(arg0, arg1 + 8, 8, arg3 - 0x10, 0, 0, 0x400, 0, 0);
+    Gfx_DrawTextureIa8((arg0 + arg2) - 8, (arg1 + arg3) - 8, 8, 8, D_2000C00, 8, 0);
+    Gfx_DrawTexturedRectClipped(arg0 + 8, (arg1 + arg3) - 8, arg2 - 0x10, 8, 0, 0, 0, 0x400, 0);
+    Gfx_DrawTexturedRectClipped((arg0 + arg2) - 8, arg1 + 8, 8, arg3 - 0x10, 0, 0, 0x400, 0, 0);
 
     gSPDisplayList(gDisplayListHead++, D_8006F498);
 
-    func_8001C604(arg0 + 8, arg1 + 8, arg2 - 0x10, arg3 - 0x10, arg4, arg5, arg6, arg7);
+    Gfx_FillRectRgba(arg0 + 8, arg1 + 8, arg2 - 0x10, arg3 - 0x10, arg4, arg5, arg6, arg7);
 
     gSPDisplayList(gDisplayListHead++, D_8006F630);
 }
 
-void func_84200738(s16 arg0, s16 arg1, s16 arg2, s16 arg3) {
+void TeamSelection_DrawAnimatedGoldCorners(s16 arg0, s16 arg1, s16 arg2, s16 arg3) {
     static s16 D_84210D58 = 0;
 
     s16 sp56 = SINS(D_84210D58) * 2;
@@ -121,17 +121,17 @@ void func_84200738(s16 arg0, s16 arg1, s16 arg2, s16 arg3) {
     gSPDisplayList(gDisplayListHead++, D_8006F518);
     gDPSetEnvColor(gDisplayListHead++, 240, 212, 104, 255);
 
-    func_8001CADC(arg0 + sp56, arg1 + sp56, 0x10, 0x10, D_2000C80, 0x10, 0);
-    func_8001CADC(arg0 + sp56, ((arg1 + arg3) - sp56) - 0x10, 0x10, 0x10, D_2000F80, 0x10, 0);
-    func_8001CADC(((arg0 + arg2) - sp56) - 0x10, arg1 + sp56, 0x10, 0x10, D_2000D80, 0x10, 0);
-    func_8001CADC(((arg0 + arg2) - sp56) - 0x10, ((arg1 + arg3) - sp56) - 0x10, 0x10, 0x10, D_2000E80, 0x10, 0);
+    Gfx_DrawTextureIa8(arg0 + sp56, arg1 + sp56, 0x10, 0x10, D_2000C80, 0x10, 0);
+    Gfx_DrawTextureIa8(arg0 + sp56, ((arg1 + arg3) - sp56) - 0x10, 0x10, 0x10, D_2000F80, 0x10, 0);
+    Gfx_DrawTextureIa8(((arg0 + arg2) - sp56) - 0x10, arg1 + sp56, 0x10, 0x10, D_2000D80, 0x10, 0);
+    Gfx_DrawTextureIa8(((arg0 + arg2) - sp56) - 0x10, ((arg1 + arg3) - sp56) - 0x10, 0x10, 0x10, D_2000E80, 0x10, 0);
 
     gSPDisplayList(gDisplayListHead++, D_8006F630);
 
     D_84210D58 += 0x2000;
 }
 
-void func_8420092C(s16 arg0, s16 arg1, s16 arg2, s16 arg3, u8 arg4, u8 arg5, u8 arg6, u8 arg7) {
+void TeamSelection_DrawTexturedFrame(s16 arg0, s16 arg1, s16 arg2, s16 arg3, u8 arg4, u8 arg5, u8 arg6, u8 arg7) {
     s16 temp_a2;
     s16 temp_s0_32;
     s16 var_s2;
@@ -156,40 +156,40 @@ void func_8420092C(s16 arg0, s16 arg1, s16 arg2, s16 arg3, u8 arg4, u8 arg5, u8 
     gDPLoadTextureBlock_4b(gDisplayListHead++, D_20288E0, G_IM_FMT_I, 16, 16, 0, G_TX_NOMIRROR | G_TX_WRAP,
                            G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
 
-    func_8001C330(arg0, arg1, var_s3, var_s2, 0, 0, 0x4000 / var_s3, 0x4000 / var_s2, 0);
+    Gfx_DrawTexturedRectClipped(arg0, arg1, var_s3, var_s2, 0, 0, 0x4000 / var_s3, 0x4000 / var_s2, 0);
 
     gDPLoadTextureBlock_4b(gDisplayListHead++, D_2028960, G_IM_FMT_I, 16, 16, 0, G_TX_NOMIRROR | G_TX_WRAP,
                            G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
 
-    func_8001C330((arg0 + arg2) - var_s3, arg1, var_s3, var_s2, 0, 0, 0x4000 / var_s3, 0x4000 / var_s2, 0);
+    Gfx_DrawTexturedRectClipped((arg0 + arg2) - var_s3, arg1, var_s3, var_s2, 0, 0, 0x4000 / var_s3, 0x4000 / var_s2, 0);
 
     gDPLoadTextureBlock_4b(gDisplayListHead++, D_20287E0, G_IM_FMT_I, 16, 16, 0, G_TX_NOMIRROR | G_TX_WRAP,
                            G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
 
-    func_8001C330(arg0, (arg1 + arg3) - var_s2, var_s3, var_s2, 0, 0, 0x4000 / var_s3, 0x4000 / var_s2, 0);
+    Gfx_DrawTexturedRectClipped(arg0, (arg1 + arg3) - var_s2, var_s3, var_s2, 0, 0, 0x4000 / var_s3, 0x4000 / var_s2, 0);
 
     gDPLoadTextureBlock_4b(gDisplayListHead++, D_2028860, G_IM_FMT_I, 16, 16, 0, G_TX_NOMIRROR | G_TX_WRAP,
                            G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
 
-    func_8001C330((arg0 + arg2) - var_s3, (arg1 + arg3) - var_s2, var_s3, var_s2, 0, 0, 0x4000 / var_s3,
+    Gfx_DrawTexturedRectClipped((arg0 + arg2) - var_s3, (arg1 + arg3) - var_s2, var_s3, var_s2, 0, 0, 0x4000 / var_s3,
                   0x4000 / var_s2, 0);
 
     gSPDisplayList(gDisplayListHead++, D_8006F498);
 
     if ((temp_a2 > 0) && (temp_s0_32 > 0)) {
-        func_8001C604(arg0 + var_s3, arg1, temp_a2, var_s2, arg4, arg5, arg6, arg7);
-        func_8001C604(arg0, arg1 + var_s3, arg2, temp_s0_32, arg4, arg5, arg6, arg7);
-        func_8001C604(arg0 + var_s3, arg1 + var_s3 + temp_s0_32, temp_a2, var_s2, arg4, arg5, arg6, arg7);
+        Gfx_FillRectRgba(arg0 + var_s3, arg1, temp_a2, var_s2, arg4, arg5, arg6, arg7);
+        Gfx_FillRectRgba(arg0, arg1 + var_s3, arg2, temp_s0_32, arg4, arg5, arg6, arg7);
+        Gfx_FillRectRgba(arg0 + var_s3, arg1 + var_s3 + temp_s0_32, temp_a2, var_s2, arg4, arg5, arg6, arg7);
     } else if (temp_a2 > 0) {
-        func_8001C604(arg0 + var_s3, arg1, temp_a2, arg3, arg4, arg5, arg6, arg7);
+        Gfx_FillRectRgba(arg0 + var_s3, arg1, temp_a2, arg3, arg4, arg5, arg6, arg7);
     } else if (temp_s0_32 > 0) {
-        func_8001C604(arg0, arg1 + var_s2, arg2, temp_s0_32, arg4, arg5, arg6, arg7);
+        Gfx_FillRectRgba(arg0, arg1 + var_s2, arg2, temp_s0_32, arg4, arg5, arg6, arg7);
     }
 
     gSPDisplayList(gDisplayListHead++, D_8006F630);
 }
 
-void func_8420112C(s16 arg0, s16 arg1, s16 arg2, s16 arg3, u8 arg4, u8 arg5, u8 arg6, u8 arg7) {
+void TeamSelection_DrawTexturedPanel(s16 arg0, s16 arg1, s16 arg2, s16 arg3, u8 arg4, u8 arg5, u8 arg6, u8 arg7) {
     s16 temp_a2;
     s16 temp_s0_32;
     s16 var_s2;
@@ -214,81 +214,81 @@ void func_8420112C(s16 arg0, s16 arg1, s16 arg2, s16 arg3, u8 arg4, u8 arg5, u8 
     gDPLoadTextureBlock_4b(gDisplayListHead++, D_2028A60, G_IM_FMT_I, 16, 8, 0, G_TX_NOMIRROR | G_TX_WRAP,
                            G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
 
-    func_8001C330(arg0, arg1, var_s3, var_s2, 0, 0, 0x2000 / var_s3, 0x2000 / var_s2, 0);
+    Gfx_DrawTexturedRectClipped(arg0, arg1, var_s3, var_s2, 0, 0, 0x2000 / var_s3, 0x2000 / var_s2, 0);
 
     gDPLoadTextureBlock_4b(gDisplayListHead++, D_2028AA0, G_IM_FMT_I, 16, 8, 0, G_TX_NOMIRROR | G_TX_WRAP,
                            G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
 
-    func_8001C330((arg0 + arg2) - var_s3, arg1, var_s3, var_s2, 0, 0, 0x2000 / var_s3, 0x2000 / var_s2, 0);
+    Gfx_DrawTexturedRectClipped((arg0 + arg2) - var_s3, arg1, var_s3, var_s2, 0, 0, 0x2000 / var_s3, 0x2000 / var_s2, 0);
 
     gDPLoadTextureBlock_4b(gDisplayListHead++, D_20289E0, G_IM_FMT_I, 16, 8, 0, G_TX_NOMIRROR | G_TX_WRAP,
                            G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
 
-    func_8001C330(arg0, (arg1 + arg3) - var_s2, var_s3, var_s2, 0, 0, 0x2000 / var_s3, 0x2000 / var_s2, 0);
+    Gfx_DrawTexturedRectClipped(arg0, (arg1 + arg3) - var_s2, var_s3, var_s2, 0, 0, 0x2000 / var_s3, 0x2000 / var_s2, 0);
 
     gDPLoadTextureBlock_4b(gDisplayListHead++, D_2028A20, G_IM_FMT_I, 16, 8, 0, G_TX_NOMIRROR | G_TX_WRAP,
                            G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
 
-    func_8001C330((arg0 + arg2) - var_s3, (arg1 + arg3) - var_s2, var_s3, var_s2, 0, 0, 0x2000 / var_s3,
+    Gfx_DrawTexturedRectClipped((arg0 + arg2) - var_s3, (arg1 + arg3) - var_s2, var_s3, var_s2, 0, 0, 0x2000 / var_s3,
                   0x2000 / var_s2, 0);
 
     gSPDisplayList(gDisplayListHead++, D_8006F498);
 
     if ((temp_a2 > 0) && (temp_s0_32 > 0)) {
-        func_8001C604(arg0 + var_s3, arg1, temp_a2, var_s2, arg4, arg5, arg6, arg7);
-        func_8001C604(arg0, arg1 + var_s3, arg2, temp_s0_32, arg4, arg5, arg6, arg7);
-        func_8001C604(arg0 + var_s3, arg1 + var_s3 + temp_s0_32, temp_a2, var_s2, arg4, arg5, arg6, arg7);
+        Gfx_FillRectRgba(arg0 + var_s3, arg1, temp_a2, var_s2, arg4, arg5, arg6, arg7);
+        Gfx_FillRectRgba(arg0, arg1 + var_s3, arg2, temp_s0_32, arg4, arg5, arg6, arg7);
+        Gfx_FillRectRgba(arg0 + var_s3, arg1 + var_s3 + temp_s0_32, temp_a2, var_s2, arg4, arg5, arg6, arg7);
     } else if (temp_a2 > 0) {
-        func_8001C604(arg0 + var_s3, arg1, temp_a2, arg3, arg4, arg5, arg6, arg7);
+        Gfx_FillRectRgba(arg0 + var_s3, arg1, temp_a2, arg3, arg4, arg5, arg6, arg7);
     } else if (temp_s0_32 > 0) {
-        func_8001C604(arg0, arg1 + var_s2, arg2, temp_s0_32, arg4, arg5, arg6, arg7);
+        Gfx_FillRectRgba(arg0, arg1 + var_s2, arg2, temp_s0_32, arg4, arg5, arg6, arg7);
     }
 
     gSPDisplayList(gDisplayListHead++, D_8006F630);
 }
 
-void func_8420192C(s16 arg0, s16 arg1) {
+void TeamSelection_DrawHeaderBackdrop(s16 arg0, s16 arg1) {
     gSPDisplayList(gDisplayListHead++, D_8006F518);
 
-    func_8001C6AC(arg0, arg1, 0x30, 0x18, D_2006C00, 0x30, 0);
-    func_8001C6AC(arg0, arg1 + 0x18, 0x30, 0x18, D_2007500, 0x30, 0);
+    Gfx_DrawTextureRgba16(arg0, arg1, 0x30, 0x18, D_2006C00, 0x30, 0);
+    Gfx_DrawTextureRgba16(arg0, arg1 + 0x18, 0x30, 0x18, D_2007500, 0x30, 0);
 
     gSPDisplayList(gDisplayListHead++, D_8006F630);
 }
 
-void func_84201A00(s16 arg0, s16 arg1) {
+void TeamSelection_DrawRegistrationHeaderBackdrop(s16 arg0, s16 arg1) {
     gSPDisplayList(gDisplayListHead++, D_8006F518);
 
-    func_8001C6AC(arg0, arg1, 0x30, 0x18, &D_2028AE0, 0x30, 0);
-    func_8001C6AC(arg0, arg1 + 0x18, 0x30, 0x18, &D_20293E0, 0x30, 0);
+    Gfx_DrawTextureRgba16(arg0, arg1, 0x30, 0x18, &D_2028AE0, 0x30, 0);
+    Gfx_DrawTextureRgba16(arg0, arg1 + 0x18, 0x30, 0x18, &D_20293E0, 0x30, 0);
 
     gSPDisplayList(gDisplayListHead++, D_8006F630);
 }
 
-void func_84201AD4(s16 arg0, s16 arg1, s16 arg2) {
+void TeamSelection_DrawCategoryBanner(s16 arg0, s16 arg1, s16 arg2) {
     static u8* D_84210D5C[] = { D_200DFA0, D_200F3E0, D_2010820, D_2011C60, D_20130A0 };
 
     gSPDisplayList(gDisplayListHead++, D_8006F518);
 
-    func_8001C6AC(arg0, arg1, 0x48, 0x12, D_84210D5C[arg2], 0x48, 0);
-    func_8001C6AC(arg0, arg1 + 0x12, 0x48, 0x12, D_84210D5C[arg2] + 0xA20, 0x48, 0);
+    Gfx_DrawTextureRgba16(arg0, arg1, 0x48, 0x12, D_84210D5C[arg2], 0x48, 0);
+    Gfx_DrawTextureRgba16(arg0, arg1 + 0x12, 0x48, 0x12, D_84210D5C[arg2] + 0xA20, 0x48, 0);
 
     gSPDisplayList(gDisplayListHead++, D_8006F630);
 }
 
-void func_84201BC4(s16 arg0, s16 arg1, s16 arg2, Color_RGBA8* arg3, Color_RGBA8* arg4) {
+void TeamSelection_DrawGradientPanel(s16 arg0, s16 arg1, s16 arg2, Color_RGBA8* arg3, Color_RGBA8* arg4) {
     gSPDisplayList(gDisplayListHead++, D_8006F558);
     gDPSetEnvColor(gDisplayListHead++, arg3->r, arg3->g, arg3->b, 255);
     gDPSetPrimColor(gDisplayListHead++, 0, 0, arg4->r, arg4->g, arg4->b, 255);
 
-    func_8001CADC(arg0, arg1, 0x10, 0x20, D_20003C0, 0x10, 0);
-    func_8001CADC((arg0 + arg2) - 0x10, arg1, 0x10, 0x20, D_20005C0, 0x10, 0);
-    func_8001C330(arg0 + 0x10, arg1, arg2 - 0x20, 0x20, 0, 0, 0, 0x400, 0);
+    Gfx_DrawTextureIa8(arg0, arg1, 0x10, 0x20, D_20003C0, 0x10, 0);
+    Gfx_DrawTextureIa8((arg0 + arg2) - 0x10, arg1, 0x10, 0x20, D_20005C0, 0x10, 0);
+    Gfx_DrawTexturedRectClipped(arg0 + 0x10, arg1, arg2 - 0x20, 0x20, 0, 0, 0, 0x400, 0);
 
     gSPDisplayList(gDisplayListHead++, D_8006F630);
 }
 
-void func_84201D6C(void) {
+void TeamSelection_DrawTitleHeader(void) {
     static s32 D_84210D70[] = {
         0x3B, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C, 0x3D, 0x3E,
     };
@@ -296,103 +296,103 @@ void func_84201D6C(void) {
     Color_RGBA8 sp2C;
     Color_RGBA8 sp28;
 
-    func_8000E820(&sp2C, 0x64, 0x64, 0xC8);
-    func_8000E820(&sp28, 0x28, 0x28, 0x8C);
-    func_84201BC4(0x48, 0x28, 0x208, &sp2C, &sp28);
-    func_8420192C(0x30, 0x20);
-    func_8001F3F4();
-    func_8001EBE0(0x10, 0);
-    func_8001F324(0, 0, 0, 0xFF);
-    func_8001F1E8(0x6A, 0x2C, func_84200130(D_84210D70[D_800AE540.unk_0000]));
-    func_8001F324(0xFF, 0xFF, 0x77, 0xFF);
-    func_8001F1E8(0x68, 0x2A, func_84200130(D_84210D70[D_800AE540.unk_0000]));
-    func_8001F444();
+    Color_SetRGB(&sp2C, 0x64, 0x64, 0xC8);
+    Color_SetRGB(&sp28, 0x28, 0x28, 0x8C);
+    TeamSelection_DrawGradientPanel(0x48, 0x28, 0x208, &sp2C, &sp28);
+    TeamSelection_DrawHeaderBackdrop(0x30, 0x20);
+    Font_BeginTranslucentTextRendering();
+    Font_SetActive(0x10, 0);
+    Gfx_SetEnvColor(0, 0, 0, 0xFF);
+    Font_Printf(0x6A, 0x2C, TeamSelection_GetLabelText(D_84210D70[D_800AE540.unk_0000]));
+    Gfx_SetEnvColor(0xFF, 0xFF, 0x77, 0xFF);
+    Font_Printf(0x68, 0x2A, TeamSelection_GetLabelText(D_84210D70[D_800AE540.unk_0000]));
+    Font_EndTexturedTextRendering();
 }
 
-void func_84201E70(s16 arg0, s16 arg1, s16 arg2, s32 arg3) {
+void TeamSelection_DrawCategoryRow(s16 arg0, s16 arg1, s16 arg2, s32 arg3) {
     if (arg2 == D_8423D3F8) {
-        func_8001F324(0xFF, 0xFF, 0, 0xFF);
+        Gfx_SetEnvColor(0xFF, 0xFF, 0, 0xFF);
     } else {
-        func_8001F324(0xFF, 0xFF, 0xFF, 0xFF);
+        Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
     }
-    func_8001F1E8(arg0 + 0x36, arg1 + (arg2 * 0x1E) + 0x2C, arg3);
+    Font_Printf(arg0 + 0x36, arg1 + (arg2 * 0x1E) + 0x2C, arg3);
 }
 
-void func_84201F04(s16 arg0, s16 arg1, s16 arg2) {
+void TeamSelection_DrawCategoryScreen(s16 arg0, s16 arg1, s16 arg2) {
     UNUSED s32 pad[2];
     char* sp30;
     s16 temp_a3;
     s16 temp_v0;
 
-    func_800079C4();
-    func_8001D924(D_84211B34);
-    func_84201D6C();
+    BgStage_DrawFrame();
+    Gfx_DrawTiledRgba16Image(D_84211B34);
+    TeamSelection_DrawTitleHeader();
     if (arg2 > 0) {
         temp_a3 = (((arg2 * 0x9A) - 0x9A) / 8) + 0x10;
-        func_80020754(0x6D, (s16)(((0xAA - temp_a3) / 2) + 0x81), 0x1A6, temp_a3);
+        Ui_DrawBorderedPanelNoFill(0x6D, (s16)(((0xAA - temp_a3) / 2) + 0x81), 0x1A6, temp_a3);
         temp_v0 = (((arg2 * 0x5C) - 0x5C) / 8) + 0x10;
         if (1) {}
-        func_8420112C(0x38, ((0x6C - temp_v0) / 2) + 0x14C, 0x210, (((arg2 * 0x5C) - 0x5C) / 8) + 0x10, 0x1E, 0x1E,
+        TeamSelection_DrawTexturedPanel(0x38, ((0x6C - temp_v0) / 2) + 0x14C, 0x210, (((arg2 * 0x5C) - 0x5C) / 8) + 0x10, 0x1E, 0x1E,
                       0x82, 0x96);
         if (arg2 == 9) {
-            func_84200420(0x74, 0x88, 0x198, 0x20, 0x8C, 0x28, 0x8C, 0xFF);
-            func_84200420(0x74, 0xA8, 0x198, 0x7C, 0x64, 0x1E, 0x64, 0xFF);
-            func_80020928(0x79, (D_8423D3F8 * 0x1E) + 0xAD);
-            func_8001F3F4();
-            func_8001EBE0(0x10, 0);
-            func_8001F1E8(0x7D, 0x8B, "%s %s", func_84200130(D_800AE540.unk_0001 + 0x3F), func_84200130(0x48));
-            func_84201E70(0x6D, 0x81, 0, func_84200130(0x49));
-            func_84201E70(0x6D, 0x81, 1, func_84200130(0x4A));
-            func_84201E70(0x6D, 0x81, 2, func_84200130(0x4B));
-            func_84201E70(0x6D, 0x81, 3, func_84200130(0x4C));
-            func_8001EBE0(8, 0);
-            func_8001F324(0xFF, 0xFF, 0xFF, 0xFF);
-            func_8001F3B4(0x18);
-            func_8001F1E8(0x58, 0x154, func_8002D7C0(NULL, 0, D_84211B48, 0x4D));
-            func_8001F444();
+            TeamSelection_DrawColoredFrame(0x74, 0x88, 0x198, 0x20, 0x8C, 0x28, 0x8C, 0xFF);
+            TeamSelection_DrawColoredFrame(0x74, 0xA8, 0x198, 0x7C, 0x64, 0x1E, 0x64, 0xFF);
+            Ui_DrawAnimatedTextureMarker(0x79, (D_8423D3F8 * 0x1E) + 0xAD);
+            Font_BeginTranslucentTextRendering();
+            Font_SetActive(0x10, 0);
+            Font_Printf(0x7D, 0x8B, "%s %s", TeamSelection_GetLabelText(D_800AE540.unk_0001 + 0x3F), TeamSelection_GetLabelText(0x48));
+            TeamSelection_DrawCategoryRow(0x6D, 0x81, 0, TeamSelection_GetLabelText(0x49));
+            TeamSelection_DrawCategoryRow(0x6D, 0x81, 1, TeamSelection_GetLabelText(0x4A));
+            TeamSelection_DrawCategoryRow(0x6D, 0x81, 2, TeamSelection_GetLabelText(0x4B));
+            TeamSelection_DrawCategoryRow(0x6D, 0x81, 3, TeamSelection_GetLabelText(0x4C));
+            Font_SetActive(8, 0);
+            Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
+            Font_SetLineHeight(0x18);
+            Font_Printf(0x58, 0x154, Text_GetString(NULL, 0, D_84211B48, 0x4D));
+            Font_EndTexturedTextRendering();
         }
     }
-    func_8420D4F8(0);
-    func_80007778();
+    TeamSelection_RulePrompt_DrawFrame(0);
+    BgStage_AdvanceFrame();
 }
 
-void func_84202208(void) {
-    func_80048B90(8);
-    func_8420DA28(0x10, gPlayer1Controller);
+void TeamSelection_WaitForConfirm(void) {
+    Audio_PlaySoundEffectById(8);
+    TeamSelection_RulePrompt_Open(0x10, gPlayer1Controller);
 
-    while (func_8420DB48(0x10) == -1) {
-        func_8420D9B0();
-        func_84201F04(0x8C, 0xBC, 9);
-        func_800290B4();
+    while (TeamSelection_RulePrompt_TryFinish(0x10) == -1) {
+        TeamSelection_RulePrompt_Update();
+        TeamSelection_DrawCategoryScreen(0x8C, 0xBC, 9);
+        Controller_PollInputs();
     }
 }
 
-s32 func_84202284(void) {
+s32 TeamSelection_HandleConfirmInput(void) {
     s32 sp1C = 'exec';
 
     if (BTN_IS_PRESSED(gPlayer1Controller, BTN_A)) {
-        if ((D_8423D3F8 == 0) && (func_80028E68() == 0xA)) {
-            func_84202208();
+        if ((D_8423D3F8 == 0) && (Deck_FindFirstFreeTeamSlot() == 0xA)) {
+            TeamSelection_WaitForConfirm();
         } else {
             if (D_8423D3F8 < 3) {
-                func_80048B90(0x1C);
+                Audio_PlaySoundEffectById(0x1C);
             } else {
-                func_80048B90(3);
+                Audio_PlaySoundEffectById(3);
             }
             sp1C = 'btnA';
         }
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_B)) {
-        func_80048B90(3);
+        Audio_PlaySoundEffectById(3);
         D_8423D3F8 = 3;
         sp1C = 'btnB';
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DUP)) {
-        func_80048B90(1);
+        Audio_PlaySoundEffectById(1);
         D_8423D3F8--;
         if (D_8423D3F8 < 0) {
             D_8423D3F8 = 3;
         }
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DDOWN)) {
-        func_80048B90(1);
+        Audio_PlaySoundEffectById(1);
         D_8423D3F8++;
         if (D_8423D3F8 >= 4) {
             D_8423D3F8 = 0;
@@ -401,34 +401,34 @@ s32 func_84202284(void) {
     return sp1C;
 }
 
-s16 func_842023E4(void) {
+s16 TeamSelection_RunCategorySelection(void) {
     s16 i;
     s32 temp_s0;
 
     D_8423D3F8 = 0;
-    func_80048B90(4);
+    Audio_PlaySoundEffectById(4);
 
     for (i = 0; i < 9; i++) {
-        func_800290B4();
-        func_84201F04(0x8C, 0xBC, i);
+        Controller_PollInputs();
+        TeamSelection_DrawCategoryScreen(0x8C, 0xBC, i);
     }
 
     do {
-        func_800290B4();
-        temp_s0 = func_84202284();
-        func_84201F04(0x8C, 0xBC, 9);
+        Controller_PollInputs();
+        temp_s0 = TeamSelection_HandleConfirmInput();
+        TeamSelection_DrawCategoryScreen(0x8C, 0xBC, 9);
     } while (temp_s0 == 'exec');
 
     for (i = 8; i >= 0; i--) {
-        func_800290B4();
-        func_84201F04(0x8C, 0xBC, i);
+        Controller_PollInputs();
+        TeamSelection_DrawCategoryScreen(0x8C, 0xBC, i);
     }
 
-    func_84201F04(0x8C, 0xBC, 0);
-    return func_84200020(D_8423D3F8);
+    TeamSelection_DrawCategoryScreen(0x8C, 0xBC, 0);
+    return TeamSelection_CheckCartRemoved(D_8423D3F8);
 }
 
-void func_842024DC(s16 arg0, s16 arg1) {
+void TeamSelection_DrawFrame(s16 arg0, s16 arg1) {
     Color_RGBA8 sp34;
     Color_RGBA8 sp30;
     s32 var_t0 = 0;
@@ -445,74 +445,74 @@ void func_842024DC(s16 arg0, s16 arg1) {
     }
 
     if (arg0 == 0) {
-        func_8000E820(&sp34, 0x64, 0x64, 0xC8);
-        func_8000E820(&sp30, 0x28, 0x28, 0x8C);
-        func_84201BC4(0x48, 0x28, 0x208, &sp34, &sp30);
-        func_8420192C(0x30, 0x20);
+        Color_SetRGB(&sp34, 0x64, 0x64, 0xC8);
+        Color_SetRGB(&sp30, 0x28, 0x28, 0x8C);
+        TeamSelection_DrawGradientPanel(0x48, 0x28, 0x208, &sp34, &sp30);
+        TeamSelection_DrawHeaderBackdrop(0x30, 0x20);
         if (var_t0 != 0) {
-            func_84201AD4(0x1AE, 0x26, arg1);
+            TeamSelection_DrawCategoryBanner(0x1AE, 0x26, arg1);
         }
     } else {
-        func_8000E820(&sp34, 0xB4, 0x5A, 0xA0);
-        func_8000E820(&sp30, 0x78, 0x28, 0x64);
-        func_84201BC4(0x48, 0x28, 0x208, &sp34, &sp30);
-        func_84201A00(0x30, 0x20);
+        Color_SetRGB(&sp34, 0xB4, 0x5A, 0xA0);
+        Color_SetRGB(&sp30, 0x78, 0x28, 0x64);
+        TeamSelection_DrawGradientPanel(0x48, 0x28, 0x208, &sp34, &sp30);
+        TeamSelection_DrawRegistrationHeaderBackdrop(0x30, 0x20);
     }
 
-    func_8001F3F4();
-    func_8001EBE0(0x10, 0);
-    func_8001F324(0, 0, 0, 0xFF);
+    Font_BeginTranslucentTextRendering();
+    Font_SetActive(0x10, 0);
+    Gfx_SetEnvColor(0, 0, 0, 0xFF);
 
-    func_8001F1E8(0x6A, 0x2C, func_8002D7C0(NULL, 0, D_84211B48, arg0 + 0x37));
-    func_8001F324(0xFF, 0xFF, 0x77, 0xFF);
-    func_8001F1E8(0x68, 0x2A, func_8002D7C0(NULL, 0, D_84211B48, arg0 + 0x37));
+    Font_Printf(0x6A, 0x2C, Text_GetString(NULL, 0, D_84211B48, arg0 + 0x37));
+    Gfx_SetEnvColor(0xFF, 0xFF, 0x77, 0xFF);
+    Font_Printf(0x68, 0x2A, Text_GetString(NULL, 0, D_84211B48, arg0 + 0x37));
 
     if ((arg0 == 0) && (var_t0 != 0)) {
-        func_8001EBE0(4, 0);
-        func_8001F1E8(0x1F9, 0x2F, func_8002D7C0(NULL, 0, D_84211B48, 0x4E));
+        Font_SetActive(4, 0);
+        Font_Printf(0x1F9, 0x2F, Text_GetString(NULL, 0, D_84211B48, 0x4E));
     }
-    func_8001F444();
+    Font_EndTexturedTextRendering();
 }
 
-void func_84202718(UNUSED s16 arg0, s16 arg1, s16 arg2) {
+void TeamSelection_RenderFrame(UNUSED s16 arg0, s16 arg1, s16 arg2) {
     s32 temp_s0 = D_84210D40 > 0;
 
-    func_800079C4();
+    BgStage_DrawFrame();
 
     if (temp_s0 != 0) {
         D_84210D40--;
-        func_8001D924(D_84211B34);
-        func_842024DC(arg1, arg2);
+        Gfx_DrawTiledRgba16Image(D_84211B34);
+        TeamSelection_DrawFrame(arg1, arg2);
     }
 
     if (D_84210D44 & 8) {
-        func_84204760(temp_s0);
+        TeamSelection_TrainerSlots_Render(temp_s0);
     }
 
     if (D_84210D44 & 1) {
-        func_842062D4(&D_84211B50, temp_s0);
+        Rental_DrawTeamTray(&D_84211B50, temp_s0);
     }
 
     if (D_84210D44 & 2) {
-        func_84209340(&D_842168A0, temp_s0);
+        Rental_CarouselDraw(&D_842168A0, temp_s0);
     }
 
     if (D_84210D44 & 4) {
-        func_8420EE54(&D_84229EB0, temp_s0);
+        TeamSelection_RegisteredTeam_Render(&D_84229EB0, temp_s0);
     }
 
     if (D_84210D44 & 0x10) {
-        func_8420B8CC(&D_8423D3A8, temp_s0);
+        TeamSelection_Preview_DrawPokemonDetails(&D_8423D3A8, temp_s0);
     }
 
     if (D_84210D44 & 0x20) {
-        func_8420D4F8(temp_s0);
+        TeamSelection_RulePrompt_DrawFrame(temp_s0);
     }
 
-    func_80007778();
+    BgStage_AdvanceFrame();
 }
 
-s16 func_84202844(s16 arg0, s16 arg1, s16 arg2, s32 arg3) {
+s16 TeamSelection_RunModal(s16 arg0, s16 arg1, s16 arg2, s32 arg3) {
     s32 temp_s1 = -1;
     s16 i;
 
@@ -520,45 +520,45 @@ s16 func_84202844(s16 arg0, s16 arg1, s16 arg2, s32 arg3) {
 
     for (i = 0; i < 4; i++) {
         D_84210D40 = 2;
-        func_84202718(-1, arg1, arg2);
+        TeamSelection_RenderFrame(-1, arg1, arg2);
     }
 
-    func_84205D48(arg0, arg3);
+    TeamSelection_TrainerSlots_Open(arg0, arg3);
 
     while (temp_s1 == -1) {
-        func_800290B4();
-        func_8420570C();
-        func_8420D9B0();
-        temp_s1 = func_84205E54();
+        Controller_PollInputs();
+        TeamSelection_TrainerSlots_Update();
+        TeamSelection_RulePrompt_Update();
+        temp_s1 = TeamSelection_TrainerSlots_GetSelection();
         D_84210D40 = 2;
-        func_84202718(-1, arg1, arg2);
+        TeamSelection_RenderFrame(-1, arg1, arg2);
     }
 
-    func_84202718(-1, arg1, arg2);
+    TeamSelection_RenderFrame(-1, arg1, arg2);
     return temp_s1;
 }
 
-void func_84202974(UNUSED s16 arg0, UNUSED s32 arg1) {
+void TeamSelection_Update(UNUSED s16 arg0, UNUSED s32 arg1) {
     s32 var_a1 = 0;
 
     if (D_84210D44 & 1) {
-        var_a1 = func_8420776C(&D_84211B50);
+        var_a1 = Rental_TeamSlotsUpdate(&D_84211B50);
     }
 
     if (D_84210D44 & 2) {
-        var_a1 |= func_8420B0C8(&D_842168A0);
+        var_a1 |= Rental_CarouselTick(&D_842168A0);
     }
 
     if (D_84210D44 & 4) {
-        var_a1 |= func_842106FC(&D_84229EB0);
+        var_a1 |= TeamSelection_RegisteredTeam_Update(&D_84229EB0);
     }
 
     if (D_84210D44 & 0x10) {
-        var_a1 |= func_8420C580(&D_8423D3A8);
+        var_a1 |= TeamSelection_Preview_Update(&D_8423D3A8);
     }
 
     if (D_84210D44 & 0x20) {
-        var_a1 |= func_8420D9B0();
+        var_a1 |= TeamSelection_RulePrompt_Update();
     }
 
     if (var_a1 != 0) {
@@ -566,41 +566,41 @@ void func_84202974(UNUSED s16 arg0, UNUSED s32 arg1) {
     }
 }
 
-void func_84202A64(s16 arg0, s32 arg1, s16 arg2) {
-    func_80048B90(4);
+void TeamSelection_Open(s16 arg0, s32 arg1, s16 arg2) {
+    Audio_PlaySoundEffectById(4);
     if (arg0 == 4) {
-        func_84210A18(&D_84229EB0);
+        RegistrationManager_Begin(&D_84229EB0);
     } else {
-        func_842079B4(&D_84211B50, 0);
-        func_8420B1D0(&D_842168A0, 0);
+        Rental_TeamTrayOpen(&D_84211B50, 0);
+        Rental_CarouselOpen(&D_842168A0, 0);
     }
-    func_800290B4();
-    func_84202974(arg0, 0);
-    func_84202718(arg0, arg1, arg2);
+    Controller_PollInputs();
+    TeamSelection_Update(arg0, 0);
+    TeamSelection_RenderFrame(arg0, arg1, arg2);
 }
 
-void func_84202AF4(s16 arg0, s16 arg1, s16 arg2) {
+void TeamSelection_RunInputLoop(s16 arg0, s16 arg1, s16 arg2) {
     s32 var_s0 = 1;
 
-    func_8001F738(&gControllers[D_842168A0.unk_00003]);
+    Input_SetRepeatController(&gControllers[D_842168A0.unk_00003]);
 
     while (var_s0 != 0) {
-        func_800290B4();
-        func_84202974(arg0, func_8001F750() & 0xFFFF);
-        func_84202718(arg0, arg1, arg2);
+        Controller_PollInputs();
+        TeamSelection_Update(arg0, Input_GetRepeatedDPad() & 0xFFFF);
+        TeamSelection_RenderFrame(arg0, arg1, arg2);
 
         if (arg0 == 4) {
-            var_s0 = func_84210B54(&D_84229EB0) == 0;
+            var_s0 = TeamSelection_RegisteredTeam_GetSelection(&D_84229EB0) == 0;
         } else {
-            var_s0 = !func_842081A8(&D_84211B50);
-            var_s0 |= !func_8420B37C(&D_842168A0);
+            var_s0 = !Rental_TeamTrayIsIdle(&D_84211B50);
+            var_s0 |= !Rental_CarouselIsIdle(&D_842168A0);
         }
     }
 }
 
-void func_84202C20(void) {
+void TeamSelection_InitializeSlots(void) {
     s16 i;
-    unk_D_800AE540_0004* var_v0 = D_800AE540.unk_0004;
+    TeamRoster* var_v0 = D_800AE540.unk_0004;
 
     for (i = 0; i < 4; i++) {
         D_8423D3D8[i].unk_00 = 0;
@@ -623,31 +623,31 @@ void func_84202C20(void) {
     }
 }
 
-void func_84202D18(unk_D_8423D3D8* arg0, s16 arg1) {
+void TeamSelection_InitializeSlot(unk_D_8423D3D8* arg0, s16 arg1) {
     char sp50[16];
     UNUSED s32 pad;
     u16 var_v1;
-    unk_D_800AC910_040 sp38;
+    GbSavePlayerIdentity sp38;
 
     if (arg1 == 4) {
-        D_84210D44 |= func_8421089C(&D_84229EB0, &D_84211B50, &D_842168A0, &D_8423D3A8, 0, 0x2C, 0x54, arg0->unk_02);
+        D_84210D44 |= TeamSelection_RegisteredTeam_Initialize(&D_84229EB0, &D_84211B50, &D_842168A0, &D_8423D3A8, 0, 0x2C, 0x54, arg0->unk_02);
         return;
     }
 
     if (arg1 < 4) {
-        func_80025040(arg1, &sp38);
-        func_80021A90(sp50, sp38.unk_02);
+        GbSave_CopyPlayerIdentity(arg1, &sp38);
+        Text_UntranscodeName(sp50, sp38.unk_02);
         var_v1 = sp38.unk_00;
     } else {
-        HAL_Strcpy(sp50, func_8002311C(1));
+        HAL_Strcpy(sp50, Text_GetPlayerLabel(1));
         var_v1 = 0;
     }
 
-    D_84210D44 |= func_842078C0(&D_84211B50, &D_842168A0, &D_8423D3A8, NULL, 0, var_v1, sp50, 0x40, 0x54, arg0->unk_02);
-    D_84210D44 |= func_8420AF1C(&D_842168A0, &D_84211B50, &D_8423D3A8, 0, 0x68, 0xE4, arg0->unk_02, arg1, D_84211B38);
+    D_84210D44 |= Rental_InitTeamTray(&D_84211B50, &D_842168A0, &D_8423D3A8, NULL, 0, var_v1, sp50, 0x40, 0x54, arg0->unk_02);
+    D_84210D44 |= Rental_PrimeCarousel(&D_842168A0, &D_84211B50, &D_8423D3A8, 0, 0x68, 0xE4, arg0->unk_02, arg1, D_84211B38);
 }
 
-s32 func_84202EB0(unk_D_8423D3D8* arg0, s16 arg1) {
+s32 Team_CommitSelectionToTrainer(unk_D_8423D3D8* arg0, s16 arg1) {
     s32 temp_s3;
     s32 var_s0 = 0;
     unk_D_84229EB0_00024* sp34;
@@ -655,7 +655,7 @@ s32 func_84202EB0(unk_D_8423D3D8* arg0, s16 arg1) {
 
     arg0->unk_04->unk_002 = 0;
     if (arg1 == 4) {
-        temp_s3 = func_84210B60(&D_84229EB0, &sp34);
+        temp_s3 = RegisteredTeam_LoadSelected(&D_84229EB0, &sp34);
         if (sp34 != NULL) {
             arg0->unk_04->unk_018 = sp34->unk_4D10;
             if (D_800AE540.unk_0000 != 0) {
@@ -664,7 +664,7 @@ s32 func_84202EB0(unk_D_8423D3D8* arg0, s16 arg1) {
             HAL_Strcpy(arg0->unk_04->unk_214->unk_014, sp34->unk_4D12);
 
             for (i = 0; i < temp_s3; i++) {
-                func_8002B888(arg0->unk_04, &sp34->unk_0000[i].unk_004);
+                Trainer_AddPokemon(arg0->unk_04, &sp34->unk_0000[i].unk_004);
             }
             var_s0 = 1;
         }
@@ -677,7 +677,7 @@ s32 func_84202EB0(unk_D_8423D3D8* arg0, s16 arg1) {
 
         if (D_84211B50.unk_0006 > 0) {
             for (i = 0; i < D_84211B50.unk_0006; i++) {
-                func_8002B888(arg0->unk_04, &D_84211B50.unk_0030[i].unk_004);
+                Trainer_AddPokemon(arg0->unk_04, &D_84211B50.unk_0030[i].unk_004);
             }
             var_s0 = 1;
         }
@@ -685,90 +685,90 @@ s32 func_84202EB0(unk_D_8423D3D8* arg0, s16 arg1) {
     return var_s0;
 }
 
-void func_8420305C(s32 arg0) {
+void TeamSelection_FadeOut(s32 arg0) {
     s32 i;
 
-    func_80007990(1);
-    func_8000D278(0x10);
-    func_80006CB4(8);
+    StageContext_SetClearColor(1);
+    Audio_StopMusic(0x10);
+    StageFade_StartFromTransparent(8);
 
     for (i = 0; i < 8; i++) {
-        func_800290B4();
-        func_800079C4();
-        func_8001D924(D_84211B34);
+        Controller_PollInputs();
+        BgStage_DrawFrame();
+        Gfx_DrawTiledRgba16Image(D_84211B34);
         if (arg0 != 0) {
-            func_842024DC(0, -1);
+            TeamSelection_DrawFrame(0, -1);
         }
-        func_80007778();
+        BgStage_AdvanceFrame();
     }
 
-    func_800077B4(2);
+    StageLoader_RunFrames(2);
 }
 
-void func_84203100(void) {
+void TeamSelection_FadeIn(void) {
     s32 i;
 
-    if (func_80007604() == 1) {
-        func_80006C6C(8);
+    if (StageContext_GetFadeMode() == 1) {
+        StageFade_StartFromOpaque(8);
         for (i = 0; i < 10; i++) {
-            func_800290B4();
-            func_800079C4();
-            func_8001D924(D_84211B34);
-            func_842024DC(0, -1);
-            func_80007778();
+            Controller_PollInputs();
+            BgStage_DrawFrame();
+            Gfx_DrawTiledRgba16Image(D_84211B34);
+            TeamSelection_DrawFrame(0, -1);
+            BgStage_AdvanceFrame();
         }
     }
 }
 
-void func_8420318C(s16 arg0, s16 arg1) {
-    unk_D_800AE540_0004* temp_v1 = D_8423D3D8[arg0].unk_04;
+void TeamSelection_ApplySlotSelection(s16 arg0, s16 arg1) {
+    TeamRoster* temp_v1 = D_8423D3D8[arg0].unk_04;
 
     if (temp_v1->unk_002 != 0) {
         if (arg1 == 4) {
-            func_84210C80(&D_84229EB0, temp_v1->unk_214->unk_028[0].unk_53);
+            TeamSelection_RegisteredTeam_ApplySelection(&D_84229EB0, temp_v1->unk_214->unk_028[0].unk_53);
         } else {
-            func_842081B4(&D_84211B50, &temp_v1->unk_214->unk_028, temp_v1->unk_214->unk_002);
+            Rental_CopyRosterToTeam(&D_84211B50, &temp_v1->unk_214->unk_028, temp_v1->unk_214->unk_002);
         }
     }
 }
 
-s32 func_84203210(void) {
+s32 Team_SelectTeams(void) {
     s16 var_s1 = 0;
     s16 var_s2;
 
     if ((D_800AE540.unk_0000 == 7) && (D_800AE540.unk_0002 == 9)) {
-        func_8420305C(0);
-        func_8002B6BC();
+        TeamSelection_FadeOut(0);
+        Team_ResetOpponentHistory();
         return 1;
     }
 
     switch (D_800AE540.unk_0000) {
         case 0:
-            func_8000D1F0(0x2D);
+            Audio_PlayMusicIfChanged(0x2D);
             break;
 
         case 7:
-            func_8000D1F0(0x2B);
+            Audio_PlayMusicIfChanged(0x2B);
             break;
 
         case 8:
-            func_8000D1F0(0x30);
+            Audio_PlayMusicIfChanged(0x30);
             break;
 
         default:
-            func_8000D1F0(0x15);
+            Audio_PlayMusicIfChanged(0x15);
             break;
     }
 
-    func_84202C20();
-    func_84203100();
+    TeamSelection_InitializeSlots();
+    TeamSelection_FadeIn();
 
-    D_84210D44 |= func_84205C18(0);
-    D_84210D44 |= func_8420C504(&D_8423D3A8);
+    D_84210D44 |= TeamSelection_TrainerSlots_Initialize(0);
+    D_84210D44 |= TeamSelection_Preview_Initialize(&D_8423D3A8);
 
     while (var_s1 >= 0 && var_s1 < 4) {
         if (D_8423D3D8[var_s1].unk_00 != 0) {
-            var_s2 = func_84202844(D_8423D3D8[var_s1].unk_02, 0, D_8423D3D8[var_s1].unk_01, 1);
+            var_s2 = TeamSelection_RunModal(D_8423D3D8[var_s1].unk_02, 0, D_8423D3D8[var_s1].unk_01, 1);
             D_8423D3D8[var_s1].unk_04->unk_002 = 0;
 
             if (var_s2 < 0) {
@@ -788,19 +788,19 @@ s32 func_84203210(void) {
                 main_pool_push_state('pkgb');
 
                 if (var_s2 < 4) {
-                    func_80023D60(var_s2);
-                    func_80024208(var_s2);
-                    D_800AE540.unk_11F0 = func_80025328(var_s2);
+                    GbSave_LoadPort(var_s2);
+                    GbSave_MarkBoxDataLoaded(var_s2);
+                    D_800AE540.gbStarterChoice = GbSave_GetStarterChoice(var_s2);
                 } else {
-                    D_800AE540.unk_11F0 = 0;
+                    D_800AE540.gbStarterChoice = 0;
                 }
 
-                func_84202D18(&D_8423D3D8[(unsigned long)idx], var_s2);
-                func_8420318C(var_s1, var_s2);
-                func_84202A64(var_s2, 0, D_8423D3D8[var_s1].unk_01);
-                func_84202AF4(var_s2, 0, D_8423D3D8[var_s1].unk_01);
+                TeamSelection_InitializeSlot(&D_8423D3D8[(unsigned long)idx], var_s2);
+                TeamSelection_ApplySlotSelection(var_s1, var_s2);
+                TeamSelection_Open(var_s2, 0, D_8423D3D8[var_s1].unk_01);
+                TeamSelection_RunInputLoop(var_s2, 0, D_8423D3D8[var_s1].unk_01);
 
-                if (func_84202EB0(&D_8423D3D8[(unsigned long)idx], var_s2) != 0) {
+                if (Team_CommitSelectionToTrainer(&D_8423D3D8[(unsigned long)idx], var_s2) != 0) {
                     var_s1++;
                 }
 
@@ -815,43 +815,43 @@ s32 func_84203210(void) {
         return 0;
     }
 
-    func_8420305C(1);
-    func_8002B6BC();
+    TeamSelection_FadeOut(1);
+    Team_ResetOpponentHistory();
     return 1;
 }
 
-s32 func_842034E4(void) {
+s32 Team_SelectRegisteredTeams(void) {
     s16 var_s1 = 0;
     s16 var_s2;
 
     switch (D_800AE540.unk_0000) {
         case 0:
-            func_8000D1F0(0x2D);
+            Audio_PlayMusicIfChanged(0x2D);
             break;
 
         case 7:
-            func_8000D1F0(0x2B);
+            Audio_PlayMusicIfChanged(0x2B);
             break;
 
         case 8:
-            func_8000D1F0(0x30);
+            Audio_PlayMusicIfChanged(0x30);
             break;
 
         default:
-            func_8000D1F0(0x15);
+            Audio_PlayMusicIfChanged(0x15);
             break;
     }
 
-    func_84202C20();
-    func_84203100();
+    TeamSelection_InitializeSlots();
+    TeamSelection_FadeIn();
 
-    D_84210D44 |= func_84205C18(0);
-    D_84210D44 |= func_8420C504(&D_8423D3A8);
+    D_84210D44 |= TeamSelection_TrainerSlots_Initialize(0);
+    D_84210D44 |= TeamSelection_Preview_Initialize(&D_8423D3A8);
 
     while ((var_s1 >= 0) && (var_s1 < 4)) {
         if (D_8423D3D8[var_s1].unk_00 != 0) {
             if (D_8423D3D8[var_s1].unk_04->unk_002 == 0) {
-                var_s2 = func_84202844(D_8423D3D8[var_s1].unk_02, 0, D_8423D3D8[var_s1].unk_01, 1);
+                var_s2 = TeamSelection_RunModal(D_8423D3D8[var_s1].unk_02, 0, D_8423D3D8[var_s1].unk_01, 1);
             } else {
                 var_s2 = ((D_8423D3D8[var_s1].unk_04->unk_01C[0].unk_52 & 0x70) >> 4);
             }
@@ -874,17 +874,17 @@ s32 func_842034E4(void) {
                 main_pool_push_state('pkgb');
 
                 if (var_s2 < 4) {
-                    func_80023D60(var_s2);
-                    func_80024208(var_s2);
-                    D_800AE540.unk_11F0 = func_80025328(var_s2);
+                    GbSave_LoadPort(var_s2);
+                    GbSave_MarkBoxDataLoaded(var_s2);
+                    D_800AE540.gbStarterChoice = GbSave_GetStarterChoice(var_s2);
                 } else {
-                    D_800AE540.unk_11F0 = 0;
+                    D_800AE540.gbStarterChoice = 0;
                 }
-                func_84202D18(&D_8423D3D8[(unsigned long)idx], var_s2);
-                func_8420318C(var_s1, var_s2);
-                func_84202A64(var_s2, 0, D_8423D3D8[var_s1].unk_01);
-                func_84202AF4(var_s2, 0, D_8423D3D8[var_s1].unk_01);
-                if (func_84202EB0(&D_8423D3D8[(unsigned long)idx], var_s2) != 0) {
+                TeamSelection_InitializeSlot(&D_8423D3D8[(unsigned long)idx], var_s2);
+                TeamSelection_ApplySlotSelection(var_s1, var_s2);
+                TeamSelection_Open(var_s2, 0, D_8423D3D8[var_s1].unk_01);
+                TeamSelection_RunInputLoop(var_s2, 0, D_8423D3D8[var_s1].unk_01);
+                if (Team_CommitSelectionToTrainer(&D_8423D3D8[(unsigned long)idx], var_s2) != 0) {
                     var_s1++;
                 }
 
@@ -899,20 +899,20 @@ s32 func_842034E4(void) {
         return 0;
     }
 
-    func_8420305C(1);
-    func_8002B6BC();
+    TeamSelection_FadeOut(1);
+    Team_ResetOpponentHistory();
     return 1;
 }
 
-void func_842037AC(void) {
+void RegisteredTeam_Register(void) {
     unk_D_84229EB0* ptr;
     char sp74[16];
     s16 temp_v0;
     u16 var_s1;
-    unk_D_800AC910_040 sp60;
+    GbSavePlayerIdentity sp60;
 
     while (true) {
-        temp_v0 = func_84202844(0, 1, 0, 1);
+        temp_v0 = TeamSelection_RunModal(0, 1, 0, 1);
         if (temp_v0 < 0) {
             return;
         }
@@ -920,23 +920,23 @@ void func_842037AC(void) {
         main_pool_push_state('regi');
 
         if (temp_v0 < 4) {
-            func_80023D60(temp_v0);
-            func_80024208(temp_v0);
-            func_80025040(temp_v0, &sp60);
-            func_80021A90(sp74, sp60.unk_02);
+            GbSave_LoadPort(temp_v0);
+            GbSave_MarkBoxDataLoaded(temp_v0);
+            GbSave_CopyPlayerIdentity(temp_v0, &sp60);
+            Text_UntranscodeName(sp74, sp60.unk_02);
             var_s1 = sp60.unk_00;
         } else {
-            HAL_Strcpy(sp74, func_8002311C(1));
+            HAL_Strcpy(sp74, Text_GetPlayerLabel(1));
             var_s1 = 0;
         }
 
         ptr = &D_84229EB0;
-        D_84210D44 |= func_8421089C(ptr, &D_84211B50, &D_842168A0, &D_8423D3A8, 3, 0x2C, 0xBC, 0);
-        D_84210D44 |= func_842078C0(&D_84211B50, &D_842168A0, &D_8423D3A8, ptr, 1, var_s1, sp74, 0x40, 0x54, 0);
-        D_84210D44 |= func_8420AF1C(&D_842168A0, &D_84211B50, &D_8423D3A8, 1, 0x68, 0xE4, 0, temp_v0, D_84211B38);
+        D_84210D44 |= TeamSelection_RegisteredTeam_Initialize(ptr, &D_84211B50, &D_842168A0, &D_8423D3A8, 3, 0x2C, 0xBC, 0);
+        D_84210D44 |= Rental_InitTeamTray(&D_84211B50, &D_842168A0, &D_8423D3A8, ptr, 1, var_s1, sp74, 0x40, 0x54, 0);
+        D_84210D44 |= Rental_PrimeCarousel(&D_842168A0, &D_84211B50, &D_8423D3A8, 1, 0x68, 0xE4, 0, temp_v0, D_84211B38);
 
-        func_84202A64(temp_v0, 1, 0);
-        func_84202AF4(temp_v0, 1, 0);
+        TeamSelection_Open(temp_v0, 1, 0);
+        TeamSelection_RunInputLoop(temp_v0, 1, 0);
 
         main_pool_pop_state('regi');
 
@@ -946,57 +946,57 @@ void func_842037AC(void) {
     }
 }
 
-void func_842039B4(void) {
-    D_84210D44 |= func_8421089C(&D_84229EB0, &D_84211B50, &D_842168A0, &D_8423D3A8, 1, 0x2C, 0x54, 0);
+void RegisteredTeam_Browse(void) {
+    D_84210D44 |= TeamSelection_RegisteredTeam_Initialize(&D_84229EB0, &D_84211B50, &D_842168A0, &D_8423D3A8, 1, 0x2C, 0x54, 0);
 
-    func_84210A18(&D_84229EB0);
-    func_800290B4();
-    func_84202974(4, 0);
-    func_84202718(4, 2, 0);
-    func_8001F738(&gControllers[D_842168A0.unk_00003]);
-
-    do {
-        func_800290B4();
-        func_84202974(4, func_8001F750() & 0xFFFF);
-        func_84202718(4, 2, 0);
-    } while (func_84210B54(&D_84229EB0) == 0);
-}
-
-void func_84203AB8(void) {
-    D_84210D44 |= func_8421089C(&D_84229EB0, &D_84211B50, &D_842168A0, &D_8423D3A8, 2, 0x2C, 0x54, 0);
-
-    func_84210A18(&D_84229EB0);
-    func_800290B4();
-    func_84202974(4, 0);
-    func_84202718(4, 3, 0);
-    func_8001F738(&gControllers[D_842168A0.unk_00003]);
+    RegistrationManager_Begin(&D_84229EB0);
+    Controller_PollInputs();
+    TeamSelection_Update(4, 0);
+    TeamSelection_RenderFrame(4, 2, 0);
+    Input_SetRepeatController(&gControllers[D_842168A0.unk_00003]);
 
     do {
-        func_800290B4();
-        func_84202974(4, func_8001F750() & 0xFFFF);
-        func_84202718(4, 3, 0);
-    } while (func_84210B54(&D_84229EB0) == 0);
+        Controller_PollInputs();
+        TeamSelection_Update(4, Input_GetRepeatedDPad() & 0xFFFF);
+        TeamSelection_RenderFrame(4, 2, 0);
+    } while (TeamSelection_RegisteredTeam_GetSelection(&D_84229EB0) == 0);
 }
 
-s32 func_84203BBC(void) {
+void RegisteredTeam_Delete(void) {
+    D_84210D44 |= TeamSelection_RegisteredTeam_Initialize(&D_84229EB0, &D_84211B50, &D_842168A0, &D_8423D3A8, 2, 0x2C, 0x54, 0);
+
+    RegistrationManager_Begin(&D_84229EB0);
+    Controller_PollInputs();
+    TeamSelection_Update(4, 0);
+    TeamSelection_RenderFrame(4, 3, 0);
+    Input_SetRepeatController(&gControllers[D_842168A0.unk_00003]);
+
+    do {
+        Controller_PollInputs();
+        TeamSelection_Update(4, Input_GetRepeatedDPad() & 0xFFFF);
+        TeamSelection_RenderFrame(4, 3, 0);
+    } while (TeamSelection_RegisteredTeam_GetSelection(&D_84229EB0) == 0);
+}
+
+s32 RegisteredTeam_Manage(void) {
     s16 temp_v0;
 
-    D_84210D44 |= func_84205C18(1);
-    D_84210D44 |= func_8420C504(&D_8423D3A8);
+    D_84210D44 |= TeamSelection_TrainerSlots_Initialize(1);
+    D_84210D44 |= TeamSelection_Preview_Initialize(&D_8423D3A8);
 
     do {
-        temp_v0 = func_842023E4();
+        temp_v0 = TeamSelection_RunCategorySelection();
         switch (temp_v0) {
             case 0:
-                func_842037AC();
+                RegisteredTeam_Register();
                 break;
 
             case 1:
-                func_842039B4();
+                RegisteredTeam_Browse();
                 break;
 
             case 2:
-                func_84203AB8();
+                RegisteredTeam_Delete();
                 break;
         }
     } while (temp_v0 != 3);
@@ -1004,11 +1004,11 @@ s32 func_84203BBC(void) {
     return 1;
 }
 
-void func_84203C90(void) {
+void Rental_LoadRosterForMode(void) {
     BinArchive* temp_a0;
     s16 var_a1;
 
-    temp_a0 = func_800044F4(0x898000, NULL, 1, 0);
+    temp_a0 = BinArchive_Open(0x898000, NULL, 1, 0);
 
     switch (D_800AE540.unk_0001) {
         case 0:
@@ -1058,68 +1058,68 @@ void func_84203C90(void) {
         if (D_800AE540.unk_11F2 != 0) {
             var_a1 += 0x1F;
         }
-        D_84211B38 = func_8000484C(temp_a0, var_a1);
+        D_84211B38 = BinArchive_GetFile(temp_a0, var_a1);
     }
 }
 
-void func_84203D74(void) {
-    unk_func_80027FA0 sp20;
+void Rental_LoadBackgroundImage(void) {
+    ModeSettings sp20;
 
     D_84211B30 = ASSET_LOAD2(backgrounds, 1, 1);
     if (D_800AE540.unk_0000 == 7) {
         if (D_800AE540.unk_0002 >= 8) {
-            D_84211B34 = func_8000484C(D_84211B30, 0xE);
+            D_84211B34 = BinArchive_GetFile(D_84211B30, 0xE);
         } else {
-            func_80028AFC(2);
-            func_80027FA0(&sp20, D_800AE540.unk_11F2);
+            Save_EnsureBankLoaded(2);
+            Save_GetModeSettings(&sp20, D_800AE540.unk_11F2);
             if (sp20.unk_04 < 8) {
-                D_84211B34 = func_8000484C(D_84211B30, 0xD);
+                D_84211B34 = BinArchive_GetFile(D_84211B30, 0xD);
             } else {
-                D_84211B34 = func_8000484C(D_84211B30, 0x10);
+                D_84211B34 = BinArchive_GetFile(D_84211B30, 0x10);
             }
         }
     } else {
-        D_84211B34 = func_8000484C(D_84211B30, D_84210D4C[D_800AE540.unk_0000]);
+        D_84211B34 = BinArchive_GetFile(D_84211B30, D_84210D4C[D_800AE540.unk_0000]);
     }
 }
 
-s32 func_84203E6C(s32 arg0, UNUSED s32 arg1) {
+s32 Rental_Main(s32 arg0, UNUSED s32 arg1) {
     s32 var_v1;
 
     main_pool_push_state('PICK');
 
-    func_8001E94C(0x1C, 0);
+    Font_Init(0x1C, 0);
     ASSET_LOAD(D_1000000, common_menu1_ui, 0);
     ASSET_LOAD(D_2000000, common_menu2_ui, 0);
     FRAGMENT_LOAD(fragment31);
-    func_8001987C();
-    func_8002D510();
+    PokeIcon_OpenModelArchives();
+    Text_InitStringTables();
 
-    D_84211B3C = func_8002D5AC(0x24);
-    D_84211B40 = func_8002D5AC(0x25);
-    D_84211B44 = func_8002D5AC(0x26);
-    D_84211B48 = func_8002D5AC(0x1A);
-    D_84211B4C = func_8002D5AC(6);
+    D_84211B3C = Text_GetStringTable(0x24);
+    D_84211B40 = Text_GetStringTable(0x25);
+    D_84211B44 = Text_GetStringTable(0x26);
+    D_84211B48 = Text_GetStringTable(0x1A);
+    D_84211B4C = Text_GetStringTable(6);
 
-    func_80028AFC(D_800AE540.unk_0001 / 4);
-    func_80028C48(D_800AE540.unk_0001);
-    func_80028EB8();
-    func_84203D74();
-    func_8001B058();
-    func_84203C90();
-    func_80007754();
+    Save_EnsureBankLoaded(D_800AE540.unk_0001 / 4);
+    Save_SetActiveRecordBank(D_800AE540.unk_0001);
+    Deck_CompactRegisteredTeams();
+    Rental_LoadBackgroundImage();
+    PokeIcon_OpenModelArchive();
+    Rental_LoadRosterForMode();
+    StageLoader_UpdateSegments();
 
     if (arg0 == 1) {
-        var_v1 = func_84203BBC();
+        var_v1 = RegisteredTeam_Manage();
     } else if (D_800AE540.unk_11F6 & 0x20) {
-        var_v1 = func_842034E4();
+        var_v1 = Team_SelectRegisteredTeams();
         D_800AE540.unk_11F6 = D_800AE540.unk_11F6 & 0xFFDF;
     } else {
         D_800AE540.unk_11F5 &= 0xFFFD;
-        var_v1 = func_84203210();
+        var_v1 = Team_SelectTeams();
     }
 
-    func_8000771C();
+    StageLoader_WaitForRetrace();
 
     main_pool_pop_state('PICK');
 

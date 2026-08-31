@@ -106,9 +106,9 @@ typedef struct StadiumModel {
 } StadiumModel; // size = 0x204
 
 void func_80033D1C(StadiumModel* model, MtxF* mtx);
-void func_800350E4(ModelSegment*, MtxF*, ModelVertex*);
+void Model_InitializeVertexPositions(ModelSegment*, MtxF*, ModelVertex*);
 void func_800357F4(StadiumModel* model);
-void func_800359FC(ModelSegment*, ModelVertex*, StadiumModel*, f32);
+void Model_ApplyTransformCommands(ModelSegment*, ModelVertex*, StadiumModel*, f32);
 void func_80035FA8(ModelSegment*, ModelVertex*);
 
 #endif // _33E30_H_
