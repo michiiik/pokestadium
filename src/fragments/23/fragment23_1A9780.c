@@ -17,6 +17,14 @@
 #include "src/stage_loader.h"
 #include "src/fragments/29/fragment29.h"
 
+typedef struct unk_func_88201488_arg2 {
+    /* 0x00 */ u8 unk_00;
+    /* 0x01 */ char pad01[0x23];
+    /* 0x24 */ u8 unk_24;
+} unk_func_88201488_arg2; // size = 0x28
+
+extern s32 D_4006A08;
+
 static char** D_88224FA0;
 static char** D_88224FA4;
 
@@ -98,12 +106,113 @@ s32 func_88201440(unk_func_88205880_A030* arg0) {
     return 1;
 }
 
+#ifdef NON_MATCHING
+void func_88201488(s32 arg0, s32 arg1, unk_func_88201488_arg2** arg2, s32 arg3, s32 arg4, unk_func_88200FA0_030_030* arg5) {
+    static Color_RGBA8 D_88217C20 = { 0xF0, 0xF0, 0xF0, 0xFF };
+    static Color_RGBA8 D_88217C24 = { 0x28, 0x28, 0x64, 0xFF };
+    static Color_RGBA8 D_88217C28 = { 0x3C, 0x3C, 0x82, 0xFF };
+    static Color_RGBA8 D_88217C2C = { 0x78, 0x78, 0x96, 0xFF };
+    s32 pad[3];
+    s32 temp_t1;
+    gDPPipeSync(gDisplayListHead++);
+    gDPSetCycleType(gDisplayListHead++, G_CYC_FILL);
+    gDPSetRenderMode(gDisplayListHead++, 0, 0);
+    {
+        u32 color = GPACK_RGBA5551(D_88217C24.r, D_88217C24.g, D_88217C24.b, 1);
+        gDPPipeSync(gDisplayListHead++);
+        gDPSetFillColor(gDisplayListHead++, (color << 16) | color);
+        gDPFillRectangle(gDisplayListHead++, (arg0 + 1), (arg1 + 1), ((arg5->unk_3C + arg0) - 2), arg1 + 0x31);
+        // temp_a2 = (arg1 & 0x3FF) * 4;
+        // temp_t7 = ((arg0 + 1) & 0x3FF) << 0xE;
+        // temp_t6 = ((arg1 + 1) & 0x3FF) * 4;
+        // sp30 = temp_t6;
+        // sp34 = temp_t7;
+        // {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = (s32) (((((arg0 + arg5->unk_3C) - 2) & 0x3FF) << 0xE) | 0xF6000000 | (((arg1 + 0x31) & 0x3FF) * 4));    _gfx->words.w1 = (s32) (temp_t7 | temp_t6);    }
+    }
+    {
+        u32 color = GPACK_RGBA5551(D_88217C28.r, D_88217C28.g, D_88217C28.b, 1);
+        gDPPipeSync(gDisplayListHead++);
+        gDPSetFillColor(gDisplayListHead++, (color << 16) | color);
+        gDPFillRectangle(gDisplayListHead++, (arg0 + 1), (arg1 + 0x32), ((arg0 + arg5->unk_3C) - 2), arg1 + 0x49);
+        // temp_t2_2 = (arg0 & 0x3FF) << 0xE; 
+        // {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = (s32) (((((arg0 + arg5->unk_3C) - 2) & 0x3FF) << 0xE) | 0xF6000000 | (((arg1 + 0x49) & 0x3FF) * 4));    _gfx->words.w1 = (s32) (temp_t7 | (((arg1 + 0x32) & 0x3FF) * 4));    }
+    }
+    {
+        u32 color = GPACK_RGBA5551(D_88217C2C.r, D_88217C2C.g, D_88217C2C.b, 1);
+        gDPPipeSync(gDisplayListHead++);
+        gDPSetFillColor(gDisplayListHead++, (color << 16) | color);
+        gDPFillRectangle(gDisplayListHead++, arg0, arg1, ((arg5->unk_3C + arg0) - 1), arg1);
+    // {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 =  (s32) (((((arg5->unk_3C + arg0) - 1) & 0x3FF) << 0xE) | 0xF6000000 | temp_a2);    _gfx->words.w1 = (s32) (temp_t2_2 | temp_a2);    }
+        temp_t1 = (color << 0x10) | color;
+        gDPPipeSync(gDisplayListHead++);
+        gDPSetFillColor(gDisplayListHead++, temp_t1);
+        gDPFillRectangle(gDisplayListHead++, arg0, ((arg1 + arg5->unk_3E) - 1), ((arg5->unk_3C + arg0) - 1), ((arg1 + arg5->unk_3E) - 1));
+        // {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = (s32) (((((arg5->unk_3C + arg0) - 1) & 0x3FF) << 0xE) | 0xF6000000 | ((((arg1 + arg5->unk_3E) - 1) & 0x3FF) * 4));    _gfx->words.w1 = (s32) (temp_t2_2 | ((((arg1 + arg5->unk_3E) - 1) & 0x3FF) * 4));    }
+
+        gDPPipeSync(gDisplayListHead++);
+        gDPSetFillColor(gDisplayListHead++, temp_t1);
+        gDPFillRectangle(gDisplayListHead++, arg0, (arg1 + 1), arg0, ((arg1 + arg5->unk_3E) - 2));
+        // {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 =  (s32) (temp_t2_2 | 0xF6000000 | ((((arg1 + arg5->unk_3E) - 2) & 0x3FF) * 4));    _gfx->words.w1 = (s32) (temp_t2_2 | sp30);    }
+
+        gDPPipeSync(gDisplayListHead++);
+        gDPSetFillColor(gDisplayListHead++, temp_t1);
+        gDPFillRectangle(gDisplayListHead++, ((arg5->unk_3C + arg0) - 1), (arg1 + 1), ((arg5->unk_3C + arg0) - 1), ((arg1 + arg5->unk_3E) - 2));
+        // {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = (s32) (((((arg5->unk_3C + arg0) - 1) & 0x3FF) << 0xE) | 0xF6000000 | ((((arg1 + arg5->unk_3E) - 2) & 0x3FF) * 4));    _gfx->words.w1 = (s32) (((((arg5->unk_3C + arg0) - 1) & 0x3FF) << 0xE) | sp30);    }
+    }
+
+    if (arg2 != NULL) {
+        gDPPipeSync(gDisplayListHead++);
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE3000A01;    _gfx->words.w1 = 0x200000;    }
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE200001C;    _gfx->words.w1 = 0;    }
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE2001E01;    _gfx->words.w1 = 1;    }
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE3000C00;    _gfx->words.w1 = 0;    }
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xFD100000;    _gfx->words.w1 = (arg2 + 8);    }
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xF5100000;    _gfx->words.w1 = 0x07000000;    }
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE6000000;    _gfx->words.w1 = 0;    }
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xF3000000;    _gfx->words.w1 = 0x0763F0CD;    }
+        gDPPipeSync(gDisplayListHead++);
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xF5101400;    _gfx->words.w1 = 0;    }
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xF2000000;    _gfx->words.w1 = 0x9C09C;    }
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = (s32) (((((arg0 + 0x57) * 4) & 0xFFF) << 0xC) | 0xE4000000 | (((arg1 + 0x2D) * 4) & 0xFFF));    _gfx->words.w1 = (s32) (((((arg0 + 0x30) * 4) & 0xFFF) << 0xC) | (((arg1 + 6) * 4) & 0xFFF));    }
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE1000000;    _gfx->words.w1 = 0;    }
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xF1000000;    _gfx->words.w1 = 0x10000400;    }
+        gDPPipeSync(gDisplayListHead++);
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE2001E01;    _gfx->words.w1 = 0;    }
+
+        if (((s32) (*arg2)->unk_00 > 0) && ((s32) (*arg2)->unk_00 < 0x98)) {
+            gDPPipeSync(gDisplayListHead++);
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE3000A01;    _gfx->words.w1 = 0;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE200001C;    _gfx->words.w1 = 0x504240;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE3000C00;    _gfx->words.w1 = 0;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE3001201;    _gfx->words.w1 = 0;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xFCFFFFFF;    _gfx->words.w1 = 0xFFFCF279;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xFD700000;    _gfx->words.w1 = &D_4006A08;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xF5700000;    _gfx->words.w1 = 0x07000000;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE6000000;    _gfx->words.w1 = 0;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xF3000000;    _gfx->words.w1 = 0x07027800;    }
+            gDPPipeSync(gDisplayListHead++);
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xF5680200;    _gfx->words.w1 = 0;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xF2000000;    _gfx->words.w1 = 0x1C024;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = (s32) (((((arg0 + 0x12) * 4) & 0xFFF) << 0xC) | 0xE4000000 | (((arg1 + 0x29) * 4) & 0xFFF));    _gfx->words.w1 = (s32) (((((arg0 + 0xA) * 4) & 0xFFF) << 0xC) | (((arg1 + 0x1F) * 4) & 0xFFF));    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE1000000;    _gfx->words.w1 = 0;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xF1000000;    _gfx->words.w1 = 0x04000400;    }
+            func_8002E244(arg0 + 0x14, arg1 + 0x1D, (*arg2)->unk_24);
+        }
+        func_8001F3F4();
+        func_8001F324(D_88217C20.r, D_88217C20.g, D_88217C20.b, D_88217C20.a);
+        func_8001EBE0(8, 0);
+        func_8001F1E8(((s32) (arg5->unk_3C - func_8001F5B0(0, 0, ((char *)(*arg2)) + 0x30)) / 2) + arg0, arg1 + 0x34, ((char *)(*arg2)) + 0x30);
+        func_8001F444();
+    }
+}
+#else
 void func_88201488();
 static Color_RGBA8 D_88217C20 = { 0xF0, 0xF0, 0xF0, 0xFF };
 static Color_RGBA8 D_88217C24 = { 0x28, 0x28, 0x64, 0xFF };
 static Color_RGBA8 D_88217C28 = { 0x3C, 0x3C, 0x82, 0xFF };
 static Color_RGBA8 D_88217C2C = { 0x78, 0x78, 0x96, 0xFF };
 #pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/23/fragment23_1A9780/func_88201488.s")
+#endif
 
 void func_88201DA0(unk_func_88201DA0* arg0, s32 arg1, s32 arg2, unk_func_88001300_000* arg3, FragmentEntry arg4,
                    unk_func_88205880_0098* arg5, MemoryPool* arg6) {
@@ -639,13 +748,74 @@ s32 func_88202F70(unk_func_882025E0_1A9780* arg0, Controller* arg1) {
     return var_a2;
 }
 
-void func_88203538();
 static Color_RGBA8 D_88217C48 = { 0xF0, 0xF0, 0xF0, 0xFF };
 static Color_RGBA8 D_88217C4C = { 0x5A, 0x5A, 0xA6, 0xFF };
 static Color_RGBA8 D_88217C50 = { 0x40, 0x40, 0x74, 0xFF };
-static Color_RGBA8 D_88217C54 = { 0x78, 0x78, 0xF1, 0xFF };
-static Color_RGBA8 D_88217C58 = { 0x5E, 0x5E, 0xBE, 0xFF };
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/23/fragment23_1A9780/func_88203538.s")
+static Color_RGBA8 D_88217C54[] = {
+    { 0x78, 0x78, 0xF1, 0xFF },
+    { 0x5E, 0x5E, 0xBE, 0xFF },
+};
+
+void func_88203538(s32 arg0, s32 arg1, char* arg2, s32 arg3, s32 arg4, unk_func_88200FA0_030_030* arg5) {
+    Color_RGBA8 sp8C;
+    Color_RGBA8 sp88;
+    s32 pad[1];
+    char* sp80;
+    char sp7C[4];
+    s32 sp78;
+    s32 sp74;
+    s32 sp70;
+    s32 pad2[2];
+
+    if (arg4 & 2) {
+        sp8C = func_8002D444(D_88217C50, 1.4f);
+    } else {
+        sp8C = *(Color_RGBA8 *)&D_88217C50;
+    }
+
+    gDPPipeSync(gDisplayListHead++);
+    gDPSetCycleType(gDisplayListHead++, G_CYC_FILL);
+    gDPSetRenderMode(gDisplayListHead++, 0, 0);
+
+    {
+        u32 color = GPACK_RGBA5551(sp8C.r, sp8C.g, sp8C.b, 1);
+        gDPPipeSync(gDisplayListHead++);
+        gDPSetFillColor(gDisplayListHead++, (color << 16) | color);
+        gDPFillRectangle(gDisplayListHead++, arg0, arg1 + 1, ((arg5->unk_3C + arg0) - 1), ((arg1 + arg5->unk_3E) - 2));
+    }
+
+    {
+        u32 color = GPACK_RGBA5551(D_88217C54[1].r, D_88217C54[1].g, D_88217C54[1].b, 1); gDPPipeSync(gDisplayListHead++);
+        gDPSetFillColor(gDisplayListHead++, (color << 16) | color);
+        gDPFillRectangle(gDisplayListHead++, arg0, arg1, ((arg5->unk_3C + arg0) - 1), arg1);
+    }
+    
+    {
+        u32 color = GPACK_RGBA5551(D_88217C54[1].r, D_88217C54[1].g, D_88217C54[1].b, 1); gDPPipeSync(gDisplayListHead++);
+        gDPSetFillColor(gDisplayListHead++, (color << 16) | color);
+        gDPFillRectangle(gDisplayListHead++, arg0, ((arg1 + arg5->unk_3E) - 1), ((arg5->unk_3C + arg0) - 1), ((arg1 + arg5->unk_3E) - 1));
+    }
+
+
+    sp88 = D_88217C48;
+    if (arg4 & 4) {
+        sp88.a = 0x4C;
+    }
+    sp80 = func_8002D7C0(0, 0, D_88224FA4, 0x31);
+    sp78 = func_8001F5B0(8, 0, sp80);
+    sp74 = func_8001F5B0(8, 0, " 00");
+    sp70 = func_8001F5B0(4, 0, "00");
+    func_8001F3F4();
+    func_8001EBE0(8, 0);
+    func_8001F324(sp88.r, sp88.g, sp88.b, sp88.a);
+    func_8001F1E8(arg0 + 0x19, arg1 + 2, sp80);
+    sprintf(sp7C, "%d", arg3 + 1);
+    func_8001F1E8(((arg0 + sp78 + sp74) - func_8001F5B0(0, 0, sp7C)) + 0x19, arg1 + 2, sp7C);
+    func_8001F444();
+    if (!(arg4 & 0x100)) {
+        func_88202450(arg2, ((arg5->unk_3C + arg0) - sp70) - 0x35, arg1);
+    }
+}
 
 void func_8820399C(unk_func_8820399C* arg0, s32 arg1, unk_func_8850143C* arg2) {
     ((func885007CC)Memmap_GetFragmentVaddr(func_885007CC))(arg0, sizeof(unk_func_8820399C));
@@ -1227,7 +1397,6 @@ s32 func_882051EC(unk_func_88203ED8* arg0, Controller* arg1) {
 }
 
 #ifdef NON_MATCHING
-// Did match but now broken due to merging structs on the func_8820213C call
 s32 func_882052F4(unk_func_88203ED8_064* arg0, Controller* arg1) {
     s32 sp34;
     s32 tmp;
@@ -1335,11 +1504,8 @@ s32 func_882052F4(unk_func_88203ED8_064* arg0, Controller* arg1) {
                         func_80048B90(2);
                         tmp = (arg0->unk_24->unk_6C->unk_38 != 0 ? 1 : 2) << 0x10;
                         func_8820213C(arg0->unk_24->unk_5C,
-                                      &((unk_func_882025E0_1A9780*)arg0->unk_24->unk_6C)
-                                           ->unk_24[0]
-                                           ->unk_2C->unk_00[0]
-                                           ->unk_000[arg0->unk_24->unk_6C->unk_24[0]->unk_38],
-                                      tmp | arg0->unk_24->unk_6C->unk_24[0]->unk_38);
+                        ((s32*)arg0->unk_24->unk_6C->unk_24[0]->unk_2C->unk_00)[arg0->unk_24->unk_6C->unk_24[0]->unk_38],
+                        tmp | arg0->unk_24->unk_6C->unk_24[0]->unk_38);
 
                         arg0->unk_24->unk_6C->unk_24[0]->unk_00.unk_24(arg0->unk_24->unk_6C->unk_24[0], 0x100);
                         func_88202394(arg0->unk_24->unk_5C, arg1);

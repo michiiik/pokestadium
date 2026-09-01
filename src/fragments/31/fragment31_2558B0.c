@@ -15,16 +15,14 @@ typedef struct unk_D_810047E0 {
 
 typedef struct unk_arg2_func_81001D80 {
     /* 0x00 */ s32 unk_00;
-    /* 0x04 */ char unk04[0x4];
+    /* 0x04 */ s32 unk_04;
     /* 0x08 */ s32 unk_08;
 } unk_arg2_func_81001D80; // size = 0xC
 
 typedef struct unk_D_81003FE0 {
     /* 0x00 */ s16 unk_00;
     /* 0x02 */ s16 unk_02;
-    /* 0x04 */ s16 unk_04;
-    /* 0x06 */ s16 unk_06;
-    /* 0x08 */ s16 unk_08;
+    /* 0x04 */ s16 unk_04[3];
     /* 0x0A */ s16 unk_0A;
 } unk_D_81003FE0; // size = 0xC
 
@@ -305,8 +303,213 @@ void func_81000E78(unk_D_810047E0* arg0) {
     }
 }
 
+#ifdef NON_MATCHING
+Gfx* func_810010BC(Gfx* gfx, unk_D_810047E0* arg1, unk_arg2_func_81001D80* arg2, s16 arg3) {
+    Mtx* sp294;
+    Mtx sp250;
+    Mtx sp210;
+    Mtx sp1D0;
+    Mtx sp190;
+    s32 pad1;
+    MtxF sp14C;
+    MtxF sp10C;
+    s32 pad2;
+    f32 sp104;
+    f32 sp100;
+    f32 spFC;
+
+    sp294 = func_80005F5C(0x40);
+    func_80031EF4(&sp14C, &D_8006F088->unk_60.mtxf);
+    guMtxF2L(sp14C.mf, &sp1D0);
+    if (D_8006F09C->unk_0A6 == 0xFE) {
+        guScale(&sp250, D_8006F09C->unk_030.x * arg1->scale.x * 0.1f, D_8006F09C->unk_030.y * arg1->scale.y * 0.1f, D_8006F09C->unk_030.z * arg1->scale.z * 0.1f);
+    } else {
+        guScale(&sp250, D_8006F09C->unk_030.x * arg1->scale.x * 0.1f, D_8006F09C->unk_030.y * arg1->scale.y * 0.1f, D_8006F09C->unk_030.z * arg1->scale.z * 0.1f);
+    }
+    if (D_8006F09C->unk_0A6 == 0xFF) {
+        if ((D_8006F09C->unk_01A == 0x5C) || (D_8006F09C->unk_01A == 0x6D) || (D_8006F09C->unk_01A == 0x6E)) {
+            func_8000ED4C(&sp10C, func_800123D4(0));
+            guMtxXFMF(sp10C.mf, 0, 0, 0, &spFC, &sp100, &sp104);
+            guTranslate(&sp190, spFC, sp100, sp104);
+            guMtxCatL(&sp250, &sp190, sp294);
+        } else {
+            guTranslate(&sp210, arg1->position.x, arg1->position.y, arg1->position.z);
+            guMtxCatL(&sp250, &sp210, sp294);
+        }
+    } else if (D_8006F09C->unk_01A == 0x5C) {
+        func_8000ED4C(&sp10C, func_800123D4(0));
+        guMtxXFMF(sp10C.mf, 0, 0, 0, &spFC, &sp100, &sp104);
+        guTranslate(&sp190, spFC, sp100, sp104);
+        guMtxCatL(&sp250, &sp190, sp294);
+    } else {
+        guTranslate(&sp210, arg1->position.x, arg1->position.y, arg1->position.z);
+        guMtxCatL(&sp250, &sp210, sp294);
+    }
+    guMtxCatL(&sp1D0, sp294, sp294);
+    {    Gfx *_gfx = (Gfx *)(gfx++);    _gfx->words.w0 = 0xDA380002;    _gfx->words.w1 = sp294;    }
+    gSPDisplayList(gfx++, arg2->unk_00);
+    switch (D_8006F09C->unk_01A) {                              
+    case 0x6D:                                      
+    case 0x6E:                                      
+        {    Gfx *_gfx = (Gfx *)(gfx++);    _gfx->words.w0 = 0xFD900000;    _gfx->words.w1 = (s32) (arg2 + (((s16) arg1->misc / 2) * 4))->unk_08;    }
+        gDPSetTile(gfx++, G_IM_FMT_I, G_IM_SIZ_16b, 0, 0x0000, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD);
+        gDPLoadSync(gfx++);
+        gDPLoadBlock(gfx++, G_TX_LOADTILE, 0, 0, 255, 1024);
+        gDPPipeSync(gfx++);
+        gDPSetTile(gfx++, G_IM_FMT_I, G_IM_SIZ_4b, 2, 0x0000, G_TX_RENDERTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD);
+        gDPSetTileSize(gfx++, G_TX_RENDERTILE, 0, 0, 0x007C, 0x007C);
+        {    Gfx *_gfx = (Gfx *)(gfx++);    _gfx->words.w0 = 0xFA000000;    _gfx->words.w1 = (s32) (((0xC8 - (arg1->misc * 0xD)) & 0xFF) | 0x0A000000);    }
+        break;
+    case 0x5C:
+        {    Gfx *_gfx = (Gfx *)(gfx++);    _gfx->words.w0 = 0xFD900000;    _gfx->words.w1 = (s32) (arg2 + (((s16) arg1->misc / 2) * 4))->unk_08;    }
+        gDPSetTile(gfx++, G_IM_FMT_I, G_IM_SIZ_16b, 0, 0x0000, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD);
+        gDPLoadSync(gfx++);
+        gDPLoadBlock(gfx++, G_TX_LOADTILE, 0, 0, 255, 1024);
+        gDPPipeSync(gfx++);
+        gDPSetTile(gfx++, G_IM_FMT_I, G_IM_SIZ_4b, 2, 0x0000, G_TX_RENDERTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD);
+        gDPSetTileSize(gfx++, G_TX_RENDERTILE, 0, 0, 0x007C, 0x007C);
+        gDPSetEnvColor(gfx++, 0x32, 0x14, 0x46, 0x00);
+        if (arg1->misc < 0xA) {
+            gDPSetPrimColor(gfx++, 0, 0, 0x64, 0x46, 0x82, 0xFF);
+        } else {
+            {    Gfx *_gfx = (Gfx *)(gfx++);    _gfx->words.w0 = 0xFA000000;    _gfx->words.w1 = (s32) (((0x28F - (arg1->misc * 0x28)) & 0xFF) | 0x64468200);    }
+        }
+        break;
+    case 0x4D:                                      
+    case 0x4E:                                      
+    case 0x92:                                      
+        {    Gfx *_gfx = (Gfx *)(gfx++);    _gfx->words.w0 = 0xFD900000;    _gfx->words.w1 = (s32) (arg2 + (((s16) arg1->misc / 2) * 4))->unk_08;    }
+        gDPSetTile(gfx++, G_IM_FMT_I, G_IM_SIZ_16b, 0, 0x0000, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD);
+        gDPLoadSync(gfx++);
+        gDPLoadBlock(gfx++, G_TX_LOADTILE, 0, 0, 255, 1024);
+        gDPPipeSync(gfx++);
+        gDPSetTile(gfx++, G_IM_FMT_I, G_IM_SIZ_4b, 2, 0x0000, G_TX_RENDERTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD);
+        gDPSetTileSize(gfx++, G_TX_RENDERTILE, 0, 0, 0x007C, 0x007C);
+        {    Gfx *_gfx = (Gfx *)(gfx++);    _gfx->words.w0 = 0xFA000000;    _gfx->words.w1 = (s32) (((0xFA - (arg1->misc * 3)) & 0xFF) | 0xFFFF0000);    }
+        break;
+    case 0x86:                                      
+    case 0x90:                                      
+        {    Gfx *_gfx = (Gfx *)(gfx++);    _gfx->words.w0 = 0xFD700000;    _gfx->words.w1 = (s32) (arg2 + (((s16) arg1->misc / 2) * 4))->unk_08;    }
+        gDPSetTile(gfx++, G_IM_FMT_IA, G_IM_SIZ_16b, 0, 0x0000, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD);
+        gDPLoadSync(gfx++);
+        gDPLoadBlock(gfx++, G_TX_LOADTILE, 0, 0, 1023, 256);
+        gDPPipeSync(gfx++);
+        gDPSetTile(gfx++, G_IM_FMT_IA, G_IM_SIZ_16b, 8, 0x0000, G_TX_RENDERTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD);
+        gDPSetTileSize(gfx++, G_TX_RENDERTILE, 0, 0, 0x007C, 0x007C);
+        if (arg1->misc < 4) {
+            {    Gfx *_gfx = (Gfx *)(gfx++);    _gfx->words.w0 = 0xFA000000;    _gfx->words.w1 = (s32) ((((arg1->misc * 0x14) + 0xB4) & 0xFF) | ~0xFF);    }
+        } else {
+            {    Gfx *_gfx = (Gfx *)(gfx++);    _gfx->words.w0 = 0xFA000000;    _gfx->words.w1 = (s32) (((0x122 - (arg1->misc * 0xA)) & 0xFF) | ~0xFF);    }
+        }
+        break;
+    default:                                        
+        {    Gfx *_gfx = (Gfx *)(gfx++);    _gfx->words.w0 = 0xFD900000;    _gfx->words.w1 = (s32) (arg2 + (((s16) arg1->misc / 2) * 4))->unk_08;    }
+        gDPSetTile(gfx++, G_IM_FMT_I, G_IM_SIZ_16b, 0, 0x0000, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD);
+        gDPLoadSync(gfx++);
+        gDPLoadBlock(gfx++, G_TX_LOADTILE, 0, 0, 255, 1024);
+        gDPPipeSync(gfx++);
+        gDPSetTile(gfx++, G_IM_FMT_I, G_IM_SIZ_4b, 2, 0x0000, G_TX_RENDERTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD);
+        gDPSetTileSize(gfx++, G_TX_RENDERTILE, 0, 0, 0x007C, 0x007C);
+        {    Gfx *_gfx = (Gfx *)(gfx++);    _gfx->words.w0 = 0xFA000000;    _gfx->words.w1 = (s32) (((0xC8 - (arg1->misc * 0xD)) & 0xFF) | 0x0A000000);    }
+        break;
+    }
+    gSPDisplayList(gfx++, arg2->unk_04);
+    {    Gfx *_gfx = (Gfx *)(gfx++);    _gfx->words.w0 = 0xD8380002;    _gfx->words.w1 = 0x40;    }
+    if (func_800325AC() == 0) {
+        switch (D_8006F09C->unk_01A) {                          
+        case 0x6D:                                  
+        case 0x6E:                                  
+            if (D_8006F09C->unk_0A6 != 0xFF) {
+                arg1->misc++;
+                arg1->scale.x += 0.1f;
+                arg1->position.y += 0.5f * D_8006F09C->unk_030.y;
+                arg1->scale.y += 0.1f;
+                arg1->scale.z += 0.1f;
+                if (arg1->misc >= 0x10) {
+                    arg1->active = 0;
+                }
+            }
+            break;
+        case 0x5C:                                  
+            if (D_8006F09C->unk_0A6 == 0xFF) {
+                arg1->misc += 2;
+            } else {
+                arg1->misc++;
+            }
+            if (arg1->misc >= 0x10) {
+                arg1->active = 0;
+            }
+            break;
+        case 0x92:                                  
+            arg1->misc++;
+            arg1->position.y += 1.5f * D_8006F09C->unk_030.y;
+            arg1->scale.x += 0.005f;
+            arg1->scale.y += 0.005f;
+            arg1->scale.z += 0.005f;
+            if (arg1->misc >= 0x10) {
+                arg1->active = 0;
+            }
+            break;
+        case 0x4D:                                  
+            arg1->misc++;
+            arg1->scale.x += 0.005f;
+            arg1->position.y += 0.75f * D_8006F09C->unk_030.y;
+            arg1->scale.y += 0.005f;
+            arg1->scale.z += 0.005f;
+            if (arg1->misc >= 0x10) {
+                arg1->active = 0;
+            }
+            break;
+        case 0x4E:                                  
+            arg1->position.y += D_8006F09C->unk_030.y;
+            arg1->misc++;
+            arg1->scale.x += 0.005f;
+            arg1->scale.y += 0.005f;
+            arg1->scale.z += 0.005f;
+            if (arg1->misc >= 0x10) {
+                arg1->active = 0;
+            }
+            break;
+        case 0x90:                                  
+            arg1->misc++;
+            arg1->position.y -= 0.5f * D_8006F09C->unk_030.y;
+            arg1->scale.x = D_810040DC[arg1->misc % 12];
+            arg1->scale.y = D_810040DC[arg1->misc % 12];
+            arg1->scale.z = D_810040DC[arg1->misc % 12];
+            if ((arg1->misc >= 0xC) || (arg1->position.y < 0.0f)) {
+                arg1->active = 0;
+            }
+            break;
+        case 0x86:                                  
+            arg1->misc++;
+            arg1->scale.x = D_810040DC[arg1->misc % 12];
+            arg1->scale.y = D_810040DC[arg1->misc % 12];
+            arg1->scale.z = D_810040DC[arg1->misc % 12];
+            if ((arg1->misc >= 0xC) || (arg1->position.y < 0.0f)) {
+                arg1->active = 0;
+            }
+            break;
+        default:                                    
+            arg1->misc++;
+            if (arg1->misc >= 0x10) {
+                arg1->active = 0;
+            }
+            break;
+        }
+        arg1->position.x = (f32) (arg1->position.x + arg1->velocity.x);
+        arg1->position.y = (f32) (arg1->position.y + arg1->velocity.y);
+        arg1->position.z = (f32) (arg1->position.z + arg1->velocity.z);
+        arg1->velocity.x *= 0.9f;
+        arg1->velocity.y *= 0.9f;
+        arg1->velocity.z *= 0.9f;
+    }
+    D_81004B50 += 1;
+    return gfx;
+}
+#else
 Gfx* func_810010BC(Gfx*, unk_D_810047E0*, unk_arg2_func_81001D80*, s16);
 #pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/31/fragment31_2558B0/func_810010BC.s")
+#endif
 
 Gfx* func_81001D80(Gfx* gfx, unk_D_810047E0* arg1, unk_arg2_func_81001D80* arg2, s16 arg3) {
     s32 i;
@@ -319,7 +522,101 @@ Gfx* func_81001D80(Gfx* gfx, unk_D_810047E0* arg1, unk_arg2_func_81001D80* arg2,
     return gfx;
 }
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/31/fragment31_2558B0/func_81001E24.s")
+void func_81001E24(s32 arg0, DisplayListState* state) {
+    s32 pad[2];
+    s32 sp5C;
+    unk_D_810047E0* sp1C;
+    s32 sp18;
+    unk_D_810047E0* temp_a1_3;
+    s32 temp_a0;
+    s16 temp_a2;
+    s16 temp_v0;
+    s16 temp_v0_2;
+    unk_D_810047E0* temp_a1_2;
+    s32 temp_a1;
+    Gfx* gfx;    
+    s32 var_a3;
+    s32 i;
+    u8 temp_v1;
+    s32 pad2[1];
+
+    sp5C = state->addresses;
+    if (arg0 == 2) {
+        if (D_81004B54 == 0) {
+            state->gfx = func_80005F5C(0x500);
+        } else {
+            state->gfx = func_80005F5C(0x80);
+        }
+        gfx = state->gfx;
+        temp_v1 = D_8006F09C->unk_0A6;
+        if (temp_v1 == 0xFF) {
+            temp_v0 = D_8006F09C->unk_01A;
+            switch (D_8006F09C->unk_01A) {
+                case 0x5C:
+                    func_81000E78(&D_810047E0);
+                    if (D_81004B54 == 0) {
+                        gfx = func_81001D80(gfx, &D_810047E0, sp5C, 0);
+                    }
+                    break;
+                case 0x6D:
+                case 0x6E:
+                    var_a3 = 0;
+                    temp_v0_2 = D_8006F09C->unk_040.unk_00;
+                    temp_a2 = D_810040B8[D_81004B54 % 18];
+                    temp_a1 = (s32) D_8006F09C->unk_040.unk_08 >> 0x10;
+                    switch (temp_v0_2) {
+                    case 4:
+                        temp_a0 = D_81003FE0[temp_a2].unk_02;
+                        if (((u32) temp_a1 >= (u32) temp_a0) && ((u32) temp_a1 < (u32) (temp_a0 + 0xF))) {
+                            var_a3 = 1;
+                        }
+                        break;
+                    case 3:
+                        for (i = 0; i < 3; i++) {
+                            temp_a0 = D_81003FE0[temp_a2].unk_04[i];
+                            if (((u32) temp_a1 >= (u32) temp_a0) && ((u32) temp_a1 < (u32) (temp_a0 + 0xF))) {
+                                var_a3 = 1;
+                            }
+                        }
+                        break;
+                    case 2:
+                        temp_a0 = D_81003FE0[temp_a2].unk_0A;
+                        if (((u32) temp_a1 >= (u32) temp_a0) && ((u32) temp_a1 < (u32) (temp_a0 + 0xF))) {
+                            var_a3 = 1;
+                        }
+                        break;
+                    default:
+                        temp_a0 = D_81003FE0[temp_a2].unk_00;
+                        if (((u32) temp_a1 >= (u32) temp_a0) && ((u32) temp_a1 < (u32) (temp_a0 + 0xF))) {
+                            var_a3 = 1;
+                        }
+                        break;
+                    }
+                    if (var_a3 == 1) {
+                        temp_a1_2 = &D_810047E0[0][D_81004B50];
+                        if (temp_a1_2->active == 1) {
+                            gfx = func_810010BC(gfx, temp_a1_2, sp5C, 0);
+                        }
+                    }
+                    break;
+            }
+        } else if (temp_v1 == 0xFE) {
+            if (D_81004B54 == 0) {
+                gfx = func_81001D80(gfx, &D_810047E0, sp5C, 0);
+            }
+        } else if (((s32) temp_v1 < 2) && (D_81004B50 >= 0) && (D_81004B50 < 0xB)) {
+            temp_a1_3 = &D_810047E0[temp_v1 & 1][0];
+            sp1C = temp_a1_3;
+            sp18 = (s32) temp_v1;
+            func_81000E78(temp_a1_3);
+            if (D_81004B54 == 0) {
+                gfx = func_81001D80(gfx, temp_a1_3, sp5C, (s16) temp_v1);
+            }
+        }
+        gSPEndDisplayList(gfx);
+    }
+    D_81004B54 += 1;
+}
 
 void func_81002174(u8* arg0) {
     s32 i;
