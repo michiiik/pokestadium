@@ -18,13 +18,13 @@ void func_80048684(void*, s16, s32, s16*);
 void _bcopy(void* src, void* dst, s32);
 
 // C030.s
-s32 func_8000B4C4(void);
+s32 Controller_CheckAccessoryEeprom(void);
 
 // Yay0.s
 void Yay0_Decompress(void* src, void* dst);
 
 // DDC0.s
-void func_8000D564(void);
+void Audio_StartThread(void);
 
 // exception_set.s
 void set_watch_lohi(s32);

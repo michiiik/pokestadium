@@ -2,27 +2,27 @@
 #define _SRC_DP_INTRO_H_
 
 #include "global.h"
-#include "3FB0.h"
+#include "jpeg_stream.h"
 
-void func_80001380(UnkStruct80001380* arg0);
-void func_80001444(UnkStruct80001380* arg0, struct UnkArray4* arg1, s32 arg2);
-void func_80001474(s8 arg0, s8 arg1);
-void func_8000152C(struct UnkArray4* arg0);
-void func_800015A8(void);
-void func_800017E4(void);
-void func_8000183C(UNUSED void* arg);
-void func_800019C8(void);
-void func_80001AD4(u16 color);
-u16 func_80001B2C(void);
-s32 func_80001B40(void);
-void func_80001B7C(void);
-void func_80001BA8(void* arg0);
-void func_80001BD4(s32 arg0);
-void func_80001C1C(struct UnkArray4* arg0, u8 arg1, u8 arg2, u8 arg3, u8 arg4, s32 arg5, s32 arg6, s32 arg7);
-s32 func_80001C58(void);
-void func_80001C64(void);
-s32 func_80001C90(void);
-void func_80001CB8(void);
-void func_80001CC8(void);
+void DisplayTask_Initialize(UnkStruct80001380* arg0);
+void DisplayTask_Submit(UnkStruct80001380* arg0, struct UnkArray4* arg1, s32 arg2);
+void Video_SetMode(s8 arg0, s8 arg1);
+void DisplayWorker_SetBufferConfig(struct UnkArray4* arg0);
+void DisplayWorker_ProcessFrame(void);
+void DisplayWorker_DrainEvents(void);
+void DisplayWorker_ThreadMain(UNUSED void* arg);
+void DisplayWorker_Initialize(void);
+void Display_ClearFramebufferLine(u16 color);
+u16 Display_GetFramebufferClearColor(void);
+s32 Display_IsCurrentFramebuffer(void);
+void Display_WaitForCompletion(void);
+void Display_QueueFramebufferRequest(void* arg0);
+void Display_WaitForFrames(s32 arg0);
+void Display_SetBufferConfig(struct UnkArray4* arg0, u8 arg1, u8 arg2, u8 arg3, u8 arg4, s32 arg5, s32 arg6, s32 arg7);
+s32 Display_GetWorkerStatus(void);
+void Display_ApplyPendingVideoMode(void);
+s32 Display_IsFrameReady(void);
+void Display_EnableBlackout(void);
+void Display_DisableBlackout(void);
 
 #endif /* _SRC_DP_INTRO_H_ */

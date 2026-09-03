@@ -3,8 +3,8 @@
 #include "memory.h"
 #include "string.h"
 #include "dp_intro.h"
-#include "6BC0.h"
-#include "6A40.h"
+#include "gfx_rect.h"
+#include "gfx_buffer.h"
 #include "memmap.h"
 #include "util.h"
 #include "profiler.h"
@@ -176,11 +176,11 @@ static Mtx D_800A7468;
 static char pad_D_800A74A8[0x8];
 static Gfx* D_800A74B0;
 
-s32 func_80007A58(void);
-void func_80007FC4(Gfx**, s32);
-void func_800080E0(void);
+s32 StageContext_IsHighResolution(void);
+void TextRenderer_FlushQueuedStrings(Gfx**, s32);
+void TextRenderer_ClearQueuedStrings(void);
 
-void func_800069F0(void) {
+void StageFade_Update(void) {
     u8 a;
     u8 b;
     u8 g;
@@ -232,7 +232,7 @@ void func_800069F0(void) {
     }
 }
 
-s32 func_80006C04(s32 arg0) {
+s32 StageFade_Start(s32 arg0) {
     s32 ret = 0;
 
     if ((D_800A7464 != NULL) && ((D_800A7464->unk_11 == 1) || (D_800A7464->unk_11 == 0))) {
@@ -250,27 +250,27 @@ s32 func_80006C04(s32 arg0) {
     return ret;
 }
 
-s32 func_80006C6C(s32 arg0) {
+s32 StageFade_StartFromOpaque(s32 arg0) {
     s32 ret = 0;
 
     if ((D_800A7464 != NULL) && (D_800A7464->unk_11 == 1)) {
-        ret = func_80006C04(arg0);
+        ret = StageFade_Start(arg0);
     }
 
     return ret;
 }
 
-s32 func_80006CB4(s32 arg0) {
+s32 StageFade_StartFromTransparent(s32 arg0) {
     s32 ret = 0;
 
     if ((D_800A7464 != NULL) && (D_800A7464->unk_11 == 0)) {
-        ret = func_80006C04(arg0);
+        ret = StageFade_Start(arg0);
     }
 
     return ret;
 }
 
-void func_80006CF8(s32 arg0) {
+void StageFade_SetMode(s32 arg0) {
     if (D_800A7464 != NULL) {
         D_800A7464->unk_11 = arg0;
         D_800A7464->unk_13 = 0;
@@ -278,7 +278,7 @@ void func_80006CF8(s32 arg0) {
     }
 }
 
-void func_80006D28(u32 arg0, u32 arg1) {
+void Profiler_SetDisplayModes(u32 arg0, u32 arg1) {
     if (arg0 < 3) {
         gShowCPUProfiler = arg0;
     }
@@ -288,7 +288,7 @@ void func_80006D28(u32 arg0, u32 arg1) {
     }
 }
 
-void func_80006D50(void) {
+void Gfx_SetDefaultRenderState(void) {
     gDPPipeSync(gDisplayListHead++);
     gDPPipelineMode(gDisplayListHead++, G_PM_1PRIMITIVE);
     gDPSetTextureLOD(gDisplayListHead++, G_TL_TILE);
@@ -307,26 +307,26 @@ void func_80006D50(void) {
     gDPPipeSync(gDisplayListHead++);
 }
 
-void func_80006F34(void) {
+void Gfx_SetDefaultGeometryState(void) {
     gSPClearGeometryMode(gDisplayListHead++, G_SHADE | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN |
                                                  G_TEXTURE_GEN_LINEAR | G_LOD | G_SHADING_SMOOTH);
     gSPSetGeometryMode(gDisplayListHead++, G_SHADE | G_CULL_BACK | G_SHADING_SMOOTH);
     gSPTexture(gDisplayListHead++, 0, 0, 0, G_TX_RENDERTILE, G_OFF);
 }
 
-void func_80006F98(void) {
-    func_80006450();
+void StageLoader_ResetGraphicsState(void) {
+    GfxImage_ResetCurrent();
     Memmap_SetSegmentMap(0, 0x80000000, osMemSize);
     Memmap_SetSegments(&gDisplayListHead);
-    func_80006D50();
-    func_80006F34();
+    Gfx_SetDefaultRenderState();
+    Gfx_SetDefaultGeometryState();
 }
 
-void func_80006FE8(void) {
-    func_80006498(&gDisplayListHead, D_800A7464->unk_18[D_800A7464->unk_16]);
+void StageLoader_SetupFrame(void) {
+    GfxImage_SetRenderTarget(&gDisplayListHead, D_800A7464->unk_18[D_800A7464->unk_16]);
     guOrtho(&D_800A7468, 0.0f, 320.0f, 0.0f, 240.0f, -2.0f, 2.0f, 1.0f);
-    func_80006D50();
-    func_80006F34();
+    Gfx_SetDefaultRenderState();
+    Gfx_SetDefaultGeometryState();
 
     gSPMatrix(gDisplayListHead++, (u32)&D_80068BC8 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     gSPMatrix(gDisplayListHead++, (u32)&D_800A7468 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
@@ -338,14 +338,14 @@ void func_80006FE8(void) {
         gSPViewport(gDisplayListHead++, (u32)&D_80068C08 & 0x1FFFFFFF);
     }
 
-    func_800060E0(&gDisplayListHead, 0, 0, D_800A7464->unk_00, D_800A7464->unk_02);
-    func_800069F0();
+    Gfx_SetScissorRect(&gDisplayListHead, 0, 0, D_800A7464->unk_00, D_800A7464->unk_02);
+    StageFade_Update();
 
     if (gShowCPUProfiler != 0) {
         print_profiler_metrics();
     }
 
-    func_80007FC4(&gDisplayListHead, func_80007A58());
+    TextRenderer_FlushQueuedStrings(&gDisplayListHead, StageContext_IsHighResolution());
 
     if (gShowCPUProfiler != 0) {
         draw_profiler(gShowCPUProfiler - 1);
@@ -358,30 +358,30 @@ void func_80006FE8(void) {
     gDPFullSync(gDisplayListHead++);
     gSPEndDisplayList(gDisplayListHead++);
 
-    func_80005F5C(0);
+    Gfx_AllocDisplayList(0);
 }
 
-void func_80007234(void) {
-    func_80005EDC();
-    func_80006F98();
+void StageLoader_SwapDisplayListAndReset(void) {
+    Gfx_SwapDisplayListBuffer();
+    StageLoader_ResetGraphicsState();
 }
 
-void func_8000725C(void) {
-    func_80006FE8();
+void StageLoader_BeginFrame(void) {
+    StageLoader_SetupFrame();
     D_800A7450.unk_00 = D_800A7464->unk_10;
     D_800A7450.unk_01 = D_800A7464->unk_0C;
     D_800A7450.unk_02 = D_800A7464->unk_0D;
     D_800A7450.unk_03 = D_800A7464->unk_16;
     D_800A7450.unk_0C = D_800A7464->unk_18[D_800A7464->unk_16];
-    func_80005F1C(&D_800A7450.unk_04, &D_800A7450.unk_08);
+    Gfx_GetDisplayListRange(&D_800A7450.unk_04, &D_800A7450.unk_08);
     D_800A7464->unk_16++;
     if (D_800A7464->unk_16 == D_800A7464->unk_0E) {
         D_800A7464->unk_16 = 0;
     }
 }
 
-void func_80007304(void) {
-    func_800079C4();
+void StageLoader_FillFrame(void) {
+    BgStage_DrawFrame();
 
     gDPPipeSync(gDisplayListHead++);
     gDPSetRenderMode(gDisplayListHead++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
@@ -393,7 +393,7 @@ void func_80007304(void) {
     gDPSetCycleType(gDisplayListHead++, G_CYC_1CYCLE);
 }
 
-unk_func_80007444* func_80007444(s8 arg0, s8 arg1, s8 arg2, s8 arg3, s8 arg4, s32 arg5) {
+unk_func_80007444* StageContext_Allocate(s8 arg0, s8 arg1, s8 arg2, s8 arg3, s8 arg4, s32 arg5) {
     unk_func_80007444* temp_v0 = main_pool_alloc(sizeof(unk_func_80007444), 0);
 
     if (temp_v0 != NULL) {
@@ -409,7 +409,7 @@ unk_func_80007444* func_80007444(s8 arg0, s8 arg1, s8 arg2, s8 arg3, s8 arg4, s3
         temp_v0->unk_0E = arg2;
         temp_v0->unk_0F = arg3;
         temp_v0->unk_10 = arg4;
-        temp_v0->unk_14 = func_80001B2C();
+        temp_v0->unk_14 = Display_GetFramebufferClearColor();
         temp_v0->unk_16 = 0;
         temp_v0->unk_04 = 0;
         temp_v0->unk_06 = temp_v0->unk_00 - 1;
@@ -425,15 +425,15 @@ unk_func_80007444* func_80007444(s8 arg0, s8 arg1, s8 arg2, s8 arg3, s8 arg4, s3
 
             for (i = 0; i < temp_v0->unk_0E; i++) {
                 temp_v0->unk_18[i] =
-                    func_80006314(0, IMAGE_SIZE_BITS_16b, temp_v0->unk_00, temp_v0->unk_02, MEMORY_POOL_RIGHT);
+                    GfxImage_Allocate(0, IMAGE_SIZE_BITS_16b, temp_v0->unk_00, temp_v0->unk_02, MEMORY_POOL_RIGHT);
             }
 
             if (temp_v0->unk_0F == 1) {
                 void* temp_s3 =
-                    func_80006314(0, IMAGE_SIZE_BITS_16b, temp_v0->unk_00, temp_v0->unk_02, MEMORY_POOL_LEFT);
+                    GfxImage_Allocate(0, IMAGE_SIZE_BITS_16b, temp_v0->unk_00, temp_v0->unk_02, MEMORY_POOL_LEFT);
 
                 for (i = 0; i < temp_v0->unk_0E; i++) {
-                    func_80006414(temp_v0->unk_18[i], temp_s3);
+                    GfxImage_AttachDepthBuffer(temp_v0->unk_18[i], temp_s3);
                 }
             }
         }
@@ -442,15 +442,15 @@ unk_func_80007444* func_80007444(s8 arg0, s8 arg1, s8 arg2, s8 arg3, s8 arg4, s3
     return temp_v0;
 }
 
-unk_func_80007444* func_800075F8(void) {
+unk_func_80007444* StageContext_GetCurrent(void) {
     return D_800A7464;
 }
 
-s32 func_80007604(void) {
+s32 StageContext_GetFadeMode(void) {
     return D_800A7464->unk_11;
 }
 
-void func_80007614(unk_func_80007444* arg0) {
+void StageContext_SaveAndSwitch(unk_func_80007444* arg0) {
     arg0->unk_11 = D_800A7464->unk_11;
     arg0->unk_12 = D_800A7464->unk_12;
     arg0->unk_13 = D_800A7464->unk_13;
@@ -465,62 +465,62 @@ void func_80007614(unk_func_80007444* arg0) {
     D_800A7464 = arg0;
 }
 
-void func_80007678(unk_func_80007444* arg0) {
+void StageContext_Activate(unk_func_80007444* arg0) {
     D_800A7464 = arg0;
-    func_80001BA8(NULL);
-    func_80001B7C();
-    func_80001AD4(arg0->unk_14);
-    func_80007234();
+    Display_QueueFramebufferRequest(NULL);
+    Display_WaitForCompletion();
+    Display_ClearFramebufferLine(arg0->unk_14);
+    StageLoader_SwapDisplayListAndReset();
 }
 
-void func_800076C0(void) {
+void StageContext_Deactivate(void) {
     if (D_800A7464 != NULL) {
-        func_80007304();
-        func_8000725C();
-        func_80001BA8(&D_800A7450);
-        func_80001B7C();
-        func_80001BD4(2);
+        StageLoader_FillFrame();
+        StageLoader_BeginFrame();
+        Display_QueueFramebufferRequest(&D_800A7450);
+        Display_WaitForCompletion();
+        Display_WaitForFrames(2);
         D_800A7464 = NULL;
     }
 }
 
-void func_8000771C(void) {
-    while (func_80001C90() == 0) {}
+void StageLoader_WaitForRetrace(void) {
+    while (Display_IsFrameReady() == 0) {}
 }
 
-void func_80007754(void) {
+void StageLoader_UpdateSegments(void) {
     Memmap_SetSegments(&gDisplayListHead);
 }
 
-s32 func_80007778(void) {
-    func_8000725C();
-    func_80001BA8(&D_800A7450);
-    func_80001B7C();
-    func_80007234();
+s32 BgStage_AdvanceFrame(void) {
+    StageLoader_BeginFrame();
+    Display_QueueFramebufferRequest(&D_800A7450);
+    Display_WaitForCompletion();
+    StageLoader_SwapDisplayListAndReset();
 }
 
-void func_800077B4(s32 arg0) {
+void StageLoader_RunFrames(s32 arg0) {
     while (arg0-- > 0) {
-        func_80007304();
-        func_8000725C();
-        func_80001BA8(&D_800A7450);
-        func_80001B7C();
-        func_80007234();
+        StageLoader_FillFrame();
+        StageLoader_BeginFrame();
+        Display_QueueFramebufferRequest(&D_800A7450);
+        Display_WaitForCompletion();
+        StageLoader_SwapDisplayListAndReset();
     }
 }
 
-s32 func_80007820(u32 arg0, s32 (*arg1)(u8)) {
+s32 BgStage_RunUntilCondition(u32 arg0, s32 (*arg1)(u8)) {
     s32 var_s1 = 0;
 
     if (arg0 == 0) {
         while (var_s1 == 0) {
             var_s1 = arg1(D_800A7464->unk_11);
-            func_80007778();
+            BgStage_AdvanceFrame();
         }
     } else {
         while (arg0-- > 0) {
             var_s1 = arg1(D_800A7464->unk_11);
-            func_80007778();
+            BgStage_AdvanceFrame();
             if (var_s1 != 0) {
                 break;
             }
@@ -529,47 +529,47 @@ s32 func_80007820(u32 arg0, s32 (*arg1)(u8)) {
     return var_s1;
 }
 
-s32 func_800078D4(s32 (*arg0)(u8), s32 arg1, s32 arg2) {
+s32 BgStage_WaitForCondition(s32 (*arg0)(u8), s32 arg1, s32 arg2) {
     s32 temp_v0;
     s32 var_s0;
     s32 var_s2;
 
     var_s2 = 0;
     var_s0 = 1;
-    func_80006C6C(arg1);
+    StageFade_StartFromOpaque(arg1);
 
     while (var_s0 != 0) {
         temp_v0 = arg0(D_800A7464->unk_11);
         if (var_s2 == 0) {
             if (temp_v0 != 0) {
                 var_s2 = temp_v0;
-                func_80006CB4(arg2);
+                StageFade_StartFromTransparent(arg2);
             }
         } else if (D_800A7464->unk_11 == 1) {
             var_s0 = 0;
         }
-        func_80007778();
+        BgStage_AdvanceFrame();
     }
 
     return var_s2;
 }
 
-void func_80007990(u16 arg0) {
+void StageContext_SetClearColor(u16 arg0) {
     if (D_800A7464 != NULL) {
         D_800A7464->unk_14 = arg0;
-        func_80001AD4(arg0);
+        Display_ClearFramebufferLine(arg0);
     }
 }
 
-void func_800079C4(void) {
+void BgStage_DrawFrame(void) {
     if (D_800A7464 != NULL) {
-        func_80006498(&gDisplayListHead, D_800A7464->unk_18[D_800A7464->unk_16]);
+        GfxImage_SetRenderTarget(&gDisplayListHead, D_800A7464->unk_18[D_800A7464->unk_16]);
 
         gDPSetCycleType(gDisplayListHead++, G_CYC_1CYCLE);
     }
 }
 
-unk_D_80068BB0* func_80007A2C(void) {
+unk_D_80068BB0* StageContext_GetCurrentImage(void) {
     unk_D_80068BB0* ret = NULL;
 
     if (D_800A7464 != NULL) {
@@ -579,7 +579,7 @@ unk_D_80068BB0* func_80007A2C(void) {
     return ret;
 }
 
-s32 func_80007A58(void) {
+s32 StageContext_IsHighResolution(void) {
     s32 ret = 0;
 
     if (D_800A7464 != NULL) {
@@ -589,7 +589,7 @@ s32 func_80007A58(void) {
     return ret;
 }
 
-void func_80007A80(void) {
+void TextRenderer_SetupGlyphState(void) {
     gDPPipeSync(D_800A74B0++);
     gDPSetCycleType(D_800A74B0++, G_CYC_1CYCLE);
     gDPSetTexturePersp(D_800A74B0++, G_TP_NONE);
@@ -601,7 +601,7 @@ void func_80007A80(void) {
                            G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 7, 6, G_TX_NOLOD, G_TX_NOLOD);
 }
 
-void func_80007C3C(void) {
+void TextRenderer_RestoreState(void) {
     gDPPipeSync(D_800A74B0++);
     gDPSetTexturePersp(D_800A74B0++, G_TP_PERSP);
     gDPSetTextureFilter(D_800A74B0++, G_TF_BILERP);
@@ -609,57 +609,57 @@ void func_80007C3C(void) {
     gSPTexture(D_800A74B0++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF);
 }
 
-void func_80007CD8(s16 arg0, s16 arg1, s16 arg2) {
+void TextRenderer_DrawGlyphSmall(s16 arg0, s16 arg1, s16 arg2) {
     gSPTextureRectangle(D_800A74B0++, arg0 * 4, arg1 * 4, (arg0 + 6) << 2, (arg1 + 8) << 2, G_TX_RENDERTILE,
                         ((arg2 % 16) * 6) << 5, (u16)(arg2 / 16) << 8, 0x0400, 0x0400);
 }
 
-void func_80007DE4(s16 arg0, s16 arg1, s16 arg2) {
+void TextRenderer_DrawGlyphLarge(s16 arg0, s16 arg1, s16 arg2) {
     gSPTextureRectangle(D_800A74B0++, arg0 * 8, arg1 * 8, (arg0 + 6) << 3, (arg1 + 8) << 3, G_TX_RENDERTILE,
                         ((arg2 % 16) * 6) << 5, (u16)(arg2 / 16) << 8, 0x0200, 0x0200);
 }
 
-void func_80007EF0(s16 arg0, s16 arg1, s8* arg2, s32 arg3) {
+void TextRenderer_DrawString(s16 arg0, s16 arg1, s8* arg2, s32 arg3) {
     s32 temp_s0;
 
     while (*arg2 != 0) {
         temp_s0 = (*arg2++ & 0x7F) - 0x20;
         if (temp_s0 != 0) {
             if (arg3 == 0) {
-                func_80007CD8(arg0, arg1, temp_s0);
+                TextRenderer_DrawGlyphSmall(arg0, arg1, temp_s0);
             }
 
             if (arg3 == 1) {
-                func_80007DE4(arg0, arg1, temp_s0);
+                TextRenderer_DrawGlyphLarge(arg0, arg1, temp_s0);
             }
         }
         arg0 += 6;
     }
 }
 
-void func_80007FC4(Gfx** arg0, s32 arg1) {
+void TextRenderer_FlushQueuedStrings(Gfx** arg0, s32 arg1) {
     unk_D_80068CA0* var_s0 = D_80068CA0;
     unk_D_80068CA0* var_s2 = D_80068CA4;
 
     D_800A74B0 = *arg0;
 
     if ((var_s0 != NULL) || (var_s2 != NULL)) {
-        func_80007A80();
+        TextRenderer_SetupGlyphState();
 
         while (var_s0 != NULL) {
             unk_D_80068CA0* next = var_s0->next;
 
-            func_80007EF0(var_s0->unk_04, var_s0->unk_06, var_s0->unk_08, arg1);
+            TextRenderer_DrawString(var_s0->unk_04, var_s0->unk_06, var_s0->unk_08, arg1);
             Util_Free(var_s0);
             var_s0 = next;
         }
 
         while (var_s2 != NULL) {
-            func_80007EF0(var_s2->unk_04, var_s2->unk_06, var_s2->unk_08, arg1);
+            TextRenderer_DrawString(var_s2->unk_04, var_s2->unk_06, var_s2->unk_08, arg1);
             var_s2 = var_s2->next;
         }
 
-        func_80007C3C();
+        TextRenderer_RestoreState();
         D_80068CA0 = NULL;
     }
 
@@ -669,12 +669,12 @@ void func_80007FC4(Gfx** arg0, s32 arg1) {
     if (D_80068CA8 >= 0x384) {
         D_80068CA8 = 0;
         if (D_80068CA4 != NULL) {
-            func_800080E0();
+            TextRenderer_ClearQueuedStrings();
         }
     }
 }
 
-void func_800080E0(void) {
+void TextRenderer_ClearQueuedStrings(void) {
     unk_D_80068CA0* var_s0 = D_80068CA4;
 
     while (var_s0 != NULL) {
@@ -687,7 +687,7 @@ void func_800080E0(void) {
     D_80068CA4 = NULL;
 }
 
-char* func_80008130(char* buffer, const char* data, size_t size) {
+char* TextRenderer_FormatCopy(char* buffer, const char* data, size_t size) {
     return (char*)memcpy(buffer, data, size) + size;
 }
 
@@ -699,7 +699,7 @@ s32 HAL_Printf(s16 x, s16 y, const char* fmt, ...) {
 
     va_start(args, fmt);
 
-    sp124 = _Printf(func_80008130, sp20, fmt, args);
+    sp124 = _Printf(TextRenderer_FormatCopy, sp20, fmt, args);
 
     if (sp124 > 0) {
         sp1C = Util_Malloc(sp124 + sizeof(unk_D_80068CA0));
@@ -718,7 +718,7 @@ s32 HAL_Printf(s16 x, s16 y, const char* fmt, ...) {
     return sp124;
 }
 
-s32 func_800081F8(s16 x, s16 y, const char* fmt, ...) {
+s32 TextRenderer_QueuePersistentString(s16 x, s16 y, const char* fmt, ...) {
     s32 sp124;
     char sp20[0x104];
     unk_D_80068CA0* sp1C;
@@ -727,7 +727,7 @@ s32 func_800081F8(s16 x, s16 y, const char* fmt, ...) {
     va_start(args, fmt);
 
     D_80068CA8 = 0;
-    sp124 = _Printf(func_80008130, sp20, fmt, args);
+    sp124 = _Printf(TextRenderer_FormatCopy, sp20, fmt, args);
     if (sp124 > 0) {
         sp1C = Util_Malloc(sp124 + sizeof(unk_D_80068CA0));
         if (sp1C != NULL) {

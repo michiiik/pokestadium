@@ -11,9 +11,24 @@ SHELL = /bin/bash
 
 # OS Detection
 ifeq ($(OS),Windows_NT)
-$(error Native Windows is currently unsupported for building this repository, use WSL instead c:)
+  # Native Windows uses the repository's IDO static-recomp binaries while
+  # retaining a POSIX recipe shell supplied by MSYS2 or Git for Windows.
+  DETECTED_OS = windows
+  MAKE = make
+  VENV_BIN_DIR = Scripts
+  PYTHON = $(VENV)/$(VENV_BIN_DIR)/python.exe
+  N_THREADS ?= 1
+  RUN_CC_CHECK ?= 0
 else
   UNAME_S := $(shell uname -s)
+  ifneq ($(filter MINGW% MSYS% CYGWIN%,$(UNAME_S)),)
+    DETECTED_OS = windows
+    MAKE = make
+    VENV_BIN_DIR = Scripts
+    PYTHON = $(VENV)/$(VENV_BIN_DIR)/python.exe
+    N_THREADS ?= 1
+    RUN_CC_CHECK ?= 0
+  endif
   ifeq ($(UNAME_S),Linux)
     DETECTED_OS = linux
     MAKE = make
@@ -150,6 +165,9 @@ AR              := ar
 CPP             := cpp
 ICONV           := iconv
 CAT             := cat
+ifeq ($(DETECTED_OS),windows)
+  CPP := cpp.exe
+endif
 
 ASM_PROC        := $(PYTHON) tools/asm-processor/build.py
 ASM_PROC_FLAGS  := --input-enc=utf-8 --output-enc=euc-jp --convert-statics=global-with-filename
@@ -238,7 +256,9 @@ ASM_DIRS      := $(shell find asm/$(VERSION) -type d -not -path "asm/$(VERSION)/
 ASSET_DIRS    := $(shell find assets/$(VERSION) -type d)
 LIB_DIRS      := $(foreach f, $(LIBULTRA_DIR), $f)
 
-C_FILES       := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c))
+# Build the branch's versioned source tree, excluding local/generated analysis
+# copies that may coexist in a developer checkout after extraction.
+C_FILES       := $(shell git ls-files -- src | sed -n '/\.c$$/p')
 S_FILES       := $(foreach dir,$(ASM_DIRS) $(SRC_DIRS),$(wildcard $(dir)/*.s))
 BIN_FILES     := $(foreach dir,$(ASSET_DIRS),$(wildcard $(dir)/*.bin))
 O_FILES       := $(foreach f,$(C_FILES:.c=.o),$(BUILD_DIR)/$f) \
@@ -269,7 +289,7 @@ build/src/boot/libu64/%.o: OPTFLAGS := -O2
 
 build/src/boot/fault.o: CFLAGS += -trapuv
 build/src/boot/fault_drawer.o: CFLAGS += -trapuv
-build/src/C030.o: OPTFLAGS += -Wo,-loopunroll,0
+build/src/controller_ram.o: OPTFLAGS += -Wo,-loopunroll,0
 build/src/hal_libc.o: CFLAGS += -signed
 
 build/src/libleo/%.o: CC := $(CC_OLD)
@@ -277,9 +297,9 @@ build/src/libleo/%.o: CC := $(CC_OLD)
 build/src/jpegutils.o: CC := $(CC_OLD)
 build/src/jpeg_decoder.o: CC := $(CC_OLD)
 
-build/src/D470.o: CC := $(CC_OLD)
-build/src/D470.o: OPTFLAGS := -O0
-build/src/D470.o: MIPS_VERSION := -mips1
+build/src/flash.o: CC := $(CC_OLD)
+build/src/flash.o: OPTFLAGS := -O0
+build/src/flash.o: MIPS_VERSION := -mips1
 
 ifeq ($(COLOR),1)
 NO_COL  := \033[0m
@@ -299,9 +319,14 @@ DECOMP_POKESTADIUM := $(filter-out src/libleo/%,$(foreach dir,$(SRC_DIRS),$(wild
 DECOMP_POKESTADIUM_FILTERED := $(patsubst %.c,%.o,$(addprefix build/,$(shell find $(DECOMP_POKESTADIUM) -type f -exec grep -l "GLOBAL_ASM" {} \;)))
 
 # only run asm processor on files that need it.
+ifeq ($(DETECTED_OS),windows)
+$(DECOMP_POKESTADIUM_FILTERED): CC := $(ASM_PROC) $(ASM_PROC_FLAGS) $(PYTHON) $(abspath tools/ido-native-preprocess.py) $(CPP) $(CC) -- $(AS) $(ASFLAGS) --
+$(DECOMP_POKESTADIUM_FILTERED): PREPROCESS :=
+$(BUILD_DIR)/src/%.o: PREPROCESS := $(PYTHON) $(abspath tools/ido-native-preprocess.py) $(CPP)
+else
 $(DECOMP_POKESTADIUM_FILTERED): CC := $(ASM_PROC) $(ASM_PROC_FLAGS) $(CC) -- $(AS) $(ASFLAGS) --
-
 $(BUILD_DIR)/src/%.o: PREPROCESS := ./tools/preprocess.sh -i $(ICONV) --
+endif
 
 ###################### Ugly hacksz #############################
 
@@ -316,7 +341,7 @@ rom: $(ROM)
 	@$(PRINT) "$(RED)Building ROM...\n$(NO_COL)"
 ifneq ($(COMPARE),0)
 	@md5sum $(ROM)
-	@md5sum -c $(BASEROM_DIR)/checksum.md5
+	@$(CAT) $(BASEROM_DIR)/checksum.md5 | tr -d '\r' | md5sum -c -
 endif
 
 clean:
@@ -354,7 +379,7 @@ extract:
 	$(V)$(RM) -r asm/$(VERSION) assets/$(VERSION)
 	$(V)$(CAT) yamls/$(VERSION)/header.yaml yamls/$(VERSION)/rom.yaml > $(SPLAT_YAML)
 	$(V)$(SPLAT) $(SPLAT_FLAGS) $(SPLAT_YAML)
-	$(V)$(EXTRACT_ASSETS)
+	$(V)PYTHON="$(PYTHON)" $(EXTRACT_ASSETS)
 
 lib: $(ULTRALIB_LIB)
 
@@ -401,11 +426,11 @@ $(ELF): $(O_FILES) $(LIBULTRA_LIB) $(LDSCRIPT) $(BUILD_DIR)/linker_scripts/$(VER
 
 $(LDSCRIPT): linker_scripts/$(VERSION)/$(TARGET).ld
 	$(call print,Copying linker script to build dir:,$<,$@)
-	$(V)cp $< $@
+	$(V)sed 's#\\#/#g' $< > $@
 
 $(BUILD_DIR)/%.ld: %.ld
 	$(call print,Preprocessing linker script:,$<,$@)
-	$(V)$(CPP) $(CPPFLAGS) $(BUILD_DEFINES) $(IINC) $< > $@
+	$(V)$(CPP) $(CPPFLAGS) $(BUILD_DEFINES) $(IINC) $< | sed 's#\\#/#g' > $@
 
 $(LIBULTRA_LIB): $(ULTRALIB_LIB)
 	$(call print,Archiving libultra lib:,$<,$@)
@@ -414,7 +439,7 @@ $(LIBULTRA_LIB): $(ULTRALIB_LIB)
 
 $(ULTRALIB_LIB):
 	@$(PRINT) "$(GREEN)Making libultra:  $(BLUE)$@ $(NO_COL)\n"
-	$(V)$(MAKE) -C lib/ultralib VERSION=$(ULTRALIB_VERSION) TARGET=$(ULTRALIB_TARGET) FIXUPS=1 CROSS=$(MIPS_BINUTILS_PREFIX) CC=../../$(CC_OLD) VERBOSE=$(VERBOSE) COLOR=$(COLOR)
+	$(V)$(MAKE) -C lib/ultralib VERSION=$(ULTRALIB_VERSION) TARGET=$(ULTRALIB_TARGET) FIXUPS=1 COMPARE=0 CROSS=$(MIPS_BINUTILS_PREFIX) IDO_PREPROCESS=$(if $(filter windows,$(DETECTED_OS)),1,0) CC=../../$(CC_OLD) PYTHON=$(PYTHON) VERBOSE=$(VERBOSE) COLOR=$(COLOR)
 
 $(BUILD_DIR)/%.o: %.bin
 	$(call print,Binning object:,$<,$@)
@@ -422,7 +447,7 @@ $(BUILD_DIR)/%.o: %.bin
 
 $(BUILD_DIR)/%.o: %.s
 	$(call print,Assembling:,$<,$@)
-	$(V)$(ICONV) $(ICONV_FLAGS) $< | $(AS) $(ASFLAGS) $(ENDIAN) $(IINC) -I $(dir $*) -o $@
+	$(V)$(PYTHON) tools/normalize-asm-paths.py $< | $(ICONV) $(ICONV_FLAGS) | $(AS) $(ASFLAGS) $(ENDIAN) $(IINC) -I $(dir $*) -o $@
 	$(V)$(OBJDUMP_CMD)
 
 $(BUILD_DIR)/%.o: %.c

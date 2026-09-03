@@ -7,7 +7,7 @@ u8 sJpegBitStreamBitIdx;
 u8 sJpegBitStreamDontSkip;
 u32 sJpegBitStreamCurWord;
 
-s32 JpegDecoder_Decode(JpegDecoder* decoder, u16* mcuBuff, s32 count, u8 isFollowing, JpegDecoderState* state) {
+s32 Jpeg_DecodeMcus(JpegDecoder* decoder, u16* mcuBuff, s32 count, u8 isFollowing, JpegDecoderState* state) {
     s16 pad;
     s16 unk0;
     s16 unk1;
@@ -57,18 +57,18 @@ s32 JpegDecoder_Decode(JpegDecoder* decoder, u16* mcuBuff, s32 count, u8 isFollo
 
     while (count != 0) {
         for (idx = 0; idx < unkCount; idx++) {
-            if (JpegDecoder_ProcessMcu(hTable0, hTable1, mcuBuff, &unk0)) {
+            if (Jpeg_DecodeBlock(hTable0, hTable1, mcuBuff, &unk0)) {
                 return 2;
             }
             mcuBuff += 8 * 8;
         }
 
-        if (JpegDecoder_ProcessMcu(hTable2, hTable3, mcuBuff, &unk1)) {
+        if (Jpeg_DecodeBlock(hTable2, hTable3, mcuBuff, &unk1)) {
             return 2;
         }
         mcuBuff += 8 * 8;
 
-        if (JpegDecoder_ProcessMcu(hTable2, hTable3, mcuBuff, &unk2)) {
+        if (Jpeg_DecodeBlock(hTable2, hTable3, mcuBuff, &unk2)) {
             return 2;
         }
 
@@ -87,19 +87,19 @@ s32 JpegDecoder_Decode(JpegDecoder* decoder, u16* mcuBuff, s32 count, u8 isFollo
     return 0;
 }
 
-s32 JpegDecoder_ProcessMcu(JpegHuffmanTable* hTable0, JpegHuffmanTable* hTable1, u16* mcu, s16* unk) {
+s32 Jpeg_DecodeBlock(JpegHuffmanTable* hTable0, JpegHuffmanTable* hTable1, u16* mcu, s16* unk) {
     s8 i = 0;
     s8 zeroCount;
     s16 coeff;
 
-    if (JpegDecoder_ParseNextSymbol(hTable0, &coeff, &zeroCount)) {
+    if (Jpeg_DecodeHuffmanSymbol(hTable0, &coeff, &zeroCount)) {
         return 1;
     }
 
     *unk += coeff;
     mcu[i++] = *unk;
     while (i < 8 * 8) {
-        if (JpegDecoder_ParseNextSymbol(hTable1, &coeff, &zeroCount) != 0) {
+        if (Jpeg_DecodeHuffmanSymbol(hTable1, &coeff, &zeroCount) != 0) {
             return 1;
         }
 
@@ -125,11 +125,11 @@ s32 JpegDecoder_ProcessMcu(JpegHuffmanTable* hTable0, JpegHuffmanTable* hTable1,
     return 0;
 }
 
-s32 JpegDecoder_ParseNextSymbol(JpegHuffmanTable* hTable, s16* outCoeff, s8* outZeroCount) {
+s32 Jpeg_DecodeHuffmanSymbol(JpegHuffmanTable* hTable, s16* outCoeff, s8* outZeroCount) {
     u8 codeIdx;
     u8 sym;
     u16 codeOff = 0;
-    u16 buff = JpegDecoder_ReadBits(16);
+    u16 buff = Jpeg_ReadBits(16);
 
     for (codeIdx = 0; codeIdx < 16; codeIdx++) {
         if (hTable->codesB[codeIdx] == 0xFFFF) {
@@ -153,7 +153,7 @@ s32 JpegDecoder_ParseNextSymbol(JpegHuffmanTable* hTable, s16* outCoeff, s8* out
     sJpegBitStreamBitIdx += codeIdx - 15;
     *outCoeff = 0;
     if (sym) {
-        *outCoeff = JpegDecoder_ReadBits(sym);
+        *outCoeff = Jpeg_ReadBits(sym);
         if (*outCoeff < (1 << (sym - 1))) {
             *outCoeff += (-1U << sym) + 1;
         }
@@ -162,7 +162,7 @@ s32 JpegDecoder_ParseNextSymbol(JpegHuffmanTable* hTable, s16* outCoeff, s8* out
     return 0;
 }
 
-u16 JpegDecoder_ReadBits(u8 len) {
+u16 Jpeg_ReadBits(u8 len) {
     u8 byteCount;
     u8 data;
     s32 ret = 0;

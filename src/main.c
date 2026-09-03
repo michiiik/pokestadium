@@ -21,13 +21,13 @@ LEODiskID D_800818E0;
  */
 void Idle_ThreadEntry(UNUSED void* unused) {
     osCreateViManager(OS_PRIORITY_VIMGR);
-    func_80001474(0, 1);
+    Video_SetMode(0, 1);
     osViBlack(TRUE);
     crash_screen_init();
     rsp_init();
-    func_800052B4();
-    func_8000D564();
-    func_800019C8();
+    Sched_Init();
+    Audio_StartThread();
+    DisplayWorker_Initialize();
     SoftReset_CreateThread();
     osCreateThread(&pThreads, 6, &Game_Thread, 0, &D_800818E0, 20);
     osStartThread(&pThreads);

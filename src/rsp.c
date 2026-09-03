@@ -1,6 +1,6 @@
 #include "global.h"
 #include "rsp.h"
-#include "D470.h"
+#include "flash.h"
 #include "util.h"
 
 // All from n64 programming manual section 27.2
@@ -22,7 +22,7 @@ OSMesg D_80083BCC;
 struct UnkStruct80083BD0 D_80083BD0;
 s16 D_80083C1C;
 
-s32 func_800005C0(void) {
+s32 Storage_InitializeLeoManager(void) {
     UNUSED s32 unused;
     UNUSED s32 unused2[6];
     s32 result;
@@ -37,7 +37,7 @@ s32 func_800005C0(void) {
     return result;
 }
 
-OSPiHandle* func_80000628(void) {
+OSPiHandle* Storage_GetSramHandle(void) {
     static OSPiHandle sramHandle;
 
     void* baseAddr = OS_PHYSICAL_TO_K1(SRAM_START_ADDR);
@@ -57,9 +57,9 @@ OSPiHandle* func_80000628(void) {
     return &sramHandle;
 }
 
-s32 func_800006C4(struct UnkStruct800006C4_2* arg0) {
+s32 Storage_ReadSram(struct UnkStruct800006C4_2* arg0) {
     OSIoMesg msg;
-    OSPiHandle* handle = func_80000628();
+    OSPiHandle* handle = Storage_GetSramHandle();
 
     msg.hdr.pri = 0;
     msg.hdr.retQueue = &D_80083BD0.queue2;
@@ -73,9 +73,9 @@ s32 func_800006C4(struct UnkStruct800006C4_2* arg0) {
     return 0;
 }
 
-s32 func_8000074C(struct UnkStruct800006C4_2* arg0) {
+s32 Storage_WriteSram(struct UnkStruct800006C4_2* arg0) {
     OSIoMesg msg;
-    OSPiHandle* handle = func_80000628();
+    OSPiHandle* handle = Storage_GetSramHandle();
 
     msg.hdr.pri = 0;
     msg.hdr.retQueue = &D_80083BD0.queue2;
@@ -89,7 +89,7 @@ s32 func_8000074C(struct UnkStruct800006C4_2* arg0) {
     return 0;
 }
 
-s32 func_800007D4(struct UnkStruct800006C4_2* arg0, s32 arg1) {
+s32 Storage_ReadRom(struct UnkStruct800006C4_2* arg0, s32 arg1) {
     OSIoMesg msg;
     OSPiHandle* handle;
 
@@ -111,7 +111,7 @@ s32 func_800007D4(struct UnkStruct800006C4_2* arg0, s32 arg1) {
     return 0;
 }
 
-s32 func_8000087C(struct UnkStruct800006C4_2* arg0) {
+s32 Storage_WriteRom(struct UnkStruct800006C4_2* arg0) {
     OSIoMesg msg;
     OSPiHandle* handle;
 
@@ -129,109 +129,109 @@ s32 func_8000087C(struct UnkStruct800006C4_2* arg0) {
     return 0;
 }
 
-s32 func_80000904(struct UnkStruct800006C4_2* arg0) {
+s32 Storage_ReadFlashArray(struct UnkStruct800006C4_2* arg0) {
     OSIoMesg sp20;
 
     osInvalDCache(arg0->vaddr, 0x80);
-    func_8000D0B4(&sp20, 0, arg0->unk1C, arg0->vaddr, 1, &D_80083BD0.queue2);
+    Flash_StartReadArray(&sp20, 0, arg0->unk1C, arg0->vaddr, 1, &D_80083BD0.queue2);
     osRecvMesg(&D_80083BD0.queue2, &D_80083BD0.unk0, OS_MESG_BLOCK);
     return 0;
 }
 
-s32 func_80000974(struct UnkStruct800006C4_2* arg0) {
+s32 Storage_StartFlashWriteBuffer(struct UnkStruct800006C4_2* arg0) {
     OSIoMesg sp20;
     UNUSED s32 pad;
 
-    func_8000CEE4(&sp20, 0, arg0->vaddr, &D_80083BD0.queue2);
+    Flash_StartWriteBuffer(&sp20, 0, arg0->vaddr, &D_80083BD0.queue2);
     osRecvMesg(&D_80083BD0.queue2, &D_80083BD0.unk0, OS_MESG_BLOCK);
     return 0;
 }
 
-void* func_800009C8(void) {
+void* Storage_WaitForIoMessage(void) {
     void* msg;
 
     osRecvMesg(&D_80083BD0.queue2, &msg, OS_MESG_BLOCK);
     return msg;
 }
 
-void* func_800009F8(struct UnkStruct800006C4_2* arg0) {
+void* Storage_ReadDisk(struct UnkStruct800006C4_2* arg0) {
     LeoReadWrite(arg0, 0, arg0->unk1C, arg0->vaddr, arg0->size, &D_80083BD0.queue2);
-    return func_800009C8();
+    return Storage_WaitForIoMessage();
 }
 
-void* func_80000A3C(struct UnkStruct800006C4_2* arg0) {
+void* Storage_WriteDisk(struct UnkStruct800006C4_2* arg0) {
     LeoReadWrite(arg0, 1, arg0->unk1C, arg0->vaddr, arg0->size, &D_80083BD0.queue2);
-    return func_800009C8();
+    return Storage_WaitForIoMessage();
 }
 
-void* func_80000A80(struct UnkStruct80000A80* arg0) {
+void* Storage_ReadDiskId(struct UnkStruct80000A80* arg0) {
     LeoReadDiskID(&arg0->cmd, arg0->addr, &D_80083BD0.queue2);
-    return func_800009C8();
+    return Storage_WaitForIoMessage();
 }
 
-void* func_80000AB0(struct UnkStruct80000A80* arg0) {
+void* Storage_SeekDisk(struct UnkStruct80000A80* arg0) {
     LeoSeek(&arg0->cmd, arg0->lba, &D_80083BD0.queue2);
-    return func_800009C8();
+    return Storage_WaitForIoMessage();
 }
 
-void* func_80000AE0(struct UnkStruct80000A80* arg0) {
+void* Storage_SetDiskMotor(struct UnkStruct80000A80* arg0) {
     LeoSpdlMotor(&arg0->cmd, arg0->mode, &D_80083BD0.queue2);
-    return func_800009C8();
+    return Storage_WaitForIoMessage();
 }
 
-void* func_80000B10(struct UnkStruct80000A80* arg0) {
+void* Storage_ReadRtc(struct UnkStruct80000A80* arg0) {
     void* temp_v0;
 
     LeoReadRTC(&arg0->cmd, &D_80083BD0.queue2);
-    temp_v0 = func_800009C8();
+    temp_v0 = Storage_WaitForIoMessage();
     if (temp_v0 == NULL) {
         *(LEODiskTime*)arg0->addr = arg0->cmd.data.time;
     }
     return temp_v0;
 }
 
-void* func_80000B74(struct UnkStruct80000A80* arg0) {
+void* Storage_WriteRtc(struct UnkStruct80000A80* arg0) {
     LeoSetRTC(&arg0->cmd, arg0->addr, &D_80083BD0.queue2);
-    return func_800009C8();
+    return Storage_WaitForIoMessage();
 }
 
 void thread20_rsp(UNUSED void* arg) {
     struct UnkStruct800006C4_2* sp2C;
     OSMesg var_v0;
 
-    func_800005C0();
-    func_8000C8F8();
+    Storage_InitializeLeoManager();
+    Flash_Initialize();
 
     while (true) {
         osRecvMesg(&D_80083BD0.queue1, (void*)&sp2C, OS_MESG_BLOCK);
 
         switch (sp2C->unk0) {
             case 0xF0:
-                var_v0 = (OSMesg)INT2VOID(func_800007D4(sp2C, 0));
+                var_v0 = (OSMesg)INT2VOID(Storage_ReadRom(sp2C, 0));
                 break;
             case 0xF1:
-                var_v0 = (OSMesg)INT2VOID(func_800007D4(sp2C, 1));
+                var_v0 = (OSMesg)INT2VOID(Storage_ReadRom(sp2C, 1));
                 break;
             case 0xF2:
-                var_v0 = (OSMesg)INT2VOID(func_800006C4(sp2C));
+                var_v0 = (OSMesg)INT2VOID(Storage_ReadSram(sp2C));
                 break;
             case 0xF3:
-                var_v0 = (OSMesg)INT2VOID(func_8000074C(sp2C));
+                var_v0 = (OSMesg)INT2VOID(Storage_WriteSram(sp2C));
                 break;
             case 0xF4:
-                var_v0 = (OSMesg)INT2VOID(func_8000087C(sp2C));
+                var_v0 = (OSMesg)INT2VOID(Storage_WriteRom(sp2C));
                 break;
             case 0xF5:
-                var_v0 = (OSMesg)INT2VOID(func_80000904(sp2C));
+                var_v0 = (OSMesg)INT2VOID(Storage_ReadFlashArray(sp2C));
                 break;
             case 0xF6:
-                var_v0 = (OSMesg)INT2VOID(func_80000974(sp2C));
+                var_v0 = (OSMesg)INT2VOID(Storage_StartFlashWriteBuffer(sp2C));
                 break;
             case 0x5:
-                var_v0 = (OSMesg)func_800009F8(sp2C);
+                var_v0 = (OSMesg)Storage_ReadDisk(sp2C);
                 break;
             case 0x6:
-                var_v0 = (OSMesg)func_80000A3C(sp2C);
+                var_v0 = (OSMesg)Storage_WriteDisk(sp2C);
                 break;
             case 0xC:
                 /*
@@ -239,19 +239,19 @@ void thread20_rsp(UNUSED void* arg) {
                  * there is very tenuous aliasing going on due to s16 and u8 overlap where
                  * there should be word loads. What is going on here?
                  */
-                var_v0 = (OSMesg)func_80000A80((struct UnkStruct80000A80*)sp2C);
+                var_v0 = (OSMesg)Storage_ReadDiskId((struct UnkStruct80000A80*)sp2C);
                 break;
             case 0x7:
-                var_v0 = (OSMesg)func_80000AB0((struct UnkStruct80000A80*)sp2C);
+                var_v0 = (OSMesg)Storage_SeekDisk((struct UnkStruct80000A80*)sp2C);
                 break;
             case 0x8:
-                var_v0 = (OSMesg)func_80000AE0((struct UnkStruct80000A80*)sp2C);
+                var_v0 = (OSMesg)Storage_SetDiskMotor((struct UnkStruct80000A80*)sp2C);
                 break;
             case 0xD:
-                var_v0 = (OSMesg)func_80000B10((struct UnkStruct80000A80*)sp2C);
+                var_v0 = (OSMesg)Storage_ReadRtc((struct UnkStruct80000A80*)sp2C);
                 break;
             case 0xE:
-                var_v0 = (OSMesg)func_80000B74((struct UnkStruct80000A80*)sp2C);
+                var_v0 = (OSMesg)Storage_WriteRtc((struct UnkStruct80000A80*)sp2C);
                 break;
         }
 
@@ -271,14 +271,14 @@ void rsp_init(void) {
     osStartThread(&gRspThread);
 }
 
-void func_80000DF4(void) {
+void Storage_ResetDisk(void) {
     if (D_80083C1C != 0) {
         LeoReset();
         D_80083C1C = 0;
     }
 }
 
-void func_80000E2C(void* arg0, s32 arg1) {
+void Storage_QueueRequest(void* arg0, s32 arg1) {
     if (arg1 == 1) {
         osJamMesg(&D_80083BD0.queue1, arg0, OS_MESG_BLOCK);
         return;

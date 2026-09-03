@@ -1,5 +1,6 @@
 COMPARE ?= 1
 FIXUPS ?= 0
+PYTHON ?= python3
 
 ifneq ($(FIXUPS),0)
 COMPARE := 0
@@ -19,6 +20,10 @@ BUILD_DIR := $(BUILD_ROOT)/$(VERSION)/$(TARGET)
 BUILD_AR := $(BUILD_DIR)/$(TARGET).a
 
 WORKING_DIR := $(shell pwd)
+CC_COMMAND := $(WORKING_DIR)/$(CC)
+ifeq ($(IDO_PREPROCESS),1)
+CC_COMMAND := $(PYTHON) $(WORKING_DIR)/../../tools/ido-native-preprocess.py cpp.exe $(WORKING_DIR)/$(CC)
+endif
 
 PRINT = printf
 ifeq ($(VERBOSE),0)
@@ -173,11 +178,11 @@ $(BUILD_DIR)/src/sp/sprite.marker: GBIDEFINE := -DF3D_GBI
 $(BUILD_DIR)/src/sp/spriteex.marker: GBIDEFINE :=
 $(BUILD_DIR)/src/sp/spriteex2.marker: GBIDEFINE :=
 $(BUILD_DIR)/src/voice/%.marker: OPTFLAGS += -DLANG_JAPANESE -I$(WORKING_DIR)/src -I$(WORKING_DIR)/src/voice
-$(BUILD_DIR)/src/voice/%.marker: CC := tools/compile_sjis.py -D__CC=$(WORKING_DIR)/$(CC) -D__BUILD_DIR=$(BUILD_DIR)
+$(BUILD_DIR)/src/voice/%.marker: CC := tools/compile_sjis.py -D__CC=$(CC_COMMAND) -D__BUILD_DIR=$(BUILD_DIR)
 
 $(C_MARKER_FILES): $(BUILD_DIR)/%.marker: %.c
 	@$(PRINT) "$(GREEN)Compiling libultra file:  $(BLUE)$@ $(NO_COL)\n"
-	$(V)cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(MIPS_VERSION) $(CPPFLAGS) $(OPTFLAGS) $(<F) $(IINC) -o $(WORKING_DIR)/$(@:.marker=.o)
+	$(V)cd $(<D) && $(CC_COMMAND) $(CFLAGS) $(MIPS_VERSION) $(CPPFLAGS) $(OPTFLAGS) $(<F) $(IINC) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifneq ($(COMPARE),0)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
 	@$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
@@ -197,7 +202,7 @@ endif
 
 $(S_MARKER_FILES): $(BUILD_DIR)/%.marker: %.s
 	@$(PRINT) "$(GREEN)Assembling libultra file:  $(BLUE)$@ $(NO_COL)\n"
-	$(V)cd $(<D) && $(WORKING_DIR)/$(CC) $(ASFLAGS) $(MIPS_VERSION) $(CPPFLAGS) $(ASOPTFLAGS) $(<F) $(IINC) -o $(WORKING_DIR)/$(@:.marker=.o)
+	$(V)cd $(<D) && $(CC_COMMAND) $(ASFLAGS) $(MIPS_VERSION) $(CPPFLAGS) $(ASOPTFLAGS) $(<F) $(IINC) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifneq ($(COMPARE),0)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
 	@$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
@@ -219,7 +224,7 @@ endif
 $(MDEBUG_FILES): $(BUILD_DIR)/src/%.marker: src/%.s
 	cp $(<:.marker=.s) $(dir $@)
 	mkdir -p $(@:.marker=)
-	export USR_INCLUDE=$(WORKING_DIR)/include && cd $(@:.marker=) && $(WORKING_DIR)/$(CC) $(ASFLAGS) $(CPPFLAGS) ../$(<F) -I/usr/include -o $(notdir $(<:.s=.o))
+	export USR_INCLUDE=$(WORKING_DIR)/include && cd $(@:.marker=) && $(CC_COMMAND) $(ASFLAGS) $(CPPFLAGS) ../$(<F) -I/usr/include -o $(notdir $(<:.s=.o))
 	mv $(@:.marker=)/$(<F:.s=.o) $(@:.marker=)/..
 ifneq ($(COMPARE),0)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so

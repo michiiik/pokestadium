@@ -1,0 +1,1894 @@
+#include "metapod_game.h"
+#include "src/geo_render.h"
+#include "src/model_animation.h"
+#include "src/model_animation_events.h"
+#include "src/display_object_textures.h"
+#include "src/model_renderer.h"
+#include "src/graphics_textures.h"
+#include "src/ui_graphics.h"
+#include "src/text_system.h"
+#include "src/jpeg_stream.h"
+#include "src/audio_sound_state.h"
+#include "src/audio_sfx.h"
+#include "src/audio_channel.h"
+#include "src/audio_loop_point.h"
+#include "src/audio_commands_category2.h"
+#include "src/audio_category_fade.h"
+#include "src/gfx_buffer.h"
+#include "src/gfx_rect.h"
+#include "src/fragments/widget_toolkit/widget_toolkit.h"
+#include "src/fragments/particle_math/particle_math.h"
+#include "src/geo_layout.h"
+#include "src/memory.h"
+#include "src/stage_loader.h"
+
+extern u8 D_0303ED80[];
+extern u8 D_0303F580[];
+extern u8 D_0303F180[];
+extern u8 D_03040580[];
+extern u8 D_03040D80[];
+extern u8 D_03040980[];
+
+typedef struct MiniRockInfo {
+    /* 0x00 */ Vec3f unk_00;
+    /* 0x0C */ Vec3s unk_0C;
+    /* 0x12 */ s16 unk_12;
+    /* 0x14 */ s16 unk_14;
+    /* 0x16 */ s16 unk_16;
+} MiniRockInfo; // size = 0x18
+
+static MiniActor miniMetapods[4];
+static MiniActor miniMetapodRocks[20];
+static s16 D_86E08E40;
+static FontContext* D_86E08E44;
+
+static u32 D_86E02FB0[] = {
+    0xE8E0CBB4, 0xAAAAAFB6, 0xB6AEABBC, 0xD6BBA5A5, 0xA6BCC4C9, 0xC3B5BBBB, 0xB8B5B9C0, 0xBDB9C3D7, 0xDED2CBBD,
+    0xB9BBC8E6, 0xDEB2A7BB, 0xD6BAA5A5, 0xA5ADAEA9, 0xABB1BBCD, 0xD1CCCEDA, 0xDCD4D4D8, 0xDECEC9C0, 0xCCDEE3EF,
+    0xE5B5A9AD, 0xB3AAA5A5, 0xA6A9ACAE, 0xB1B8C1E0, 0xF3E9DADC, 0xE8ECF0E9, 0xE5C2B4B4, 0xBAC6C5C1, 0xBBAFAFC9,
+    0xC7A7A5A5, 0xA8B0B9C3, 0xCACCCADC, 0xECE0DFE9, 0xF0F4F1ED, 0xDAB8AFB5, 0xB1AEB2B1, 0xAEAEB2CD, 0xC7A7A5A6,
+    0xABB3BCCF, 0xDFD7CAC4, 0xC2C0DEF3, 0xF8FBF7E4, 0xCBC4BDC2, 0xB6B0B5B4, 0xB1B2B1AD, 0xA9A7A7A7, 0xACB0B2BA,
+    0xC4C2BDB4, 0xAEB2CAE8, 0xEAEFE8CE, 0xD3D7BEAF, 0xABB3BFC4, 0xC2C6BBAC, 0xAAADADAA, 0xAAABAAAA, 0xB1BCBEB2,
+    0xAAAAB7CC, 0xCDCAC9C3, 0xDADBB8A7, 0xA9B7D3EB, 0xE0CBBBB1, 0xAEB4B4AD, 0xA9A9AAB0, 0xBFD0D0C2, 0xB8B2B0B7,
+    0xBDC2BFC0, 0xCDC9B0A6, 0xA8B8DFFB, 0xF0C7B8B2, 0xAEB2B2AB, 0xA7A7B0C5, 0xDBEEE7CE, 0xC0B7B6AC, 0xACB5BABD,
+    0xBBADA7A6, 0xA9B6D5F5, 0xECD3CBBB, 0xAEABABA8, 0xA5A7B5D2, 0xE6EEE2C7, 0xB3B5B7A7, 0xA5A9B6C6, 0xBCA7A7AB,
+    0xAFB9D0E2, 0xDDE1E9CB, 0xB0B0B9B0, 0xA7A6B2C9, 0xD7D5C7B5, 0xABACAEA7, 0xA6ABB9CB, 0xB6A7A9BE, 0xD3D2DED6,
+    0xCED6D8C1, 0xADB7CABC, 0xAEAAB0C3, 0xD0C6B8AC, 0xA6A5B0B6, 0xAFB7D2D3, 0xBBAEAACD, 0xF4EBDAC7, 0xC0C2BEB6,
+    0xAEBECAC3, 0xBBB1B6D2, 0xDFCEC0B1, 0xA8A5AEB9, 0xB3B6CCC7, 0xB6B1A9B7, 0xD5DAC5B7, 0xB6BFCAD0, 0xD1E1D3BE,
+    0xC3BCC7E1, 0xE0D3CDC3, 0xBAB3B2B0, 0xABAAACAE, 0xA5A5A6A9, 0xAFB2AFAD, 0xB6CEE7F2, 0xF6F0C8B6, 0xC3C7D7E1,
+    0xCED1DDE1, 0xDED4CABC, 0xACA6A5A5, 0xA5A5A5A5, 0xA6A6A7AD, 0xBEDBF3F9, 0xF6D8B0AF, 0xC1D0D8CB, 0xBBD0EAF4,
+    0xF6EEDCC2, 0xAEA5A5A5, 0xA5A5A5A5, 0xA5A5A6B2, 0xC7DFEFF1, 0xE1BEA9AA, 0xB8C9CABA, 0xB4CCE9F6, 0xF9F5DDBC,
+    0xA9A5A5A5, 0xA6A5A5A5, 0xA6AAA9B1, 0xC6D9DFD7, 0xC2AFA7A6, 0xABB2B3AE, 0xB7CEE7F7, 0xF9F3D6B2, 0xA6A6A7A7,
+    0xB3AAA5A5, 0xBAD8C0AB, 0xB5C3C6BB, 0xB1ACA8A5, 0xA5A6A7AD, 0xC6E4F2F9, 0xFAF1D0AF, 0xA7B0B9BB, 0xD2B9A9A8,
+    0xCAE4C2A7, 0xA9ADAFAC, 0xABACAAA7, 0xA7A7A7AD, 0xCAECF7FA, 0xFAF1D1B0, 0xAEC3D9E0, 0xEEC9B0AB, 0xBCBEADA6,
+    0xA5A6A6A6, 0xA9AEB3B5, 0xB6B7B4AE, 0xBBDAECF1, 0xF3EBD0B2, 0xB2CEEEFA, 0xF2CBB6B2, 0xB2ADA9A8, 0xA9A9ABAC,
+    0xAEBBCED6, 0xD3D2CBB7, 0xAFB9C7D2, 0xDBDDCCB2, 0xAEC4E7FB, 0xDBC4BEC4, 0xC1B3ACB0, 0xB9C6C9C2, 0xBED3E8E6,
+    0xE1E8EACD, 0xB2AAACB7, 0xC9CFC1AE, 0xA8B0C2DC, 0xDFD3CEE1, 0xE5C7B1B7, 0xD1F4F4DC, 0xD2F0F4DE, 0xDDF5FBE5,
+    0xBAABA8B2, 0xC5CAB5A9, 0xA5A6AAC1, 0xE2E1D8DC, 0xF0E1C0B7, 0xCAE9EAD3, 0xD2EEE9D0, 0xCCE1EFD6, 0xB8AAA7AB,
+    0xB7C3BDAC, 0xA6A5A6BC, 0xB8C2BDB7, 0xCEF0E9C3, 0xB4B8BBBB, 0xC8E5E0C3, 0xB6BBC0B9, 0xB3AAA5A6, 0xA9BCD2BC,
+    0xACAFB3B1, 0xA9A9A9A7, 0xB4EEFBDE, 0xB3ABACB4, 0xC4EAE2B8, 0xAAAAABAB, 0xB2B0A7A9, 0xABC4E0C7, 0xB0B2C0B7,
+    0xB1ABA6A5, 0xACDDF4D2, 0xB2AAABB2, 0xBBC7C0AC, 0xA6A5A5A6, 0xB2BCB1B6, 0xC1CED9C2, 0xB2AEBCC0, 0xC9BBAEB5,
+    0xB5B3BAB1, 0xACA7A8AD, 0xB2B0AAA6, 0xA5A5A5A7, 0xB0BDB4C0, 0xD9CEBAB3, 0xB4B6C5CF, 0xEAD6C5CE, 0xCCB3A7BA,
+    0xC9B2A6A8, 0xAAA9A6A5, 0xA5A5A8B6, 0xB9AFAAB4, 0xCAC0A8A7, 0xB0C0DCEF, 0xF6F3E4D0, 0xC0B3ADC6, 0xE2C6B2AA,
+    0xA7A6A5A5, 0xA5A5AFD0, 0xD0AFA6A9, 0xB6BAACA6, 0xB2C6E5F8, 0xF1F2E1BF, 0xABABAFB6, 0xC5BEB6B0, 0xB1AAA5A5,
+    0xA5B0C1E4, 0xDBB7AFAC, 0xB1B2AEAD, 0xB2BED0E6,
+};
+
+static u32 D_86E033B0[] = {
+    0x34BD34BD, 0x34BD34BD, 0x34FD34BD, 0x3CBD34FD, 0x3CFD3CFD, 0x3CFD34FD, 0x3CFD3CFD, 0x3CFD3CFD, 0x3CFD3CFD,
+    0x3CFD3CFD, 0x3CFD3CFD, 0x3CFD3CFD, 0x3CFD3CFD, 0x3CFD3CFD, 0x3CFB3CFB, 0x3CFD3CFD, 0x3CFB3CFB, 0x3CFB3CFB,
+    0x3D3B3CFB, 0x3D3B3D3B, 0x3D3B3D3B, 0x3D3B3D3B, 0x3D3B3D3B, 0x3D3B3D3B, 0x453B453B, 0x453B453B, 0x453B453B,
+    0x453B453B, 0x453B453B, 0x453B453B, 0x453B453B, 0x453B453B, 0x457B457B, 0x457B457B, 0x457B457B, 0x457B457B,
+    0x457B457B, 0x457B457B, 0x457B457B, 0x457B457B, 0x457B457B, 0x457B457B, 0x457B457B, 0x457B457B, 0x457B457B,
+    0x457B457B, 0x45BB45BB, 0x4D7B457B, 0x4DBB4DBB, 0x4DBB4DBB, 0x4DBB4DBB, 0x4DBB4DBB, 0x4DBB4DBB, 0x4DBB4DBB,
+    0x4DBB4DBB, 0x4DBB4DBB, 0x4DBB4DBB, 0x4DBB4DBB, 0x4DBB4DBB, 0x4DBB4DBB, 0x4DBB4DBB, 0x4DBB4DBB, 0x4DFB4DFB,
+    0x4DFB4DFB, 0x4DFB4DFB, 0x4DFB4DFB, 0x4DFB55FB, 0x55FB4DFB, 0x55FB55FB, 0x55FB55FB, 0x55FB55FB, 0x55FB55FB,
+    0x55FB55FB, 0x55FB55FB, 0x5DFB5E3B, 0x5DFB5E3B, 0x5E3B5E3B, 0x5E3B5E3B, 0x663B663B, 0x663B663B, 0x663B663B,
+    0x663B663B, 0x6E3B6E3B, 0x6E3B6E3B, 0x6E3B6E3B, 0x6E3B6E3B, 0x767B767B, 0x763B767B, 0x767B767B, 0x767B767B,
+    0x7E7B7E7B, 0x7E7B7E7B, 0x7E7B7E7B, 0x7E7B7E7B, 0x867B867B, 0x867B867B, 0x867B867B, 0x867B867B, 0x8EBB8EBB,
+    0x8EBB8EBB, 0x8EBB8EBB, 0x8EBB8EBB, 0x96BB96BB, 0x96BB96BB, 0x96BB96BB, 0x96BB96BB, 0x9EBB9EBB, 0x9EBB9EBB,
+    0xA6FBA6FB, 0xA6FBA6FB, 0xA6FDA6FD, 0xA6FDA6FB, 0xAEFDAEFD, 0xAEFDAEFD, 0xAEFDAEFD, 0xAEFDAEFD, 0xB6FDB6FD,
+    0xB6FDB6FD, 0xB73DB73D, 0xB73DB73D, 0xBF3DBF3D, 0xBF3DBF3D, 0xBF3DBF3D, 0xBF3DBF3D, 0xC73DC73D, 0xC73DC73D,
+    0xC73DC73D, 0xC73DC73D,
+};
+
+static u32 D_86E035B0[] = {
+    0xA45BA45B, 0x9C179BD7, 0x93D593D5, 0x9C179C17, 0x9C199C19, 0x9C199C19, 0xA45BAC9D, 0xA45B9C19, 0x9C199C19,
+    0x9C1993D7, 0x8B538351, 0x8B518B93, 0x93959C17, 0xA49BB4DF, 0xB4DFAC9F, 0xB4DFB521, 0xAC9DA45B, 0xA4599C17,
+    0x9BD793D5, 0x93D593D5, 0x93D79BD7, 0x93D593D5, 0x9BD7A45B, 0xA45B9BD7, 0x93D79C19, 0xA45B9C19, 0x93958B51,
+    0x8B519393, 0x93D59C17, 0x9C19A45B, 0xA49DAC9F, 0xACDFB521, 0xACDFA45B, 0xA459A459, 0x9C1993D7, 0x93959393,
+    0x93D59BD7, 0x93D58B93, 0x8B939C17, 0x9BD79395, 0x8B539BD7, 0xA459A459, 0x9BD78B93, 0x8B5193D5, 0x9BD593D5,
+    0x93959BD7, 0x9C19A45B, 0xAC9DB4E1, 0xACDFAC9D, 0xA45BA45B, 0x9C1993D7, 0x93959393, 0x93D59C17, 0x9BD78B93,
+    0x83518B93, 0x8B938351, 0x7B0F8B51, 0x93959BD7, 0x9BD793D5, 0x8B939393, 0x93938B93, 0x939393D5, 0x9BD79C17,
+    0xA45BAC9D, 0xAC9DA45B, 0xA45BA419, 0x9C1793D5, 0x93939393, 0x93D59C17, 0x9C1993D7, 0x8B538351, 0x8B938351,
+    0x7B0F7B0F, 0x835193D5, 0x93D793D5, 0x93938B93, 0x8B518B51, 0x8B9393D5, 0x93D59393, 0x93959BD7, 0xA45B9C19,
+    0xA459A459, 0x9C1793D7, 0x93D59393, 0x8B939395, 0x93D793D7, 0x8B959395, 0x9BD793D7, 0x8B938B53, 0x93D59C17,
+    0x9C1793D5, 0x93938B91, 0x8B518B51, 0x8B539393, 0x93939393, 0x8B938B53, 0x93D793D7, 0x9C179C19, 0x9C1793D5,
+    0x93D59395, 0x8B518311, 0x83518B53, 0x8B939BD7, 0xA45BA45B, 0x93D79395, 0x9C19A45B, 0xA4599C17, 0x9C179393,
+    0x8B518B51, 0x8B538B53, 0x939393D5, 0x8B938B53, 0x8B959395, 0x93D793D7, 0x93938B51, 0x8B938B93, 0x83517ACD,
+    0x7ACD7ACD, 0x8B5193D5, 0xA4599C19, 0x8B958B95, 0x93D7A45B, 0xAC9DAC9D, 0xA49B9C17, 0x93958B93, 0x8B938B53,
+    0x8B939393, 0x8B938B93, 0x939593D7, 0x9C199395, 0x83517ACF, 0x830F8311, 0x7B0F72CD, 0x7B0F8B51, 0x939393D5,
+    0x9BD593D5, 0x83537B11, 0x93D7A45B, 0xAC9DB4DF, 0xACDFA45B, 0x9C1993D5, 0x93938B93, 0x8B518B51, 0x8B538B93,
+    0x9C19A419, 0x9C199395, 0x83117ACF, 0x7ACD7ACF, 0x7ACF7ACF, 0x8B539C17, 0x9C1993D5, 0x93938B51, 0x830F7B11,
+    0x9395A45B, 0xB4DFB4E1, 0xB4DFAC9D, 0xA45B9BD7, 0x93938B93, 0x8B518B51, 0x8B9393D5, 0xA459A459, 0x9C1793D5,
+    0x8B938351, 0x8311830F, 0x830F8311, 0x93959C19, 0x9C1993D5, 0x8B938B51, 0x830F830F, 0x8B93A459, 0xB4DFB4DF,
+    0xAC9DAC9B, 0xA45B9C17, 0x93D59393, 0x8B938B91, 0x939393D3, 0xA457A417, 0x9C179BD7, 0x9BD793D5, 0x93938B53,
+    0x83518351, 0x8B9393D5, 0x93D59393, 0x8B518B51, 0x830F830F, 0x8B519BD7, 0xAC9BAC9B, 0xA459A459, 0xAC9BA45B,
+    0x9C1793D5, 0x8B938B51, 0x8B519393, 0x9BD59C17, 0x9C179C17, 0x9C179C17, 0x9BD79395, 0x8B938B51, 0x8B518B51,
+    0x8B939393, 0x93938B51, 0x8B51830F, 0x835193D5, 0xA459A417, 0x9C17A459, 0xAC9BA49B, 0xA41993D5, 0x93938B51,
+    0x8B519393, 0x93959BD7, 0x9C179C17, 0x9BD59C17, 0x9C179BD7, 0x93958B93, 0x8B518B51, 0x8B518B93, 0x8B938B51,
+    0x830F7B0F, 0x835193D5, 0x9C179C19, 0x9C19A459, 0xA459A459, 0x9C1793D5, 0x93938B91, 0x8B518B91, 0x93D59BD7,
+    0x9C179C17, 0x9BD79BD5, 0x9BD59BD5, 0x93D58B93, 0x8B518B51, 0x8B518B51, 0x8B518B51, 0x830F7B0F, 0x83519393,
+    0x93D59C17, 0x9C199C17, 0x9C179C17, 0x9C199BD7, 0x93939393, 0x8B938B53, 0x939593D5, 0x9BD59C17, 0x9BD79395,
+    0x93939393, 0x93938B93, 0x8B518B51, 0x83518351, 0x83518B51, 0x83118311, 0x8B518B51, 0x8B919395, 0x9BD593D5,
+    0x93D59BD7, 0x9C199C17, 0x93D593D3, 0x93938B93, 0x83118311, 0x8B939C17, 0x9C199395, 0x8B518B51, 0x8B938B51,
+    0x83117B0F, 0x7ACF830F, 0x8B518B93, 0x8B938B51, 0x8351830F, 0x834F8B93, 0x93938B93, 0x939393D5, 0x93D59395,
+    0x93D593D3, 0x93D593D5, 0x728D728D, 0x7B119395, 0x9C179BD7, 0x93938B51, 0x8B518351, 0x7ACF728D, 0x7ACF8351,
+    0x8B938B93, 0x8B938B51, 0x7ACF7ACD, 0x830F8B51, 0x8B518B51, 0x8B938B53, 0x8B538B93, 0x93939393, 0x939393D5,
+    0x728D6A4D, 0x728D8311, 0x93D59C19, 0x9C1993D5, 0x93938B53, 0x7B117ACF, 0x83119393, 0x93938B51, 0x8B51830F,
+    0x7ACF7ACD, 0x830F8351, 0x83518311, 0x83518B51, 0x8B9393D3, 0x93D39393, 0x8B518B53, 0x7ACF7ACD, 0x7ACD7ACD,
+    0x835193D7, 0xA4599C17, 0x93D59393, 0x8B538311, 0x8B519393, 0x93918B4F, 0x830F830F, 0x7ACF7ACF, 0x830F830F,
+    0x834F834F, 0x834F8B51, 0x93D39C13, 0x9BD39391, 0x8351830F, 0x830F830F, 0x830F7ACD, 0x7ACF8B53, 0x9BD79BD5,
+    0x93D59393, 0x8B938351, 0x8B518B51, 0x8B51830F, 0x7ACD7ACD, 0x7ACD7ACD, 0x7ACD830F, 0x830F834F, 0x834F834F,
+    0x8B519391, 0x93918B4F, 0x830F830F, 0x7B0F7ACF, 0x7ACD72CD, 0x72CD830F, 0x8B518B51, 0x8B518B51, 0x8B518311,
+    0x830F830F, 0x830F7B0F, 0x7ACD7ACD, 0x728D6A8D, 0x6A4D728D, 0x7B0F830F, 0x830F7ACF, 0x7ACD7ACD, 0x830D834F,
+    0x834F8B51, 0x728D6A8D, 0x6A4D728D, 0x728D7ACD, 0x7ACF7B0F, 0x7B0F830F, 0x830F7ACF, 0x72CD72CD, 0x72CD728D,
+    0x728D728D, 0x728D6A4D, 0x620B624D, 0x72CD830F, 0x7ACF728D, 0x6A4B728D, 0x7ACD830F, 0x8B518B93, 0x72CF728D,
+    0x6A4D6A4B, 0x6A4D72CD, 0x830F830F, 0x7ACF7ACD, 0x728D6A4D, 0x6A4D6A4B, 0x6A4B6A4B, 0x6A4B728B, 0x728D728D,
+    0x624D624B, 0x728D7ACF, 0x72CD6A8D, 0x6A4D728D, 0x7ACD7ACF, 0x83518B93, 0x83538311, 0x7ACF6A4D, 0x620B6A4D,
+    0x7ACF830F, 0x7ACF728D, 0x6A4B624D, 0x620D5A0B, 0x5A0B620B, 0x6A4B6A4B, 0x728D728F, 0x6A8D6A4D, 0x728D728D,
+    0x728D6A4D, 0x6A8D728D, 0x728D728F, 0x72CF7B11, 0x9C199395, 0x835372CF, 0x624D624D, 0x6A8D7ACF, 0x72CF6A4D,
+    0x624D6A4D, 0x624D5A0D, 0x59CB5A0B, 0x620B624B, 0x6A4D6A4D, 0x624D624D, 0x6A4D6A8D, 0x6A4D624D, 0x6A4D6A4D,
+    0x6A4D624D, 0x624D6A8F, 0xA45B9BD7, 0x93958B55, 0x7B13728F, 0x6A8D6A8D, 0x6A8F6A8F, 0x6A8F728F, 0x6A8F624D,
+    0x5A0B5A0B, 0x624B6A4B, 0x620B5A0B, 0x5A0B5A0B, 0x624D6A8D, 0x6A4D624D, 0x5A0B5A0B, 0x5A0B5A0B, 0x5A0D624D,
+    0x9C1B93D9, 0x939793D7, 0x93978353, 0x72D1728F, 0x72CF7AD1, 0x7AD17AD1, 0x7AD1728F, 0x624D624D, 0x6A8D6A4D,
+    0x624B5A0B, 0x520B51CB, 0x5A0D624D, 0x624D620D, 0x5A0B51CB, 0x59CB5A0B, 0x624D624F, 0x9BD993D7, 0x93959397,
+    0x93979395, 0x83538313, 0x83138B53, 0x8B558B95, 0x8B958353, 0x72D1728F, 0x72CF728D, 0x6A4D624D, 0x620B5A0B,
+    0x520B5A0B, 0x5A0B5A0B, 0x5A0B51CB, 0x59CB624D, 0x6A8F72CF, 0x93979395, 0x8B958B95, 0x8B958B95, 0x8B959395,
+    0x93D79C19, 0x9C199C19, 0x9C199397, 0x831372CF, 0x72CF728F, 0x6A8D6A4D, 0x6A4D620B, 0x5A0B5A0B, 0x5A0D620D,
+    0x5A0B5A0B, 0x624D728F, 0x7B118353, 0x8B978B97, 0x93978B95, 0x8B958B95, 0x93D79BD9, 0xA45BA45B, 0xA45BA45B,
+    0x9BD98B95, 0x83137AD1, 0x72CF728F, 0x7AD17ACF, 0x728F6A4D, 0x620D624D, 0x624D6A8F, 0x6A4D6A8D, 0x72CF8313,
+    0x8B959397, 0x93D793D7, 0x93D793D9, 0x93D793D7, 0x9BD99C1B, 0xA45DAC9D, 0xA45D9C19, 0x8B978353, 0x83137B11,
+    0x72D172D1, 0x83538B53, 0x7B116A8F, 0x624F624F, 0x6A8F72D1, 0x7AD17B11, 0x83538B95, 0x93D793D9,
+};
+
+static unk_D_86002F34_018 D_86E03DB0[3] = {
+    {
+        0x04,
+        unk_D_86002F34_018_GFX_TYPE_1,
+        32,
+        32,
+        1024,
+        D_86E02FB0,
+    },
+    {
+        0x00,
+        unk_D_86002F34_018_GFX_TYPE_2,
+        4,
+        64,
+        256,
+        D_86E033B0,
+    },
+    {
+        0x00,
+        unk_D_86002F34_018_GFX_TYPE_2,
+        32,
+        32,
+        1024,
+        D_86E035B0,
+    },
+};
+static Gfx D_86E03DD8[] = {
+    gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0x0000, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD,
+                G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD),
+    gsDPLoadSync(),
+    gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 1023, 256),
+    gsDPPipeSync(),
+    gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 0x0000, G_TX_RENDERTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD,
+                G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD),
+    gsDPSetTileSize(G_TX_RENDERTILE, 0, 0, 0x007C, 0x007C),
+    gsSPEndDisplayList(),
+};
+static Gfx D_86E03E10[] = {
+    gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0x0000, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, 6, G_TX_NOLOD,
+                G_TX_NOMIRROR | G_TX_CLAMP, 2, G_TX_NOLOD),
+    gsDPLoadSync(),
+    gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 255, 2048),
+    gsDPPipeSync(),
+    gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, 0x0000, G_TX_RENDERTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, 6, G_TX_NOLOD,
+                G_TX_NOMIRROR | G_TX_CLAMP, 2, G_TX_NOLOD),
+    gsDPSetTileSize(G_TX_RENDERTILE, 0, 0, 0x000C, 0x00FC),
+    gsSPEndDisplayList(),
+};
+static Gfx D_86E03E48[] = {
+    gsDPSetTile(G_IM_FMT_I, G_IM_SIZ_16b, 0, 0x0000, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD,
+                G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD),
+    gsDPLoadSync(),
+    gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 511, 512),
+    gsDPPipeSync(),
+    gsDPSetTile(G_IM_FMT_I, G_IM_SIZ_8b, 4, 0x0000, G_TX_RENDERTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD,
+                G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD),
+    gsDPSetTileSize(G_TX_RENDERTILE, 0, 0, 0x007C, 0x007C),
+    gsDPSetTileSize(G_TX_RENDERTILE, 0, 0, 0x017C, 0x037C),
+    gsSPEndDisplayList(),
+};
+static Vtx D_86E03E88[] = {
+    VTX(-2544, 844, -2221, 392, 3180, 0x4D, 0x73, 0x20, 0xFF),
+    VTX(-1824, 587, -2393, 641, 3314, 0x4D, 0x73, 0x20, 0xFF),
+    VTX(-1848, 250, -2970, 633, 3759, 0x5E, 0x2F, 0x04, 0xFF),
+    VTX(3500, 250, 1500, 2749, 404, 0x84, 0x5E, 0x3E, 0xFF),
+    VTX(3500, 250, -937, 2941, 2288, 0x84, 0x5E, 0x3E, 0xFF),
+    VTX(1990, 250, -937, 2419, 2288, 0xBD, 0x97, 0x5E, 0xFF),
+    VTX(1824, 362, -4141, 2383, 4864, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(1824, 362, -3604, 2458, 4448, 0x5E, 0x2F, 0x04, 0xFF),
+    VTX(2784, 587, -3392, 2790, 4285, 0x5E, 0x2F, 0x04, 0xFF),
+    VTX(2760, 587, -4295, 2707, 4983, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(0, 250, -3727, 1827, 4543, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(-1894, 909, -3842, 1172, 4633, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(864, 250, -2125, 1571, 3106, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(1894, 684, -1980, 1927, 2995, 0x4F, 0x73, 0x3E, 0xFF),
+    VTX(1752, 1031, -2893, 1878, 3700, 0x4F, 0x73, 0x3E, 0xFF),
+    VTX(-2769, 1295, -4034, 581, 4681, 0x97, 0x59, 0x26, 0xFF),
+    VTX(-4052, 1005, -4585, 9, 5356, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(-3500, 250, -2780, 62, 3612, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(-3278, 941, -2048, 69, 3047, 0x4D, 0x73, 0x20, 0xFF),
+    VTX(3624, 1310, -2586, 2526, 3462, 0x4F, 0x73, 0x3E, 0xFF),
+    VTX(3792, 1101, -3143, 2850, 3993, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(-2625, 1358, -5254, 503, 5874, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(-1822, 1182, -4421, 1069, 5329, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(-1803, 250, -5615, 787, 6152, 0xBF, 0xA2, 0x7D, 0xFF),
+    VTX(-3298, 587, -1750, 62, 2817, 0x4D, 0x73, 0x20, 0xFF),
+    VTX(-2206, 587, -1462, 389, 2594, 0x2D, 0x46, 0x09, 0xFF),
+    VTX(-1345, 587, -1750, 667, 2817, 0x4D, 0x73, 0x20, 0xFF),
+    VTX(-739, 250, -2086, 957, 3076, 0x84, 0x5E, 0x3E, 0xFF),
+    VTX(-644, 250, -2563, 970, 3445, 0x5E, 0x2F, 0x04, 0xFF),
+    VTX(3153, 941, -5254, 2736, 5774, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(3792, 1101, -4141, 3064, 4864, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(4028, 1471, -5000, 3049, 5453, 0xCC, 0xAA, 0x6F, 0xFF),
+};
+static Vtx D_86E04088[] = {
+    VTX(-749, 250, -5106, 1152, 5759, 0xBF, 0xA2, 0x7D, 0xFF),
+    VTX(566, 791, -6840, 1841, 7000, 0x9D, 0xDF, 0xCC, 0xFF),
+    VTX(-243, 675, -6701, 1561, 6892, 0x9D, 0xDF, 0xCC, 0xFF),
+    VTX(-1803, 250, -5615, 787, 6152, 0xBF, 0xA2, 0x7D, 0xFF),
+    VTX(3624, 1310, -2586, 2526, 3462, 0x4F, 0x73, 0x3E, 0xFF),
+    VTX(1752, 1031, -2893, 1878, 3700, 0x4F, 0x73, 0x3E, 0xFF),
+    VTX(1894, 684, -1980, 1927, 2995, 0x4F, 0x73, 0x3E, 0xFF),
+    VTX(875, 250, -3438, 2129, 4321, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(1032, 250, -3085, 1896, 3948, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(1824, 362, -3604, 2458, 4448, 0x5E, 0x2F, 0x04, 0xFF),
+    VTX(1824, 362, -4141, 2383, 4864, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(1145, 250, -4986, 1935, 5417, 0xBF, 0xA2, 0x7D, 0xFF),
+    VTX(1055, 579, -4219, 2192, 4924, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(1919, 676, -4571, 2203, 5096, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(2760, 587, -4295, 2707, 4983, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(2784, 587, -3392, 2790, 4285, 0x5E, 0x2F, 0x04, 0xFF),
+    VTX(3792, 1101, -3143, 2850, 3993, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(3792, 1101, -4141, 3064, 4864, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(3500, 1101, -1961, 2483, 2980, 0x4F, 0x73, 0x3E, 0xFF),
+    VTX(2784, 587, -3392, 2361, 3948, 0x5E, 0x2F, 0x04, 0xFF),
+    VTX(1824, 362, -3604, 2790, 4285, 0x5E, 0x2F, 0x04, 0xFF),
+    VTX(1752, 1031, -2893, 2458, 4448, 0x4F, 0x73, 0x3E, 0xFF),
+    VTX(-2544, 844, -2221, 392, 3180, 0x4D, 0x73, 0x20, 0xFF),
+    VTX(-2206, 587, -1462, 389, 2594, 0x2D, 0x46, 0x09, 0xFF),
+    VTX(-1345, 587, -1750, 667, 2817, 0x4D, 0x73, 0x20, 0xFF),
+    VTX(-1824, 587, -2393, 641, 3314, 0x4D, 0x73, 0x20, 0xFF),
+    VTX(-3298, 587, -1750, 62, 2817, 0x4D, 0x73, 0x20, 0xFF),
+    VTX(-3298, 652, -938, 520, 2288, 0x4D, 0x73, 0x20, 0xFF),
+    VTX(-2452, 806, -984, 823, 2288, 0x4D, 0x73, 0x20, 0xFF),
+    VTX(-3500, 250, -125, 520, 1660, 0x84, 0x5E, 0x3E, 0xFF),
+    VTX(1990, 250, -937, 2419, 2288, 0xBD, 0x97, 0x5E, 0xFF),
+    VTX(3500, 250, -937, 2941, 2288, 0x84, 0x5E, 0x3E, 0xFF),
+};
+static Vtx D_86E04288[] = {
+    VTX(-2206, 587, -1462, 389, 2594, 0x2D, 0x46, 0x09, 0xFF),
+    VTX(-2452, 806, -984, 823, 2288, 0x4D, 0x73, 0x20, 0xFF),
+    VTX(-1230, 250, -938, 1126, 2288, 0xBD, 0x97, 0x5E, 0xFF),
+    VTX(-739, 250, -2086, 957, 3076, 0x84, 0x5E, 0x3E, 0xFF),
+    VTX(-1345, 587, -1750, 667, 2817, 0x4D, 0x73, 0x20, 0xFF),
+    VTX(-2480, 250, -125, 823, 1660, 0xBD, 0x97, 0x5E, 0xFF),
+    VTX(1990, 250, -937, 2419, 2288, 0xBD, 0x97, 0x5E, 0xFF),
+    VTX(1894, 684, -1980, 1927, 2995, 0x4F, 0x73, 0x3E, 0xFF),
+    VTX(864, 250, -2125, 1571, 3106, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(566, 791, -6840, 1841, 7000, 0x9D, 0xDF, 0xCC, 0xFF),
+    VTX(-749, 250, -5106, 1152, 5759, 0xBF, 0xA2, 0x7D, 0xFF),
+    VTX(1145, 250, -4986, 1935, 5417, 0xBF, 0xA2, 0x7D, 0xFF),
+    VTX(2415, 595, -5476, 2481, 5945, 0xBF, 0xA2, 0x7D, 0xFF),
+    VTX(1577, 675, -6655, 2191, 6857, 0x9D, 0xDF, 0xCC, 0xFF),
+    VTX(-1894, 909, -3842, 1172, 4633, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(-1822, 1182, -4421, 1069, 5329, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(-2625, 1358, -5254, 503, 5874, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(0, 250, -3727, 1827, 4543, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(-791, 836, -4459, 1425, 5359, 0x97, 0x59, 0x26, 0xFF),
+    VTX(-2769, 1295, -4034, 581, 4681, 0x97, 0x59, 0x26, 0xFF),
+    VTX(240, 547, -4363, 1910, 5036, 0xBB, 0x8E, 0x48, 0xFF),
+    VTX(875, 250, -3438, 2129, 4321, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(1055, 579, -4219, 2192, 4924, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(1824, 362, -4141, 2383, 4864, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(1919, 676, -4571, 2203, 5096, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(2760, 587, -4295, 2707, 4983, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(3153, 941, -5254, 2736, 5774, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(-3500, 250, -2780, 62, 3612, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(-1848, 250, -2970, 633, 3759, 0x5E, 0x2F, 0x04, 0xFF),
+    VTX(1752, 1031, -2893, 1878, 3700, 0x4F, 0x73, 0x3E, 0xFF),
+    VTX(1824, 362, -3604, 2458, 4448, 0x5E, 0x2F, 0x04, 0xFF),
+    VTX(1032, 250, -3085, 1896, 3948, 0xCC, 0xAA, 0x6F, 0xFF),
+};
+static Vtx D_86E04488[] = {
+    VTX(-1848, 250, -2970, 633, 3759, 0x5E, 0x2F, 0x04, 0xFF),
+    VTX(-3500, 250, -2780, 62, 3612, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(-2544, 844, -2221, 392, 3180, 0x4D, 0x73, 0x20, 0xFF),
+    VTX(3500, 1101, -1961, 2483, 2980, 0x4F, 0x73, 0x3E, 0xFF),
+    VTX(1894, 684, -1980, 1927, 2995, 0x4F, 0x73, 0x3E, 0xFF),
+    VTX(1990, 250, -937, 2419, 2288, 0xBD, 0x97, 0x5E, 0xFF),
+    VTX(-1803, 250, -5615, 787, 6152, 0xBF, 0xA2, 0x7D, 0xFF),
+    VTX(-1822, 1182, -4421, 1069, 5329, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(-791, 836, -4459, 1425, 5359, 0x97, 0x59, 0x26, 0xFF),
+    VTX(-749, 250, -5106, 1152, 5759, 0xBF, 0xA2, 0x7D, 0xFF),
+    VTX(240, 547, -4363, 1910, 5036, 0xBB, 0x8E, 0x48, 0xFF),
+    VTX(1055, 579, -4219, 2192, 4924, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(1145, 250, -4986, 1935, 5417, 0xBF, 0xA2, 0x7D, 0xFF),
+    VTX(1577, 675, -6655, 2191, 6857, 0x9D, 0xDF, 0xCC, 0xFF),
+    VTX(566, 791, -6840, 1841, 7000, 0x9D, 0xDF, 0xCC, 0xFF),
+    VTX(0, 250, -3727, 1827, 4543, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(-644, 250, -2563, 970, 3445, 0x5E, 0x2F, 0x04, 0xFF),
+    VTX(875, 250, -3438, 2129, 4321, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(864, 250, -2125, 1571, 3106, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(1032, 250, -3085, 1896, 3948, 0xCC, 0xAA, 0x6F, 0xFF),
+    VTX(-739, 250, -2086, 957, 3076, 0x84, 0x5E, 0x3E, 0xFF),
+    VTX(-1230, 250, -938, 1126, 2288, 0xBD, 0x97, 0x5E, 0xFF),
+    VTX(-2480, 250, -125, 823, 1660, 0xBD, 0x97, 0x5E, 0xFF),
+    VTX(-1345, 587, -1750, 667, 2817, 0x4D, 0x73, 0x20, 0xFF),
+    VTX(-2206, 587, -1462, 389, 2594, 0x2D, 0x46, 0x09, 0xFF),
+    VTX(-3500, 250, -125, 520, 1660, 0x84, 0x5E, 0x3E, 0xFF),
+    VTX(-2452, 806, -984, 823, 2288, 0x4D, 0x73, 0x20, 0xFF),
+    VTX(-3500, 250, 1500, 328, 404, 0x84, 0x5E, 0x3E, 0xFF),
+    VTX(3500, 250, 1500, 2749, 404, 0x84, 0x5E, 0x3E, 0xFF),
+    VTX(2784, 587, -3392, 2790, 4285, 0x5E, 0x2F, 0x04, 0xFF),
+    VTX(1752, 1031, -2893, 2361, 3948, 0x4F, 0x73, 0x3E, 0xFF),
+    VTX(3624, 1310, -2586, 2526, 3462, 0x4F, 0x73, 0x3E, 0xFF),
+};
+static Vtx D_86E04688[] = {
+    VTX(-250, 0, 250, 0, 2880, 0xFF, 0xFF, 0xFF, 0xFF),
+    VTX(250, 0, 250, 128, 2880, 0xFF, 0xFF, 0xFF, 0xFF),
+    VTX(250, 620, 250, 128, 0, 0xFF, 0xFF, 0xFF, 0xFF),
+    VTX(-250, 620, 250, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
+};
+static Vtx D_86E046C8[] = {
+    VTX(-206, -33, 80, 0, 974, 0x8E, 0xF2, 0x20, 0xFF),    VTX(-111, 68, 137, 233, 556, 0xAC, 0x30, 0x46, 0xFF),
+    VTX(-159, 120, 14, 116, 339, 0x9D, 0x40, 0x11, 0xFF),  VTX(-82, -45, 202, 305, 1024, 0xDB, 0xE4, 0x6E, 0xFF),
+    VTX(-25, 125, 193, 447, 318, 0xEE, 0x40, 0x63, 0xFF),  VTX(185, -19, -121, 968, 917, 0x5C, 0xD9, 0xBE, 0xFF),
+    VTX(185, 94, -29, 967, 449, 0x6C, 0x2E, 0xED, 0xFF),   VTX(208, -44, -16, 1024, 1018, 0x72, 0xDE, 0x0C, 0xFF),
+    VTX(-61, 102, -170, 358, 415, 0xD1, 0x29, 0x9A, 0xFF), VTX(-73, 202, -75, 328, 0, 0xC0, 0x5C, 0xD9, 0xFF),
+    VTX(74, 200, -112, 693, 6, 0x22, 0x65, 0xCB, 0xFF),    VTX(80, 19, -211, 707, 758, 0x0F, 0x21, 0x8E, 0xFF),
+    VTX(146, 21, 169, 871, 749, 0x52, 0x0C, 0x56, 0xFF),   VTX(121, 184, 54, 809, 73, 0x3D, 0x5F, 0x27, 0xFF),
+    VTX(-60, 191, 78, 361, 46, 0xD7, 0x69, 0x27, 0xFF),    VTX(-181, 22, -65, 61, 744, 0x9A, 0x00, 0xC2, 0xFF),
+};
+static Gfx D_86E047C8[] = {
+    gsSPVertex(D_86E046C8, 16, 0),
+    gsSPSetGeometryMode(G_CULL_BACK),
+    gsSP2Triangles(0, 1, 2, 0, 1, 3, 4, 0),
+    gsSP2Triangles(5, 6, 7, 0, 8, 9, 10, 0),
+    gsSP2Triangles(6, 11, 10, 0, 12, 13, 4, 0),
+    gsSP2Triangles(14, 2, 1, 0, 9, 8, 15, 0),
+    gsSP2Triangles(10, 13, 6, 0, 3, 1, 0, 0),
+    gsSP2Triangles(12, 7, 6, 0, 10, 14, 13, 0),
+    gsSP2Triangles(6, 13, 12, 0, 11, 8, 10, 0),
+    gsSP2Triangles(6, 5, 11, 0, 15, 8, 11, 0),
+    gsSP2Triangles(10, 9, 14, 0, 9, 2, 14, 0),
+    gsSP2Triangles(15, 2, 9, 0, 4, 14, 1, 0),
+    gsSP2Triangles(2, 15, 0, 0, 3, 12, 4, 0),
+    gsSP1Triangle(4, 13, 14, 0),
+    gsSPEndDisplayList(),
+};
+static Gfx D_86E04840[] = {
+    gsSPClearGeometryMode(G_LIGHTING),      gsSPVertex(D_86E04688, 4, 0),    gsSPSetGeometryMode(G_CULL_BACK),
+    gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0), gsSPSetGeometryMode(G_LIGHTING), gsSPEndDisplayList(),
+};
+static Gfx D_86E04870[] = {
+    gsSPClearGeometryMode(G_LIGHTING),
+    gsSPVertex(D_86E03E88, 32, 0),
+    gsSPSetGeometryMode(G_CULL_BACK),
+    gsSP2Triangles(0, 1, 2, 0, 3, 4, 5, 0),
+    gsSP2Triangles(6, 7, 8, 0, 6, 8, 9, 0),
+    gsSP2Triangles(10, 11, 2, 0, 12, 13, 14, 0),
+    gsSP2Triangles(15, 16, 17, 0, 2, 11, 15, 0),
+    gsSP2Triangles(17, 18, 0, 0, 19, 20, 8, 0),
+    gsSP2Triangles(21, 22, 23, 0, 18, 24, 25, 0),
+    gsSP2Triangles(18, 25, 0, 0, 1, 26, 27, 0),
+    gsSP2Triangles(1, 27, 28, 0, 2, 1, 28, 0),
+    gsSP2Triangles(29, 9, 30, 0, 29, 30, 31, 0),
+    gsSP1Triangle(15, 21, 16, 0),
+    gsSPVertex(D_86E04088, 32, 0),
+    gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
+    gsSP2Triangles(4, 5, 6, 0, 7, 8, 9, 0),
+    gsSP2Triangles(7, 9, 10, 0, 11, 12, 13, 0),
+    gsSP2Triangles(14, 15, 16, 0, 14, 16, 17, 0),
+    gsSP2Triangles(6, 18, 4, 0, 19, 20, 21, 0),
+    gsSP2Triangles(22, 23, 24, 0, 22, 24, 25, 0),
+    gsSP2Triangles(23, 26, 27, 0, 23, 27, 28, 0),
+    gsSP2Triangles(28, 27, 29, 0, 30, 31, 18, 0),
+    gsSPVertex(D_86E04288, 32, 0),
+    gsSP2Triangles(0, 1, 2, 0, 3, 4, 2, 0),
+    gsSP2Triangles(2, 1, 5, 0, 6, 7, 8, 0),
+    gsSP2Triangles(9, 10, 11, 0, 12, 13, 11, 0),
+    gsSP2Triangles(14, 15, 16, 0, 14, 17, 18, 0),
+    gsSP2Triangles(16, 19, 14, 0, 18, 15, 14, 0),
+    gsSP2Triangles(20, 17, 21, 0, 20, 21, 22, 0),
+    gsSP2Triangles(22, 21, 23, 0, 22, 23, 24, 0),
+    gsSP2Triangles(24, 23, 25, 0, 24, 25, 26, 0),
+    gsSP2Triangles(10, 18, 20, 0, 11, 26, 12, 0),
+    gsSP2Triangles(11, 24, 26, 0, 17, 20, 18, 0),
+    gsSP2Triangles(19, 27, 28, 0, 29, 30, 31, 0),
+    gsSP1Triangle(31, 8, 29, 0),
+    gsSPVertex(D_86E04488, 32, 0),
+    gsSP2Triangles(0, 1, 2, 0, 3, 4, 5, 0),
+    gsSP2Triangles(6, 7, 8, 0, 6, 8, 9, 0),
+    gsSP2Triangles(10, 11, 12, 0, 12, 9, 10, 0),
+    gsSP2Triangles(12, 13, 14, 0, 15, 0, 16, 0),
+    gsSP2Triangles(15, 16, 17, 0, 17, 18, 19, 0),
+    gsSP2Triangles(17, 16, 18, 0, 18, 16, 20, 0),
+    gsSP2Triangles(20, 5, 18, 0, 20, 21, 5, 0),
+    gsSP2Triangles(21, 22, 5, 0, 21, 23, 24, 0),
+    gsSP2Triangles(25, 22, 26, 0, 22, 25, 27, 0),
+    gsSP2Triangles(28, 5, 22, 0, 22, 27, 28, 0),
+    gsSP1Triangle(29, 30, 31, 0),
+    gsSPSetGeometryMode(G_LIGHTING),
+    gsSPEndDisplayList(),
+};
+
+static u32 D_86E049F8[] = {
+    0x09000000, 0x05000000, 0x1D030100, 0x00000000, 0x00000000, 0x00000000, 0x00010000, 0x00010000, 0x00010000,
+    0x05000000, 0x1D020101, 0x0000FF06, 0x00000000, 0x00000000, 0x0000CCCC, 0x00010000, 0x00010000, 0x05000000,
+    0x2303FFFF, D_86E03E48, 0x0000FFFF, 0xFFFFFFFF, 0x22010000, D_86E04870, 0x1D010102, 0x03F400E0, 0xFB500000,
+    0x00000000, 0x00014000, 0x00010000, 0x00010000, 0x05000000, 0x2301FFFF, D_86E03DD8, 0x0002FFFF, 0xFFFFFFFF,
+    0x22010000, D_86E047C8, 0x06000000, 0x1D000103, 0x000000FA, 0xE3D40000, 0x00000000, 0x00117869, 0x0005FADE,
+    0x00010000, 0x05000000, 0x2306FFFF, D_86E03E10, 0x0001FFFF, 0xFFFFFFFF, 0x22010000, D_86E04840, 0x06000000,
+    0x06000000, 0x06000000, 0x06000000, 0x04000000,
+};
+
+static u32 D_86E04AE0[] = {
+    0x17000003, 0x00000094, D_86E03DB0, 0x00000000, D_86E03E88, 0x05000000, 0x1C000000, 0x00001999,
+    0x00001999, 0x00001999, 0x05000000, 0x03000000, D_86E049F8, 0x06000000, 0x06000000, 0x01000000,
+};
+
+static s16 D_86E04B20 = 0;
+static s16 D_86E04B24 = 1;
+static s16 D_86E04B28 = 0;
+static MiniActor* miniMetapodPtr = miniMetapods;
+static MiniActor* miniRockPtr = miniMetapodRocks;
+static u32 D_86E04B34[] = {
+    0x0C00FFFF, 0x05000000, 0x0B00001E, 0x00000000, 0x014000F0, 0xFFE20032, 0x00000000,  0x00000000,
+    0x05000000, 0x0D000000, 0x05000000, 0x14000000, 0x002B0012, 0xFFFFFF32, 0x16FFFFFF,  0x0F000003,
+    0x05000000, 0x1F00FFFF, 0x00000000, 0x00000000, 0xFFFE0000, 0x00640064, 0x00640000,  0x05000000,
+    0x00000000, D_86E04AE0, 0x06000000, 0x06000000, 0x05000000, 0x0A000000, &D_800AC840, 0x06000000,
+    0x06000000, 0x06000000, 0x03000000, D_87806398, 0x06000000, 0x01000000,
+};
+static Vec3f miniMetapodInfo[] = {
+    { -54.0f, 0.0f, 0.0f },
+    { -18.0f, 0.0f, 0.0f },
+    { 18.0f, 0.0f, 0.0f },
+    { 54.0f, 0.0f, 0.0f },
+};
+static MiniRockInfo miniRockInfos[] = {
+    { { -54.0f, 0.0f, -300.0f }, { 0, 0, 0 }, 20, 40, 0 },
+    { { -18.0f, 0.0f, -300.0f }, { 0, 0, 0 }, 20, 40, 0 },
+    { { 18.0f, 0.0f, -300.0f }, { 0, 0, 0 }, 20, 40, 0 },
+    { { 54.0f, 0.0f, -300.0f }, { 0, 0, 0 }, 20, 40, 0 },
+};
+static unk_func_87801684 D_86E04C5C[] = {
+    { D_0303ED80, 0xE }, { D_0303F180, 2 }, { D_0303F580, 6 }, { D_0303F180, 2 }, { NULL, 0 },
+};
+static unk_func_87801684 D_86E04C84[] = {
+    { D_03040580, 0x12 }, { D_03040980, 2 }, { D_03040D80, 8 }, { D_03040980, 2 }, { NULL, 0 },
+};
+
+void MetapodGame_PlaySoundEvent(s16 arg0, s16 arg1) {
+    s32 var_s0 = 0;
+    s32 sp28;
+    s32 sp24;
+
+    if (arg1 == -1) {
+        sp24 = 0;
+        sp28 = 0;
+    } else {
+        sp28 = arg1;
+        sp24 = 4;
+    }
+
+    switch (arg0) {
+        case 1:
+            var_s0 = 0x40001;
+            break;
+
+        case 2:
+            var_s0 = 0x40002;
+            break;
+
+        case 5:
+            var_s0 = 0x40003;
+            break;
+
+        case 6:
+            var_s0 = 0x40004;
+            break;
+
+        case 7:
+            var_s0 = 0x40005;
+            break;
+
+        case 8:
+            var_s0 = 0x40006;
+            break;
+
+        case 9:
+            var_s0 = 0x40007;
+            break;
+
+        case 10:
+            Audio_StartMusicTrack(0x11);
+            break;
+
+        case 11:
+            Audio_FadeOutAll(0x3C);
+            break;
+
+        case 12:
+            Audio_StartMusicTrack(0xC1);
+            break;
+
+        case 13:
+            Audio_PlaySoundEffectById(3);
+            break;
+
+        case 14:
+            Audio_FadeCategories(1, arg1);
+            Audio_FadeCategories(2, arg1);
+            D_8790604A = 1;
+            break;
+
+        case 15:
+            Audio_BeginVolumeTransition(arg1);
+            break;
+
+        case 16:
+            Audio_ResetVolumeTransition();
+            break;
+    }
+
+    if (var_s0 != 0) {
+        D_87903DBC++;
+        Audio_DispatchSoundBankCommand(var_s0, sp28, sp24);
+    }
+}
+
+void MetapodGame_PlaySoundEventGuarded(s16 arg0, s16 arg1) {
+    if (D_8790604A == 0) {
+        MetapodGame_PlaySoundEvent(arg0, arg1);
+    }
+}
+
+void miniInitMetapodPlayer(MiniActor* metapod, s32 arg1) {
+    miniActorAllToZero(metapod);
+
+    metapod->scale.x = 1.0f;
+    metapod->scale.y = 1.0f;
+    metapod->scale.z = 1.0f;
+
+    metapod->position_1.x = miniMetapodInfo[arg1].x;
+    metapod->position_1.y = miniMetapodInfo[arg1].y;
+    metapod->position_1.z = miniMetapodInfo[arg1].z;
+
+    if (metapod->unk_23C == 0x9E) { // if poke is metapod (not weedle) move it slightly
+        metapod->position_1.z -= 10.0f;
+    }
+
+    metapod->xRot_1 = 0;
+    metapod->yRot_1 = 0;
+    metapod->zRot_1 = 0;
+    metapod->miniMaxHealth = 0x190;
+    metapod->miniHealth = metapod->miniMaxHealth;
+    metapod->unk_2A6 = 5;
+    metapod->middleHeight = metapod->halfHeight * 0.5f;
+
+    ModelAnim_SetAnimation(&metapod->unk_000, 0);
+    ModelAnim_ClearEventTrack(&metapod->unk_000);
+    metapod->unk_000.unk_01C = 0;
+    miniActorUpdateTransform(metapod);
+    metapod->isComp = D_879060C4[arg1];
+}
+
+void miniInitMetapodPlayers(void) {
+    s32 i;
+
+    miniMetapodPtr = miniMetapods;
+    for (i = 0; i < 4; i++) {
+        miniInitMetapodPlayer(miniMetapodPtr, i);
+        miniMetapodPtr++;
+    }
+}
+
+void MetapodGame_BeginHarden(MiniActor* metapod) {
+    metapod->damageTimer++;
+    metapod->unk_272 = 4;
+    metapod->unk_000.unk_01C = 1;
+}
+
+void miniMetapodHumanControls(MiniActor* metapod) {
+    if (metapod->metapodInputLockTimer != 0) {
+        metapod->metapodInputLockTimer--;
+    }
+
+    if ((BTN_IS_DOWN(miniControllerPtr, BTN_A)) && (metapod->mainState == 0) && (metapod->isSquashed == 0) &&
+        (metapod->unk_2AA == 0) && (metapod->metapodInputLockTimer == 0)) {
+        metapod->mainState = 1;
+    }
+
+    switch (metapod->mainState) {
+        case 1: // start harden
+            MetapodGame_BeginHarden(metapod);
+            miniChangeActorAnim(metapod, 1, -1, 1);
+            Particle_EmitBurstAtTransform(1.0f, metapod->totalPos, metapod->totalRot, MiniFx_UpdatePalette17SmallDelayedRevealFallParticle, &gMiniFxParticleDescriptorIa8Variant, 4);
+            metapod->mainState++;
+            break;
+
+        case 2: //  harden
+            if (ModelAnim_HasCrossedFrame(&metapod->unk_000, 5) != 0) {
+                metapod->unk_000.unk_000.unk_02 &= ~0x20;
+            }
+
+            if (!(BTN_IS_DOWN(miniControllerPtr, BTN_A)) || (metapod->unk_2AA != 0)) {
+                metapod->mainState = 0;
+                metapod->unk_000.unk_000.unk_02 |= 0x20;
+            } else if (BTN_IS_DOWN(miniControllerPtr, BTN_A)) {
+                MetapodGame_BeginHarden(metapod);
+            }
+            break;
+    }
+}
+
+void MetapodGame_ResetCompState(MiniActor* metapod) {
+    if (metapod->isComp) {
+        metapod->unk_244 = 0;
+        metapod->compState = 0;
+    }
+}
+
+s32 MetapodGame_ChooseRockDelayMode(UNUSED MiniActor* metapod, s32 arg1) {
+    s32 sp1C;
+    s32 sp18;
+    s32 var_v1;
+    s32 temp_v0;
+
+    switch (miniDifficulty) {
+        case 0:
+            if (arg1 < 0xA) {
+                sp1C = 0x32;
+            } else {
+                sp1C = 0x46;
+            }
+            break;
+
+        case 1:
+            if (arg1 < 0xA) {
+                sp1C = 0x50;
+            } else {
+                sp1C = 0x5A;
+            }
+            break;
+
+        case 2:
+            if (arg1 < 3) {
+                sp1C = 0x5A;
+            } else if (arg1 < 8) {
+                sp1C = 0x5F;
+            } else {
+                sp1C = 0x62;
+            }
+            break;
+
+        case 3:
+            if (arg1 < 3) {
+                sp1C = 0x60;
+            } else if (arg1 < 8) {
+                sp1C = 0x61;
+            } else {
+                sp1C = 0x62;
+            }
+            break;
+    }
+
+    sp18 = Rand_Range(0x64);
+    temp_v0 = Rand_Range(0x64);
+
+    if (sp18 < sp1C) {
+        var_v1 = 0;
+    } else if (temp_v0 < 0x32) {
+        var_v1 = 1;
+    } else {
+        var_v1 = 2;
+    }
+
+    return var_v1;
+}
+
+void MetapodGame_ComputeRockDelay_Type0(MiniActor* metapod, s32 arg1) {
+    s32 sp2C;
+    s32 sp28;
+    u32 sp24;
+    u32 temp_s1 = Rand_Range(arg1);
+
+    switch (miniDifficulty) {
+        case 0:
+            sp2C = Rand_Range(0xA) + 2;
+            sp28 = arg1 - temp_s1;
+            sp2C += sp28;
+            sp24 = Rand_Range(3);
+            break;
+
+        case 1:
+            sp2C = Rand_Range(5) + 2;
+            sp28 = arg1 - temp_s1;
+            sp2C += sp28;
+            sp24 = 0;
+            break;
+
+        case 2:
+            sp2C = Rand_Range(4);
+            sp28 = arg1 - temp_s1;
+            sp2C += sp28;
+            sp24 = 0;
+            break;
+
+        case 3:
+            sp2C = Rand_Range(3);
+            sp28 = arg1 - temp_s1;
+            sp2C += sp28;
+            sp24 = 0;
+            break;
+    }
+
+    metapod->unk_244 = temp_s1;
+    metapod->unk_29E = sp2C;
+    metapod->unk_2B2 = sp24;
+}
+
+void MetapodGame_ComputeRockDelay_Type1(MiniActor* arg0, s32 arg1) {
+    u32 sp2C;
+    UNUSED s32 pad[3];
+    u32 sp1C;
+    s32 var_a0;
+    s32 var_a2;
+    u32 temp_v0_2;
+
+    if (arg1 < 5) {
+        sp2C = 0;
+        var_a0 = 0;
+        var_a2 = arg1;
+    } else {
+        sp1C = arg1 - 4;
+        sp2C = Rand_Range(sp1C);
+        temp_v0_2 = Rand_Range(sp1C - sp2C);
+        var_a0 = temp_v0_2 + 2;
+        var_a2 = ((arg1 - sp2C) - temp_v0_2) - 2;
+    }
+
+    arg0->unk_244 = sp2C;
+    arg0->unk_29E = var_a0;
+    arg0->unk_2B2 = var_a2;
+}
+
+void MetapodGame_ComputeRockDelay_Type2(MiniActor* metapod, s32 arg1) {
+    metapod->unk_244 = arg1;
+    metapod->unk_29E = 0;
+    metapod->unk_2B2 = 0;
+}
+
+void MetapodGame_CompDecideRockAvoidance(MiniActor* metapod, s32 player) {
+    s32 i;
+    s32 sp20;
+    s32 var_t0 = 0;
+
+    if (metapod->isSquashed == 0) {
+        switch (miniDifficulty) {
+            case 0:
+                sp20 = 0x1E;
+                break;
+
+            case 1:
+                sp20 = 0x14;
+                break;
+
+            case 2:
+                sp20 = 0xD;
+                break;
+
+            case 3:
+                sp20 = 0xC;
+        }
+
+        miniRockPtr = miniMetapodRocks;
+        for (i = 0; i < 20; i++) {
+            if ((miniRockPtr->unk_270 != 0) && (player == miniRockPtr->collidingActorId)) {
+                if (miniRockPtr->unk_29E < sp20) {
+                    var_t0 = 1;
+                    sp20 = miniRockPtr->unk_29E;
+                }
+            }
+            miniRockPtr++;
+        }
+
+        sp20--;
+        if (var_t0 != 0) {
+            if (sp20 < 0) {
+                sp20 = 0;
+            }
+            metapod->compState = 1;
+
+            switch (MetapodGame_ChooseRockDelayMode(metapod, sp20)) {
+                case 0:
+                    MetapodGame_ComputeRockDelay_Type0(metapod, sp20);
+                    break;
+
+                case 1:
+                    MetapodGame_ComputeRockDelay_Type1(metapod, sp20);
+                    break;
+
+                case 2:
+                    MetapodGame_ComputeRockDelay_Type2(metapod, sp20);
+                    break;
+            }
+        }
+    }
+}
+
+void miniMetapodCompControls(MiniActor* compMetapod, s32 nPlayer) {
+    if (compMetapod->compState == 0) {
+        MetapodGame_CompDecideRockAvoidance(compMetapod, nPlayer);
+    }
+
+    switch (compMetapod->compState) {
+        case 0x1:
+            compMetapod->unk_244--;
+            if (compMetapod->unk_244 < 0) {
+                if ((compMetapod->unk_2AA == 0) && (compMetapod->isSquashed == false)) {
+                    if (compMetapod->unk_29E > 0) {
+                        miniChangeActorAnim(compMetapod, 1, -1, 1);
+                        compMetapod->mainState = 1;
+                        compMetapod->unk_272 = 4;
+                        compMetapod->compState++;
+                        Particle_EmitBurstAtTransform(1.0f, compMetapod->totalPos, compMetapod->totalRot, MiniFx_UpdatePalette17SmallDelayedRevealFallParticle, &gMiniFxParticleDescriptorIa8Variant,
+                                      4);
+                    } else {
+                        compMetapod->compState = 0x64;
+                    }
+                } else {
+                    compMetapod->compState = 0;
+                }
+            }
+            break;
+
+        case 0x2:
+            compMetapod->unk_29E--;
+            if (compMetapod->unk_29E < 0) {
+                compMetapod->unk_000.unk_000.unk_02 |= 0x20;
+                compMetapod->compState = 0x64;
+                return;
+            }
+
+            compMetapod->damageTimer++;
+            compMetapod->unk_272 = 4;
+            compMetapod->unk_000.unk_01C = 1;
+            if (ModelAnim_HasCrossedFrame(&compMetapod->unk_000, 5) != 0) {
+                compMetapod->unk_000.unk_000.unk_02 &= ~0x20;
+            }
+            break;
+
+        case 0x64:
+            compMetapod->unk_2B2--;
+            if (compMetapod->unk_2B2 <= 0) {
+                compMetapod->mainState = 0;
+                compMetapod->compState = 0;
+            }
+            break;
+    }
+}
+
+void miniUpdateMetapods(void) {
+    s32 i;
+
+    miniControllerPtr = gPlayer1Controller;
+    miniMetapodPtr = miniMetapods;
+
+    for (i = 0; i < 4; i++) {
+        miniMetapodPtr->unk_000.unk_01C = 0;
+        miniMetapodPtr->unk_272 = 0;
+
+        if (minigameInputLock != 0) {
+            if (miniMetapodPtr->isComp == false) {
+                miniMetapodHumanControls(miniMetapodPtr);
+            } else {
+                miniMetapodCompControls(miniMetapodPtr, i);
+            }
+        }
+
+        miniActorUpdateTransform(miniMetapodPtr);
+        MiniActor_SyncModelTransform(miniMetapodPtr);
+
+        miniMetapodPtr++;
+        miniControllerPtr++;
+    }
+}
+
+s32 metapodRockCollisionCheck_void(void) {
+    return metapodRockCollisionCheck(miniRockPtr, &miniMetapods[miniRockPtr->collidingActorId]);
+}
+
+s32 MetapodGame_ResolveRockHit(s32 nPlayer) {
+    s32 sp1C = 0;
+
+    if (metapodRockCollisionCheck_void() != 0) {
+        miniMetapodPtr->midAirState = 1;
+        if (miniMetapodPtr->unk_272 != 0) { //  if hardened ? colliding ?
+            MetapodGame_PlaySoundEventGuarded(7, nPlayer);
+            sp1C = 1;
+        } else {
+            miniMetapodPtr->isSquashed = 1; // rock squashing
+            MetapodGame_ResetCompState(miniMetapodPtr);
+            sp1C = 2;
+        }
+    }
+    return sp1C;
+}
+
+void miniRockChecks(UNUSED MiniActor* metapod, s32 nPlayer) {
+    s32 i;
+    s32 colliding;
+
+    miniRockPtr = miniMetapodRocks;
+
+    for (i = 0; i < 20; i++) {
+        if ((miniRockPtr->unk_270 != 0) && (nPlayer == miniRockPtr->collidingActorId) &&
+            (miniRockPtr->midAirState == 0)) {
+            colliding = MetapodGame_ResolveRockHit(nPlayer);
+            if (colliding) {
+                miniRockPtr->midAirState = 1;
+                if (colliding == 1) {
+                    miniRockPtr->unk_272 = 1;
+                } else {
+                    miniRockPtr->unk_272 = 0;
+                }
+                break;
+            }
+        }
+        miniRockPtr++;
+    }
+}
+
+void miniMatapodChecks(MiniActor* metapod, s32 nPlayer) {
+    if ((miniMetapodPtr->damageTimer > 0) && (metapod->isWinner == 0)) {
+        if (miniMetapodPtr->damageTimer >= 0x28) {
+            miniMetapodPtr->miniHealth -= miniMetapodPtr->damageTimer;
+            miniMetapodPtr->damageTimer = 0;
+        } else {
+            miniMetapodPtr->damageTimer--;
+            miniMetapodPtr->miniHealth--;
+        }
+
+        if (miniMetapodPtr->miniHealth < 0) {
+            miniMetapodPtr->miniHealth = 0;
+        }
+    }
+
+    if (miniMetapodPtr->miniHealth == 0) {
+        if (miniMetapodPtr->unk_2A4 == 0) {
+            MetapodGame_PlaySoundEventGuarded(9, nPlayer);
+            miniChangeActorAnim(miniMetapodPtr, 3, 1, 0); // dead animation
+            miniMetapodPtr->unk_2A4 = 1;
+            miniMetapodPtr->unk_2AA = 1;
+        }
+    } else {
+        switch (miniMetapodPtr->isSquashed) {
+            case 1:
+                miniMetapodPtr->damageTimer += 0x1E;
+                miniChangeActorAnim(miniMetapodPtr, 2, 0, 1);
+                MetapodGame_PlaySoundEventGuarded(8, nPlayer);
+                miniMetapodPtr->isSquashed++;
+                break;
+
+            case 2:
+                if (miniMetapodPtr->unk_248 == 0) {
+                    miniMetapodPtr->isSquashed = 0;
+                }
+                break;
+        }
+    }
+}
+
+void miniMatapodMinigameChecks(void) {
+    s32 i;
+
+    miniMetapodPtr = miniMetapods;
+
+    for (i = 0; i < 4; i++) {
+        if (minigameInputLock != 0) {
+            miniRockChecks(miniMetapodPtr, i);
+            miniMatapodChecks(miniMetapodPtr, i);
+        }
+        miniMetapodPtr++;
+    }
+}
+
+void MetapodGame_SyncMetapodModelTransform(void) {
+    MiniActor_UpdateAnimation(miniMetapodPtr);
+
+    miniMetapodPtr->unk_000.unk_024.x = miniMetapodPtr->totalPos.x;
+    miniMetapodPtr->unk_000.unk_024.y = miniMetapodPtr->totalPos.y;
+    miniMetapodPtr->unk_000.unk_024.z = miniMetapodPtr->totalPos.z;
+
+    miniMetapodPtr->unk_000.unk_01E.x = miniMetapodPtr->totalRot.x;
+    miniMetapodPtr->unk_000.unk_01E.y = miniMetapodPtr->totalRot.y;
+    miniMetapodPtr->unk_000.unk_01E.z = miniMetapodPtr->totalRot.z;
+}
+
+void MetapodGame_SyncAllMetapodModelTransforms(void) {
+    s32 i;
+
+    miniMetapodPtr = miniMetapods;
+
+    for (i = 0; i < 4; i++) {
+        MetapodGame_SyncMetapodModelTransform();
+        miniMetapodPtr++;
+    }
+}
+
+void miniInitRock(MiniActor* rock, s32 arg1) {
+    miniActorAllToZero(rock);
+    rock->collidingActorId = arg1;
+
+    rock->position_1.x = miniRockInfos[arg1].unk_00.x;
+    rock->position_1.y = miniRockInfos[arg1].unk_00.y;
+    rock->position_1.z = miniRockInfos[arg1].unk_00.z;
+
+    rock->unk_270 = 0;
+    rock->cubeRadio = miniRockInfos[arg1].unk_12;
+    rock->halfHeight = miniRockInfos[arg1].unk_14;
+
+    rock->scale.x = 0.5f;
+    rock->scale.y = 0.5f;
+    rock->scale.z = 0.5f;
+
+    rock->unk_000.unk_000.unk_01 &= ~1;
+
+    miniActorUpdateTransform(rock);
+}
+
+void miniInitRocks(void) {
+    s32 i;
+    s32 j;
+
+    miniRockPtr = miniMetapodRocks;
+
+    for (i = 0; i < 4; i++) {
+        for (j = 0; j < 5; j++) {
+            miniInitRock(miniRockPtr, i);
+            miniRockPtr++;
+        }
+    }
+
+    D_86E04B20 = 0;
+    D_86E04B24 = 1;
+}
+
+void MetapodGame_ScheduleRockWave(void) {
+    s32 i;
+    s32 j;
+    s32 var_s1;
+    s32 sp40;
+    s32 var_s5;
+    MiniActor* metapod;
+
+    switch (miniDifficulty) {
+        default:
+            var_s5 = sp40;
+            break;
+
+        case 0:
+            var_s5 = Rand_Range(0x14) + 0xF;
+            break;
+
+        case 1:
+            var_s5 = Rand_Range(0x14) + 0xA;
+            break;
+
+        case 2:
+            var_s5 = Rand_Range(0x1E) + 5;
+            break;
+
+        case 3:
+            var_s5 = Rand_Range(0x1E) + 5;
+            break;
+    }
+
+    metapod = miniMetapods;
+    for (i = 0; i < 4; i++, metapod++) {
+        if (metapod->unk_2AA == 0) {
+            var_s1 = 0;
+            miniRockPtr = &miniMetapodRocks[i * 5];
+
+            for (j = 0; j < D_86E04B24; j++) {
+                miniInitRock(miniRockPtr, i);
+
+                miniRockPtr->mainState = 1;
+                miniRockPtr->unk_29E = var_s1;
+
+                var_s1 += var_s5;
+                miniRockPtr++;
+            }
+        }
+    }
+}
+
+void MetapodGame_LaunchRock(MiniActor* rock) {
+    s16 temp_v1 = (D_86E04B20 * 4) + 0x28;
+    s16 temp_a1 = rock->collidingActorId;
+
+    rock->unk_29E = temp_v1 - 1;
+    rock->position_1.y += miniRockInfos[temp_a1].unk_00.y + miniMetapods[temp_a1].halfHeight;
+
+    rock->antiAcceleration = 0.7f;
+    rock->xSpeed = 0.0f;
+    rock->ySpeed = temp_v1 * rock->antiAcceleration * 0.5f;
+
+    rock->zSpeed =
+        ((miniMetapods[temp_a1].position_1.z + (miniMetapods[temp_a1].cubeRadio * 0.5f)) - rock->position_1.z) /
+        temp_v1;
+    rock->unk_270 = 1;
+
+    rock->unk_000.unk_000.unk_01 |= 1;
+    ModelAnim_SetAnimation(&rock->unk_000, 0);
+}
+
+void MetapodGame_DespawnRock(MiniActor* rock) {
+    rock->mainState = 0;
+    rock->unk_000.unk_000.unk_01 &= ~1;
+}
+
+void miniRockStateMachine(MiniActor* rock) {
+    UNUSED s32 pad[3];
+    s16 temp_a1 = rock->collidingActorId;
+    Vec3f sp3C;
+
+    if ((D_87903DA8 != 0) || (miniMetapods[temp_a1].miniHealth == 0)) {
+        switch (rock->mainState) {
+            case 1:
+                rock->mainState = 0;
+                break;
+
+            case 2:
+                rock->unk_270 = 0;
+                rock->mainState = 0x64;
+                break;
+        }
+    }
+
+    switch (rock->mainState) {
+        case 0x1:
+            rock->unk_29E--;
+            if (rock->unk_29E <= 0) {
+                MetapodGame_PlaySoundEventGuarded(5, temp_a1);
+                MetapodGame_LaunchRock(rock);
+                rock->mainState++;
+            }
+            break;
+
+        case 0x2:
+            rock->unk_29E--;
+            if (rock->unk_29E < 0) {
+                rock->unk_29E = 0;
+            }
+
+            if (rock->midAirState != 0) {
+                rock->unk_270 = 0;
+                if (rock->unk_272 != 0) {
+                    rock->ySpeed = 5.0f;
+                    rock->zSpeed = 1.5f;
+                    MetapodGame_DespawnRock(rock);
+                    Particle_EmitBurstAtTransform(1.0f, rock->totalPos, rock->totalRot, MiniFx_UpdateRandomVelocityGravityParticle, &gMiniFxParticleDescriptorIa8, 4);
+                } else {
+                    rock->mainState++;
+                }
+            }
+            break;
+
+        case 0x3:
+            rock->ySpeed = 7.0f;
+            rock->zSpeed = 3.0f;
+
+            sp3C.x = rock->totalPos.x;
+            sp3C.y = 0.0f;
+            sp3C.z = rock->totalPos.z;
+
+            Particle_EmitBurstAtTransform(1.0f, sp3C, rock->totalRot, MiniFx_UpdatePalette10FastRiseFadeParticle, &gMiniFxParticleDescriptorI4Frame, 4);
+            rock->mainState++;
+            break;
+
+        case 0x4:
+            if (rock->totalPos.y < -10.0f) {
+                MetapodGame_DespawnRock(rock);
+            }
+            break;
+
+        case 0x64:
+            if (ParticleMath_ApproachU8(&rock->unk_000.unk_01D, 0, 0x40) != 0) {
+                MetapodGame_DespawnRock(rock);
+            }
+            break;
+    }
+}
+
+void miniRockUpdatePosition(MiniActor* rock) {
+    UNUSED f32 temp_fv0;
+    UNUSED f32 temp_fv0_2;
+    UNUSED f32 temp_fv0_3;
+
+    rock->totalPos.x = rock->totalPos_alt.x = rock->position_1.x + rock->position_2.x;
+    rock->totalPos.y = rock->totalPos_alt.y = rock->position_1.y + rock->position_2.y;
+    rock->totalPos.z = rock->totalPos_alt.z = rock->position_1.z + rock->position_2.z;
+}
+
+void miniUpdateRockTransform(MiniActor* rock) {
+    if (rock->mainState != 0) {
+        rock->xSpeed += rock->xAccel;
+        rock->ySpeed += rock->yAccel - rock->antiAcceleration;
+        rock->zSpeed += rock->zAccel;
+        rock->position_2.x += rock->xSpeed;
+        rock->position_2.y += rock->ySpeed;
+        rock->position_2.z += rock->zSpeed;
+    }
+
+    miniRockUpdatePosition(rock);
+}
+
+void miniUpdateRocks(void) {
+    s32 i;
+
+    miniRockPtr = miniMetapodRocks;
+    for (i = 0; i < 20; i++) {
+        miniRockStateMachine(miniRockPtr);
+        miniUpdateRockTransform(miniRockPtr);
+        miniRockPtr++;
+    }
+}
+
+//	update model transform ?
+void MetapodGame_SyncRockModelTransform(MiniActor* arg0) {
+    MiniActor_UpdateAnimation(arg0);
+
+    arg0->unk_000.unk_030.x = arg0->scale.x;
+    arg0->unk_000.unk_030.y = arg0->scale.y;
+    arg0->unk_000.unk_030.z = arg0->scale.z;
+
+    arg0->unk_000.unk_024.x = arg0->totalPos.x;
+    arg0->unk_000.unk_024.y = arg0->totalPos.y;
+    arg0->unk_000.unk_024.z = arg0->totalPos.z;
+
+    arg0->unk_000.unk_01E.x = arg0->totalRot.x;
+    arg0->unk_000.unk_01E.y = arg0->totalRot.y;
+    arg0->unk_000.unk_01E.z = arg0->totalRot.z;
+}
+
+void miniUpdateRocksPositions(void) {
+    s32 i;
+    miniRockPtr = miniMetapodRocks;
+    for (i = 0; i < 20; ++i) {
+        miniRockUpdatePosition(miniRockPtr);
+        MetapodGame_SyncRockModelTransform(miniRockPtr);
+        miniRockPtr = &miniRockPtr[1];
+    }
+}
+
+void MetapodGame_InitCamera(void) {
+    D_87906054 = D_87906050->unk_00.unk_0C;
+
+    miniCameraXRot = -0x200;
+    miniCameraYRot = 0;
+    miniCameraDistance = 0xBE;
+    miniCameraFov = 0x23;
+    miniCameraNear = 0x32;
+    miniCameraFar = 0x1900;
+
+    miniCameraCoords.x = 0;
+    miniCameraCoords.y = 0x2A;
+    miniCameraCoords.z = 0;
+
+    miniUpdateCamera();
+}
+
+void miniMetapodCameraControls(void) {
+    minigameDebuggModeControl();
+    miniUpdateCamera();
+}
+
+void initMetapodMinigameAssets(void) {
+    miniResetGlobalState(); //	minigame variables
+    miniInitRocks();
+    miniInitMetapodPlayers();
+    MetapodGame_InitCamera(); //	camera
+    minigameInputLock = 0;
+}
+
+void MetapodGame_UpdateRockWaveScheduler(void) {
+    s32 i;
+    s32 var_a2;
+
+    miniRockPtr = miniMetapodRocks;
+    switch (D_86E04B28) {
+        case 1:
+            MetapodGame_ScheduleRockWave();
+            D_86E04B28++;
+            break;
+
+        case 2:
+            var_a2 = 1;
+            for (i = 0; i < 20; i++) {
+                if (miniRockPtr->mainState != 0) {
+                    var_a2 = 0;
+                    break;
+                }
+                miniRockPtr++;
+            }
+
+            if (var_a2 != 0) {
+                if (D_87903DA8 != 0) {
+                    D_86E04B28 = 0;
+                    return;
+                }
+
+                D_86E04B28 = 1;
+                D_86E04B20++;
+                if (D_86E04B20 >= 5) {
+                    D_86E04B20 = 0;
+                    D_86E04B24++;
+                    if (D_86E04B24 >= 6) {
+                        D_86E04B24 = 1;
+                    }
+                }
+            }
+    }
+}
+
+s32 MetapodGame_CheckWinCondition(void) {
+    UNUSED s32 pad[2];
+    s32 i;
+    s32 var_a3 = 5;
+    s32 var_t2 = 0;
+    s32 var_t1 = 0;
+    s32 var_t3 = 0;
+    s32 var_v0_5;
+
+    miniMetapodPtr = miniMetapods;
+
+    for (i = 0; i < 4; i++) {
+        if (miniMetapodPtr->unk_2A6 < var_a3) {
+            var_a3 = miniMetapodPtr->unk_2A6;
+        }
+
+        if (miniMetapodPtr->unk_2A4 == 1) {
+            var_t1++;
+        }
+
+        if (miniMetapodPtr->unk_2A4 == 2) {
+            var_t2++;
+        }
+
+        miniMetapodPtr++;
+    }
+
+    if (var_t1 != 0) {
+        var_a3 -= var_t1;
+        miniMetapodPtr = miniMetapods;
+        for (i = 0; i < 4; i++) {
+            if (miniMetapodPtr->unk_2A4 == 1) {
+                miniMetapodPtr->unk_2A4 = 2;
+                miniMetapodPtr->unk_2A6 = var_a3;
+            }
+            miniMetapodPtr++;
+        }
+    }
+
+    var_a3 = var_t1 + var_t2;
+    var_v0_5 = 0;
+    if (3 == var_a3) {
+        var_v0_5 = 1;
+    } else if (var_t1 == 4) {
+        var_v0_5 = 2;
+    } else if ((var_t1 >= 2) && (var_a3 == 4)) {
+        var_v0_5 = 3;
+    }
+
+    miniMetapodPtr = miniMetapods;
+
+    switch (var_v0_5) {
+        case 1:
+            for (i = 0; i < 4; i++) {
+                if (miniMetapodPtr->unk_2A6 == 5) {
+                    miniMetapodPtr->isWinner = 1;
+                    miniMetapodPtr->unk_2AA = 1;
+                    miniMetapodPtr->unk_2A6 = 1;
+                    var_t3 = 1;
+                    Widget_PauseMenuRecordWin(i);
+                    break;
+                }
+                miniMetapodPtr++;
+            }
+            break;
+
+        case 2:
+            var_t3 = 1;
+            for (i = 0; i < 4; i++) {
+                miniMetapodPtr->unk_2AA = 1;
+                miniMetapodPtr->unk_2A6 = 0;
+                miniMetapodPtr++;
+            }
+            break;
+
+        case 3:
+            for (i = 0; i < 4; i++) {
+                if (miniMetapodPtr->unk_2A6 == 1) {
+                    miniMetapodPtr->unk_2AA = 1;
+                    miniMetapodPtr->unk_2A6 = 5;
+                    var_t3 = 1;
+                }
+                miniMetapodPtr++;
+            }
+            break;
+    }
+
+    if (var_t3 != 0) {
+        D_87903DA8 = 1;
+    }
+    return var_t3;
+}
+
+s32 MetapodGame_PlayWinnerAnimations(void) {
+    s32 i;
+    s32 var_s3 = 0;
+    MiniActor* var_s0;
+
+    for (i = 0, var_s0 = miniMetapods; i < 4; i++, var_s0++) {
+        if (var_s0->isWinner != 0) {
+            miniChangeActorAnim(var_s0, 4, -1, 0);
+            var_s3 = 1;
+        }
+    }
+
+    return var_s3;
+}
+
+void func_86E01EB0(void) {
+    s32 i;
+
+    miniMetapodPtr = miniMetapods;
+    for (i = 0; i < 4; i++) {
+        if (miniMetapodPtr) {}
+
+        miniMetapodPtr++;
+    }
+}
+
+s32 MetapodGame_UpdateStartCountdown(void) {
+    s32 sp1C = 0;
+    s32 temp_v0 = Widget_CountdownGetState();
+
+    if (temp_v0 == -2) {
+        sp1C = 1;
+    }
+
+    if (temp_v0 > 0) {
+        MetapodGame_PlaySoundEventGuarded(1, 0);
+    } else if (temp_v0 == 0) {
+        MetapodGame_PlaySoundEventGuarded(2, 0);
+        MetapodGame_PlaySoundEventGuarded(0xA, 0);
+    }
+
+    return sp1C;
+}
+
+s32 MetapodGame_AllRocksCleared(void) {
+    s32 i;
+    s32 ret = 1;
+    MiniActor* var_v0 = miniMetapodRocks;
+
+    for (i = 0; i < 20; i++, var_v0++) {
+        if (var_v0->mainState != 0) {
+            ret = 0;
+            break;
+        }
+    }
+    return ret;
+}
+
+void miniMetapodMinigameStateMachine(void) {
+    switch (minigameState) {
+        case 1:
+            miniInputLockTimer = 0xF;
+            minigameState++;
+            break;
+
+        case 2:
+            miniInputLockTimer--;
+            if (miniInputLockTimer < 0) {
+                Widget_CountdownStart(1);
+                minigameState++;
+            }
+            break;
+
+        case 3:
+            if (MetapodGame_UpdateStartCountdown() != 0) {
+                D_86E04B28 = 1;
+                minigameInputLock = 1;
+                miniTutoScreenState = 0;
+                minigameState++;
+            }
+            break;
+
+        case 4:
+            if (1) {}
+
+            if (MetapodGame_CheckWinCondition() != 0) {
+                minigameState++;
+            } else {
+                MetapodGame_UpdateRockWaveScheduler();
+            }
+            break;
+
+        case 5:
+            if (MetapodGame_AllRocksCleared() != 0) {
+                miniInputLockTimer = 0xA;
+                minigameState++;
+            }
+            break;
+
+        case 6:
+            miniInputLockTimer--;
+            if (miniInputLockTimer < 0) {
+                MetapodGame_PlayWinnerAnimations();
+                Widget_PauseMenuTrigger(1);
+                minigameState++;
+            }
+            break;
+
+        case 7:
+            if (D_8780FC96 != 0) {
+                minigameState++;
+                D_87903DAC = 1;
+            }
+            break;
+    }
+
+    Widget_CountdownUpdate();
+    func_86E01EB0();
+}
+
+void MetapodGame_UpdateParticleFx(void) {
+    MiniFx_UpdateParticles();
+}
+
+void miniDrawMetapodHealth(void) {
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+        Widget_DrawProgressBar(0x1A + i * 0x4A, 0xD0, 0x32, miniMetapods[i].miniHealth, miniMetapods[i].miniMaxHealth);
+    }
+}
+
+void miniDrawMetapodHeads(void) {
+    s32 i;
+    s32 tmp;
+
+    gSPDisplayList(gDisplayListHead++, D_8006F518);
+    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, miniHudTransparency);
+
+    for (i = 0, tmp = 0x26; i < 4; tmp += 0x4A, i++) {
+        if (D_879060C4[i] == 0) {
+            Widget_DrawPlayerIcon(i, tmp, 0xD6, 0.7f); //  draw player icon
+        } else {
+            Widget_DrawPlayerIcon(-1 - i, tmp, 0xD6, 0.7f); //  draw player icon
+        }
+    }
+
+    gSPDisplayList(gDisplayListHead++, D_8006F630);
+}
+
+void MetapodGame_DrawTutorialText(void) {
+    UNUSED s32 pad;
+    s32 sp38;
+    s32 sp34;
+
+    Ui_DrawBorderedPanel(0x18, 0x16, 0x110, 0x90, 0x15);
+    Ui_DrawBorderedPanel(0x18, 0xA5, 0x110, 0x36, 0x14B);
+    Font_BeginTranslucentTextRendering();
+    Font_EnableTwoCycleTexturing();
+    Font_SetActive(2, 0);
+    Font_SetLineHeight(0xC);
+    Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
+    Gfx_SetPrimColor(0xF9, 0xF4, 0, 0xFF);
+    Font_Printf(0xA0 - (Text_MeasureStringWidth(D_86E08E44, Text_GetString(NULL, 0, D_87806330, 0x44)) / 2), 0x20,
+                  Text_GetString(NULL, 0, D_87806330, 0x44));
+    Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
+    Gfx_SetPrimColor(0xFF, 0xFF, 0xFF, 0xFF);
+    Font_Printf(0x28, 0x34, Text_GetString(NULL, 0, D_87806330, 0x45));
+    Font_Printf(0x28, 0x58, Text_GetString(NULL, 0, D_87806330, 0x46));
+    Font_Printf(0x28, 0x7C, Text_GetString(NULL, 0, D_87806330, 0x47));
+    Font_Printf(0x28, 0x94, Text_GetString(NULL, 0, D_87806330, 0x48));
+    Gfx_SetEnvColor(0xC8, 0xC8, 0xFF, 0xFF);
+    Gfx_SetPrimColor(0x50, 0x50, 0xFF, 0xFF);
+    Widget_MeasureLabelBox(&sp38, &sp34, Text_GetString(NULL, 0, D_87806330, 0x45), Text_GetString(NULL, 0, D_87806330, 0x5F),
+                  0xC);
+    Font_Printf(sp38 + 0x28, sp34 + 0x34, Text_GetString(NULL, 0, D_87806330, 0x5F));
+    Widget_MeasureLabelBox(&sp38, &sp34, Text_GetString(NULL, 0, D_87806330, 0x46), Text_GetString(NULL, 0, D_87806330, 0x5F),
+                  0xC);
+    Font_Printf(sp38 + 0x28, sp34 + 0x58, Text_GetString(NULL, 0, D_87806330, 0x5F));
+    Font_Printf(0x8B, 0xB2, Text_GetString(NULL, 0, D_87806330, 0x5C));
+    Font_Printf(0x8B, 0xC8, Text_GetString(NULL, 0, D_87806330, 0x5C));
+    Gfx_SetEnvColor(0xC8, 0xC8, 0xFF, 0xFF);
+    Gfx_SetPrimColor(0x50, 0x50, 0xFF, 0xFF);
+    Font_Printf(0xA2, 0xB2, Text_GetString(NULL, 0, D_87806330, 0x49));
+    Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
+    Gfx_SetPrimColor(0xFF, 0x80, 0x80, 0xFF);
+    Font_Printf(0xA2, 0xC8, Text_GetString(NULL, 0, D_87806330, 0x14));
+    Font_DisableTwoCycleTexturing();
+    Font_EndTexturedTextRendering();
+}
+
+void MetapodGame_DrawTutorialScreen(void) {
+    switch (D_87903DCC) {
+        case 3:
+            MetapodGame_DrawTutorialText();
+
+            gSPDisplayList(gDisplayListHead++, D_8006F518);
+
+            Widget_DrawSplitBanner(2, 0x19, 0xA6);
+            Widget_DrawAnimIcon16(0x74, 0xB0, D_86E04C5C);
+            Widget_DrawAnimIcon16C(0x74, 0xC6, D_86E04C84);
+
+            gSPDisplayList(gDisplayListHead++, D_8006F630);
+            break;
+
+        case 5:
+            miniTutoScreenShow(0x3E8);
+            break;
+    }
+
+    if (miniTutoScreenState == -2) {
+        Font_SetActive(0x10, -2);
+        Font_SetActive(4, -2);
+    }
+}
+
+void MetapodGame_DrawTutorial(void) {
+    miniTutoScreenBegin();
+    MetapodGame_DrawTutorialScreen();
+}
+
+void miniMetapodDrawPlayerHUBs(UNUSED s32 arg0) {
+    UNUSED u8 sp1C[] = { 0, 0, 30 };
+    UNUSED u8 sp18[] = { 0, 0, 250 };
+
+    Font_BeginTranslucentTextRendering();
+    Font_SetActive(4, -2);
+    MetapodGame_DrawTutorial();
+    Font_EndTexturedTextRendering();
+
+    if (miniShowHUB != 0) {
+        miniDrawMetapodHealth();
+        miniDrawMetapodHeads();
+    }
+}
+
+void MetapodGame_DrawFrame(s32 arg0) {
+    BgStage_DrawFrame();
+    GfxImage_FillCurrent(&gDisplayListHead, 0xA6BF);
+
+    if (D_8780FC94 == 0) {
+        GeoRender_AdvanceFrameCounter();
+    }
+
+    Geo_RenderRootNode(&D_87906050->unk_00);
+    MiniFx_DrawParticles();
+
+    if (miniDebugMode == false) {
+        if (D_8780FC98 == 0) {
+            miniMetapodDrawPlayerHUBs(arg0);
+        }
+        Widget_PauseMenuUpdate();
+    } else {
+        showDebuggCameraInfo();
+    }
+
+    BgStage_AdvanceFrame();
+}
+
+void metapodMinigameInit(void) {
+    initMetapodMinigameAssets();
+    StageLoader_RunFrames(0xA);
+    StageFade_StartFromOpaque(0x10);
+    miniTutoScreenState = 3;
+    miniDifficulty = D_8780FA38;
+}
+
+void func_86E0296C(void) {
+}
+
+void miniMetapodTutoScreenControls(void) {
+    if ((miniDebugMode == false) && (miniShowHUB == false) && (StageContext_GetFadeMode() == 0)) {
+        if (BTN_IS_PRESSED(gPlayer1Controller, BTN_START)) {
+            miniTutoScreenState = 1;
+            minigameState = 1;
+            miniShowHUB = 1;
+            MetapodGame_PlaySoundEventGuarded(0xB, 0);
+        } else if ((D_8780FA2A == 0) && (BTN_IS_PRESSED(gPlayer1Controller, BTN_B))) {
+            MetapodGame_PlaySoundEventGuarded(0xD, 0);
+            Widget_PauseMenuTrigger(2);
+        }
+    }
+}
+
+void MetapodGame_LockPlayerInputOnPress(void) {
+    MiniActor* metapod = miniMetapods;
+
+    if (BTN_IS_PRESSED(gPlayer1Controller, BTN_A) && (metapod->mainState == 0)) {
+        metapod->metapodInputLockTimer = 4;
+    }
+}
+
+void MetapodGame_MainLoop(void) {
+    s32 var_s1 = 1;
+
+    D_87903DBC = 0;
+
+    MiniFx_Init();
+    hideMiniGameHUD();
+
+    while (var_s1 != 0) {
+        MiniActor_ReadControllerInputs();
+
+        if (minigameState == 0) {
+            D_87906042 += 1;
+            if (D_87906042 < 0) {
+                D_87906042 = 0;
+            }
+        }
+
+        miniMetapodTutoScreenControls();
+
+        if (D_8780FC94 == 0) {
+            Particle_UpdateFrameCounters();
+            miniMetapodMinigameStateMachine();
+            miniUpdateMetapods();
+            miniUpdateRocks();
+            miniMatapodMinigameChecks();
+            miniUpdateRocksPositions();
+            MetapodGame_SyncAllMetapodModelTransforms(); // update metapod models?
+            MetapodGame_UpdateParticleFx();
+            miniMetapodCameraControls();
+        } else {
+            MetapodGame_LockPlayerInputOnPress();
+        }
+
+        if ((D_87903DAC != 0) || (D_8780FC92 != 0)) {
+            var_s1 = 0;
+        }
+
+        MetapodGame_DrawFrame(1);
+    }
+}
+
+void MetapodGame_ShowResultText(void) {
+    s32 i;
+
+    StageFade_StartFromTransparent(0x1E);
+    if (D_86E08E40 != 0) {
+        MetapodGame_PlaySoundEventGuarded(0xF, 0x1E);
+    } else {
+        MetapodGame_PlaySoundEventGuarded(0xE, 0x1E);
+    }
+
+    for (i = 0; i < 30; i++) {
+        MiniActor_ReadControllerInputs();  // input reading
+        MetapodGame_DrawFrame(2); // display text ?
+    }
+
+    while (Audio_GetActivityScore() != 0) {}
+
+    MetapodGame_PlaySoundEventGuarded(0x10, 0);
+}
+
+void MetapodGame_LoadAssets(void) {
+    static s16 playerVariations[6][4] = {
+        { 0x9B, 0xA, 0x23, 0 }, { 0x9E, 0xA, 0x1E, 0 }, { 0, 0x13, 0, 0x28 },
+        { -1, -0x19, 0, 0 },    { 0, 0x3C, 0, 0x20 },   { 0, 6, -1, -0x14 },
+    };
+
+    s32 i;
+    MemoryBlock* temp_v0;
+    unk_D_86002F30* temp_s1_2;
+    s32 randN;
+
+    temp_v0 = MainPool_AllocState(main_pool_get_available(), 0);
+    D_87906050 = process_geo_layout(temp_v0, D_86E04B34);
+    MainPool_FinalizeAllocation(temp_v0);
+    ModelRenderer_InitDisplayRoots();
+
+    for (i = 0; i < 4; i++) {
+        ModelRenderer_AttachDisplayObject(&miniMetapods[i].unk_000);
+    }
+
+    for (i = 0; i < 20; i++) {
+        ModelRenderer_AttachDisplayObject(&miniMetapodRocks[i].unk_000);
+    }
+
+    PokeIcon_OpenModelArchives();
+
+    for (i = 0; i < 4; i++) {
+        randN = D_8780FA68[i] - 1;
+        if (D_8780FA68[i] == 0) {
+            randN = Rand_Range(2);
+        }
+
+        miniMetapods[i].unk_23C = playerVariations[randN][0];
+        miniMetapods[i].unk_168 = Model_LoadByArchiveIndex(miniMetapods[i].unk_23C);
+        miniMetapods[i].cubeRadio = playerVariations[randN][1];
+        miniMetapods[i].halfHeight = playerVariations[randN][2];
+
+        Model_InitDisplayObject(&miniMetapods[i].unk_000, 0, miniMetapods[i].unk_23C, miniMetapods[i].unk_168->unk_08->unk_00[0]);
+        ModelAnim_SetAnimation(&miniMetapods[i].unk_000, 0);
+
+        if (miniMetapods) {}
+    }
+
+    temp_s1_2 = Model_LoadByArchiveIndex(0x9C);
+    for (i = 0; i < 20; i++) {
+        miniMetapodRocks[i].unk_23C = 0x9C;
+        miniMetapodRocks[i].unk_168 = temp_s1_2;
+
+        Model_InitDisplayObject(&miniMetapodRocks[i].unk_000, 0, miniMetapodRocks[i].unk_23C, temp_s1_2->unk_08->unk_00[0]);
+        ModelAnim_SetAnimation(&miniMetapodRocks[i].unk_000, 0);
+
+        miniMetapodRocks[i].unk_000.unk_000.unk_01 &= ~1;
+    }
+}
+
+s32 metapodMinigameLoad(s32 arg0, s32 arg1) {
+    unk_func_80007444* sp24;
+
+    if (arg0 == 1) {
+        D_86E08E40 = 1;
+    } else {
+        D_86E08E40 = 0;
+    }
+
+    main_pool_push_state('MINI');
+
+    Gfx_InitDisplayListBuffers(0x40000, 0);
+    sp24 = StageContext_Allocate(0, 1, 3, 1, 2, 1);
+    D_86E08E44 = Font_Init(0x16, 0);
+
+    ASSET_LOAD(D_1000000, common_menu1_ui, 0);
+    FRAGMENT_LOAD(fragment31);
+    Fragment_Load((((u32)D_8D000000 & 0x0FF00000) >> 0x14) - 0x10, _5C7A70_ROM_START, pokedex_area_model_ROM_START);
+
+    MetapodGame_LoadAssets();
+    StageContext_Activate(sp24);
+    metapodMinigameInit();
+    MetapodGame_MainLoop(); //	tutorial screen ?
+    MetapodGame_ShowResultText();
+    StageContext_Deactivate();
+    Font_Free(); //	main_pool_try_free(D_800AC870);
+    Gfx_FreeDisplayListBuffers(); //	main_pool_try_free(D_800A7428.unk4); main_pool_try_free(D_800A7428.unk0);
+
+    main_pool_pop_state('MINI');
+
+    return Widget_PauseMenuGetResult();
+}

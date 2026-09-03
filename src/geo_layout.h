@@ -3,7 +3,7 @@
 
 #include "global.h"
 #include "src/memory.h"
-#include "src/11BA0.h"
+#include "src/geo_node.h"
 
 #define GEO_CMD_FLAGS_RESET 0
 #define GEO_CMD_FLAGS_SET   1
@@ -319,38 +319,38 @@ void geo_layout_cmd_branch(void); // cmd  3
 void geo_layout_cmd_return(void); // cmd  4
 void geo_layout_cmd_open_node(void); // cmd  5
 void geo_layout_cmd_close_node(void); // cmd  6
-void func_80017B28(void); // cmd  7
-void func_80017B60(void); // cmd  8
-void func_80017BBC(void); // cmd  9
-void func_80017BFC(void); // cmd 10
-void func_80017C48(void); // cmd 11
-void func_80017D94(void); // cmd 12
-void func_80017DE0(void); // cmd 13
-void func_80017E2C(void); // cmd 14
-void func_80017E78(void); // cmd 15
-void func_80017EC4(void); // cmd 16
-void func_80017F1C(void); // cmd 17
-void func_80017F5C(void); // cmd 18
-void func_80017F64(void); // cmd 19
-void func_80017FD4(void); // cmd 20
-void func_800180BC(void); // cmd 21
-void func_800180D4(void); // cmd 22
-void func_8001812C(void); // cmd 23
-void func_8001819C(void); // cmd 24
-void func_800181FC(void); // cmd 25
-void func_8001824C(void); // cmd 26
-void func_8001829C(void); // cmd 27
-void func_800183C4(void); // cmd 28
-void func_80018490(void); // cmd 29
-void func_800185A8(void); // cmd 30
-void func_80018600(void); // cmd 31
-void func_8001878C(void); // cmd 32
-void func_800188C8(void); // cmd 33
-void func_80018968(void); // cmd 34
-void func_800189B8(void); // cmd 35
-void func_80018A40(void); // cmd 36
-void func_80018A8C(void); // cmd 37
-void func_80018AD0(void); // cmd 38
+void geo_layout_cmd_attach_node(void); // cmd  7
+void geo_layout_cmd_set_callback(void); // cmd  8
+void geo_layout_cmd_create_container(void); // cmd  9
+void geo_layout_cmd_create_reference(void); // cmd 10
+void geo_layout_cmd_create_camera(void); // cmd 11
+void geo_layout_cmd_create_type3(void); // cmd 12
+void geo_layout_cmd_create_type4(void); // cmd 13
+void geo_layout_cmd_create_ortho(void); // cmd 14
+void geo_layout_cmd_create_perspective(void); // cmd 15
+void geo_layout_cmd_create_background(void); // cmd 16
+void geo_layout_cmd_create_clear_depth(void); // cmd 17
+void geo_layout_cmd_noop(void); // cmd 18
+void geo_layout_cmd_create_fog(void); // cmd 19
+void geo_layout_cmd_create_light(void); // cmd 20
+void geo_layout_cmd_skip(void); // cmd 21
+void geo_layout_cmd_create_ambient_light(void); // cmd 22
+void geo_layout_cmd_create_shadow_context(void); // cmd 23
+void geo_layout_cmd_create_shadow(void); // cmd 24
+void geo_layout_cmd_create_cull_distance(void); // cmd 25
+void geo_layout_cmd_create_switch_case(void); // cmd 26
+void geo_layout_cmd_create_translate_rotate(void); // cmd 27
+void geo_layout_cmd_create_translate(void); // cmd 28
+void geo_layout_cmd_create_animated_part(void); // cmd 29
+void geo_layout_cmd_create_display_list_part(void); // cmd 30
+void geo_layout_cmd_create_model_part(void); // cmd 31
+void geo_layout_cmd_create_display_list_matrix(void); // cmd 32
+void geo_layout_cmd_create_scale(void); // cmd 33
+void geo_layout_cmd_create_display_list(void); // cmd 34
+void geo_layout_cmd_create_shadow_texture(void); // cmd 35
+void geo_layout_cmd_create_anchor(void); // cmd 36
+void geo_layout_cmd_set_node_flag4(void); // cmd 37
+void geo_layout_cmd_create_group(void); // cmd 38
 GraphNode* process_geo_layout(MemoryBlock*, void*);
 
 #endif // _18480_H_

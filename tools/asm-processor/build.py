@@ -51,8 +51,11 @@ asmproc_flags += opt_flags + [str(in_file)]
 # number debug data.
 # asmproc_flags += ["--drop-mdebug-gptab"]
 
-# Convert encoding before compiling.
-asmproc_flags += ["--input-enc", "euc-jp", "--output-enc", "euc-jp"]
+# Convert encoding before compiling, while respecting project-specific flags.
+if not any(flag == "--input-enc" or flag.startswith("--input-enc=") for flag in asmproc_flags):
+    asmproc_flags += ["--input-enc", "euc-jp"]
+if not any(flag == "--output-enc" or flag.startswith("--output-enc=") for flag in asmproc_flags):
+    asmproc_flags += ["--output-enc", "euc-jp"]
 
 with tempfile.TemporaryDirectory(prefix="asm_processor") as tmpdirname:
     tmpdir_path = Path(tmpdirname)

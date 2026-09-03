@@ -870,22 +870,22 @@ typedef struct unk_D_8006FF00 {
 } unk_D_8006FF00; // size = 0x1C
 extern unk_D_8006FF00 D_8006FF00[152];
 
-typedef struct unk_D_800AC870_sub {
+typedef struct FontSet {
 	/* 0x00 */ s16 unk_00;
 	/* 0x02 */ s16 unk_02;
 	/* 0x04 */ u8* unk_04;
 	/* 0x08 */ u8* unk_08;
-} unk_D_800AC870_sub; // size = 0xC
+} FontSet; // size = 0xC
 
-typedef struct unk_D_800AC870 {
-    /* 0x00 */ unk_D_800AC870_sub unk_00[6];
+typedef struct FontContext {
+    /* 0x00 */ FontSet unk_00[6];
     /* 0x48 */ void* unk_48;
     /* 0x4C */ s32 unk_4C;
     /* 0x50 */ u8 unk_50;
     /* 0x51 */ s8 unk_51;
     /* 0x52 */ u8 unk_52;
     /* 0x53 */ u8 unk_53;
-} unk_D_800AC870; // size = 0x54
+} FontContext; // size = 0x54
 
 extern Gfx D_8006F498[];
 
@@ -913,7 +913,7 @@ typedef struct unk_D_800A6CF4 {
     /* 0x20 */ s32 unk_20;
 } unk_D_800A6CF4; // size = 0x24
 extern unk_D_800A6CF4 D_800A6CF4;
-extern u8 D_15C0000[];
+extern u8 gAudioData[];
 
 extern Mtx D_8006F010;
 extern u32 D_1003E78[];
@@ -942,15 +942,15 @@ typedef struct unk_D_70B10 {
 
 extern u32 D_8C000000; // start of some rom area
 
-typedef struct unk_D_80072B00 {
+typedef struct MoveData {
     /* 0x00 */ u8 unk_00;
     /* 0x01 */ u8 unk_01;
     /* 0x02 */ u8 unk_02;
     /* 0x03 */ u8 unk_03;
     /* 0x04 */ u8 unk_04;
     /* 0x05 */ u8 unk_05;
-} unk_D_80072B00; // size = 0x6
-extern unk_D_80072B00 D_80072B00[];
+} MoveData; // size = 0x6
+extern MoveData gMoveData[];
 
 typedef struct unk_D_80072338 {
     /* 0x00 */ char unk00[0x1];
@@ -959,7 +959,7 @@ typedef struct unk_D_80072338 {
     /* 0x04 */ s32 unk_04;
     /* 0x08 */ char unk08[0x4];
 } unk_D_80072338; // size = 0xC
-extern unk_D_80072338 D_80072338[];
+extern unk_D_80072338 gMoveDisplayInfo[];
 
 extern char D_8006FEE8[][0x1C];
 

@@ -58,23 +58,23 @@
 #define ASSET_ID(asset) (((u32)asset & 0x0F000000) >> 0x18)
 
 #define FRAGMENT_LOAD(fragment) ( \
-    func_80004454(FRAGMENT_ID(fragment), fragment##_ROM_START, fragment##_relocs_ROM_END) \
+    Fragment_Load(FRAGMENT_ID(fragment), fragment##_ROM_START, fragment##_relocs_ROM_END) \
 )
 
 #define FRAGMENT_LOAD_AND_CALL(fragment, arg0, arg1) (\
-    func_80029008(FRAGMENT_ID(fragment), fragment##_ROM_START, fragment##_relocs_ROM_END, arg0, arg1) \
+    Fragment_LoadAndCall(FRAGMENT_ID(fragment), fragment##_ROM_START, fragment##_relocs_ROM_END, arg0, arg1) \
 )
 
 #define FRAGMENT_LOAD_AND_CALL2(fragment, arg0, arg1) (\
-    func_80029048(FRAGMENT_ID(fragment), fragment##_ROM_START, fragment##_relocs_ROM_END, arg0, arg1) \
+    Fragment_QueueCall(FRAGMENT_ID(fragment), fragment##_ROM_START, fragment##_relocs_ROM_END, arg0, arg1) \
 )
 
 #define ASSET_LOAD(vram, rom, arg0) (\
-    func_80004258(ASSET_ID(vram), rom##_ROM_START, rom##_ROM_END, arg0) \
+    Asset_LoadToSegment(ASSET_ID(vram), rom##_ROM_START, rom##_ROM_END, arg0) \
 )
 
 #define ASSET_LOAD2(rom, arg0, arg1) (\
-    func_800044F4(rom##_ROM_START, rom##_ROM_END, arg0, arg1) \
+    BinArchive_Open(rom##_ROM_START, rom##_ROM_END, arg0, arg1) \
 )
 
 #endif
