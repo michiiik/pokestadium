@@ -6,7 +6,7 @@
 #include "src/gfx_buffer.h"
 #include "src/controller_ram.h"
 #include "src/dp_intro.h"
-#include "src/fragments/43/gallery_backgrounds.h"
+#include "src/fragments/gallery_backgrounds/gallery_backgrounds.h"
 #include "src/memory.h"
 #include "src/stage_loader.h"
 

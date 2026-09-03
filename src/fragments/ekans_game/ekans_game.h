@@ -2,7 +2,7 @@
 #define _FRAGMENT18_H_
 
 #include "global.h"
-#include "src/fragments/3/minigame_actor_framework.h"
+#include "src/fragments/minigame_actor_framework/minigame_actor_framework.h"
 
 s32 EkansGame_GetLaunchForceTier(MiniActor* arg0);
 void miniDiglettGoldCheck(s16 arg0, s32* arg1, s32* arg2);

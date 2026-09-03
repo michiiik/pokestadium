@@ -542,7 +542,7 @@ void func_84100020(s16 arg0, s16 arg1, s16 arg2) {
     gSPDisplayList(gDisplayListHead++, D_8006F630);
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/59/fragment59/func_84100020.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/stadium_select/stadium_select/func_84100020.s")
 #endif
 
 void StadiumSelect_UpdateSparkles(s16 arg0) {

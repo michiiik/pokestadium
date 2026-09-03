@@ -12,7 +12,7 @@
 #include "src/gfx_rect.h"
 #include "src/controller_ram.h"
 #include "src/controller.h"
-#include "src/fragments/43/gallery_backgrounds.h"
+#include "src/fragments/gallery_backgrounds/gallery_backgrounds.h"
 #include "src/memory.h"
 #include "src/stage_loader.h"
 
@@ -590,7 +590,7 @@ void func_83301090(void) {
 #else
 static s16 D_83303288 = 0;
 static s16 D_8330328C = 0x3200;
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/42/fragment42/func_83301090.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gallery_snap/gallery_snap/func_83301090.s")
 #endif
 
 void Gallery_SnapDrawTitleBar(s32 arg0, s32 arg1, s32 arg2) {
@@ -880,7 +880,7 @@ void func_83302068(unk_D_83407B38* arg0) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/42/fragment42/func_83302068.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gallery_snap/gallery_snap/func_83302068.s")
 #endif
 
 void Gallery_SnapDrawCursor(unk_D_83407B38* arg0) {

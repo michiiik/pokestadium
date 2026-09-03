@@ -13,7 +13,7 @@
 #include "src/gfx_rect.h"
 #include "src/matrix.h"
 #include "src/controller.h"
-#include "src/fragments/34/particle_math.h"
+#include "src/fragments/particle_math/particle_math.h"
 #include "src/memory.h"
 #include "src/stage_loader.h"
 

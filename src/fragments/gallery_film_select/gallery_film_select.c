@@ -9,8 +9,8 @@
 #include "src/audio_sfx.h"
 #include "src/gfx_buffer.h"
 #include "src/controller.h"
-#include "src/fragments/39/minigame_select.h"
-#include "src/fragments/43/gallery_backgrounds.h"
+#include "src/fragments/minigame_select/minigame_select.h"
+#include "src/fragments/gallery_backgrounds/gallery_backgrounds.h"
 #include "src/memory.h"
 #include "src/stage_loader.h"
 

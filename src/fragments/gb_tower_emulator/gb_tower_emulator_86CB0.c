@@ -121,7 +121,7 @@ u32 GbApu_FreqToStep(u16 arg0) {
   return temp;
 }
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/func_81207494.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/func_81207494.s")
 
 u32 GbApu_FreqToStep2x(u16 arg0) {
   u32 temp;
@@ -167,7 +167,7 @@ s32 func_81207698(u32 arg0, s32 arg1) {
 }
 #else
 s32 func_81207698(u32, s32);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/func_81207698.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/func_81207698.s")
 #endif
 
 u16 GbApu_UpdateSquare1Channel(void) {
@@ -478,13 +478,13 @@ u16 func_81207DF8(void) {
 }
 #else
 u16 func_81207DF8(void);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/func_81207DF8.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/func_81207DF8.s")
 #endif
 
 void func_8120806C(u16, u8);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/func_8120806C.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/func_8120806C.s")
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/func_81208828.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/func_81208828.s")
 
 #ifdef NON_MATCHING
 // Matching needs rodata mapping
@@ -543,7 +543,7 @@ void func_81208C08(u16 arg0, u8 arg1, u16 arg2) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/func_81208C08.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/func_81208C08.s")
 #endif
 
 void GbApu_ResetChannels(void) {
@@ -631,7 +631,7 @@ u8 GbMem_ReadIoRegister(u16 arg0) {
   return gGbMemoryMap[arg0 & 0xFFFF];
 }
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/func_81209078.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/func_81209078.s")
 
 void GbAudio_SetAlternateRendererEnabled(s32 arg0) {
   D_8120EB78 = arg0;
@@ -641,7 +641,7 @@ void GbAudio_SetAlternateStreamId(s32 arg0) {
   D_8120EB7C = arg0;
 }
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/func_81209374.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/func_81209374.s")
 
 void func_81209688(UNUSED s32 arg0) {
 }

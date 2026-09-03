@@ -3,7 +3,7 @@
 #include "geo_render.h"
 #include "src/util.h"
 #include "src/memmap.h"
-#include "src/fragments/31/particle_data_library.h"
+#include "src/fragments/particle_data_library/particle_data_library.h"
 
 // .bss
 u8 D_800AF770[8];

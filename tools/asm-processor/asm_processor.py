@@ -1336,7 +1336,13 @@ def fixup_objfile(objfile_name, functions, asm_prelude, assembler, output_enc, d
                     name_to_sym[s.name] = s
                     newer_syms.append(s)
                 elif s.st_shndx != SHN_UNDEF:
-                    raise Failure("symbol \"" + s.name + "\" defined twice")
+                    if (s.bind == STB_LOCAL and existing.bind == STB_LOCAL and
+                            s.type == STT_SECTION and existing.type == STT_SECTION and
+                            s.st_shndx == existing.st_shndx):
+                        s.replace_by = existing
+                        old_syms.append(s)
+                    else:
+                        raise Failure("symbol \"" + s.name + "\" defined twice")
                 else:
                     s.replace_by = existing
                     old_syms.append(s)

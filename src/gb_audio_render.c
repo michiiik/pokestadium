@@ -269,7 +269,7 @@ void func_80049A60(u32 arg0) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/4A3E0/func_80049A60.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/gb_audio_render/func_80049A60.s")
 #endif
 
 void GbAudio_ApplyQueuedWrites(u16 arg0) {
@@ -283,11 +283,11 @@ void GbAudio_ApplyQueuedWrites(u16 arg0) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/4A3E0/func_80049DF0.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/gb_audio_render/func_80049DF0.s")
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/4A3E0/func_8004A474.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/gb_audio_render/func_8004A474.s")
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/4A3E0/func_8004A89C.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/gb_audio_render/func_8004A89C.s")
 
 void GbAudio_ClearInterpolationHistory(void) {
     s32 i;

@@ -1,7 +1,7 @@
 #include "gallery_camera.h"
 #include "src/matrix.h"
 #include "src/stage_loader.h"
-#include "src/fragments/3/minigame_actor_framework.h"
+#include "src/fragments/minigame_actor_framework/minigame_actor_framework.h"
 
 static s16 D_8690B600;
 static s16 D_8690B602;

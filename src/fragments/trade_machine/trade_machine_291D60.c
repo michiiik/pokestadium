@@ -695,7 +695,7 @@ void func_82F0BEF8(unk_D_82F210E0* arg0) {
 }
 #else
 static s16 D_82F13F88 = 0;
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/41/fragment41_291D60/func_82F0BEF8.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/trade_machine/trade_machine_291D60/func_82F0BEF8.s")
 #endif
 
 s32 Trade_GetSaveSeqState(void) {

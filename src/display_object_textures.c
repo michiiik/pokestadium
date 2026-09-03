@@ -58,7 +58,7 @@ void func_80018C40(unk_D_86002F34* arg0, arg1_func_80010CA8 arg1) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/19840/func_80018C40.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/display_object_textures/func_80018C40.s")
 #endif
 
 Fragment* Jpeg_AllocAndDecodeFragment(MemoryBlock* arg0, PRESJPEG* arg1, PRESJPEG* arg2) {

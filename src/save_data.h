@@ -76,10 +76,6 @@ typedef struct unk_D_800AE4E8_004_2_0DC0 {
     /* 0x01C */ char unk01C[0xF44];
 } unk_D_800AE4E8_004_2_0DC0; // size = 0xF60
 
-typedef struct GbPokemonNamedRecord {
-    /* 0x00 */ char unk00[0x37];
-} GbPokemonNamedRecord; // size = 0x37
-
 typedef struct ContinueRecordBlock {
     /* 0x000 */ u8 unk_000;
     /* 0x002 */ SessionContinueData unk_002;

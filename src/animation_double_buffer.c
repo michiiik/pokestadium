@@ -119,4 +119,4 @@ s32 Anim_DecodePackedTransform(unk_arg0_func_80045A80* arg0, unk_arg1_func_80045
     return 0;
 }
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/46680/func_80045FF0.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/animation_double_buffer/func_80045FF0.s")

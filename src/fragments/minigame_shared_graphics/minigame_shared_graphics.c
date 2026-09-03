@@ -1,5 +1,5 @@
 #include "minigame_shared_graphics.h"
-#include "src/fragments/2/widget_toolkit.h"
+#include "src/fragments/widget_toolkit/widget_toolkit.h"
 #include "src/gfx_buffer.h"
 #include "src/audio_commands_category2.h"
 
@@ -243,7 +243,7 @@ void func_87A00DB8(s32 arg0) {
     gDisplayListHead = gfx;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/4/fragment4/func_87A00DB8.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/minigame_shared_graphics/minigame_shared_graphics/func_87A00DB8.s")
 #endif
 
 typedef void (*ret_func_87A010C8)(void);

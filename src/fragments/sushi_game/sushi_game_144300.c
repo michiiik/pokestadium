@@ -17,8 +17,8 @@
 #include "src/gfx_buffer.h"
 #include "src/gfx_rect.h"
 #include "src/controller.h"
-#include "src/fragments/2/widget_toolkit.h"
-#include "src/fragments/3/minigame_actor_framework.h"
+#include "src/fragments/widget_toolkit/widget_toolkit.h"
+#include "src/fragments/minigame_actor_framework/minigame_actor_framework.h"
 #include "src/memory.h"
 #include "src/stage_loader.h"
 
@@ -468,7 +468,7 @@ void func_86800B38(void) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/14/fragment14_144300/func_86800B38.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/sushi_game/sushi_game_144300/func_86800B38.s")
 #endif
 
 void SushiGame_DrawFrame(void) {
@@ -666,7 +666,7 @@ s32 func_86801884(void) {
     return sp1C;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/14/fragment14_144300/func_86801884.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/sushi_game/sushi_game_144300/func_86801884.s")
 #endif
 
 void SushiGame_MainLoop(void) {

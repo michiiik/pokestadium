@@ -8,7 +8,7 @@ s32 D_80078A18 = 0;
 u8 D_80078A1C[4] = { 0 };
 u8 D_80078A20[16] = { 0 };
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/48C60/func_80048060.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/audio_stored_fade/func_80048060.s")
 
 void Audio_FadeStoredSound(void) {
   if (D_80078A1C[0] != 0) {

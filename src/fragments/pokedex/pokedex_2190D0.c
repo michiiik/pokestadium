@@ -3670,7 +3670,7 @@ Gfx* func_88805AEC(Gfx* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, 
     return arg0;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/28/fragment28_2190D0/func_88805AEC.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/pokedex/pokedex_2190D0/func_88805AEC.s")
 #endif
 
 void Pokedex_BuildMapLabelsDisplayList(void) {
@@ -4176,7 +4176,7 @@ void func_88807D04(s32 arg0, MainPoolState* arg1, UNUSED s32 arg2, s32 arg3, s32
     ptr->unk_60.eye = D_88826288;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/28/fragment28_2190D0/func_88807D04.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/pokedex/pokedex_2190D0/func_88807D04.s")
 #endif
 
 void Pokedex_ExitAreaMapPool(void) {

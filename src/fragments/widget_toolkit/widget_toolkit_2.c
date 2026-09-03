@@ -1357,7 +1357,7 @@ void func_87802E58(void) {
 }
 #else
 static u32 D_8780FE38;
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/2/fragment2_2/func_87802E58.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/widget_toolkit/widget_toolkit_2/func_87802E58.s")
 #endif
 
 void Widget_PauseMenuTrigger(s16 arg0) {
@@ -1642,7 +1642,7 @@ void func_87803EAC(u32* arg0, u16 arg1, UNUSED u16 arg2, u16 arg3, u16 arg4, u8 
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/2/fragment2_2/func_87803EAC.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/widget_toolkit/widget_toolkit_2/func_87803EAC.s")
 #endif
 
 #ifdef NON_MATCHING
@@ -1790,7 +1790,7 @@ void func_87804320(u8 arg0, s8 arg1, s8 arg2, s8 arg3, s8 arg4) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/2/fragment2_2/func_87804320.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/widget_toolkit/widget_toolkit_2/func_87804320.s")
 #endif
 
 void Widget_PauseMenuDrawPlayerIcons(s16 arg0) {

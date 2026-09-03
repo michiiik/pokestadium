@@ -152,7 +152,7 @@ void func_8001A324(unk_func_8001A024* arg0, s32 arg1, s32 arg2, u16 arg3) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/1AB70/func_8001A324.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/poke_icon/func_8001A324.s")
 #endif
 
 #ifdef NON_MATCHING
@@ -187,7 +187,7 @@ void func_8001A46C(unk_func_8001A024* arg0, s32 arg1, BattleMon* arg2, u16 arg3)
     arg0->unk_08[arg1].unk_04 = -0xE38;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/1AB70/func_8001A46C.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/poke_icon/func_8001A46C.s")
 #endif
 
 void PokeIcon_AdjustImageColors(u16* arg0, s32 a1, arg1_func_80010CA8 arg2) {

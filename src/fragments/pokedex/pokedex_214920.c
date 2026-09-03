@@ -838,7 +838,7 @@ s32 func_88803614(void) {
     return var_s2;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/28/fragment28_214920/func_88803614.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/pokedex/pokedex_214920/func_88803614.s")
 #endif
 
 s32 Pokedex_ShowEntryMenu(void) {

@@ -1,8 +1,8 @@
 #include "gallery_camera.h"
-#include "src/fragments/3/minigame_actor_framework.h"
-#include "src/fragments/31/particle_data_library.h"
-#include "src/fragments/34/particle_math.h"
-#include "src/fragments/43/gallery_backgrounds.h"
+#include "src/fragments/minigame_actor_framework/minigame_actor_framework.h"
+#include "src/fragments/particle_data_library/particle_data_library.h"
+#include "src/fragments/particle_math/particle_math.h"
+#include "src/fragments/gallery_backgrounds/gallery_backgrounds.h"
 #include "src/geo_node.h"
 #include "src/geo_render.h"
 #include "src/model_animation.h"
@@ -597,7 +597,7 @@ void func_86900A14(void) {
     GalleryCamera_CopyControllerState(&D_8690B390, &D_8690B5D0);
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/15/fragment15_14CA70/func_86900A14.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gallery_camera/gallery_camera_14CA70/func_86900A14.s")
 #endif
 
 void GalleryCamera_AddPolarOffset(f32* arg0, f32* arg1, s16 arg2, s16 arg3) {

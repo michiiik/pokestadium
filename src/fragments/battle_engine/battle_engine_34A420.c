@@ -1262,5 +1262,5 @@ static u8 D_843892E0[] = { 0xFF, 0, 0xFF };
 static u8 D_843892E4[] = { 0x20, 0x20, 0xFF };
 static u8 D_843892E8[] = { 0, 0xFF, 0 };
 static f32 D_843892EC[] = { 1.0f, 1.73205f, 1.0f };
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/62/fragment62_34A420/func_84362084.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/battle_engine/battle_engine_34A420/func_84362084.s")
 #endif

@@ -4,7 +4,7 @@
 #include "global.h"
 #include "src/geo_node.h"
 #include "src/poke_icon.h"
-#include "src/fragments/47/gallery_rental_viewer.h"
+#include "src/fragments/gallery_rental_viewer/gallery_rental_viewer.h"
 
 struct RentalCarouselState;
 struct unk_D_84229EB0;

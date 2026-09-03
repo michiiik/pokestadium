@@ -14,8 +14,8 @@
 #include "src/gfx_rect.h"
 #include "src/matrix.h"
 #include "src/controller.h"
-#include "src/fragments/2/widget_toolkit.h"
-#include "src/fragments/4/minigame_shared_graphics.h"
+#include "src/fragments/widget_toolkit/widget_toolkit.h"
+#include "src/fragments/minigame_shared_graphics/minigame_shared_graphics.h"
 #include "src/memory.h"
 #include "src/stage_loader.h"
 

@@ -7,7 +7,7 @@
 #include "src/jpeg_stream.h"
 #include "src/gfx_buffer.h"
 #include "src/controller.h"
-#include "src/fragments/39/minigame_select.h"
+#include "src/fragments/minigame_select/minigame_select.h"
 #include "src/memory.h"
 #include "src/stage_loader.h"
 

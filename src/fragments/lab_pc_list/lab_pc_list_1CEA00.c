@@ -14,7 +14,7 @@
 #include "src/memmap.h"
 #include "src/memory.h"
 #include "src/stage_loader.h"
-#include "src/fragments/25/pokemon_lab_support.h"
+#include "src/fragments/pokemon_lab_support/pokemon_lab_support.h"
 
 char** D_8831A4C0;
 char** D_8831A4C4;
@@ -1464,7 +1464,7 @@ static Color_RGBA8 D_883172CC[][2] = {
         { 0x4B, 0x4C, 0x4F, 0xFF },
     },
 };
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/24/fragment24_1CEA00/func_88304850.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc_list/lab_pc_list_1CEA00/func_88304850.s")
 #endif
 
 void LabPCList_SaveFilterState(unk_func_8830867C_02C* arg0) {
@@ -1973,7 +1973,7 @@ void func_88305F28(unk_func_8830867C_02C* arg0) {
     LabPCList_BuildTmHmList(&arg0->unk_C48, arg0->unk_1A8, arg0->unk_154, 3, 0xAA);
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/24/fragment24_1CEA00/func_88305F28.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc_list/lab_pc_list_1CEA00/func_88305F28.s")
 #endif
 
 s32 LabPCList_OpenListMenu(unk_func_8830867C_02C* arg0, Controller* arg1) {

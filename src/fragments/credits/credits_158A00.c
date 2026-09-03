@@ -14,7 +14,7 @@
 #include "src/matrix.h"
 #include "src/controller.h"
 #include "src/dp_intro.h"
-#include "src/fragments/34/particle_math.h"
+#include "src/fragments/particle_math/particle_math.h"
 #include "src/memory.h"
 #include "src/stage_loader.h"
 
@@ -1547,7 +1547,7 @@ void func_86A013C8(u8 arg0, u8 arg1, unk_D_86A03014* arg2) {
     D_86A06214 = arg2;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/16/fragment16_158A00/func_86A013C8.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/credits/credits_158A00/func_86A013C8.s")
 #endif
 
 #ifdef NON_MATCHING
@@ -1567,7 +1567,7 @@ void func_86A01490(void) {
     D_86A0621C = temp_v0;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/16/fragment16_158A00/func_86A01490.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/credits/credits_158A00/func_86A01490.s")
 #endif
 
 void Credits_DrawRoleList(void) {

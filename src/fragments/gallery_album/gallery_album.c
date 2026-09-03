@@ -10,8 +10,8 @@
 #include "src/controller.h"
 #include "src/memory.h"
 #include "src/stage_loader.h"
-#include "src/fragments/39/minigame_select.h"
-#include "src/fragments/43/gallery_backgrounds.h"
+#include "src/fragments/minigame_select/minigame_select.h"
+#include "src/fragments/gallery_backgrounds/gallery_backgrounds.h"
 
 static s32 D_83503FC0;
 static unk_D_83407B38 D_83503FC8;
@@ -340,7 +340,7 @@ void func_83500FE8(unk_D_83407B38* arg0, s32 arg1, s32 arg2) {
     Font_EndTexturedTextRendering();
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/44/fragment44/func_83500FE8.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gallery_album/gallery_album/func_83500FE8.s")
 #endif
 
 void Gallery_AlbumDrawThumbnailFrame(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
@@ -506,7 +506,7 @@ void func_83501718(u16* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, f32 arg5) 
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/44/fragment44/func_83501718.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gallery_album/gallery_album/func_83501718.s")
 #endif
 
 void Gallery_AlbumDrawThumbnails(s32 arg0, s32 arg1, unk_D_83407B38* arg2) {

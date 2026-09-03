@@ -6,9 +6,9 @@
 #include "src/model_renderer.h"
 #include "src/audio_commands_category2.h"
 #include "src/matrix.h"
-#include "src/fragments/2/widget_toolkit.h"
-#include "src/fragments/3/minigame_actor_framework.h"
-#include "src/fragments/34/particle_math.h"
+#include "src/fragments/widget_toolkit/widget_toolkit.h"
+#include "src/fragments/minigame_actor_framework/minigame_actor_framework.h"
+#include "src/fragments/particle_math/particle_math.h"
 #include "src/memmap.h"
 #include "src/memory.h"
 
@@ -1128,7 +1128,7 @@ void func_86803C6C(unk_D_86807558* arg0) {
 }
 #else
 void func_86803C6C(unk_D_86807558* arg0);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/14/fragment14_1462A0/func_86803C6C.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/sushi_game/sushi_game_1462A0/func_86803C6C.s")
 #endif
 
 #ifdef NON_MATCHING
@@ -1158,7 +1158,7 @@ unk_D_868084D8* func_86804634(unk_D_86807558* arg0) {
 }
 #else
 unk_D_868084D8* func_86804634(unk_D_86807558* arg0);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/14/fragment14_1462A0/func_86804634.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/sushi_game/sushi_game_1462A0/func_86804634.s")
 #endif
 
 s32 SushiGame_CheckEatInterrupt(unk_D_86807558* arg0) {

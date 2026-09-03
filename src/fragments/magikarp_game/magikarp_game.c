@@ -5,9 +5,9 @@
 #include "src/stage_loader.h"
 #include "src/graphics_textures.h"
 #include "src/audio_loop_point.h"
-#include "src/fragments/2/widget_toolkit.h"
-#include "src/fragments/4/minigame_shared_graphics.h"
-#include "src/fragments/6/magikarp_game.h"
+#include "src/fragments/widget_toolkit/widget_toolkit.h"
+#include "src/fragments/minigame_shared_graphics/minigame_shared_graphics.h"
+#include "src/fragments/magikarp_game/magikarp_game.h"
 #include "src/geo_layout.h"
 #include "src/display_object_textures.h"
 #include "src/model_renderer.h"
@@ -432,7 +432,7 @@ static u8 D_86002B88[] = {
     150,
 };
 void func_860005B8(s32 arg0);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/6/fragment6/func_860005B8.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/magikarp_game/magikarp_game/func_860005B8.s")
 #endif
 
 static Gfx D_86002B90[] = {

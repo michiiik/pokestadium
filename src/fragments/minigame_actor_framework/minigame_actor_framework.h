@@ -2,7 +2,7 @@
 #define _FRAGMENT3_H_
 
 #include "global.h"
-#include "src/fragments/34/particle_math.h"
+#include "src/fragments/particle_math/particle_math.h"
 #include "src/jpeg_stream.h"
 #include "src/controller.h"
 

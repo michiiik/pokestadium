@@ -6,7 +6,7 @@
 #include "src/jpeg_stream.h"
 #include "src/gfx_buffer.h"
 #include "src/gfx_rect.h"
-#include "src/fragments/3/minigame_actor_framework.h"
+#include "src/fragments/minigame_actor_framework/minigame_actor_framework.h"
 #include "src/memory.h"
 #include "src/stage_loader.h"
 #include "src/geo_layout.h"

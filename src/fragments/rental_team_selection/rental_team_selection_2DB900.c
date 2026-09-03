@@ -13,7 +13,7 @@
 #include "src/geo_layout.h"
 #include "src/math_util.h"
 #include "src/memmap.h"
-#include "src/fragments/47/gallery_rental_viewer.h"
+#include "src/fragments/gallery_rental_viewer/gallery_rental_viewer.h"
 #include "src/memory.h"
 
 typedef struct unk_D_8423E518 {

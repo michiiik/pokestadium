@@ -7,7 +7,7 @@
 #include "src/gallery.h"
 #include "src/audio_sfx.h"
 #include "src/gfx_rect.h"
-#include "src/fragments/61/rental_team_selection.h"
+#include "src/fragments/rental_team_selection/rental_team_selection.h"
 
 static unk_D_838067F0 D_838067F0;
 
@@ -822,5 +822,5 @@ void func_838043F8(s32 arg0) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/47/fragment47_2AFDB0/func_838043F8.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gallery_rental_viewer/gallery_rental_viewer_2AFDB0/func_838043F8.s")
 #endif

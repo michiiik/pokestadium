@@ -280,7 +280,7 @@ Vtx* func_8001E490(void) {
 }
 #else
 Vtx* func_8001E490(void);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/1CF30/func_8001E490.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/graphics_textures/func_8001E490.s")
 #endif
 
 void Gfx_SetVertexAttributes(Vtx* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, u8 arg6, u8 arg7, u8 arg8, u8 arg9) {

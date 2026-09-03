@@ -405,7 +405,7 @@ void func_88216000(unk_func_8820BE14_02C_038* arg0, s32 arg1, s32 arg2) {
     gDPSetAlphaCompare(gDisplayListHead++, G_AC_NONE);
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/23/fragment23_1BCF10/func_88216000.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc/lab_pc_1BCF10/func_88216000.s")
 #endif
 
 #ifdef NON_MATCHING
@@ -595,7 +595,7 @@ s32 func_882169D4(unk_func_8820BE14_02C_038* arg0, Controller* arg1) {
     return var_t2;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/23/fragment23_1BCF10/func_882169D4.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc/lab_pc_1BCF10/func_882169D4.s")
 #endif
 
 void LabPC_ScrollableGrid_SetSwapMode(unk_func_8820BE14_02C_038* arg0, s32 arg1) {

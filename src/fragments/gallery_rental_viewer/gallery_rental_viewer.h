@@ -4,7 +4,7 @@
 #include "global.h"
 #include "src/gallery.h"
 #include "src/geo_layout.h"
-#include "src/fragments/43/gallery_backgrounds.h"
+#include "src/fragments/gallery_backgrounds/gallery_backgrounds.h"
 
 typedef struct unk_D_8380565C {
     /* 0x000 */ u32 unk_000;

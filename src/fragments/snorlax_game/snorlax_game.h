@@ -3,7 +3,7 @@
 
 #include "global.h"
 #include "src/geo_node.h"
-#include "src/fragments/5/minigame_shared_library.h"
+#include "src/fragments/minigame_shared_library/minigame_shared_library.h"
 
 typedef struct unk_D_86404778 {
     /* 0x000 */ s32 unk_000;

@@ -865,7 +865,7 @@ void func_8130306C(u8* arg0) {
     gDisplayListHead = gfx;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/33/fragment33/func_8130306C.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/transfer_pak_select/transfer_pak_select/func_8130306C.s")
 #endif
 
 #ifdef NON_MATCHING
@@ -954,5 +954,5 @@ void func_8130337C(void) {
     gDisplayListHead = gfx;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/33/fragment33/func_8130337C.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/transfer_pak_select/transfer_pak_select/func_8130337C.s")
 #endif

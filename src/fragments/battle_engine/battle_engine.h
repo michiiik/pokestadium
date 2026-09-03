@@ -6,8 +6,8 @@
 #include "src/3D140.h"
 #include "src/gfx_rect.h"
 #include "src/stage_loader.h"
-#include "src/fragments/17/demo_scenes.h"
-#include "src/fragments/34/particle_math.h"
+#include "src/fragments/demo_scenes/demo_scenes.h"
+#include "src/fragments/particle_math/particle_math.h"
 
 typedef s32 (*func_D_84390300)(void);
 typedef void (*func_D_84390320)(void);

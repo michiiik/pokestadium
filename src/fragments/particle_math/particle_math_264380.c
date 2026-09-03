@@ -1173,7 +1173,7 @@ Gfx* func_81407590(Gfx* arg0, arg1_func_81407874_014* arg1) {
     return arg0;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/34/fragment34_264380/func_81407590.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/particle_math/particle_math_264380/func_81407590.s")
 #endif
 
 void ParticleGfx_GraphNodeBuildDescriptorMaterialList(s32 arg0, arg1_func_87903D64* arg1) {

@@ -2,7 +2,7 @@
 #define _FRAGMENT20_H_
 
 #include "global.h"
-#include "src/fragments/3/minigame_actor_framework.h"
+#include "src/fragments/minigame_actor_framework/minigame_actor_framework.h"
 
 void MetapodGame_PlaySoundEvent(s16 arg0, s16 arg1);
 void MetapodGame_PlaySoundEventGuarded(s16 arg0, s16 arg1);

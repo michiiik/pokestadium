@@ -10,8 +10,8 @@
 #include "src/jpeg_stream.h"
 #include "src/audio_sfx.h"
 #include "src/hal_libc.h"
-#include "src/fragments/25/pokemon_lab_support.h"
-#include "src/fragments/26/widget_tree.h"
+#include "src/fragments/pokemon_lab_support/pokemon_lab_support.h"
+#include "src/fragments/widget_tree/widget_tree.h"
 #include "src/memmap.h"
 #include "src/memory.h"
 #include "src/stage_loader.h"
@@ -201,7 +201,7 @@ static unk_D_88217D10 D_88217D10[2][9] = {
         { 0x36, 0xD2F, 0xA, 0x85, 0, 0 },
     },
 };
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/23/fragment23_1AE680/func_88206110.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc/lab_pc_1AE680/func_88206110.s")
 #endif
 
 s32 LabPC_ReadDeckEntries(unk_func_882062E4* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
@@ -1932,7 +1932,7 @@ static Color_RGBA8* D_88217F90[] = {
 };
 static Color_RGBA8* D_88217FB0[] = { D_882181F8, D_882181F8 };
 static Color_RGBA8 D_88217FB8 = { 0xF0, 0xF0, 0xF0, 0xFF };
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/23/fragment23_1AE680/func_88209B54.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc/lab_pc_1AE680/func_88209B54.s")
 #endif
 
 s32 LabPC_SwapScreen_UpdatePageSelection(unk_func_8820BE14_02C* arg0) {
@@ -2601,7 +2601,7 @@ void func_8820BE14(unk_func_8820BE14* arg0, s32 arg1, s32 arg2, s32 arg3, Memory
 #else
 static Color_RGBA8 D_88217FC0 = { 0x1E, 0x50, 0x50, 0xFF };
 static Color_RGBA8 D_88217FC4 = { 0x00, 0x0A, 0x0A, 0xFF };
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/23/fragment23_1AE680/func_8820BE14.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc/lab_pc_1AE680/func_8820BE14.s")
 #endif
 
 void LabPC_RunSwapScreenLoop(unk_func_8820BE14* arg0) {

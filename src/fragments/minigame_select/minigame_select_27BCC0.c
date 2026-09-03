@@ -12,7 +12,7 @@
 #include "src/gfx_buffer.h"
 #include "src/matrix.h"
 #include "src/controller.h"
-#include "src/fragments/2/widget_toolkit.h"
+#include "src/fragments/widget_toolkit/widget_toolkit.h"
 #include "src/geo_layout.h"
 #include "src/memmap.h"
 #include "src/memory.h"
@@ -1469,7 +1469,7 @@ void func_82501B18(unk_D_8250A228* arg0, s16 arg1) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/39/fragment39_27BCC0/func_82501B18.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/minigame_select/minigame_select_27BCC0/func_82501B18.s")
 #endif
 
 void MiniGameSelect_SetWidgetTargetState(unk_D_8250A228* arg0, s16 arg1, s32 arg2) {
@@ -1905,7 +1905,7 @@ void func_8250281C(void) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/39/fragment39_27BCC0/func_8250281C.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/minigame_select/minigame_select_27BCC0/func_8250281C.s")
 #endif
 
 void MiniGameSelect_RenderDirtyPanels(void) {

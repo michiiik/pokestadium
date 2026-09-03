@@ -274,7 +274,7 @@ void func_80012870(Vtx* arg0, unk_D_86002F34_00C_0CC* arg1, s16 arg2, s16 arg3, 
 }
 #else
 void func_80012870(Vtx* arg0, unk_D_86002F34_00C_0CC* arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, s16 arg6, s16 arg7);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/12D80/func_80012870.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/geo_render/func_80012870.s")
 #endif
 
 Vtx* GeoOverlay_BuildRotatingQuad(unk_D_86002F34_00C_0CC* arg0) {
@@ -608,7 +608,7 @@ void func_80013D34(GraphNode* arg0) {
     D_8006F090->unk_1C++;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/12D80/func_80013D34.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/geo_render/func_80013D34.s")
 #endif
 
 void Geo_NodeType12Empty(UNUSED GraphNode* arg0) {

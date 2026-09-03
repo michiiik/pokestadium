@@ -2,7 +2,7 @@
 #include "src/geo_render.h"
 #include "src/model_renderer.h"
 #include "src/matrix.h"
-#include "src/fragments/34/particle_math.h"
+#include "src/fragments/particle_math/particle_math.h"
 #include "src/memory.h"
 
 void BattleAnim_InitParticleSystem(void) {

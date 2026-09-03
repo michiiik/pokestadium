@@ -2,7 +2,7 @@
 #include "src/graphics_textures.h"
 #include "src/ui_graphics.h"
 #include "src/audio_sfx.h"
-#include "src/fragments/43/gallery_backgrounds.h"
+#include "src/fragments/gallery_backgrounds/gallery_backgrounds.h"
 
 static s16 D_83407C00;
 static Controller* D_83407C04;

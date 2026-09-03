@@ -1,4 +1,4 @@
-#include "rental_team_selection.h"
+#include "fragments/rental_team_selection/rental_team_selection.h"
 #include "src/poke_icon.h"
 #include "src/graphics_textures.h"
 #include "src/ui_graphics.h"

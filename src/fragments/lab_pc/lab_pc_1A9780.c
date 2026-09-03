@@ -15,7 +15,7 @@
 #include "src/memmap.h"
 #include "src/memory.h"
 #include "src/stage_loader.h"
-#include "src/fragments/29/lab_ui_support.h"
+#include "src/fragments/lab_ui_support/lab_ui_support.h"
 
 static char** D_88224FA0;
 static char** D_88224FA4;
@@ -103,7 +103,7 @@ static Color_RGBA8 D_88217C20 = { 0xF0, 0xF0, 0xF0, 0xFF };
 static Color_RGBA8 D_88217C24 = { 0x28, 0x28, 0x64, 0xFF };
 static Color_RGBA8 D_88217C28 = { 0x3C, 0x3C, 0x82, 0xFF };
 static Color_RGBA8 D_88217C2C = { 0x78, 0x78, 0x96, 0xFF };
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/23/fragment23_1A9780/func_88201488.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc/lab_pc_1A9780/func_88201488.s")
 
 void func_88201DA0(unk_func_88201DA0* arg0, s32 arg1, s32 arg2, WidgetNode* arg3, FragmentEntry arg4,
                    unk_func_88205880_0098* arg5, MemoryPool* arg6) {
@@ -645,7 +645,7 @@ static Color_RGBA8 D_88217C4C = { 0x5A, 0x5A, 0xA6, 0xFF };
 static Color_RGBA8 D_88217C50 = { 0x40, 0x40, 0x74, 0xFF };
 static Color_RGBA8 D_88217C54 = { 0x78, 0x78, 0xF1, 0xFF };
 static Color_RGBA8 D_88217C58 = { 0x5E, 0x5E, 0xBE, 0xFF };
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/23/fragment23_1A9780/func_88203538.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc/lab_pc_1A9780/func_88203538.s")
 
 void LabPC_BuildBoxLabelTab(unk_func_8820399C* arg0, s32 arg1, unk_func_8850143C* arg2) {
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(arg0, sizeof(unk_func_8820399C));
@@ -1027,7 +1027,7 @@ static Color_RGBA8 D_88217CE4 = { 0xFF, 0xFF, 0x00, 0xFF };
 static Color_RGBA8 D_88217CE8 = { 0x2D, 0x1A, 0x41, 0xFF };
 static Color_RGBA8 D_88217CEC = { 0x6F, 0x5F, 0x7F, 0xFF };
 static Color_RGBA8* D_88217CF0[5] = { D_882181F0, D_88218208, D_88218200, D_88218210, D_882181F8 };
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/23/fragment23_1A9780/func_88203ED8.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc/lab_pc_1A9780/func_88203ED8.s")
 #endif
 
 s32 LabPC_BoxMenu_OnShow(unk_func_88203ED8* arg0) {
@@ -1385,7 +1385,7 @@ s32 func_882052F4(unk_func_88203ED8_064* arg0, Controller* arg1) {
     return sp34;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/23/fragment23_1A9780/func_882052F4.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc/lab_pc_1A9780/func_882052F4.s")
 #endif
 
 void LabPC_BoxMenu_ModalLoop(unk_func_88203ED8* arg0, Controller* arg1) {

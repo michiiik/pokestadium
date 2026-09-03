@@ -1,7 +1,7 @@
 #include "particle_data_library.h"
-#include "src/fragments/7/clefairy_game.h"
-#include "src/fragments/8/rattata_game.h"
-#include "src/fragments/50/victory_palace.h"
+#include "src/fragments/clefairy_game/clefairy_game.h"
+#include "src/fragments/rattata_game/rattata_game.h"
+#include "src/fragments/victory_palace/victory_palace.h"
 #include "src/gfx_buffer.h"
 #include "src/geo_render.h"
 #include "src/battle_hud.h"
@@ -271,7 +271,7 @@ void func_81003A54(Gfx* gfx) {
     D_81004BB0++;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/31/fragment31_258080/func_81003A54.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/particle_data_library/particle_data_library_258080/func_81003A54.s")
 #endif
 
 void DisplayList_InitDigitDisplayBackground(s32 arg0, DisplayListState* state) {

@@ -8,7 +8,7 @@
 #include "src/gfx_buffer.h"
 #include "src/gfx_rect.h"
 #include "src/controller.h"
-#include "src/fragments/51/gb_tower_unused.h"
+#include "src/fragments/gb_tower_unused/gb_tower_unused.h"
 #include "src/geo_layout.h"
 #include "src/memory.h"
 #include "src/stage_loader.h"

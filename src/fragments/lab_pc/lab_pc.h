@@ -2,8 +2,8 @@
 #define _FRAGMENT23_H_
 
 #include "global.h"
-#include "src/fragments/26/widget_tree.h"
-#include "src/fragments/29/lab_ui_support.h"
+#include "src/fragments/widget_tree/widget_tree.h"
+#include "src/fragments/lab_ui_support/lab_ui_support.h"
 #include "src/table_view.h"
 #include "src/gb_data.h"
 #include "src/gb_save.h"

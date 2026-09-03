@@ -1534,7 +1534,7 @@ void func_82F10BB4(s16 arg0, s16 arg1, f32 arg2) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/41/fragment41_2942C0/func_82F10BB4.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/trade_machine/trade_machine_2942C0/func_82F10BB4.s")
 #endif
 
 void TradeCable_DrawTubeRailBar(s16 arg0, s16 arg1, f32 arg2, s16 arg3, s16 arg4, s16 arg5) {

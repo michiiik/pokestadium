@@ -2,7 +2,7 @@
 #define _FRAGMENT27_H_
 
 #include "global.h"
-#include "fragments/24/lab_pc_list.h"
+#include "fragments/lab_pc_list/lab_pc_list.h"
 
 typedef struct unk_func_8860439C_sp64 {
     /* 0x00 */ WidgetNode unk_00;

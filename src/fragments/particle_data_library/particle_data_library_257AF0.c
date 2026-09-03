@@ -37,7 +37,7 @@ void func_81002830(Gfx* gfx, unk_arg1_func_81002830* arg1) {
 }
 #else
 void func_81002830(s32, s32);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/31/fragment31_257AF0/func_81002830.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/particle_data_library/particle_data_library_257AF0/func_81002830.s")
 #endif
 
 void DisplayList_InitAnimatedFrameSegment(s32 arg0, unk_arg1_func_81002968* arg1) {

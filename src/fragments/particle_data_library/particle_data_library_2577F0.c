@@ -59,7 +59,7 @@ void func_81002530(Gfx* gfx, DisplayListAddresses* addresses) {
 }
 #else
 void func_81002530(Gfx*, DisplayListAddresses*);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/31/fragment31_2577F0/func_81002530.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/particle_data_library/particle_data_library_2577F0/func_81002530.s")
 #endif
 
 void DisplayList_InitScrollingDualPanel(s32 arg0, DisplayListState* state) {

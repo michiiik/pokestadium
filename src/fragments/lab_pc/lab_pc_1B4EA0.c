@@ -1323,7 +1323,7 @@ s32 func_88210380(unk_func_8821421C_038_04C* arg0, Controller* arg1) {
     return var_v1;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/23/fragment23_1B4EA0/func_88210380.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc/lab_pc_1B4EA0/func_88210380.s")
 #endif
 
 void LabItem_InitOperationController(unk_func_8821421C_02C_06C_02C* arg0, unk_func_8820BE14_02C_038* arg1,
@@ -1666,7 +1666,7 @@ void func_88210F74(unk_func_8820BE14_02C_038* arg0, s32 arg1, s32 arg2) {
     ((func88507AE4)Memmap_GetFragmentVaddr(WidgetTree_SetScrollableGridIndex))(arg0, var_s3 - 1);
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/23/fragment23_1B4EA0/func_88210F74.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc/lab_pc_1B4EA0/func_88210F74.s")
 #endif
 
 void LabItem_SubtractSelectedItemQuantity(unk_func_8820BE14_02C_038* arg0, s32 arg1) {
@@ -1744,7 +1744,7 @@ void func_882111F8(unk_func_8820BE14_02C_038* arg0, s32 arg1, s32 arg2) {
 }
 #else
 void func_882111F8(unk_func_8820BE14_02C_038* arg0, s32 arg1, s32 arg2);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/23/fragment23_1B4EA0/func_882111F8.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc/lab_pc_1B4EA0/func_882111F8.s")
 #endif
 
 void LabItem_SwapEntries(unk_func_8820BE14_02C_038* arg0, unk_func_8820BE14_02C_038* arg1) {

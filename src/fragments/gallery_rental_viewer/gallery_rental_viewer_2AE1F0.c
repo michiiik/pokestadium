@@ -8,7 +8,7 @@
 #include "src/audio_sfx.h"
 #include "src/matrix.h"
 #include "src/controller.h"
-#include "src/fragments/61/rental_team_selection.h"
+#include "src/fragments/rental_team_selection/rental_team_selection.h"
 #include "src/math_util.h"
 #include "src/memmap.h"
 #include "src/memory.h"

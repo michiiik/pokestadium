@@ -165,5 +165,5 @@ loop_9:
     } while (*var_s1 != &D_812346EC);
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86920/func_812070A0.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86920/func_812070A0.s")
 #endif

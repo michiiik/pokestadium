@@ -3325,7 +3325,7 @@ void func_86A01CF0(s16* arg0, s16* arg1, s16* arg2, unk_D_86002F34_00C* arg3, u1
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/16/fragment16_15A2B0/func_86A01CF0.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/credits/credits_15A2B0/func_86A01CF0.s")
 #endif
 
 void Credits_StepCameraYawBlend(void) {

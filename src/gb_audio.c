@@ -961,5 +961,5 @@ void func_80044A50(unk_D_800FC6D4* arg0) {
     arg0->flags = 1;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/435D0/func_80044A50.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/gb_audio/func_80044A50.s")
 #endif

@@ -2,8 +2,8 @@
 #include "src/audio_sfx.h"
 #include "src/gfx_buffer.h"
 #include "src/matrix.h"
-#include "src/fragments/2/widget_toolkit.h"
-#include "src/fragments/5/minigame_shared_library.h"
+#include "src/fragments/widget_toolkit/widget_toolkit.h"
+#include "src/fragments/minigame_shared_library/minigame_shared_library.h"
 
 static u8 D_86502F50[0x3000] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,

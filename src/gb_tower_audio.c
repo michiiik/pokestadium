@@ -7,7 +7,7 @@
 #include "jpeg_stream.h"
 #include "scheduler.h"
 #include "util.h"
-#include "src/fragments/1/gb_tower_emulator.h"
+#include "src/fragments/gb_tower_emulator/gb_tower_emulator.h"
 
 unk_D_800AA660* D_800AA660;
 unk_D_800AA664* D_800AA664;

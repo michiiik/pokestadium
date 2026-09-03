@@ -790,7 +790,7 @@ void func_84370B7C(Battler* arg0) {
     // clang-format on
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/62/fragment62_359F90/func_84370B7C.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/battle_engine/battle_engine_359F90/func_84370B7C.s")
 #endif
 
 s32 Battle_IsPartyMemberAlive(Battler* arg0) {
@@ -1611,7 +1611,7 @@ end:
     D_843C4DB7 = 0;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/62/fragment62_359F90/func_84372670.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/battle_engine/battle_engine_359F90/func_84372670.s")
 #endif
 
 void Battle_HandleFaint(Battler* arg0) {

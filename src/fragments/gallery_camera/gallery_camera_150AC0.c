@@ -318,7 +318,7 @@ void func_86905734(u8* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, u
 }
 #else
 void func_86905734(u8* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, u8 arg6);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/15/fragment15_150AC0/func_86905734.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gallery_camera/gallery_camera_150AC0/func_86905734.s")
 #endif
 
 void GalleryUI_DrawRotateArrowIcon(u8* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, u8 arg6) {

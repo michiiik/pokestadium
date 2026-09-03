@@ -8,7 +8,7 @@
 #include "src/game_state.h"
 #include "src/poke_icon.h"
 #include "src/table_view.h"
-#include "src/fragments/25/pokemon_lab_support.h"
+#include "src/fragments/pokemon_lab_support/pokemon_lab_support.h"
 
 struct WidgetMainMenu;
 struct WidgetNode;

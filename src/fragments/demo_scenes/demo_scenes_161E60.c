@@ -21,7 +21,7 @@
 #include "src/math_util.h"
 #include "src/memory.h"
 #include "src/stage_loader.h"
-#include "src/fragments/3/minigame_actor_framework.h"
+#include "src/fragments/minigame_actor_framework/minigame_actor_framework.h"
 #include "src/gb_save.h"
 
 extern u8 D_30074E0[];

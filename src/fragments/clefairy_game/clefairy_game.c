@@ -15,8 +15,8 @@
 #include "src/gfx_buffer.h"
 #include "src/gfx_rect.h"
 #include "src/controller.h"
-#include "src/fragments/2/widget_toolkit.h"
-#include "src/fragments/4/minigame_shared_graphics.h"
+#include "src/fragments/widget_toolkit/widget_toolkit.h"
+#include "src/fragments/minigame_shared_graphics/minigame_shared_graphics.h"
 #include "src/memory.h"
 #include "src/stage_loader.h"
 
@@ -671,7 +671,7 @@ void func_86100C30(s32 arg0) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/7/fragment7/func_86100C30.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/clefairy_game/clefairy_game/func_86100C30.s")
 #endif
 
 void ClefairyGame_DrawPenaltyDots(void) {
