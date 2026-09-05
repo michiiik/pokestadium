@@ -170,7 +170,17 @@ ifeq ($(DETECTED_OS),windows)
 endif
 
 ASM_PROC        := $(PYTHON) tools/asm-processor/build.py
-ASM_PROC_FLAGS  := --input-enc=utf-8 --output-enc=euc-jp --convert-statics=global-with-filename
+ifeq ($(DETECTED_OS),windows)
+  # On Windows, ido-native-preprocess.py passes the original UTF-8 source to
+  # asm-processor, which performs the EUC-JP conversion itself (--output-enc).
+  ASM_PROC_FLAGS := --input-enc=utf-8 --output-enc=euc-jp --convert-statics=global-with-filename
+else
+  # On Linux/macOS, preprocess.sh converts the source from UTF-8 to EUC-JP
+  # with iconv before invoking the compile command, so asm-processor's input
+  # is already EUC-JP. Passing --input-enc=utf-8 here makes it fail with a
+  # UnicodeDecodeError on any source containing Japanese text.
+  ASM_PROC_FLAGS := --input-enc=euc-jp --output-enc=euc-jp --convert-statics=global-with-filename
+endif
 
 SPLAT           := $(PYTHON) -m splat split
 SPLAT_YAML      := $(TARGET)-$(VERSION).yaml
