@@ -132,8 +132,6 @@ u32 GbApu_FreqToStep2x(u16 arg0) {
 void func_81207690(void) {
 }
 
-#ifdef NON_MATCHING
-// Matching needs rodata mapping
 s32 func_81207698(u32 arg0, s32 arg1) {
     switch (arg0) {
     case 0:
@@ -157,18 +155,14 @@ s32 func_81207698(u32 arg0, s32 arg1) {
         }
         return 0x7F;
     case 4:
-        return (u8)(D_8122C794[arg1 + D_8122EE98] & 0x7F);
     case 5:
-        return (u8)(D_8122EE58[arg1] << 3);
-    case 6:
-    case 7:
         break;
+    case 6:
+        return (u8)(D_8122C794[arg1 + D_8122EE98] & 0x7F);
+    case 7:
+        return (u8)(D_8122EE58[arg1] << 3);
     }
 }
-#else
-s32 func_81207698(u32, s32);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/func_81207698.s")
-#endif
 
 u16 GbApu_UpdateSquare1Channel(void) {
     u16 var_t0;
@@ -486,8 +480,6 @@ void func_8120806C(u16, u8);
 
 #pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/func_81208828.s")
 
-#ifdef NON_MATCHING
-// Matching needs rodata mapping
 void func_81208C08(u16 arg0, u8 arg1, u16 arg2) {
     s32 temp_v1;
 
@@ -542,9 +534,6 @@ void func_81208C08(u16 arg0, u8 arg1, u16 arg2) {
         break;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/func_81208C08.s")
-#endif
 
 void GbApu_ResetChannels(void) {
   s32 pad[6];
