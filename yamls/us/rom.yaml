@@ -616,6 +616,7 @@
     - [0xAA8F0,  rodata, fragments/gb_tower_emulator/gb_tower_emulator_rodata_AA8F0]
     - [0xAA900,  rodata, fragments/gb_tower_emulator/gb_tower_emulator_rodata_AA900]
     - [0xAAA20,  rodata, fragments/gb_tower_emulator/gb_tower_emulator_rodata_AAA20]
+    - [0xAAA30, .rodata, fragments/gb_tower_emulator/gb_tower_emulator_86CB0]
 
     - {vram: 0x8122B1E0, type:  bss, name: fragments/gb_tower_emulator/gb_tower_emulator_bss}
 
