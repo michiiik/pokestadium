@@ -446,7 +446,7 @@
     - [0x7D800, .rodata, gb_audio]
     - [0x7D860, .rodata, audio_stream]
     - [0x7D880, .rodata, libnaudio/n_env]
-    - [0x7D8D0, rodata, rom_rodata_7D8D0]
+    - [0x7D8D0, .rodata, audio_fade]
     - [0x7DF80, rodata, rom_rodata_7DF80]
     - [0x7DFD0, .rodata, audio_sfx]
     - [0x7E0C0, .rodata, libnaudio/n_synthesizer]

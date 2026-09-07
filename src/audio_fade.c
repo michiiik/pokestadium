@@ -1,4 +1,22 @@
 #include "global.h"
+#include "audio_cache.h"
+#include "audio_commands.h"
+#include "audio_fade.h"
+#include "audio_stored_fade.h"
+#include "cry.h"
+#include "rom_device.h"
+#include "libnumus/player.h"
+
+// D_800FC6F0 with its trailing per-file offset array.
+typedef struct unk_D_800FC6F0 {
+    /* 0x00 */ u32 num_files;
+    /* 0x04 */ u32 offset1;
+    /* 0x08 */ u32 wave_tables_offset;
+    /* 0x0C */ u32 files[1];
+} unk_D_800FC6F0; // size >= 0x10
+
+extern u8 D_800786FD[];
+extern u8 D_80078A20[16];
 
 // .data
 typedef struct {
@@ -166,11 +184,208 @@ unk_D_80078700 D_80078700[151] = {
 
 s32 D_800789F4 = 0;
 s32 D_800789F8 = 0;
-s32 D_800789FC = 0;
-s32 D_80078A00[] = { 0, 0, 0, 0 };
+u8 D_800789FC[4] = { 0 };
+u8 D_80078A00[16] = { 0 };
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/audio_fade/func_800479C0.s")
+s32 func_800479C0(u32 arg0, u32 arg1, u32 arg2) {
+    s32 var;
+    unk_D_800FC6F0* sp;
+    s32 ret;
+    u32 size;
 
+    if (!(arg0 < 0xA6) && (arg0 != 0xA6)) {
+        return 0;
+    }
+
+    Audio_FadeStoredSound();
+
+    if (arg0 == 0xA6) {
+        var = arg2;
+        arg2 = 0xFF;
+    }
+
+    switch (arg2) {
+        case 4:
+            if (Audio_IsSoundPlaying(D_800789F4) != 0) {
+                Audio_QueueFadeSoundCommand(D_800789F4, 0x14);
+                D_800789F4 = 0;
+            }
+            if ((arg0 == 0xD) || (arg0 == 0x13) || (arg0 == 0x4C) || (arg0 == 0x5B) || (arg0 == 0x82) ||
+                (arg0 == 0x8F)) {
+                var = 4;
+                break;
+            }
+            return 0;
+
+        case 0:
+            if (Audio_IsSoundPlaying(D_800789F4) != 0) {
+                Audio_QueueFadeSoundCommand(D_800789F4, 0x14);
+                D_800789F4 = 0;
+            }
+            switch (arg0) {
+                case 0x35:
+                case 0x52:
+                case 0x53:
+                    if (D_800786FD[arg1 * 5] == 1) {
+                        var = 0;
+                    } else {
+                        var = 4;
+                    }
+                    break;
+
+                case 0x78:
+                case 0x99:
+                    var = 0;
+                    break;
+
+                default:
+                    var = 0;
+            }
+            D_80078A00[0] = 0;
+            break;
+
+        case 1:
+            switch (arg0) {
+                case 0x14: case 0x23: case 0x2B: case 0x30: case 0x32: case 0x35: case 0x3B: case 0x3D:
+                case 0x3E: case 0x3F: case 0x47: case 0x48: case 0x4B: case 0x50: case 0x51: case 0x52:
+                case 0x66: case 0x6D: case 0x7E: case 0x84: case 0x86: case 0x89: case 0x8A: case 0x8D:
+                case 0xA0:
+                    if (Audio_IsSoundPlaying(D_800789F4) != 0) {
+                        Audio_QueueFadeSoundCommand(D_800789F4, 0x3C);
+                        D_800789F4 = 0;
+                    }
+                    break;
+
+                default:
+                    if (Audio_IsSoundPlaying(D_800789F4) != 0) {
+                        Audio_QueueFadeSoundCommand(D_800789F4, 2);
+                        D_800789F4 = 0;
+                    }
+                    break;
+
+                case 0xB: case 0xC: case 0xD: case 0x10: case 0x12: case 0x2F: case 0x39: case 0x4D:
+                case 0x4E: case 0x4F: case 0x54: case 0x55: case 0x56: case 0x57: case 0x5F: case 0x65:
+                case 0x67: case 0x6C: case 0x72: case 0x78: case 0x7B: case 0x7F: case 0x80: case 0x81:
+                case 0x8B: case 0x8E: case 0x93: case 0x94: case 0x95: case 0x99:
+                    break;
+            }
+            var = 1;
+            break;
+
+        case 2:
+            if (Audio_IsSoundPlaying(D_800789F4) != 0) {
+                Audio_QueueFadeSoundCommand(D_800789F4, 0x14);
+                D_800789F4 = 0;
+            }
+            switch (arg0) {
+                case 0xE: case 0x36: case 0x4A: case 0x60: case 0x61: case 0x66: case 0x68: case 0x69:
+                case 0x6A: case 0x6B: case 0x6E: case 0x6F: case 0x70: case 0x71: case 0x72: case 0x73:
+                case 0x74: case 0x85: case 0x87: case 0x90: case 0x97: case 0x9C: case 0x9F: case 0xA4:
+                    return 0;
+
+                case 0x1: case 0x2: case 0x3: case 0x4: case 0x6: case 0xA: case 0xB: case 0xC:
+                case 0xF: case 0x15: case 0x16: case 0x17: case 0x20: case 0x2C: case 0x44: case 0x7D:
+                case 0x80: case 0x9A: case 0x9E: case 0xA2: case 0xA3:
+                    var = 2;
+                    break;
+
+                case 0x35: case 0x52: case 0x53:
+                    if (D_800786FD[arg1 * 5] == 1) {
+                        var = 0;
+                    } else {
+                        var = 4;
+                    }
+                    break;
+
+                default:
+                    var = 0;
+                    break;
+            }
+            D_80078A00[0] = 0;
+            break;
+
+        case 3:
+            if (Audio_IsSoundPlaying(D_800789F4) != 0) {
+                Audio_QueueFadeSoundCommand(D_800789F4, 0x14);
+                D_800789F4 = 0;
+            }
+            if (arg0 == 0x9A) {
+                if (D_80078A00[0] == 0) {
+                    var = 3;
+                    D_80078A00[0] = 1;
+                } else {
+                    var = 0;
+                }
+            } else {
+                var = 0;
+            }
+            break;
+
+        case 5:
+            switch (arg0) {
+                case 0xD: case 0x10: case 0x12: case 0x2F: case 0x39: case 0x4D: case 0x4E: case 0x4F:
+                case 0x54: case 0x55: case 0x56: case 0x57: case 0x5F: case 0x67: case 0x6C: case 0x6D:
+                case 0x72: case 0x78: case 0x7B: case 0x80: case 0x81: case 0x8B: case 0x8E: case 0x93:
+                case 0x94: case 0x99:
+                    return 0;
+
+                default:
+                    if (Audio_IsSoundPlaying(D_800789F4) != 0) {
+                        Audio_QueueFadeSoundCommand(D_800789F4, 0x3C);
+                        D_800789F4 = 0;
+                    }
+                    return 0;
+            }
+
+        case 0xA6:
+        case 0xFF:
+            break;
+
+        default:
+            return 0;
+    }
+
+    D_800789FC[0]++;
+    D_800789FC[0] %= 3;
+
+    sp = (unk_D_800FC6F0*)D_800FC6F0;
+    arg0--;
+    if (arg0 < sp->num_files - 1) {
+        size = sp->files[arg0 + 1] - sp->files[arg0];
+    } else {
+        size = (u32)D_800FC6E8->seqArray[2].offset - sp->files[arg0];
+    }
+
+    Rom_DmaRead(sp->files[arg0], D_800FC6DC, size);
+    Audio_CopyDataWithCacheSync(D_800FC6DC, D_800FC698[D_800789FC[0]], 0x258);
+    Audio_RelocateSoundBankTable(D_800FC698[D_800789FC[0]]);
+    ret = Audio_PlaySoundEffect(D_800FC690, D_800FC698[D_800789FC[0]], var + 1, 0x70, 0x80, -1);
+
+    if (arg2 != 0xFF) {
+        D_800789F8 = ret;
+    }
+    if ((arg2 == 0) || (arg2 == 2) || (arg2 == 3) || (arg2 == 4)) {
+        D_800789F4 = D_800789F8;
+    }
+    if ((arg2 == 0) || (arg2 == 2)) {
+        switch (arg0 + 1) {
+            case 0x85:
+                Audio_PlayCommand(0x28, 0, 0);
+                break;
+
+            case 0x2D:
+            case 0x2E:
+                if (D_80078A20[0] == 0) {
+                    Cry_Play(arg1, 0);
+                }
+                D_80078A20[0] = 0;
+                break;
+
+            case 0x9C:
+                break;
+        }
+    }
+}
 void Audio_FadeAndClearStoredSounds(void) {
   Audio_QueueFadeSoundCommand(D_800789F8, 0x5A);
   Audio_QueueFadeSoundCommand(D_800789F4, 0x5A);
