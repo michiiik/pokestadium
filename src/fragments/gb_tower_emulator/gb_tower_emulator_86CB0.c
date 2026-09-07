@@ -132,29 +132,19 @@ u32 GbApu_FreqToStep2x(u16 arg0) {
 void func_81207690(void) {
 }
 
-#ifdef NON_MATCHING
-// Matching needs rodata mapping
 s32 func_81207698(u32 arg0, s32 arg1) {
     switch (arg0) {
     case 0:
-        if ((arg1 >= 4) && (arg1 < 8)) {
-            return 0x7F;
-        }
+        if ((arg1 >= 4) && (arg1 < 8)) return 0x7F;
         return 0;
     case 1:
-        if (arg1 < 8) {
-            return 0x7F;
-        }
+        if (arg1 < 8) return 0x7F;
         return 0;
     case 2:
-        if (arg1 < 0x10) {
-            return 0x7F;
-        }
+        if (arg1 < 0x10) return 0x7F;
         return 0;
     case 3:
-        if (arg1 < 8) {
-            return 0;
-        }
+        if (arg1 < 8) return 0;
         return 0x7F;
     case 4:
         return (u8)(D_8122C794[arg1 + D_8122EE98] & 0x7F);
@@ -165,10 +155,6 @@ s32 func_81207698(u32 arg0, s32 arg1) {
         break;
     }
 }
-#else
-s32 func_81207698(u32, s32);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/func_81207698.s")
-#endif
 
 u16 GbApu_UpdateSquare1Channel(void) {
     u16 var_t0;
