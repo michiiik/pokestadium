@@ -688,9 +688,46 @@ void Model_ApplyTransformCommands(ModelSegment* segment, ModelVertex* vertices, 
     }
 }
 
-void func_80035B20(ModelSegment*, ModelVertex*, StadiumModel*, f32);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/33FE0/func_80035B20.s")
+void func_80035B20(ModelSegment* segment, ModelVertex* vertices, StadiumModel* model, f32 deltaTime) {
+    f32 temp_fs0;
+    f32 temp_fv0;
+    s16 temp_v1;
+    s16 var_a0;
+    s16 var_a1;
+    s16 var_a2;
+    ModelTransformCmd* temp_v0;
+    ModelVertex* temp_a3;
+    ModelVertex* temp_v0_2;
+    ModelVertex* var_s2;
 
+    Memmap_GetSegmentVaddr(segment->tableSegment);
+    Memmap_GetSegmentVaddr(segment->remapSegment);
+    var_s2 = vertices;
+    while (1) {
+        temp_v0 = &var_s2->cmd;
+        var_s2++;
+        temp_v1 = temp_v0->targetIndex;
+        if (temp_v1 == -1) {
+            break;
+        }
+        var_a1 = temp_v0->sourceIndex;
+        var_a2 = temp_v0->enableFrom;
+        var_a0 = temp_v0->enableTo;
+        temp_fs0 = temp_v0->blendWeight;
+        temp_a3 = &vertices[temp_v1];
+        if (temp_a3->disabled != 0) {
+            var_a2 = 0;
+        }
+        temp_v0_2 = &vertices[var_a1];
+        if (temp_v0_2->disabled != 0) {
+            var_a0 = 0;
+        }
+        if ((var_a0 != 0) || (var_a2 != 0)) {
+            temp_fv0 = Model_ComputeScaledDistance(&temp_a3->position.base, &temp_v0_2->position.base, &model->position);
+            func_80035660(&temp_a3->position.base, &temp_v0_2->position.base, temp_fs0, temp_fv0, deltaTime);
+        }
+    }
+}
 void Model_OffsetVertexHeights(ModelSegment* segment, ModelVertex* vertices, f32 yOffset) {
     s16* indexTable;
     s16* remap;
