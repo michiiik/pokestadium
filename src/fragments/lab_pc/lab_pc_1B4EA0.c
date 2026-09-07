@@ -1237,7 +1237,6 @@ void LabItem_InitBoxScreenMenu(unk_func_8821421C_038_04C* arg0, unk_func_8821421
     arg0->unk_00.unk_24 = arg1;
 }
 
-#ifdef NON_MATCHING
 s32 func_88210380(unk_func_8821421C_038_04C* arg0, Controller* arg1) {
     s32 var_v1;
     s32 i;
@@ -1251,80 +1250,43 @@ s32 func_88210380(unk_func_8821421C_038_04C* arg0, Controller* arg1) {
         }
         var_v1 = var_a0->unk_10(var_a0, arg1);
     }
-
-    if (var_v1 & 1) {
-        return var_v1;
-    }
-
+    if (var_v1 & 1) return var_v1;
     if (var_v1 == 0) {
-        if (arg1->buttonPressed & 0x4000) {
-            var_v1 = 0x80000002;
-        } else if (arg1->buttonPressed & 0x8000) {
-            var_v1 = 0x80000004;
-        }
+        if (arg1->buttonPressed & 0x4000) var_v1 = 0x80000002;
+        else if (arg1->buttonPressed & 0x8000) var_v1 = 0x80000004;
     }
-
     if (var_v1 & 2) {
         switch (arg0->unk_00.unk_1C) {
-            case 1:
-                ((func8850C064)Memmap_GetFragmentVaddr(WidgetTree_SetVerticalMenuSelection))(arg0, 0);
-                var_v1 |= 1;
-                break;
-
-            case 2:
-                ((func8850C064)Memmap_GetFragmentVaddr(WidgetTree_SetVerticalMenuSelection))(arg0, 1);
-                var_v1 |= 1;
-                break;
+            case 1: ((func8850C064)Memmap_GetFragmentVaddr(WidgetTree_SetVerticalMenuSelection))(arg0, 0); var_v1 |= 1; break;
+            case 2: ((func8850C064)Memmap_GetFragmentVaddr(WidgetTree_SetVerticalMenuSelection))(arg0, 1); var_v1 |= 1; break;
         }
     } else if (var_v1 & 4) {
         switch (arg0->unk_00.unk_1C) {
             case 0:
-                LabItem_GamePakLabelWidget_SetSlot(arg0->unk_00.unk_24->unk_2C,
-                              &arg0->unk_00.unk_24->unk_50[arg0->unk_00.unk_24->unk_34->unk_00.unk_38]);
+                LabItem_GamePakLabelWidget_SetSlot(arg0->unk_00.unk_24->unk_2C, arg0->unk_00.unk_24->unk_50[0] + arg0->unk_00.unk_24->unk_34->unk_00.unk_38);
                 LabItem_LoadBoxScreenSlotItems(arg0->unk_00.unk_24, arg0->unk_00.unk_24->unk_34->unk_00.unk_38);
-
                 ((func8850CB48)Memmap_GetFragmentVaddr(WidgetTree_SetGridMenuSelection))(arg0->unk_28, 0);
                 ((func8850C064)Memmap_GetFragmentVaddr(WidgetTree_SetVerticalMenuSelection))(arg0, 1);
-
                 var_v1 |= 1;
                 break;
-
             case 1:
                 switch (arg0->unk_28->unk_24) {
-                    case 0:
-                        ((func8850C064)Memmap_GetFragmentVaddr(WidgetTree_SetVerticalMenuSelection))(arg0, 2);
-                        var_v1 |= 1;
-                        break;
-
+                    case 0: ((func8850C064)Memmap_GetFragmentVaddr(WidgetTree_SetVerticalMenuSelection))(arg0, 2); var_v1 |= 1; break;
                     case 1:
                         LabItem_SetConfirmDialogText(arg0->unk_00.unk_24->unk_48, Text_GetString(NULL, 0, D_88224FC4, 0x16));
                         ((func8850CB48)Memmap_GetFragmentVaddr(WidgetTree_SetGridMenuSelection))(arg0->unk_00.unk_24->unk_48->unk_30, 1);
                         Audio_PlaySoundEffectById(2);
-
                         arg0->unk_28->unk_14(arg0->unk_28, 0x100);
-
-                        if (LabItem_RunConfirmDialog(arg0->unk_00.unk_24->unk_48, arg1) == 1) {
-                            var_v1 = 4;
-                        } else {
-                            var_v1 = 1;
-                        }
-
+                        if (LabItem_RunConfirmDialog(arg0->unk_00.unk_24->unk_48, arg1) == 1) var_v1 = 4; else var_v1 = 1;
                         arg0->unk_28->unk_14(arg0->unk_28, 1);
                         break;
                 }
                 break;
-
-            case 2:
-                var_v1 = 1;
-                break;
+            case 2: var_v1 = 1; break;
         }
     }
-
     return var_v1;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc/lab_pc_1B4EA0/func_88210380.s")
-#endif
 
 void LabItem_InitOperationController(unk_func_8821421C_02C_06C_02C* arg0, unk_func_8820BE14_02C_038* arg1,
                    unk_func_8820BE14_02C_038* arg2, unk_func_8820E99C* arg3, unk_func_88217740* arg4,
