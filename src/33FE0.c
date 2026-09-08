@@ -59,37 +59,22 @@ void Math_CrossProduct(f32 ax, f32 ay, f32 az, f32 bx, f32 by, f32 bz, f32* cx, 
     *cz = (ax * by) - (ay * bx);
 }
 
-#ifdef NON_MATCHING
 f32 func_800334C0(
     f32 px, f32 py, f32 pz,
     f32 ax, f32 ay, f32 az,
     f32 bx, f32 by, f32 bz
 ) {
-    f32 dx;
-    f32 dy;
-    f32 dz;
+    UNUSED s32 pad[4];
     f32 lenSq;
-    f32 dot;
 
-    dx = bx - ax;
-    dy = by - ay;
-    dz = bz - az;
-
-    lenSq = (dx * dx) + (dy * dy) + (dz * dz);
+    lenSq = ((bx - ax) * (bx - ax)) + ((by - ay) * (by - ay)) + ((bz - az) * (bz - az));
 
     if (lenSq == 0.0f) {
         return 0.0f;
     }
 
-    dot = (dx * (px - ax))
-        + (dy * (py - ay))
-        + (dz * (pz - az));
-
-    return dot / lenSq;
+    return (((bx - ax) * (px - ax)) + ((by - ay) * (py - ay)) + ((bz - az) * (pz - az))) / lenSq;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/33FE0/func_800334C0.s")
-#endif
 
 #ifdef NON_MATCHING
 f32 func_80033568(
