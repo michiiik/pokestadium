@@ -1525,7 +1525,25 @@ s32 Credits_InterpolateRoleColor(Color_RGBA8_u32* arg0, u16 arg1, u16 arg2, u8 a
 }
 
 #ifdef NON_MATCHING
-// Needs the in-fucntion static but that breaks bss ordering
+/**
+ * Instruction-exact with the block-scope `static char** D_86A06218` below (a file-scope
+ * definition, static or not, costs an extra callee-saved register and a larger frame), but
+ * IDO then emits that static's `.lcomm` immediately *before* the file's non-static bss
+ * symbols instead of after them, so it is allocated at 0x86A06200 rather than 0x86A06218
+ * and D_86A06200 slides to 0x86A06204.
+ *
+ * The `.lcomm` order is not declaration order for block-scope statics and does not depend
+ * on the symbol name, the type, or the position of the declaration within the function.
+ * A block-scope static in most functions of this file is emitted last (correct), but one in
+ * func_86A013C8 (or in Credits_InterpolateRoleColor) is emitted just ahead of the globals.
+ *
+ * Merging this file with credits_15A2B0.c so that D_86A06210/11 need not be extern does not
+ * help: the bss run is per translation unit and already sized correctly here, and the merge
+ * is independently wrong -- the ROM has 12 bytes of padding between the end of
+ * Credits_DrawRoleList (0x15A294) and Credits_GetRoleCount (0x15A2A0) plus 8 more before
+ * 0x15A2B0, which IDO only emits at object boundaries, so these are three separate
+ * translation units.
+ */
 void func_86A013C8(u8 arg0, u8 arg1, unk_D_86A03014* arg2) {
     static char** D_86A06218;
 
@@ -1550,6 +1568,12 @@ void func_86A013C8(u8 arg0, u8 arg1, unk_D_86A03014* arg2) {
 #pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/credits/credits_158A00/func_86A013C8.s")
 #endif
 
+/**
+ * Same bss-allocation problem as func_86A013C8, plus one register-allocation difference:
+ * the target moves temp_v0 through an extra register (addiu t5, v0, 0; subu t9, t5, v1).
+ * Note that making D_86A0621C a block-scope static here *does* land it at 0x86A0621C, so
+ * long as D_86A06218 stays at file scope.
+ */
 #ifdef NON_MATCHING
 void func_86A01490(void) {
     static u32 D_86A0621C;
