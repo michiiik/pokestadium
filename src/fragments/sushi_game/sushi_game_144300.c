@@ -537,7 +537,6 @@ s32 SushiGame_IsRoundTimeUp(void) {
     return var_v1;
 }
 
-#ifdef NON_MATCHING
 s32 func_86801884(void) {
     s32 sp1C;
     s32 sp18;
@@ -547,26 +546,22 @@ s32 func_86801884(void) {
     s32 var_a0;
 
     sp1C = 0;
-
     sp18 = 0;
     if ((D_8680753E != 0) && (gPlayer1Controller->buttonPressed != 0)) {
         if (StageContext_GetFadeMode() == 0) {
             sp18 = 1;
         }
     }
-
     if (((D_8780FC92 != 0) || (sp18 != 0)) && (D_8680750C != 7)) {
         D_8680750C = 7;
         D_86807540 = 0x1E;
         StageFade_StartFromTransparent(D_86807540);
         SushiGame_FadeAudio(D_86807540 / 2);
     }
-
     switch (D_8680750C) {
         case 0:
             SushiGame_UpdateWaitForStart();
             break;
-
         case 1:
             D_86807540 -= 1;
             if (D_86807540 <= 0) {
@@ -574,7 +569,6 @@ s32 func_86801884(void) {
                 Widget_CountdownStart(1);
             }
             break;
-
         case 2:
             temp_v0 = Widget_CountdownGetState();
             if ((temp_v0 >= 0) && (temp_v0 < 4)) {
@@ -585,7 +579,6 @@ s32 func_86801884(void) {
                 SushiGame_SetGamePhase(1);
             }
             break;
-
         case 3:
             if (D_8780FC94 == 0) {
                 D_86807510--;
@@ -595,7 +588,6 @@ s32 func_86801884(void) {
                     }
                 }
             }
-
             if (SushiGame_IsRoundTimeUp() != 0) {
                 if (D_8680753E == 0) {
                     D_8680750C = 4;
@@ -613,35 +605,29 @@ s32 func_86801884(void) {
                 }
             }
             break;
-
         case 4:
             if (SushiGame_AreAllPlayersIdle() != 0) {
                 D_86807540--;
             }
-
             if (D_86807540 <= 0) {
                 D_8680750C = 5;
                 SushiGame_BroadcastPlayerPhase(0xF, 4);
             }
             break;
-
         case 5:
             var_a0 = 1;
             ptr = &D_86807558[0];
-
             for (i = 0; i < 4; i++, ptr++) {
                 if (ptr->unk_018 != ptr->unk_01C) {
                     var_a0 = 0;
                 }
             }
-
             if ((var_a0 != 0) && (D_8780FC94 == 0)) {
                 D_8680750C = 6;
                 SushiGame_BroadcastPlayerPhase(0xF, 5);
                 Widget_PauseMenuTrigger(1);
             }
             break;
-
         case 6:
             if (D_8780FC96 != 0) {
                 D_8680750C = 7;
@@ -650,24 +636,18 @@ s32 func_86801884(void) {
                 SushiGame_FadeAudio(D_86807540 / 2);
             }
             break;
-
         case 7:
             if (D_86807540 > 0) {
                 D_86807540--;
             }
-
             if ((D_86807540 <= 0) && (Audio_GetActivityScore() == 0)) {
                 sp1C = 1;
                 Audio_ResetVolumeTransition();
             }
             break;
     }
-
     return sp1C;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/sushi_game/sushi_game_144300/func_86801884.s")
-#endif
 
 void SushiGame_MainLoop(void) {
     s32 var_s0;
