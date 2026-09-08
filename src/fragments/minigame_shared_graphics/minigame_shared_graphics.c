@@ -210,6 +210,45 @@ void MiniGfx_DrawBackgroundStrips(s32 arg0) {
     gDisplayListHead = gfx;
 }
 
+/**
+ * Draws a 15x20 grid of 16x16 texture tiles covering the full screen
+ * (240x320), reading each tile from `arg0 + row*0x2800 + col*0x200`.
+ * Same shape as MiniGfx_DrawBackgroundStrips() above, just a 2D grid
+ * instead of a single column of strips.
+ *
+ * 192 of this function's 196 instructions are byte-exact against the
+ * target, including every jump-table-free strength-reduced accumulator
+ * IDO derives for the (i*0x10)<<2 / ((i+1)*0x10)<<2 rectangle corners
+ * (spilled to $sp+0x30/0x34 in both the target and this body) and for
+ * the running texture-tile address (kept in a register, incremented by
+ * 0x200 per column). The remaining 4 instructions are the *same* single
+ * spilled local -- IDO's own strength-reduced accumulator for `i*0x14`,
+ * never named in this source -- read at loop-top, stored at loop-bottom,
+ * and used inside the loop to seed that address: the target places it at
+ * $sp+0x44, this body's IDO run places the numerically identical value at
+ * $sp+0x40. Total frame size, every saved register, and both other
+ * accumulators' offsets are identical either way, so this is pure
+ * temp-slot-numbering drift, not a missing/wrong value.
+ *
+ * Ruled out (all either reproduce the exact same 0x40-vs-0x44 drift, blow
+ * up the instruction count by breaking the loop-carried strength
+ * reduction, or grow the frame by a full 8 bytes instead of the needed
+ * 4): naming `i*0x14` (or `i*0x40` for the corner terms) as its own local,
+ * anywhere in or outside the loop, always costs 8 bytes of frame -- IDO
+ * appears to size this function's spill area in fixed 8-byte units per
+ * distinct source-level local, never 4; a genuinely extra/unused local
+ * (`UNUSED s32`) has the same cost. Reassociating/reordering the
+ * arg0 + ((i*0x14)<<9) expression, swapping the for-loop's comma-step
+ * order, s16/u32/register/combined-declarator variants of i/j/sp44,
+ * for-vs-do-while, an extra block around the inner loop, and moving
+ * sp44's declaration to function scope all reproduce the identical
+ * 0x40-vs-0x44 diff with no other change. None of these is plausible
+ * enough to land as "the" fix over the others, so the loop body keeps its
+ * current natural shape.
+ *
+ * Full fresh-extract rebuild verified against this body:
+ * ed1378bc12115f71209a77844965ba50.
+ */
 #ifdef NON_MATCHING
 void func_87A00DB8(s32 arg0) {
     Gfx* gfx = gDisplayListHead;
