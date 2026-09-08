@@ -481,7 +481,6 @@ void func_812018C0(u16* arg0, s32 arg1, u16* arg2, s32 arg3, s32 arg4) {
 #pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/func_812018C0.s")
 #endif
 
-#ifdef NON_MATCHING
 void func_81201DDC(u16* dst, u8* alpha_map, s32 color, s32 width, s32 height, u32 alpha_stride) {
   u16* dst_row;
   u8* alpha_row;
@@ -490,31 +489,21 @@ void func_81201DDC(u16* dst, u8* alpha_map, s32 color, s32 width, s32 height, u3
   s32 var_t0;
   s32 var_t4;
   s32 var_a0;
-
   for (y = 0; y < height; y++) {
       for (x = 0; x < width; x++) {
-          var_a0 = alpha_map[y * alpha_stride + x];
-
-          var_t0 = (dst[y * 320 + x] & 0xF800) + ((((color & 0xF800) * (var_a0 & 0xF)) / 15) & 0xF800);
+          var_a0 = alpha_map[y * alpha_stride + x] & 0xF;
+          var_t0 = (dst[y * 320 + x] & 0xF800) + (((color & 0xF800) * var_a0) / 15 & 0xF800);
           if (var_t0 > 0xF800) var_t0 = 0xF800;
-
           var_t4 = var_t0;
-
-          var_t0 = (dst[y * 320 + x] & 0x07C0) + ((((color & 0x07C0) * (var_a0 & 0xF)) / 15) & 0x07C0);
+          var_t0 = (dst[y * 320 + x] & 0x07C0) + (((color & 0x07C0) * var_a0) / 15 & 0x07C0);
           if (var_t0 > 0x07C0) var_t0 = 0x07C0;
-          
           var_t4 |= var_t0;
-
-          var_t0 = (dst[y * 320 + x] & 0x003E) + ((((color & 0x003E) * (var_a0 & 0xF)) / 15) & 0x003E);
+          var_t0 = (dst[y * 320 + x] & 0x003E) + (((color & 0x003E) * var_a0) / 15 & 0x003E);
           if (var_t0 > 0x003E) var_t0 = 0x003E;
-
           dst[y * 320 + x] = (s16)(var_t4 | var_t0);
       }
   }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/func_81201DDC.s")
-#endif
 
 void GbEmu_DrawStretchedBorderRow(s32 arg0, s32 arg1, s32 arg2) {
   s32 var_s0;
