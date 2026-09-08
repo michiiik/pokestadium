@@ -584,58 +584,42 @@ void Model_ExtrapolateVertexPosition(Vec3f* from, Vec3f* to, f32 currentTime, f3
     to->z += temp_ft5 * scale;
 }
 
-#ifdef NON_MATCHING
 void func_80035660(PosBlend* src, PosBlend* dst, f32 totalTime, f32 elapsed, f32 stiffness) {
-    f32 sp3C;
-    f32 sp38;
-    f32 sp34;
-    f32 sp20;
-    f32 temp_fa0;
-    f32 temp_fa1;
-    f32 temp_ft1;
-    f32 temp_ft2;
-    f32 temp_ft4;
-    f32 temp_ft5;
-    f32 temp_fv1;
-    f32 var_fv0;
+    f32 dx;
+    f32 dy;
+    f32 dz;
+    s32 pad;
 
-    if (!(elapsed < D_8007C5E0)) {
-        if (Math_FAbs(dst->base.x) < D_8007C5E4) {
-            dst->base.x = 0.0f;
-        }
-        if (Math_FAbs(dst->base.y) < D_8007C5E8) {
-            dst->base.y = 0.0f;
-        }
-        if (Math_FAbs(dst->base.z) < D_8007C5EC) {
-            dst->base.z = 0.0f;
-        }
-        temp_fa1 = dst->base.x;
-        temp_ft1 = temp_fa1 - src->base.x;
-        sp3C = temp_ft1;
-        temp_ft4 = dst->base.y;
-        sp38 = temp_ft4 - src->base.y;
-        temp_ft5 = dst->base.z;
-        sp34 = temp_ft5 - src->base.z;
-        var_fv0 = stiffness * ((totalTime - elapsed) / elapsed);
-        if (elapsed < totalTime) {
-            var_fv0 *= 0.5f;
-        }
-        temp_fv1 = temp_ft1 * var_fv0;
-        dst->base.x = (f32) (temp_fa1 + temp_fv1);
-        temp_fa0 = sp38 * var_fv0;
-        dst->base.y = (f32) (temp_ft4 + temp_fa0);
-        temp_ft2 = sp34 * var_fv0;
-        sp20 = temp_ft2;
-        dst->base.z = (f32) (temp_ft5 + temp_ft2);
-        dst->offset.x += temp_fv1;
-        dst->offset.y += temp_fa0;
-        dst->offset.z += sp20;
+    if (elapsed < D_8007C5E0) {
+        return;
     }
+
+    if (Math_FAbs(dst->base.x) < D_8007C5E4) {
+        dst->base.x = 0.0f;
+    }
+    if (Math_FAbs(dst->base.y) < D_8007C5E8) {
+        dst->base.y = 0.0f;
+    }
+    if (Math_FAbs(dst->base.z) < D_8007C5EC) {
+        dst->base.z = 0.0f;
+    }
+
+    dx = dst->base.x - src->base.x;
+    dy = dst->base.y - src->base.y;
+    dz = dst->base.z - src->base.z;
+
+    stiffness *= (totalTime - elapsed) / elapsed;
+    if (elapsed < totalTime) {
+        stiffness /= 2.0f;
+    }
+
+    dst->base.x += dx * stiffness;
+    dst->base.y += dy * stiffness;
+    dst->base.z += dz * stiffness;
+    dst->offset.x += dx * stiffness;
+    dst->offset.y += dy * stiffness;
+    dst->offset.z += dz * stiffness;
 }
-#else
-void func_80035660(PosBlend*, PosBlend*, f32, f32, f32);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/33FE0/func_80035660.s")
-#endif
 
 void func_800357F4(StadiumModel*);
 #pragma GLOBAL_ASM("asm/us/nonmatchings/33FE0/func_800357F4.s")
