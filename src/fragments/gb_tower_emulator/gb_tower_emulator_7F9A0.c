@@ -528,7 +528,32 @@ void GbEmu_DrawStretchedBorderRow(s32 arg0, s32 arg1, s32 arg2) {
   func_812018C0(arg0 + (arg2 - 8) * 2, &D_8122C748->unk_9990, arg1, 8, 0x10);
 }
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/func_812020C0.s")
+void func_812020C0(u16* dst, s32 arg1, s32 arg2) {
+  u16* src;
+  s32 off;
+  s32 row;
+  s32 col;
+  u16 val;
+
+  off = arg2 * 132;
+  if (arg1 != 0) {
+      src = (u16*) (off * 2 + (u8*) D_8122C748 + 0x9A90);
+      arg1 = 1;
+  } else {
+      src = (u16*) (off * 2 + (u8*) D_8122C748 + 0x9B96);
+      arg1 = -1;
+  }
+
+  for (row = 0; row < 11; row++) {
+      for (col = 0; col < 12; col++) {
+          val = *src;
+          if (val & 1) {
+              dst[row * 320 + col + 730] = val;
+          }
+          src += arg1;
+      }
+  }
+}
 
 #pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/func_81202210.s")
 
