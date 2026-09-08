@@ -2560,6 +2560,27 @@ void Audio_UpdateBattleAudioFrame(void) {
     }
 }
 
+/**
+ * Everything below is byte-exact against the target except ONE instruction.
+ *
+ * The target materialises &D_800FCCA1 into a general register
+ * (`lui $a0, %hi; addiu $a0, $a0, %lo; sb $zero, 0($a0)`) instead of the
+ * `lui $at, %hi; sb $zero, %lo($at)` form IDO uses for every other scalar
+ * store in this function. IDO only picks the register form when the address
+ * survives CSE, i.e. when the C references that lvalue at least twice --
+ * exactly why the neighbouring `D_8007839C[0]`/`D_8007839C[1]` pair keeps its
+ * base in $v1 (drop either store and it reverts to the $at form).
+ *
+ * A read-modify-write whose read IDO folds away late (`D_800FCCA1 *= 0;`,
+ * `D_800FCCA1 %= 1;`, `D_800FCCA1 = D_800FCCA1 * 0;`) reproduces the target
+ * word-for-word, register-for-register -- but none of those is plausible
+ * source, so the real shape of this one statement is still unknown. Things
+ * that do NOT produce it: array/struct/union wrappers with a constant index,
+ * casts through `s8*`, a local pointer, `static`, `register`, bitfields,
+ * `&= 0` / `-= x` / `^= x` (folded too early), and one- or two-trip loops.
+ * `volatile` does force a register, but IDO then allocates $t6 and schedules
+ * the `addiu` after the two D_8007839C stores, which is not the target.
+ */
 #ifdef NON_MATCHING
 void func_80041A98(void) {
     s32 i;
@@ -2573,7 +2594,7 @@ void func_80041A98(void) {
     }
     D_8007839C[0] = 0;
     D_8007839C[1] = 0;
-    *(volatile u8*)&D_800FCCA1 = 0;
+    D_800FCCA1 = 0;
     D_800FCCA0 = 0;
     D_800FCCA2 = 0;
     D_800FCCA4 = 0;
