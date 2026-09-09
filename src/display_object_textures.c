@@ -19,47 +19,28 @@ typedef struct ret_func_unk_D_800ABE10 {
 
 unk_D_800ABE10 D_800ABE10;
 
-#ifdef NON_MATCHING
 void func_80018C40(unk_D_86002F34* arg0, arg1_func_80010CA8 arg1) {
     s32 i;
     s32 j;
-    unk_D_86002F34_018* var_s2;
-    unk_D_86002F34_01C* var_s4;
-
-    var_s2 = arg0->unk_18;
-    var_s4 = arg0->unk_1C;
-
+    unk_D_86002F34_018* var_s2 = arg0->unk_18;
+    unk_D_86002F34_01C* var_s4 = arg0->unk_1C;
     for (i = 0; i < arg0->unk_24; i++, var_s2++) {
         if (var_s2->unk_00 == 0) {
             if (var_s2->type == unk_D_86002F34_018_GFX_TYPE_2) {
-                u16* var_s1 = var_s2->texture;
-
-                for (j = 0; j < var_s2->num_texels; j++) {
-                    var_s1[j] = Color_AdjustRGB5551(var_s1[j], arg1);
-                }
+                u16* var_s1 = (u16*)var_s2->texture;
+                for (j = 0; j < var_s2->num_texels; j++, var_s1++) *var_s1 = Color_AdjustRGB5551(*var_s1, arg1);
             }
-
             if (var_s2->type == unk_D_86002F34_018_GFX_TYPE_3) {
                 u32* var_s1 = var_s2->texture;
-
-                for (j = 0; j < var_s2->num_texels; j++) {
-                    var_s1[j] = Color_AdjustRGBA8(var_s1[j], arg1);
-                }
+                for (j = 0; j < var_s2->num_texels; j++, var_s1++) *var_s1 = Color_AdjustRGBA8(*var_s1, arg1);
             }
         }
     }
-
     for (i = 0; i < arg0->unk_25; i++, var_s4++) {
         u16* var_s1 = var_s4->unk_04;
-
-        for (j = 0; j < var_s4->unk_00; j++) {
-            var_s1[j] = Color_AdjustRGB5551(var_s1[j], arg1);
-        }
+        for (j = 0; j < var_s4->unk_00; j++, var_s1++) *var_s1 = Color_AdjustRGB5551(*var_s1, arg1);
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/display_object_textures/func_80018C40.s")
-#endif
 
 Fragment* Jpeg_AllocAndDecodeFragment(MemoryBlock* arg0, PRESJPEG* arg1, PRESJPEG* arg2) {
     Fragment* sp1C;
