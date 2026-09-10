@@ -8,10 +8,6 @@ typedef struct PosBlend {
     /* 0x0C */ Vec3f offset;
 } PosBlend; // size = 0x18
 
-typedef struct Vec3sPad {
-    /* 0x0 */ Vec3s vec;
-    /* 0x6 */ char pad06[0x9];
-} Vec3sPad; // size = 0x10
 
 typedef struct Vec3fCounter {
     /* 0x00 */ Vec3f vec;
@@ -39,9 +35,10 @@ typedef struct ModelVertex {
     /* 0x00 */ s16 jointIndex;      // bone / transform index
     /* 0x02 */ s16 parentIndex;     // parent bone index
     /* 0x04 */ s16 childIndex;      // child / next transform
-    /* 0x06 */ u16  pad06;
+    /* 0x06 */ u16 pad06;
     /* 0x08 */ ModelTransformCmd cmd;
-    /* 0x14 */ u8   pad14[0xC];
+    /* 0x14 */ f32 unk_14;
+    /* 0x18 */ u8  pad18[0x8];
     /* 0x20 */ f32 unk_20;
     /* 0x24 */ u8  pad24[0x40];
     /* 0x64 */ PosBlend position;   // base + animated offset

@@ -357,7 +357,8 @@
     - [0x764A0, .data, 2E460]
     - [0x76A40, data, rom_data_76A40]
     - [0x76EF0, .data, 33E30]
-    - [0x76FB0, data, rom_data_76FB0] # 33FE0
+    - [0x76FB0, .data, 33FE0]
+    - [0x78220, data, rom_data_78220]
     - [0x78570, .data, 373A0]
     - [0x78890, .data, libnumus/player]
     - [0x78990, data, rom_data_78990]
@@ -439,7 +440,7 @@
     - [0x7D090, .rodata, 2FEA0]
     - [0x7D0F0, .rodata, 30640]
     - [0x7D110, rodata, rom_rodata_7D110]
-    - [0x7D1B0, rodata, rom_rodata_7D1B0] # 33FE0
+    - [0x7D1B0, .rodata, 33FE0]
     - [0x7D230, .rodata, 373A0]
     - [0x7D340, .rodata, libnumus/player]
     - [0x7D3C0, .rodata, 3D140]
