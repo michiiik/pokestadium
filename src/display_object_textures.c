@@ -17,6 +17,7 @@ typedef struct ret_func_unk_D_800ABE10 {
     /* 0x14 */ func_unk_D_800ABE10 unk_14;
 } ret_func_unk_D_800ABE10;
 
+// .bss
 unk_D_800ABE10 D_800ABE10;
 
 void func_80018C40(unk_D_86002F34* arg0, arg1_func_80010CA8 arg1) {
@@ -24,6 +25,7 @@ void func_80018C40(unk_D_86002F34* arg0, arg1_func_80010CA8 arg1) {
     s32 j;
     unk_D_86002F34_018* var_s2 = arg0->unk_18;
     unk_D_86002F34_01C* var_s4 = arg0->unk_1C;
+
     for (i = 0; i < arg0->unk_24; i++, var_s2++) {
         if (var_s2->unk_00 == 0) {
             if (var_s2->type == unk_D_86002F34_018_GFX_TYPE_2) {
