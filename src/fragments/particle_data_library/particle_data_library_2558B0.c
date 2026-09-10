@@ -543,9 +543,9 @@ void func_81001E24(s32 arg0, DisplayListState* state) {
     sp5C = state->addresses;
     if (arg0 == 2) {
         if (D_81004B54 == 0) {
-            state->gfx = func_80005F5C(0x500);
+            state->gfx = Gfx_AllocDisplayList(0x500);
         } else {
-            state->gfx = func_80005F5C(0x80);
+            state->gfx = Gfx_AllocDisplayList(0x80);
         }
         gfx = state->gfx;
         temp_v1 = D_8006F09C->unk_0A6;
@@ -553,9 +553,9 @@ void func_81001E24(s32 arg0, DisplayListState* state) {
             temp_v0 = D_8006F09C->unk_01A;
             switch (D_8006F09C->unk_01A) {
                 case 0x5C:
-                    func_81000E78(&D_810047E0);
+                    Particle31_UpdateSpeciesEffectTrigger(&D_810047E0);
                     if (D_81004B54 == 0) {
-                        gfx = func_81001D80(gfx, &D_810047E0, sp5C, 0);
+                        gfx = Particle31_BuildDisplayList(gfx, &D_810047E0, sp5C, 0);
                     }
                     break;
                 case 0x6D:
@@ -602,15 +602,15 @@ void func_81001E24(s32 arg0, DisplayListState* state) {
             }
         } else if (temp_v1 == 0xFE) {
             if (D_81004B54 == 0) {
-                gfx = func_81001D80(gfx, &D_810047E0, sp5C, 0);
+                gfx = Particle31_BuildDisplayList(gfx, &D_810047E0, sp5C, 0);
             }
         } else if (((s32) temp_v1 < 2) && (D_81004B50 >= 0) && (D_81004B50 < 0xB)) {
             temp_a1_3 = &D_810047E0[temp_v1 & 1][0];
             sp1C = temp_a1_3;
             sp18 = (s32) temp_v1;
-            func_81000E78(temp_a1_3);
+            Particle31_UpdateSpeciesEffectTrigger(temp_a1_3);
             if (D_81004B54 == 0) {
-                gfx = func_81001D80(gfx, temp_a1_3, sp5C, (s16) temp_v1);
+                gfx = Particle31_BuildDisplayList(gfx, temp_a1_3, sp5C, (s16) temp_v1);
             }
         }
         gSPEndDisplayList(gfx);

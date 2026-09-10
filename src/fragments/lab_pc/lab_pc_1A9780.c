@@ -768,7 +768,7 @@ void func_88203538(s32 arg0, s32 arg1, char* arg2, s32 arg3, s32 arg4, unk_func_
     s32 pad2[2];
 
     if (arg4 & 2) {
-        sp8C = func_8002D444(D_88217C50, 1.4f);
+        sp8C = Color_ScaleRgb(D_88217C50, 1.4f);
     } else {
         sp8C = *(Color_RGBA8 *)&D_88217C50;
     }
@@ -801,19 +801,19 @@ void func_88203538(s32 arg0, s32 arg1, char* arg2, s32 arg3, s32 arg4, unk_func_
     if (arg4 & 4) {
         sp88.a = 0x4C;
     }
-    sp80 = func_8002D7C0(0, 0, D_88224FA4, 0x31);
-    sp78 = func_8001F5B0(8, 0, sp80);
-    sp74 = func_8001F5B0(8, 0, " 00");
-    sp70 = func_8001F5B0(4, 0, "00");
-    func_8001F3F4();
-    func_8001EBE0(8, 0);
-    func_8001F324(sp88.r, sp88.g, sp88.b, sp88.a);
-    func_8001F1E8(arg0 + 0x19, arg1 + 2, sp80);
+    sp80 = Text_GetString(0, 0, D_88224FA4, 0x31);
+    sp78 = Font_MeasureTextExtent(8, 0, sp80);
+    sp74 = Font_MeasureTextExtent(8, 0, " 00");
+    sp70 = Font_MeasureTextExtent(4, 0, "00");
+    Font_BeginTranslucentTextRendering();
+    Font_SetActive(8, 0);
+    Gfx_SetEnvColor(sp88.r, sp88.g, sp88.b, sp88.a);
+    Font_Printf(arg0 + 0x19, arg1 + 2, sp80);
     sprintf(sp7C, "%d", arg3 + 1);
-    func_8001F1E8(((arg0 + sp78 + sp74) - func_8001F5B0(0, 0, sp7C)) + 0x19, arg1 + 2, sp7C);
-    func_8001F444();
+    Font_Printf(((arg0 + sp78 + sp74) - Font_MeasureTextExtent(0, 0, sp7C)) + 0x19, arg1 + 2, sp7C);
+    Font_EndTexturedTextRendering();
     if (!(arg4 & 0x100)) {
-        func_88202450(arg2, ((arg5->unk_3C + arg0) - sp70) - 0x35, arg1);
+        LabPC_DrawBoxCount(arg2, ((arg5->unk_3C + arg0) - sp70) - 0x35, arg1);
     }
 }
 
@@ -1504,7 +1504,7 @@ s32 func_882052F4(unk_func_88203ED8_064* arg0, Controller* arg1) {
                         Audio_PlaySoundEffectById(2);
                         tmp = (arg0->unk_24->unk_6C->unk_38 != 0 ? 1 : 2) << 0x10;
                         LabPC_CheckBox_ShowBox(arg0->unk_24->unk_5C,
-                        ((s32*)arg0->unk_24->unk_6C->unk_24[0]->unk_2C->unk_00)[arg0->unk_24->unk_6C->unk_24[0]->unk_38],
+                        (unk_func_88205880_00D0*)((s32*)arg0->unk_24->unk_6C->unk_24[0]->unk_2C->unk_00)[arg0->unk_24->unk_6C->unk_24[0]->unk_38],
                         tmp | arg0->unk_24->unk_6C->unk_24[0]->unk_38);
 
                         arg0->unk_24->unk_6C->unk_24[0]->unk_00.unk_24(arg0->unk_24->unk_6C->unk_24[0], 0x100);
