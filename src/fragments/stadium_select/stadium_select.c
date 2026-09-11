@@ -536,9 +536,10 @@ void func_84100020(s16 arg0, s16 arg1, s16 arg2) {
     gDPSetPrimColor(gDisplayListHead++, 0, 0, 255, 255, 0, 255);
     gDPLoadTextureBlock(gDisplayListHead++, D_302E440, G_IM_FMT_IA, G_IM_SIZ_8b, 32, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-    gSPTextureRectangle(gDisplayListHead++, ((arg0 << 2) - (arg2 << 1)), ((arg1 << 2) - (arg2 << 1)),
-                        (((arg0 << 2) - arg2 << 1)) << 2, (((arg1 << 2) - (arg2 << 1)) + (arg2 << 2)), G_TX_RENDERTILE,
-                        0, 0, 0x8000 / arg2, 0x8000 / arg2);
+    sp8 = (arg0 << 2) - (arg2 << 1);
+    spC = (arg1 << 2) - (arg2 << 1);
+    gSPTextureRectangle(gDisplayListHead++, sp8, spC, sp8 + (arg2 << 2), spC + (arg2 << 2), G_TX_RENDERTILE, 0, 0,
+                        0x8000 / arg2, 0x8000 / arg2);
     gSPDisplayList(gDisplayListHead++, D_8006F630);
 }
 #else
