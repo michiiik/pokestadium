@@ -522,33 +522,30 @@ static u32 D_841033F8[] = {
     0x00000000, 0x08000000, StadiumSelect_IconGeoPostCallback, 0x00000000, 0x06000000, 0x01000000,
 };
 
-#ifdef NON_MATCHING
 void func_84100020(s16 arg0, s16 arg1, s16 arg2) {
-    volatile s32 spC;
-    s16 *sp4ptr;
-    volatile s32 sp8;
-    volatile s32 sp4;
-    s32 sp0;
+    s16 sp4;
+    s16 sp8;
+    s16 spC;
+    s16 sp10;
+    s16 sp14;
 
     if (arg2 < 2) {
         return;
     }
 
+    sp4 = 0x8000 / arg2;
+    sp8 = (arg0 << 2) - (arg2 << 1);
+    spC = (arg1 << 2) - (arg2 << 1);
+    sp10 = sp8 + (arg2 << 2);
+    sp14 = spC + (arg2 << 2);
+
     gSPDisplayList(gDisplayListHead++, D_8006F558);
     gDPSetPrimColor(gDisplayListHead++, 0, 0, 255, 255, 0, 255);
     gDPLoadTextureBlock(gDisplayListHead++, D_302E440, G_IM_FMT_IA, G_IM_SIZ_8b, 32, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-    sp0 = arg2 << 2;
-    sp8 = (arg0 << 2) - (arg2 << 1);
-    spC = (arg1 << 2) - (arg2 << 1);
-    sp4ptr = &arg2;
-    gSPTextureRectangle(gDisplayListHead++, sp8, spC, sp8 + sp0, spC + sp0, G_TX_RENDERTILE, 0, 0,
-                        0x8000 / arg2, 0x8000 / (*sp4ptr));
+    gSPTextureRectangle(gDisplayListHead++, sp8, spC, sp10, sp14, G_TX_RENDERTILE, 0, 0, sp4, sp4);
     gSPDisplayList(gDisplayListHead++, D_8006F630);
 }
-#else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/stadium_select/stadium_select/func_84100020.s")
-#endif
 
 void StadiumSelect_UpdateSparkles(s16 arg0) {
     s32 i;
