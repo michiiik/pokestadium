@@ -524,9 +524,10 @@ static u32 D_841033F8[] = {
 
 #ifdef NON_MATCHING
 void func_84100020(s16 arg0, s16 arg1, s16 arg2) {
-    s32 spC;
-    s32 sp8;
-    s32 sp4;
+    volatile s32 spC;
+    volatile s32 sp8;
+    volatile s32 sp4;
+    s32 sp0;
 
     if (arg2 < 2) {
         return;
@@ -538,7 +539,8 @@ void func_84100020(s16 arg0, s16 arg1, s16 arg2) {
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     sp8 = (arg0 << 2) - (arg2 << 1);
     spC = (arg1 << 2) - (arg2 << 1);
-    gSPTextureRectangle(gDisplayListHead++, sp8, spC, sp8 + (arg2 << 2), spC + (arg2 << 2), G_TX_RENDERTILE, 0, 0,
+    sp0 = arg2 << 2;
+    gSPTextureRectangle(gDisplayListHead++, sp8, spC, sp8 + sp0, spC + sp0, G_TX_RENDERTILE, 0, 0,
                         0x8000 / arg2, 0x8000 / arg2);
     gSPDisplayList(gDisplayListHead++, D_8006F630);
 }
