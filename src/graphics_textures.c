@@ -255,12 +255,11 @@ void Gfx_DrawTiledImageMesh(s16 arg0, s16 arg1, s16 arg2, f32 arg3, Vtx* arg4, u
     }
 }
 
-#ifdef NON_MATCHING
 Vtx* func_8001E490(void) {
-    s16 i;
-    s16 j;
     Vtx* sp54;
     Vtx* var_s0;
+    s16 i;
+    s16 j;
 
     sp54 = main_pool_alloc(0x4B00, 0);
     if (sp54 != NULL) {
@@ -268,20 +267,16 @@ Vtx* func_8001E490(void) {
 
         for (i = -0xF0; i < 0xF0; i += 0x20) {
             for (j = -0x140; j < 0x140; j += 0x20) {
-                Gfx_SetVertexAttributes(var_s0++, j, i, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF);
-                Gfx_SetVertexAttributes(var_s0++, j, i + 0x20, 0, 0, 0x200, 0xFF, 0xFF, 0xFF, 0xFF);
+                Gfx_SetVertexAttributes(var_s0++, j + 0, i + 0, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF);
+                Gfx_SetVertexAttributes(var_s0++, j + 0, i + 0x20, 0, 0, 0x200, 0xFF, 0xFF, 0xFF, 0xFF);
                 Gfx_SetVertexAttributes(var_s0++, j + 0x20, i + 0x20, 0, 0x200, 0x200, 0xFF, 0xFF, 0xFF, 0xFF);
-                Gfx_SetVertexAttributes(var_s0++, j + 0x20, i, 0, 0x200, 0, 0xFF, 0xFF, 0xFF, 0xFF);
+                Gfx_SetVertexAttributes(var_s0++, j + 0x20, i + 0, 0, 0x200, 0, 0xFF, 0xFF, 0xFF, 0xFF);
             }
         }
     }
 
     return sp54;
 }
-#else
-Vtx* func_8001E490(void);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/graphics_textures/func_8001E490.s")
-#endif
 
 void Gfx_SetVertexAttributes(Vtx* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, u8 arg6, u8 arg7, u8 arg8, u8 arg9) {
     arg0->v.ob[0] = arg1;

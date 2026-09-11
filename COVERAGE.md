@@ -3,8 +3,8 @@
 # pokestadium decompilation coverage
 
 <!-- AUTO_COVERAGE:START -->
-- Functions with C implementations: **7,322 / 7,437 (98.5%)**
-- Remaining `GLOBAL_ASM` owners: **115** (across 54 source files)
+- Functions with C implementations: **7,335 / 7,437 (98.6%)**
+- Remaining `GLOBAL_ASM` owners: **102** (across 50 source files)
 <!-- AUTO_COVERAGE:END -->
 
 Total function count is derived from the current linker map's `.text` symbols under `build/src/`, not a historical zero-progress snapshot (unlike the sibling GS repo's `COVERAGE.md`, pokestadium's `asm/us/nonmatchings/*.s` stubs are gitignored, so no such snapshot exists to anchor to) -- it naturally includes both matched and still-`GLOBAL_ASM` functions, since either way their bytes end up in that same object file's `.text` section. Regenerate with:
@@ -14,12 +14,11 @@ Total function count is derived from the current linker map's `.text` symbols un
 
 | File | Remaining owners |
 | --- | ---: |
-| `src/33FE0.c` | 13 |
+| `src/33FE0.c` | 8 |
 | `src/3D140.c` | 5 |
 | `src/animation_double_buffer.c` | 1 |
 | `src/audio_stored_fade.c` | 1 |
 | `src/audio_stream.c` | 1 |
-| `src/display_object_textures.c` | 1 |
 | `src/fragments/battle_engine/battle_engine_2EC3C0.c` | 2 |
 | `src/fragments/battle_engine/battle_engine_34A420.c` | 1 |
 | `src/fragments/battle_engine/battle_engine_351F20.c` | 1 |
@@ -34,10 +33,10 @@ Total function count is derived from the current linker map's `.text` symbols un
 | `src/fragments/gallery_camera/gallery_camera_150AC0.c` | 1 |
 | `src/fragments/gallery_rental_viewer/gallery_rental_viewer_2AFDB0.c` | 1 |
 | `src/fragments/gallery_snap/gallery_snap.c` | 2 |
-| `src/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0.c` | 15 |
+| `src/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0.c` | 13 |
 | `src/fragments/gb_tower_emulator/gb_tower_emulator_86920.c` | 1 |
 | `src/fragments/gb_tower_emulator/gb_tower_emulator_86CB0.c` | 6 |
-| `src/fragments/lab_pc/lab_pc_1A9780.c` | 4 |
+| `src/fragments/lab_pc/lab_pc_1A9780.c` | 3 |
 | `src/fragments/lab_pc/lab_pc_1AE680.c` | 3 |
 | `src/fragments/lab_pc/lab_pc_1B4EA0.c` | 1 |
 | `src/fragments/lab_pc/lab_pc_1BCF10.c` | 2 |
@@ -45,8 +44,7 @@ Total function count is derived from the current linker map's `.text` symbols un
 | `src/fragments/lab_pc_list/lab_pc_list_1D7B40.c` | 1 |
 | `src/fragments/magikarp_game/magikarp_game.c` | 1 |
 | `src/fragments/minigame_select/minigame_select_27BCC0.c` | 2 |
-| `src/fragments/minigame_shared_graphics/minigame_shared_graphics.c` | 1 |
-| `src/fragments/particle_data_library/particle_data_library_2558B0.c` | 2 |
+| `src/fragments/particle_data_library/particle_data_library_2558B0.c` | 1 |
 | `src/fragments/particle_data_library/particle_data_library_2577F0.c` | 1 |
 | `src/fragments/particle_data_library/particle_data_library_257AF0.c` | 1 |
 | `src/fragments/particle_data_library/particle_data_library_258080.c` | 1 |
@@ -64,7 +62,5 @@ Total function count is derived from the current linker map's `.text` symbols un
 | `src/fragments/widget_tree/widget_tree.c` | 4 |
 | `src/gb_audio.c` | 1 |
 | `src/gb_audio_render.c` | 4 |
-| `src/gb_mbc.c` | 1 |
 | `src/geo_render.c` | 2 |
-| `src/graphics_textures.c` | 1 |
 | `src/poke_icon.c` | 1 |
