@@ -1129,7 +1129,7 @@ Gfx* func_81407590(Gfx* arg0, arg1_func_81407874_014* arg1) {
                 color.rgba = var_a3->unk_14->unk_00.color.rgba;
 
                 gDPPipeSync(arg0++);
-                gDPSetPrimColor(arg0++, 0, 0xFF, (color.rgba >> 0x18) & 0xFF, (color.rgba >> 0x10), (color.rgba >> 0x8),
+                gDPSetPrimColor(arg0++, 0, 0xFF, color.rgba >> 0x18, (color.rgba >> 0x10), (color.rgba >> 0x8),
                                 color.rgba);
             } else {
                 ret = ParticleGfx_GetFrameDivisor(var_a3->unk_14->unk_06) % var_a3->unk_14->unk_04;
