@@ -525,6 +525,7 @@ static u32 D_841033F8[] = {
 #ifdef NON_MATCHING
 void func_84100020(s16 arg0, s16 arg1, s16 arg2) {
     volatile s32 spC;
+    s16 *sp4ptr;
     volatile s32 sp8;
     volatile s32 sp4;
     s32 sp0;
@@ -537,11 +538,12 @@ void func_84100020(s16 arg0, s16 arg1, s16 arg2) {
     gDPSetPrimColor(gDisplayListHead++, 0, 0, 255, 255, 0, 255);
     gDPLoadTextureBlock(gDisplayListHead++, D_302E440, G_IM_FMT_IA, G_IM_SIZ_8b, 32, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+    sp0 = arg2 << 2;
     sp8 = (arg0 << 2) - (arg2 << 1);
     spC = (arg1 << 2) - (arg2 << 1);
-    sp0 = arg2 << 2;
+    sp4ptr = &arg2;
     gSPTextureRectangle(gDisplayListHead++, sp8, spC, sp8 + sp0, spC + sp0, G_TX_RENDERTILE, 0, 0,
-                        0x8000 / arg2, 0x8000 / arg2);
+                        0x8000 / arg2, 0x8000 / (*sp4ptr));
     gSPDisplayList(gDisplayListHead++, D_8006F630);
 }
 #else
