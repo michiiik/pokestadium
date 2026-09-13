@@ -1,0 +1,54 @@
+name: Public PR ROM Gate
+
+on:
+  pull_request:
+    branches:
+      - master
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Public PR number to validate using its GitHub merge ref
+        required: false
+
+      ref:
+        description: Same-repository branch or SHA when no PR number is supplied
+        required: false
+        default: master
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-pr-rom-gate-${{ github.event.pull_request.number || inputs.pr_number || inputs.ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    name: Validate ROM against master
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.pull_request.author_association)
+    # This label is intentionally dedicated to the public Stadium 1 gate.
+    # Register it only on a credential-free Mac
+    # runner after the public baseline image has been built.
+    runs-on: [self-hosted, macOS, ARM64, pokestadium-public]
+    timeout-minutes: 30
+    steps:
+      - name: Checkout the PR merge ref or selected branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.pr_number && format('refs/pull/{0}/merge', inputs.pr_number) || inputs.ref }}
+
+      - name: Build and compare against the retail checksum
+        shell: bash
+        run: bash ci/gate-pr.sh "$GITHUB_WORKSPACE" "$RUNNER_TEMP/pokestadium-gate-out"
+
+      - name: Upload gate and proposed coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-pr-rom-gate-${{ github.event.pull_request.number || inputs.pr_number || github.run_id }}
+          path: ${{ runner.temp }}/pokestadium-gate-out/
+          if-no-files-found: warn
+          retention-days: 14

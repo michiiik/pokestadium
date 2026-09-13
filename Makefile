@@ -354,6 +354,11 @@ ifneq ($(COMPARE),0)
 	@$(CAT) $(BASEROM_DIR)/checksum.md5 | tr -d '\r' | md5sum -c -
 endif
 
+cc-check:
+	@set -e; for source in $(C_FILES); do \
+		$(CC_CHECK) $(CC_CHECK_FLAGS) $(IINC) -I $$(dirname "$$source") $(CHECK_WARNINGS) $(BUILD_DEFINES) $(COMMON_DEFINES) $(RELEASE_DEFINES) $(GBI_DEFINES) $(LIBULTRA_DEFINES) $(C_DEFINES) $(MIPS_BUILTIN_DEFS) -o /dev/null "$$source"; \
+	done
+
 clean:
 	@$(PRINT) "$(RED)Cleaning ROM build files...\n$(NO_COL)"
 	$(V)$(RM) -r $(BUILD_DIR)
@@ -410,7 +415,7 @@ ifeq ($(N64_EMULATOR),)
 endif
 	$(N64_EMULATOR) $<
 
-.PHONY: all rom clean libclean distclean venv setup extract lib diff-init init run
+.PHONY: all rom cc-check clean libclean distclean venv setup extract lib diff-init init run
 .DEFAULT_GOAL := rom
 # Prevent removing intermediate files
 .SECONDARY:

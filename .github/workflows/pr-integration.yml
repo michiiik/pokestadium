@@ -1,0 +1,289 @@
+name: Public PR Integration
+
+# This workflow is deliberately separate from the self-hosted ROM gate. It
+# runs only on GitHub-hosted infrastructure and never executes PR-provided
+# scripts. The checked-out PR tree is treated as data by the trusted coverage
+# generator from the base commit.
+on:
+  workflow_run:
+    workflows: [Public PR ROM Gate]
+    types: [completed]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: public-pr-integration-${{ github.event.workflow_run.pull_requests[0].number || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  integrate:
+    name: Refresh coverage and arm auto-merge
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.pull_requests[0].number
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Confirm the exact gate result is still an eligible PR
+        id: metadata
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+          EXPECTED_HEAD_SHA: ${{ github.event.workflow_run.pull_requests[0].head.sha }}
+          EXPECTED_BASE_SHA: ${{ github.event.workflow_run.pull_requests[0].base.sha }}
+        with:
+          script: |
+            const number = Number(process.env.PR_NUMBER);
+            const expectedHead = process.env.EXPECTED_HEAD_SHA;
+            const expectedBase = process.env.EXPECTED_BASE_SHA;
+            const { owner, repo } = context.repo;
+
+            if (!number || !expectedHead || !expectedBase) {
+              core.setFailed('The completed gate did not include a complete pull-request identity.');
+              return;
+            }
+
+            const { data: pr } = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number: number,
+            });
+
+            const sameRepository = pr.head.repo?.full_name === `${owner}/${repo}`;
+            const trustedAuthor = ['OWNER', 'MEMBER', 'COLLABORATOR'].includes(
+              pr.author_association,
+            );
+            const exactRevision = pr.head.sha === expectedHead && pr.base.sha === expectedBase;
+
+            if (!exactRevision) {
+              core.info(`PR #${number} changed after the gate; waiting for its newer gate run.`);
+              core.setOutput('eligible', 'false');
+              return;
+            }
+
+            if (pr.state !== 'open' || pr.base.ref !== 'master' || pr.draft) {
+              core.info(`PR #${number} is closed, non-master, or draft; no integration action taken.`);
+              core.setOutput('eligible', 'false');
+              return;
+            }
+
+            if (!sameRepository || !trustedAuthor) {
+              core.info(
+                `PR #${number} is external or not from a verified author; coverage and merge remain manual.`,
+              );
+              core.setOutput('eligible', 'false');
+              return;
+            }
+
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner,
+              repo,
+              pull_number: number,
+              per_page: 100,
+            });
+            const changesAutomation = files.some(({ filename }) =>
+              filename === '.dockerignore' ||
+              filename.startsWith('.github/') ||
+              filename.startsWith('ci/'),
+            );
+            if (changesAutomation) {
+              core.info(`PR #${number} changes CI or runner controls; automatic integration remains manual.`);
+              core.setOutput('eligible', 'false');
+              return;
+            }
+
+            if (pr.mergeable_state === 'dirty') {
+              core.setFailed(`PR #${number} has merge conflicts; resolve them before integration.`);
+              return;
+            }
+
+            core.setOutput('eligible', 'true');
+            core.setOutput('head-ref', pr.head.ref);
+            core.info(`PR #${number} is eligible at ${expectedHead}.`);
+
+      - name: Checkout the trusted base revision
+        if: steps.metadata.outputs.eligible == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.pull_requests[0].base.sha }}
+          path: control
+          persist-credentials: false
+
+      - name: Checkout the current PR merge ref as data
+        if: steps.metadata.outputs.eligible == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: refs/pull/${{ github.event.workflow_run.pull_requests[0].number }}/merge
+          path: pr
+          persist-credentials: false
+
+      - name: Generate the proposed coverage from trusted code
+        if: steps.metadata.outputs.eligible == 'true'
+        id: coverage
+        shell: bash
+        env:
+          CONTROL_DIR: ${{ github.workspace }}/control
+          PR_DIR: ${{ github.workspace }}/pr
+        run: |
+          set -euo pipefail
+          python3 "$CONTROL_DIR/ci/update_coverage.py" \
+            --repo-root "$PR_DIR" \
+            --output "$RUNNER_TEMP/COVERAGE.md"
+
+          if [[ -L "$PR_DIR/COVERAGE.md" ]]; then
+            echo '::error::The PR makes COVERAGE.md a symbolic link; refusing to write through it.'
+            exit 1
+          fi
+
+          if [[ -f "$PR_DIR/COVERAGE.md" ]] && cmp -s "$RUNNER_TEMP/COVERAGE.md" "$PR_DIR/COVERAGE.md"; then
+            echo 'changed=false' >> "$GITHUB_OUTPUT"
+            echo 'COVERAGE.md is already current for this exact merge tree.'
+          else
+            echo 'changed=true' >> "$GITHUB_OUTPUT"
+            echo 'A coverage-only commit is required before merge.'
+          fi
+
+      - name: Check the integration GitHub App configuration
+        if: >-
+          steps.metadata.outputs.eligible == 'true' &&
+          (steps.coverage.outputs.changed == 'true' || vars.PUBLIC_CI_AUTOMERGE_ENABLED == 'true')
+        shell: bash
+        env:
+          APP_CLIENT_ID: ${{ vars.PUBLIC_CI_APP_ID }}
+          APP_PRIVATE_KEY: ${{ secrets.PUBLIC_CI_APP_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$APP_CLIENT_ID" || -z "$APP_PRIVATE_KEY" ]]; then
+            echo '::error::Configure PUBLIC_CI_APP_ID and PUBLIC_CI_APP_PRIVATE_KEY before enabling coverage integration.'
+            exit 1
+          fi
+
+      - name: Create the least-privilege integration App token
+        if: >-
+          steps.metadata.outputs.eligible == 'true' &&
+          (steps.coverage.outputs.changed == 'true' || vars.PUBLIC_CI_AUTOMERGE_ENABLED == 'true')
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.PUBLIC_CI_APP_ID }}
+          private-key: ${{ secrets.PUBLIC_CI_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+          permission-contents: write
+          permission-pull-requests: write
+
+      - name: Commit only the generated coverage file to the PR branch
+        if: steps.coverage.outputs.changed == 'true'
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+          EXPECTED_HEAD_SHA: ${{ github.event.workflow_run.pull_requests[0].head.sha }}
+          PR_COVERAGE_PATH: ${{ runner.temp }}/COVERAGE.md
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            const fs = require('fs');
+            const number = Number(process.env.PR_NUMBER);
+            const expectedHead = process.env.EXPECTED_HEAD_SHA;
+            const { owner, repo } = context.repo;
+            const { data: pr } = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number: number,
+            });
+
+            if (pr.head.sha !== expectedHead || pr.head.repo?.full_name !== `${owner}/${repo}`) {
+              core.setFailed('The PR head changed or is no longer a same-repository branch; refusing the coverage commit.');
+              return;
+            }
+
+            let currentFile;
+            try {
+              const response = await github.rest.repos.getContent({
+                owner,
+                repo,
+                path: 'COVERAGE.md',
+                ref: pr.head.ref,
+              });
+              currentFile = response.data;
+            } catch (error) {
+              if (error.status !== 404) {
+                throw error;
+              }
+              core.info('COVERAGE.md is absent on the PR branch; the update will create it.');
+            }
+
+            if (Array.isArray(currentFile) || currentFile?.type === 'dir') {
+              core.setFailed('COVERAGE.md resolved to a directory.');
+              return;
+            }
+
+            const update = {
+              owner,
+              repo,
+              path: 'COVERAGE.md',
+              branch: pr.head.ref,
+              content: fs.readFileSync(process.env.PR_COVERAGE_PATH).toString('base64'),
+              message: `ci: update coverage for #${number}`,
+            };
+            if (currentFile?.sha) {
+              update.sha = currentFile.sha;
+            }
+
+            await github.rest.repos.createOrUpdateFileContents(update);
+            core.info(`Committed generated COVERAGE.md to ${pr.head.ref}; the new head must pass the ROM gate.`);
+
+      - name: Leave auto-merge disabled until repository protection is ready
+        if: >-
+          steps.coverage.outputs.changed == 'false' &&
+          vars.PUBLIC_CI_AUTOMERGE_ENABLED != 'true'
+        shell: bash
+        run: |
+          echo 'Coverage is current. Set PUBLIC_CI_AUTOMERGE_ENABLED=true only after branch protection and Allow auto-merge are configured.'
+
+      - name: Enable squash auto-merge after the coverage gate passes
+        if: >-
+          steps.coverage.outputs.changed == 'false' &&
+          vars.PUBLIC_CI_AUTOMERGE_ENABLED == 'true'
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+          EXPECTED_HEAD_SHA: ${{ github.event.workflow_run.pull_requests[0].head.sha }}
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            const number = Number(process.env.PR_NUMBER);
+            const expectedHead = process.env.EXPECTED_HEAD_SHA;
+            const { owner, repo } = context.repo;
+            const { data: pr } = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number: number,
+            });
+
+            if (pr.head.sha !== expectedHead || pr.state !== 'open' || pr.base.ref !== 'master') {
+              core.setFailed('The PR changed before auto-merge could be armed.');
+              return;
+            }
+
+            const result = await github.graphql(
+              `mutation($pullRequestId: ID!, $mergeMethod: PullRequestMergeMethod!) {
+                enablePullRequestAutoMerge(input: {
+                  pullRequestId: $pullRequestId,
+                  mergeMethod: $mergeMethod
+                }) {
+                  pullRequest {
+                    number
+                    autoMergeRequest { enabledAt }
+                  }
+                }
+              }`,
+              {
+                pullRequestId: pr.node_id,
+                mergeMethod: 'SQUASH',
+              },
+            );
+            core.info(`Squash auto-merge enabled for PR #${result.enablePullRequestAutoMerge.pullRequest.number}.`);
