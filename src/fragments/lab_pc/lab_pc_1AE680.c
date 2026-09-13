@@ -187,7 +187,7 @@ static unk_D_88217D10 D_88217D10[2][9] = {
         { 0x36, 0xD2F, 0xA, 0x85, 0, 0 },
     },
 };
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/23/fragment23_1AE680/LabPC_BuildPrizePokemon.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc/lab_pc_1AE680/LabPC_BuildPrizePokemon.s")
 #endif
 
 s32 LabPC_ReadDeckEntries(unk_func_882062E4* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
@@ -210,7 +210,7 @@ static Color_RGBA8 D_88217DF4 = { 0x6C, 0x6C, 0x7E, 0xFF };
 void LabPC_DrawBoxNumberCell();
 // const char D_88224E90[] = "%d";
 // const char D_88224E94[] = " 00";
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/23/fragment23_1AE680/LabPC_DrawBoxNumberCell.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc/lab_pc_1AE680/LabPC_DrawBoxNumberCell.s")
 
 static u8 D_88217DF8[] = {
     0x18,
@@ -223,7 +223,7 @@ static Color_RGBA8 D_88217E04 = { 0xF0, 0xF0, 0x00, 0xFF };
 static Color_RGBA8 D_88217E08 = { 0x6C, 0x6C, 0x7E, 0xFF };
 
 void LabPC_DrawBoxTypeCell();
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/23/fragment23_1AE680/LabPC_DrawBoxTypeCell.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc/lab_pc_1AE680/LabPC_DrawBoxTypeCell.s")
 
 s32 LabPC_BoxNumberSelectorInput(unk_func_8820BE14_02C_078_034* arg0, Controller* arg1) {
     s32 var_v1;
@@ -504,7 +504,7 @@ static Color_RGBA8 D_88217E1C[] = {
 };
 
 void LabPC_DrawSwapBoxLabel();
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/23/fragment23_1AE680/LabPC_DrawSwapBoxLabel.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc/lab_pc_1AE680/LabPC_DrawSwapBoxLabel.s")
 
 void LabPC_InitMonNameLevelWidget(unk_func_882079D8* arg0, s32 arg1, s32 arg2, s32 arg3, unk_func_88205880_00D0* arg4) {
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(&arg0->unk_00, sizeof(unk_func_882079D8));
@@ -1785,7 +1785,7 @@ static Color_RGBA8* D_88217F90[] = {
 };
 static Color_RGBA8* D_88217FB0[] = { D_882181F8, D_882181F8 };
 static Color_RGBA8 D_88217FB8 = { 0xF0, 0xF0, 0xF0, 0xFF };
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/23/fragment23_1AE680/LabPC_BuildSwapMenuNode.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc/lab_pc_1AE680/LabPC_BuildSwapMenuNode.s")
 #endif
 
 s32 LabPC_SwapScreen_UpdatePageSelection(unk_func_8820BE14_02C* arg0) {
@@ -2454,7 +2454,7 @@ void LabPC_BuildSwapScreen(unk_func_8820BE14* arg0, s32 arg1, s32 arg2, s32 arg3
 #else
 static Color_RGBA8 D_88217FC0 = { 0x1E, 0x50, 0x50, 0xFF };
 static Color_RGBA8 D_88217FC4 = { 0x00, 0x0A, 0x0A, 0xFF };
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/23/fragment23_1AE680/LabPC_BuildSwapScreen.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc/lab_pc_1AE680/LabPC_BuildSwapScreen.s")
 #endif
 
 void LabPC_RunSwapScreenLoop(unk_func_8820BE14* arg0) {

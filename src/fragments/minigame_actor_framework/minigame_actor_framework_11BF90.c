@@ -225,7 +225,7 @@ Gfx* MiniFx_BuildNodeColorRampDisplayList(Gfx* arg0, arg1_func_87903D64_014* arg
     return arg0;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/3/fragment3_11BF90/MiniFx_BuildNodeColorRampDisplayList.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/minigame_actor_framework/minigame_actor_framework_11BF90/MiniFx_BuildNodeColorRampDisplayList.s")
 #endif
 
 void MiniFx_GraphNodeBuildColorRampList(s32 arg0, arg1_func_87903D64* arg1) {

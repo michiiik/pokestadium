@@ -1557,7 +1557,7 @@ void Credits_InitRoleList(u8 arg0, u8 arg1, unk_D_86A03014* arg2) {
     D_86A06214 = arg2;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/16/fragment16_158A00/Credits_InitRoleList.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/credits/credits_158A00/Credits_InitRoleList.s")
 #endif
 
 #ifdef NON_MATCHING
@@ -1576,7 +1576,7 @@ void Credits_UpdateScrollDelta(void) {
     D_86A0621C = temp_v0;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/16/fragment16_158A00/Credits_UpdateScrollDelta.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/credits/credits_158A00/Credits_UpdateScrollDelta.s")
 #endif
 
 void Credits_DrawRoleList(void) {

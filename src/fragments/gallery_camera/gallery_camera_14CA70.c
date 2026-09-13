@@ -597,7 +597,7 @@ void GalleryCamera_PlayScriptedInput(void) {
     GalleryCamera_CopyControllerState(&D_8690B390, &D_8690B5D0);
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/15/fragment15_14CA70/GalleryCamera_PlayScriptedInput.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gallery_camera/gallery_camera_14CA70/GalleryCamera_PlayScriptedInput.s")
 #endif
 
 void GalleryCamera_AddPolarOffset(f32* arg0, f32* arg1, s16 arg2, s16 arg3) {

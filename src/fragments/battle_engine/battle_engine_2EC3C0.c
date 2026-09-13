@@ -424,7 +424,7 @@ void Battle_LoadSpeciesDataTables(Battler* arg0, s32 arg1) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/62/fragment62_2EC3C0/Battle_LoadSpeciesDataTables.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/battle_engine/battle_engine_2EC3C0/Battle_LoadSpeciesDataTables.s")
 #endif
 
 void BattleScene_TickRow10CleanupAndEnterState18(Battler* arg0) {
@@ -1288,7 +1288,7 @@ void func_8430506C(Battler* arg0) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/62/fragment62_2EC3C0/func_8430506C.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/battle_engine/battle_engine_2EC3C0/func_8430506C.s")
 #endif
 
 void BattleScene_TickRow14PlayMoveEffectEnd(Battler* arg0) {

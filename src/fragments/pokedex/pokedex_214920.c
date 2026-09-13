@@ -838,7 +838,7 @@ s32 Pokedex_ShowSpeciesList(void) {
     return var_s2;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/28/fragment28_214920/Pokedex_ShowSpeciesList.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/pokedex/pokedex_214920/Pokedex_ShowSpeciesList.s")
 #endif
 
 #ifdef NON_MATCHING
@@ -911,7 +911,7 @@ u8 Pokedex_ShowEntryMenu(void) {
     return var_s1;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/28/fragment28_214920/Pokedex_ShowEntryMenu.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/pokedex/pokedex_214920/Pokedex_ShowEntryMenu.s")
 #endif
 
 void Pokedex_LoadIcon(u8* arg0, s32 arg1) {

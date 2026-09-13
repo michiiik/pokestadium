@@ -104,20 +104,20 @@ u32 GbApu_FreqToStep(u16 arg0) {
   return temp;
 }
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/func_81207494.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/func_81207494.s")
 
 s32 GbApu_FreqToStep2x(s32);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/GbApu_FreqToStep2x.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/GbApu_FreqToStep2x.s")
 
 void func_81207690(void) {
 }
 
 s32 GbApu_SampleWaveform(u32, u16);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/GbApu_SampleWaveform.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/GbApu_SampleWaveform.s")
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/GbApu_UpdateSquare1Channel.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/GbApu_UpdateSquare1Channel.s")
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/GbApu_UpdateSquare2Channel.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/GbApu_UpdateSquare2Channel.s")
 
 u16 GbApu_UpdateWaveChannel(void) {
     u16 temp_v0;
@@ -264,17 +264,17 @@ u16 GbApu_UpdateNoiseChannel(void) {
 }
 #else
 u16 GbApu_UpdateNoiseChannel(void);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/GbApu_UpdateNoiseChannel.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/GbApu_UpdateNoiseChannel.s")
 #endif
 
 void GbApu_WriteRegister(u16, u8);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/GbApu_WriteRegister.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/GbApu_WriteRegister.s")
 
 void GbApu_RenderAudioBuffer(s32 sampleCount, s16* samples);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/GbApu_RenderAudioBuffer.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/GbApu_RenderAudioBuffer.s")
 
 void GbApu_QueueRegisterWrite(u16 address, u8 value, u16 timestamp);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/GbApu_QueueRegisterWrite.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/GbApu_QueueRegisterWrite.s")
 
 void GbApu_ResetChannels(void) {
   s32 pad[6];
@@ -302,7 +302,7 @@ void GbApu_Reset(s32 arg0) {
   GbApu_ResetChannels();
 }
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/func_81208E4C.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/func_81208E4C.s")
 
 void func_81208F94(void) {
 }
@@ -340,7 +340,7 @@ u8 GbMem_ReadIoRegister(u16 arg0) {
   return gGbMemoryMap[arg0 & 0xFFFF];
 }
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/GbAudio_ServiceOutputBuffer.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/GbAudio_ServiceOutputBuffer.s")
 
 /* Schedules the next N64 audio buffer and renders either the GB APU or an alternate stream. */
 void GbAudio_ServiceOutputBuffer(void);
@@ -354,10 +354,10 @@ void GbAudio_SetAlternateStreamId(s32 arg0) {
 }
 
 void GbAudio_RenderAlternateBuffer(s32 sampleCount, s16* samples);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/GbAudio_RenderAlternateBuffer.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/GbAudio_RenderAlternateBuffer.s")
 
 void func_81209688(UNUSED s32 arg0) {
 }
 
 // Decrypting this function causes issues
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/func_81209690.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/func_81209690.s")

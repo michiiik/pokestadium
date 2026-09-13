@@ -2526,7 +2526,7 @@ s32 BattleInfoWidget_MoveSelectionInput(unk_func_8830867C_040_05C* arg0, Control
     return var_t2;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/24/fragment24_1D7B40/BattleInfoWidget_MoveSelectionInput.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc_list/lab_pc_list_1D7B40/BattleInfoWidget_MoveSelectionInput.s")
 #endif
 
 void BattleInfoWidget_InitGamePakSlotLabel(unk_func_88310B70* arg0, s32 arg1, s32 arg2, unk_func_8830867C_04C_030* arg3, MemoryPool* arg4) {

@@ -51,5 +51,5 @@ s32 osGbSetNextBuffer(void* bufPtr, u32 size) {
   return 0;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86C30/osGbSetNextBuffer.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86C30/osGbSetNextBuffer.s")
 #endif

@@ -51,7 +51,7 @@ void DisplayList_BuildScrollingDualPanel(Gfx* gfx, DisplayListAddresses* address
 }
 #else
 void DisplayList_BuildScrollingDualPanel(Gfx*, DisplayListAddresses*);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/31/fragment31_2577F0/DisplayList_BuildScrollingDualPanel.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/particle_data_library/particle_data_library_2577F0/DisplayList_BuildScrollingDualPanel.s")
 #endif
 
 void DisplayList_InitScrollingDualPanel(s32 arg0, DisplayListState* state) {

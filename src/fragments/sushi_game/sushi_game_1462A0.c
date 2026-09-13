@@ -1128,7 +1128,7 @@ void SushiGame_UpdatePlayerPhysics(unk_D_86807558* arg0) {
 }
 #else
 void SushiGame_UpdatePlayerPhysics(unk_D_86807558* arg0);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/14/fragment14_1462A0/SushiGame_UpdatePlayerPhysics.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/sushi_game/sushi_game_1462A0/SushiGame_UpdatePlayerPhysics.s")
 #endif
 
 #ifdef NON_MATCHING
@@ -1158,7 +1158,7 @@ unk_D_868084D8* SushiGame_FindPlateNearMouth(unk_D_86807558* arg0) {
 }
 #else
 unk_D_868084D8* SushiGame_FindPlateNearMouth(unk_D_86807558* arg0);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/14/fragment14_1462A0/SushiGame_FindPlateNearMouth.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/sushi_game/sushi_game_1462A0/SushiGame_FindPlateNearMouth.s")
 #endif
 
 s32 SushiGame_CheckEatInterrupt(unk_D_86807558* arg0) {

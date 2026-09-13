@@ -175,5 +175,5 @@ Gfx* BattleAnim_BuildBladeStreakDisplayList(Gfx* arg0, Vec3f* arg1, Vec3f* arg2,
     return arg0;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/62/fragment62_351F20/BattleAnim_BuildBladeStreakDisplayList.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/battle_engine/battle_engine_351F20/BattleAnim_BuildBladeStreakDisplayList.s")
 #endif

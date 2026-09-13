@@ -221,7 +221,7 @@ void GbPak_PrepareProbeBlock(unk_D_8122B2C0* arg0, s32 arg1) {
 }
 
 s32 GbPak_VerifyWritableProbeBlock(unk_D_8122B2C0*);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_7F9A0/GbPak_VerifyWritableProbeBlock.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/GbPak_VerifyWritableProbeBlock.s")
 
 s32 GbPak_ProbeCartridge(unk_D_8122B2C0* arg0) {
   s32 ret;
@@ -254,7 +254,7 @@ s32 GbPak_ProbeCartridge(unk_D_8122B2C0* arg0) {
 }
 
 s32 GbPak_ReadRomAndChecksum(unk_D_8122B2C0* arg0);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_7F9A0/GbPak_ReadRomAndChecksum.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/GbPak_ReadRomAndChecksum.s")
 
 s32 GbPak_TransferBankedRam(unk_D_8122B2C0* arg0, s32 arg1) {
   s32 temp_v0;
@@ -315,9 +315,9 @@ s32 GbPak_DetectSupportedCartridgeVariant(unk_func_812009D0* arg0) {
 }
 
 void GbPak_ServiceThread(void *);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_7F9A0/GbPak_ServiceThread.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/GbPak_ServiceThread.s")
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_7F9A0/GbEmu_DrawGlyphList.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/GbEmu_DrawGlyphList.s")
 
 s32 GbEmu_PixelOpDitherA(s32 arg0, s32 arg1) {
   return (arg1 & 1) ? arg1 : arg0;
@@ -357,9 +357,9 @@ void GbEmu_BlitWithPixelOp(u16* dst, u16* src, s32 mode, s32 width, s32 height) 
   }
 }
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_7F9A0/func_812016DC.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/func_812016DC.s")
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_7F9A0/func_812018C0.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/func_812018C0.s")
 
 #ifdef NON_MATCHING
 void GbEmu_BlitAlphaBlended(u16* dst, u8* alpha_map, s32 color, s32 width, s32 height, u32 alpha_stride) {
@@ -393,7 +393,7 @@ void GbEmu_BlitAlphaBlended(u16* dst, u8* alpha_map, s32 color, s32 width, s32 h
   }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_7F9A0/GbEmu_BlitAlphaBlended.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/GbEmu_BlitAlphaBlended.s")
 #endif
 
 void GbEmu_DrawStretchedBorderRow(s32 arg0, s32 arg1, s32 arg2) {
@@ -408,19 +408,19 @@ void GbEmu_DrawStretchedBorderRow(s32 arg0, s32 arg1, s32 arg2) {
   func_812018C0(arg0 + (arg2 - 8) * 2, &D_8122C748->unk_9990, arg1, 8, 0x10);
 }
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_7F9A0/func_812020C0.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/func_812020C0.s")
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_7F9A0/GbEmu_DrawStatusScreen.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/GbEmu_DrawStatusScreen.s")
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_7F9A0/func_8120241C.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/func_8120241C.s")
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_7F9A0/func_81202758.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/func_81202758.s")
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_7F9A0/GbEmu_ComposeBorderFrame.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/GbEmu_ComposeBorderFrame.s")
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_7F9A0/func_81202EA8.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/func_81202EA8.s")
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_7F9A0/GbEmu_UpdateBorderAnimation.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/GbEmu_UpdateBorderAnimation.s")
 
 void GbEmu_ResetEmulatorState(unk_D_8122B2C0* arg0) {
   s32 i;
@@ -514,10 +514,10 @@ void func_81208F94(void);
 void GbAudio_SetAlternateRendererEnabled(s32);
 
 void GbEmu_Startup(s32, s32, OSId, s32, OSMesgQueue*, u16 (*arg5)[6][0x640]);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_7F9A0/GbEmu_Startup.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/GbEmu_Startup.s")
 
 void GbEmu_DecompressBankedResources(unk_D_8122B2C0*);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_7F9A0/GbEmu_DecompressBankedResources.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/GbEmu_DecompressBankedResources.s")
 
 void GbEmu_ApplyButtonMapping(void) {
   if ((gGbEmuButtonBindingSelections.unk_01 == gGbEmuButtonBindingSelections.unk_00) || (gGbEmuButtonBindingSelections.unk_00 >= 5) || (gGbEmuButtonBindingSelections.unk_01 >= 5)) {
@@ -530,13 +530,13 @@ void GbEmu_ApplyButtonMapping(void) {
 }
 
 void GbEmu_UpdateMenuInput(unk_D_8122B2C0*);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_7F9A0/GbEmu_UpdateMenuInput.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/GbEmu_UpdateMenuInput.s")
 
 void GbEmu_DrawMenuOverlay(s32);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_7F9A0/GbEmu_DrawMenuOverlay.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/GbEmu_DrawMenuOverlay.s")
 
 s32 GbEmu_ProcessFrameStateMachine(s32);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_7F9A0/GbEmu_ProcessFrameStateMachine.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/GbEmu_ProcessFrameStateMachine.s")
 
 void GbEmu_Init(unk_D_800AA660* arg0) {
   D_8122C4FC = 0;

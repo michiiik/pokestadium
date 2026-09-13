@@ -194,7 +194,7 @@ Gfx* SushiGame_DrawPlateStack(Gfx* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4)
     return arg0;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/14/fragment14_144300/SushiGame_DrawPlateStack.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/sushi_game/sushi_game_144300/SushiGame_DrawPlateStack.s")
 #endif
 
 void SushiGame_DrawAllPlateStacks(void) {
@@ -474,7 +474,7 @@ void SushiGame_DrawTutorialScreen(void) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/14/fragment14_144300/SushiGame_DrawTutorialScreen.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/sushi_game/sushi_game_144300/SushiGame_DrawTutorialScreen.s")
 #endif
 
 void SushiGame_DrawFrame(void) {
@@ -672,7 +672,7 @@ s32 SushiGame_Update(void) {
     return sp1C;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/14/fragment14_144300/SushiGame_Update.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/sushi_game/sushi_game_144300/SushiGame_Update.s")
 #endif
 
 void SushiGame_MainLoop(void) {

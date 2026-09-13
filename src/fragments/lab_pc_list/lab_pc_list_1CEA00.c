@@ -1464,7 +1464,7 @@ static Color_RGBA8 D_883172CC[][2] = {
         { 0x4B, 0x4C, 0x4F, 0xFF },
     },
 };
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/24/fragment24_1CEA00/LabPCList_DrawRowCells.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc_list/lab_pc_list_1CEA00/LabPCList_DrawRowCells.s")
 #endif
 
 void LabPCList_SaveFilterState(unk_func_8830867C_02C* arg0) {
@@ -1973,7 +1973,7 @@ void LabPCList_ApplySelectedItem(unk_func_8830867C_02C* arg0) {
     LabPCList_BuildTmHmList(&arg0->unk_C48, arg0->unk_1A8, arg0->unk_154, 3, 0xAA);
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/24/fragment24_1CEA00/LabPCList_ApplySelectedItem.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc_list/lab_pc_list_1CEA00/LabPCList_ApplySelectedItem.s")
 #endif
 
 s32 LabPCList_OpenListMenu(unk_func_8830867C_02C* arg0, Controller* arg1) {

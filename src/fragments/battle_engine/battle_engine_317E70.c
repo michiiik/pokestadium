@@ -48,7 +48,7 @@ BattleAnimEffectSlot* BattleAnim_AllocEffectSlot(void) {
     return var_v1;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/62/fragment62_317E70/BattleAnim_AllocEffectSlot.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/battle_engine/battle_engine_317E70/BattleAnim_AllocEffectSlot.s")
 #endif
 
 void BattleAnim_FreeEffectSlot(BattleAnimEffectSlot* arg0) {

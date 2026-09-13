@@ -405,7 +405,7 @@ void LabPC_ScrollableGrid_DrawHeaderArrows(unk_func_8820BE14_02C_038* arg0, s32 
     gDPSetAlphaCompare(gDisplayListHead++, G_AC_NONE);
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/23/fragment23_1BCF10/LabPC_ScrollableGrid_DrawHeaderArrows.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc/lab_pc_1BCF10/LabPC_ScrollableGrid_DrawHeaderArrows.s")
 #endif
 
 #ifdef NON_MATCHING
@@ -595,7 +595,7 @@ s32 LabPC_ScrollableGrid_SwapModeInput(unk_func_8820BE14_02C_038* arg0, Controll
     return var_t2;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/23/fragment23_1BCF10/LabPC_ScrollableGrid_SwapModeInput.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc/lab_pc_1BCF10/LabPC_ScrollableGrid_SwapModeInput.s")
 #endif
 
 void LabPC_ScrollableGrid_SetSwapMode(unk_func_8820BE14_02C_038* arg0, s32 arg1) {

@@ -822,5 +822,5 @@ void Gallery_RentalViewerDrawBoxPicker(s32 arg0) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/47/fragment47_2AFDB0/Gallery_RentalViewerDrawBoxPicker.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gallery_rental_viewer/gallery_rental_viewer_2AFDB0/Gallery_RentalViewerDrawBoxPicker.s")
 #endif

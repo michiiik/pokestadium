@@ -3670,7 +3670,7 @@ Gfx* Pokedex_DrawMapLabelBubble(Gfx* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg
     return arg0;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/28/fragment28_2190D0/Pokedex_DrawMapLabelBubble.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/pokedex/pokedex_2190D0/Pokedex_DrawMapLabelBubble.s")
 #endif
 
 void Pokedex_BuildMapLabelsDisplayList(void) {
@@ -4176,7 +4176,7 @@ void Pokedex_ShowAreaMap(s32 arg0, MainPoolState* arg1, UNUSED s32 arg2, s32 arg
     ptr->unk_60.eye = D_88826288;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/28/fragment28_2190D0/Pokedex_ShowAreaMap.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/pokedex/pokedex_2190D0/Pokedex_ShowAreaMap.s")
 #endif
 
 void Pokedex_ExitAreaMapPool(void) {

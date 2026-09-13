@@ -3618,7 +3618,7 @@ void BattleAI_RefineMoveCandidateScores(AICandidateGroup* arg0, AICandidateGroup
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/62/fragment62_361050/BattleAI_RefineMoveCandidateScores.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/battle_engine/battle_engine_361050/BattleAI_RefineMoveCandidateScores.s")
 #endif
 
 s32 BattleAI_IsScoreBetter(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
@@ -4430,7 +4430,7 @@ s32 BattleAI_SelectBestCandidateSubset(AICandidateGroup* arg0, s32* arg1, s32* a
     return sp76;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/62/fragment62_361050/BattleAI_SelectBestCandidateSubset.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/battle_engine/battle_engine_361050/BattleAI_SelectBestCandidateSubset.s")
 #endif
 
 s32 BattleAI_SelectLeadFromScoredGroup(AICandidateGroup* arg0, AICandidateGroup* arg1, u8* arg2, u8* arg3, s32* arg4) {

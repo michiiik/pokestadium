@@ -898,7 +898,7 @@ void Trade_DrawPickScreenGrid(unk_D_82F144D0* arg0) {
 }
 #else
 static s16 D_82F13C0C[] = { 0x34, 0x148 };
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/41/fragment41_289240/Trade_DrawPickScreenGrid.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/trade_machine/trade_machine_289240/Trade_DrawPickScreenGrid.s")
 #endif
 
 void Trade_ResetPickScreens(void) {

@@ -45,7 +45,7 @@ void DisplayList_BuildScrollingIconSegment0(Gfx* gfx, s32 arg1, s32 arg2) {
 }
 #else
 void DisplayList_BuildScrollingIconSegment0(Gfx*, s32, s32);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/31/fragment31_258080/DisplayList_BuildScrollingIconSegment0.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/particle_data_library/particle_data_library_258080/DisplayList_BuildScrollingIconSegment0.s")
 #endif
 
 void DisplayList_InitScrollingIconSegment0(s32 arg0, DisplayListState* state) {
@@ -88,7 +88,7 @@ void DisplayList_BuildScrollingIconSegment1(Gfx* gfx, s32 arg1, s32 arg2) {
 }
 #else
 void DisplayList_BuildScrollingIconSegment1(Gfx*, s32, s32);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/31/fragment31_258080/DisplayList_BuildScrollingIconSegment1.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/particle_data_library/particle_data_library_258080/DisplayList_BuildScrollingIconSegment1.s")
 #endif
 
 void DisplayList_InitScrollingIconSegment1(s32 arg0, DisplayListState* state) {
@@ -131,7 +131,7 @@ void DisplayList_BuildScrollingIconSegment2(Gfx* gfx, s32 arg1, s32 arg2) {
 }
 #else
 void DisplayList_BuildScrollingIconSegment2(Gfx*, s32, s32);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/31/fragment31_258080/DisplayList_BuildScrollingIconSegment2.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/particle_data_library/particle_data_library_258080/DisplayList_BuildScrollingIconSegment2.s")
 #endif
 
 void DisplayList_InitScrollingIconSegment2(s32 arg0, DisplayListState* state) {
@@ -174,7 +174,7 @@ void DisplayList_BuildScrollingIconSegment3(Gfx* gfx, s32 arg1, s32 arg2) {
 }
 #else
 void DisplayList_BuildScrollingIconSegment3(Gfx*, s32, s32);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/31/fragment31_258080/DisplayList_BuildScrollingIconSegment3.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/particle_data_library/particle_data_library_258080/DisplayList_BuildScrollingIconSegment3.s")
 #endif
 
 void DisplayList_InitScrollingIconSegment3(s32 arg0, DisplayListState* state) {
@@ -216,7 +216,7 @@ void DisplayList_InitPulsingRectSegment(s32 arg0, DisplayListState* state) {
 }
 #else
 void DisplayList_InitPulsingRectSegment(s32, DisplayListState*);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/31/fragment31_258080/DisplayList_InitPulsingRectSegment.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/particle_data_library/particle_data_library_258080/DisplayList_InitPulsingRectSegment.s")
 #endif
 
 #ifdef NON_MATCHING
@@ -276,7 +276,7 @@ void DisplayList_InitColorCycleBoxSegment(s32 arg0, DisplayListState* state) {
 }
 #else
 void DisplayList_InitColorCycleBoxSegment(s32, DisplayListState*);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/31/fragment31_258080/DisplayList_InitColorCycleBoxSegment.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/particle_data_library/particle_data_library_258080/DisplayList_InitColorCycleBoxSegment.s")
 #endif
 
 void DisplayList_BuildDigitDisplayBackground(Gfx* gfx) {
@@ -355,7 +355,7 @@ void DisplayList_BuildDigitOrGlyphSegment(Gfx* gfx) {
     D_81004BB0 += 1;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/31/fragment31_258080/DisplayList_BuildDigitOrGlyphSegment.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/particle_data_library/particle_data_library_258080/DisplayList_BuildDigitOrGlyphSegment.s")
 #endif
 
 void DisplayList_InitDigitDisplayBackground(s32 arg0, DisplayListState* state) {

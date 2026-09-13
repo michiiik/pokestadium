@@ -290,7 +290,7 @@ Gfx* DoubleTextureTrail_DrawSegment(Gfx* arg0, DoubleTextureTrail* arg1, s16 arg
     return arg0;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/62/fragment62_356730/DoubleTextureTrail_DrawSegment.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/battle_engine/battle_engine_356730/DoubleTextureTrail_DrawSegment.s")
 #endif
 
 Gfx* DoubleTextureTrail_LoadTextures(Gfx* arg0, DoubleTextureTrail* arg1) {

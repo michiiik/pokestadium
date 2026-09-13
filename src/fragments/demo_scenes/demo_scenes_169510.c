@@ -64,5 +64,5 @@ void MtxF_SetEulerRotationTranslation(MtxF* arg0, f32 arg1, f32 arg2, f32 arg3, 
     arg0->mf[3][3] = 1.0f;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/17/fragment17_169510/MtxF_SetEulerRotationTranslation.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/demo_scenes/demo_scenes_169510/MtxF_SetEulerRotationTranslation.s")
 #endif

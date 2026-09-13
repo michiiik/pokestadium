@@ -3234,7 +3234,7 @@ void Credits_InitCameraKeyframeBlend(unk_D_86002F34_00C* arg0, u16 arg1, s8 arg2
     D_86A06244 = ((ptr->unk_2C - ptr->unk_28) * scale) / arg1;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/16/fragment16_15A2B0/Credits_InitCameraKeyframeBlend.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/credits/credits_15A2B0/Credits_InitCameraKeyframeBlend.s")
 #endif
 
 void Credits_StepCameraKeyframeBlend(void) {
@@ -3321,7 +3321,7 @@ void Credits_InitCameraYawBlend(s16* arg0, s16* arg1, s16* arg2, unk_D_86002F34_
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/16/fragment16_15A2B0/Credits_InitCameraYawBlend.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/credits/credits_15A2B0/Credits_InitCameraYawBlend.s")
 #endif
 
 void Credits_StepCameraYawBlend(void) {

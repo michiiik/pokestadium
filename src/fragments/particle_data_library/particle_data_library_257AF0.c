@@ -37,7 +37,7 @@ void DisplayList_BuildAnimatedFrameSegment(Gfx* gfx, unk_arg1_func_81002830* arg
 }
 #else
 void DisplayList_BuildAnimatedFrameSegment(s32, s32);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/31/fragment31_257AF0/DisplayList_BuildAnimatedFrameSegment.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/particle_data_library/particle_data_library_257AF0/DisplayList_BuildAnimatedFrameSegment.s")
 #endif
 
 void DisplayList_InitAnimatedFrameSegment(s32 arg0, unk_arg1_func_81002968* arg1) {

@@ -48,7 +48,7 @@ s32 MiniFx_AllocEmitter(void) {
     return (s32)var_v1;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/3/fragment3_119FB0/MiniFx_AllocEmitter.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/minigame_actor_framework/minigame_actor_framework_119FB0/MiniFx_AllocEmitter.s")
 #endif
 
 void MiniFx_FreeEmitter(ParticleEmitter* arg0) {

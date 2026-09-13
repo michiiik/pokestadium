@@ -97,7 +97,7 @@ void Battle_FormatString(s8* arg0, s8* arg1, ...) {
     arg0[var_v0] = '\x00';
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/62/fragment62_3020D0/Battle_FormatString.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/battle_engine/battle_engine_3020D0/Battle_FormatString.s")
 #endif
 
 void Battle_QueueMessage(s8* arg0, s8 arg1) {

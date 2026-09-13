@@ -64,7 +64,7 @@ void Particle31_ResetSlot(unk_D_86002F58_004_000* arg0, s32 arg1) {
     D_810047E0[var_v0 & 1][arg1].scale = sp38;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/31/fragment31_2558B0/Particle31_ResetSlot.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/particle_data_library/particle_data_library_2558B0/Particle31_ResetSlot.s")
 #endif
 
 void Particle31_ResetAllSlots(unk_D_86002F58_004_000* arg0) {
@@ -223,7 +223,7 @@ loop_11:
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/31/fragment31_2558B0/Particle31_SpawnSpeciesEffect.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/particle_data_library/particle_data_library_2558B0/Particle31_SpawnSpeciesEffect.s")
 #endif
 
 #ifdef NON_MATCHING
@@ -302,11 +302,11 @@ void Particle31_UpdateSpeciesEffectTrigger(unk_D_810047E0* arg0) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/31/fragment31_2558B0/Particle31_UpdateSpeciesEffectTrigger.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/particle_data_library/particle_data_library_2558B0/Particle31_UpdateSpeciesEffectTrigger.s")
 #endif
 
 Gfx* Particle31_BuildSlotDisplayList(Gfx*, unk_D_810047E0*, unk_arg2_func_81001D80*, s16);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/31/fragment31_2558B0/Particle31_BuildSlotDisplayList.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/particle_data_library/particle_data_library_2558B0/Particle31_BuildSlotDisplayList.s")
 
 Gfx* Particle31_BuildDisplayList(Gfx* gfx, unk_D_810047E0* arg1, unk_arg2_func_81001D80* arg2, s16 arg3) {
     s32 i;
@@ -319,7 +319,7 @@ Gfx* Particle31_BuildDisplayList(Gfx* gfx, unk_D_810047E0* arg1, unk_arg2_func_8
     return gfx;
 }
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/31/fragment31_2558B0/func_81001E24.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/particle_data_library/particle_data_library_2558B0/func_81001E24.s")
 
 #ifdef NON_MATCHING
 void Particle31_PackSlotData(unk_D_83402EE0_00A* arg0) {
@@ -360,7 +360,7 @@ void Particle31_PackSlotData(unk_D_83402EE0_00A* arg0) {
     i = 0;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/31/fragment31_2558B0/Particle31_PackSlotData.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/particle_data_library/particle_data_library_2558B0/Particle31_PackSlotData.s")
 #endif
 
 #ifdef NON_MATCHING
@@ -426,5 +426,5 @@ void Particle31_UnpackSlotData(unk_arg0_func_81002260* arg0, unk_arg0_func_81002
     };
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/31/fragment31_2558B0/Particle31_UnpackSlotData.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/particle_data_library/particle_data_library_2558B0/Particle31_UnpackSlotData.s")
 #endif

@@ -1469,7 +1469,7 @@ void MiniGameSelect_SetWidgetState(unk_D_8250A228* arg0, s16 arg1) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/39/fragment39_27BCC0/MiniGameSelect_SetWidgetState.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/minigame_select/minigame_select_27BCC0/MiniGameSelect_SetWidgetState.s")
 #endif
 
 void MiniGameSelect_SetWidgetTargetState(unk_D_8250A228* arg0, s16 arg1, s32 arg2) {
@@ -1905,7 +1905,7 @@ void MiniGameSelect_DrawSelectionMarker(void) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/39/fragment39_27BCC0/MiniGameSelect_DrawSelectionMarker.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/minigame_select/minigame_select_27BCC0/MiniGameSelect_DrawSelectionMarker.s")
 #endif
 
 void MiniGameSelect_RenderDirtyPanels(void) {
