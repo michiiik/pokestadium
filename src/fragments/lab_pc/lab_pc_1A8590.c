@@ -1,7 +1,7 @@
 #include "lab_pc.h"
 #include "src/graphics_textures.h"
 #include "src/game_state.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/memory.h"
 #include "src/stage_loader.h"
 

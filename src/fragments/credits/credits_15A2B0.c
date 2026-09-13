@@ -3200,28 +3200,21 @@ static unk_D_86A04328 D_86A04328[18][6] = {
     },
 };
 
-static u16 D_86A06220;
-static u16 D_86A06222;
-static Vec3f D_86A06228;
-static f32 D_86A06234;
-static Vec3f D_86A06238;
-static f32 D_86A06244;
-Vec3f D_86A06248;
-static unk_D_86002F34_00C* D_86A06254;
-static s16 D_86A06258;
-static s16* D_86A0625C;
-
+#ifdef NON_MATCHING
 void Credits_InitCameraKeyframeBlend(unk_D_86002F34_00C* arg0, u16 arg1, s8 arg2, u8 arg3) {
     f32 scale = 1.0f;
     unk_D_86A04328* ptr = &D_86A04328[arg2 - 1][arg3 - 3];
     Vec3f sp3C;
     Vec3f sp30;
+
     D_86A06254 = arg0;
     D_86A06220 = 0;
     D_86A06222 = arg1;
 
-    Camera_ComputeEyeFromAngles(&ptr->unk_00, &sp3C, 720.0f, (((s32) D_86A04328[arg2 - 1][arg3 - 3].unk_0C) << 0xF) / 180, (((s32) D_86A04328[arg2 - 1][arg3 - 3].unk_10) << 0xF) / 180);
-    Camera_ComputeEyeFromAngles(&ptr->unk_14, &sp30, 720.0f, (((s32) D_86A04328[arg2 - 1][arg3 - 3].unk_20) << 0xF) / 180, (((s32) D_86A04328[arg2 - 1][arg3 - 3].unk_24) << 0xF) / 180);
+    Camera_ComputeEyeFromAngles(&ptr->unk_00, &sp3C, 720.0f, ((s32)D_86A04328[arg2 - 1][arg3 - 3].unk_0C << 0xF) / 180,
+                  ((s32)D_86A04328[arg2 - 1][arg3 - 3].unk_10 << 0xF) / 180);
+    Camera_ComputeEyeFromAngles(&ptr->unk_14, &sp30, 720.0f, ((s32)D_86A04328[arg2 - 1][arg3 - 3].unk_20 << 0xF) / 180,
+                  ((s32)D_86A04328[arg2 - 1][arg3 - 3].unk_24 << 0xF) / 180);
 
     D_86A06254->unk_60.eye = ptr->unk_00;
     D_86A06254->unk_60.at = sp3C;
@@ -3240,6 +3233,9 @@ void Credits_InitCameraKeyframeBlend(unk_D_86002F34_00C* arg0, u16 arg1, s8 arg2
 
     D_86A06244 = ((ptr->unk_2C - ptr->unk_28) * scale) / arg1;
 }
+#else
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/16/fragment16_15A2B0/Credits_InitCameraKeyframeBlend.s")
+#endif
 
 void Credits_StepCameraKeyframeBlend(void) {
     if (D_86A06220 < D_86A06222) {
@@ -3257,7 +3253,7 @@ void Credits_StepCameraKeyframeBlend(void) {
 }
 
 #ifdef NON_MATCHING
-void func_86A01CF0(s16* arg0, s16* arg1, s16* arg2, unk_D_86002F34_00C* arg3, u16 arg4, s8 arg5, u8 arg6) {
+void Credits_InitCameraYawBlend(s16* arg0, s16* arg1, s16* arg2, unk_D_86002F34_00C* arg3, u16 arg4, s8 arg5, u8 arg6) {
     unk_D_86A03170* temp_v1;
 
     if (!arg4) {}
@@ -3325,7 +3321,7 @@ void func_86A01CF0(s16* arg0, s16* arg1, s16* arg2, unk_D_86002F34_00C* arg3, u1
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/credits/credits_15A2B0/func_86A01CF0.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/16/fragment16_15A2B0/Credits_InitCameraYawBlend.s")
 #endif
 
 void Credits_StepCameraYawBlend(void) {

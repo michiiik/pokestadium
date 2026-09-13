@@ -1,9 +1,8 @@
 #include "audio_sfx.h"
-#include "src/libnumus/player.h"
+#include "src/audio_io.h"
 #include "src/audio_sfx.h"
 #include "src/audio_commands_category2.h"
 #include "src/audio_commands.h"
-#include "src/audio_data.h"
 
 static s32 D_80078A30 = 0;
 static s32 D_80078A34 = 0;

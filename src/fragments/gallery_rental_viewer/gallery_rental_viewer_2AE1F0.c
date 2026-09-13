@@ -262,7 +262,7 @@ s32 Gallery_RentalViewerNodePostCallback(s32 arg0, GraphNode* arg1) {
         }
 
         gDPPipeSync(gDisplayListHead++);
-        gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, D_8006F09C->unk_01D);
+        gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, D_8006F09C->materialAlpha);
         gSPSegment(gDisplayListHead++, 0x0F, Memmap_GetSegmentVaddr(var_a0));
         gSPSegment(gDisplayListHead++, 0x0E, Memmap_GetSegmentVaddr(var_a3));
         gSPDisplayList(gDisplayListHead++, arg1->unk_14);
@@ -319,8 +319,8 @@ void Gallery_RentalViewerRefreshPortStatus(void) {
 
     for (i = 0; i < 4; i++) {
         GbSave_CopyPlayerIdentity(i, &sp48);
-        Text_UntranscodeName(D_83806778[i].unk_06, &sp48.unk_02);
-        D_83806778[i].unk_04 = sp48.unk_00;
+        Text_UntranscodeName(D_83806778[i].unk_06, &sp48.playerName);
+        D_83806778[i].unk_04 = sp48.trainerId;
         D_83806778[i].unk_01 = GbSave_GetPortGame(i);
         D_83806778[i].unk_00 = GbSave_GetSaveState(i);
         D_83806778[i].unk_02 = GbSave_SavedAtPokemonCenter(i);
@@ -406,7 +406,7 @@ void Gallery_RentalViewerInitSlotModels(void) {
                           -579.0f);
             Vec3f_SetComponentsDuplicate(&D_83805698[1][i].unk_024, D_8380548C[i].unk_02 - 0x140, 0xE4 - D_8380548C[i].unk_04,
                           -579.0f);
-            D_83805698[1][i].unk_01D = 0xB4;
+            D_83805698[1][i].materialAlpha = 0xB4;
         }
     }
 }

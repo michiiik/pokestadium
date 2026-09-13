@@ -20,26 +20,26 @@ typedef struct unk_D_83003CE0 {
 } unk_D_83003CE0; // size = 0x100
 
 typedef struct unk_D_83079E70_014_000 {
-    /* 0x00 */ s16 unk_00;
-    /* 0x02 */ s16 unk_02;
+    /* 0x00 */ s16 speciesId;
+    /* 0x02 */ s16 matchesCategory; // RentalRules_SpeciesMatchesCategory
 } unk_D_83079E70_014_000; // size = 0x4
 
 typedef struct unk_D_83079E70_000 {
-    /* 0x00 */ unk_D_83079E70_014_000 unk_00[6];
-    /* 0x18 */ struct unk_D_83079E70_000* unk_18;
-    /* 0x1C */ struct unk_D_83079E70_000* unk_1C;
+    /* 0x00 */ unk_D_83079E70_014_000 speciesEntries[6];
+    /* 0x18 */ struct unk_D_83079E70_000* next; // RentalRules_ScrollPageDown/AdvancePageNode
+    /* 0x1C */ struct unk_D_83079E70_000* prev; // RentalRules_ScrollPageUp
 } unk_D_83079E70_000; // size = 0x20
 
 typedef struct unk_D_83079E70 {
-    /* 0x00 */ s16 unk_00;
-    /* 0x02 */ s16 unk_02;
-    /* 0x04 */ s16 unk_04;
-    /* 0x06 */ s16 unk_06;
-    /* 0x08 */ s16 unk_08;
-    /* 0x0A */ s16 unk_0A;
-    /* 0x0C */ s16 unk_0C;
-    /* 0x10 */ unk_D_83079E70_000* unk_10;
-    /* 0x14 */ unk_D_83079E70_000 unk_14[6];
+    /* 0x00 */ s16 state; // RentalRules_ListUpdate{Open,Shown,Scrolling,Close}'s dispatch
+    /* 0x02 */ s16 timer;
+    /* 0x04 */ s16 slideProgress; // interpolated 0-0x400 during open/close
+    /* 0x06 */ s16 matchingSpeciesCount; // RentalRules_CountMatchingSpecies, displayed via Text_SetNumberToken
+    /* 0x08 */ s16 pageIndex;
+    /* 0x0A */ s16 scrollDirection; // -1 (up) or 1 (down)
+    /* 0x0C */ s16 scrollAnim; // -1/2 = idle variants, redraw/animation trigger set alongside state transitions
+    /* 0x10 */ unk_D_83079E70_000* currentPage;
+    /* 0x14 */ unk_D_83079E70_000 pageEntries[6];
 } unk_D_83079E70; // size = 0xD4
 
 extern unk_D_83003CE0 D_83003CE0;

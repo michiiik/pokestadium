@@ -54,20 +54,20 @@ void BattlePrep_SaveVictoryPalaceRecords(void) {
     ExtendedRosterInfo* temp_v0;
     BattleMon* var_s1;
 
-    temp_v0 = D_800AE540.unk_1194[0].unk_08[0]->unk_214;
-    temp_s0 = temp_v0->unk_002;
-    var_s1 = temp_v0->unk_028;
+    temp_v0 = D_800AE540.unk_1194[0].teams[0]->extendedRoster;
+    temp_s0 = temp_v0->partyCount;
+    var_s1 = temp_v0->party;
 
-    if ((D_800AE540.unk_0000 == 3) || (D_800AE540.unk_0000 == 6)) {
-        if (D_800AE540.unk_0002 != 3) {
+    if ((D_800AE540.sessionMode == 3) || (D_800AE540.sessionMode == 6)) {
+        if (D_800AE540.progressIndex != 3) {
             return;
         }
-    } else if ((D_800AE540.unk_0000 == 7) && (D_800AE540.unk_0002 != 9)) {
+    } else if ((D_800AE540.sessionMode == 7) && (D_800AE540.progressIndex != 9)) {
         return;
     }
 
     while (temp_s0-- > 0) {
-        VictoryPalace_SaveSpeciesRecord(var_s1++, D_800AE540.unk_0000, D_800AE540.unk_11F2);
+        VictoryPalace_SaveSpeciesRecord(var_s1++, D_800AE540.sessionMode, D_800AE540.roundSelector);
     }
 
     Save_CommitTypedRecord(0x13, 0);
@@ -79,54 +79,54 @@ void BattlePrep_MarkFirstClearBonus(void) {
 
     Save_GetOptions(&sp20);
 
-    if ((D_800AE540.unk_0000 == 3) && (D_800AE540.unk_0002 == 3) && !(D_84B26670.unk_00 & 8)) {
+    if ((D_800AE540.sessionMode == 3) && (D_800AE540.progressIndex == 3) && !(D_84B26670.flags & 8)) {
         sp1C = 1;
     }
 
-    if ((D_800AE540.unk_0000 == 6) && (D_800AE540.unk_0002 == 3) && !(D_84B26670.unk_00 & 0x40)) {
+    if ((D_800AE540.sessionMode == 6) && (D_800AE540.progressIndex == 3) && !(D_84B26670.flags & 0x40)) {
         sp1C = 1;
     }
 
-    if ((sp1C != 0) && (sp20.unk_00 < 2)) {
-        sp20.unk_00++;
+    if ((sp1C != 0) && (sp20.presentationMode < 2)) {
+        sp20.presentationMode++;
         Save_SetOptions(&sp20);
-        if (sp20.unk_00 == 1) {
-            D_800AE540.unk_11F6 |= 8;
+        if (sp20.presentationMode == 1) {
+            D_800AE540.battleFlowFlags |= 8;
         } else {
-            D_800AE540.unk_11F6 |= 0x10;
+            D_800AE540.battleFlowFlags |= 0x10;
         }
     }
 }
 
 void BattlePrep_MarkCupCleared(void) {
-    if (((D_800AE540.unk_0000 != 3) || (D_800AE540.unk_0002 >= 3)) &&
-        ((D_800AE540.unk_0000 != 6) || (D_800AE540.unk_0002 >= 3)) &&
-        ((D_800AE540.unk_0000 != 7) || (D_800AE540.unk_0002 >= 9))) {
-        D_84B26670.unk_00 |= (1 << D_800AE540.unk_0000);
-        if (D_84B26670.unk_00 == 0xF8) {
-            D_84B26670.unk_07 = 1;
-            D_800AE540.unk_11F5 |= 4;
+    if (((D_800AE540.sessionMode != 3) || (D_800AE540.progressIndex >= 3)) &&
+        ((D_800AE540.sessionMode != 6) || (D_800AE540.progressIndex >= 3)) &&
+        ((D_800AE540.sessionMode != 7) || (D_800AE540.progressIndex >= 9))) {
+        D_84B26670.flags |= (1 << D_800AE540.sessionMode);
+        if (D_84B26670.flags == 0xF8) {
+            D_84B26670.unlocked = 1;
+            D_800AE540.sessionFlowFlags |= 4;
         }
-        Save_SetModeSettings(&D_84B26670, D_800AE540.unk_11F2);
+        Save_SetModeSettings(&D_84B26670, D_800AE540.roundSelector);
     }
 }
 
 void BattlePrep_MarkNewRoundRecord(void) {
-    if (D_800AE540.unk_0000 == 7) {
-        if ((D_800AE540.unk_0002 >= D_84B26670.unk_04) && (D_800AE540.unk_0002 < 8)) {
-            D_84B26670.unk_04 = D_800AE540.unk_0002 + 1;
-            D_800AE540.unk_11F6 |= 0x400;
+    if (D_800AE540.sessionMode == 7) {
+        if ((D_800AE540.progressIndex >= D_84B26670.regionIndex) && (D_800AE540.progressIndex < 8)) {
+            D_84B26670.regionIndex = D_800AE540.progressIndex + 1;
+            D_800AE540.battleFlowFlags |= 0x400;
         }
-    } else if (D_800AE540.unk_0000 == 3) {
-        if ((D_800AE540.unk_0002 >= D_84B26670.unk_05) && (D_800AE540.unk_0002 < 4)) {
-            D_84B26670.unk_05 = D_800AE540.unk_0002 + 1;
-            D_800AE540.unk_11F6 |= 0x400;
+    } else if (D_800AE540.sessionMode == 3) {
+        if ((D_800AE540.progressIndex >= D_84B26670.divisionACount) && (D_800AE540.progressIndex < 4)) {
+            D_84B26670.divisionACount = D_800AE540.progressIndex + 1;
+            D_800AE540.battleFlowFlags |= 0x400;
         }
-    } else if ((D_800AE540.unk_0000 == 6) && (D_800AE540.unk_0002 >= D_84B26670.unk_06) && (D_800AE540.unk_0002 < 4)) {
-        D_84B26670.unk_06 = D_800AE540.unk_0002 + 1;
-        D_800AE540.unk_11F6 |= 0x400;
+    } else if ((D_800AE540.sessionMode == 6) && (D_800AE540.progressIndex >= D_84B26670.divisionBCount) && (D_800AE540.progressIndex < 4)) {
+        D_84B26670.divisionBCount = D_800AE540.progressIndex + 1;
+        D_800AE540.battleFlowFlags |= 0x400;
     }
-    Save_SetModeSettings(&D_84B26670, D_800AE540.unk_11F2);
+    Save_SetModeSettings(&D_84B26670, D_800AE540.roundSelector);
 }
 
 char* BattlePrep_GetString(s32 arg0) {
@@ -155,7 +155,7 @@ void BattlePrep_ResetAllDisplayObjects(void) {
     s32 i;
 
     for (i = 0; i < 128; i++) {
-        BattlePrep_ResetDisplayObject(&D_84B1A598.unk_0008[i]);
+        BattlePrep_ResetDisplayObject(&D_84B1A598.displayObjectPool[i]);
     }
 }
 
@@ -240,32 +240,32 @@ void BattlePrep_DrawTrainerStatusIcon(unk_D_80068BB0* arg0, s16 arg1, u8* arg2, 
     Gfx_DrawTextureRgba16(4, 0x24, 0x38, 0x1C, arg2 + 0x208, 0x40, 0x200000);
     Gfx_DrawTextureRgba16(4, 0x40, 0x38, 0x1C, arg2 + 0x1008, 0x40, 0x200000);
 
-    if (D_800AE540.unk_0000 == 0 || D_800AE540.unk_0000 == 9) {
-        if (temp_v1->unk_08[0]->unk_000 & 2) {
+    if (D_800AE540.sessionMode == 0 || D_800AE540.sessionMode == 9) {
+        if (temp_v1->teams[0]->slotState & 2) {
             Gfx_DrawTextureRgba16(8, 4, 0x30, 0x10, &D_3016900, 0x30, 0x200000);
-        } else if (temp_v1->unk_01 == 1) {
-            Gfx_DrawTextureRgba16(8, 4, 0x30, 0x10, D_84B0FB10[temp_v1->unk_08[0]->unk_001], 0x30, 0x200000);
+        } else if (temp_v1->playerCount == 1) {
+            Gfx_DrawTextureRgba16(8, 4, 0x30, 0x10, D_84B0FB10[temp_v1->teams[0]->trainerSlotId], 0x30, 0x200000);
         } else {
-            if (temp_v1->unk_08[0]->unk_001 < temp_v1->unk_08[1]->unk_001) {
-                Gfx_DrawTextureRgba16(8, 4, 0x30, 0x10, D_84B0FB10[temp_v1->unk_08[0]->unk_001], 0x30, 0x200000);
-                Gfx_DrawTextureRgba16(8, 0x14, 0x30, 0x10, D_84B0FB10[temp_v1->unk_08[1]->unk_001], 0x30, 0x200000);
+            if (temp_v1->teams[0]->trainerSlotId < temp_v1->teams[1]->trainerSlotId) {
+                Gfx_DrawTextureRgba16(8, 4, 0x30, 0x10, D_84B0FB10[temp_v1->teams[0]->trainerSlotId], 0x30, 0x200000);
+                Gfx_DrawTextureRgba16(8, 0x14, 0x30, 0x10, D_84B0FB10[temp_v1->teams[1]->trainerSlotId], 0x30, 0x200000);
             } else {
-                Gfx_DrawTextureRgba16(8, 4, 0x30, 0x10, D_84B0FB10[temp_v1->unk_08[1]->unk_001], 0x30, 0x200000);
-                Gfx_DrawTextureRgba16(8, 0x14, 0x30, 0x10, D_84B0FB10[temp_v1->unk_08[0]->unk_001], 0x30, 0x200000);
+                Gfx_DrawTextureRgba16(8, 4, 0x30, 0x10, D_84B0FB10[temp_v1->teams[1]->trainerSlotId], 0x30, 0x200000);
+                Gfx_DrawTextureRgba16(8, 0x14, 0x30, 0x10, D_84B0FB10[temp_v1->teams[0]->trainerSlotId], 0x30, 0x200000);
             }
         }
 
         gSPDisplayList(gDisplayListHead++, D_8006F630);
-    } else if ((arg1 == 0) || (D_800AE540.unk_0000 == 0xA)) {
-        Gfx_DrawTextureRgba16(8, 4, 0x30, 0x10, D_84B0FB10[temp_v1->unk_08[0]->unk_001], 0x30, 0x200000);
+    } else if ((arg1 == 0) || (D_800AE540.sessionMode == 0xA)) {
+        Gfx_DrawTextureRgba16(8, 4, 0x30, 0x10, D_84B0FB10[temp_v1->teams[0]->trainerSlotId], 0x30, 0x200000);
 
         gSPDisplayList(gDisplayListHead++, D_8006F630);
 
-        BattlePrep_DrawCenteredText(arg1, 0x14, temp_v1->unk_08[0]->unk_214->unk_014);
+        BattlePrep_DrawCenteredText(arg1, 0x14, temp_v1->teams[0]->extendedRoster->shortName);
     } else {
         gSPDisplayList(gDisplayListHead++, D_8006F630);
 
-        BattlePrep_DrawCenteredText(arg1, 6, temp_v1->unk_08[0]->unk_214->unk_220);
+        BattlePrep_DrawCenteredText(arg1, 6, temp_v1->teams[0]->extendedRoster->longName);
     }
 }
 
@@ -281,23 +281,23 @@ void BattlePrep_AnimateBallBurstEffect(s16 arg0) {
 
     if (arg0 < 0x10) {
         for (i = 0; i < 4; i++) {
-            D_84B1A598.unk_0008[i + 0].unk_024.y += 2.0f * arg0 * 0.5f;
-            D_84B1A598.unk_0008[i + 0].unk_01E.x += 0x300;
-            D_84B1A598.unk_0008[i + 8].unk_024.y += 2.0f * arg0 * 0.5f;
-            D_84B1A598.unk_0008[i + 8].unk_01E.x += 0x300;
-            D_84B1A598.unk_0008[i + 4].unk_01E.x -= 0x300;
+            D_84B1A598.displayObjectPool[i + 0].unk_024.y += 2.0f * arg0 * 0.5f;
+            D_84B1A598.displayObjectPool[i + 0].unk_01E.x += 0x300;
+            D_84B1A598.displayObjectPool[i + 8].unk_024.y += 2.0f * arg0 * 0.5f;
+            D_84B1A598.displayObjectPool[i + 8].unk_01E.x += 0x300;
+            D_84B1A598.displayObjectPool[i + 4].unk_01E.x -= 0x300;
             // clang-format off
-            D_84B1A598.unk_0008[i + 4].unk_024.y -= 2.0f * arg0 * 0.5f; D_84B1A598.unk_0008[i + 12].unk_01E.x -= 0x300;
+            D_84B1A598.displayObjectPool[i + 4].unk_024.y -= 2.0f * arg0 * 0.5f; D_84B1A598.displayObjectPool[i + 12].unk_01E.x -= 0x300;
             // clang-format on
-            D_84B1A598.unk_0008[i + 12].unk_024.y -= 2.0f * arg0 * 0.5f;
+            D_84B1A598.displayObjectPool[i + 12].unk_024.y -= 2.0f * arg0 * 0.5f;
         }
 
         for (i = 0; i < 8; i++) {
-            D_84B1A598.unk_0008[i + 0].unk_01E.z += D_84B0FC0C[i];
-            D_84B1A598.unk_0008[i + 8].unk_01E.z += D_84B0FC0C[i];
+            D_84B1A598.displayObjectPool[i + 0].unk_01E.z += D_84B0FC0C[i];
+            D_84B1A598.displayObjectPool[i + 8].unk_01E.z += D_84B0FC0C[i];
 
-            D_84B1A598.unk_0008[i + 0].unk_024.x += arg0 * D_84B0FC1C[i] * 0.5f;
-            D_84B1A598.unk_0008[i + 8].unk_024.x += arg0 * D_84B0FC1C[i] * 0.5f;
+            D_84B1A598.displayObjectPool[i + 0].unk_024.x += arg0 * D_84B0FC1C[i] * 0.5f;
+            D_84B1A598.displayObjectPool[i + 8].unk_024.x += arg0 * D_84B0FC1C[i] * 0.5f;
         }
     }
 }
@@ -307,11 +307,11 @@ void BattlePrep_FadeInBallBurstObjects(s16 arg0) {
 
     if (arg0 < 0x10) {
         for (i = 0; i < 16; i++) {
-            D_84B1A598.unk_0008[i].unk_01D = (-arg0 * 0x10) + 0xF0;
+            D_84B1A598.displayObjectPool[i].materialAlpha = (-arg0 * 0x10) + 0xF0;
         }
 
         for (i = 28; i < 32; i++) {
-            D_84B1A598.unk_0008[i].unk_01D = (-arg0 * 0x10) + 0xF0;
+            D_84B1A598.displayObjectPool[i].materialAlpha = (-arg0 * 0x10) + 0xF0;
         }
     }
 }
@@ -319,7 +319,7 @@ void BattlePrep_FadeInBallBurstObjects(s16 arg0) {
 void BattlePrep_RenderFrame(void) {
     BgStage_DrawFrame();
     GfxImage_FillCurrent(&gDisplayListHead, 1);
-    Geo_RenderRootNode(D_84B1A598.unk_0004);
+    Geo_RenderRootNode(D_84B1A598.sceneRootNode);
     BattlePrep_DrawRuleWindow(&D_84B26640.unk_1C);
     BattlePrep_DrawRuleWindow(&D_84B26640.unk_28);
     BgStage_AdvanceFrame();
@@ -337,8 +337,8 @@ s32 BattlePrep_ShowSingleBattleIntro(void) {
     s32 var_s1 = 0;
 
     Team_LoadOpponentPreset();
-    BattlePrepRoster_Init(&D_84B25A28, D_84B1A598.unk_0004->unk_0C);
-    BattlePrepRoster_Load(&D_84B25A28, D_84B1A598.unk_B40C);
+    BattlePrepRoster_Init(&D_84B25A28, D_84B1A598.sceneRootNode->unk_0C);
+    BattlePrepRoster_Load(&D_84B25A28, D_84B1A598.portraitArchive);
     Audio_PlayMusicIfChanged(0x31);
 
     for (i = 0; i < 16; i++) {
@@ -347,7 +347,7 @@ s32 BattlePrep_ShowSingleBattleIntro(void) {
 
     StageFade_StartFromOpaque(8);
 
-    while (BattlePrepRoster_InitDisplayObjects(&D_84B25A28, D_84B1A598.unk_0008) == 0) {
+    while (BattlePrepRoster_InitDisplayObjects(&D_84B25A28, D_84B1A598.displayObjectPool) == 0) {
         BattlePrep_UpdateSingleBattleIntroFrame();
         var_s1++;
     }
@@ -369,8 +369,8 @@ s32 BattlePrep_ShowSingleBattleIntro(void) {
         BattlePrep_UpdateSingleBattleIntroFrame();
     }
 
-    if (D_800AE540.unk_11F5 & 1) {
-        D_800AE540.unk_11F5 &= ~1;
+    if (D_800AE540.sessionFlowFlags & 1) {
+        D_800AE540.sessionFlowFlags &= ~1;
         Save_ResetAndCommitTypedRecord(0x15, 0);
         Save_FlushBank(2);
     }
@@ -389,8 +389,8 @@ void BattlePrep_UpdateRoundIntroFrame(void) {
 
 void BattlePrep_InitRoundIntroScene(void) {
     BattlePrep_InitBannerScene(&D_84B259A8);
-    BattlePrep_InitBadgeCarouselScene(&D_84B259E8, D_84B1A598.unk_B408, D_84B1A598.unk_B40C);
-    BattlePrepRoster_Init(&D_84B25A28, D_84B1A598.unk_0004->unk_0C);
+    BattlePrep_InitBadgeCarouselScene(&D_84B259E8, D_84B1A598.portraitArchiveRaw, D_84B1A598.portraitArchive);
+    BattlePrepRoster_Init(&D_84B25A28, D_84B1A598.sceneRootNode->unk_0C);
 }
 
 s32 BattlePrep_ShowRoundIntro(void) {
@@ -405,7 +405,7 @@ s32 BattlePrep_ShowRoundIntro(void) {
 
     Team_LoadOpponentPreset();
     BattlePrep_InitRoundIntroScene();
-    BattlePrepRoster_Load(&D_84B25A28, D_84B1A598.unk_B40C);
+    BattlePrepRoster_Load(&D_84B25A28, D_84B1A598.portraitArchive);
 
     for (i = 0; i < 16; i++) {
         BattlePrep_UpdateRoundIntroFrame();
@@ -417,8 +417,8 @@ s32 BattlePrep_ShowRoundIntro(void) {
         BattlePrep_UpdateRoundIntroFrame();
     }
 
-    BattlePrep_InitCarouselEntry(&D_84B259A8, &D_84B1A598.unk_0008[0x10]);
-    BattlePrep_InitBadgeCarousel(&D_84B259E8, D_84B1A598.unk_0008, 0);
+    BattlePrep_InitCarouselEntry(&D_84B259A8, &D_84B1A598.displayObjectPool[0x10]);
+    BattlePrep_InitBadgeCarousel(&D_84B259E8, D_84B1A598.displayObjectPool, 0);
     Audio_PlayMusicIfChanged(0x33);
 
     for (i = 0; i < var_s1; i++) {
@@ -426,13 +426,13 @@ s32 BattlePrep_ShowRoundIntro(void) {
     }
 
     BattlePrep_StartCarouselExit(&D_84B259A8);
-    D_84B259E8.unk_00 = 2;
+    D_84B259E8.state = 2;
 
     for (i = 0; i < 16; i++) {
         BattlePrep_UpdateRoundIntroFrame();
     }
 
-    while (BattlePrepRoster_InitDisplayObjects(&D_84B25A28, D_84B1A598.unk_0008) == 0) {
+    while (BattlePrepRoster_InitDisplayObjects(&D_84B25A28, D_84B1A598.displayObjectPool) == 0) {
         BattlePrep_UpdateRoundIntroFrame();
     }
 
@@ -448,8 +448,8 @@ s32 BattlePrep_ShowRoundIntro(void) {
         BattlePrep_UpdateRoundIntroFrame();
     }
 
-    if (D_800AE540.unk_11F5 & 1) {
-        D_800AE540.unk_11F5 &= ~1;
+    if (D_800AE540.sessionFlowFlags & 1) {
+        D_800AE540.sessionFlowFlags &= ~1;
         Save_ResetAndCommitTypedRecord(0x15, 0);
         Save_FlushBank(2);
     }
@@ -463,32 +463,32 @@ void BattlePrep_CheckPikachuNeedsSurf(void) {
     TeamRoster* var_a1;
     ExtendedRosterInfo* temp_v1;
 
-    if (!(D_800AE540.unk_11F5 & 2) && (D_800AE540.unk_11F2 == 1) && (D_800AE540.unk_0000 == 6) &&
-        (D_800AE540.unk_0002 == 3)) {
-        var_a1 = D_800AE540.unk_1194[0].unk_08[0];
-        temp_v1 = var_a1->unk_214;
+    if (!(D_800AE540.sessionFlowFlags & 2) && (D_800AE540.roundSelector == 1) && (D_800AE540.sessionMode == 6) &&
+        (D_800AE540.progressIndex == 3)) {
+        var_a1 = D_800AE540.unk_1194[0].teams[0];
+        temp_v1 = var_a1->extendedRoster;
 
-        for (i = 0; i < temp_v1->unk_002; i++) {
-            s32 tmp = (temp_v1->unk_028[i].unk_52 & 0x70) >> 4;
-            s32 tmp2 = temp_v1->unk_028[i].unk_52 & 0xF;
+        for (i = 0; i < temp_v1->partyCount; i++) {
+            s32 tmp = (temp_v1->party[i].sourceAndFlags & 0x70) >> 4;
+            s32 tmp2 = temp_v1->party[i].sourceAndFlags & 0xF;
 
             if ((tmp >= 4) || (tmp2 >= 13)) {
                 return;
             }
         }
 
-        for (i = 0; i < var_a1->unk_002; i++) {
-            BattleMon* ptr = &var_a1->unk_01C[i];
+        for (i = 0; i < var_a1->partyCount; i++) {
+            BattleMon* ptr = &var_a1->party[i];
 
-            if (ptr->unk_00.unk_00 == 0x19) {
+            if (ptr->species.dexId == 0x19) {
                 for (j = 0; j < 4; j++) {
-                    if (ptr->unk_09[j] == 0) {
+                    if (ptr->moves[j] == 0) {
                         break;
-                    } else if (ptr->unk_09[j] == 0x39) {
+                    } else if (ptr->moves[j] == 0x39) {
                         return;
                     }
                 }
-                D_800AE540.unk_11F6 |= 0x1000;
+                D_800AE540.battleFlowFlags |= 0x1000;
                 break;
             }
         }
@@ -514,15 +514,15 @@ void BattlePrep_InitRoundIntroSubScenes(void) {
     s32 tmp;
 
     BattlePrepTeamIcons_Init(&D_84B25A58);
-    BattlePrep_InitBadgeCarouselScene(&D_84B259E8, D_84B1A598.unk_B408, D_84B1A598.unk_B40C);
+    BattlePrep_InitBadgeCarouselScene(&D_84B259E8, D_84B1A598.portraitArchiveRaw, D_84B1A598.portraitArchive);
     BattlePrepBadgeAward_Init(&D_84B25A90);
 
-    if (D_84B1A598.unk_0003 != 0) {
+    if (D_84B1A598.bothSidesSameActive != 0) {
         BattlePrepStarBurst_Init(&D_84B25AC0, 1, -1);
         BattlePrepStarBurst_Init(&D_84B26080, 0, -1);
     } else {
-        BattlePrepStarBurst_Init(&D_84B25AC0, 1, D_84B1A598.unk_0001);
-        tmp = D_84B1A598.unk_0001 == 0;
+        BattlePrepStarBurst_Init(&D_84B25AC0, 1, D_84B1A598.side1Active);
+        tmp = D_84B1A598.side1Active == 0;
         BattlePrepStarBurst_Init(&D_84B26080, 0, tmp);
     }
 
@@ -533,14 +533,14 @@ void BattlePrep_InitRoundIntroSubScenes(void) {
 void BattlePrep_RunNormalRoundIntro(void) {
     s32 i;
 
-    BattlePrepTeamIcons_Load(&D_84B25A58, D_84B1A598.unk_B40C);
+    BattlePrepTeamIcons_Load(&D_84B25A58, D_84B1A598.portraitArchive);
 
     for (i = 0; i < 8; i++) {
         BattlePrep_UpdateRoundIntroScene();
     }
 
-    if (D_800AE540.unk_1194[1].unk_08[0]->unk_000 & 2) {
-        if (D_800AE540.unk_1194[0].unk_1C == 1) {
+    if (D_800AE540.unk_1194[1].teams[0]->slotState & 2) {
+        if (D_800AE540.unk_1194[0].isActiveSide == 1) {
             Audio_PlayMusicIfChanged(0x32);
         } else {
             Audio_PlayMusicIfChanged(0x45);
@@ -551,18 +551,18 @@ void BattlePrep_RunNormalRoundIntro(void) {
 
     StageFade_StartFromOpaque(8);
 
-    while (BattlePrepTeamIcons_InitDisplayObjects(&D_84B25A58, D_84B1A598.unk_0008) == 0) {
+    while (BattlePrepTeamIcons_InitDisplayObjects(&D_84B25A58, D_84B1A598.displayObjectPool) == 0) {
         BattlePrep_UpdateRoundIntroScene();
     }
 
-    while (D_84B25A58.unk_00 != 0) {
+    while (D_84B25A58.state != 0) {
         BattlePrep_UpdateRoundIntroScene();
     }
 
-    BattlePrepStarBurst_Launch(&D_84B25AC0, &D_84B1A598.unk_0008[0x1C], &D_84B1A598.unk_0008[0x20]);
-    BattlePrepStarBurst_Launch(&D_84B26080, &D_84B1A598.unk_0008[0x1E], &D_84B1A598.unk_0008[0x20]);
+    BattlePrepStarBurst_Launch(&D_84B25AC0, &D_84B1A598.displayObjectPool[0x1C], &D_84B1A598.displayObjectPool[0x20]);
+    BattlePrepStarBurst_Launch(&D_84B26080, &D_84B1A598.displayObjectPool[0x1E], &D_84B1A598.displayObjectPool[0x20]);
 
-    while ((D_84B259E8.unk_00 != 0) || (D_84B26080.unk_5A0 != 0)) {
+    while ((D_84B259E8.state != 0) || (D_84B26080.state != 0)) {
         BattlePrep_UpdateRoundIntroScene();
     }
 }
@@ -570,7 +570,7 @@ void BattlePrep_RunNormalRoundIntro(void) {
 void BattlePrep_RunFinalRoundIntro(void) {
     s32 i;
 
-    BattlePrepTeamIcons_Load(&D_84B25A58, D_84B1A598.unk_B40C);
+    BattlePrepTeamIcons_Load(&D_84B25A58, D_84B1A598.portraitArchive);
 
     for (i = 0; i < 8; i++) {
         BattlePrep_UpdateRoundIntroScene();
@@ -579,7 +579,7 @@ void BattlePrep_RunFinalRoundIntro(void) {
     Audio_PlayMusicIfChanged(0x32);
     StageFade_StartFromOpaque(8);
 
-    while (BattlePrepTeamIcons_InitDisplayObjects(&D_84B25A58, D_84B1A598.unk_0008) == 0) {
+    while (BattlePrepTeamIcons_InitDisplayObjects(&D_84B25A58, D_84B1A598.displayObjectPool) == 0) {
         BattlePrep_UpdateRoundIntroScene();
     }
 
@@ -587,26 +587,26 @@ void BattlePrep_RunFinalRoundIntro(void) {
         BattlePrep_UpdateRoundIntroScene();
     }
 
-    BattlePrep_StartTrophyModelGrow(&D_84B26640.unk_00, &D_84B1A598.unk_0008[0x1A]);
+    BattlePrep_StartTrophyModelGrow(&D_84B26640.unk_00, &D_84B1A598.displayObjectPool[0x1A]);
     Audio_PlayCategory11SoundCommand(0x01100013, 0, 0);
 
-    while (D_84B25A58.unk_00 != 0) {
+    while (D_84B25A58.state != 0) {
         BattlePrep_UpdateRoundIntroScene();
     }
 
     BattlePrep_StartTrophyModelShrink(&D_84B26640.unk_00);
-    BattlePrepStarBurst_Launch(&D_84B25AC0, &D_84B1A598.unk_0008[0x1C], &D_84B1A598.unk_0008[0x20]);
-    BattlePrepStarBurst_Launch(&D_84B26080, &D_84B1A598.unk_0008[0x1E], &D_84B1A598.unk_0008[0x20]);
+    BattlePrepStarBurst_Launch(&D_84B25AC0, &D_84B1A598.displayObjectPool[0x1C], &D_84B1A598.displayObjectPool[0x20]);
+    BattlePrepStarBurst_Launch(&D_84B26080, &D_84B1A598.displayObjectPool[0x1E], &D_84B1A598.displayObjectPool[0x20]);
 
-    if (D_800AE540.unk_0003 < 8) {
+    if (D_800AE540.opponentNumber < 8) {
         for (i = 0; i < 16; i++) {
             BattlePrep_UpdateRoundIntroScene();
         }
-        BattlePrep_StartTrophyModelGrow(&D_84B26640.unk_10, &D_84B1A598.unk_0008[0x1B]);
+        BattlePrep_StartTrophyModelGrow(&D_84B26640.unk_10, &D_84B1A598.displayObjectPool[0x1B]);
         Audio_PlaySoundEffectById(0x28);
     }
 
-    while ((D_84B259E8.unk_00 != 0) || (D_84B26080.unk_5A0 != 0)) {
+    while ((D_84B259E8.state != 0) || (D_84B26080.state != 0)) {
         BattlePrep_UpdateRoundIntroScene();
     }
 }
@@ -616,10 +616,10 @@ void BattlePrep_RunBadgeCarouselIntro(void) {
     s32 tmp;
 
     BattlePrepStarBurst_StartExit(&D_84B26080);
-    tmp = D_84B1A598.unk_0001 == 0;
-    BattlePrep_InitBadgeCarousel(&D_84B259E8, D_84B1A598.unk_0008, tmp + 1);
+    tmp = D_84B1A598.side1Active == 0;
+    BattlePrep_InitBadgeCarousel(&D_84B259E8, D_84B1A598.displayObjectPool, tmp + 1);
 
-    while ((D_84B259E8.unk_00 != 0) || (D_84B26080.unk_5A0 != 0)) {
+    while ((D_84B259E8.state != 0) || (D_84B26080.state != 0)) {
         BattlePrep_UpdateRoundIntroScene();
     }
 
@@ -632,12 +632,12 @@ void BattlePrep_RunBallBurstTransition(void) {
     s32 i;
     s32 j;
 
-    while ((D_84B25AC0.unk_5A0 != 0) || (D_84B26080.unk_5A0 != 0)) {
+    while ((D_84B25AC0.state != 0) || (D_84B26080.state != 0)) {
         BattlePrep_UpdateRoundIntroScene();
     }
 
-    for (i = 16; i < ARRAY_COUNT(D_84B1A598.unk_0008); i++) {
-        BattlePrep_ResetDisplayObject(&D_84B1A598.unk_0008[i]);
+    for (i = 16; i < ARRAY_COUNT(D_84B1A598.displayObjectPool); i++) {
+        BattlePrep_ResetDisplayObject(&D_84B1A598.displayObjectPool[i]);
     }
 
     Audio_PlayCategory11SoundCommand(0x01100017, 0, 0);
@@ -650,7 +650,7 @@ void BattlePrep_RunBallBurstTransition(void) {
     }
 
     for (i = 0; i < 16; i++) {
-        BattlePrep_ResetDisplayObject(&D_84B1A598.unk_0008[i]);
+        BattlePrep_ResetDisplayObject(&D_84B1A598.displayObjectPool[i]);
     }
 
     for (j = 0; j < 16; j++) {
@@ -697,7 +697,7 @@ s32 BattlePrep_HandleRoundContinue(void) {
     s32 var_s2;
     s32 var_v0_2;
 
-    if (D_800AE540.unk_0000 == 7) {
+    if (D_800AE540.sessionMode == 7) {
         BattlePrep_InitRuleWindow(&D_84B26640.unk_1C, 2);
     } else {
         BattlePrep_InitRuleWindow(&D_84B26640.unk_1C, 1);
@@ -724,7 +724,7 @@ s32 BattlePrep_HandleRoundContinue(void) {
             }
         }
         if (var_s2 == 1) {
-            D_800AE540.unk_0003 = D_800AE540.unk_0003 + 1;
+            D_800AE540.opponentNumber = D_800AE540.opponentNumber + 1;
             Session_SaveContinueData();
             Save_FlushBank(2);
         }
@@ -751,7 +751,7 @@ s32 BattlePrep_ConsumeContinueToken(void) {
     }
 
     if (sp24 != 0) {
-        D_800AE540.unk_11F3--;
+        D_800AE540.badgeCount--;
         Session_SaveContinueData();
         Save_FlushBank(2);
     }
@@ -761,12 +761,12 @@ s32 BattlePrep_ConsumeContinueToken(void) {
 s32 BattlePrep_ConfirmDefaultRules(void) {
     s32 var_v0;
 
-    if (D_800AE540.unk_1194[0].unk_1C == 1) {
-        D_800AE540.unk_1194[0].unk_1E += 1;
+    if (D_800AE540.unk_1194[0].isActiveSide == 1) {
+        D_800AE540.unk_1194[0].winStreak += 1;
     }
 
-    if (D_800AE540.unk_1194[1].unk_1C == 1) {
-        D_800AE540.unk_1194[1].unk_1E += 1;
+    if (D_800AE540.unk_1194[1].isActiveSide == 1) {
+        D_800AE540.unk_1194[1].winStreak += 1;
     }
 
     BattlePrep_RunNormalRoundIntro();
@@ -782,15 +782,15 @@ s32 BattlePrep_ConfirmDefaultRules(void) {
 
     switch (var_v0) {
         case 0:
-            D_800AE540.unk_11F6 |= 0x21;
+            D_800AE540.battleFlowFlags |= 0x21;
             break;
 
         case 1:
-            D_800AE540.unk_11F6 |= 0x81;
+            D_800AE540.battleFlowFlags |= 0x81;
             break;
 
         case 2:
-            D_800AE540.unk_11F6 |= 1;
+            D_800AE540.battleFlowFlags |= 1;
             break;
     }
 
@@ -826,7 +826,7 @@ s32 BattlePrep_ConfirmCupRules(void) {
     s32 var_s2;
     s32 var_v0;
 
-    if (D_84B1A598.unk_0002 != 0) {
+    if (D_84B1A598.teamChosen != 0) {
         BattlePrep_RunFinalRoundIntro();
     } else {
         BattlePrep_RunNormalRoundIntro();
@@ -834,20 +834,20 @@ s32 BattlePrep_ConfirmCupRules(void) {
 
     BattlePrep_RunBadgeCarouselIntro();
 
-    if (D_800AE540.unk_1194[0].unk_1C == 1) {
-        D_800AE540.unk_11F3 += D_84B1A598.unk_0002;
-        if ((D_84B1A598.unk_0002 != 0) && (D_800AE540.unk_0003 < 8)) {
+    if (D_800AE540.unk_1194[0].isActiveSide == 1) {
+        D_800AE540.badgeCount += D_84B1A598.teamChosen;
+        if ((D_84B1A598.teamChosen != 0) && (D_800AE540.opponentNumber < 8)) {
             BattlePrep_StartTrophyModelShrink(&D_84B26640.unk_10);
         }
 
         BattlePrepStarBurst_StartExit(&D_84B25AC0);
-        BattlePrepBadgeAward_InitDisplayObjects(&D_84B25A90, D_84B1A598.unk_0008);
+        BattlePrepBadgeAward_InitDisplayObjects(&D_84B25A90, D_84B1A598.displayObjectPool);
 
-        while (D_84B25A90.unk_00 != 3) {
+        while (D_84B25A90.state != 3) {
             BattlePrep_UpdateRoundIntroScene();
         }
 
-        if (D_800AE540.unk_0003 == 8) {
+        if (D_800AE540.opponentNumber == 8) {
             for (i = 0; i < 120; i++) {
                 BattlePrep_UpdateRoundIntroScene();
                 if (BTN_IS_PRESSED(gPlayer1Controller, BTN_A)) {
@@ -864,15 +864,15 @@ s32 BattlePrep_ConfirmCupRules(void) {
             BattlePrep_RunBallBurstTransition();
             BattlePrep_FadeToTransparentEnding();
             BattlePrep_CheckPikachuNeedsSurf();
-            D_800AE540.unk_11F6 |= 3;
+            D_800AE540.battleFlowFlags |= 3;
         } else if (BattlePrep_HandleRoundContinue() == 1) {
             BattlePrep_RunBallBurstTransition();
             BattlePrep_FadeToTransparentEnding();
-            D_800AE540.unk_11F6 |= 0x41;
+            D_800AE540.battleFlowFlags |= 0x41;
         } else {
             BattlePrep_RunBallBurstTransition();
             Audio_StopMusic(0x50);
-            D_800AE540.unk_0003++;
+            D_800AE540.opponentNumber++;
             sp2C = 1;
         }
     } else {
@@ -890,30 +890,30 @@ s32 BattlePrep_ConfirmCupRules(void) {
             switch (var_v0) {
                 case 0:
                     sp2C = 1;
-                    D_800AE540.unk_11F3--;
+                    D_800AE540.badgeCount--;
                     var_s2 = 0;
                     break;
 
                 case 1:
                     if (BattlePrep_ConsumeContinueToken() != 0) {
                         var_s2 = 0;
-                        D_800AE540.unk_11F6 |= 0x41;
+                        D_800AE540.battleFlowFlags |= 0x41;
                     }
                     break;
 
                 case 2:
                     var_s2 = 0;
-                    D_800AE540.unk_11F6 |= 0x21;
+                    D_800AE540.battleFlowFlags |= 0x21;
                     break;
 
                 case 3:
                     var_s2 = 0;
-                    D_800AE540.unk_11F6 |= 0x801;
+                    D_800AE540.battleFlowFlags |= 0x801;
                     break;
 
                 case 4:
                     var_s2 = 0;
-                    D_800AE540.unk_11F6 |= 1;
+                    D_800AE540.battleFlowFlags |= 1;
                     break;
             }
         }
@@ -940,8 +940,8 @@ s32 BattlePrep_ConfirmCastleRules(void) {
     BattlePrep_RunNormalRoundIntro();
     BattlePrep_RunBadgeCarouselIntro();
 
-    if (D_800AE540.unk_1194[0].unk_1C == 1) {
-        if ((D_800AE540.unk_0003 == 4) || (D_800AE540.unk_0002 == 9)) {
+    if (D_800AE540.unk_1194[0].isActiveSide == 1) {
+        if ((D_800AE540.opponentNumber == 4) || (D_800AE540.progressIndex == 9)) {
             BattlePrep_MarkCupCleared();
             BattlePrep_MarkNewRoundRecord();
             BattlePrep_SaveVictoryPalaceRecords();
@@ -960,15 +960,15 @@ s32 BattlePrep_ConfirmCastleRules(void) {
             BattlePrep_RunBallBurstTransition();
             Audio_StopMusic(0x10);
 
-            D_800AE540.unk_11F6 |= 1;
-            if (D_800AE540.unk_0002 == 8) {
-                D_800AE540.unk_11F6 |= 0x400;
+            D_800AE540.battleFlowFlags |= 1;
+            if (D_800AE540.progressIndex == 8) {
+                D_800AE540.battleFlowFlags |= 0x400;
             }
 
-            if (D_800AE540.unk_0002 == 9) {
-                D_800AE540.unk_11F6 |= 0x200;
+            if (D_800AE540.progressIndex == 9) {
+                D_800AE540.battleFlowFlags |= 0x200;
             } else {
-                D_800AE540.unk_11F6 |= 0x100;
+                D_800AE540.battleFlowFlags |= 0x100;
             }
             sp24 = 3;
         } else if (BattlePrep_HandleRoundContinue() == 1) {
@@ -976,13 +976,13 @@ s32 BattlePrep_ConfirmCastleRules(void) {
             Audio_PlayCategory11SoundCommand(0x0110000D, 0, 0);
             BattlePrep_RunBallBurstTransition();
             BattlePrep_FadeToTransparentEnding();
-            D_800AE540.unk_11F6 |= 0x41;
+            D_800AE540.battleFlowFlags |= 0x41;
         } else {
             BattlePrepStarBurst_StartExit(&D_84B25AC0);
             Audio_PlayCategory11SoundCommand(0x0110000D, 0, 0);
             BattlePrep_RunBallBurstTransition();
             Audio_StopMusic(0x50);
-            D_800AE540.unk_0003++;
+            D_800AE540.opponentNumber++;
             sp24 = 1;
         }
     } else {
@@ -997,15 +997,15 @@ s32 BattlePrep_ConfirmCastleRules(void) {
 
         switch (var_v0) {
             case 0:
-                D_800AE540.unk_11F6 |= 0x21;
+                D_800AE540.battleFlowFlags |= 0x21;
                 break;
 
             case 1:
-                D_800AE540.unk_11F6 |= 0x801;
+                D_800AE540.battleFlowFlags |= 0x801;
                 break;
 
             case 2:
-                D_800AE540.unk_11F6 |= 1;
+                D_800AE540.battleFlowFlags |= 1;
                 break;
         }
 
@@ -1013,8 +1013,8 @@ s32 BattlePrep_ConfirmCastleRules(void) {
         BattlePrep_RunBallBurstTransition();
         BattlePrep_FadeToTransparentEnding();
 
-        if (D_800AE540.unk_0002 == 9) {
-            D_800AE540.unk_0002 = 8;
+        if (D_800AE540.progressIndex == 9) {
+            D_800AE540.progressIndex = 8;
         }
     }
     return sp24;
@@ -1025,10 +1025,10 @@ s32 BattlePrep_ConfirmMewtwoRules(void) {
     u16 sp2A;
 
     BattlePrep_RunNormalRoundIntro();
-    if (D_800AE540.unk_1194[0].unk_1C == 1) {
-        s32 tmp1 = !!(D_84B26670.unk_00 & 0x100);
+    if (D_800AE540.unk_1194[0].isActiveSide == 1) {
+        s32 tmp1 = !!(D_84B26670.flags & 0x100);
 
-        if ((D_800AE540.unk_11F2 == 0) & !tmp1) {
+        if ((D_800AE540.roundSelector == 0) & !tmp1) {
             Save_GetOptionsField02(&sp2A);
             sp2A |= 4;
             Save_SetOptionsField02(&sp2A);
@@ -1042,7 +1042,7 @@ s32 BattlePrep_ConfirmMewtwoRules(void) {
         Audio_PlayCategory11SoundCommand(0x0110000D, 0, 0);
         BattlePrep_RunBallBurstTransition();
         BattlePrep_FadeToTransparentEnding();
-        D_800AE540.unk_11F6 |= 5;
+        D_800AE540.battleFlowFlags |= 5;
     } else {
         BattlePrep_InitRuleWindow(&D_84B26640.unk_28, 6);
 
@@ -1054,11 +1054,11 @@ s32 BattlePrep_ConfirmMewtwoRules(void) {
 
         switch (var_v0) {
             case 0:
-                D_800AE540.unk_11F6 |= 0x21;
+                D_800AE540.battleFlowFlags |= 0x21;
                 break;
 
             case 1:
-                D_800AE540.unk_11F6 |= 1;
+                D_800AE540.battleFlowFlags |= 1;
                 break;
         }
 
@@ -1075,11 +1075,11 @@ u8 BattlePrep_CheckTeamChosen(void) {
     s32 i;
     u8 var_v1 = 0;
 
-    if ((D_800AE540.unk_0000 > 0) && (D_800AE540.unk_0000 < 7)) {
-        if (D_800AE540.unk_1194[0].unk_1C == 1) {
+    if ((D_800AE540.sessionMode > 0) && (D_800AE540.sessionMode < 7)) {
+        if (D_800AE540.unk_1194[0].isActiveSide == 1) {
             var_v1 = 1;
             for (i = 0; i < 3; i++) {
-                if (D_800AE540.unk_1194[0].unk_08[0]->unk_01C[i].unk_02 == 0) {
+                if (D_800AE540.unk_1194[0].teams[0]->party[i].currentHP == 0) {
                     var_v1 = 0;
                 }
             }
@@ -1092,10 +1092,10 @@ u8 BattlePrep_CheckTeamChosen(void) {
 s32 BattlePrep_DispatchRuleConfirm(void) {
     s32 var_v0;
 
-    D_84B1A598.unk_0002 = BattlePrep_CheckTeamChosen();
+    D_84B1A598.teamChosen = BattlePrep_CheckTeamChosen();
     BattlePrep_InitRoundIntroSubScenes();
 
-    switch (D_800AE540.unk_0000) {
+    switch (D_800AE540.sessionMode) {
         case 0:
             var_v0 = BattlePrep_ConfirmDefaultRules();
             break;
@@ -1147,14 +1147,14 @@ s32 BattlePrep_ShowCastleClearOutro(void) {
     s32 i;
     s32 var_s1;
 
-    if (D_800AE540.unk_0002 == 9) {
+    if (D_800AE540.progressIndex == 9) {
         var_s1 = 0x3C;
     } else {
         var_s1 = 0x4B;
     }
 
     BattlePrep_InitBannerScene(&D_84B259A8);
-    BattlePrep_InitCarouselExit(&D_84B259A8, &D_84B1A598.unk_0008[0x10]);
+    BattlePrep_InitCarouselExit(&D_84B259A8, &D_84B1A598.displayObjectPool[0x10]);
     Audio_PlayMusicIfChanged(0x3F);
 
     for (i = 0; i < var_s1; i++) {
@@ -1183,26 +1183,26 @@ void BattlePrep_InitScene(void) {
     unk_D_86002F58_004_000* ptr2;
     s32 i;
 
-    D_84B1A598.unk_0001 = 0;
-    D_84B1A598.unk_0003 = 0;
-    if (D_800AE540.unk_1194[0].unk_1C == D_800AE540.unk_1194[1].unk_1C) {
-        D_84B1A598.unk_0003 = 1;
-    } else if (D_800AE540.unk_1194[0].unk_1C == 1) {
-        D_84B1A598.unk_0001 = 1;
+    D_84B1A598.side1Active = 0;
+    D_84B1A598.bothSidesSameActive = 0;
+    if (D_800AE540.unk_1194[0].isActiveSide == D_800AE540.unk_1194[1].isActiveSide) {
+        D_84B1A598.bothSidesSameActive = 1;
+    } else if (D_800AE540.unk_1194[0].isActiveSide == 1) {
+        D_84B1A598.side1Active = 1;
     }
 
     ModelRenderer_InitDisplayRoots();
 
-    for (i = 0, ptr2 = &D_84B1A598.unk_0008[0]; i < 128; ptr2++, i++) {
+    for (i = 0, ptr2 = &D_84B1A598.displayObjectPool[0]; i < 128; ptr2++, i++) {
         ModelRenderer_AttachDisplayObject(ptr2);
-        D_84B1A598.unk_0008[i].unk_0A6 = i;
+        D_84B1A598.displayObjectPool[i].poolIndex = i;
     }
 
     temp_v0 = MainPool_AllocState(main_pool_get_available(), 0);
-    D_84B1A598.unk_0004 = process_geo_layout(temp_v0, &D_84B0FB20);
+    D_84B1A598.sceneRootNode = process_geo_layout(temp_v0, &D_84B0FB20);
     MainPool_FinalizeAllocation(temp_v0);
 
-    ptr = D_84B1A598.unk_0004->unk_0C;
+    ptr = D_84B1A598.sceneRootNode->unk_0C;
     ptr->unk_24.near = 10.0f;
     ptr->unk_24.far = 6000.0f;
 
@@ -1216,7 +1216,7 @@ s32 BattlePrep_RunRulesScreen(s32 arg0, UNUSED s32 arg1) {
 
     main_pool_push_state('EYEC');
     Save_EnsureBankLoaded(2);
-    Save_GetModeSettings(&D_84B26670, D_800AE540.unk_11F2);
+    Save_GetModeSettings(&D_84B26670, D_800AE540.roundSelector);
     Gfx_InitDisplayListBuffers(0x18000, 0);
     sp2C = StageContext_Allocate(0, 1, 3, 1, 2, 1);
     Font_Init(0x17, 0);
@@ -1229,8 +1229,8 @@ s32 BattlePrep_RunRulesScreen(s32 arg0, UNUSED s32 arg1) {
     D_84B26678 = Text_GetStringTable(0x1B);
     PokeIcon_OpenModelArchive();
 
-    D_84B1A598.unk_B408 = BinArchive_Open(0x898000, NULL, 1, 1);
-    D_84B1A598.unk_B40C = ASSET_LOAD2(battle_portraits, 1, 1);
+    D_84B1A598.portraitArchiveRaw = BinArchive_Open(0x898000, NULL, 1, 1);
+    D_84B1A598.portraitArchive = ASSET_LOAD2(battle_portraits, 1, 1);
 
     StageContext_Activate(sp2C);
     BattlePrep_InitScene();

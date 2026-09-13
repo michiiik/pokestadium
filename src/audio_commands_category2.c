@@ -1,5 +1,5 @@
 #include "audio_commands_category2.h"
-#include "src/libnumus/player.h"
+#include "src/audio_io.h"
 #include "src/audio_sfx.h"
 #include "src/rom_device.h"
 #include "src/audio_loop_point.h"

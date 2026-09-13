@@ -5,7 +5,7 @@
 #include "src/input.h"
 #include "src/text_system.h"
 #include "src/session.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/audio_sound_state.h"
 #include "src/audio_sfx.h"
 #include "src/audio_data.h"
@@ -254,8 +254,8 @@ s32 Title_StartAttractDemo(void) {
     if (mod == 0) {
         Title_PickDemoMatchup(gTitleAttractDemoScenarios[low_index]);
     } else {
-        D_800AE540.unk_0000 = 0x19;
-        D_800AE540.unk_0003 = gTitleAttractDemoScenarios[low_index][3];
+        D_800AE540.sessionMode = 0x19;
+        D_800AE540.opponentNumber = gTitleAttractDemoScenarios[low_index][3];
     }
 
     temp_a1 = ((temp_a1 + 1) % 4);
@@ -352,7 +352,7 @@ void Title_LoadAssets(void) {
 
     gTitleBackgroundArchive = ASSET_LOAD2(backgrounds, 1, 1);
 
-    if (gTitleModeSettings.unk_00 == 0x1F8) {
+    if (gTitleModeSettings.flags == 0x1F8) {
         gTitleBackgroundImage = BinArchive_GetFile(gTitleBackgroundArchive, 0x11);
     } else {
         gTitleBackgroundImage = BinArchive_GetFile(gTitleBackgroundArchive, 0);

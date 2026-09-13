@@ -118,75 +118,75 @@ char* Text_GetTmHmName(s32 arg0, char* arg1) {
 }
 
 void Pokemon_FromGbRecord(BattleMon* arg0, GbPokemonRecord* arg1) {
-    arg0->unk_00.unk_00 = Species_FromInternalIndex(arg1->unk_00);
-    arg0->unk_00.unk_01 = arg1->unk_00;
-    arg0->unk_02 = GbData_ReadU16BE(arg1->unk_01);
+    arg0->species.dexId = Species_FromInternalIndex(arg1->speciesInternalIndex);
+    arg0->species.internalIndex = arg1->speciesInternalIndex;
+    arg0->currentHP = GbData_ReadU16BE(arg1->currentHP);
 
-    arg0->unk_04 = arg1->unk_03;
-    arg0->unk_05 = arg1->unk_04;
-    arg0->unk_06 = arg1->unk_05;
-    arg0->unk_07 = arg1->unk_06;
-    arg0->unk_08 = arg1->unk_07;
+    arg0->boxLevel = arg1->boxLevel;
+    arg0->status = arg1->status;
+    arg0->type1 = arg1->type1;
+    arg0->type2 = arg1->type2;
+    arg0->catchRate = arg1->catchRate;
 
-    arg0->unk_0E = GbData_ReadU16BE(arg1->unk_0C);
-    arg0->unk_10 = GbData_ReadU24BE(arg1->unk_0E);
-    arg0->unk_14 = GbData_ReadU16BE(arg1->unk_11);
-    arg0->unk_16 = GbData_ReadU16BE(arg1->unk_13);
-    arg0->unk_18 = GbData_ReadU16BE(arg1->unk_15);
-    arg0->unk_1A = GbData_ReadU16BE(arg1->unk_17);
-    arg0->unk_1C = GbData_ReadU16BE(arg1->unk_19);
-    arg0->unk_1E = GbData_ReadU16BE(arg1->unk_1B);
+    arg0->otId = GbData_ReadU16BE(arg1->otId);
+    arg0->exp = GbData_ReadU24BE(arg1->exp);
+    arg0->hpStatExp = GbData_ReadU16BE(arg1->hpStatExp);
+    arg0->attackStatExp = GbData_ReadU16BE(arg1->attackStatExp);
+    arg0->defenseStatExp = GbData_ReadU16BE(arg1->defenseStatExp);
+    arg0->speedStatExp = GbData_ReadU16BE(arg1->speedStatExp);
+    arg0->specialStatExp = GbData_ReadU16BE(arg1->specialStatExp);
+    arg0->dvs = GbData_ReadU16BE(arg1->dvs);
 
-    memcpy(arg0->unk_09, arg1->unk_08, 4);
-    memcpy(arg0->unk_20, arg1->unk_1D, 4);
+    memcpy(arg0->moves, arg1->moves, 4);
+    memcpy(arg0->pp, arg1->pp, 4);
 }
 
 void Pokemon_FromGbRecordExt(BattleMon* arg0, GbPokemonRecordExt* arg1) {
-    Pokemon_FromGbRecord(arg0, &arg1->unk_00);
-    arg0->unk_24 = arg1->unk_21;
-    arg0->unk_26 = GbData_ReadU16BE(&arg1->unk_22);
-    arg0->unk_28 = GbData_ReadU16BE(&arg1->unk_24);
-    arg0->unk_2A = GbData_ReadU16BE(&arg1->unk_26);
-    arg0->unk_2C = GbData_ReadU16BE(&arg1->unk_28);
-    arg0->unk_2E = GbData_ReadU16BE(&arg1->unk_2A);
+    Pokemon_FromGbRecord(arg0, &arg1->base);
+    arg0->level = arg1->level;
+    arg0->maxHP = GbData_ReadU16BE(&arg1->maxHP);
+    arg0->attack = GbData_ReadU16BE(&arg1->attack);
+    arg0->defense = GbData_ReadU16BE(&arg1->defense);
+    arg0->speed = GbData_ReadU16BE(&arg1->speed);
+    arg0->special = GbData_ReadU16BE(&arg1->special);
 }
 
 void Pokemon_ToGbRecord(BattleMon* arg0, GbPokemonRecord* arg1) {
-    if (Species_ToInternalIndex(arg0->unk_00.unk_00) & 0xFF) {
-        arg1->unk_00 = Species_ToInternalIndex(arg0->unk_00.unk_00);
+    if (Species_ToInternalIndex(arg0->species.dexId) & 0xFF) {
+        arg1->speciesInternalIndex = Species_ToInternalIndex(arg0->species.dexId);
     } else {
-        arg1->unk_00 = arg0->unk_00.unk_01;
+        arg1->speciesInternalIndex = arg0->species.internalIndex;
     }
 
-    GbData_WriteU16BE(arg1->unk_01, (u16)arg0->unk_02);
+    GbData_WriteU16BE(arg1->currentHP, (u16)arg0->currentHP);
 
-    arg1->unk_03 = arg0->unk_04;
-    arg1->unk_04 = arg0->unk_05;
-    arg1->unk_05 = arg0->unk_06;
-    arg1->unk_06 = arg0->unk_07;
-    arg1->unk_07 = arg0->unk_08;
+    arg1->boxLevel = arg0->boxLevel;
+    arg1->status = arg0->status;
+    arg1->type1 = arg0->type1;
+    arg1->type2 = arg0->type2;
+    arg1->catchRate = arg0->catchRate;
 
-    GbData_WriteU16BE(arg1->unk_0C, arg0->unk_0E);
-    GbData_WriteU24BE(arg1->unk_0E, arg0->unk_10);
-    GbData_WriteU16BE(arg1->unk_11, arg0->unk_14);
-    GbData_WriteU16BE(arg1->unk_13, arg0->unk_16);
-    GbData_WriteU16BE(arg1->unk_15, arg0->unk_18);
-    GbData_WriteU16BE(arg1->unk_17, arg0->unk_1A);
-    GbData_WriteU16BE(arg1->unk_19, arg0->unk_1C);
-    GbData_WriteU16BE(arg1->unk_1B, arg0->unk_1E);
+    GbData_WriteU16BE(arg1->otId, arg0->otId);
+    GbData_WriteU24BE(arg1->exp, arg0->exp);
+    GbData_WriteU16BE(arg1->hpStatExp, arg0->hpStatExp);
+    GbData_WriteU16BE(arg1->attackStatExp, arg0->attackStatExp);
+    GbData_WriteU16BE(arg1->defenseStatExp, arg0->defenseStatExp);
+    GbData_WriteU16BE(arg1->speedStatExp, arg0->speedStatExp);
+    GbData_WriteU16BE(arg1->specialStatExp, arg0->specialStatExp);
+    GbData_WriteU16BE(arg1->dvs, arg0->dvs);
 
-    memcpy(arg1->unk_08, arg0->unk_09, 4);
-    memcpy(arg1->unk_1D, arg0->unk_20, 4);
+    memcpy(arg1->moves, arg0->moves, 4);
+    memcpy(arg1->pp, arg0->pp, 4);
 }
 
 void Pokemon_ToGbRecordExt(unk_func_88205880_00D0* arg0, GbPokemonRecordExt* arg1) {
     Pokemon_ToGbRecord(arg0->unk_000, arg1);
-    arg1->unk_21 = arg0->unk_000[0].unk_24;
-    GbData_WriteU16BE(&arg1->unk_22, arg0->unk_000[0].unk_26);
-    GbData_WriteU16BE(&arg1->unk_24, arg0->unk_000[0].unk_28);
-    GbData_WriteU16BE(&arg1->unk_26, arg0->unk_000[0].unk_2A);
-    GbData_WriteU16BE(&arg1->unk_28, arg0->unk_000[0].unk_2C);
-    GbData_WriteU16BE(&arg1->unk_2A, arg0->unk_000[0].unk_2E);
+    arg1->level = arg0->unk_000[0].level;
+    GbData_WriteU16BE(&arg1->maxHP, arg0->unk_000[0].maxHP);
+    GbData_WriteU16BE(&arg1->attack, arg0->unk_000[0].attack);
+    GbData_WriteU16BE(&arg1->defense, arg0->unk_000[0].defense);
+    GbData_WriteU16BE(&arg1->speed, arg0->unk_000[0].speed);
+    GbData_WriteU16BE(&arg1->special, arg0->unk_000[0].special);
 }
 
 u16 StatExpSqrt(u16 arg0) {
@@ -214,19 +214,19 @@ u16 GetPokemonDV(s32 statId, u16 dvBits) { //GetPokemonDV
                     | (dvBits & 0x0001);        // Attack DV bit 0 → HP DV bit 3
             break;
 
-        case STAT_SPECIAL: // Special DV
+        case STAT_ATTACK: // Special DV
             dvValue = (dvBits >> 12) & 0xF;
             break;
 
-        case STAT_SPEED: // Speed DV
+        case STAT_DEFENSE: // Speed DV
             dvValue = (dvBits >> 8) & 0xF;
             break;
 
-        case STAT_DEFENSE: // Defense DV
+        case STAT_SPEED: // Defense DV
             dvValue = (dvBits >> 4) & 0xF;
             break;
 
-        case STAT_ATTACK: // Attack DV
+        case STAT_SPECIAL: // Attack DV
             dvValue = dvBits & 0xF;
             break;
     }
@@ -243,17 +243,17 @@ u32 CalculateStatValue(s32 statId, s32 speciesId, u16 statModifier, u16 level, u
         case STAT_HP:
             baseStat = gBaseStats[speciesId].baseHP;
             break;
-        case STAT_SPECIAL:
-            baseStat = gBaseStats[speciesId].baseSpecial;
-            break;
-        case STAT_SPEED:
-            baseStat = gBaseStats[speciesId].baseSpeed;
+        case STAT_ATTACK:
+            baseStat = gBaseStats[speciesId].baseAttack;
             break;
         case STAT_DEFENSE:
             baseStat = gBaseStats[speciesId].baseDefense;
             break;
-        case STAT_ATTACK:
-            baseStat = gBaseStats[speciesId].baseAttack;
+        case STAT_SPEED:
+            baseStat = gBaseStats[speciesId].baseSpeed;
+            break;
+        case STAT_SPECIAL:
+            baseStat = gBaseStats[speciesId].baseSpecial;
             break;
     }
 
@@ -279,12 +279,12 @@ u32 CalculateStatValue(s32 statId, s32 speciesId, u16 statModifier, u16 level, u
 }
 
 void Pokemon_RecalcStats(BattleMon* arg0) {
-    arg0->unk_24 = Pokemon_LevelFromExp(arg0->unk_00.unk_00, arg0->unk_10);
-    arg0->unk_26 = CalculateStatValue(1, arg0->unk_00.unk_00, arg0->unk_14, arg0->unk_24, arg0->unk_1E);
-    arg0->unk_28 = CalculateStatValue(2, arg0->unk_00.unk_00, arg0->unk_16, arg0->unk_24, arg0->unk_1E);
-    arg0->unk_2A = CalculateStatValue(3, arg0->unk_00.unk_00, arg0->unk_18, arg0->unk_24, arg0->unk_1E);
-    arg0->unk_2C = CalculateStatValue(4, arg0->unk_00.unk_00, arg0->unk_1A, arg0->unk_24, arg0->unk_1E);
-    arg0->unk_2E = CalculateStatValue(5, arg0->unk_00.unk_00, arg0->unk_1C, arg0->unk_24, arg0->unk_1E);
+    arg0->level = Pokemon_LevelFromExp(arg0->species.dexId, arg0->exp);
+    arg0->maxHP = CalculateStatValue(1, arg0->species.dexId, arg0->hpStatExp, arg0->level, arg0->dvs);
+    arg0->attack = CalculateStatValue(2, arg0->species.dexId, arg0->attackStatExp, arg0->level, arg0->dvs);
+    arg0->defense = CalculateStatValue(3, arg0->species.dexId, arg0->defenseStatExp, arg0->level, arg0->dvs);
+    arg0->speed = CalculateStatValue(4, arg0->species.dexId, arg0->speedStatExp, arg0->level, arg0->dvs);
+    arg0->special = CalculateStatValue(5, arg0->species.dexId, arg0->specialStatExp, arg0->level, arg0->dvs);
 }
 
 u16 Pokemon_StatExpForTarget(s32 arg0, s32 arg1, u16 arg2, u16 arg3, u16 arg4) {
@@ -304,7 +304,7 @@ u16 Pokemon_StatExpForTarget(s32 arg0, s32 arg1, u16 arg2, u16 arg3, u16 arg4) {
 u32 Pokemon_ExpForLevel(s32 arg0, u16 arg1) {
     u32 sp4;
 
-    switch (gBaseStats[arg0].unk_13) {
+    switch (gBaseStats[arg0].growthRate) {
         case 0:
             sp4 = arg1 * arg1 * arg1;
             break;

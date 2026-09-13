@@ -250,7 +250,7 @@ s32 TeamSelection_TrainerSlots_GraphCallback(s32 arg0, unk_func_80011B94* arg1) 
         // clang-format on
 
         gDPPipeSync(gDisplayListHead++);
-        gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, D_8006F09C->unk_01D);
+        gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, D_8006F09C->materialAlpha);
         gSPSegment(gDisplayListHead++, 0x0F, Memmap_GetSegmentVaddr(var_a0));
         gSPSegment(gDisplayListHead++, 0x0E, Memmap_GetSegmentVaddr(var_a3));
         gSPDisplayList(gDisplayListHead++, arg1->unk_00.unk_14);
@@ -726,7 +726,7 @@ void TeamSelection_TrainerSlots_InitializeModels(void) {
             Vec3f_SetComponentsDuplicate(&D_8423D408[0][i].unk_024, D_84210DA0[i].unk_02 - 0x140, 0xF0 - D_84210DA0[i].unk_04, -579.f);
             Vec3f_SetComponentsDuplicate(&D_8423D408[1][i].unk_024, D_84210DA0[i].unk_02 - 0x140, 0xE4 - D_84210DA0[i].unk_04,
                           -579.0f);
-            D_8423D408[1][i].unk_01D = 0xB4;
+            D_8423D408[1][i].materialAlpha = 0xB4;
         }
     }
 
@@ -734,8 +734,8 @@ void TeamSelection_TrainerSlots_InitializeModels(void) {
         D_8423E578 = Deck_FindFirstFreeTeamSlot();
         if (D_8423E578 == 0) {
             D_84210DD8[0] = 0;
-            D_8423D408[0][4].unk_01D = 0xA0;
-            D_8423D408[1][4].unk_01D = 0x64;
+            D_8423D408[0][4].materialAlpha = 0xA0;
+            D_8423D408[1][4].materialAlpha = 0x64;
         }
     }
 
@@ -749,8 +749,8 @@ void TeamSelection_TrainerSlots_PollGameBoySaves(void) {
 
     for (i = 0; i < 4; i++) {
         GbSave_CopyPlayerIdentity(i, &sp48);
-        Text_UntranscodeName(D_8423E518[i].unk_06, sp48.unk_02);
-        D_8423E518[i].unk_04 = sp48.unk_00;
+        Text_UntranscodeName(D_8423E518[i].unk_06, sp48.playerName);
+        D_8423E518[i].unk_04 = sp48.trainerId;
         D_8423E518[i].unk_01 = GbSave_GetPortGame(i);
         D_8423E518[i].unk_00 = GbSave_GetSaveState(i);
         D_8423E518[i].unk_02 = GbSave_SavedAtPokemonCenter(i);

@@ -3,7 +3,7 @@
 
 #include "global.h"
 
-void func_86100C30(s32 arg0);
+void ClefairyGame_DrawTutorialScreen(s32 arg0);
 
 
 #endif // _FRAGMENT7_H_

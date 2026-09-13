@@ -1,6 +1,6 @@
 #include "audio_category_fade.h"
 #include "audio_stream.h"
-#include "libnumus/player.h"
+#include "audio_io.h"
 #include "3D140.h"
 
 void Audio_FadeCategories(s32 arg0, u32 arg1) {
@@ -19,7 +19,7 @@ void Audio_FadeCategoriesAndStreams(s32 arg0) {
     s32 i;
 
     D_8007840C = 0;
-    func_8003DB84(0);
+    Audio_ResetSequencePlaybackState(0);
     Audio_FadeCategories(3, arg0);
 
     for (i = 0; i < 2; i++) {

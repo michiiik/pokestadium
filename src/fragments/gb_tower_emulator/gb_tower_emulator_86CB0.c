@@ -22,13 +22,7 @@ typedef struct GbApuChannelState {
   /* 0x2C */ char unk2C[0x1];
   /* 0x2D */ u8 unk_2D;
   /* 0x2E */ u8 unk_2E;
-  /* 0x2F */ char unk2F[0x1];
-  /* 0x30 */ u32 unk_30;
-  /* 0x34 */ u32 unk_34;
-  /* 0x38 */ u8 unk_38;
-  /* 0x39 */ u8 unk_39;
-  /* 0x3A */ u8 unk_3A;
-  /* 0x3B */ u8 unk_3B;
+  /* 0x2F */ char unk2F[0xD];
   /* 0x3C */ u8 unk_3C;
   /* 0x3D */ char unk3D[0x3];
   /* 0x40 */ u32 unk_40;
@@ -57,31 +51,20 @@ extern s32 D_8120EACC;
 extern s32 D_8120EAC4;
 extern s32 D_8120EA60;
 extern u32 D_8120EA80;
-extern s32 D_8120EAD0;
-extern u8 D_8120EB14[];
 extern s32 D_8120EB78;
 extern s32 D_8120EB7C;
-
-// .rodata
 extern f32 D_8122B0A0;
 extern f32 D_8122B0A4;
-extern f32 D_8122B0A8;
-extern f32 D_8122B0AC;
+extern s32 D_8122C794;
 
-// .bss
-extern s16 D_8122C790;
-extern s16 D_8122C792;
-extern u8* D_8122C794;
 extern GbApuChannelState gGbApuSquare1;
 extern GbApuChannelState gGbApuSquare2;
 extern GbApuChannelState gGbApuWave;
 extern GbApuChannelState gGbApuNoise;
-extern u8 D_8122EE58[40];
-extern s32 D_8122EE98;
 extern unk_D_8122EEA8 D_8122EEA8;
+
 extern OSMesgQueue D_8122EEB0;
 extern OSMesg D_8122EEC8;
-extern void* D_812346E0;
 
 void func_81207330(void) {
 }
@@ -121,211 +104,20 @@ u32 GbApu_FreqToStep(u16 arg0) {
   return temp;
 }
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/func_81207494.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/func_81207494.s")
 
-u32 GbApu_FreqToStep2x(u16 arg0) {
-  u32 temp;
-  temp = ((131072.0f / (0x800 - arg0)) / D_8120EAC0) * 65536;
-  return temp;
-}
+s32 GbApu_FreqToStep2x(s32);
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/GbApu_FreqToStep2x.s")
 
 void func_81207690(void) {
 }
 
-s32 func_81207698(u32 arg0, s32 arg1) {
-    switch (arg0) {
-    case 0:
-        if ((arg1 >= 4) && (arg1 < 8)) {
-            return 0x7F;
-        }
-        return 0;
-    case 1:
-        if (arg1 < 8) {
-            return 0x7F;
-        }
-        return 0;
-    case 2:
-        if (arg1 < 0x10) {
-            return 0x7F;
-        }
-        return 0;
-    case 3:
-        if (arg1 < 8) {
-            return 0;
-        }
-        return 0x7F;
-    case 4:
-    case 5:
-        break;
-    case 6:
-        return (u8)(D_8122C794[arg1 + D_8122EE98] & 0x7F);
-    case 7:
-        return (u8)(D_8122EE58[arg1] << 3);
-    }
-}
+s32 GbApu_SampleWaveform(u32, u16);
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/GbApu_SampleWaveform.s")
 
-u16 GbApu_UpdateSquare1Channel(void) {
-    u16 var_t0;
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/GbApu_UpdateSquare1Channel.s")
 
-    if (gGbApuSquare1.unk_00 == 0) {
-        if (gGbApuSquare1.unk_3C == 0) {
-            return 0U;
-        }
-        gGbApuSquare1.unk_3C--;
-        gGbApuSquare1.unk_20 = gGbApuSquare1.unk_3C;
-        gGbApuSquare1.unk_0C = (s32) gGbApuSquare1.unk_40;
-    }
-    if ((s32) gGbApuSquare1.unk_10 <= 0) {
-        gGbApuSquare1.unk_4C = 1U;
-    } else if (((s32) gGbApuSquare1.unk_10 >= 0x7FF) && (gGbApuSquare1.unk_39 == 0)) {
-        gGbApuSquare1.unk_4C = 1U;
-    } else {
-        gGbApuSquare1.unk_4C = 0U;
-    }
-    {
-        s32 temp_v0 = func_81207698(gGbApuSquare1.unk_3B, gGbApuSquare1.unk_08.unk_00);
-        gGbApuSquare1.unk_08.unk_02 += gGbApuSquare1.unk_0C;
-        gGbApuSquare1.unk_08.unk_02 &= 0x1FFFFF;
-        if (gGbApuSquare1.unk_4C == 1) {
-            if (gGbApuSquare1.unk_3C != 0) {
-                gGbApuSquare1.unk_3C--;
-            }
-            var_t0 = ((temp_v0 & 0xFFFF) * gGbApuSquare1.unk_3C);
-        } else {
-            gGbApuSquare1.unk_40 = (s32) gGbApuSquare1.unk_0C;
-            gGbApuSquare1.unk_3C = (u8) gGbApuSquare1.unk_20;
-            var_t0 = ((temp_v0 & 0xFFFF) * gGbApuSquare1.unk_20);
-        }
-    }
-    if ((gGbApuSquare1.unk_3A != 0) && (((++gGbApuSquare1.unk_30 % (u32) gGbApuSquare1.unk_34) == 0))) {
-        s32 temp_a2 = ((s32) gGbApuSquare1.unk_10 >> gGbApuSquare1.unk_38) & 0xFFFF;
-        switch (gGbApuSquare1.unk_39) {
-        case 0:
-            gGbApuSquare1.unk_10 += temp_a2;
-            break;
-        case 1:
-            gGbApuSquare1.unk_10 = (gGbApuSquare1.unk_10 - temp_a2) - 1;;
-            break;
-        }
-        if (gGbApuSquare1.unk_10 <= 0) {
-            gGbApuSquare1.unk_00 = 0U;
-            return var_t0;
-        } else {
-            if ((gGbApuSquare1.unk_10 >= 0x800) && (gGbApuSquare1.unk_39 == 0)) {
-                gGbApuSquare1.unk_10 = 0x7FFU;
-                gGbApuSquare1.unk_00 = 0U;
-            }
-            gGbApuSquare1.unk_0C = GbApu_FreqToStep2x(gGbApuSquare1.unk_10);
-        }
-    }
-    if (gGbApuSquare1.unk_28 != 0) {
-        gGbApuSquare1.unk_24++;
-        if ((gGbApuSquare1.unk_24 % (u32) gGbApuSquare1.unk_28) == 0) {
-            switch (gGbApuSquare1.unk_2E) {
-            case 0:
-                if (gGbApuSquare1.unk_2D != 0) {
-                    gGbApuSquare1.unk_2D--;
-                }
-                if (!gGbApuSquare1.unk_2D) {
-                    gGbApuSquare1.unk_00 = 0;
-                }
-                break;
-            
-            case 1:
-                if (gGbApuSquare1.unk_2D < 0xF) {
-                    gGbApuSquare1.unk_2D++;
-                }
-                break;
-            
-            default:
-                break;
-            }
-        gGbApuSquare1.unk_20 = D_8120EB14[gGbApuSquare1.unk_2D];
-        }
-    } else {
-        gGbApuSquare1.unk_20 = D_8120EB14[gGbApuSquare1.unk_2D];
-    }
-    if (gGbApuSquare1.unk_18 == 1U) {
-        if (gGbApuSquare1.unk_14 != 0) {
-            gGbApuSquare1.unk_14--;
-        }
-        if (gGbApuSquare1.unk_14 == 0) {
-            gGbApuSquare1.unk_00 = 0U;
-        }
-    }
-    return var_t0;
-}
-
-s32 GbApu_UpdateSquare2Channel(void) {
-    s32 temp_v0;
-    s32 var_a3;
-    u8 var_v0;
-
-    if (gGbApuSquare2.unk_00 == 0) {
-        if (gGbApuSquare2.unk_3C == 0) {
-            return 0;
-        }
-        gGbApuSquare2.unk_3C--;
-        gGbApuSquare2.unk_20 = gGbApuSquare2.unk_3C;
-        gGbApuSquare2.unk_0C = (s32) gGbApuSquare2.unk_40;
-    }
-    if ((s32) gGbApuSquare2.unk_10 >= 0x7FF) {
-        gGbApuSquare2.unk_4C = 1U;
-    } else {
-        gGbApuSquare2.unk_4C = 0U;
-    }
-    temp_v0 = func_81207698(gGbApuSquare2.unk_3B, gGbApuSquare2.unk_08.unk_00);
-    gGbApuSquare2.unk_08.unk_02 += gGbApuSquare2.unk_0C;
-    gGbApuSquare2.unk_08.unk_02 &= 0x1FFFFF;
-    if (gGbApuSquare2.unk_4C == 1) {
-        if (gGbApuSquare2.unk_3C != 0) {
-            gGbApuSquare2.unk_3C--;
-        }
-        var_a3 = ((temp_v0 & 0xFFFF) * gGbApuSquare2.unk_3C) & 0xFFFF;
-    } else {
-        if (gGbApuSquare2.unk_20 != gGbApuSquare2.unk_3C) {
-            gGbApuSquare2.unk_3C = (u8) gGbApuSquare2.unk_20;
-        }
-        gGbApuSquare2.unk_40 = (s32) gGbApuSquare2.unk_0C;
-        var_a3 = ((temp_v0 & 0xFFFF) * gGbApuSquare2.unk_20) & 0xFFFF;
-    }
-    if (gGbApuSquare2.unk_28 != 0) {
-        gGbApuSquare2.unk_24++;
-        if ((gGbApuSquare2.unk_24 % (u32) gGbApuSquare2.unk_28) == 0) {
-            switch (gGbApuSquare2.unk_2E) {
-                case 0:
-                    if (gGbApuSquare2.unk_2D != 0) {
-                        gGbApuSquare2.unk_2D--;
-                    }
-                    if (!gGbApuSquare2.unk_2D) {
-                        gGbApuSquare2.unk_00 = 0;
-                    }
-                    break;
-                
-                case 1:
-                    if (gGbApuSquare2.unk_2D < 0xF) {
-                        gGbApuSquare2.unk_2D++;
-                    }
-                    break;
-                
-                default:
-                    break;
-                }
-            gGbApuSquare2.unk_20 = D_8120EB14[gGbApuSquare2.unk_2D];
-        }
-    } else {
-        gGbApuSquare2.unk_20 = D_8120EB14[gGbApuSquare2.unk_2D];
-    }
-    if (gGbApuSquare2.unk_18 == 1U) {
-        if (gGbApuSquare2.unk_14 != 0) {
-            gGbApuSquare2.unk_14--;
-        }
-        if (gGbApuSquare2.unk_14 == 0) {
-            gGbApuSquare2.unk_00 = 0U;
-        }
-    }
-    return var_a3;
-}
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/GbApu_UpdateSquare2Channel.s")
 
 u16 GbApu_UpdateWaveChannel(void) {
     u16 temp_v0;
@@ -359,7 +151,7 @@ u16 GbApu_UpdateWaveChannel(void) {
             }
         }
     }
-    temp_a0 = func_81207698(7, gGbApuWave.unk_08.unk_00);
+    temp_a0 = GbApu_SampleWaveform(7, gGbApuWave.unk_08.unk_00);
     gGbApuWave.unk_08.unk_02 += gGbApuWave.unk_0C;
     gGbApuWave.unk_08.unk_02 &= 0x1FFFFF;
     if (gGbApuWave.unk_4C - 1 == 0) {
@@ -394,7 +186,7 @@ u16 func_81207C5C_Empty(void) {
 
 #ifdef NON_MATCHING
 // Matching but won't generate correct checksum
-u16 func_81207DF8(void) {
+u16 GbApu_UpdateNoiseChannel(void) {
     static s32 D_8120EB6C;
     u16 temp_v0;
     u32 var_a2;
@@ -417,7 +209,7 @@ u16 func_81207DF8(void) {
         gGbApuNoise.unk_20 = gGbApuNoise.unk_3C;
         gGbApuNoise.unk_0C = gGbApuNoise.unk_40;
     }
-    temp_v0 = func_81207698(6, gGbApuNoise.unk_08.unk_00);
+    temp_v0 = GbApu_SampleWaveform(6, gGbApuNoise.unk_08.unk_00);
     gGbApuNoise.unk_08.unk_02 += var_a2;
     if (gGbApuNoise.unk_08.unk_00  >= (u32)D_8120EACC) {
         gGbApuNoise.unk_08.unk_00  = D_8120EAC8;
@@ -471,69 +263,18 @@ u16 func_81207DF8(void) {
     return (temp_v0 << 1);
 }
 #else
-u16 func_81207DF8(void);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/func_81207DF8.s")
+u16 GbApu_UpdateNoiseChannel(void);
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/GbApu_UpdateNoiseChannel.s")
 #endif
 
-void func_8120806C(u16, u8);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/func_8120806C.s")
+void GbApu_WriteRegister(u16, u8);
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/GbApu_WriteRegister.s")
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/func_81208828.s")
+void GbApu_RenderAudioBuffer(s32 sampleCount, s16* samples);
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/GbApu_RenderAudioBuffer.s")
 
-void func_81208C08(u16 arg0, u8 arg1, u16 arg2) {
-    s32 temp_v1;
-
-    temp_v1 = arg0 + 0xFFFF0100;
-    osSendMesg(&D_8122EEB0, (temp_v1 << 0x18) | (arg1 << 0x10) | arg2, 0);
-    D_8120EAD0 = (s32) arg2;
-    switch (temp_v1) {
-    case 20:
-        if (arg1 & 0x80) {
-            D_8122EEA8.unk_00 = 2;
-            return;
-        }
-    default:
-        return;
-    case 25:
-        if (arg1 & 0x80) {
-            D_8122EEA8.unk_01 = 2;
-            return;
-        }
-        break;
-    case 30:
-        if (arg1 & 0x80) {
-            D_8122EEA8.unk_02 = 2;
-            return;
-        }
-        break;
-    case 35:
-        if (arg1 & 0x80) {
-            D_8122EEA8.unk_03 = 2;
-            return;
-        }
-        break;
-    case 38:
-        if (!(arg1 & 1)) {
-            D_8122EEA8.unk_00 = 1;
-        }
-        if (!(arg1 & 2)) {
-            D_8122EEA8.unk_01 = 1;
-        }
-        if (!(arg1 & 4)) {
-            D_8122EEA8.unk_02 = 1;
-        }
-        if (!(arg1 & 8)) {
-            D_8122EEA8.unk_03 = 1;
-        }
-        if (!(arg1 & 0x80)) {
-            D_8122EEA8.unk_00 = 1;
-            D_8122EEA8.unk_01 = 1;
-            D_8122EEA8.unk_02 = 1;
-            D_8122EEA8.unk_03 = 1;
-        }
-        break;
-    }
-}
+void GbApu_QueueRegisterWrite(u16 address, u8 value, u16 timestamp);
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/GbApu_QueueRegisterWrite.s")
 
 void GbApu_ResetChannels(void) {
   s32 pad[6];
@@ -544,7 +285,7 @@ void GbApu_ResetChannels(void) {
   osCreateMesgQueue(&sp24, &sp20, 1);
   osCreateMesgQueue(&D_8122EEB0, &D_8122EEC8, 0x960);
   for (i = 0x50; i > 0xF; i--) {
-      func_8120806C(i, 0);
+      GbApu_WriteRegister(i, 0);
   }
   gGbApuSquare1.unk_3C = 0;
   gGbApuSquare2.unk_3C = 0;
@@ -561,28 +302,7 @@ void GbApu_Reset(s32 arg0) {
   GbApu_ResetChannels();
 }
 
-void func_81208E4C(void) {
-    void* sp34 = D_812346E0;
-    f32 x = (f32) D_8122C790;
-    f32 y = (f32) D_8122C792;
-    f32 dx = x / 640.0f;
-    f32 dy = y / 640.0f;
-    s32 i;
-    s32 idx;
-
-    GbApu_ResetChannels();
-    for (i = 0, idx = 0; i != 0x280; i++) {
-        ((s16*)sp34)[idx + 0] = x;
-        ((s16*)sp34)[idx + 1] = y;
-        x -= dx;
-        y -= dy;
-        idx += 2;
-    }
-     do {
-     } while (osAiGetStatus() & 0x80000000);
-    osWritebackDCache(sp34, 0xA00);
-    osGbSetNextBuffer(sp34, 0xA00);
-}
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/func_81208E4C.s")
 
 void func_81208F94(void) {
 }
@@ -620,7 +340,10 @@ u8 GbMem_ReadIoRegister(u16 arg0) {
   return gGbMemoryMap[arg0 & 0xFFFF];
 }
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/func_81209078.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/GbAudio_ServiceOutputBuffer.s")
+
+/* Schedules the next N64 audio buffer and renders either the GB APU or an alternate stream. */
+void GbAudio_ServiceOutputBuffer(void);
 
 void GbAudio_SetAlternateRendererEnabled(s32 arg0) {
   D_8120EB78 = arg0;
@@ -630,7 +353,11 @@ void GbAudio_SetAlternateStreamId(s32 arg0) {
   D_8120EB7C = arg0;
 }
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/func_81209374.s")
+void GbAudio_RenderAlternateBuffer(s32 sampleCount, s16* samples);
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/GbAudio_RenderAlternateBuffer.s")
 
 void func_81209688(UNUSED s32 arg0) {
 }
+
+// Decrypting this function causes issues
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/1/fragment1_86CB0/func_81209690.s")

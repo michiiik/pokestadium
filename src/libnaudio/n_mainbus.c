@@ -18,7 +18,7 @@
  *====================================================================*/
 
 #include "n_synthInternals.h"
-#include "../audio_stream.h"
+#include "../45720.h"
 
 // This function appears to be different than the stock n_alMainBusPull.
 

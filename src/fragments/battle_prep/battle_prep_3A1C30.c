@@ -138,7 +138,7 @@ void BattlePrep_DrawCursorArrow(BattlePrepRuleWindow* arg0, s16 arg1, s16 arg2) 
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                         G_TX_NOLOD);
 
-    Gfx_DrawTexturedRectClipped(arg1, arg2 + (arg0->unk_04 * 0xE) + 1, 0x10, 0xB, 0, 0, 0x800, 0x800, 0);
+    Gfx_DrawTexturedRectClipped(arg1, arg2 + (arg0->selectedOption * 0xE) + 1, 0x10, 0xB, 0, 0, 0x800, 0x800, 0);
 
     gSPDisplayList(gDisplayListHead++, D_8006F630);
 
@@ -148,7 +148,7 @@ void BattlePrep_DrawCursorArrow(BattlePrepRuleWindow* arg0, s16 arg1, s16 arg2) 
 void BattlePrep_DrawRuleOption(BattlePrepRuleWindow* arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4, s8* arg5) {
     if (arg4 == 0) {
         Gfx_SetEnvColor(0x64, 0x64, 0x64, 0xFF);
-    } else if (arg3 == arg0->unk_04) {
+    } else if (arg3 == arg0->selectedOption) {
         Gfx_SetEnvColor(0xFF, 0xFF, 0, 0xFF);
     } else {
         Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
@@ -167,7 +167,7 @@ void BattlePrep_DrawResultPrompt(BattlePrepRuleWindow* arg0, BattlePrepRuleWindo
     if (arg1->unk_06 == 0x48) {
         Font_SetActive(1, 0);
         Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
-        Font_Printf(arg1->unk_00 + 0x4A, arg1->unk_02 + 0x36, "%s%d", BattlePrep_GetString(0x2C), D_800AE540.unk_11F3);
+        Font_Printf(arg1->unk_00 + 0x4A, arg1->unk_02 + 0x36, "%s%d", BattlePrep_GetString(0x2C), D_800AE540.badgeCount);
     }
 
     Font_EndTexturedTextRendering();
@@ -177,8 +177,8 @@ void BattlePrep_DrawContinuePrompt(BattlePrepRuleWindow* arg0, BattlePrepRuleWin
     s32 sp2C;
     s32 sp28;
 
-    sp2C = D_800AE540.unk_11F3 > 0;
-    sp28 = !!(D_800AE540.unk_11F5 & 2);
+    sp2C = D_800AE540.badgeCount > 0;
+    sp28 = !!(D_800AE540.sessionFlowFlags & 2);
     sp28 = !sp28;
 
     BattlePrep_DrawCursorArrow(arg0, arg1->unk_00 + 5, arg1->unk_02 + 6);
@@ -191,12 +191,12 @@ void BattlePrep_DrawContinuePrompt(BattlePrepRuleWindow* arg0, BattlePrepRuleWin
     BattlePrep_DrawRuleOption(arg0, arg1->unk_00 + 0x1A, arg1->unk_02 + 6, 4, 1, BattlePrep_GetString(0x31));
     Font_SetActive(1, 0);
     Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
-    Font_Printf(arg1->unk_00 + 0x4A, arg1->unk_02 + 0x4C, "%s%d", BattlePrep_GetString(0x2C), D_800AE540.unk_11F3);
+    Font_Printf(arg1->unk_00 + 0x4A, arg1->unk_02 + 0x4C, "%s%d", BattlePrep_GetString(0x2C), D_800AE540.badgeCount);
     Font_EndTexturedTextRendering();
 }
 
 void BattlePrep_DrawGiveUpPrompt(BattlePrepRuleWindow* arg0, BattlePrepRuleWindowLayout* arg1) {
-    s32 sp2C = !!(D_800AE540.unk_11F5 & 2);
+    s32 sp2C = !!(D_800AE540.sessionFlowFlags & 2);
 
     sp2C = !sp2C;
     BattlePrep_DrawCursorArrow(arg0, arg1->unk_00 + 5, arg1->unk_02 + 6);
@@ -209,7 +209,7 @@ void BattlePrep_DrawGiveUpPrompt(BattlePrepRuleWindow* arg0, BattlePrepRuleWindo
 }
 
 void BattlePrep_DrawRetireStreakPrompt(BattlePrepRuleWindow* arg0, BattlePrepRuleWindowLayout* arg1) {
-    s32 sp2C = D_800AE540.unk_1194[0].unk_1E < 0x63 && D_800AE540.unk_1194[1].unk_1E < 0x63;
+    s32 sp2C = D_800AE540.unk_1194[0].winStreak < 0x63 && D_800AE540.unk_1194[1].winStreak < 0x63;
 
     BattlePrep_DrawCursorArrow(arg0, arg1->unk_00 + 5, arg1->unk_02 + 6);
     Font_BeginTranslucentTextRendering();
@@ -237,17 +237,17 @@ void BattlePrep_DrawCupRuleSummary(BattlePrepRuleWindow* arg0, BattlePrepRuleWin
     Font_SetActive(4, 0);
     Gfx_SetPrimColor(0x32, 0xFF, 0x64, 0xFF);
 
-    if ((D_800AE540.unk_0000 == 3) || (D_800AE540.unk_0000 == 6)) {
-        temp_v0 = BattlePrep_GetString(D_800AE540.unk_0000 - 1);
+    if ((D_800AE540.sessionMode == 3) || (D_800AE540.sessionMode == 6)) {
+        temp_v0 = BattlePrep_GetString(D_800AE540.sessionMode - 1);
         Font_Printf((arg1->unk_00 - (Font_MeasureTextExtent(4, 0, temp_v0) / 2)) + 0x64, arg1->unk_02 + 6, temp_v0);
-        temp_v0 = BattlePrep_GetString(D_800AE540.unk_0002 + 7);
+        temp_v0 = BattlePrep_GetString(D_800AE540.progressIndex + 7);
         Font_Printf((arg1->unk_00 - (Font_MeasureTextExtent(4, 0, temp_v0) / 2)) + 0x64, arg1->unk_02 + 0x18, temp_v0);
-        temp_v0 = BattlePrep_GetString(D_800AE540.unk_0003 + 0xA);
+        temp_v0 = BattlePrep_GetString(D_800AE540.opponentNumber + 0xA);
         Font_Printf((arg1->unk_00 - (Font_MeasureTextExtent(4, 0, temp_v0) / 2)) + 0x64, arg1->unk_02 + 0x2A, temp_v0);
     } else {
-        temp_v0 = BattlePrep_GetString(D_800AE540.unk_0000 - 1);
+        temp_v0 = BattlePrep_GetString(D_800AE540.sessionMode - 1);
         Font_Printf((arg1->unk_00 - (Font_MeasureTextExtent(4, 0, temp_v0) / 2)) + 0x64, arg1->unk_02 + 0xA, temp_v0);
-        temp_v0 = BattlePrep_GetString(D_800AE540.unk_0003 + 0xA);
+        temp_v0 = BattlePrep_GetString(D_800AE540.opponentNumber + 0xA);
         Font_Printf((arg1->unk_00 - (Font_MeasureTextExtent(4, 0, temp_v0) / 2)) + 0x64, arg1->unk_02 + 0x26, temp_v0);
     }
 
@@ -264,23 +264,23 @@ void BattlePrep_DrawCastleRuleSummary(BattlePrepRuleWindow* arg0, BattlePrepRule
     Font_SetActive(4, 0);
     Gfx_SetPrimColor(0x32, 0xFF, 0x64, 0xFF);
 
-    sprintf(sp2C, "%s %s", BattlePrep_GetString(D_800AE540.unk_0002 + 0x13), BattlePrep_GetString(0x36));
+    sprintf(sp2C, "%s %s", BattlePrep_GetString(D_800AE540.progressIndex + 0x13), BattlePrep_GetString(0x36));
     sp12C = Font_MeasureTextExtent(4, 0, sp2C);
     Font_Printf((arg1->unk_00 - (sp12C / 2)) + 0x64, arg1->unk_02 + 0xA, sp2C);
 
-    if (D_800AE540.unk_0002 < 9) {
-        if (D_800AE540.unk_0002 == 8) {
-            sprintf(sp2C, "%s %d", BattlePrep_GetString(0x1B), D_800AE540.unk_0003);
+    if (D_800AE540.progressIndex < 9) {
+        if (D_800AE540.progressIndex == 8) {
+            sprintf(sp2C, "%s %d", BattlePrep_GetString(0x1B), D_800AE540.opponentNumber);
             sp12C = Font_MeasureTextExtent(4, 0, sp2C);
             Font_Printf((arg1->unk_00 - (sp12C / 2)) + 0x64, arg1->unk_02 + 0x26, sp2C);
-        } else if (D_800AE540.unk_0003 < 4) {
-            sprintf(&sp2C, "%s %d", BattlePrep_GetString(0x37), D_800AE540.unk_0003);
+        } else if (D_800AE540.opponentNumber < 4) {
+            sprintf(&sp2C, "%s %d", BattlePrep_GetString(0x37), D_800AE540.opponentNumber);
             sp12C = Font_MeasureTextExtent(4, 0, sp2C);
             Font_Printf((arg1->unk_00 - (sp12C / 2)) + 0x64, arg1->unk_02 + 0x26, sp2C);
         } else {
-            sp12C = Font_MeasureTextExtent(4, 0, BattlePrep_GetString(D_800AE540.unk_0002 + 0x1D));
+            sp12C = Font_MeasureTextExtent(4, 0, BattlePrep_GetString(D_800AE540.progressIndex + 0x1D));
             Font_Printf((arg1->unk_00 - (sp12C / 2)) + 0x64, arg1->unk_02 + 0x26,
-                          BattlePrep_GetString(D_800AE540.unk_0002 + 0x1D));
+                          BattlePrep_GetString(D_800AE540.progressIndex + 0x1D));
         }
     }
 
@@ -293,24 +293,24 @@ void BattlePrep_DrawRankBadge(s16 arg0, s16 arg1, BattleSessionTeams* arg2) {
 
     gSPDisplayList(gDisplayListHead++, D_8006F518);
 
-    if (arg2->unk_01 == 1) {
-        if (arg2->unk_08[0]->unk_000 & 2) {
+    if (arg2->playerCount == 1) {
+        if (arg2->teams[0]->slotState & 2) {
             Gfx_DrawTextureRgba16(arg0 + 0x1A, arg1 + 3, 0x24, 0x1A, D_3025200, 0x24, 0);
             if (0) {}
         } else {
-            Gfx_DrawTextureRgba16(arg0 + 0x1A, arg1 + 3, 0x24, 0x1A, D_84B17608[arg2->unk_08[0]->unk_001], 0x24, 0);
+            Gfx_DrawTextureRgba16(arg0 + 0x1A, arg1 + 3, 0x24, 0x1A, D_84B17608[arg2->teams[0]->trainerSlotId], 0x24, 0);
         }
 
         gSPDisplayList(gDisplayListHead++, D_8006F630);
         return;
     }
 
-    if (arg2->unk_08[0]->unk_001 < arg2->unk_08[1]->unk_001) {
-        Gfx_DrawTextureRgba16(arg0 + 6, arg1 + 3, 0x24, 0x1A, D_84B17608[arg2->unk_08[0]->unk_001], 0x24, 0);
-        Gfx_DrawTextureRgba16(arg0 + 0x30, arg1 + 3, 0x24, 0x1A, D_84B17608[arg2->unk_08[1]->unk_001], 0x24, 0);
+    if (arg2->teams[0]->trainerSlotId < arg2->teams[1]->trainerSlotId) {
+        Gfx_DrawTextureRgba16(arg0 + 6, arg1 + 3, 0x24, 0x1A, D_84B17608[arg2->teams[0]->trainerSlotId], 0x24, 0);
+        Gfx_DrawTextureRgba16(arg0 + 0x30, arg1 + 3, 0x24, 0x1A, D_84B17608[arg2->teams[1]->trainerSlotId], 0x24, 0);
     } else {
-        Gfx_DrawTextureRgba16(arg0 + 6, arg1 + 3, 0x24, 0x1A, D_84B17608[arg2->unk_08[1]->unk_001], 0x24, 0);
-        Gfx_DrawTextureRgba16(arg0 + 0x30, arg1 + 3, 0x24, 0x1A, D_84B17608[arg2->unk_08[0]->unk_001], 0x24, 0);
+        Gfx_DrawTextureRgba16(arg0 + 6, arg1 + 3, 0x24, 0x1A, D_84B17608[arg2->teams[1]->trainerSlotId], 0x24, 0);
+        Gfx_DrawTextureRgba16(arg0 + 0x30, arg1 + 3, 0x24, 0x1A, D_84B17608[arg2->teams[0]->trainerSlotId], 0x24, 0);
     }
 
     gSPDisplayList(gDisplayListHead++, D_8006F630);
@@ -324,7 +324,7 @@ void BattlePrep_DrawRankBadge(s16 arg0, s16 arg1, BattleSessionTeams* arg2) {
 void BattlePrep_SetStreakColor(BattleSessionTeams* arg0) {
     static s16 D_84B17618 = 0;
 
-    if (arg0->unk_1C == 1) {
+    if (arg0->isActiveSide == 1) {
         Gfx_SetEnvColor(0xFF, (SINS((s32)(SINS(D_84B17618) * 16384.0f)) * 100.0f) + 155.0f, 0x37, 0xFF);
         D_84B17618 += 0x400;
     } else {
@@ -345,9 +345,9 @@ void BattlePrep_DrawTeamPreview(BattlePrepRuleWindow* arg0, BattlePrepRuleWindow
     Font_DisableTwoCycleTexturing();
     Font_SetActive(0x10, 0);
     BattlePrep_SetStreakColor(&D_800AE540.unk_1194[0]);
-    Font_Printf(arg1->unk_00 + 0x5C, arg1->unk_02 + 0x18, "%2d", D_800AE540.unk_1194[0].unk_1E);
+    Font_Printf(arg1->unk_00 + 0x5C, arg1->unk_02 + 0x18, "%2d", D_800AE540.unk_1194[0].winStreak);
     BattlePrep_SetStreakColor(&D_800AE540.unk_1194[1]);
-    Font_Printf(arg1->unk_00 + 0x5C, arg1->unk_02 + 0x48, "%2d", D_800AE540.unk_1194[1].unk_1E);
+    Font_Printf(arg1->unk_00 + 0x5C, arg1->unk_02 + 0x48, "%2d", D_800AE540.unk_1194[1].winStreak);
     Font_SetActive(4, 0);
     Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
     Font_Printf(arg1->unk_00 + 0x82, arg1->unk_02 + 0x1F, BattlePrep_GetString(0x39));
@@ -373,34 +373,34 @@ void BattlePrep_DrawStreakGiveUpPrompt(BattlePrepRuleWindow* arg0, BattlePrepRul
     BattlePrep_DrawRuleOption(arg0, arg1->unk_00 + 0x2A, arg1->unk_02 + 0x64, 1, 1, BattlePrep_GetString(0x3D));
     Gfx_SetEnvColor(0xFF, 0x64, 0x64, 0xFF);
 
-    if (sp50.unk_00 == 7) {
-        Font_Printf(arg1->unk_00 + 0x1E, arg1->unk_02 + 0x17, BattlePrep_GetString(sp50.unk_00 - 1));
-        Font_Printf(arg1->unk_00 + 0x1E, arg1->unk_02 + 0x26, BattlePrep_GetString(sp50.unk_01 + 0x13));
-        if (sp50.unk_01 < 8) {
-            if (sp50.unk_02 < 4) {
-                Font_Printf(arg1->unk_00 + 0x1E, arg1->unk_02 + 0x35, "%s %d", BattlePrep_GetString(0x37), sp50.unk_02);
+    if (sp50.sessionMode == 7) {
+        Font_Printf(arg1->unk_00 + 0x1E, arg1->unk_02 + 0x17, BattlePrep_GetString(sp50.sessionMode - 1));
+        Font_Printf(arg1->unk_00 + 0x1E, arg1->unk_02 + 0x26, BattlePrep_GetString(sp50.progressIndex + 0x13));
+        if (sp50.progressIndex < 8) {
+            if (sp50.opponentNumber < 4) {
+                Font_Printf(arg1->unk_00 + 0x1E, arg1->unk_02 + 0x35, "%s %d", BattlePrep_GetString(0x37), sp50.opponentNumber);
             } else {
                 Font_Printf(arg1->unk_00 + 0x1E, arg1->unk_02 + 0x35, BattlePrep_GetString(0x3E));
             }
         } else {
-            Font_Printf(arg1->unk_00 + 0x1E, arg1->unk_02 + 0x35, "%s %d", BattlePrep_GetString(0x1B), sp50.unk_02);
+            Font_Printf(arg1->unk_00 + 0x1E, arg1->unk_02 + 0x35, "%s %d", BattlePrep_GetString(0x1B), sp50.opponentNumber);
         }
-    } else if ((sp50.unk_00 == 3) || (sp50.unk_00 == 6)) {
-        Font_Printf(arg1->unk_00 + 0x1E, arg1->unk_02 + 0x17, BattlePrep_GetString(sp50.unk_00 - 1));
-        Font_Printf(arg1->unk_00 + 0x1E, arg1->unk_02 + 0x26, BattlePrep_GetString(sp50.unk_01 + 7));
-        Font_Printf(arg1->unk_00 + 0x1E, arg1->unk_02 + 0x35, BattlePrep_GetString(sp50.unk_02 + 0xA));
+    } else if ((sp50.sessionMode == 3) || (sp50.sessionMode == 6)) {
+        Font_Printf(arg1->unk_00 + 0x1E, arg1->unk_02 + 0x17, BattlePrep_GetString(sp50.sessionMode - 1));
+        Font_Printf(arg1->unk_00 + 0x1E, arg1->unk_02 + 0x26, BattlePrep_GetString(sp50.progressIndex + 7));
+        Font_Printf(arg1->unk_00 + 0x1E, arg1->unk_02 + 0x35, BattlePrep_GetString(sp50.opponentNumber + 0xA));
     } else {
-        Font_Printf(arg1->unk_00 + 0x1E, arg1->unk_02 + 0x17, BattlePrep_GetString(sp50.unk_00 - 1));
-        Font_Printf(arg1->unk_00 + 0x1E, arg1->unk_02 + 0x26, BattlePrep_GetString(sp50.unk_02 + 0xA));
+        Font_Printf(arg1->unk_00 + 0x1E, arg1->unk_02 + 0x17, BattlePrep_GetString(sp50.sessionMode - 1));
+        Font_Printf(arg1->unk_00 + 0x1E, arg1->unk_02 + 0x26, BattlePrep_GetString(sp50.opponentNumber + 0xA));
     }
 
-    if (sp50.unk_00 != 7) {
+    if (sp50.sessionMode != 7) {
         Font_SetActive(1, 0);
         Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
-        Font_Printf(arg1->unk_00 + 0x64, arg1->unk_02 + 0x43, "%s %d", BattlePrep_GetString(0x2C), sp50.unk_04);
+        Font_Printf(arg1->unk_00 + 0x64, arg1->unk_02 + 0x43, "%s %d", BattlePrep_GetString(0x2C), sp50.badgeCount);
     }
 
-    if (arg0->unk_04 == 0) {
+    if (arg0->selectedOption == 0) {
         sp48 = (arg1->unk_04 - Font_MeasureTextExtent(1, 0, BattlePrep_GetString(0x3F))) / 2;
         Font_SetActive(1, 0);
         Gfx_SetEnvColor(0xFF, 0xFF, 0, 0xFF);
@@ -410,8 +410,8 @@ void BattlePrep_DrawStreakGiveUpPrompt(BattlePrepRuleWindow* arg0, BattlePrepRul
 
     Font_EndTexturedTextRendering();
 
-    if (sp50.unk_03 == 1) {
-        temp_v0 = Font_MeasureTextExtent(1, 0, BattlePrep_GetString(sp50.unk_00 - 1));
+    if (sp50.roundSelector == 1) {
+        temp_v0 = Font_MeasureTextExtent(1, 0, BattlePrep_GetString(sp50.sessionMode - 1));
 
         gSPDisplayList(gDisplayListHead++, D_8006F518);
 
@@ -426,11 +426,11 @@ void BattlePrep_DrawRuleWindow(BattlePrepRuleWindow* arg0) {
     s16 temp_a1;
     s16 var_a3;
 
-    if ((arg0->unk_00 != 0) && (arg0->unk_02 > 0)) {
-        temp_s0 = &gBattlePrepRuleWindowLayouts[arg0->unk_01 - 1];
+    if ((arg0->state != 0) && (arg0->expandProgress > 0)) {
+        temp_s0 = &gBattlePrepRuleWindowLayouts[arg0->windowType - 1];
 
-        if (arg0->unk_02 < 4) {
-            var_a3 = (temp_s0->unk_06 * arg0->unk_02) / 4;
+        if (arg0->expandProgress < 4) {
+            var_a3 = (temp_s0->unk_06 * arg0->expandProgress) / 4;
             if (var_a3 < 0x10) {
                 var_a3 = 0x10;
             }
@@ -449,7 +449,7 @@ void BattlePrep_DrawRuleWindow(BattlePrepRuleWindow* arg0) {
                               0xFF);
             }
 
-            switch (arg0->unk_01) {
+            switch (arg0->windowType) {
                 case 1:
                     BattlePrep_DrawResultPrompt(arg0, temp_s0);
                     break;
@@ -499,11 +499,11 @@ void BattlePrep_RunQuitMenu(BattlePrepRuleWindow* arg0) {
     s16 sp22;
     s32 tmp;
 
-    sp24 = &gBattlePrepRuleWindowLayouts[arg0->unk_01 - 1];
+    sp24 = &gBattlePrepRuleWindowLayouts[arg0->windowType - 1];
     sp22 = sp24->unk_08 - 1;
 
     if (BTN_IS_PRESSED(gPlayer1Controller, BTN_A)) {
-        tmp = sp24->unk_10 >> (arg0->unk_04 * 3);
+        tmp = sp24->unk_10 >> (arg0->selectedOption * 3);
         switch (tmp & 7) {
             case 1:
                 Audio_PlaySoundEffectById(3);
@@ -529,44 +529,44 @@ void BattlePrep_RunQuitMenu(BattlePrepRuleWindow* arg0) {
                 Audio_PlaySoundEffectById(0x21);
                 break;
         }
-        arg0->unk_00 = 2;
+        arg0->state = 2;
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DUP)) {
         Audio_PlaySoundEffectById(1);
         do {
-            arg0->unk_04--;
-            if (arg0->unk_04 < 0) {
-                arg0->unk_04 = sp22;
+            arg0->selectedOption--;
+            if (arg0->selectedOption < 0) {
+                arg0->selectedOption = sp22;
             }
-        } while (!(sp24->unk_0E & (1 << arg0->unk_04)));
+        } while (!(sp24->unk_0E & (1 << arg0->selectedOption)));
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DDOWN)) {
         Audio_PlaySoundEffectById(1);
         do {
-            arg0->unk_04++;
-            if (sp22 < arg0->unk_04) {
-                arg0->unk_04 = 0;
+            arg0->selectedOption++;
+            if (sp22 < arg0->selectedOption) {
+                arg0->selectedOption = 0;
             }
-        } while (!(sp24->unk_0E & (1 << arg0->unk_04)));
+        } while (!(sp24->unk_0E & (1 << arg0->selectedOption)));
     }
 }
 
 void BattlePrep_RuleWindowExpanding(BattlePrepRuleWindow* arg0) {
-    arg0->unk_02++;
-    if (arg0->unk_02 >= 5) {
-        arg0->unk_02 = 4;
-        arg0->unk_00 = 3;
+    arg0->expandProgress++;
+    if (arg0->expandProgress >= 5) {
+        arg0->expandProgress = 4;
+        arg0->state = 3;
     }
 }
 
 void BattlePrep_RuleWindowCollapsing(BattlePrepRuleWindow* arg0) {
-    arg0->unk_02--;
-    if (arg0->unk_02 < 0) {
-        arg0->unk_02 = 0;
-        arg0->unk_00 = 4;
+    arg0->expandProgress--;
+    if (arg0->expandProgress < 0) {
+        arg0->expandProgress = 0;
+        arg0->state = 4;
     }
 }
 
 void BattlePrep_UpdateRuleWindow(BattlePrepRuleWindow* arg0) {
-    switch (arg0->unk_00) {
+    switch (arg0->state) {
         case 1:
             BattlePrep_RuleWindowExpanding(arg0);
             break;
@@ -584,46 +584,46 @@ void BattlePrep_UpdateRuleWindow(BattlePrepRuleWindow* arg0) {
 void BattlePrep_InitRuleWindow(BattlePrepRuleWindow* arg0, s16 arg1) {
     BattlePrepRuleWindowLayout* ptr = &gBattlePrepRuleWindowLayouts[arg1 - 1];
 
-    arg0->unk_01 = arg1;
-    arg0->unk_02 = 0;
-    arg0->unk_04 = 0;
-    arg0->unk_00 = 1;
+    arg0->windowType = arg1;
+    arg0->expandProgress = 0;
+    arg0->selectedOption = 0;
+    arg0->state = 1;
 
     ptr->unk_0E = -1;
 
     Audio_PlaySoundEffectById(4);
 
     if (arg1 - 1 == 2) {
-        if (D_800AE540.unk_11F3 == 0) {
+        if (D_800AE540.badgeCount == 0) {
             ptr->unk_0E &= ~3;
         }
-        if (D_800AE540.unk_11F5 & 2) {
+        if (D_800AE540.sessionFlowFlags & 2) {
             ptr->unk_0E &= ~4;
         }
     } else if (arg1 - 1 == 3) {
-        if (D_800AE540.unk_11F5 & 2) {
+        if (D_800AE540.sessionFlowFlags & 2) {
             ptr->unk_0E &= ~1;
         }
     } else if ((arg1 - 1 == 4) &&
-               ((D_800AE540.unk_1194[0].unk_1E >= 0x63) || (D_800AE540.unk_1194[1].unk_1E >= 0x63))) {
+               ((D_800AE540.unk_1194[0].winStreak >= 0x63) || (D_800AE540.unk_1194[1].winStreak >= 0x63))) {
         ptr->unk_0E &= ~1;
     }
 
-    while (!(ptr->unk_0E & (1 << arg0->unk_04))) {
-        arg0->unk_04++;
+    while (!(ptr->unk_0E & (1 << arg0->selectedOption))) {
+        arg0->selectedOption++;
     }
 }
 
 void BattlePrep_CloseRuleWindow(BattlePrepRuleWindow* arg0) {
-    arg0->unk_00 = 0;
-    arg0->unk_01 = 0;
-    arg0->unk_02 = 0;
+    arg0->state = 0;
+    arg0->windowType = 0;
+    arg0->expandProgress = 0;
 }
 
 s32 BattlePrep_PollRuleWindow(BattlePrepRuleWindow* arg0) {
-    if (arg0->unk_00 == 4) {
-        arg0->unk_00 = 0;
-        return arg0->unk_04;
+    if (arg0->state == 4) {
+        arg0->state = 0;
+        return arg0->selectedOption;
     }
     return -1;
 }

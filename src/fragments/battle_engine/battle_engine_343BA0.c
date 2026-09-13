@@ -357,7 +357,7 @@ s32 BattleAnim_StartEffect19Radial20_Update(void) {
 void BattleAnim_StartEffect19Radial20_Draw(void) {
     gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
-    gDisplayListHead = func_84362084(gDisplayListHead);
+    gDisplayListHead = Radial20_Draw(gDisplayListHead);
 }
 
 void BattleAnim_EndEffect9Radial20_Init(void) {
@@ -474,7 +474,7 @@ s32 BattleAnim_StartEffect33Radial20_Update(void) {
 void BattleAnim_StartEffect33Radial20_Draw(void) {
     gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
-    gDisplayListHead = func_84362084(gDisplayListHead);
+    gDisplayListHead = Radial20_Draw(gDisplayListHead);
 }
 
 void BattleAnim_EndEffect32Radial20_Init(void) {
@@ -565,7 +565,7 @@ s32 BattleAnim_StartEffect98Radial20_Update(void) {
 void BattleAnim_StartEffect98Radial20_Draw(void) {
     gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
-    gDisplayListHead = func_84362084(gDisplayListHead);
+    gDisplayListHead = Radial20_Draw(gDisplayListHead);
 }
 
 void BattleAnim_StartEffect11Trail50Alt_Init(void) {
@@ -871,7 +871,7 @@ s32 BattleAnim_StartEffect78Radial20_Update(void) {
 void BattleAnim_StartEffect78Radial20_Draw(void) {
     gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
-    gDisplayListHead = func_84362084(gDisplayListHead);
+    gDisplayListHead = Radial20_Draw(gDisplayListHead);
 }
 
 void BattleAnim_StartEffect26DoubleTextureTrail_Seed(void) {

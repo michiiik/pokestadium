@@ -4,7 +4,7 @@
 #include "src/graphics_textures.h"
 #include "src/input.h"
 #include "src/ui_graphics.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/gfx_buffer.h"
 #include "src/gfx_rect.h"
 #include "src/matrix.h"
@@ -507,7 +507,7 @@ void Glc_DrawTrackingIcon(void) {
 
 void Glc_ClearInitState(void) {
     D_83101EE8 = 0;
-    if (D_800AE540.unk_11F2 != 0) {
+    if (D_800AE540.roundSelector != 0) {
         D_83101EEC = 1;
     } else {
         D_83101EEC = 0;

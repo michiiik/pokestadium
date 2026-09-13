@@ -1,7 +1,7 @@
 #include "snap_print_club_background_select.h"
 #include "src/graphics_textures.h"
 #include "src/input.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/audio_sfx.h"
 #include "src/gfx_buffer.h"
 #include "src/gfx_rect.h"

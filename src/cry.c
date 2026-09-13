@@ -1154,8 +1154,8 @@ void Cry_Play(u32 arg0, u32 arg1) {
 
         case 5:
             if ((var_v0 != 0) && ((D_800FCB18[0] == NULL) || (D_800FCB18[1] == NULL) ||
-                                  (((D_800FCB18[0]->unk_15 & 7) == 0) && ((D_800FCB18[1]->unk_15 & 7) == 0) &&
-                                   !(D_800FCB18[0]->unk_15 & 0x20) && !(D_800FCB18[1]->unk_15 & 0x20)))) {
+                                  (((D_800FCB18[0]->status & 7) == 0) && ((D_800FCB18[1]->status & 7) == 0) &&
+                                   !(D_800FCB18[0]->status & 0x20) && !(D_800FCB18[1]->status & 0x20)))) {
                 arg0 = 0x9A;
                 sp24 = 0x70;
             } else {
@@ -1165,8 +1165,8 @@ void Cry_Play(u32 arg0, u32 arg1) {
 
         case 6:
             if ((var_v0 != 0) && (((D_800FCB18[0] == NULL) || (D_800FCB18[1] == NULL)) ||
-                                  (!(D_800FCB18[0]->unk_15 & 7) && !(D_800FCB18[1]->unk_15 & 7) &&
-                                   !(D_800FCB18[0]->unk_15 & 0x20) && !(D_800FCB18[1]->unk_15 & 0x20)))) {
+                                  (!(D_800FCB18[0]->status & 7) && !(D_800FCB18[1]->status & 7) &&
+                                   !(D_800FCB18[0]->status & 0x20) && !(D_800FCB18[1]->status & 0x20)))) {
                 arg0 = 0x9B;
                 sp24 = 0x70;
             } else {

@@ -107,7 +107,7 @@ void AudioStream_SetEnabled(s32 arg0) {
 }
 
 #ifdef NON_MATCHING
-void func_80044EA4(void) {
+void AudioStream_Update(void) {
     s32 i;
     s32 j;
     s32 sp70;
@@ -172,13 +172,13 @@ void func_80044EA4(void) {
             }
 
             AudioStream_RefillAndDecode(D_800FCED8[i]);
-            if (D_800FCED8[i]->unk_25D1 == 2) {
+            if (D_800FCED8[i]->state == 2) {
                 osWritebackDCache(D_800FCF28[i], 0x1140);
                 AudioStream_MarkLoaded(D_800FCED8[i]);
                 D_800FCED0 = 1;
                 D_800FCF20[i] = 0;
             } else {
-                if ((D_800FCEF0[i] != 0) && (D_800FCEF0[i] != 3) && (D_800FCED8[i]->unk_25D1 == 4)) {
+                if ((D_800FCEF0[i] != 0) && (D_800FCEF0[i] != 3) && (D_800FCED8[i]->state == 4)) {
                     if (D_800FCF20[i] == 0) {
                         AudioStream_Abort(D_800FCED8[i]);
                         D_800FCF20[i] = 1;
@@ -192,7 +192,7 @@ void func_80044EA4(void) {
 
             AudioStream_ConsumeSamples(D_800FCED8[i], var_s7);
 
-            temp_a2 = D_800FCED8[i]->unk_25C8 - var_s7;
+            temp_a2 = D_800FCED8[i]->samplesConsumed - var_s7;
             for (j = 0; j < var_s7; j++) {
                 D_800FCF28[i]->unk_000[(D_800FCF38[i] + j * 2) % 2208] =
                     (D_800FCF00[i] * D_800FCEE0[i][temp_a2 % 2560]) >> 7;
@@ -243,7 +243,7 @@ void func_80044EA4(void) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/audio_stream/func_80044EA4.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/45720/AudioStream_Update.s")
 #endif
 
 void AudioStream_DmaReadChunk(u32 arg0, u32 arg1, u32 arg2, OSMesgQueue* arg3) {
@@ -284,25 +284,25 @@ void AudioStream_OpenChannel(unk_D_800FCED8* arg0, s32 arg1, s32 arg2) {
     bzero(&arg0->unk_0000, sizeof(unk_D_800FCED8_0000));
 
     arg0->unk_0000.unk_166 = 0x28;
-    arg0->unk_0190 = arg2;
-    arg0->unk_0194 = arg1;
+    arg0->dmaReadFunc = arg2;
+    arg0->dmaBaseAddr = arg1;
 
-    osCreateMesgQueue(&arg0->unk_25A0, &arg0->unk_25B8, 1);
+    osCreateMesgQueue(&arg0->dmaMsgQueue, &arg0->dmaMsgBuf, 1);
 
     if ((arg1 == 0) || (arg2 == 0)) {
-        arg0->unk_25D1 = 0;
+        arg0->state = 0;
     } else {
-        arg0->unk_25D1 = 1;
+        arg0->state = 1;
     }
 
-    arg0->unk_25D0 = 0;
-    arg0->unk_2598 = arg0->unk_259C = arg0->unk_259A = 0;
-    arg0->unk_25BC = 0;
-    arg0->unk_25C4 = 0;
-    arg0->unk_25C0 = 0;
-    arg0->unk_25CC = 0;
-    arg0->unk_25C8 = 0;
-    arg0->unk_25D2 = 2;
+    arg0->dmaPending = 0;
+    arg0->chunksRemaining = arg0->chunkDwordsRemaining = arg0->unk_259A = 0;
+    arg0->lastChunkOffset = 0;
+    arg0->dmaBytesRequested = 0;
+    arg0->dmaBytesConsumed = 0;
+    arg0->samplesDecoded = 0;
+    arg0->samplesConsumed = 0;
+    arg0->decodeBudget = 2;
 }
 
 void AudioStream_RefillAndDecode(unk_D_800FCED8* arg0) {
@@ -310,56 +310,56 @@ void AudioStream_RefillAndDecode(unk_D_800FCED8* arg0) {
     s32 var_s2;
     u32 var_v1;
 
-    var_s2 = arg0->unk_25D2;
+    var_s2 = arg0->decodeBudget;
 
-    if ((arg0->unk_25D0 != 0) && (osRecvMesg(&arg0->unk_25A0, NULL, 0) >= 0)) {
-        if (arg0->unk_25C4 == 0) {
-            arg0->unk_2598 = (arg0->unk_1598[0].unk_04 >> 0x10) & 0xFFFF;
+    if ((arg0->dmaPending != 0) && (osRecvMesg(&arg0->dmaMsgQueue, NULL, 0) >= 0)) {
+        if (arg0->dmaBytesRequested == 0) {
+            arg0->chunksRemaining = (arg0->unk_1598[0].unk_04 >> 0x10) & 0xFFFF;
             arg0->unk_259A = arg0->unk_1598[0].unk_04 & 0xFFFF;
-            arg0->unk_259C = arg0->unk_15A0 & 0xFFFFFF;
-            arg0->unk_25BC = 0x60;
+            arg0->chunkDwordsRemaining = arg0->unk_15A0 & 0xFFFFFF;
+            arg0->lastChunkOffset = 0x60;
         }
 
-        arg0->unk_25C4 += 0x400;
-        if (arg0->unk_259C >= 0x100) {
-            arg0->unk_259C -= 0x100;
+        arg0->dmaBytesRequested += 0x400;
+        if (arg0->chunkDwordsRemaining >= 0x100) {
+            arg0->chunkDwordsRemaining -= 0x100;
         } else {
-            arg0->unk_259C = 0;
+            arg0->chunkDwordsRemaining = 0;
         }
-        arg0->unk_25D0 = 0;
+        arg0->dmaPending = 0;
     }
 
-    if ((arg0->unk_25D0 == 0) && ((arg0->unk_25D1 == 1) || (arg0->unk_25D1 == 2) || (arg0->unk_25D1 == 3))) {
-        if ((arg0->unk_25C4 - arg0->unk_25C0) < 0xC01) {
-            if (arg0->unk_25C4 == 0) {
+    if ((arg0->dmaPending == 0) && ((arg0->state == 1) || (arg0->state == 2) || (arg0->state == 3))) {
+        if ((arg0->dmaBytesRequested - arg0->dmaBytesConsumed) < 0xC01) {
+            if (arg0->dmaBytesRequested == 0) {
                 var_a2 = 0x400;
-            } else if (arg0->unk_259C >= 0x101) {
+            } else if (arg0->chunkDwordsRemaining >= 0x101) {
                 var_a2 = 0x400;
             } else {
-                var_a2 = arg0->unk_259C * 4;
+                var_a2 = arg0->chunkDwordsRemaining * 4;
             }
 
             if (var_a2 > 0) {
-                arg0->unk_25D0 = 1;
-                arg0->unk_0190(arg0->unk_0194 + arg0->unk_25C4, &arg0->unk_1598[(arg0->unk_25C4 & 0xFFF) >> 3], var_a2,
-                               &arg0->unk_25A0);
+                arg0->dmaPending = 1;
+                arg0->dmaReadFunc(arg0->dmaBaseAddr + arg0->dmaBytesRequested, &arg0->unk_1598[(arg0->dmaBytesRequested & 0xFFF) >> 3], var_a2,
+                               &arg0->dmaMsgQueue);
             }
         }
     }
 
-    var_v1 = arg0->unk_25CC - arg0->unk_25C8;
-    while ((var_v1 < 0x960) && ((arg0->unk_25D1 == 1) || (arg0->unk_2598 > 0)) &&
-           ((arg0->unk_25C4 - arg0->unk_25C0) >= 0x25) && (var_s2 > 0)) {
-        func_80045FF0(arg0, arg0->unk_0198.unk_0000 + (((arg0->unk_25CC % 2560) >> 2) * 8));
-        arg0->unk_25C0 = (arg0->unk_25BC >> 3) & ~3;
-        arg0->unk_25CC += 0xA0;
-        arg0->unk_2598--;
-        var_v1 = arg0->unk_25CC - arg0->unk_25C8;
+    var_v1 = arg0->samplesDecoded - arg0->samplesConsumed;
+    while ((var_v1 < 0x960) && ((arg0->state == 1) || (arg0->chunksRemaining > 0)) &&
+           ((arg0->dmaBytesRequested - arg0->dmaBytesConsumed) >= 0x25) && (var_s2 > 0)) {
+        func_80045FF0(arg0, arg0->pcmBuffer.unk_0000 + (((arg0->samplesDecoded % 2560) >> 2) * 8));
+        arg0->dmaBytesConsumed = (arg0->lastChunkOffset >> 3) & ~3;
+        arg0->samplesDecoded += 0xA0;
+        arg0->chunksRemaining--;
+        var_v1 = arg0->samplesDecoded - arg0->samplesConsumed;
         var_s2--;
     }
 
-    if ((arg0->unk_25D1 == 1) && (var_v1 >= 0x8C0)) {
-        arg0->unk_25D1 = 2;
+    if ((arg0->state == 1) && (var_v1 >= 0x8C0)) {
+        arg0->state = 2;
     }
 }
 
@@ -367,17 +367,17 @@ u32 AudioStream_ConsumeSamples(unk_D_800FCED8* arg0, u32 arg1) {
     u32 temp_v0;
     u32 var_a2;
 
-    if (arg0->unk_25D1 == 3) {
-        temp_v0 = arg0->unk_25CC - arg0->unk_25C8;
+    if (arg0->state == 3) {
+        temp_v0 = arg0->samplesDecoded - arg0->samplesConsumed;
         if (arg1 < temp_v0) {
             var_a2 = arg1;
         } else {
             var_a2 = temp_v0;
-            if (arg0->unk_2598 <= 0) {
-                arg0->unk_25D1 = 4;
+            if (arg0->chunksRemaining <= 0) {
+                arg0->state = 4;
             }
         }
-        arg0->unk_25C8 += var_a2;
+        arg0->samplesConsumed += var_a2;
         return var_a2;
     }
 
@@ -385,11 +385,11 @@ u32 AudioStream_ConsumeSamples(unk_D_800FCED8* arg0, u32 arg1) {
 }
 
 void AudioStream_MarkLoaded(unk_D_800FCED8* arg0) {
-    if (arg0->unk_25D1 == 2) {
-        arg0->unk_25D1 = 3;
+    if (arg0->state == 2) {
+        arg0->state = 3;
     }
 }
 
 void AudioStream_Abort(unk_D_800FCED8* arg0) {
-    arg0->unk_25D1 = 4;
+    arg0->state = 4;
 }

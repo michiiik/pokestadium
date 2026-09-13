@@ -8,7 +8,7 @@
 #include "src/graphics_textures.h"
 #include "src/ui_graphics.h"
 #include "src/text_system.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/audio_sfx.h"
 #include "src/audio_loop_point.h"
 #include "src/audio_commands_category2.h"
@@ -350,7 +350,7 @@ void SnorlaxGame_DrawPlayerOverlay(UNUSED s32 arg0) {
 
         gSPEndDisplayList(temp_v0++);
 
-        D_864052C8->unk_190->unk_1C = D_864052C8->unk_028.unk_0A8[0].unk_04;
+        D_864052C8->unk_190->unk_1C = D_864052C8->unk_028.anchors[0].unk_04;
     }
 }
 

@@ -5,13 +5,6 @@ extern vu16 LEOrw_flags;
 extern u8 LEOC2_Syndrome[2][0xE8 * 4];
 extern block_param_form LEOc2_param;
 
-tgt_param_form LEOtgt_param;
-u32 LEO_country_code;
-u8* LEOc2ctrl_que_buf;
-OSMesgQueue LEOc2ctrl_que;
-OSPiHandle* LEOPiInfo;
-OSIoMesg LEOPiDmaParam;
-
 u32 read_write_track();
 u32 leoChk_mecha_int(void);
 void leosetup_BM(void);

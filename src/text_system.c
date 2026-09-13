@@ -1,5 +1,5 @@
 #include "text_system.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/memory.h"
 
 #define D_800AF740_NUM_FILES 42

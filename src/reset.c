@@ -105,7 +105,7 @@ void SoftReset_Thread(void* unused) {
     // thread loop
     while (1) {
         Sched_WaitClientQueue(&D_800A6D20.thread); // hangs here until gets a soft reset.
-        if (D_800A62E0.unk_A38 == 0) {
+        if (D_800A62E0.shutdownCounter == 0) {
             continue;
         }
 

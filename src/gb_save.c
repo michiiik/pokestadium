@@ -47,13 +47,13 @@ unk_func_88500020 D_800758F0[] = {
 
 void GbSave_BuildPortSummary(unk_func_8002D860* arg0, s32 arg1) {
     if (GbSave_GetSaveState(arg1) != 0) {
-        arg0->unk_00 = 1;
+        arg0->isEmpty = 1;
     } else {
-        arg0->unk_00 = 0;
-        arg0->unk_08 = GbSave_GetTrainerId(arg1);
+        arg0->isEmpty = 0;
+        arg0->trainerId = GbSave_GetTrainerId(arg1);
         GbSave_GetPlayerName(arg1, &arg0[1]);
     }
-    arg0->unk_04 = GbSave_GetPortGame(arg1);
+    arg0->gameId = GbSave_GetPortGame(arg1);
 }
 
 void Gfx_DrawTiledTextureStrip(unk_func_88500020* arg0, s32 arg1, s32 a2) {
@@ -103,19 +103,19 @@ s32 Ui_AdjustVerticalSelection(unk_func_8002DCB8_arg0* arg0, s32 arg1) {
     switch (arg1) {
         case 0x800:
             Audio_PlaySoundEffectById(1);
-            if (arg0->unk_04 == 0) {
-                arg0->unk_04 += arg0->unk_08;
+            if (arg0->selectedIndex == 0) {
+                arg0->selectedIndex += arg0->itemCount;
             }
-            arg0->unk_04--;
+            arg0->selectedIndex--;
             ret = 1;
             break;
 
         case 0x400:
             Audio_PlaySoundEffectById(1);
-            if (arg0->unk_04 >= (arg0->unk_08 - 1)) {
-                arg0->unk_04 -= arg0->unk_08;
+            if (arg0->selectedIndex >= (arg0->itemCount - 1)) {
+                arg0->selectedIndex -= arg0->itemCount;
             }
-            arg0->unk_04++;
+            arg0->selectedIndex++;
             ret = 1;
             break;
     }
@@ -136,19 +136,19 @@ s32 Ui_AdjustHorizontalSelection(unk_func_8002DD98_arg0* arg0, s32 arg1) {
     switch (arg1) {
         case 0x200:
             Audio_PlaySoundEffectById(1);
-            if (arg0->unk_04 == 0) {
-                arg0->unk_04 += arg0->unk_08;
+            if (arg0->selectedIndex == 0) {
+                arg0->selectedIndex += arg0->itemCount;
             }
-            arg0->unk_04--;
+            arg0->selectedIndex--;
             ret = 1;
             break;
 
         case 0x100:
             Audio_PlaySoundEffectById(1);
-            if (arg0->unk_04 >= (arg0->unk_08 - 1)) {
-                arg0->unk_04 -= arg0->unk_08;
+            if (arg0->selectedIndex >= (arg0->itemCount - 1)) {
+                arg0->selectedIndex -= arg0->itemCount;
             }
-            arg0->unk_04++;
+            arg0->selectedIndex++;
             ret = 1;
             break;
     }
@@ -165,28 +165,28 @@ s32 Ui_HandleHorizontalSelectionInput(unk_func_8002DD98_arg0* arg0) {
 
 void Ui_AdjustSteppedScrollSelection(unk_func_8002DE78_arg0* arg0) {
     s32 temp_v0 = Input_GetRepeatedDPad();
-    s32 sp18 = arg0->unk_0C;
+    s32 sp18 = arg0->stepSize;
 
     if (gPlayer1Controller->buttonDown & 0x2000) {
-        sp18 = ((arg0->unk_08 - arg0->unk_04) + 1) / 10;
+        sp18 = ((arg0->maxValue - arg0->minValue) + 1) / 10;
     }
 
     switch (temp_v0) {
         case 0x800:
             Audio_PlaySoundEffectById(1);
-            if (arg0->unk_00 - sp18 < arg0->unk_04) {
-                arg0->unk_00 = arg0->unk_04;
+            if (arg0->value - sp18 < arg0->minValue) {
+                arg0->value = arg0->minValue;
             } else {
-                arg0->unk_00 -= sp18;
+                arg0->value -= sp18;
             }
             break;
 
         case 0x400:
             Audio_PlaySoundEffectById(1);
-            if (arg0->unk_08 < arg0->unk_00 + sp18) {
-                arg0->unk_00 = arg0->unk_08;
+            if (arg0->maxValue < arg0->value + sp18) {
+                arg0->value = arg0->maxValue;
             } else {
-                arg0->unk_00 += sp18;
+                arg0->value += sp18;
             }
             break;
     }
@@ -201,15 +201,15 @@ s32 Ui_AdjustNumericSelection(unk_func_8830867C_044_038_030* arg0, s32 arg1) {
     var_t1 = 0;
     var_a2 = 1;
 
-    for (i = arg0->unk_10; i > 0; i--) {
+    for (i = arg0->digitIndex; i > 0; i--) {
         var_a2 *= 10;
     }
 
     switch (arg1) {
         case 0x200:
-            temp_v0 = arg0->unk_10 + 1;
-            if (temp_v0 < arg0->unk_0C) {
-                arg0->unk_10 = temp_v0;
+            temp_v0 = arg0->digitIndex + 1;
+            if (temp_v0 < arg0->maxDigits) {
+                arg0->digitIndex = temp_v0;
                 Audio_PlaySoundEffectById(1);
                 var_t1 = 9;
             } else {
@@ -218,8 +218,8 @@ s32 Ui_AdjustNumericSelection(unk_func_8830867C_044_038_030* arg0, s32 arg1) {
             break;
 
         case 0x100:
-            if (arg0->unk_10 > 0) {
-                arg0->unk_10--;
+            if (arg0->digitIndex > 0) {
+                arg0->digitIndex--;
                 Audio_PlaySoundEffectById(1);
                 var_t1 = 9;
             } else {
@@ -228,15 +228,15 @@ s32 Ui_AdjustNumericSelection(unk_func_8830867C_044_038_030* arg0, s32 arg1) {
             break;
 
         case 0x800:
-            if (arg0->unk_00 == arg0->unk_08) {
-                arg0->unk_00 = arg0->unk_00 - ((arg0->unk_00 / var_a2) * var_a2);
-                if (arg0->unk_00 < arg0->unk_04) {
-                    arg0->unk_00 = arg0->unk_04;
+            if (arg0->value == arg0->maxValue) {
+                arg0->value = arg0->value - ((arg0->value / var_a2) * var_a2);
+                if (arg0->value < arg0->minValue) {
+                    arg0->value = arg0->minValue;
                 }
             } else {
-                arg0->unk_00 += var_a2;
-                if (arg0->unk_08 < arg0->unk_00) {
-                    arg0->unk_00 = arg0->unk_08;
+                arg0->value += var_a2;
+                if (arg0->maxValue < arg0->value) {
+                    arg0->value = arg0->maxValue;
                 }
             }
             Audio_PlaySoundEffectById(1);
@@ -244,12 +244,12 @@ s32 Ui_AdjustNumericSelection(unk_func_8830867C_044_038_030* arg0, s32 arg1) {
             break;
 
         case 0x400:
-            if (arg0->unk_00 == arg0->unk_04) {
-                arg0->unk_00 = arg0->unk_08;
+            if (arg0->value == arg0->minValue) {
+                arg0->value = arg0->maxValue;
             } else {
-                arg0->unk_00 -= var_a2;
-                if (arg0->unk_00 < arg0->unk_04) {
-                    arg0->unk_00 = arg0->unk_04;
+                arg0->value -= var_a2;
+                if (arg0->value < arg0->minValue) {
+                    arg0->value = arg0->minValue;
                 }
             }
             Audio_PlaySoundEffectById(1);
@@ -268,7 +268,7 @@ s32 Ui_HandleNumericSelectionInput(unk_func_8820E99C_030_030* arg0) {
 
 s32 Ui_AdjustSteppedRangeSelection(unk_func_8002E128_arg0* arg0) {
     s32 sp1C = Input_GetRepeatedDPad() & 0xFFFF;
-    s32 sp18 = arg0->unk_0C;
+    s32 sp18 = arg0->stepSize;
 
     if (sp1C != 0) {
         Audio_PlaySoundEffectById(1);
@@ -278,12 +278,12 @@ s32 Ui_AdjustSteppedRangeSelection(unk_func_8002E128_arg0* arg0) {
                 sp18 *= 0xA;
 
             case 0x800:
-                if (arg0->unk_00 >= arg0->unk_08) {
-                    arg0->unk_00 = arg0->unk_04;
-                } else if (arg0->unk_08 < (arg0->unk_00 + sp18)) {
-                    arg0->unk_00 = arg0->unk_08;
+                if (arg0->value >= arg0->maxValue) {
+                    arg0->value = arg0->minValue;
+                } else if (arg0->maxValue < (arg0->value + sp18)) {
+                    arg0->value = arg0->maxValue;
                 } else {
-                    arg0->unk_00 = arg0->unk_00 + sp18;
+                    arg0->value = arg0->value + sp18;
                 }
                 break;
 
@@ -291,12 +291,12 @@ s32 Ui_AdjustSteppedRangeSelection(unk_func_8002E128_arg0* arg0) {
                 sp18 *= 0xA;
 
             case 0x400:
-                if (arg0->unk_04 >= arg0->unk_00) {
-                    arg0->unk_00 = arg0->unk_08;
-                } else if ((arg0->unk_00 - sp18) < arg0->unk_04) {
-                    arg0->unk_00 = arg0->unk_04;
+                if (arg0->minValue >= arg0->value) {
+                    arg0->value = arg0->maxValue;
+                } else if ((arg0->value - sp18) < arg0->minValue) {
+                    arg0->value = arg0->minValue;
                 } else {
-                    arg0->unk_00 = arg0->unk_00 - sp18;
+                    arg0->value = arg0->value - sp18;
                 }
                 break;
         }
@@ -388,9 +388,9 @@ void Gfx_DrawNumberDigits(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 s32 Ui_GetSelectionDirection(unk_func_8002EBD8_arg0* arg0) {
     s32 var_v1 = 0;
 
-    if (arg0->unk_08 & 0x4000) {
+    if (arg0->buttonFlags & 0x4000) {
         var_v1 = -1;
-    } else if (arg0->unk_08 & 0x8000) {
+    } else if (arg0->buttonFlags & 0x8000) {
         var_v1 = 1;
     }
 
@@ -424,7 +424,7 @@ s32 BattleMon_CountMoves(BattleMon* arg0) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
-        if (arg0->unk_09[i] == 0) {
+        if (arg0->moves[i] == 0) {
             break;
         }
     }
@@ -447,16 +447,16 @@ MoveData* Move_GetData(s32 arg0) {
 }
 
 s32 Species_GetMoveSlot(BattleMon* arg0, s32 arg1) {
-    s32 temp_v0 = arg0->unk_00.unk_00 - 1;
+    s32 temp_v0 = arg0->species.dexId - 1;
     s32 var_v1;
 
     if (arg1 == 1) {
-        if (D_80070FA0[temp_v0].unk_06 == D_80070FA0[temp_v0].unk_07) {
+        if (D_80070FA0[temp_v0].type1 == D_80070FA0[temp_v0].type2) {
             return -1;
         }
-        var_v1 = D_80070FA0[temp_v0].unk_07;
+        var_v1 = D_80070FA0[temp_v0].type2;
     } else {
-        var_v1 = D_80070FA0[temp_v0].unk_06;
+        var_v1 = D_80070FA0[temp_v0].type1;
     }
     return var_v1;
 }
@@ -542,8 +542,8 @@ void State_PokemonLab(void) {
 
             FRAGMENT_LOAD_AND_CALL2(fragment22, var_s4, 0);
 
-            while ((game_state == STATE_POKEMON_LAB) && (D_800AE520.unk_00 != 0)) {
-                D_800AE520.unk_00 = 0;
+            while ((game_state == STATE_POKEMON_LAB) && (D_800AE520.pendingReload != 0)) {
+                D_800AE520.pendingReload = 0;
                 game_state = Fragment_LoadAndCall(D_800AE520.fragment_id, D_800AE520.rom_start, D_800AE520.rom_end,
                                            D_800AE520.arg0, D_800AE520.arg1);
             }

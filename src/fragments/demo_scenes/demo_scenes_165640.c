@@ -8,7 +8,7 @@
 #include "src/graphics_textures.h"
 #include "src/input.h"
 #include "src/game_state.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/audio_loop_point.h"
 #include "src/audio_commands_category2.h"
 #include "src/gfx_buffer.h"
@@ -240,14 +240,14 @@ void Intro_LoadPokemonTextures(void) {
 }
 
 void Intro_LoadShowcaseModel(void) {
-    D_86B0FA78->unk_174 = D_86B10690->unk_01C[D_86B0FA78->unk_17C].unk_00.unk_00;
+    D_86B0FA78->unk_174 = D_86B10690->party[D_86B0FA78->unk_17C].species.dexId;
     ModelRenderer_AttachDisplayObject(&D_86B0FA78->unk_004);
     PokeIcon_OpenModelArchives();
 
-    D_86B0FA78->unk_000 = Model_LoadForPokemon(&D_86B10690->unk_01C[D_86B0FA78->unk_17C]);
+    D_86B0FA78->unk_000 = Model_LoadForPokemon(&D_86B10690->party[D_86B0FA78->unk_17C]);
     Model_InitDisplayObject(&D_86B0FA78->unk_004, 0, D_86B0FA78->unk_174, D_86B0FA78->unk_000->unk_08->unk_00[0]);
     ModelAnim_SetAnimation(&D_86B0FA78->unk_004, 0);
-    D_86B0FA78->unk_004.unk_0A6 = 0;
+    D_86B0FA78->unk_004.poolIndex = 0;
     Intro_LoadPokemonTextures();
     D_86B0FA78->unk_004.unk_024.y += D_86B10660.unk_08;
     D_86B0FA78->unk_170 = 0;
@@ -439,23 +439,23 @@ void Intro_SetupTextPanel(unk_D_86B0FA50* arg0, u8* arg1, f32 arg2, s16 arg3, s1
 }
 
 void Intro_ConfigureTextPanels(void) {
-    if (D_800AE540.unk_11F2 == 1) {
+    if (D_800AE540.roundSelector == 1) {
         Intro_SetupTextPanel(D_86B0FA60, &D_300C6D0, -250.0f, 0xC8, 0x18, 0x18);
     }
 
     Intro_SetupTextPanel(D_86B0FA54, &D_3000180, -250.0f, 0xC8, 0x40, 0x18);
 
-    if (D_800AE540.unk_0002 == 0) {
+    if (D_800AE540.progressIndex == 0) {
         Intro_SetupTextPanel(D_86B0FA5C, &D_30060E0, -170.0f, 0x3C, 0x88, 0x14);
-    } else if (D_800AE540.unk_0002 == 1) {
+    } else if (D_800AE540.progressIndex == 1) {
         Intro_SetupTextPanel(D_86B0FA5C, &D_3006B80, -170.0f, 0x3C, 0x78, 0x14);
-    } else if (D_800AE540.unk_0002 == 2) {
+    } else if (D_800AE540.progressIndex == 2) {
         Intro_SetupTextPanel(D_86B0FA5C, &D_3004E20, -170.0f, 0x3C, 0x78, 0x14);
-    } else if (D_800AE540.unk_0002 == 3) {
+    } else if (D_800AE540.progressIndex == 3) {
         Intro_SetupTextPanel(D_86B0FA5C, &D_3005780, -170.0f, 0x3C, 0x78, 0x14);
     }
 
-    switch (D_800AE540.unk_0001) {
+    switch (D_800AE540.modeCategory) {
         case 1:
             Intro_SetupTextPanel(D_86B0FA58, &D_30024E0, -100.0f, 0x1E, 0xB0, 0x14);
             break;
@@ -523,11 +523,11 @@ void Intro_TriggerTextPanelExit(void) {
 }
 
 void Intro_SelectPartyRoster(void) {
-    if (D_800AE540.unk_1194[0].unk_1C == 1) {
-        D_86B10690 = D_800AE540.unk_1194[0].unk_08[0];
+    if (D_800AE540.unk_1194[0].isActiveSide == 1) {
+        D_86B10690 = D_800AE540.unk_1194[0].teams[0];
         D_86B10694 = &D_800AE540.unk_1194[0];
     } else {
-        D_86B10690 = D_800AE540.unk_1194[1].unk_08[0];
+        D_86B10690 = D_800AE540.unk_1194[1].teams[0];
         D_86B10694 = &D_800AE540.unk_1194[1];
     }
 }
@@ -554,7 +554,7 @@ s32 Intro_UpdateShowcaseSequence(void) {
             }
 
             if (Intro_UpdateCameraKeyframe(D_86B0FA7C->unk_00) != 0) {
-                if ((D_800AE540.unk_0001 == 7) && (D_86B0FA78->unk_17C == 5)) {
+                if ((D_800AE540.modeCategory == 7) && (D_86B0FA78->unk_17C == 5)) {
                     return 1;
                 }
                 WipeTransition_Start(3, 0x1E);
@@ -721,7 +721,7 @@ void Intro_DrawTextPanels(void) {
                 UI_DrawGradientTexture(D_86B0FA58->unk_80, D_86B0FA58->unk_98, D_86B0FA58->unk_9C, D_86B0FA58->unk_9E,
                               D_86B0FA58->unk_A0, &D_86B0FA54->unk_B0);
 
-                if (D_800AE540.unk_11F2 == 1) {
+                if (D_800AE540.roundSelector == 1) {
                     UI_DrawTextureRgba16(D_86B0FA60->unk_80, (s16)D_86B0FA58->unk_98 + D_86B0FA58->unk_9E,
                                   D_86B0FA58->unk_9C - 2, D_86B0FA60->unk_9E, D_86B0FA60->unk_A0);
                 }
@@ -772,7 +772,7 @@ void Intro_DrawTextPanels(void) {
                 UI_DrawGradientTexture(D_86B0FA58->unk_80, D_86B0FA58->unk_98, D_86B0FA58->unk_9C, D_86B0FA58->unk_9E,
                               D_86B0FA58->unk_A0, D_86B0DD40);
 
-                if (D_800AE540.unk_11F2 == 1) {
+                if (D_800AE540.roundSelector == 1) {
                     UI_DrawTextureRgba16(D_86B0FA60->unk_80, (s16)D_86B0FA58->unk_98 + D_86B0FA58->unk_9E,
                                   D_86B0FA58->unk_9C - 2, D_86B0FA60->unk_9E, D_86B0FA60->unk_A0);
                 }
@@ -793,7 +793,7 @@ void Intro_DrawTextPanels(void) {
                 D_86B0FA50->unk_9C = 0xB4;
                 D_86B0FA50->unk_A4 = 0.0f;
                 D_86B0FA50->unk_AC = 0.0f;
-                sprintf(D_86B0FA50->unk00, "%s", D_86B10690->unk_01C[D_86B0FA78->unk_17C].unk_30);
+                sprintf(D_86B0FA50->unk00, "%s", D_86B10690->party[D_86B0FA78->unk_17C].nickname);
                 D_86B0FA50->unk_90++;
                 break;
 
@@ -887,7 +887,7 @@ void Intro_FadeOutSequence(void) {
     s32 var_s1;
     void (*temp_s2)(void) = Util_ConvertAddrToVirtAddr(Particle_UpdateFrameCountersAlias);
 
-    if (D_800AE540.unk_0001 == 7) {
+    if (D_800AE540.modeCategory == 7) {
         for (i = 0; i < 100; i++) {
             Intro_ReadControllerInput();
             MiniFx_UpdateParticles();
@@ -898,7 +898,7 @@ void Intro_FadeOutSequence(void) {
         }
     }
 
-    if (D_800AE540.unk_0001 == 7) {
+    if (D_800AE540.modeCategory == 7) {
         var_s1 = 0x64;
     } else {
         var_s1 = 0xA;
@@ -908,7 +908,7 @@ void Intro_FadeOutSequence(void) {
     Audio_FadeOutAll(var_s1 - 2);
 
     for (i = 0; i < var_s1; i++) {
-        if (D_800AE540.unk_0001 == 7) {
+        if (D_800AE540.modeCategory == 7) {
             Intro_ReadControllerInput();
             MiniFx_UpdateParticles();
             temp_s2();
@@ -922,7 +922,7 @@ void Intro_FadeOutSequence(void) {
         }
     }
 
-    if (D_800AE540.unk_0001 == 7) {
+    if (D_800AE540.modeCategory == 7) {
         for (i = 0; i < 30; i++) {
             Intro_ReadControllerInput();
             MiniFx_UpdateParticles();
@@ -941,12 +941,12 @@ void Stage_LoadModels(void) {
     void* temp_v0_3;
     unk_D_8690A610_018* temp_v0_6;
 
-    D_86B0FA42 = gStageModelIndices[D_800AE540.unk_0001];
-    if (D_800AE540.unk_0001 == 7) {
-        D_86B0FA42 += D_800AE540.unk_0002;
+    D_86B0FA42 = gStageModelIndices[D_800AE540.modeCategory];
+    if (D_800AE540.modeCategory == 7) {
+        D_86B0FA42 += D_800AE540.progressIndex;
     }
 
-    switch (D_800AE540.unk_0001) {
+    switch (D_800AE540.modeCategory) {
         case 1:
             D_86B0FA44 = 4;
             break;
@@ -956,7 +956,7 @@ void Stage_LoadModels(void) {
             break;
 
         case 3:
-            D_86B0FA44 = D_800AE540.unk_0002;
+            D_86B0FA44 = D_800AE540.progressIndex;
             break;
 
         case 4:
@@ -968,7 +968,7 @@ void Stage_LoadModels(void) {
             break;
 
         case 6:
-            D_86B0FA44 = D_800AE540.unk_0002;
+            D_86B0FA44 = D_800AE540.progressIndex;
             break;
 
         default:
@@ -1009,9 +1009,9 @@ void Stage_LoadModels(void) {
         D_86B0F9D0.unk_00.unk_14 = 0;
         D_86B0F9D0.unk_00.unk_01 &= ~1;
     } else {
-        D_86B0F9D0.unk_18.unk_00 = temp_v0_6->unk_00;
-        D_86B0F9D0.unk_18.unk_02 = temp_v0_6->unk_02;
-        D_86B0F9D0.unk_18.unk_04.rgba = temp_v0_6->unk_04.rgba;
+        D_86B0F9D0.unk_18.fogNear = temp_v0_6->fogNear;
+        D_86B0F9D0.unk_18.fogFar = temp_v0_6->fogFar;
+        D_86B0F9D0.unk_18.fogColor.rgba = temp_v0_6->fogColor.rgba;
         D_86B0F9D0.unk_00.unk_14 = 1;
     }
 
@@ -1042,7 +1042,7 @@ void Stage_LoadModels(void) {
 
     Intro_SelectPartyRoster();
 
-    switch (D_800AE540.unk_0001) {
+    switch (D_800AE540.modeCategory) {
         case 1:
         case 2:
         case 4:
@@ -1055,7 +1055,7 @@ void Stage_LoadModels(void) {
             break;
 
         default:
-            if (D_800AE540.unk_0002 == 3) {
+            if (D_800AE540.progressIndex == 3) {
                 D_86B0FA74 = 1;
                 Intro_StartFirstShowcase();
                 Intro_BeginOrbitCamera();

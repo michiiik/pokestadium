@@ -5,22 +5,13 @@
 
 extern void (*D_80079520[5])(void);
 
+extern u16 LEOrw_flags;
 extern LEOCmdRead leo_sys_read_cmd;
 
 // D_8007DA40
 const u8 leo_sys_form_lbas[] = { 0, 1, 8, 9, 0, 0, 0, 0 }; // EXTRA 0 IS A HACK
 
 u8 leoRead_system_area(void);
-
-OSMesg LEOblock_que_buf[1];
-u8* LEOwrite_pointer;
-LEOCmd* LEOcur_command;
-u32 LEOasic_bm_ctl_shadow;
-u32 LEOasic_seq_ctl_shadow;
-u8 LEOdrive_flag;
-vu8 LEOclr_que_flag;
-u16 LEOrw_flags;
-u8 LEOdisk_type;
 
 void leomain(void* arg0) {
     u32 cur_status;

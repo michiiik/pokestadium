@@ -3,7 +3,7 @@
 #include "src/poke_icon.h"
 #include "src/pokemon_stats.h"
 #include "src/save_data.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/gfx_buffer.h"
 #include "src/gfx_rect.h"
 #include "src/controller.h"
@@ -27,7 +27,7 @@ void GbTower_LoadPartyFromDeck(s32 arg0) {
     }
 
     for (i = 0; i < D_82A00360; i++) {
-        func_8001A46C(D_82A00374, i, &D_82A00378[i], 1);
+        PokeIcon_SetSlotFromMon(D_82A00374, i, &D_82A00378[i], 1);
     }
 }
 
@@ -40,15 +40,15 @@ s32 GbTower_TeamPrepFrameCallback(u8 arg0) {
     return 0;
 }
 
-void GbTower_BuildPartyResult(UnkInputStruct8000D738* arg0) {
+void GbTower_BuildPartyResult(GbTowerLaunchData* arg0) {
     s32 i;
     GameOptions sp34;
-    u16(*var_s1)[0x640] = arg0->unk_04[0];
+    u16(*var_s1)[0x640] = arg0->partyIconFrames[0];
 
     Save_GetOptions(&sp34);
-    arg0->unk_02 = sp34.unk_00;
-    arg0->unk_00 = sp34.unk_04;
-    arg0->unk_03 = D_82A00360;
+    arg0->presentationMode = sp34.presentationMode;
+    arg0->buttonBindingsPacked = sp34.buttonBindingsPacked;
+    arg0->partyCount = D_82A00360;
 
     for (i = 0; i < D_82A00360; i++, var_s1++) {
         _bcopy(PokeIcon_GetImage(D_82A00374, i), var_s1, sizeof(var_s1[0]));
@@ -59,7 +59,7 @@ void GbTower_BuildPartyResult(UnkInputStruct8000D738* arg0) {
     }
 }
 
-s32 GbTower_TeamPrep(s32 arg0, UnkInputStruct8000D738* arg1) {
+s32 GbTower_TeamPrep(s32 arg0, GbTowerLaunchData* arg1) {
     unk_func_80007444* sp24;
 
     main_pool_push_state('PREP');

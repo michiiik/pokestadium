@@ -1,17 +1,15 @@
 #include "global.h"
 #include "gfx_buffer.h"
 
-typedef struct UnkStruct800A7428 {
+struct UnkStruct800A7428 {
     u32* unk0;
     u32* unk4;
     u32 unk8;
     s32 unkC;
     s16 unk10;
-} UnkStruct800A7428; // size = 0x12
+};
 
-Gfx* gDisplayListHead;
-UnkStruct800A7428 D_800A7428;
-unk_D_800A7440 D_800A7440;
+extern struct UnkStruct800A7428 D_800A7428;
 
 void Gfx_SwapDisplayListBuffer(void);
 

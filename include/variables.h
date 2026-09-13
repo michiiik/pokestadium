@@ -12,7 +12,6 @@
 #define THREAD_ID_IDLE 1
 #define THREAD_ID_RESET 21
 
-#define POOL_START   0x80104BB0
 #define POOL_END_4MB 0x80400000
 #define POOL_END_6MB 0x80600000
 
@@ -843,6 +842,8 @@ extern u8 D_86C00000;
 extern u8 D_87A00000;
 extern u8 D_87000000[];
 
+extern u8 D_800AF770[];
+
 typedef struct unk_D_800A7440 {
 	/* 0x00 */ s16 x1;
 	/* 0x02 */ s16 y1;
@@ -886,6 +887,7 @@ typedef struct FontContext {
     /* 0x52 */ u8 unk_52;
     /* 0x53 */ u8 unk_53;
 } FontContext; // size = 0x54
+extern FontContext* D_800AC870;
 
 extern Gfx D_8006F498[];
 
@@ -920,6 +922,7 @@ extern u32 D_1003E78[];
 extern u32 D_304F120[];
 
 extern s32 D_800FC820;
+extern u8* D_800FF9C0;
 
 extern OSViMode D_800795C0;
 extern u8 D_ADC80[];
@@ -943,12 +946,12 @@ typedef struct unk_D_70B10 {
 extern u32 D_8C000000; // start of some rom area
 
 typedef struct MoveData {
-    /* 0x00 */ u8 unk_00;
-    /* 0x01 */ u8 unk_01;
-    /* 0x02 */ u8 unk_02;
-    /* 0x03 */ u8 unk_03;
-    /* 0x04 */ u8 unk_04;
-    /* 0x05 */ u8 unk_05;
+    /* 0x00 */ u8 moveId;
+    /* 0x01 */ u8 effectId;
+    /* 0x02 */ u8 power;
+    /* 0x03 */ u8 type;
+    /* 0x04 */ u8 accuracy;
+    /* 0x05 */ u8 basePP;
 } MoveData; // size = 0x6
 extern MoveData gMoveData[];
 

@@ -73,12 +73,12 @@ typedef struct unk_func_8830867C_034_03C_038_02C {
 
 // Seems to be >= 0x58 in other places?
 typedef struct unk_func_8830867C_02C_144_000 {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ s32 unk_04;
+    /* 0x00 */ s32 category; // Deck_Open's arg0; LabPCList_GetCategoryDirtyFlag's arg
+    /* 0x04 */ s32 bankId; // Deck_Open's arg1; GbSave_GetBoxCount/MarkBoxDataLoaded's arg
     /* 0x08 */ char unk08[0x4];
-    /* 0x0C */ unk_func_8830867C_02C_0CC_000_000* unk_0C;
+    /* 0x0C */ unk_func_8830867C_02C_0CC_000_000* boxes;
     /* 0x10 */ char unk10[0x4];
-    /* 0x14 */ s32 unk_14;
+    /* 0x14 */ s32 boxCount;
     /* 0x18 */ char unk18[0x8];
 } unk_func_8830867C_02C_144_000; // size = 0x20
 
@@ -90,9 +90,9 @@ typedef struct unk_func_8830867C_02C_144_000_alt {
 } unk_func_8830867C_02C_144_000_alt; // size >= 0x58
 
 typedef struct unk_func_8830867C_02C_144 {
-    /* 0x00 */ unk_func_8830867C_02C_144_000* unk_00;
+    /* 0x00 */ unk_func_8830867C_02C_144_000* categories;
     /* 0x04 */ char unk04[0x4];
-    /* 0x08 */ s32 unk_08;
+    /* 0x08 */ s32 categoryCount;
 } unk_func_8830867C_02C_144; // size >= 0xC
 
 typedef struct unk_func_8830867C_02C_154 {
@@ -654,7 +654,7 @@ void LabPCList_DrawPlainText(s32 arg0, s32 arg1, s8* arg2, s32 arg3);
 void LabPCList_DrawFormattedNumber(s32 arg0, s32 arg1, char* arg2, s32 arg3);
 void LabPCList_DrawStatNumber(s32 arg0, s32 arg1, char* arg2, s32 arg3, u8* arg4);
 s32 LabPCList_CheckStatFilterRange(unk_func_8830867C_02C* arg0, unk_func_88304850_arg2* arg1);
-void func_88304850(s32 arg0, s32 arg1, unk_func_88304850_arg2* arg2, s32 arg3, s32 arg4,
+void LabPCList_DrawRowCells(s32 arg0, s32 arg1, unk_func_88304850_arg2* arg2, s32 arg3, s32 arg4,
                    unk_func_8830867C_02C_034* arg5);
 void LabPCList_SaveFilterState(unk_func_8830867C_02C* arg0);
 void LabPCList_RestoreFilterState(unk_func_8830867C_02C* arg0);
@@ -676,7 +676,7 @@ void LabPCList_TeachTmMove(unk_func_8830867C_02C_0CC_000* arg0, unk_func_8830867
 void LabPCList_SetRowMenuState(unk_func_8830867C_02C* arg0, s32 arg1);
 s32 LabPCList_RowMenuHandleInput(unk_func_8830867C_02C* arg0, Controller* arg1);
 void LabPCList_RunPartySelectionModal(unk_func_8830867C_02C* arg0, Controller* arg1);
-void func_88305F28(unk_func_8830867C_02C* arg0);
+void LabPCList_ApplySelectedItem(unk_func_8830867C_02C* arg0);
 s32 LabPCList_OpenListMenu(unk_func_8830867C_02C* arg0, Controller* arg1);
 s32 LabPCList_OpenRowMenu(unk_func_8830867C_02C* arg0, Controller* arg1);
 s32 LabPCList_HandleColumnHeaderClick(unk_func_8830867C_02C* arg0, WidgetNode* arg1, s32 arg2, Controller* arg3);
@@ -779,7 +779,7 @@ void BattleInfoWidget_SetMovePanelState(unk_func_8830867C_040* arg0, s32 arg1);
 s32 BattleInfoWidget_HandleMovePanelInput(unk_func_8830867C_040* arg0, Controller* arg1);
 s32 BattleInfoWidget_RunMovePanelModal(unk_func_8830867C_040* arg0, Controller* arg1);
 void BattleInfoWidget_InitMoveSelectionProxy(unk_func_8830867C_040_05C* arg0, unk_func_8830867C_040* arg1);
-s32 func_88310854(unk_func_8830867C_040_05C* arg0, Controller* arg1);
+s32 BattleInfoWidget_MoveSelectionInput(unk_func_8830867C_040_05C* arg0, Controller* arg1);
 void BattleInfoWidget_InitGamePakSlotLabel(unk_func_88310B70* arg0, s32 arg1, s32 arg2, unk_func_8830867C_04C_030* arg3, MemoryPool* arg4);
 s32 BattleInfoWidget_DrawGamePakSlotLabel(unk_func_88310B70* arg0);
 void BattleInfoWidget_BuildItemMenu(unk_func_8830867C_04C* arg0, s32 arg1, s32 arg2, WidgetNode* arg3, MemoryPool* arg4);

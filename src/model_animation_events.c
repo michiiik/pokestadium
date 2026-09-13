@@ -8,10 +8,10 @@ s32 ModelAnim_ResolveEventIndex(s32 arg0, unk_func_80017540_arg1* arg1, s32 arg2
     unk_func_80017540_arg1* temp_v0 = &arg1[arg2];
     s32 ret;
 
-    if (arg0 < temp_v0->unk_00) {
-        ret = arg0 + temp_v0->unk_02;
+    if (arg0 < temp_v0->keyCount) {
+        ret = arg0 + temp_v0->baseIndex;
     } else {
-        ret = (temp_v0->unk_02 + temp_v0->unk_00) - 1;
+        ret = (temp_v0->baseIndex + temp_v0->keyCount) - 1;
     }
     return ret;
 }
@@ -53,16 +53,16 @@ void ModelAnim_BeginEventContext(unk_D_86002F58_004_000_054* arg0, u16 arg1, s32
                 arg0->unk_08 = ModelAnim_AdvanceEventFrame(arg0, arg1);
             }
             arg0->unk_0A = arg1;
-            temp_s0->unk_00 = 1;
-            temp_s0->unk_02 = arg0->unk_08;
-            temp_s0->unk_04 = sp24;
-            temp_s0->unk_08 = Util_ConvertAddrToVirtAddr(sp24->unk_0C);
-            temp_s0->unk_0C = Util_ConvertAddrToVirtAddr(sp24->unk_10);
-            if (temp_s0->unk_02 < 0) {
-                temp_s0->unk_02 = 0;
+            temp_s0->isActive = 1;
+            temp_s0->currentFrame = arg0->unk_08;
+            temp_s0->eventData = sp24;
+            temp_s0->eventIndexTable = Util_ConvertAddrToVirtAddr(sp24->unk_0C);
+            temp_s0->eventIdTable = Util_ConvertAddrToVirtAddr(sp24->unk_10);
+            if (temp_s0->currentFrame < 0) {
+                temp_s0->currentFrame = 0;
             }
         } else {
-            temp_s0->unk_00 = 0;
+            temp_s0->isActive = 0;
         }
     }
 }
@@ -78,8 +78,8 @@ void ModelAnim_GetEventAtFrame(unk_D_86002F34_alt11_018** arg0, unk_D_86002F34_a
 
     if ((D_800ABD20 >= 0) && (D_800ABD20 < 2)) {
         sp1C = &D_800ABD00[D_800ABD20];
-        if ((sp1C->unk_00 == 1) && (arg2 >= 0) && (arg2 < sp1C->unk_04->unk_08)) {
-            *arg0 = &arg1[((u8*)sp1C->unk_0C)[ModelAnim_ResolveEventIndex(sp1C->unk_02, sp1C->unk_08, arg2)]];
+        if ((sp1C->isActive == 1) && (arg2 >= 0) && (arg2 < sp1C->eventData->unk_08)) {
+            *arg0 = &arg1[((u8*)sp1C->eventIdTable)[ModelAnim_ResolveEventIndex(sp1C->currentFrame, sp1C->eventIndexTable, arg2)]];
         }
     }
 }

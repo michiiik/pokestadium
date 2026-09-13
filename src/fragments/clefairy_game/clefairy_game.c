@@ -9,7 +9,7 @@
 #include "src/input.h"
 #include "src/ui_graphics.h"
 #include "src/text_system.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/audio_sfx.h"
 #include "src/audio_loop_point.h"
 #include "src/gfx_buffer.h"
@@ -546,7 +546,7 @@ void func_86100C28(void) {
 }
 
 #ifdef NON_MATCHING
-void func_86100C30(s32 arg0) {
+void ClefairyGame_DrawTutorialScreen(s32 arg0) {
     s32 i;
     UNUSED unk_D_86104B5C sp60 = D_86104B60;
     UNUSED unk_D_86104B5C sp5C = D_86104B5C;
@@ -671,7 +671,7 @@ void func_86100C30(s32 arg0) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/clefairy_game/clefairy_game/func_86100C30.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/7/fragment7/ClefairyGame_DrawTutorialScreen.s")
 #endif
 
 void ClefairyGame_DrawPenaltyDots(void) {
@@ -778,7 +778,7 @@ void ClefairyGame_DrawFrame(s32 arg0) {
                 break;
         }
 
-        func_86100C30(arg0);
+        ClefairyGame_DrawTutorialScreen(arg0);
     }
 
     Widget_PauseMenuUpdate();

@@ -65,34 +65,40 @@ void Battle_ClearMessageCursor(void) {
     gBattleMessageQueues->unk_008[1] = 0;
 }
 
-void func_84317940(s8* arg0, s8* arg1, ...) {
+#ifdef NON_MATCHING
+void Battle_FormatString(s8* arg0, s8* arg1, ...) {
     va_list args;
-    s8* src;
-    s8* fmt;
-    s32 len;
+    s8** temp_v1;
+    s32 var_v0;
+    s8* var_a3;
 
-    len = 0;
-    va_start(args, arg1);
-    fmt = arg1;
+    var_v0 = 0;
+    temp_v1 = &args;
 
-    while (*fmt != 0) {
-        if (*fmt != 0x25) {
-            arg0[len++] = *fmt;
+    while (*arg1 != '\x00') {
+        if (*arg1 != 0x25) {
+            arg0[var_v0++] = *arg1;
         } else {
-            fmt++;
-            if (*fmt == 0x73) {
-                src = va_arg(args, s8*);
-                while (*src != 0) {
-                    arg0[len] = *src;
-                    src++;
-                    len++;
+            arg1++;
+            if (*arg1 == 0x73) {
+                temp_v1 = ALIGN4((s32)temp_v1);
+                var_a3 = *(s8**)temp_v1;
+                temp_v1++;
+
+                while (*var_a3 != 0) {
+                    arg0[var_v0] = *var_a3;
+                    var_a3++;
+                    var_v0++;
                 }
             }
         }
-        fmt++;
+        arg1++;
     }
-    arg0[len] = 0;
+    arg0[var_v0] = '\x00';
 }
+#else
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/62/fragment62_3020D0/Battle_FormatString.s")
+#endif
 
 void Battle_QueueMessage(s8* arg0, s8 arg1) {
     u8 tmp = arg1;
@@ -115,8 +121,8 @@ void Battle_QueueStatusText(char* arg0, s32 arg1) {
     UNUSED s32 pad2[2];
 
     Battle_ClearMessageCursor();
-    gBattleMessageQueues->unk_000 = D_84390010[arg1]->unk_720->unk_08[sp28->unk_2B]->unk_001;
-    func_84317940(gBattleMessageQueues->unk_048, arg0 + 1);
+    gBattleMessageQueues->unk_000 = D_84390010[arg1]->sessionTeams->teams[sp28->activeSideIndex]->trainerSlotId;
+    Battle_FormatString(gBattleMessageQueues->unk_048, arg0 + 1);
     *arg0 = 0;
 }
 
@@ -127,33 +133,33 @@ void Battle_DrawCompactStatusBoxesIfVisible(void) {
     Battler* ptr1 = D_84390010[0];
     Battler* ptr2 = D_84390010[1];
 
-    if ((D_800AE540.unk_0000 != 0x10) && (gBattleScene.unk_00->unk_30 == 0)) {
-        BattleHud_DrawCompactMonStatusBox(ptr1, 0x15, 0xF, ptr1->unk_720->unk_08[ptr1->unk_728.unk_16C]->unk_001);
-        BattleHud_DrawCompactMonStatusBox(ptr2, 0xE1, 0xF, ptr2->unk_720->unk_08[ptr2->unk_728.unk_16C]->unk_001);
+    if ((D_800AE540.sessionMode != 0x10) && (gBattleScene.scene->unk_30 == 0)) {
+        BattleHud_DrawCompactMonStatusBox(ptr1, 0x15, 0xF, ptr1->sessionTeams->teams[ptr1->presentation.trainerIndex]->trainerSlotId);
+        BattleHud_DrawCompactMonStatusBox(ptr2, 0xE1, 0xF, ptr2->sessionTeams->teams[ptr2->presentation.trainerIndex]->trainerSlotId);
     }
 }
 
 void Battle_QueueMoveCategoryUsedMessage(void) {
     u32 sp1C;
-    BattleMonRuntime* sp18 = &D_84390010[gBattleScene.unk_00->unk_2C]->unk_654.unk_38;
+    BattleMonRuntime* sp18 = &D_84390010[gBattleScene.scene->activeBattlerIndex]->unk_654.monRuntime;
 
-    sp18->unk_58 = sp18->unk_44.unk_00;
+    sp18->lastMoveUsedId = sp18->cachedMove.moveId;
 
-    if (BattleScene_ByteArrayContains(sp18->unk_44.unk_00, D_84385990, 2) != 0) {
+    if (BattleScene_ByteArrayContains(sp18->cachedMove.moveId, D_84385990, 2) != 0) {
         sp1C = 0;
-    } else if (BattleScene_ByteArrayContains(sp18->unk_44.unk_00, D_84385994, 5) != 0) {
+    } else if (BattleScene_ByteArrayContains(sp18->cachedMove.moveId, D_84385994, 5) != 0) {
         sp1C = 1;
-    } else if (BattleScene_ByteArrayContains(sp18->unk_44.unk_00, D_8438599C, 5) != 0) {
+    } else if (BattleScene_ByteArrayContains(sp18->cachedMove.moveId, D_8438599C, 5) != 0) {
         sp1C = 2;
-    } else if (BattleScene_ByteArrayContains(sp18->unk_44.unk_00, D_843859A4, 0x2E) != 0) {
+    } else if (BattleScene_ByteArrayContains(sp18->cachedMove.moveId, D_843859A4, 0x2E) != 0) {
         sp1C = 3;
     } else {
         sp1C = 4;
     }
 
-    if ((sp18->unk_44.unk_00 == 0x76) || (sp18->unk_44.unk_00 == 0x77)) {
-        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.unk_00->unk_2C]));
-        Text_SetStringToken(0x1D, Battle_GetActiveMoveName(D_84390010[gBattleScene.unk_00->unk_2C]));
+    if ((sp18->cachedMove.moveId == 0x76) || (sp18->cachedMove.moveId == 0x77)) {
+        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.scene->activeBattlerIndex]));
+        Text_SetStringToken(0x1D, Battle_GetActiveMoveName(D_84390010[gBattleScene.scene->activeBattlerIndex]));
 
         switch (sp1C) {
             case 0:
@@ -177,8 +183,8 @@ void Battle_QueueMoveCategoryUsedMessage(void) {
                 break;
         }
     } else {
-        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.unk_00->unk_2C]));
-        Text_SetStringToken(0x1D, Battle_GetActiveMoveName(D_84390010[gBattleScene.unk_00->unk_2C]));
+        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.scene->activeBattlerIndex]));
+        Text_SetStringToken(0x1D, Battle_GetActiveMoveName(D_84390010[gBattleScene.scene->activeBattlerIndex]));
 
         switch (sp1C) {
             case 0:
@@ -207,22 +213,22 @@ void Battle_QueueMoveCategoryUsedMessage(void) {
 void Battle_QueueMoveCategoryMessage(void) {
     u32 sp24;
     UNUSED s32 pad;
-    BattleMonRuntime* sp1C = &D_84390010[gBattleScene.unk_00->unk_2C]->unk_654.unk_38;
+    BattleMonRuntime* sp1C = &D_84390010[gBattleScene.scene->activeBattlerIndex]->unk_654.monRuntime;
 
-    if (BattleScene_ByteArrayContains(sp1C->unk_5A, D_84385990, 2) != 0) {
+    if (BattleScene_ByteArrayContains(sp1C->currentMoveId, D_84385990, 2) != 0) {
         sp24 = 0;
-    } else if (BattleScene_ByteArrayContains(sp1C->unk_5A, D_84385994, 5) != 0) {
+    } else if (BattleScene_ByteArrayContains(sp1C->currentMoveId, D_84385994, 5) != 0) {
         sp24 = 1;
-    } else if (BattleScene_ByteArrayContains(sp1C->unk_5A, D_8438599C, 5) != 0) {
+    } else if (BattleScene_ByteArrayContains(sp1C->currentMoveId, D_8438599C, 5) != 0) {
         sp24 = 2;
-    } else if (BattleScene_ByteArrayContains(sp1C->unk_5A, D_843859A4, 0x2E) != 0) {
+    } else if (BattleScene_ByteArrayContains(sp1C->currentMoveId, D_843859A4, 0x2E) != 0) {
         sp24 = 3;
     } else {
         sp24 = 4;
     }
 
-    Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.unk_00->unk_2C]));
-    Text_SetStringToken(0x1D, Battle_GetActiveMoveName(D_84390010[gBattleScene.unk_00->unk_2C]));
+    Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.scene->activeBattlerIndex]));
+    Text_SetStringToken(0x1D, Battle_GetActiveMoveName(D_84390010[gBattleScene.scene->activeBattlerIndex]));
 
     switch (sp24) {
         case 0:
@@ -252,29 +258,29 @@ void Battle_QueueMetronomeMoveMessage(void) {
     s32 tmp;
     BattleMonRuntime* sp24;
 
-    sp24 = &D_84390010[gBattleScene.unk_00->unk_2C]->unk_654.unk_38;
+    sp24 = &D_84390010[gBattleScene.scene->activeBattlerIndex]->unk_654.monRuntime;
 
-    if (BattleScene_ByteArrayContains(sp24->unk_5A, D_84385990, 2) != 0) {
+    if (BattleScene_ByteArrayContains(sp24->currentMoveId, D_84385990, 2) != 0) {
         sp2C = 0;
-    } else if (BattleScene_ByteArrayContains(sp24->unk_5A, D_84385994, 5) != 0) {
+    } else if (BattleScene_ByteArrayContains(sp24->currentMoveId, D_84385994, 5) != 0) {
         sp2C = 1;
-    } else if (BattleScene_ByteArrayContains(sp24->unk_5A, D_8438599C, 5) != 0) {
+    } else if (BattleScene_ByteArrayContains(sp24->currentMoveId, D_8438599C, 5) != 0) {
         sp2C = 2;
-    } else if (BattleScene_ByteArrayContains(sp24->unk_5A, D_843859A4, 0x2E) != 0) {
+    } else if (BattleScene_ByteArrayContains(sp24->currentMoveId, D_843859A4, 0x2E) != 0) {
         sp2C = 3;
     } else {
         sp2C = 4;
     }
 
-    if (sp24->unk_5A == 0x76) {
+    if (sp24->currentMoveId == 0x76) {
         do {
             tmp = Battle_Random();
         } while ((tmp == 0) || (tmp >= 0xA5) || tmp == 0x76);
 
-        sp24->unk_5A = tmp;
+        sp24->currentMoveId = tmp;
 
-        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.unk_00->unk_2C]));
-        Text_SetStringToken(0x1D, Battle_GetActiveMoveName(D_84390010[gBattleScene.unk_00->unk_2C]));
+        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.scene->activeBattlerIndex]));
+        Text_SetStringToken(0x1D, Battle_GetActiveMoveName(D_84390010[gBattleScene.scene->activeBattlerIndex]));
 
         switch (sp2C) {
             case 0:
@@ -298,10 +304,10 @@ void Battle_QueueMetronomeMoveMessage(void) {
                 break;
         }
 
-        sp24->unk_5A = 0x76;
+        sp24->currentMoveId = 0x76;
 
-        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.unk_00->unk_2C]));
-        Text_SetStringToken(0x1D, Battle_GetActiveMoveName(D_84390010[gBattleScene.unk_00->unk_2C]));
+        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.scene->activeBattlerIndex]));
+        Text_SetStringToken(0x1D, Battle_GetActiveMoveName(D_84390010[gBattleScene.scene->activeBattlerIndex]));
 
         switch (sp2C) {
             case 0:
@@ -325,8 +331,8 @@ void Battle_QueueMetronomeMoveMessage(void) {
                 break;
         }
     } else {
-        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.unk_00->unk_2C]));
-        Text_SetStringToken(0x1D, Battle_GetActiveMoveName(D_84390010[gBattleScene.unk_00->unk_2C]));
+        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.scene->activeBattlerIndex]));
+        Text_SetStringToken(0x1D, Battle_GetActiveMoveName(D_84390010[gBattleScene.scene->activeBattlerIndex]));
 
         switch (sp2C) {
             case 0:
@@ -529,7 +535,7 @@ s32 BattleBox_SelectMessage(unk_D_843901A0_4C8* arg0) {
                 return 1;
             }
 
-            arg0->unk_0C = gBattleScene.unk_00->unk_2C;
+            arg0->unk_0C = gBattleScene.scene->activeBattlerIndex;
             if (gBattleMessageQueues->unk_0C8[1] != 0) {
                 BattleBox_PlayTextBlip(gBattleMessageQueues->unk_0C8);
             }
@@ -546,7 +552,7 @@ s32 BattleBox_SelectMessage(unk_D_843901A0_4C8* arg0) {
 
         case 1:
         case 3:
-            arg0->unk_0C = gBattleScene.unk_00->unk_2C;
+            arg0->unk_0C = gBattleScene.scene->activeBattlerIndex;
             BattleBox_PlayTextBlip(gBattleMessageQueues->unk_088);
             BattleBox_PlayTextBlip(gBattleMessageQueues->unk_148);
             BattleBox_PlayTextBlip(gBattleMessageQueues->unk_208);
@@ -561,7 +567,7 @@ s32 BattleBox_SelectMessage(unk_D_843901A0_4C8* arg0) {
             break;
 
         case 2:
-            arg0->unk_0C = gBattleScene.unk_00->unk_2C;
+            arg0->unk_0C = gBattleScene.scene->activeBattlerIndex;
             BattleBox_PlayTextBlip(gBattleMessageQueues->unk_088);
             BattleBox_PlayTextBlip(gBattleMessageQueues->unk_148);
             BattleBox_PlayTextBlip(gBattleMessageQueues->unk_208);
@@ -573,7 +579,7 @@ s32 BattleBox_SelectMessage(unk_D_843901A0_4C8* arg0) {
             break;
 
         case 15:
-            arg0->unk_0C = gBattleScene.unk_00->unk_2C;
+            arg0->unk_0C = gBattleScene.scene->activeBattlerIndex;
             BattleBox_PlayTextBlip(gBattleMessageQueues->unk_088);
             if (gBattleMessageQueues->unk_088[1] == 0) {
                 arg0->unk_00 = 0xFF;
@@ -587,13 +593,13 @@ s32 BattleBox_SelectMessage(unk_D_843901A0_4C8* arg0) {
                 arg0->unk_00 = 0xFF;
                 return 1;
             }
-            tmp = gBattleScene.unk_00->unk_2C == 0;
+            tmp = gBattleScene.scene->activeBattlerIndex == 0;
             arg0->unk_00 += 1;
             arg0->unk_0C = tmp;
             break;
 
         case 9:
-            tmp = gBattleScene.unk_00->unk_2C == 0;
+            tmp = gBattleScene.scene->activeBattlerIndex == 0;
             arg0->unk_00 += 1;
             arg0->unk_0C = tmp;
             break;
@@ -611,12 +617,12 @@ s32 BattleBox_SelectMessage(unk_D_843901A0_4C8* arg0) {
             D_84390190.z = 0.0f;
             D_84390190.x = 321.0f;
             D_84390190.y = 160.0f;
-            arg0->unk_0C = gBattleScene.unk_00->unk_2C;
+            arg0->unk_0C = gBattleScene.scene->activeBattlerIndex;
             arg0->unk_00 += 1;
             break;
 
         default:
-            arg0->unk_0C = gBattleScene.unk_00->unk_2C;
+            arg0->unk_0C = gBattleScene.scene->activeBattlerIndex;
             arg0->unk_00 += 1;
             break;
     }
@@ -626,7 +632,7 @@ s32 BattleBox_SelectMessage(unk_D_843901A0_4C8* arg0) {
 void BattleBox_Update(s16 arg0, s16 arg1) {
     unk_D_843901A0_4C8* temp_s0 = &gBattleMessageQueues->unk_4C8;
 
-    if (D_800AE540.unk_0000 == 0x10) {
+    if (D_800AE540.sessionMode == 0x10) {
         return;
     }
 
@@ -689,39 +695,39 @@ void BattleBox_Update(s16 arg0, s16 arg1) {
 }
 
 void BattleScene_ClearParticipantMessageBuffer(Battler* arg0) {
-    arg0->unk_8C4.unk_00 = 0;
-    arg0->unk_8C4.unk_04 = 0;
-    arg0->unk_8C4.unk_48[0] = 0;
-    arg0->unk_8C4.unk_08[0] = 0;
+    arg0->caption.active = 0;
+    arg0->caption.revealedCharCount = 0;
+    arg0->caption.sourceText[0] = 0;
+    arg0->caption.revealedText[0] = 0;
 }
 
 void BattleScene_BuildParticipantMessage(Battler* arg0, s32 arg1) {
-    gBattleMessageQueues->unk_000 = arg0->unk_720->unk_08[arg0->unk_654.unk_2C]->unk_001;
-    arg0->unk_8C4.unk_00 = 1;
-    Text_SetStringToken(0x19, arg0->unk_724->unk_01C[arg0->unk_654.unk_08].unk_30);
-    Text_GetString(arg0->unk_8C4.unk_48, 0x40, D_843900B0, arg1);
+    gBattleMessageQueues->unk_000 = arg0->sessionTeams->teams[arg0->unk_654.sideIndex]->trainerSlotId;
+    arg0->caption.active = 1;
+    Text_SetStringToken(0x19, arg0->ownRoster->party[arg0->unk_654.partyIndex].nickname);
+    Text_GetString(arg0->caption.sourceText, 0x40, D_843900B0, arg1);
 }
 
 void BattleScene_RevealParticipantMessageChars(Battler* arg0) {
-    TeamRoster* temp_t0 = arg0->unk_720->unk_08[arg0->unk_654.unk_2C];
+    TeamRoster* temp_t0 = arg0->sessionTeams->teams[arg0->unk_654.sideIndex];
 
-    if (arg0->unk_8C4.unk_48[arg0->unk_8C4.unk_04] != '\x00') {
-        arg0->unk_8C4.unk_08[arg0->unk_8C4.unk_04] = arg0->unk_8C4.unk_48[arg0->unk_8C4.unk_04];
-        arg0->unk_8C4.unk_04++;
+    if (arg0->caption.sourceText[arg0->caption.revealedCharCount] != '\x00') {
+        arg0->caption.revealedText[arg0->caption.revealedCharCount] = arg0->caption.sourceText[arg0->caption.revealedCharCount];
+        arg0->caption.revealedCharCount++;
     }
 
-    if (arg0->unk_8C4.unk_48[arg0->unk_8C4.unk_04] != '\x00') {
-        arg0->unk_8C4.unk_08[arg0->unk_8C4.unk_04] = arg0->unk_8C4.unk_48[arg0->unk_8C4.unk_04];
-        arg0->unk_8C4.unk_04++;
+    if (arg0->caption.sourceText[arg0->caption.revealedCharCount] != '\x00') {
+        arg0->caption.revealedText[arg0->caption.revealedCharCount] = arg0->caption.sourceText[arg0->caption.revealedCharCount];
+        arg0->caption.revealedCharCount++;
     }
 
-    arg0->unk_8C4.unk_08[arg0->unk_8C4.unk_04] = '\x00';
+    arg0->caption.revealedText[arg0->caption.revealedCharCount] = '\x00';
 
-    if (arg0->unk_8C4.unk_48[0] != 0) {
+    if (arg0->caption.sourceText[0] != 0) {
         if (arg0 == D_84390018) {
-            BattleHud_DrawTextBox(temp_t0->unk_001, 0x5F, 0xE, &arg0->unk_8C4.unk_08);
+            BattleHud_DrawTextBox(temp_t0->trainerSlotId, 0x5F, 0xE, &arg0->caption.revealedText);
         } else {
-            BattleHud_DrawTextBox(temp_t0->unk_001, 0x17, 0xBB, &arg0->unk_8C4.unk_08);
+            BattleHud_DrawTextBox(temp_t0->trainerSlotId, 0x17, 0xBB, &arg0->caption.revealedText);
         }
     }
 }
@@ -730,15 +736,15 @@ void BattleScene_TickHudTimers(void) {
     BattlerState* sp1C = &D_84390010[0]->unk_654;
     BattlerState* sp18 = &D_84390010[1]->unk_654;
 
-    if ((D_800AE540.unk_11ED != 0) && (D_84390010[1]->unk_728.unk_168->unk_1C == 0x103) &&
-        (D_84390010[0]->unk_728.unk_168->unk_1C == 0x17)) {
+    if ((D_800AE540.levelEditable != 0) && (D_84390010[1]->presentation.layout->hudX == 0x103) &&
+        (D_84390010[0]->presentation.layout->hudX == 0x17)) {
         BattleHud_DrawBattleTimer(0x101, 0x64);
         if (D_84390134 == 0) {
-            if (sp1C->unk_10 != 3) {
+            if (sp1C->menuSubState != 3) {
                 BattleHud_DrawParticipantTimer(0x46, 0x4D);
             }
 
-            if (sp18->unk_10 != 3) {
+            if (sp18->menuSubState != 3) {
                 BattleHud_DrawParticipantTimer(0xE8, 0x96);
             }
         }
@@ -764,12 +770,12 @@ void Battle_RenderHud(void) {
 
     BattleBox_Update(0xA0, 0xC8);
 
-    if (D_800AE540.unk_0000 == 0x10) {
+    if (D_800AE540.sessionMode == 0x10) {
         Battle_DrawSpectatorModeScrollingText();
         Battle_DrawSpectatorModeBackgroundPanel();
     }
 
-    switch (gBattleScene.unk_00->unk_1C) {
+    switch (gBattleScene.scene->unk_1C) {
         case 1:
             BattleHud_DrawOwnSideStatus(D_84390010[0], sp1C);
             BattleHud_DrawOpponentSideStatus(D_84390010[1], sp18);

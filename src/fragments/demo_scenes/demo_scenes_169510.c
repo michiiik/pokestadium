@@ -42,7 +42,7 @@ void MtxF_ScaleUpperRows(MtxF* arg0, f32 arg1) {
 }
 
 #ifdef NON_MATCHING
-void func_86B09F64(MtxF* arg0, f32 arg1, f32 arg2, f32 arg3, u16 arg4, u16 arg5) {
+void MtxF_SetEulerRotationTranslation(MtxF* arg0, f32 arg1, f32 arg2, f32 arg3, u16 arg4, u16 arg5) {
     arg0->mf[0][0] = (COSS(arg4) * COSS(arg5)) + (SINS(arg4) * SINS(arg4) * SINS(arg5));
     arg0->mf[1][0] = (-COSS(arg4) * SINS(arg5)) + (SINS(arg4) * SINS(arg4) * COSS(arg5));
     arg0->mf[2][0] = COSS(arg4) * SINS(arg4);
@@ -64,5 +64,5 @@ void func_86B09F64(MtxF* arg0, f32 arg1, f32 arg2, f32 arg3, u16 arg4, u16 arg5)
     arg0->mf[3][3] = 1.0f;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/demo_scenes/demo_scenes_169510/func_86B09F64.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/17/fragment17_169510/MtxF_SetEulerRotationTranslation.s")
 #endif

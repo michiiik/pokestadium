@@ -3,26 +3,18 @@
 #include "geo_render.h"
 #include "gfx_buffer.h"
 
-// .data
-static Gfx D_81004170[] = {
-    gsDPPipeSync(),
-    gsDPSetCombineLERP(TEXEL1, TEXEL0, ENV_ALPHA, TEXEL0, TEXEL1, TEXEL0, ENVIRONMENT, TEXEL0, COMBINED, 0, SHADE, 0, COMBINED, 0, PRIM_LOD_FRAC, 0),
-    gsDPSetEnvColor(0xFF, 0xFF, 0xFF, 0x64),
-    gsSPEndDisplayList(),
-};
-
-// .bss
-static s16 D_81004B60;
+extern s32 D_81004170;
+extern s16 D_81004B60;
 
 #ifdef NON_MATCHING
-void func_81002530(Gfx* gfx, DisplayListAddresses* addresses) {
+void DisplayList_BuildScrollingDualPanel(Gfx* gfx, DisplayListAddresses* addresses) {
     s16 temp_t3;
     s16 temp_t4;
     s16 temp_t2;
     u8 temp_v0;
 
     temp_v0 = ModelRenderer_GetActiveMode();
-    if ((D_8006F09C->unk_01C & 0xFF) == 0) {
+    if ((D_8006F09C->textureMode & 0xFF) == 0) {
         temp_t2 = (D_81004B60 >> 4);
         temp_t3 = 0x4000 - (D_81004B60 >> 4);
         temp_t4 = 0x4000 - (D_81004B60 >> 3);
@@ -58,8 +50,8 @@ void func_81002530(Gfx* gfx, DisplayListAddresses* addresses) {
     gSPEndDisplayList(gfx++);
 }
 #else
-void func_81002530(Gfx*, DisplayListAddresses*);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/particle_data_library/particle_data_library_2577F0/func_81002530.s")
+void DisplayList_BuildScrollingDualPanel(Gfx*, DisplayListAddresses*);
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/31/fragment31_2577F0/DisplayList_BuildScrollingDualPanel.s")
 #endif
 
 void DisplayList_InitScrollingDualPanel(s32 arg0, DisplayListState* state) {
@@ -70,6 +62,6 @@ void DisplayList_InitScrollingDualPanel(s32 arg0, DisplayListState* state) {
         addresses = state->addresses;
         gfx = Gfx_AllocDisplayList(0xF0);
         state->gfx = gfx;
-        func_81002530(gfx, addresses);
+        DisplayList_BuildScrollingDualPanel(gfx, addresses);
     }
 }

@@ -16,28 +16,28 @@ typedef struct unk_D_8380565C {
 typedef struct unk_D_838067F0_0168_0000 {
     union {
         struct {
-            /* 0x000 */ u8 unk_000;
-            /* 0x001 */ u8 unk_001;
-            /* 0x002 */ u8 unk_002;
-            /* 0x003 */ u8 unk_003;
+            /* 0x000 */ u8 state; // TeamSelection_RegisteredTeam_Load: 4 = loaded
+            /* 0x001 */ u8 deckSlot; // the deck-16 team-slot id this mon was loaded from
+            /* 0x002 */ u8 partyIndex;
+            /* 0x003 */ u8 speciesId; // cached mirror of mon.species.dexId
         };
         s32 raw;
     };
-    /* 0x004 */ BattleMon unk_004;
-    /* 0x058 */ u16 unk_058[0x640];
+    /* 0x004 */ BattleMon mon;
+    /* 0x058 */ u16 iconTexture[0x640]; // PokeIcon_LoadModelTextureForMon
 } unk_D_838067F0_0168_0000; // size = 0xCD8
 
 typedef struct unk_D_838067F0_0168 {
-    /* 0x0000 */ unk_D_838067F0_0168_0000 unk_0000[3];
-    /* 0x2688 */ struct unk_D_838067F0_0168* unk_2688;
-    /* 0x268C */ struct unk_D_838067F0_0168* unk_268C;
-    /* 0x2690 */ s16 unk_2690;
-    /* 0x2692 */ s16 unk_2692;
+    /* 0x0000 */ unk_D_838067F0_0168_0000 mons[3];
+    /* 0x2688 */ struct unk_D_838067F0_0168* next; // Rental_PrimeCarousel's pageRing circular list
+    /* 0x268C */ struct unk_D_838067F0_0168* prev;
+    /* 0x2690 */ s16 gbPort; // Rental_MarkMatchingPlayerPikachu / Rental_FillPageFromRoster
+    /* 0x2692 */ s16 boxIndex; // mirror of RentalCarouselState.boxIndex, cached per page
     /* 0x2694 */ char unk2694[0x4];
 } unk_D_838067F0_0168; // size = 0x2698
 
 typedef struct unk_D_838067F0_003C {
-    /* 0x00 */ s16 unk_00;
+    /* 0x00 */ s16 count; // Rental_CountAvailableBoxes/DrawBoxTab
     /* 0x02 */ u8 unk_02[1];
     /* 0x03 */ char unk03[0x13];
 } unk_D_838067F0_003C; // size = 0x16
@@ -144,6 +144,6 @@ s32 Gallery_RentalViewerCountBoxes(unk_D_838067F0* arg0);
 s32 Gallery_RentalViewerGetPageFillState(unk_D_838067F0_0168* arg0);
 void Gallery_RentalViewerDrawPageHeader(s32 arg0, s32 arg1, unk_D_838067F0_0168* arg2);
 void Gallery_RentalViewerDrawMonRow(s32 arg0, s32 arg1, unk_D_838067F0_0168* arg2);
-void func_838043F8(s32 arg0);
+void Gallery_RentalViewerDrawBoxPicker(s32 arg0);
 
 #endif // _FRAGMENT47_H_

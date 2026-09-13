@@ -1,6 +1,6 @@
 #include "audio_channel.h"
 #include "src/audio_sfx.h"
-#include "src/libnumus/player.h"
+#include "src/audio_io.h"
 #include "src/3D140.h"
 
 void Audio_SetChannelVolume(s32 arg0, u32 arg1) {
@@ -97,7 +97,7 @@ void Audio_BeginVolumeTransition(u32 arg0) {
     D_80077DDC = D_80078E64;
     D_80077DD8 = D_80077DD4 / arg0;
     D_80077DE0 = D_80077DDC / arg0;
-    mus_sound_effect_blocked = 1;
+    D_80077DE4 = 1;
 
     osSetIntMask(temp_v0);
 }
@@ -105,7 +105,7 @@ void Audio_BeginVolumeTransition(u32 arg0) {
 void Audio_ResetVolumeTransition(void) {
     u32 temp_v0 = osSetIntMask(1);
 
-    mus_sound_effect_blocked = 0;
+    D_80077DE4 = 0;
     D_80077DD4 = 0.0f;
     D_80077DDC = 0.0f;
 

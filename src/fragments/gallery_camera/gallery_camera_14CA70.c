@@ -14,7 +14,7 @@
 #include "src/gb_save.h"
 #include "src/save_data.h"
 #include "src/text_system.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/audio_sfx.h"
 #include "src/gfx_buffer.h"
 #include "src/gfx_rect.h"
@@ -412,13 +412,13 @@ unk_D_86002F58_004_000_010_024* Gallery_LoadSurfingPikachuIcon(BattleMon* arg0) 
     arg1_func_80010CA8 sp1C;
     unk_D_86002F58_004_000_010* sp18;
 
-    arg0->unk_00.unk_00 = 25;
+    arg0->species.dexId = 25;
     sp18 = PokeIcon_AllocFramebuffers(1);
     Model_ComputeSizeVariant(&sp1C, arg0);
-    PokeIcon_RequestFrameLoad(sp18, arg0->unk_00.unk_00 = 153, sp1C);
+    PokeIcon_RequestFrameLoad(sp18, arg0->species.dexId = 153, sp1C);
     PokeIcon_WaitFrameLoad(sp18);
 
-    return sp18->unk_24;
+    return sp18->lastLoadedFragment;
 }
 
 void Gallery_SetupPhotoModel(void) {
@@ -443,7 +443,7 @@ void Gallery_SetupPhotoModel(void) {
     ModelAnim_SetAnimation(&D_8690A69C->unk_004, D_8690A718[D_8690A700].unk_00);
 
     D_8690A69C->unk_004.unk_024.y += D_8690B2F8.unk_08;
-    D_8690A69C->unk_004.unk_0A6 = 0;
+    D_8690A69C->unk_004.poolIndex = 0;
 }
 
 void Gallery_FinalizeBackgroundLoad(void) {
@@ -490,9 +490,9 @@ void Gallery_LoadBackgroundSet(s32 arg0) {
         D_8690A610.unk_00.unk_14 = 0;
         D_8690A610.unk_00.unk_01 &= ~1;
     } else {
-        D_8690A610.unk_18.unk_00 = temp_v1->unk_00;
-        D_8690A610.unk_18.unk_02 = temp_v1->unk_02;
-        D_8690A610.unk_18.unk_04.rgba = temp_v1->unk_04.rgba;
+        D_8690A610.unk_18.fogNear = temp_v1->fogNear;
+        D_8690A610.unk_18.fogFar = temp_v1->fogFar;
+        D_8690A610.unk_18.fogColor.rgba = temp_v1->fogColor.rgba;
         D_8690A610.unk_00.unk_14 = 1;
     }
 
@@ -572,19 +572,23 @@ void GalleryCamera_CopyControllerState(Controller* arg0, Controller* arg1) {
     arg0->stickMag = arg1->stickMag;
 }
 
-void func_86900A14(void) {
-    Controller* c = &D_8690B5D0;
+#ifdef NON_MATCHING
+void GalleryCamera_PlayScriptedInput(void) {
+    s32 temp_t9;
+    u16 temp_v0;
+    s32* tmp = &D_8690B3B8;
 
     D_8690B3B4 = D_869091B8[D_8690B3B8].unk_02;
     if (D_8690B3BC == 0) {
         D_8690B3B8++;
         D_8690B3BC = D_869091B8[D_8690B3B8].unk_00;
+        if (D_869091B8) {}
     }
 
-    c->stickMag = D_869091B8[D_8690B3B8].unk_04;
-    c->stickY = D_869091B8[D_8690B3B8].unk_0C;
-    c->buttonPressed = D_869091B8[D_8690B3B8].unk_02 & (D_869091B8[D_8690B3B8].unk_02 ^ D_8690B3B4);
-    c->buttonDown = D_869091B8[D_8690B3B8].unk_02;
+    D_8690B5D0.stickMag = D_869091B8[D_8690B3B8].unk_04;
+    D_8690B5D0.stickY = D_869091B8[*tmp].unk_0C;
+    D_8690B5D0.buttonPressed = D_869091B8[*tmp].unk_02 & (D_869091B8[*tmp].unk_02 ^ D_8690B3B4);
+    D_8690B5D0.buttonDown = D_869091B8[*tmp].unk_02;
 
     if (D_8690B3BC > 0) {
         D_8690B3BC--;
@@ -592,6 +596,9 @@ void func_86900A14(void) {
 
     GalleryCamera_CopyControllerState(&D_8690B390, &D_8690B5D0);
 }
+#else
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/15/fragment15_14CA70/GalleryCamera_PlayScriptedInput.s")
+#endif
 
 void GalleryCamera_AddPolarOffset(f32* arg0, f32* arg1, s16 arg2, s16 arg3) {
     *arg0 += arg3 * COSS(arg2);
@@ -660,7 +667,7 @@ void Gallery_CapturePhoto(void) {
             }
 
             D_83402EE0[D_8690B344].unk_6C |= D_8690A710->unk_00C * 0x10;
-            D_83402EE0[D_8690B344].unk_68 = gParticleFrameCounter;
+            D_83402EE0[D_8690B344].captureFrame = gParticleFrameCounter;
 
             D_83402EE0[D_8690B344].unk_00 = D_8690A69C->unk_004.unk_024.y;
             D_83402EE0[D_8690B344].unk_04 = D_8690A69C->unk_16C;
@@ -727,14 +734,14 @@ s32 Gallery_HandleBackgroundSwitchInput(void) {
     }
 
     D_8690B38C = 0xF;
-    if (D_8690B378.unk_07 == 0) {
-        if (D_8690B378.unk_04 == 8) {
+    if (D_8690B378.unlocked == 0) {
+        if (D_8690B378.regionIndex == 8) {
             D_8690B38C--;
-        } else if (D_8690B378.unk_04 == 7) {
+        } else if (D_8690B378.regionIndex == 7) {
             D_8690B38C -= 2;
         } else {
             D_8690B38C -= 2;
-            D_8690B38C += D_8690B378.unk_04 - 7;
+            D_8690B38C += D_8690B378.regionIndex - 7;
         }
     }
 
@@ -998,7 +1005,7 @@ void Gallery_CameraDraw(void) {
     Gallery_DrawPhotoCounterReel();
     Gallery_DrawPhotoCounterReelExit();
     Gallery_DrawTutorialTextBox();
-    Gallery_DrawNicknameBanner(D_8690A6A0.unk_30);
+    Gallery_DrawNicknameBanner(D_8690A6A0.nickname);
     Gallery_DrawBackgroundSelectMenu(D_8690A710->unk_00C);
     BgStage_AdvanceFrame();
 }
@@ -1082,7 +1089,7 @@ void Gallery_CameraLoop(void) {
         if (D_8690A70C != 1) {
             GalleryCamera_CopyControllerState(&D_8690B390, gPlayer1Controller);
         } else {
-            func_86900A14();
+            GalleryCamera_PlayScriptedInput();
         }
 
         if (Gallery_CameraCheckExit() != 0) {

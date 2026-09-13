@@ -29,14 +29,14 @@ void BattlePrep_DrawStarfield(unk_D_84B19910* arg0) {
     for (i = 0; i < 400; i++) {
         temp_v0_12 = Gfx_AllocDisplayList(sizeof(Vtx) * 4);
         if (temp_v0_12 != NULL) {
-            ptr2 = &(i + ((void)0, arg0))->unk_02;
-            Gfx_SetVertexAttributes(&temp_v0_12[0], ptr2->unk_00 - 8, ptr2->unk_02 + 8, ptr2->unk_04, 0, 0, 0xFF, 0xFF, 0x96,
+            ptr2 = &(i + ((void)0, arg0))->pos;
+            Gfx_SetVertexAttributes(&temp_v0_12[0], ptr2->x - 8, ptr2->y + 8, ptr2->z, 0, 0, 0xFF, 0xFF, 0x96,
                           0xFF);
-            Gfx_SetVertexAttributes(&temp_v0_12[1], ptr2->unk_00 - 8, ptr2->unk_02 - 8, ptr2->unk_04, 0, 0x400, 0xFF, 0xFF, 0x96,
+            Gfx_SetVertexAttributes(&temp_v0_12[1], ptr2->x - 8, ptr2->y - 8, ptr2->z, 0, 0x400, 0xFF, 0xFF, 0x96,
                           0xFF);
-            Gfx_SetVertexAttributes(&temp_v0_12[2], ptr2->unk_00 + 8, ptr2->unk_02 - 8, ptr2->unk_04, 0x400, 0x400, 0xFF, 0xFF,
+            Gfx_SetVertexAttributes(&temp_v0_12[2], ptr2->x + 8, ptr2->y - 8, ptr2->z, 0x400, 0x400, 0xFF, 0xFF,
                           0x96, 0xFF);
-            Gfx_SetVertexAttributes(&temp_v0_12[3], ptr2->unk_00 + 8, ptr2->unk_02 + 8, ptr2->unk_04, 0x400, 0, 0xFF, 0xFF, 0x96,
+            Gfx_SetVertexAttributes(&temp_v0_12[3], ptr2->x + 8, ptr2->y + 8, ptr2->z, 0x400, 0, 0xFF, 0xFF, 0x96,
                           0xFF);
 
             gSPVertex(gDisplayListHead++, temp_v0_12, 4, 0);
@@ -54,16 +54,16 @@ void BattlePrep_UpdateStarfield(unk_D_84B19910* arg0) {
     s32 i;
 
     for (i = 0; i < 400; i++) {
-        arg0[i].unk_02.unk_04 += 0x64;
-        if (arg0[i].unk_02.unk_04 > 0) {
+        arg0[i].pos.z += 0x64;
+        if (arg0[i].pos.z > 0) {
             do {
                 temp_s0 = BattlePrep_RandomStarOffset();
                 temp_v0 = BattlePrep_RandomStarOffset();
             } while ((SQ(temp_s0) + SQ(temp_v0)) < 0x6400);
 
-            arg0[i].unk_02.unk_00 = temp_s0;
-            arg0[i].unk_02.unk_02 = temp_v0;
-            arg0[i].unk_02.unk_04 = (-MathUtil_Random_ZeroOne() * 500.0f) - 5000.0f;
+            arg0[i].pos.x = temp_s0;
+            arg0[i].pos.y = temp_v0;
+            arg0[i].pos.z = (-MathUtil_Random_ZeroOne() * 500.0f) - 5000.0f;
         }
     }
 }
@@ -79,9 +79,9 @@ void BattlePrep_InitStarfield(unk_D_84B19910* arg0) {
             temp_v0 = BattlePrep_RandomStarOffset();
         } while ((SQ(temp_s0) + SQ(temp_v0)) < 0x6400);
 
-        arg0[i].unk_02.unk_00 = temp_s0;
-        arg0[i].unk_02.unk_02 = temp_v0;
-        arg0[i].unk_02.unk_04 = (-MathUtil_Random_ZeroOne() * 5000.0f) - 100.0f;
+        arg0[i].pos.x = temp_s0;
+        arg0[i].pos.y = temp_v0;
+        arg0[i].pos.z = (-MathUtil_Random_ZeroOne() * 5000.0f) - 100.0f;
         arg0[i + 1].unk_00 = (MathUtil_Random_ZeroOne() * 10.0f) + 20.0f;
     }
     *(s8*)&arg0->unk_00 = 1;

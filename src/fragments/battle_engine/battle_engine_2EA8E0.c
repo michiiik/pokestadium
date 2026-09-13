@@ -7,7 +7,7 @@
 #include "src/input.h"
 #include "src/battle_hud.h"
 #include "src/3D140.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/audio_loop_point.h"
 #include "src/gfx_buffer.h"
 #include "src/matrix.h"
@@ -278,7 +278,7 @@ void Battle_DrawFaintOrderMarker(GraphNode* arg0, unk_D_80068BB0* arg1) {
     gDPSetTextureFilter(gDisplayListHead++, G_TF_BILERP);
 }
 
-void func_84300D44(void) {
+void Battle_ClearFaintOrderMarkers(void) {
     s32 i;
     s32 j;
     s32 x;
@@ -286,16 +286,16 @@ void func_84300D44(void) {
     BattleSessionTeams* ptr = &D_8438E798[0];
 
     for (i = 0; i < 2; i++, ptr++) {
-        for (j = 0; j < ptr->unk_01; j++) {
-            temp_a2 = ptr->unk_08[j];
-            for (x = 0; x < temp_a2->unk_002; x++) {
-                temp_a2->unk_01C[x].unk_25 = 0;
+        for (j = 0; j < ptr->playerCount; j++) {
+            temp_a2 = ptr->teams[j];
+            for (x = 0; x < temp_a2->partyCount; x++) {
+                temp_a2->party[x].faintOrder = 0;
             }
         }
     }
 }
 
-void func_84300DC0(void) {
+void Battle_StampFaintOrderMarkers(void) {
     s32 i;
     s32 j;
     s32 x;
@@ -304,12 +304,12 @@ void func_84300DC0(void) {
     BattleSessionTeams* ptr = &D_8438E798[0];
 
     for (i = 0; i < 2; i++, ptr++) {
-        for (j = 0; j < ptr->unk_01; j++) {
-            temp_a3 = ptr->unk_08[j];
-            for (x = 0; x < temp_a3->unk_002; x++) {
-                if ((temp_a3->unk_01C[x].unk_25 == 0) && (temp_a3->unk_01C[x].unk_02 == 0)) {
+        for (j = 0; j < ptr->playerCount; j++) {
+            temp_a3 = ptr->teams[j];
+            for (x = 0; x < temp_a3->partyCount; x++) {
+                if ((temp_a3->party[x].faintOrder == 0) && (temp_a3->party[x].currentHP == 0)) {
                     var_v0 = 1;
-                    temp_a3->unk_01C[x].unk_25 = D_8438E7A0;
+                    temp_a3->party[x].faintOrder = D_8438E7A0;
                 }
             }
         }
@@ -343,14 +343,14 @@ s32 BattleScene_UpdateFrame(s32 arg0) {
     BattleScene_DispatchLifecycle(5, D_8438E798);
     Battle_DrawFaintOrderMarker(D_8438E788, D_8438E790);
     Battle_DrawFaintOrderMarker(D_8438E78C, D_8438E794);
-    func_84300DC0();
+    Battle_StampFaintOrderMarkers();
 
     if (sp1C == 1) {
-        D_8438E798[0].unk_1C = 1;
+        D_8438E798[0].isActiveSide = 1;
     }
 
     if (sp1C == 2) {
-        D_8438E798[1].unk_1C = 1;
+        D_8438E798[1].isActiveSide = 1;
     }
 
     return sp1C;
@@ -366,7 +366,7 @@ s32 BattleScene_UpdatePausedFrame(s32 arg0) {
         BgStage_DrawFrame();
         Battle_DrawStageBackdrop();
         Geo_RenderRootNode(D_8438E784);
-        BattleScene_DispatchLifecycle(5, D_8438E798);
+    BattleScene_DispatchLifecycle(5, D_8438E798);
         Battle_DrawFaintOrderMarker(D_8438E788, D_8438E790);
         Battle_DrawFaintOrderMarker(D_8438E78C, D_8438E794);
     }
@@ -380,7 +380,7 @@ s32 BattleScene_UpdatePausedFrame(s32 arg0) {
 void Battle_UpdateCompletionGate(void) {
     if (D_8438E7AC < 0) {
         D_8438E7AC++;
-    } else if ((D_8438E7AC == 0) && (D_800AE540.unk_0000 == 0x10) && gPlayer1Controller->buttonPressed) {
+    } else if ((D_8438E7AC == 0) && (D_800AE540.sessionMode == 0x10) && gPlayer1Controller->buttonPressed) {
         D_8438E7AC = 1;
     }
 }
@@ -416,8 +416,8 @@ s32 Battle_FrameCallback(s32 arg0) {
 
     if ((arg0 != 2) && (D_8438E7AC == 1)) {
         D_8438E7AC = 2;
-        func_8003DB84(0);
-        if (D_800AE540.unk_0000 != 0x11) {
+        Audio_ResetSequencePlaybackState(0);
+        if (D_800AE540.sessionMode != 0x11) {
             Audio_FadeOutAll(0x1E);
         }
         return 1;
@@ -425,7 +425,7 @@ s32 Battle_FrameCallback(s32 arg0) {
     return 0;
 }
 
-void func_8430123C(u8* arg0, s32 arg1) {
+void Battle_FillMissingOrderSlots(u8* arg0, s32 arg1) {
     s32 i;
     s32 j;
 
@@ -442,7 +442,7 @@ void func_8430123C(u8* arg0, s32 arg1) {
     }
 }
 
-void func_8430128C(void) {
+void Battle_PrepareCpuOrder(void) {
     TeamRoster* temp_s0;
     TeamRoster* temp_s1;
     u8 sp48[8];
@@ -450,47 +450,47 @@ void func_8430128C(void) {
     s32 i;
     s32 var_s1;
 
-    temp_s1 = D_800AE540.unk_1194[0].unk_08[0];
-    temp_s2 = D_800AE540.unk_1194[0].unk_08[1];
-    temp_s0 = D_800AE540.unk_1194[1].unk_08[0];
+    temp_s1 = D_800AE540.unk_1194[0].teams[0];
+    temp_s2 = D_800AE540.unk_1194[0].teams[1];
+    temp_s0 = D_800AE540.unk_1194[1].teams[0];
 
-    if (temp_s0->unk_000 & 2) {
-        if (D_800AE540.unk_0000 == 0) {
-            if (D_800AE540.unk_0001 == 0) {
-                var_s1 = temp_s0->unk_214->unk_002;
+    if (temp_s0->slotState & 2) {
+        if (D_800AE540.sessionMode == 0) {
+            if (D_800AE540.modeCategory == 0) {
+                var_s1 = temp_s0->extendedRoster->partyCount;
             } else {
                 var_s1 = 3;
             }
-            func_843831A0(temp_s1, temp_s2, temp_s0, D_800AE540.unk_11EC, sp48, D_800AE540.unk_0001, var_s1);
+            Battle_SelectCpuOrder(temp_s1, temp_s2, temp_s0, D_800AE540.cpuTrainerId, sp48, D_800AE540.modeCategory, var_s1);
         } else {
-            if (D_800AE540.unk_0001 == 8) {
-                var_s1 = temp_s0->unk_214->unk_002;
+            if (D_800AE540.modeCategory == 8) {
+                var_s1 = temp_s0->extendedRoster->partyCount;
             } else {
                 var_s1 = 3;
             }
-            func_843831A0(temp_s1, NULL, temp_s0, temp_s0->unk_018 & 0xFF, sp48, D_800AE540.unk_0001, var_s1);
+            Battle_SelectCpuOrder(temp_s1, NULL, temp_s0, temp_s0->trainerId & 0xFF, sp48, D_800AE540.modeCategory, var_s1);
         }
-        func_8430123C(sp48, var_s1);
-        temp_s0->unk_002 = var_s1;
+        Battle_FillMissingOrderSlots(sp48, var_s1);
+        temp_s0->partyCount = var_s1;
 
-        for (i = 0; i < temp_s0->unk_214->unk_002; i++) {
-            temp_s0->unk_01C[i] = temp_s0->unk_214->unk_028[sp48[i]];
+        for (i = 0; i < temp_s0->extendedRoster->partyCount; i++) {
+            temp_s0->party[i] = temp_s0->extendedRoster->party[sp48[i]];
         }
     }
 }
 
 void BattleScene_InitializeParticipantPresentation(BattleSessionTeams* arg0, unk_D_86002F30* arg1) {
-    TeamRoster* temp_v0 = arg0->unk_08[0];
+    TeamRoster* temp_v0 = arg0->teams[0];
 
-    arg0->unk_18 = arg1->unk_08->unk_00[0];
-    arg0->unk_00 |= 0xA0;
-    arg0->unk_1C = 0;
-    arg0->unk_02 = temp_v0->unk_01C[0].unk_00.unk_00;
-    arg0->unk_04 = temp_v0->unk_01C;
+    arg0->auxModelLayout = arg1->unk_08->unk_00[0];
+    arg0->modelLoadFlags |= 0xA0;
+    arg0->isActiveSide = 0;
+    arg0->iconSpeciesId = temp_v0->party[0].species.dexId;
+    arg0->activeMon = temp_v0->party;
     Trainer_RequestPokeIcon(arg0);
 }
 
-void func_84301430(unk_func_80007444* arg0) {
+void BattleScene_Initialize(unk_func_80007444* arg0) {
     MemoryBlock* sp44;
     u32* temp_v0_4;
     FragmentEntry sp3C;
@@ -503,9 +503,9 @@ void func_84301430(unk_func_80007444* arg0) {
     Battle_SetStageTintColor(0xFF, 0xFF, 0xFF);
     BattleScene_SetModelUniformScale(1.0f);
 
-    if (D_800AE540.unk_0000 == 0x11) {
+    if (D_800AE540.sessionMode == 0x11) {
         Font_Init(4, 0);
-    } else if (D_800AE540.unk_0000 == 0x10) {
+    } else if (D_800AE540.sessionMode == 0x10) {
         Font_Init(7, 0);
     } else {
         Font_Init(3, 0);
@@ -516,7 +516,7 @@ void func_84301430(unk_func_80007444* arg0) {
     PokeIcon_OpenModelArchives();
 
     sp2C = main_pool_alloc(0x10, 0);
-    GfxImage_Initialize(sp2C, 0, 2, 0x4C, 0x4C, arg0->unk_18[0]->depth_p->img_p);
+    GfxImage_Initialize(sp2C, 0, 2, 0x4C, 0x4C, arg0->framebuffers[0]->depth_p->img_p);
     D_8438E790 = GfxImage_Allocate(0, 2, 0x4C, 0x4C, 0);
     D_8438E794 = GfxImage_Allocate(0, 2, 0x4C, 0x4C, 0);
 
@@ -530,15 +530,15 @@ void func_84301430(unk_func_80007444* arg0) {
     ASSET_LOAD(D_1000000, common_menu1_ui, 0);
     ASSET_LOAD(D_3000000, battle_ui, 0);
 
-    if ((D_800AE540.unk_0000 == 0x10) || (D_800AE540.unk_0000 == 0xA)) {
-        sp32 = D_84384350[D_800AE540.unk_0001];
-        if (D_800AE540.unk_0001 == 7) {
-            sp32 += D_800AE540.unk_0002;
+    if ((D_800AE540.sessionMode == 0x10) || (D_800AE540.sessionMode == 0xA)) {
+        sp32 = D_84384350[D_800AE540.modeCategory];
+        if (D_800AE540.modeCategory == 7) {
+            sp32 += D_800AE540.progressIndex;
         }
     } else {
-        sp32 = D_84384350[D_800AE540.unk_0000];
-        if (D_800AE540.unk_0000 == 7) {
-            sp32 += D_800AE540.unk_0002;
+        sp32 = D_84384350[D_800AE540.sessionMode];
+        if (D_800AE540.sessionMode == 7) {
+            sp32 += D_800AE540.progressIndex;
         }
     }
 
@@ -546,11 +546,11 @@ void func_84301430(unk_func_80007444* arg0) {
     D_8438E780 = sp3C(2, 0);
 
     sp28 = Model_LoadByArchiveIndex(0x9A);
-    func_8430128C();
+    Battle_PrepareCpuOrder();
     BattleScene_InitializeParticipantPresentation(&D_8438E798[0], sp28);
     BattleScene_InitializeParticipantPresentation(&D_8438E798[1], sp28);
 
-    func_84300D44();
+    Battle_ClearFaintOrderMarkers();
     GeoNode_CreateCamera(NULL, &D_8438E440, 0, 0, 0x140, 0xF0);
     GeoNode_CreateCamera(NULL, &D_8438E598, 0x1E, 0x50, 0x4C, 0x4C);
     GeoNode_CreateCamera(NULL, &D_8438E688, 0xE2, 0x50, 0x4C, 0x4C);
@@ -592,9 +592,9 @@ void func_84301430(unk_func_80007444* arg0) {
         D_8438E530.unk_00.unk_14 = 0;
         D_8438E530.unk_00.unk_01 &= ~1;
     } else {
-        D_8438E530.unk_18.unk_00 = temp_v0_7->unk_00;
-        D_8438E530.unk_18.unk_02 = temp_v0_7->unk_02;
-        D_8438E530.unk_18.unk_04.rgba = temp_v0_7->unk_04.rgba;
+        D_8438E530.unk_18.fogNear = temp_v0_7->fogNear;
+        D_8438E530.unk_18.fogFar = temp_v0_7->fogFar;
+        D_8438E530.unk_18.fogColor.rgba = temp_v0_7->fogColor.rgba;
         D_8438E530.unk_00.unk_14 = 1;
     }
 
@@ -620,7 +620,7 @@ s32 Battle_Main(s32 arg0, SessionContext* arg1) {
 
     Gfx_InitDisplayListBuffers(0x20000, 0);
     sp24 = StageContext_Allocate(0, 1, 3, 1, 2, 1);
-    func_84301430(sp24);
+    BattleScene_Initialize(sp24);
     StageContext_Activate(sp24);
     StageLoader_RunFrames(1);
     BgStage_WaitForCondition(Battle_FrameCallback, 0x20, 0x10);

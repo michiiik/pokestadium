@@ -45,8 +45,8 @@ Battler* gBattleAnimTertiaryOwner;
 s32 D_843902F4;
 s32 D_843902F8;
 static s8 gBattleAnimEffectCallbackIndex;
-func_D_84390300 gBattleAnimEffectUpdateFuncs[8];
-func_D_84390320 gBattleAnimEffectDrawFuncs[8];
+BattleAnimEffectUpdateFunc gBattleAnimEffectUpdateFuncs[8];
+BattleAnimEffectDrawFunc gBattleAnimEffectDrawFuncs[8];
 s32 D_84390340;
 static f32 D_84390344;
 Vec3f D_84390348;
@@ -944,43 +944,46 @@ ParticleDescriptor gBattleAnimParticleDescriptors[] = {
     },
 };
 
-static func_D_84390320 gMoveAnimEffectStartInitFuncs[] = {
+static BattleAnimEffectInitFunc gMoveAnimEffectStartInitFuncs[] = {
     BattleAnim_EffectStartNop, BattleAnim_StartEffect1Descriptor2FPhaseFadeOut, BattleAnim_StartEffect2Descriptor08IndexedScaleDelayFade, BattleAnim_StartEffect3ModelTintAndVerticalFade, BattleAnim_StartEffect4TintDescriptor53ScalePulse, BattleAnim_EffectStartNop, BattleAnim_StartEffect6AnimatedScaleAndBurstEmitter,
     BattleAnim_StartEffect7GlobalTintFade, BattleAnim_StartEffect8ModelBurstAndVerticalFade, BattleAnim_EffectStartNop, BattleAnim_StartEffect10Model60AndModelAnimWait, BattleAnim_StartEffect11GlobalTintFade, BattleAnim_StartEffect12DelayedModelAnim, BattleAnim_StartEffect13SecondaryOwnerSpeciesBranch,
-    BattleAnim_StartEffect14ModelAnimAndMoveKeyedTintParticles, BattleAnim_StartEffect15Descriptor08IndexedScaleDelayFade, BattleAnim_StartEffect16TintDescriptor34Sequence, BattleAnim_StartEffect17ModelAnimFinish, BattleAnim_StartEffect18ScatterRadialAndColumnSequence, BattleAnim_EffectStartNop, func_843378CC,
-    func_8434C590, func_84336B8C, func_84336EE8, func_8434BF2C, BattleAnim_EffectStartNop, func_8433BC38, BattleAnim_EffectStartNop,
-    func_843443E0, func_84358DE4, func_84358F6C, func_84357E60, BattleAnim_EffectStartNop, BattleAnim_EffectStartNop, func_84345038,
-    func_843371C0, func_8434CE14, func_8434A898, func_84342808, func_8433BD08, func_84345D74, func_84356254,
-    BattleAnim_EffectStartNop, BattleAnim_EffectStartNop, BattleAnim_EffectStartNop, func_8434ED48, BattleAnim_EffectStartNop, func_8433B988, func_8433B374,
-    func_8434D8D8, func_84348630, BattleAnim_EffectStartNop, func_84349628, func_84344508, BattleAnim_EffectStartNop, func_84349830,
-    func_843579C0, func_84357B80, func_8433B6FC, func_8433E124, func_84358DE4, func_84356DBC, BattleAnim_EffectStartNop,
-    func_84346B58, func_84346EEC, func_84344248, func_84346F40, BattleAnim_EffectStartNop, func_84349384, func_84349504,
-    func_8433BDFC, func_84349058, func_84347448, func_8433E46C, func_84349108, func_84346DC4, func_84344474,
-    func_8433BB78, func_8433BECC, func_843498D8, func_84349A14, func_84358034, func_84348630, func_8434A7DC,
-    func_843374A4, func_84358288, func_84345EC0, func_8434A9EC, func_8434AA6C, func_84358A5C, func_8434AC8C,
-    func_8434AD1C, func_8434AD70, func_8434C618, func_8434B000, func_8434BA70, func_8434C070, func_8434C0C4,
-    BattleAnim_EffectStartNop, func_8434CAD8, func_8434D0F8, func_8434D448, BattleAnim_DisableEffectSpawningAlias, func_8434E0CC, func_8434E02C,
-    func_8434E74C, func_8434DA94, func_8434DB40, func_8435674C, func_84358EA0, func_84358EDC, func_843490A8,
-    func_8434ACEC, func_8434E8E0, func_8435839C, func_843584C0, func_84358538, func_84357700, func_8434EBA0,
-    func_8434EC08, func_8433BB78, func_8434E9A0, BattleAnim_StartEffect122GlobalAndOwnerTintFade, func_8435727C, func_8435742C, func_84344094,
-    func_8433765C, func_8434EF68, func_8434EFBC, func_8434F010, func_8434F060, func_8434F0B8, func_8434F350,
-    BattleAnim_StartEffect133ModeOrbitBurstAndEffect135Followup, BattleAnim_StartEffect134ModeOrbitAndMetadataBurst, BattleAnim_StartEffect135ExpandingFlashAndRisingScaleFade, BattleAnim_EffectStartNop, BattleAnim_StartEffect137Descriptor3FRisingFade, func_84356D04, BattleAnim_StartEffect139DualRepeatingSparks,
+    BattleAnim_StartEffect14ModelAnimAndMoveKeyedTintParticles, BattleAnim_StartEffect15Descriptor08IndexedScaleDelayFade, BattleAnim_StartEffect16TintDescriptor34Sequence, BattleAnim_StartEffect17ModelAnimFinish, BattleAnim_StartEffect18ScatterRadialAndColumnSequence, BattleAnim_EffectStartNop, BattleAnim_StartEffect20Nop,
+    BattleAnim_StartEffect21TintAndModel42AnchorFollow, BattleAnim_StartEffect22Descriptor34_3D_46BurstSequence, BattleAnim_StartEffect23Descriptor4FAnd3DRepeatingSequence, BattleAnim_StartEffect24MoveKeyedTintAndModelAnimSequence, BattleAnim_EffectStartNop, BattleAnim_StartEffect26TintDescriptor53ScalePulse, BattleAnim_EffectStartNop,
+    BattleAnim_StartEffect28Descriptor33And47Sequence, BattleAnim_StartEffects29And60TintDefaultBurstSequence, BattleAnim_StartEffect30TintDescriptor42ScaleFall, BattleAnim_StartEffect31Descriptor49And47TieredRise, BattleAnim_EffectStartNop, BattleAnim_EffectStartNop, BattleAnim_StartEffect34TintDescriptor25AndModelFadeIn,
+    BattleAnim_StartEffect35Descriptor4FAnd3DRepeatingSequence, BattleAnim_StartEffect36DelayedMultiDescriptorSequence, BattleAnim_StartEffect37MoveKeyedTintAndModelAnim26, BattleAnim_StartEffect38Move86Descriptor24Sequence, BattleAnim_StartEffect39TintDescriptor53ScalePulse, BattleAnim_StartEffect40ModelFadeCycle, BattleAnim_StartEffect41Descriptor42And4ASequence,
+    BattleAnim_EffectStartNop, BattleAnim_EffectStartNop, BattleAnim_EffectStartNop, BattleAnim_StartEffect45GlobalTintFade, BattleAnim_EffectStartNop, BattleAnim_StartEffect47TintDescriptor53And4ASequence, BattleAnim_StartEffect48Descriptor45RisingSparkStream,
+    BattleAnim_StartEffect49TintAndModelFadeIn, BattleAnim_StartEffects50And82ModelTintAndDescriptorSequence, BattleAnim_EffectStartNop, BattleAnim_StartEffect52ModelAnim16, BattleAnim_StartEffect53Descriptor33And47Sequence, BattleAnim_EffectStartNop, BattleAnim_StartEffect55ModelAnimAndDescriptor42Sequence,
+    BattleAnim_StartEffect56Descriptor46And40Sequence, BattleAnim_StartEffect57GlobalTintFade, BattleAnim_StartEffect58TintAnimatedScaleAndBurst, BattleAnim_StartEffect59DirectionalStreamAndSpraySequence, BattleAnim_StartEffects29And60TintDefaultBurstSequence, BattleAnim_StartEffect61SecondaryOwnerDescriptor29Sequence, BattleAnim_EffectStartNop,
+    BattleAnim_StartEffect63DualModelSequence, BattleAnim_StartEffect64ModelAnim23Wait, BattleAnim_StartEffect65Descriptors31And32FadeIn, BattleAnim_StartEffect66ModelAnim24AndDescriptor42Sequence, BattleAnim_EffectStartNop, BattleAnim_StartEffect68ModelAnim28AndDescriptor42Sequence, BattleAnim_StartEffect69ModelAnim29AndDescriptorSequence,
+    BattleAnim_StartEffect70TintDescriptor53ScalePulse, BattleAnim_StartEffect71SpecialModelColorCycle, BattleAnim_StartEffect72ModelAnim25Wait, BattleAnim_StartEffect73Descriptor11And15Sequence, BattleAnim_StartEffect74SpecialModelColorCycle, BattleAnim_StartEffect75DualModelSequence, BattleAnim_StartEffect76Descriptor33And47Sequence,
+    BattleAnim_StartEffects77And120TintDescriptor45SparkStreams, BattleAnim_StartEffect78TintDescriptor53Grow, BattleAnim_StartEffect79ModelAnim1AndDescriptor25Fade, BattleAnim_StartEffect80AnchoredModelAnim2Wait, BattleAnim_StartEffect81ModelAlphaAndDescriptor4B3DSequence, BattleAnim_StartEffects50And82ModelTintAndDescriptorSequence, BattleAnim_StartEffect83TintAndModelAlphaFade,
+    BattleAnim_StartEffect84Descriptor4FAnd3DRepeatingSequence, BattleAnim_StartEffect85TintVerticalAndSpiralSequence, BattleAnim_StartEffect86ModelAndOwnerAlphaFadeSequence, BattleAnim_StartEffect87TintModelAnim6AndDelegateSequence, BattleAnim_StartEffect88TintModelAnim7AndDelegateSequence, BattleAnim_StartEffect89TintDescriptor3DVerticalSequence, BattleAnim_StartEffect90RepeatingModelAnim8,
+    BattleAnim_StartEffect91ModelAnim9, BattleAnim_StartEffect92SpeciesGatedModelAnim10, BattleAnim_StartEffect93Model42TintAndDescriptor34Sequence, BattleAnim_StartEffect94ModelAnim11AndTintFade, BattleAnim_StartEffect95ModelFadeAndModelAnim13Sequence, BattleAnim_StartEffect96ModelFadeIn, BattleAnim_StartEffect97ModelFadeInAndTintDelay,
+    BattleAnim_EffectStartNop, BattleAnim_StartEffect99ModelAnimAndMultiDescriptorSequence, BattleAnim_StartEffect100AnchoredModelAnim16AndDescriptor25Fade, BattleAnim_StartEffect101ModelBurstSequence, BattleAnim_DisableEffectSpawningAlias, BattleAnim_StartEffect103TintModelAlphaAndDescriptor3DSequence, BattleAnim_StartEffect104TintAndDelayedDescriptor4FSpiral,
+    BattleAnim_StartEffect105ModelAnimAndTintDefaultBurstAndDescriptor3CSequence, BattleAnim_StartEffect106TintModelAndDescriptor25Sequence, BattleAnim_StartEffect107TintModelAndDescriptor25Sequence, BattleAnim_StartEffect108Descriptor3FRiseFade, BattleAnim_StartEffect109OwnerTintPulse, BattleAnim_StartEffect110TintDefaultBurstAndDescriptor42, BattleAnim_StartEffect111TintAndSpecialModelColorCycle,
+    BattleAnim_StartEffect112TintAndRepeatingModelAnim8, BattleAnim_StartEffect113AnchoredModelAnim1B, BattleAnim_StartEffect114TintDescriptor3FAnd3DSequence, BattleAnim_StartEffect115TintDescriptor3FRiseFade, BattleAnim_StartEffect116Descriptor3FRiseFade, BattleAnim_StartEffect117SecondaryOwnerDescriptor29Sequence, BattleAnim_StartEffect118RepeatingModelPalettePulse,
+    BattleAnim_StartEffect119ModelPalettePulse, BattleAnim_StartEffects77And120TintDescriptor45SparkStreams, BattleAnim_StartEffect121TintAndAnchoredModelAnim1B, BattleAnim_StartEffect122GlobalAndOwnerTintFade, BattleAnim_StartEffect123SecondaryOwnerDescriptor29Variant, BattleAnim_StartEffect124SecondaryOwnerColorFade, BattleAnim_StartEffect125ModelBurstAndOwnerColorFade,
+    BattleAnim_StartEffect126Nop, BattleAnim_StartEffect127Descriptor39ScaleFade, BattleAnim_StartEffect128Descriptor39ScaleFade, BattleAnim_StartEffect129DelayedModelAnimWait, BattleAnim_StartEffect130Descriptor34DelayedFrameMotion, BattleAnim_StartEffect131DelayedDescriptor34FrameMotion, BattleAnim_StartEffect132Descriptor39DelayedRiseFade,
+    BattleAnim_StartEffect133ModeOrbitBurstAndEffect135Followup, BattleAnim_StartEffect134ModeOrbitAndMetadataBurst, BattleAnim_StartEffect135ExpandingFlashAndRisingScaleFade, BattleAnim_EffectStartNop, BattleAnim_StartEffect137Descriptor3FRisingFade, BattleAnim_StartEffect138TieredDescriptor4ARiseImpulseBursts, BattleAnim_StartEffect139DualRepeatingSparks,
     BattleAnim_StartEffect140StartEffect139Alias, BattleAnim_StartEffect141GridRiseAndFallingBurst, BattleAnim_StartEffect142StartEffect141Alias, BattleAnim_StartEffect143ModeOrbitAndMetadataBurst, BattleAnim_EffectStartNop,
 };
-static func_D_84390320 gMoveAnimEffectEndInitFuncs[] = {
-    BattleAnim_EffectEndNop, BattleAnim_EffectEndNop, func_8433B58C, func_84357A64, func_84357AE0, func_84357110, func_8434575C,
-    func_8434A384, func_8433DECC, BattleAnim_EffectEndNop, func_84346BE0, BattleAnim_EffectEndNop, BattleAnim_EffectEndNop, func_84344BDC,
-    func_84355E58, func_843372D8, func_8434CF64, func_84342908, func_84357CC8, BattleAnim_EffectEndNop, func_8433BF54,
-    func_84345B84, func_84337000, func_843450B4, BattleAnim_EffectEndNop, func_8434E1B8, func_84340CB0, func_8433B7E4,
-    func_8433E33C, func_843375B0, func_84356EF4, func_84344B04, BattleAnim_EffectEndNop, BattleAnim_EffectEndNop, func_8433B3D8,
-    func_84355EF0, func_84355F88, func_84356148, func_843561A0, func_843567F4, func_8433766C, func_8434915C,
-    func_8435643C, func_843565DC, func_84356020, func_843568C8, func_843569A0, func_843561F8, BattleAnim_EffectEndNop,
-    func_84345B28, func_84346E50, func_8434C5F0, func_84356AF0, func_8433C3A0, func_84336DD8, func_84357F64,
-    func_84336C80, func_843581FC, func_8434A930, func_843378D4, func_8434C720, func_8434B064, func_8434BCD4,
-    func_8434C144, func_8434CC68, func_8434D5EC, func_8434D938, func_8433C06C, func_8433C284, func_8433C4EC,
-    func_8433C604, func_8433C784, func_8433DFF4, func_8434DD08, func_8434DBEC, func_8434A9CC, func_8434E870,
-    func_8434E940, func_8434967C, func_8434ECF4, func_843560B4, func_843489FC, func_843489FC, func_8434917C,
-    func_8434EA10, func_8435783C, func_8433CAFC, func_84340D14, func_843574FC, BattleAnim_EffectEndNop,
+static BattleAnimEffectInitFunc gMoveAnimEffectEndInitFuncs[] = {
+    BattleAnim_EffectEndNop, BattleAnim_EffectEndNop, BattleAnim_EndEffect2Descriptor19_4B_0ASequence, BattleAnim_EndEffect3Descriptor29DirectionalScaleFade, BattleAnim_EndEffect4Descriptor29ScatterAndTintSequence, BattleAnim_EndEffect5SecondaryOwnerDescriptor2AAnd28Sequence, BattleAnim_EndEffect6Move146ModelAnimSequence,
+    BattleAnim_EndEffect7MoveKeyedModelAndDescriptor3DSequence, BattleAnim_EndEffect8DirectionalSprayAndColumnSequence, BattleAnim_EffectEndNop, BattleAnim_EndEffect10ModelColorFadeAndDescriptor3FSequence, BattleAnim_EffectEndNop, BattleAnim_EffectEndNop, BattleAnim_EndEffect13ModelAnimAndDescriptor42Sequence,
+    BattleAnim_EndEffect14Descriptor34And3DSequence, BattleAnim_EndEffect15Descriptor4EAnd3DSequence, BattleAnim_EndEffect16MultiDescriptorFallFadeSequence, BattleAnim_EndEffect17Move86Descriptor24Sequence, BattleAnim_EndEffect18MoveKeyedTintDescriptor47Sequence, BattleAnim_EffectEndNop, BattleAnim_EndEffect20Descriptor04And19Sequence,
+    BattleAnim_EndEffect21MoveKeyedTintAndModelAnimSequence, BattleAnim_EndEffect22Descriptor4EAnd3DSequence, BattleAnim_EndEffect23ModelTintAndDescriptorSequence, BattleAnim_EffectEndNop, BattleAnim_EndEffect25ModelAnim13AndDelegateSequence, BattleAnim_EndEffect26Descriptor2CGravityAndChildSequence, BattleAnim_EndEffect27Descriptor04_19_4B_0ASequence,
+    BattleAnim_EndEffect28BurstAndDirectionalStreamSequence, BattleAnim_EndEffect29Descriptor02And4FSequence, BattleAnim_EndEffect30SecondaryOwnerDescriptor2AAnd41Sequence, BattleAnim_EndEffect31Move73ModelAndDescriptor42Sequence, BattleAnim_EffectEndNop, BattleAnim_EffectEndNop, BattleAnim_EndEffect34Descriptor34And45BounceSequence,
+    BattleAnim_EndEffect35Descriptor34And3DSequence, BattleAnim_EndEffect36Descriptor34And3DSequence, BattleAnim_EndEffect37Descriptor34BurstEmitter, BattleAnim_EndEffect38Descriptor34BurstEmitter, BattleAnim_EndEffect39Descriptor34_36_3FSequence, BattleAnim_EndEffect40Descriptor04_46_48_3DSequence, BattleAnim_EndEffect41Delegate,
+    BattleAnim_EndEffect42Descriptor34_3D_42Sequence, BattleAnim_EndEffect43Descriptor34_40_11Sequence,
+    BattleAnim_EndEffect44Descriptor34And3DSequence, BattleAnim_EndEffect45Descriptor34_36_3FSequence,
+    BattleAnim_EndEffect46Descriptor34_36_3FSequence, BattleAnim_EndEffect47Descriptor34DelayedFrameMotion,
+    BattleAnim_EffectEndNop,
+    BattleAnim_EndEffect49Model33Anim34Sequence, BattleAnim_EndEffect50ModelColorFadeAndDescriptor3ESequence, BattleAnim_EndEffect51GlobalTintFade, BattleAnim_EndEffect52Descriptor42AndDefaultBurstSequence, BattleAnim_EndEffect53Descriptor04_19_45Sequence, BattleAnim_EndEffect54Descriptor46And3DRisingSequence, BattleAnim_EndEffect55Descriptor49And47Sequence,
+    BattleAnim_EndEffect56Descriptor46_3D_47RisingSequence, BattleAnim_EndEffect57TintFadeSequence, BattleAnim_EndEffect58ModelAnimAndDelegateSequence, BattleAnim_EndEffect59Descriptor3DAnd4FSequence, BattleAnim_EndEffect61Model42TintAndDescriptor34Sequence, BattleAnim_EndEffect60OwnerTintAndModelAnim12, BattleAnim_EndEffect62ModelFadeAndModelAnim13Sequence,
+    BattleAnim_EndEffect63ModelFadeDescriptor34AndTintSequence, BattleAnim_EndEffect64ModelAnimAndDescriptor04_19_0ASequence, BattleAnim_EndEffect65ModelBurstAndDescriptor34_3DSequence, BattleAnim_EndEffect66TintModelFadeAndDescriptor34Sequence, BattleAnim_EndEffect67Descriptor04_19_54_3D_42Sequence, BattleAnim_EndEffect68Descriptor54_1B_19Sequence, BattleAnim_EndEffect69Descriptor54And19Sequence,
+    BattleAnim_EndEffect70Descriptor04_34_54_19Sequence, BattleAnim_EndEffect71Descriptor04_34_54_19Sequence, BattleAnim_EndEffect72DirectionalSprayAndColumnSequence, BattleAnim_EndEffect73TintModelAndDescriptor34Sequence, BattleAnim_EndEffect74TintModelAndDescriptor34Sequence, BattleAnim_EndEffect75EndEffect58Alias, BattleAnim_EndEffect76TintAndModelAnim19Fade,
+    BattleAnim_EndEffect77AnchoredModelAnim1C, BattleAnim_EndEffect78ModelAnim1DAndDescriptorSequence, BattleAnim_EndEffect79ModelAnim1FPaletteFade, BattleAnim_EndEffect80Descriptor34And3DSequence, BattleAnim_EndEffects81And82ModelTintAndDescriptorSequence, BattleAnim_EndEffects81And82ModelTintAndDescriptorSequence, BattleAnim_EndEffect83TintAndDelegate,
+    BattleAnim_EndEffect84TintAndAnchoredModelAnim1C, BattleAnim_EndEffect85SecondaryOwnerAndDescriptor2BGravitySequence, BattleAnim_EndEffect86Descriptor19ModePositionedSequence, BattleAnim_EndEffect87Descriptor2DGravityFallSequence, BattleAnim_EndEffect88SecondaryOwnerDescriptor2AAnd28Sequence, BattleAnim_EffectEndNop,
 };
 static u8 D_8438682C[] = {
     0x3F, 0x00, 0x00, 0x00, 0x3F, 0x00, 0x00, 0x00, 0x3F, 0x00, 0x00, 0x00,
@@ -3018,7 +3021,7 @@ static u8* D_84386DEC[] = {
     D_84386BBC, D_84386BC4, D_84386BEC, D_84386BC8, D_84386CB8,
 };
 static u8* gBattleAnimMode9StartEffectLists[] = { D_84386968, D_84386A2C };
-static u8* gMoveAnimEffectScripts[][5] = {
+static BattleAnimMoveScriptRow gMoveAnimEffectScripts[] = {
     {
         D_84386968,
         D_84386968,
@@ -4208,19 +4211,19 @@ void BattleAnim_PlayOwnerCry(Battler* arg0, s16 arg1) {
 }
 
 void BattleAnim_PlaySpeciesSequence33(Battler* arg0) {
-    s16 sp1E = arg0->unk_000.unk_01A;
+    s16 sp1E = arg0->model.modelId;
 
     BattleScene_GetParticipantModelWidth(arg0);
     Audio_PlayCommand(0x33, sp1E, 0);
 }
 
 void Battle_TriggerTrainerPresentationCue(Battler* arg0) {
-    func_8003EB40(BattleScene_GetParticipantDisplayPlayerNumber(arg0), &arg0->unk_654.unk_38);
+    func_8003EB40(BattleScene_GetParticipantDisplayPlayerNumber(arg0), &arg0->unk_654.monRuntime);
 }
 
 void BattleAnim_PlaySpeciesReactionSound(Battler* arg0, BattleMonRuntime* arg1, s32 arg2) {
-    func_800479C0(arg1->unk_5A, arg0->unk_000.unk_01A, arg2);
-    func_80040A70(arg1, arg1->unk_5A, arg0->unk_000.unk_01A, arg2);
+    func_800479C0(arg1->currentMoveId, arg0->model.modelId, arg2);
+    func_80040A70(arg1, arg1->currentMoveId, arg0->model.modelId, arg2);
 }
 
 void BattleScene_ConfigureAudioChannelGroupsByTeam(void) {
@@ -4234,13 +4237,13 @@ void BattleScene_ConfigureAudioChannelGroupsByTeam(void) {
     sp20[2] = 0xA;
     sp20[3] = 0xA;
 
-    sp20[ptr1->unk_720->unk_08[0]->unk_001] = 1;
-    if (ptr1->unk_720->unk_01 == 2) {
-        sp20[ptr1->unk_720->unk_08[1]->unk_001] = 1;
+    sp20[ptr1->sessionTeams->teams[0]->trainerSlotId] = 1;
+    if (ptr1->sessionTeams->playerCount == 2) {
+        sp20[ptr1->sessionTeams->teams[1]->trainerSlotId] = 1;
     }
-    sp20[ptr2->unk_720->unk_08[0]->unk_001] = 2;
-    if (ptr2->unk_720->unk_01 == 2) {
-        sp20[ptr2->unk_720->unk_08[1]->unk_001] = 2;
+    sp20[ptr2->sessionTeams->teams[0]->trainerSlotId] = 2;
+    if (ptr2->sessionTeams->playerCount == 2) {
+        sp20[ptr2->sessionTeams->teams[1]->trainerSlotId] = 2;
     }
 
     for (i = 0; i < 4; i++) {
@@ -4262,22 +4265,22 @@ void BattleScene_ConfigureAudioChannelGroupCounts(void) {
     sp24[2] = 0;
     sp24[3] = 0;
 
-    sp24[ptr1->unk_720->unk_08[0]->unk_001] = BattleScene_GetRosterTeamSize(ptr1->unk_720->unk_08[0]);
-    if (ptr1->unk_720->unk_01 == 2) {
-        sp24[ptr1->unk_720->unk_08[1]->unk_001] = BattleScene_GetRosterTeamSize(ptr1->unk_720->unk_08[1]);
+    sp24[ptr1->sessionTeams->teams[0]->trainerSlotId] = BattleScene_GetRosterTeamSize(ptr1->sessionTeams->teams[0]);
+    if (ptr1->sessionTeams->playerCount == 2) {
+        sp24[ptr1->sessionTeams->teams[1]->trainerSlotId] = BattleScene_GetRosterTeamSize(ptr1->sessionTeams->teams[1]);
     }
 
-    sp24[ptr2->unk_720->unk_08[0]->unk_001] = BattleScene_GetRosterTeamSize(ptr2->unk_720->unk_08[0]);
-    if (ptr2->unk_720->unk_01 == 2) {
-        sp24[ptr2->unk_720->unk_08[1]->unk_001] = BattleScene_GetRosterTeamSize(ptr2->unk_720->unk_08[1]);
+    sp24[ptr2->sessionTeams->teams[0]->trainerSlotId] = BattleScene_GetRosterTeamSize(ptr2->sessionTeams->teams[0]);
+    if (ptr2->sessionTeams->playerCount == 2) {
+        sp24[ptr2->sessionTeams->teams[1]->trainerSlotId] = BattleScene_GetRosterTeamSize(ptr2->sessionTeams->teams[1]);
     }
     Audio_SetChannelGroupCounts(sp24[0], sp24[1], sp24[2], sp24[3]);
 }
 
 void BattleScene_SelectBattleMusic(void) {
-    switch (D_800AE540.unk_0000) {
+    switch (D_800AE540.sessionMode) {
         case 0:
-            switch (D_800AE540.unk_0001) {
+            switch (D_800AE540.modeCategory) {
                 case 0:
                     Audio_SelectModeMusic(0, 0xE);
                     break;
@@ -4317,77 +4320,77 @@ void BattleScene_SelectBattleMusic(void) {
             break;
 
         case 1:
-            Audio_SelectModeMusic(D_800AE540.unk_0003, 0xA);
+            Audio_SelectModeMusic(D_800AE540.opponentNumber, 0xA);
             break;
 
         case 2:
-            Audio_SelectModeMusic(D_800AE540.unk_0003, 0xB);
+            Audio_SelectModeMusic(D_800AE540.opponentNumber, 0xB);
             break;
 
         case 3:
-            switch (D_800AE540.unk_0002) {
+            switch (D_800AE540.progressIndex) {
                 case 0:
-                    Audio_SelectModeMusic(D_800AE540.unk_0003, 6);
+                    Audio_SelectModeMusic(D_800AE540.opponentNumber, 6);
                     break;
 
                 case 1:
-                    Audio_SelectModeMusic(D_800AE540.unk_0003, 7);
+                    Audio_SelectModeMusic(D_800AE540.opponentNumber, 7);
                     break;
 
                 case 2:
-                    Audio_SelectModeMusic(D_800AE540.unk_0003, 8);
+                    Audio_SelectModeMusic(D_800AE540.opponentNumber, 8);
                     break;
 
                 case 3:
-                    Audio_SelectModeMusic(D_800AE540.unk_0003, 9);
+                    Audio_SelectModeMusic(D_800AE540.opponentNumber, 9);
                     break;
             }
             break;
 
         case 4:
-            Audio_SelectModeMusic(D_800AE540.unk_0003, 5);
+            Audio_SelectModeMusic(D_800AE540.opponentNumber, 5);
             break;
 
         case 5:
-            Audio_SelectModeMusic(D_800AE540.unk_0003, 4);
+            Audio_SelectModeMusic(D_800AE540.opponentNumber, 4);
             break;
 
         case 6:
-            switch (D_800AE540.unk_0002) {
+            switch (D_800AE540.progressIndex) {
                 case 0:
-                    Audio_SelectModeMusic(D_800AE540.unk_0003, 0);
+                    Audio_SelectModeMusic(D_800AE540.opponentNumber, 0);
                     break;
 
                 case 1:
-                    Audio_SelectModeMusic(D_800AE540.unk_0003, 1);
+                    Audio_SelectModeMusic(D_800AE540.opponentNumber, 1);
                     break;
 
                 case 2:
-                    Audio_SelectModeMusic(D_800AE540.unk_0003, 2);
+                    Audio_SelectModeMusic(D_800AE540.opponentNumber, 2);
                     break;
 
                 case 3:
-                    Audio_SelectModeMusic(D_800AE540.unk_0003, 3);
+                    Audio_SelectModeMusic(D_800AE540.opponentNumber, 3);
                     break;
             }
             break;
 
         case 7:
-            if (D_800AE540.unk_0002 == 9) {
+            if (D_800AE540.progressIndex == 9) {
                 Audio_SelectModeMusic(5, 0xD);
-            } else if (D_800AE540.unk_0002 == 8) {
-                Audio_SelectModeMusic(D_800AE540.unk_0003, 0xD);
+            } else if (D_800AE540.progressIndex == 8) {
+                Audio_SelectModeMusic(D_800AE540.opponentNumber, 0xD);
             } else {
-                Audio_SelectModeMusic((D_800AE540.unk_0002 * 4) + D_800AE540.unk_0003, 0xC);
+                Audio_SelectModeMusic((D_800AE540.progressIndex * 4) + D_800AE540.opponentNumber, 0xC);
             }
             break;
 
         case 8:
-            Audio_SelectModeMusic(D_800AE540.unk_0003, 0xF);
+            Audio_SelectModeMusic(D_800AE540.opponentNumber, 0xF);
             break;
 
         case 10:
-            switch (D_800AE540.unk_0001) {
+            switch (D_800AE540.modeCategory) {
                 case 0:
                     Audio_SelectModeMusic(0xFF, 0xE);
                     break;
@@ -4433,13 +4436,13 @@ void BattleScene_SelectBattleMusic(void) {
 }
 
 void BattleScene_StartBattleMusic(void) {
-    switch (D_800AE540.unk_0000) {
+    switch (D_800AE540.sessionMode) {
         case 16:
             Audio_StartMusicTrack(1);
             break;
 
         case 0:
-            switch (D_800AE540.unk_0001) {
+            switch (D_800AE540.modeCategory) {
                 case 0:
                     Audio_StartTrackForCategory(0, 0xE);
                     break;
@@ -4479,77 +4482,77 @@ void BattleScene_StartBattleMusic(void) {
             break;
 
         case 1:
-            Audio_StartTrackForCategory(D_800AE540.unk_0003, 0xA);
+            Audio_StartTrackForCategory(D_800AE540.opponentNumber, 0xA);
             break;
 
         case 2:
-            Audio_StartTrackForCategory(D_800AE540.unk_0003, 0xB);
+            Audio_StartTrackForCategory(D_800AE540.opponentNumber, 0xB);
             break;
 
         case 3:
-            switch (D_800AE540.unk_0002) {
+            switch (D_800AE540.progressIndex) {
                 case 0:
-                    Audio_StartTrackForCategory(D_800AE540.unk_0003, 6);
+                    Audio_StartTrackForCategory(D_800AE540.opponentNumber, 6);
                     break;
 
                 case 1:
-                    Audio_StartTrackForCategory(D_800AE540.unk_0003, 7);
+                    Audio_StartTrackForCategory(D_800AE540.opponentNumber, 7);
                     break;
 
                 case 2:
-                    Audio_StartTrackForCategory(D_800AE540.unk_0003, 8);
+                    Audio_StartTrackForCategory(D_800AE540.opponentNumber, 8);
                     break;
 
                 case 3:
-                    Audio_StartTrackForCategory(D_800AE540.unk_0003, 9);
+                    Audio_StartTrackForCategory(D_800AE540.opponentNumber, 9);
                     break;
             }
             break;
 
         case 4:
-            Audio_StartTrackForCategory(D_800AE540.unk_0003, 5);
+            Audio_StartTrackForCategory(D_800AE540.opponentNumber, 5);
             break;
 
         case 5:
-            Audio_StartTrackForCategory(D_800AE540.unk_0003, 4);
+            Audio_StartTrackForCategory(D_800AE540.opponentNumber, 4);
             break;
 
         case 6:
-            switch (D_800AE540.unk_0002) {
+            switch (D_800AE540.progressIndex) {
                 case 0:
-                    Audio_StartTrackForCategory(D_800AE540.unk_0003, 0);
+                    Audio_StartTrackForCategory(D_800AE540.opponentNumber, 0);
                     break;
 
                 case 1:
-                    Audio_StartTrackForCategory(D_800AE540.unk_0003, 1);
+                    Audio_StartTrackForCategory(D_800AE540.opponentNumber, 1);
                     break;
 
                 case 2:
-                    Audio_StartTrackForCategory(D_800AE540.unk_0003, 2);
+                    Audio_StartTrackForCategory(D_800AE540.opponentNumber, 2);
                     break;
 
                 case 3:
-                    Audio_StartTrackForCategory(D_800AE540.unk_0003, 3);
+                    Audio_StartTrackForCategory(D_800AE540.opponentNumber, 3);
                     break;
             }
             break;
 
         case 7:
-            if (D_800AE540.unk_0002 == 9) {
+            if (D_800AE540.progressIndex == 9) {
                 Audio_StartTrackForCategory(5, 0xD);
-            } else if (D_800AE540.unk_0002 == 8) {
-                Audio_StartTrackForCategory(D_800AE540.unk_0003, 0xD);
+            } else if (D_800AE540.progressIndex == 8) {
+                Audio_StartTrackForCategory(D_800AE540.opponentNumber, 0xD);
             } else {
-                Audio_StartTrackForCategory((D_800AE540.unk_0002 * 4) + D_800AE540.unk_0003, 0xC);
+                Audio_StartTrackForCategory((D_800AE540.progressIndex * 4) + D_800AE540.opponentNumber, 0xC);
             }
             break;
 
         case 8:
-            Audio_StartTrackForCategory(D_800AE540.unk_0003, 0xF);
+            Audio_StartTrackForCategory(D_800AE540.opponentNumber, 0xF);
             break;
 
         case 10:
-            switch (D_800AE540.unk_0001) {
+            switch (D_800AE540.modeCategory) {
                 case 0:
                     Audio_StartTrackForCategory(0xFF, 0xE);
                     break;
@@ -4595,7 +4598,7 @@ void BattleScene_StartBattleMusic(void) {
 }
 
 void BattleAnim_PlayBattleSequenceById(Battler* arg0, s32 arg1) {
-    s16 sp1E = arg0->unk_000.unk_01A;
+    s16 sp1E = arg0->model.modelId;
 
     if ((BattleScene_IsPartnerPikachu(arg0) != 0) && (arg1 == 0x32)) {
         Audio_PlayCommand(0x32, 0xC8, 0);
@@ -4632,12 +4635,10 @@ void BattleAnim_RunEffectInitEnd(s16 arg0) {
     gMoveAnimEffectEndInitFuncs[arg0]();
 }
 
-void BattleAnim_RegisterEffectSlot(func_D_84390300 arg0, func_D_84390320 arg1) {
+void BattleAnim_RegisterEffectSlot(BattleAnimEffectUpdateFunc arg0, BattleAnimEffectDrawFunc arg1) {
     if (gBattleAnimEffectCallbackIndex >= 8) {
         gBattleAnimEffectCallbackIndex = 0;
     }
-
-    if (gBattleAnimEffectUpdateFuncs[gBattleAnimEffectCallbackIndex]) {}
 
     gBattleAnimEffectUpdateFuncs[gBattleAnimEffectCallbackIndex] = arg0;
     gBattleAnimEffectDrawFuncs[gBattleAnimEffectCallbackIndex] = arg1;
@@ -4652,11 +4653,11 @@ void BattleAnim_RunEffectList(s32 arg0, s32 arg1, s32 arg2) {
     if (arg2 == 1) {
         switch (arg1) {
             case 0:
-                sp2C = gMoveAnimEffectScripts[arg0][0];
+                sp2C = gMoveAnimEffectScripts[arg0].start;
                 break;
 
             case 1:
-                sp2C = gMoveAnimEffectScripts[arg0][1];
+                sp2C = gMoveAnimEffectScripts[arg0].alternateStart;
                 break;
 
             case 3:
@@ -4681,7 +4682,7 @@ void BattleAnim_RunEffectList(s32 arg0, s32 arg1, s32 arg2) {
     } else {
         switch (arg1) {
             case 2:
-                sp2C = gMoveAnimEffectScripts[arg0][2];
+                sp2C = gMoveAnimEffectScripts[arg0].end;
                 break;
 
             case 6:
@@ -4848,7 +4849,7 @@ void BattleAnim_ResetAssetTable(void) {
 
 void BattleAnim_BuildResourceListForMove(s16 arg0) {
     s32 var_v0 = 0;
-    u8* temp_a1 = gMoveAnimEffectScripts[arg0][3];
+    u8* temp_a1 = gMoveAnimEffectScripts[arg0].resourceListA;
 
     while (*temp_a1 != 0x3F) {
         gBattleAnimResourceList[var_v0] = *temp_a1;
@@ -4856,7 +4857,7 @@ void BattleAnim_BuildResourceListForMove(s16 arg0) {
         var_v0++;
     }
 
-    temp_a1 = gMoveAnimEffectScripts[arg0][4];
+    temp_a1 = gMoveAnimEffectScripts[arg0].resourceListB;
     while (*temp_a1 != 0x3F) {
         gBattleAnimResourceList[var_v0] = *temp_a1;
         temp_a1++;
@@ -4869,7 +4870,7 @@ void BattleAnim_BuildResourceListForMove(s16 arg0) {
 void BattleAnim_LoadMoveResourceList(BattleSessionTeams* arg0, s16 arg1) {
     if (arg1 != 0xFF) {
         BattleAnim_BuildResourceListForMove(arg1);
-        arg0->unk_1D |= 0x80;
+        arg0->assetLoadFlags |= 0x80;
         arg0->unk_20 = gBattleAnimResourceList;
         arg0->unk_24 = gBattleAnimResourceTablePointers;
     }
@@ -4887,7 +4888,7 @@ void BattleAnim_LoadModeResourceList(BattleSessionTeams* arg0, s16 arg1) {
 
     gBattleAnimResourceList[var_v0] = -1;
     arg0->unk_20 = gBattleAnimResourceList;
-    arg0->unk_1D |= 0x80;
+    arg0->assetLoadFlags |= 0x80;
     arg0->unk_24 = gBattleAnimResourceTablePointers;
 }
 
@@ -4906,7 +4907,7 @@ void BattleAnim_RegisterAllAssetTables(void) {
 }
 
 void BattleAnim_RegisterAssetTablesForSession(BattleSessionTeams* arg0) {
-    arg0->unk_1D &= ~0x10;
+    arg0->assetLoadFlags &= ~0x10;
     BattleAnim_RegisterAllAssetTables();
 }
 
@@ -5056,16 +5057,16 @@ void BattleAnim_DrawEffectCallbacks(UNUSED unk_D_86002F34_00C* arg0) {
 }
 
 void BattleAnim_UpdateCamera(unk_D_86002F34_00C* arg0) {
-    gParticleRenderContext.unk_0C = arg0;
-    gParticleCameraState = &gParticleRenderContext.unk_10;
+    gParticleRenderContext.cameraContext = arg0;
+    gParticleCameraState = &gParticleRenderContext.camera;
 
-    MtxF_Copy(&gParticleCameraState->unk_00, &arg0->unk_60.mtxf);
-    ParticleMath_CopyVec3f(&gParticleCameraState->unk_40, &arg0->unk_60.eye);
-    ParticleMath_CopyVec3f(&gParticleCameraState->unk_4C, &arg0->unk_60.at);
+    MtxF_Copy(&gParticleCameraState->viewMatrix, &arg0->unk_60.mtxf);
+    ParticleMath_CopyVec3f(&gParticleCameraState->eye, &arg0->unk_60.eye);
+    ParticleMath_CopyVec3f(&gParticleCameraState->at, &arg0->unk_60.at);
     BattleAnim_GetCameraLookAngles(&gParticleCameraState->unk_70, &gParticleCameraState->unk_72);
     BattleAnim_GetCameraEyeAngles(&gParticleCameraState->unk_76, &gParticleCameraState->unk_78);
-    ParticleMath_NormalizedDirection(&gParticleCameraState->unk_58, gParticleCameraState->unk_40, gParticleCameraState->unk_4C);
-    ParticleMath_NormalizedDirection(&gParticleCameraState->unk_64, gParticleCameraState->unk_4C, gParticleCameraState->unk_40);
+    ParticleMath_NormalizedDirection(&gParticleCameraState->eyeToAt, gParticleCameraState->eye, gParticleCameraState->at);
+    ParticleMath_NormalizedDirection(&gParticleCameraState->atToEye, gParticleCameraState->at, gParticleCameraState->eye);
 }
 
 s32 BattleAnim_DispatchPresentation(s32 arg0, unk_D_86002F34_00C* arg1) {
@@ -5103,9 +5104,9 @@ void BattleAnim_Reset(void) {
 
     gBattleAnimCurrentOwner = NULL;
     D_843902BC = 0;
-    gParticleRenderContext.unk_00.x = 1.0f;
-    gParticleRenderContext.unk_00.y = 1.0f;
-    gParticleRenderContext.unk_00.z = 1.0f;
+    gParticleRenderContext.renderScale.x = 1.0f;
+    gParticleRenderContext.renderScale.y = 1.0f;
+    gParticleRenderContext.renderScale.z = 1.0f;
     D_843902F4 = 0;
     D_84392040.unk_0C = 1.0f;
     D_84392040.unk_10 = 1.0f;
@@ -5144,9 +5145,9 @@ void BattleAnim_Reset(void) {
 }
 
 void BattleAnim_GetPointAlongCameraRay(Vec3f* arg0, f32 arg1) {
-    arg0->x = gParticleCameraState->unk_40.x + (arg1 * gParticleCameraState->unk_58.x);
-    arg0->y = gParticleCameraState->unk_40.y + (arg1 * gParticleCameraState->unk_58.y);
-    arg0->z = gParticleCameraState->unk_40.z + (arg1 * gParticleCameraState->unk_58.z);
+    arg0->x = gParticleCameraState->eye.x + (arg1 * gParticleCameraState->eyeToAt.x);
+    arg0->y = gParticleCameraState->eye.y + (arg1 * gParticleCameraState->eyeToAt.y);
+    arg0->z = gParticleCameraState->eye.z + (arg1 * gParticleCameraState->eyeToAt.z);
 }
 
 void BattleAnim_GetCameraEyeAngles(s16* arg0, s16* arg1) {

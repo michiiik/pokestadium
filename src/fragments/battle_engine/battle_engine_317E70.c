@@ -14,13 +14,14 @@ void BattleAnim_InitParticleSystem(void) {
     gParticlePoolIndex = 0;
 }
 
+#ifdef NON_MATCHING
 BattleAnimEffectSlot* BattleAnim_AllocEffectSlot(void) {
     s32 i;
     s32 var_v0 = gBattleAnimEffectSlotIndex;
     BattleAnimEffectSlot* var_v1 = &gBattleAnimEffectSlots[var_v0];
 
     for (i = 0; i < 300; i++) {
-        if (var_v1->unk_15 == 0) {
+        if (var_v1->active == 0) {
             break;
         }
 
@@ -35,32 +36,34 @@ BattleAnimEffectSlot* BattleAnim_AllocEffectSlot(void) {
     }
 
     if (i >= 300) {
-        var_v1 = -1;
-    } else {
-        var_v1->unk_15 = 1;
-
-        gBattleAnimEffectSlotIndex = var_v0 + 1;
-        if (gBattleAnimEffectSlotIndex >= 300) {
-            gBattleAnimEffectSlotIndex = 0;
-        }
+        return -1;
     }
 
+    var_v1->active = 1;
+
+    gBattleAnimEffectSlotIndex = var_v0 + 1;
+    if (gBattleAnimEffectSlotIndex >= 300) {
+        gBattleAnimEffectSlotIndex = 0;
+    }
     return var_v1;
 }
+#else
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/62/fragment62_317E70/BattleAnim_AllocEffectSlot.s")
+#endif
 
 void BattleAnim_FreeEffectSlot(BattleAnimEffectSlot* arg0) {
-    arg0->unk_0E = 0;
-    arg0->unk_15 = 0;
-    arg0->unk_14 = 0;
-    arg0->unk_0C = arg0->unk_0E;
+    arg0->countdown = 0;
+    arg0->active = 0;
+    arg0->repeatCount = 0;
+    arg0->period = arg0->countdown;
 }
 
 void BattleAnim_InitializeParticleChain(Particle* arg0, Vec3f arg1, Vec3s arg2, s32 arg3, s32 arg4) {
     while (arg0 != NULL) {
         ParticleMath_CopyVec3f(&arg0->unk_68, &arg1);
         ParticleMath_CopyVec3s(&arg0->unk_94, &arg2);
-        arg0->unk_08 = arg3;
-        arg0->unk_0C = arg4;
+        arg0->updateCallback = arg3;
+        arg0->descriptor = arg4;
         arg0->unk_10 = 0;
         arg0->unk_14 = 0;
         arg0->unk_CD = 0xFF;
@@ -71,8 +74,8 @@ void BattleAnim_InitializeParticleChain(Particle* arg0, Vec3f arg1, Vec3s arg2, 
 
 void BattleAnim_CloneParticleState(Particle* arg0, Particle* arg1, ParticleUpdateCallback arg2, ParticleDescriptor* arg3,
                    s32 arg4) {
-    arg0->unk_08 = arg2;
-    arg0->unk_0C = arg3;
+    arg0->updateCallback = arg2;
+    arg0->descriptor = arg3;
     arg0->unk_10 = arg1->unk_10;
     arg0->unk_CF = arg1->unk_CF;
     arg0->unk_CA = arg1->unk_CA;
@@ -132,7 +135,7 @@ Particle* BattleAnim_CreateProceduralParticle(s16 arg0, s16 arg1, s32 arg2, f32 
         Vec3f_SetComponentsDuplicate(&temp_v0->unk_38, arg0, arg1, 0.0f);
         Particle_UpdateWorldTransform(temp_v0);
         Vec3s_SetComponents(&temp_v0->unk_94, arg2, arg2, arg2);
-        temp_v0->unk_1C = arg3;
+        temp_v0->scale = arg3;
         Particle_SetFlags(temp_v0, 0x108);
     }
     return temp_v0;
@@ -312,13 +315,13 @@ void BattleAnim_UpdateParticleAnchor(Particle* arg0) {
 
 void BattleAnim_UpdateParticleCameraScale(Particle* arg0) {
     if ((arg0->unk_10 == NULL) || (Particle_HasFlags(arg0, 0x108) != 0)) {
-        gParticleRenderContext.unk_00.x = 1.0f;
-        gParticleRenderContext.unk_00.y = 1.0f;
-        gParticleRenderContext.unk_00.z = 1.0f;
+        gParticleRenderContext.renderScale.x = 1.0f;
+        gParticleRenderContext.renderScale.y = 1.0f;
+        gParticleRenderContext.renderScale.z = 1.0f;
     } else if (Particle_LacksFlags(arg0, 0x800) != 0) {
-        gParticleRenderContext.unk_00.x = BattleAnim_GetOwnerModelScale(arg0->unk_10);
-        gParticleRenderContext.unk_00.y = BattleAnim_GetOwnerModelScale(arg0->unk_10);
-        gParticleRenderContext.unk_00.z = BattleAnim_GetOwnerModelScale(arg0->unk_10);
+        gParticleRenderContext.renderScale.x = BattleAnim_GetOwnerModelScale(arg0->unk_10);
+        gParticleRenderContext.renderScale.y = BattleAnim_GetOwnerModelScale(arg0->unk_10);
+        gParticleRenderContext.renderScale.z = BattleAnim_GetOwnerModelScale(arg0->unk_10);
     }
 }
 
@@ -335,10 +338,10 @@ void BattleAnim_UpdateParticlePool(void) {
     Particle* var_s0 = gParticlePool;
 
     for (i = 0; i < 300; i++, var_s0++) {
-        if (var_s0->unk_D0 != 0) {
+        if (var_s0->active != 0) {
             BattleAnim_UpdateParticleAnchor(var_s0);
             BattleAnim_UpdateParticleCameraScale(var_s0);
-            var_s0->unk_08(var_s0);
+            var_s0->updateCallback(var_s0);
             BattleAnim_UpdateOrDestroyParticle(var_s0);
         }
     }
@@ -359,8 +362,8 @@ void BattleAnim_InitializeParticleFromEffect(Particle* arg0, Battler* arg1, Batt
     while (arg0 != NULL) {
         arg0->unk_10 = arg1;
         arg0->unk_AC = arg3++;
-        arg0->unk_08 = arg2->unk_00;
-        arg0->unk_0C = arg2->unk_04;
+        arg0->updateCallback = arg2->unk_00;
+        arg0->descriptor = arg2->descriptor;
         arg0->unk_CD = arg2->unk_19;
         arg0->unk_CE = arg2->unk_1A;
         arg0->unk_AA = arg2->unk_12;
@@ -386,9 +389,9 @@ void BattleAnim_InitializeParticleFromEffect(Particle* arg0, Battler* arg1, Batt
 void BattleAnim_SpawnEffectParticles(BattleAnimEffectSlot* arg0, s32 arg1) {
     s16 i;
     s16 var_s2;
-    ParticleDescriptor* temp_a2 = arg0->unk_04;
-    ParticleDescriptorChild* temp_a3 = arg0->unk_04->unk_04.a;
-    Battler* tmp08 = arg0->unk_08;
+    ParticleDescriptor* temp_a2 = arg0->descriptor;
+    ParticleDescriptorChild* temp_a3 = arg0->descriptor->unk_04.child;
+    Battler* tmp08 = arg0->ownerContext;
     s16 tmp12 = arg0->unk_12;
 
     switch (arg1) {
@@ -402,7 +405,7 @@ void BattleAnim_SpawnEffectParticles(BattleAnimEffectSlot* arg0, s32 arg1) {
             break;
     }
 
-    if ((temp_a2->unk_00 == 1) && (temp_a3->unk_00 == 1)) {
+    if ((temp_a2->kind == 1) && (temp_a3->unk_00 == 1)) {
         BattleAnim_InitializeParticleFromEffect(Particle_AllocChain(var_s2), tmp08, arg0, 0);
         return;
     }
@@ -422,7 +425,7 @@ void BattleAnim_SpawnBatchedParticles(BattleAnimEffectSlot* arg0) {
 
 void BattleAnim_SpawnSingleParticle(BattleAnimEffectSlot* arg0) {
     UNUSED s32 pad;
-    Battler* sp18 = arg0->unk_08;
+    Battler* sp18 = arg0->ownerContext;
 
     BattleAnim_InitializeParticleFromEffect(Particle_New(), sp18, arg0, 0);
 }
@@ -464,22 +467,22 @@ void BattleAnim_TickEffectSlots(void) {
     BattleAnimEffectSlot* var_s0 = gBattleAnimEffectSlots;
 
     for (i = 0; i < 300; i++, var_s0++) {
-        if (var_s0->unk_15 != 0) {
-            var_s0->unk_0E--;
-            if (var_s0->unk_0E <= 0) {
-                if (var_s0->unk_14 >= 0) {
+        if (var_s0->active != 0) {
+            var_s0->countdown--;
+            if (var_s0->countdown <= 0) {
+                if (var_s0->repeatCount >= 0) {
                     BattleAnim_DispatchParticleEmission(var_s0);
-                    if (var_s0->unk_14 != 0x7F) {
-                        var_s0->unk_14--;
+                    if (var_s0->repeatCount != 0x7F) {
+                        var_s0->repeatCount--;
                     }
 
-                    if (var_s0->unk_14 <= 0) {
+                    if (var_s0->repeatCount <= 0) {
                         BattleAnim_FreeEffectSlot(var_s0);
                     } else {
-                        var_s0->unk_0E = var_s0->unk_0C;
+                        var_s0->countdown = var_s0->period;
                     }
-                } else if (var_s0->unk_14 == -1) {
-                    var_s0->unk_0E = var_s0->unk_0C;
+                } else if (var_s0->repeatCount == -1) {
+                    var_s0->countdown = var_s0->period;
                     BattleAnim_DispatchParticleEmission(var_s0);
                 }
             }
@@ -500,7 +503,7 @@ void BattleAnim_CleanupEffectsRetainingCategories47(void) {
     BattleAnim_ResetSpawnDelay();
 
     for (i = 0; i < 300; i++, var_s0++) {
-        if (var_s0->unk_15 != 0) {
+        if (var_s0->active != 0) {
             if ((var_s0->unk_17 != 4) && (var_s0->unk_17 != 7)) {
                 BattleAnim_FreeEffectSlot(var_s0);
             }
@@ -508,7 +511,7 @@ void BattleAnim_CleanupEffectsRetainingCategories47(void) {
     }
 
     for (i = 0; i < 300; i++, var_s2++) {
-        if (var_s2->unk_D0 != 0) {
+        if (var_s2->active != 0) {
             if ((var_s2->unk_CA != 4) && (var_s2->unk_CA != 7)) {
                 BattleAnim_DestroyParticle(var_s2);
             }
@@ -522,21 +525,21 @@ void BattleAnim_CleanupEffectsRetainingCategory4(void) {
     Particle* var_s2 = gParticlePool;
 
     for (i = 0; i < 300; i++, var_s0++) {
-        if ((var_s0->unk_15 != 0) && (var_s0->unk_17 != 4)) {
+        if ((var_s0->active != 0) && (var_s0->unk_17 != 4)) {
             BattleAnim_FreeEffectSlot(var_s0);
         }
     }
 
     for (i = 0; i < 300; i++, var_s2++) {
-        if ((var_s2->unk_D0 != 0) && (var_s2->unk_CA != 4)) {
+        if ((var_s2->active != 0) && (var_s2->unk_CA != 4)) {
             BattleAnim_DestroyParticle(var_s2);
         }
     }
 
-    Model_SetMaterialColor(&D_84390010[0]->unk_000, 0xFF, 0xFF, 0xFF, 0);
-    Model_SetMaterialColor(&D_84390010[1]->unk_000, 0xFF, 0xFF, 0xFF, 0);
-    Model_SetMaterialAlpha(&D_84390010[0]->unk_000, 0xFF);
-    Model_SetMaterialAlpha(&D_84390010[1]->unk_000, 0xFF);
+    Model_SetMaterialColor(&D_84390010[0]->model, 0xFF, 0xFF, 0xFF, 0);
+    Model_SetMaterialColor(&D_84390010[1]->model, 0xFF, 0xFF, 0xFF, 0);
+    Model_SetMaterialAlpha(&D_84390010[0]->model, 0xFF);
+    Model_SetMaterialAlpha(&D_84390010[1]->model, 0xFF);
 
     D_8439037E = 0xFF;
     D_8439037C = D_8439037E;
@@ -613,7 +616,7 @@ void BattleAnim_StopParticlesForOwnerCategory(u8 arg0, Battler* arg1) {
     Particle* var_s0 = gParticlePool;
 
     for (i = 0; i < 300; i++, var_s0++) {
-        if ((var_s0->unk_D0 != 0) && (var_s0->unk_CA == 4) && (var_s0->unk_CB == arg0) && (arg1 == var_s0->unk_10)) {
+        if ((var_s0->active != 0) && (var_s0->unk_CA == 4) && (var_s0->unk_CB == arg0) && (arg1 == var_s0->unk_10)) {
             Particle_SetFlags(var_s0, 0x1000);
             Particle_AdvanceLifecycle(var_s0);
         }
@@ -641,12 +644,12 @@ BattleAnimEffectSlot* BattleAnim_CreateEffectSlot(s32 arg0, s32 arg1, s8 arg2, f
     BattleAnimEffectSlot* sp1C = BattleAnim_AllocEffectSlot();
 
     if ((u32)sp1C != -1) {
-        sp1C->unk_0E = arg0 + gBattleAnimSpawnDelay;
-        sp1C->unk_0C = arg1;
-        sp1C->unk_14 = arg2;
+        sp1C->countdown = arg0 + gBattleAnimSpawnDelay;
+        sp1C->period = arg1;
+        sp1C->repeatCount = arg2;
         sp1C->unk_00 = arg3;
-        sp1C->unk_04 = arg4;
-        sp1C->unk_08 = arg5;
+        sp1C->descriptor = arg4;
+        sp1C->ownerContext = arg5;
         sp1C->unk_16 = arg8;
         sp1C->unk_10 = arg6;
         sp1C->unk_12 = arg7;
@@ -821,14 +824,14 @@ void BattleAnim_GetOwnerBonePosition(Battler* arg0, s16 arg1, Vec3f* arg2) {
 
     if (arg0 != NULL) {
         if (arg1 == 0x64) {
-            if (GeoRender_FindAnchorPosition(&arg0->unk_000, 0xA, arg2) != NULL) {
+            if (GeoRender_FindAnchorPosition(&arg0->model, 0xA, arg2) != NULL) {
                 sp24 = 1;
-            } else if (GeoRender_FindAnchorPosition(&arg0->unk_000, 0x64, arg2) != NULL) {
+            } else if (GeoRender_FindAnchorPosition(&arg0->model, 0x64, arg2) != NULL) {
                 sp24 = 2;
             }
         } else {
-            if (GeoRender_FindAnchorPosition(&arg0->unk_000, arg1, arg2) == NULL) {
-                if (GeoRender_FindAnchorPosition(&arg0->unk_000, 0x64, arg2) != NULL) {
+            if (GeoRender_FindAnchorPosition(&arg0->model, arg1, arg2) == NULL) {
+                if (GeoRender_FindAnchorPosition(&arg0->model, 0x64, arg2) != NULL) {
                     sp24 = 3;
                 }
             } else {
@@ -873,7 +876,7 @@ void BattleAnim_GetOwnerModelBoundsScaled(Battler* arg0, Vec3f* arg1) {
 }
 
 f32 BattleAnim_GetSpeciesBaseScale(Battler* arg0) {
-    f32 ret = D_80075E40[arg0->unk_000.unk_01A] * 0.01f;
+    f32 ret = D_80075E40[arg0->model.modelId] * 0.01f;
 
     return ret;
 }
@@ -903,7 +906,7 @@ void BattleAnim_GetTertiaryOwnerSpeciesBaseScale(void) {
 }
 
 unk_D_86002F34_00C* BattleAnim_GetCameraContext(void) {
-    return gParticleRenderContext.unk_0C;
+    return gParticleRenderContext.cameraContext;
 }
 
 Particle* BattleAnim_SpawnSecondaryOwnerParticle(Vec3f arg0, u8 arg1) {

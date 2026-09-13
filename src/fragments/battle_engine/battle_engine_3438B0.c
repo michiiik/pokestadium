@@ -30,9 +30,9 @@ void BattleAnim_RenderEffectsFrame(unk_D_86002F34_00C* arg0) {
     ParticleGfx_SetBlendColor(D_8439039A, D_8439039C, D_8439039E, D_843903A0);
     Battle_SetStageTintColor(D_8439037A, D_8439037C, D_8439037E);
     Particle_RenderWorldChains(arg0);
-    guOrtho(&gParticleMatrixPool->unk_5B80, 0.0f, 320.0f, 240.0f, 0.0f, -2.0f, 2.0f, 1.0f);
+    guOrtho(&gParticleMatrixPool->orthographicMatrix, 0.0f, 320.0f, 240.0f, 0.0f, -2.0f, 2.0f, 1.0f);
 
-    gSPMatrix(gDisplayListHead++, (u32)&gParticleMatrixPool->unk_5B80 & 0x1FFFFFFF,
+    gSPMatrix(gDisplayListHead++, (u32)&gParticleMatrixPool->orthographicMatrix & 0x1FFFFFFF,
               G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     gSPDisplayList(gDisplayListHead++, D_8140DD78);
 

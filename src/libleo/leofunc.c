@@ -4,22 +4,6 @@
 
 const u8 LEO_ZERO_MESG[] = { 0 };
 
-OSMesgQueue LEOpost_que;
-OSMesg LEOpost_que_buf[1];
-leo_sys_form LEO_sys_data;
-OSThread LEOcommandThread;
-OSThread LEOinterruptThread;
-u8 LEOinterruptThreadStack[0x400];
-u8 LEOcommandThreadStack[0x400];
-OSMesgQueue LEOcommand_que;
-OSMesgQueue LEOevent_que;
-OSMesgQueue LEOcontrol_que;
-OSMesgQueue LEOdma_que;
-OSMesgQueue LEOblock_que;
-OSMesg LEOevent_que_buf[1];
-OSMesg LEOcontrol_que_buf[1];
-OSMesg LEOdma_que_buf[2];
-
 void leoInitialize(OSPri compri, OSPri intpri, OSMesg* command_que_buf, u32 cmd_buff_size) {
     u32 savedMask;
     OSPri oldPri;

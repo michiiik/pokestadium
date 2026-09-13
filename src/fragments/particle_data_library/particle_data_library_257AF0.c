@@ -22,10 +22,10 @@ typedef struct TextureState {
 } TextureState; // size = 0x1C
 
 #ifdef NON_MATCHING
-void func_81002830(Gfx* gfx, unk_arg1_func_81002830* arg1) {
+void DisplayList_BuildAnimatedFrameSegment(Gfx* gfx, unk_arg1_func_81002830* arg1) {
     s16 temp_v0;
     s32 var_a3;
-    if (D_8006F09C->unk_01C == 0) {
+    if (D_8006F09C->textureMode == 0) {
         var_a3 = D_800AF7AE;
         temp_v0 = 0x4000 - (arg1->unk_00 * var_a3);
         if (1) {}
@@ -36,8 +36,8 @@ void func_81002830(Gfx* gfx, unk_arg1_func_81002830* arg1) {
     gSPEndDisplayList(gfx++);
 }
 #else
-void func_81002830(s32, s32);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/particle_data_library/particle_data_library_257AF0/func_81002830.s")
+void DisplayList_BuildAnimatedFrameSegment(s32, s32);
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/31/fragment31_257AF0/DisplayList_BuildAnimatedFrameSegment.s")
 #endif
 
 void DisplayList_InitAnimatedFrameSegment(s32 arg0, unk_arg1_func_81002968* arg1) {
@@ -48,7 +48,7 @@ void DisplayList_InitAnimatedFrameSegment(s32 arg0, unk_arg1_func_81002968* arg1
         sp18 = arg1->unk_14;
         temp_v0 = Gfx_AllocDisplayList(0x50);
         arg1->unk_18 = temp_v0;
-        func_81002830(temp_v0, sp18);
+        DisplayList_BuildAnimatedFrameSegment(temp_v0, sp18);
     }
 }
 
@@ -65,7 +65,7 @@ void DisplayList_InitSelectedTextureSegment(s32 arg0, TextureState* state) {
     if (arg0 == 2) {
         textures = state->textures;
         state->gfx = (Gfx*)Gfx_AllocDisplayList(0x50);
-        if (D_8006F09C->unk_01A == 0x58) {
+        if (D_8006F09C->modelId == 0x58) {
             index = (s32) D_8006F09C->unk_040.unk_08 >> 0x10;
             if (index >= 0x42) {
                 index = index - 0x42;

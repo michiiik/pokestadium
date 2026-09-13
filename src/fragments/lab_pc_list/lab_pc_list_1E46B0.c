@@ -348,12 +348,12 @@ s32 LabPCList_CompareByPointer(unk_func_88316128* arg0, unk_func_88316128* arg1)
 }
 
 s32 LabPCList_CompareBySpeciesGroup(unk_func_8830867C_02C_0CC* arg0, unk_func_8830867C_02C_0CC* arg1) {
-    s32 var_v1 = *(s32*)&arg0->unk_00[0]->unk_08.unk_00 - *(s32*)&arg1->unk_00[0]->unk_08.unk_00;
+    s32 var_v1 = *(s32*)&arg0->data[0]->itemState.species - *(s32*)&arg1->data[0]->itemState.species;
 
     if (var_v1 == 0) {
-        var_v1 = (s32)arg0->unk_00[1] - (s32)arg1->unk_00[1];
+        var_v1 = (s32)arg0->data[1] - (s32)arg1->data[1];
         if (var_v1 == 0) {
-            var_v1 = arg0->unk_04 - arg1->unk_04;
+            var_v1 = arg0->capacity - arg1->capacity;
         }
     }
     return var_v1;
@@ -557,7 +557,7 @@ s32 LabPCList_CompareBySpeciesDexOrder(unk_func_8830867C_02C_0CC* arg0, unk_func
         0x83, 0x82, 0x54, 0x78, 0x3B, 0x20, 0x4A, 0x68, 0x85, 0x49, 0x32, 0x44, 0x16, 0x1E, 0x88, 0x3A, 0x26,
         0x6D, 0x5E, 0x5F, 0x3C, 0x3D, 0x01, 0x7F, 0x05, 0x95, 0x53, 0x1B, 0x19, 0x1A, 0x52, 0x51, 0x00,
     };
-    s32 var_v0 = D_8831A160[*(u8*)&arg0->unk_08 - 1] - D_8831A160[*(u8*)&arg1->unk_08 - 1];
+    s32 var_v0 = D_8831A160[*(u8*)&arg0->count - 1] - D_8831A160[*(u8*)&arg1->count - 1];
     s32 ret;
 
     if (var_v0 != 0) {
@@ -569,7 +569,7 @@ s32 LabPCList_CompareBySpeciesDexOrder(unk_func_8830867C_02C_0CC* arg0, unk_func
 }
 
 s32 LabPCList_CompareBySpeciesRawId(unk_func_8830867C_02C_0CC* arg0, unk_func_8830867C_02C_0CC* arg1) {
-    s32 var_v0 = *(u8*)&arg0->unk_08 - *(u8*)&arg1->unk_08;
+    s32 var_v0 = *(u8*)&arg0->count - *(u8*)&arg1->count;
     s32 ret;
 
     if (var_v0 != 0) {
@@ -602,11 +602,11 @@ s32 LabPCList_FilterByAnyType(unk_func_8830867C_02C_0CC* arg0, unk_func_8830867C
     s32 j;
     s32 var_v1;
     unk_func_8830867C_02C_C54_01C* arg1 = a1;
-    s32 idx = *(u8*)&arg0->unk_08 - 1;
+    s32 idx = *(u8*)&arg0->count - 1;
     u8 spC[2];
 
-    spC[0] = D_80070FA0[idx].unk_06;
-    spC[1] = D_80070FA0[idx].unk_07;
+    spC[0] = D_80070FA0[idx].type1;
+    spC[1] = D_80070FA0[idx].type2;
 
     if (spC[0] == spC[1]) {
         var_v1 = 1;
@@ -660,7 +660,7 @@ s32 LabPCList_FilterByAnyMove(unk_func_8830867C_02C_0CC* a0, unk_func_8830867C_0
 }
 
 s32 LabPCList_FilterBySpeciesId(unk_func_8830867C_02C_0CC* arg0, s32* arg1) {
-    return *(u8*)&arg0->unk_08 == *arg1;
+    return *(u8*)&arg0->count == *arg1;
 }
 
 s32 LabPCList_FilterByExactTypePair(unk_func_8830867C_02C_0CC* arg0, unk_func_8830867C_02C_C54_014* a1) {
@@ -669,11 +669,11 @@ s32 LabPCList_FilterByExactTypePair(unk_func_8830867C_02C_0CC* arg0, unk_func_88
     s32 j;
     s32 var_v1;
     unk_func_8830867C_02C_C54_014* arg1 = a1;
-    s32 idx = *(u8*)&arg0->unk_08 - 1;
+    s32 idx = *(u8*)&arg0->count - 1;
     s32 sp8[2];
 
-    sp8[0] = D_80070FA0[idx].unk_06;
-    sp8[1] = D_80070FA0[idx].unk_07;
+    sp8[0] = D_80070FA0[idx].type1;
+    sp8[1] = D_80070FA0[idx].type2;
 
     if (sp8[0] == sp8[1]) {
         var_v1 = 1;
@@ -720,21 +720,21 @@ void LabPCList_AllocateBoxSlots(unk_func_8830867C_02C_0E4* arg0, s32 arg1, s32 a
     unk_func_883164C0** var_s2;
     unk_func_883164C0* var_s3;
 
-    temp_lo = arg0->unk_0C.unk_04 * arg1;
+    temp_lo = arg0->unk_0C.capacity * arg1;
 
     var_s3 = mem_pool_alloc(arg3, temp_lo * sizeof(unk_func_883164C0));
     var_s2 = mem_pool_alloc(arg3, temp_lo * sizeof(unk_func_883164C0*));
 
-    var_s1 = arg0->unk_0C.unk_00;
+    var_s1 = arg0->unk_0C.data;
     bzero(var_s3, temp_lo * sizeof(unk_func_883164C0));
 
-    arg0->unk_0C.unk_08 = arg0->unk_0C.unk_04;
+    arg0->unk_0C.count = arg0->unk_0C.capacity;
 
-    for (i = 0; i < arg0->unk_0C.unk_08; i++) {
-        var_s1[i].unk_00 = arg0;
-        var_s1[i].unk_04.unk_00 = i;
-        var_s1[i].unk_04.unk_04 = arg2;
-        var_s1[i].unk_04.unk_08 = 0;
+    for (i = 0; i < arg0->unk_0C.count; i++) {
+        var_s1[i].owner = arg0;
+        var_s1[i].unk_04.data = i;
+        var_s1[i].unk_04.capacity = arg2;
+        var_s1[i].unk_04.count = 0;
 
         // clang-format off
         for (j = 0; j < arg1; j++) { var_s2[j] = &var_s3[j]; }
@@ -756,28 +756,28 @@ void LabPCList_LoadAllBoxes(unk_func_8830867C_02C_144* arg0) {
     unk_func_8830867C_02C_0CC_000_000_010_000* var_s0;
     unk_func_8830867C_02C_144_000* var_s5;
 
-    var_s5 = arg0->unk_00;
-    if (GbSave_GetBoxCount(var_s5[1].unk_04) == 0) {
-        GbSave_MarkBoxDataLoaded(var_s5[1].unk_04);
+    var_s5 = arg0->categories;
+    if (GbSave_GetBoxCount(var_s5[1].bankId) == 0) {
+        GbSave_MarkBoxDataLoaded(var_s5[1].bankId);
     }
 
-    for (i = 0; i < arg0->unk_08; i++, var_s5++) {
-        var_s3 = var_s5->unk_0C;
+    for (i = 0; i < arg0->categoryCount; i++, var_s5++) {
+        var_s3 = var_s5->boxes;
 
-        for (j = 0; j < var_s5->unk_14; j++, var_s3++) {
-            temp_v0 = Deck_Open(var_s5->unk_00, var_s5->unk_04, j, 0);
+        for (j = 0; j < var_s5->boxCount; j++, var_s3++) {
+            temp_v0 = Deck_Open(var_s5->category, var_s5->bankId, j, 0);
             var_s1 = 0;
 
             if (temp_v0 != NULL) {
-                var_s0 = var_s3->unk_10.unk_00;
+                var_s0 = var_s3->entries.data;
 
                 while (true) {
-                    if (Deck_ReadEntries(&var_s0->unk_00->unk_08, 1, temp_v0) == 0) {
+                    if (Deck_ReadEntries(&var_s0->entry->mon, 1, temp_v0) == 0) {
                         break;
                     }
 
-                    var_s0->unk_00->unk_00 = var_s3;
-                    var_s0->unk_00->unk_04 = var_s1;
+                    var_s0->entry->boxRef = var_s3;
+                    var_s0->entry->slotIndex = var_s1;
 
                     var_s0++;
                     var_s1++;
@@ -786,7 +786,7 @@ void LabPCList_LoadAllBoxes(unk_func_8830867C_02C_144* arg0) {
                 Deck_CloseAndFlush(temp_v0);
             }
 
-            var_s3->unk_10.unk_08 = var_s1;
+            var_s3->entries.count = var_s1;
         }
     }
 }
@@ -800,24 +800,24 @@ void LabPCList_FlattenEntries(unk_func_88200FA0_030_038* arg0, unk_func_8830867C
     unk_func_8830867C_02C_0CC_000_000_010_000* var_t0;
     unk_func_8830867C_02C_144_000* var_a2;
 
-    var_v0 = arg0->unk_00;
-    var_a2 = arg1->unk_00;
+    var_v0 = arg0->data;
+    var_a2 = arg1->categories;
 
-    for (i = 0; i < arg1->unk_08; i++, var_a2++) {
-        var_v1 = var_a2->unk_0C;
+    for (i = 0; i < arg1->categoryCount; i++, var_a2++) {
+        var_v1 = var_a2->boxes;
 
-        for (j = 0; j < var_a2->unk_14; j++, var_v1++) {
-            if (var_v1->unk_08 != 0) {
-                var_t0 = var_v1->unk_10.unk_00;
+        for (j = 0; j < var_a2->boxCount; j++, var_v1++) {
+            if (var_v1->isPopulated != 0) {
+                var_t0 = var_v1->entries.data;
 
-                for (x = 0; x < var_v1->unk_10.unk_08; x++, var_t0++, var_v0++) {
-                    *var_v0 = var_t0->unk_00;
+                for (x = 0; x < var_v1->entries.count; x++, var_t0++, var_v0++) {
+                    *var_v0 = var_t0->entry;
                 }
             }
         }
     }
 
-    arg0->unk_08 = var_v0 - arg0->unk_00;
+    arg0->count = var_v0 - arg0->data;
 }
 
 s32 LabPCList_GetCategoryDirtyFlag(s32 arg0) {
@@ -848,32 +848,32 @@ s32 LabPCList_CheckDirtyBoxes(unk_func_8830867C_02C_144* arg0) {
     DeckHandle* temp_v0;
     unk_func_8830867C_02C_0CC_000_000* var_s3;
     unk_func_8830867C_02C_0CC_000_000_010_000* var_s0;
-    unk_func_8830867C_02C_144_000* var_s5 = arg0->unk_00;
+    unk_func_8830867C_02C_144_000* var_s5 = arg0->categories;
     BattleMon sp4C;
 
-    for (i = 0; i < arg0->unk_08; i++, var_s5++) {
-        var_s3 = var_s5->unk_0C;
+    for (i = 0; i < arg0->categoryCount; i++, var_s5++) {
+        var_s3 = var_s5->boxes;
 
-        for (j = 0; j < var_s5->unk_14; j++, var_s3++) {
-            if (var_s3->unk_0C != 0) {
-                temp_v0 = Deck_Open(var_s5->unk_00, var_s5->unk_04, j, 0);
+        for (j = 0; j < var_s5->boxCount; j++, var_s3++) {
+            if (var_s3->isDirty != 0) {
+                temp_v0 = Deck_Open(var_s5->category, var_s5->bankId, j, 0);
                 if (temp_v0 == NULL) {
                     continue;
                 }
 
-                var_s3->unk_0C = 0;
-                if (Deck_GetEntryCountForType(var_s5->unk_00, var_s5->unk_04, j) != var_s3->unk_10.unk_08) {
-                    var_s3->unk_0C = 1;
-                    var_s7 |= LabPCList_GetCategoryDirtyFlag(var_s5->unk_00);
+                var_s3->isDirty = 0;
+                if (Deck_GetEntryCountForType(var_s5->category, var_s5->bankId, j) != var_s3->entries.count) {
+                    var_s3->isDirty = 1;
+                    var_s7 |= LabPCList_GetCategoryDirtyFlag(var_s5->category);
                 } else {
-                    var_s0 = var_s3->unk_10.unk_00;
+                    var_s0 = var_s3->entries.data;
 
-                    for (x = 0; x < var_s3->unk_10.unk_08; x++, var_s0++) {
+                    for (x = 0; x < var_s3->entries.count; x++, var_s0++) {
                         bzero(&sp4C, sizeof(BattleMon));
                         Deck_ReadEntries(&sp4C, 1, temp_v0);
-                        if (bcmp(&sp4C, &var_s0->unk_00->unk_08, sizeof(BattleMon)) != 0) {
-                            var_s3->unk_0C = 1;
-                            var_s7 |= LabPCList_GetCategoryDirtyFlag(var_s5->unk_00);
+                        if (bcmp(&sp4C, &var_s0->entry->mon, sizeof(BattleMon)) != 0) {
+                            var_s3->isDirty = 1;
+                            var_s7 |= LabPCList_GetCategoryDirtyFlag(var_s5->category);
                             break;
                         }
                     }
@@ -898,28 +898,28 @@ void LabPCList_SaveDirtyBoxes(unk_func_8830867C_02C_144* arg0, s32 arg1) {
     unk_func_8830867C_02C_144_000* var_s2;
     s32 tmp;
 
-    var_s2 = arg0->unk_00;
+    var_s2 = arg0->categories;
 
-    for (i = 0; i < arg0->unk_08; i++, var_s2++) {
-        var_s4 = var_s2->unk_0C;
+    for (i = 0; i < arg0->categoryCount; i++, var_s2++) {
+        var_s4 = var_s2->boxes;
         var_s7 = 0;
 
-        for (j = 0; j < var_s2->unk_14; j++, var_s4++) {
-            if (var_s4->unk_0C != 0) {
-                var_s0 = var_s4->unk_10.unk_00;
-                temp_s3 = Deck_Open(var_s2->unk_00, var_s2->unk_04, j, 1);
+        for (j = 0; j < var_s2->boxCount; j++, var_s4++) {
+            if (var_s4->isDirty != 0) {
+                var_s0 = var_s4->entries.data;
+                temp_s3 = Deck_Open(var_s2->category, var_s2->bankId, j, 1);
 
-                for (x = 0; x < var_s4->unk_10.unk_08; x++, var_s0++) {
-                    Deck_WriteEntries(&var_s0->unk_00->unk_08, 1, temp_s3);
-                    if ((var_s2->unk_00 == 0x20) || (var_s2->unk_00 == 0x21)) {
-                        if ((var_s0->unk_00->unk_08.unk_00.unk_00 > 0) &&
-                            (var_s0->unk_00->unk_08.unk_00.unk_00 < 0x98)) {
-                            GbSave_SetSeenOwnedBits(var_s2->unk_04, var_s0->unk_00->unk_08.unk_00.unk_00, 3);
+                for (x = 0; x < var_s4->entries.count; x++, var_s0++) {
+                    Deck_WriteEntries(&var_s0->entry->mon, 1, temp_s3);
+                    if ((var_s2->category == 0x20) || (var_s2->category == 0x21)) {
+                        if ((var_s0->entry->mon.species.dexId > 0) &&
+                            (var_s0->entry->mon.species.dexId < 0x98)) {
+                            GbSave_SetSeenOwnedBits(var_s2->bankId, var_s0->entry->mon.species.dexId, 3);
                         }
                     }
                 }
 
-                tmp = var_s2->unk_00;
+                tmp = var_s2->category;
                 if ((tmp == 0x10) || (tmp == 0x11) || (tmp == 0x12)) {
                     Deck_CloseAndFlushBox(temp_s3);
                 } else {
@@ -962,7 +962,7 @@ void LabPCList_InitDeckCategories(unk_func_8830867C_02C_154* arg0, MemoryPool* a
         if ((Deck_IsSaveEntryPresent(0x12, i) != 0) && (Deck_GetSaveEntryCount(0x12, i) > 0)) {
             temp_s1 = Deck_GetSaveEntryTrainerId(0x12, i);
             Deck_GetSaveEntryName(0x12, i, &sp38);
-            if ((sp48.unk_08 == temp_s1) && (HAL_Strcmp(sp54, sp38) == 0)) {
+            if ((sp48.trainerId == temp_s1) && (HAL_Strcmp(sp54, sp38) == 0)) {
                 break;
             }
         }
@@ -1036,7 +1036,7 @@ s32 LabPCList_IsSpecialTmItemId(s32* arg0) {
 }
 
 s32 LabPCList_CompareTmHmEntries(unk_func_88200FA0_030_038* arg0, unk_func_88200FA0_030_038* arg1) {
-    return (arg0->unk_08 - arg1->unk_08 != 0) ? arg0->unk_08 - arg1->unk_08 : (s32)arg0[1].unk_00 - (s32)arg1[1].unk_00;
+    return (arg0->count - arg1->count != 0) ? arg0->count - arg1->count : (s32)arg0[1].data - (s32)arg1[1].data;
 }
 
 void LabPCList_BuildTmHmList(unk_func_88200FA0_030_038* arg0, unk_func_8830867C_02C_1A8* arg1, unk_func_8830867C_02C_154* arg2,
@@ -1051,7 +1051,7 @@ void LabPCList_BuildTmHmList(unk_func_88200FA0_030_038* arg0, unk_func_8830867C_
     s32 var_v0;
     u8* var_s2;
 
-    var_s6 = arg0->unk_00;
+    var_s6 = arg0->data;
     var_s4 = arg2;
     var_s1 = arg1;
     PointerList_Initialize(arg0, var_s6, arg4, 0);
@@ -1095,13 +1095,13 @@ void LabPCList_BuildTmHmList(unk_func_88200FA0_030_038* arg0, unk_func_8830867C_
         }
     }
 
-    arg0->unk_08 = ((s32)var_s1 - (s32)arg1) >> 4;
+    arg0->count = ((s32)var_s1 - (s32)arg1) >> 4;
     PointerList_Sort(arg0, LabPCList_CompareTmHmEntries);
 }
 
 void LabPCList_ConsumeUsedTmItem(unk_func_8830867C_04C_030_02C_000* arg0) {
     if ((LabItem_IsQuantitylessItemForOperation(arg0->unk_00[0]->unk_00) != 0) || (arg0->unk_00[0]->unk_01 < 2)) {
-        s32 tmp = arg0->unk_00[1]->unk_0C.unk_00;
+        s32 tmp = arg0->unk_00[1]->unk_0C.data;
 
         WordList_Remove(&arg0->unk_00[1]->unk_0C, ((s32)arg0->unk_00[0] - tmp) >> 1);
     } else {

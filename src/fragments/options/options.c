@@ -5,7 +5,7 @@
 #include "src/game_state.h"
 #include "src/text_system.h"
 #include "src/3D140.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/audio_sfx.h"
 #include "src/audio_channel.h"
 #include "src/gfx_buffer.h"
@@ -295,7 +295,7 @@ void Options_EraseSaveData(void) {
     Save_ResetAndCommitTypedRecord(0x16, 0);
     Save_ResetAndCommitTypedRecord(0x17, 0);
     Save_FlushDirtyBanks();
-    D_800AE540.unk_11F2 = 0;
+    D_800AE540.roundSelector = 0;
     Audio_SetMonoOutput(0);
     Audio_SetVoiceEnabled(1);
     D_82C01666 = 0;

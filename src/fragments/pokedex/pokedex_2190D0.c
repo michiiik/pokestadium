@@ -9,7 +9,7 @@
 #include "src/gb_save.h"
 #include "src/gallery.h"
 #include "src/audio_sfx_wrapper.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/gfx_buffer.h"
 #include "src/matrix.h"
 #include "src/geo_layout.h"
@@ -3386,7 +3386,7 @@ s32 Pokedex_FindPrevMapArea(s32 arg0) {
 void Pokedex_BuildMapMarkerDisplayList(void) {
     Gfx* temp_v0 = Gfx_AllocDisplayList(sizeof(Gfx) * 5);
 
-    D_888269C0.unk_18 = temp_v0;
+    D_888269C0.displayList = temp_v0;
 
     if (D_88826A4C == 1) {
         gSPDisplayList(temp_v0++, D_88825648);
@@ -3412,7 +3412,7 @@ void Pokedex_BuildMapMarkersDisplayList(void) {
     ptr = &temp_s2->unk_60;
 
     temp_v0 = Gfx_AllocDisplayList(sizeof(Gfx) * 36 * 25);
-    D_888269E0.unk_18 = temp_v0;
+    D_888269E0.displayList = temp_v0;
     D_88826CE8 = Gfx_AllocDisplayList(sizeof(Mtx) * 36);
     var_s1 = D_88826CE8;
 
@@ -3491,7 +3491,7 @@ void Pokedex_BuildOverviewMarkersDisplayList(void) {
     Gfx* temp_v0;
 
     temp_v0 = Gfx_AllocDisplayList(sizeof(Gfx) * 170);
-    D_88826A20.unk_18 = temp_v0;
+    D_88826A20.displayList = temp_v0;
 
     if (D_88826A4C == 1) {
         gSPDisplayList(temp_v0++, D_888255B8);
@@ -3547,7 +3547,7 @@ Gfx* Pokedex_DrawMapPinIcon(Gfx* arg0, s16 arg1, s16 arg2) {
 }
 
 #ifdef NON_MATCHING
-Gfx* func_88805AEC(Gfx* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
+Gfx* Pokedex_DrawMapLabelBubble(Gfx* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
     UNUSED s32 sp44;
     u32 temp_v0;
     s32 tmp;
@@ -3670,7 +3670,7 @@ Gfx* func_88805AEC(Gfx* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, 
     return arg0;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/pokedex/pokedex_2190D0/func_88805AEC.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/28/fragment28_2190D0/Pokedex_DrawMapLabelBubble.s")
 #endif
 
 void Pokedex_BuildMapLabelsDisplayList(void) {
@@ -3686,34 +3686,34 @@ void Pokedex_BuildMapLabelsDisplayList(void) {
     s32 sp2C;
 
     temp_v0 = Gfx_AllocDisplayList(sizeof(Gfx) * 450);
-    D_88826A00.unk_18 = temp_v0;
+    D_88826A00.displayList = temp_v0;
 
     gSPDisplayList(temp_v0++, D_88825510);
 
-    temp_v0 = func_88805AEC(temp_v0, 0x1E, 0x14, D_88826CC8, 0x10, 2, 1);
+    temp_v0 = Pokedex_DrawMapLabelBubble(temp_v0, 0x1E, 0x14, D_88826CC8, 0x10, 2, 1);
 
     if (D_88826A54 == 1) {
         if (D_88826CB2 > 0) {
             sp46 = 0xA0 - (D_88826CB2 / 2);
             sp44 = D_88826CB2;
-            temp_v0 = func_88805AEC(temp_v0, sp46, 0x78, D_88826CB2, 0x14, 2, 1);
+            temp_v0 = Pokedex_DrawMapLabelBubble(temp_v0, sp46, 0x78, D_88826CB2, 0x14, 2, 1);
         }
     } else {
         if (D_88826A4C == 0) {
             sp2C = D_8882651C[D_88826A4E] - 1;
-            temp_v0 = func_88805AEC(temp_v0, 0xB9, 0xD2, 0x73, 0x10, 2, 1);
+            temp_v0 = Pokedex_DrawMapLabelBubble(temp_v0, 0xB9, 0xD2, 0x73, 0x10, 2, 1);
             if ((D_88826A52 == 1) && (sp2C >= 0) && (D_88826A80 == 0) && (D_88826CB0 > 0) && (D_88826CDC != 0)) {
                 temp_v0_2 = (D_88826CF0[sp2C].unk_02 * 0xA) - 0xA;
                 sp42 = 0x5A - D_88826CCE;
                 sp3E = D_88826CB0 + 0xA;
                 sp40 = 0xB4 - temp_v0_2;
                 sp3C = temp_v0_2 + 0x14;
-                temp_v0 = func_88805AEC(temp_v0, sp42, sp40, sp3E, sp3C, 2, 1);
+                temp_v0 = Pokedex_DrawMapLabelBubble(temp_v0, sp42, sp40, sp3E, sp3C, 2, 1);
             }
         } else {
-            temp_v0 = func_88805AEC(func_88805AEC(temp_v0, 0x4F, 0x2F, 0x97, 0x86, 2, 0), 0x4F, 0xB5, 0x97, 0x10, 2, 1);
+            temp_v0 = Pokedex_DrawMapLabelBubble(Pokedex_DrawMapLabelBubble(temp_v0, 0x4F, 0x2F, 0x97, 0x86, 2, 0), 0x4F, 0xB5, 0x97, 0x10, 2, 1);
         }
-        temp_v0 = func_88805AEC(temp_v0, 0x50 - (D_88826CCA / 2), 0xD2, D_88826CCA + 0x14, 0x10, 2, 1);
+        temp_v0 = Pokedex_DrawMapLabelBubble(temp_v0, 0x50 - (D_88826CCA / 2), 0xD2, D_88826CCA + 0x14, 0x10, 2, 1);
         D_88826CCC = D_88826CCA;
     }
 
@@ -4087,7 +4087,7 @@ s32 Pokedex_CheckAreaMapExit(void) {
 }
 
 #ifdef NON_MATCHING
-void func_88807D04(s32 arg0, MainPoolState* arg1, UNUSED s32 arg2, s32 arg3, s32 arg4, char* arg5, char** arg6) {
+void Pokedex_ShowAreaMap(s32 arg0, MainPoolState* arg1, UNUSED s32 arg2, s32 arg3, s32 arg4, char* arg5, char** arg6) {
     s32 i;
     unk_D_86002F34_00C* ptr;
     MemoryBlock* sp4C;
@@ -4176,7 +4176,7 @@ void func_88807D04(s32 arg0, MainPoolState* arg1, UNUSED s32 arg2, s32 arg3, s32
     ptr->unk_60.eye = D_88826288;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/pokedex/pokedex_2190D0/func_88807D04.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/28/fragment28_2190D0/Pokedex_ShowAreaMap.s")
 #endif
 
 void Pokedex_ExitAreaMapPool(void) {

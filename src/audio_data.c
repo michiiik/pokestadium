@@ -1,11 +1,9 @@
 #include "audio_data.h"
-#include "src/libnumus/player.h"
+#include "src/audio_io.h"
 #include "src/rom_device.h"
 #include "src/audio_cache.h"
 #include "src/audio_category_fade.h"
 #include "src/audio_commands.h"
-
-u8* D_800FF9C0;
 
 s32 Audio_LoadWaveTablesAndMusic(u8* arg0) {
     UNUSED s32 pad[2];

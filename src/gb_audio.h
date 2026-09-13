@@ -24,7 +24,7 @@ u8 GbMusic_CmdSetMasterVolume(u32 arg0);
 u8 GbMusic_CmdEnableEnvelope(u32 arg0);
 u8 GbMusic_CmdSetNoteLength(u32 arg0, u8 arg1);
 u8 GbMusic_CmdSetOctave(u32 arg0, u8 arg1);
-s32 GbMusic_CmdPlayNoteWithDuty(u32 arg0, u8 arg1);
+u8 GbMusic_CmdPlayNoteWithDuty(u32 arg0, u8 arg1);
 u8 GbMusic_CmdPlayNote(u32 arg0, u8 arg1);
 u8 GbMusic_TriggerNoteFromByte(u32 arg0, u8 arg1);
 s32 GbMusic_ScheduleNote(u32 arg0, u8 arg1);
@@ -47,6 +47,6 @@ void GbMusic_StartSfx(u8 arg0);
 void GbMusic_ResetApu(void);
 void GbMusic_BindSequenceTracks(u8 arg0);
 s32 GbMusic_CountActiveHighChannels(void);
-void func_80044A50(unk_D_800FC6D4* arg0);
+void GbMusic_RelocateSequenceTable(unk_D_800FC6D4* arg0);
 
 #endif // _435D0_H_

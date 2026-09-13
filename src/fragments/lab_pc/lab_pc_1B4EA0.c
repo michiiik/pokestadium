@@ -37,7 +37,7 @@ static char** D_88224FCC;
 void LabItem_ReadDeckEntries(s32 arg0, s32 arg1, s32 arg2, unk_func_8820BE14_06C* arg3) {
     DeckHandle* sp1C = Deck_Open(arg0, arg1, arg2, 0);
 
-    arg3->unk_08 = Deck_ReadEntries(arg3->unk_00, arg3->unk_04, sp1C);
+    arg3->count = Deck_ReadEntries(arg3->data, arg3->capacity, sp1C);
     Deck_CloseAndFlush(sp1C);
 }
 
@@ -51,7 +51,7 @@ void LabItem_WriteDeckBack(s32 arg0, s32 arg1, s32 arg2, unk_func_8820BE14_06C* 
         sp2C = Deck_Open(arg0, arg1, arg2, 1);
     }
 
-    Deck_WriteEntries(arg3->unk_00, arg3->unk_08, sp2C);
+    Deck_WriteEntries(arg3->data, arg3->count, sp2C);
 
     if ((arg0 == 0x10) || (arg0 == 0x11) || (arg0 == 0x12)) {
         Deck_CloseAndFlushBox(sp2C);
@@ -93,9 +93,9 @@ s32 LabItem_FindOrAllocateGamePakBoxSlot(unk_func_8821421C_07C* arg0, s32 arg1, 
 void LabItem_InitBoxLocationWidget(unk_func_8821421C_02C_030* arg0, unk_func_8850143C* arg1, spE8_func_882121E0* arg2) {
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(arg0, sizeof(unk_func_8821421C_02C_030));
 
-    arg0->unk_00.unk_18 = LabItem_DrawBoxLocationLabel;
-    arg0->unk_00.unk_14.unk_00 = arg1->unk_00.unk_14.unk_00;
-    arg0->unk_00.unk_14.unk_02 = arg1->unk_00.unk_14.unk_02;
+    arg0->unk_00.drawCallback = LabItem_DrawBoxLocationLabel;
+    arg0->unk_00.size.x = arg1->unk_00.size.x;
+    arg0->unk_00.size.y = arg1->unk_00.size.y;
     arg0->unk_2C = arg1;
     arg0->unk_30 = GbSave_GameToCategoryIndex(GbSave_GetPortGame(GbSave_GetActivePort()));
     arg0->unk_34 = -1;
@@ -123,7 +123,7 @@ s32 LabItem_DrawBoxLocationLabel(unk_func_8821421C_02C_030* arg0, s32 arg1, s32 
     gDPSetTexturePersp(gDisplayListHead++, G_TP_NONE);
 
     if ((arg0->unk_34 == 0) || (arg0->unk_34 == 1)) {
-        var_s0 = (((arg0->unk_00.unk_14.unk_00 - temp_v0) - 0x20) / 2) + arg1 + 0x20;
+        var_s0 = (((arg0->unk_00.size.x - temp_v0) - 0x20) / 2) + arg1 + 0x20;
 
         gDPLoadTextureBlock(gDisplayListHead++, D_88223470[arg0->unk_30], G_IM_FMT_RGBA, G_IM_SIZ_16b, 24, 26, 0,
                             G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
@@ -131,7 +131,7 @@ s32 LabItem_DrawBoxLocationLabel(unk_func_8821421C_02C_030* arg0, s32 arg1, s32 
         gSPTextureRectangle(gDisplayListHead++, (var_s0 - 0x20) << 2, (arg2 + 2) << 2, (var_s0 - 9) << 2,
                             (arg2 + 0x1B) << 2, G_TX_RENDERTILE, 0, 0, 0x1000, 0x0400);
     } else {
-        var_s0 = (((arg0->unk_00.unk_14.unk_00 - temp_v0) - 0x30) / 2) + arg1 + 0x30;
+        var_s0 = (((arg0->unk_00.size.x - temp_v0) - 0x30) / 2) + arg1 + 0x30;
 
         gDPLoadTextureBlock(gDisplayListHead++, D_88223488, G_IM_FMT_RGBA, G_IM_SIZ_16b, 48, 26, 0,
                             G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
@@ -179,17 +179,17 @@ void LabItem_InitConfirmDialog(unk_func_8821421C_034* arg0, s32 arg1, s32 arg2, 
 
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(arg0, sizeof(unk_func_8821421C_034));
 
-    arg0->unk_00.unk_20 = LabItem_ConfirmDialog_HandleInput;
-    arg0->unk_00.unk_24 = LabItem_ConfirmDialog_SetSelectedIndex;
-    arg0->unk_00.unk_10.unk_00 = arg1;
-    arg0->unk_00.unk_10.unk_02 = arg2;
+    arg0->unk_00.inputCallback = LabItem_ConfirmDialog_HandleInput;
+    arg0->unk_00.setStateCallback = LabItem_ConfirmDialog_SetSelectedIndex;
+    arg0->unk_00.position.x = arg1;
+    arg0->unk_00.position.y = arg2;
 
     arg0->unk_2C = mem_pool_alloc(arg3, sizeof(WidgetAnimatedPanel));
     ((func88502274)Memmap_GetFragmentVaddr(WidgetTree_InitAnimatedPanel))(arg0->unk_2C, 0, 0, 0x100, 0x3C);
 
-    arg0->unk_2C->unk_00.unk_28 |= 0x200;
-    arg0->unk_2C->unk_00.unk_28 |= 0x400;
-    arg0->unk_2C->unk_00.unk_28 &= ~1;
+    arg0->unk_2C->node.flags |= 0x200;
+    arg0->unk_2C->node.flags |= 0x400;
+    arg0->unk_2C->node.flags &= ~1;
 
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_2C);
 
@@ -213,7 +213,7 @@ void LabItem_InitConfirmDialog(unk_func_8821421C_034* arg0, s32 arg1, s32 arg2, 
     ((func8850A40C)Memmap_GetFragmentVaddr(WidgetTree_InitBorderFrame))(sp54, 0x28, 6, 0x48, 0x18);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(sp5C, sp54);
     ptr = arg0->unk_30;
-    ptr->unk_18[0] = sp54;
+    ptr->items[0] = sp54;
 
     sp50 = mem_pool_alloc(arg3, sizeof(unk_func_8850878C));
     ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(sp50, 0xA, 2, Text_GetString(NULL, 0, D_88224FC4, 0x17), 8);
@@ -223,7 +223,7 @@ void LabItem_InitConfirmDialog(unk_func_8821421C_034* arg0, s32 arg1, s32 arg2, 
     ((func8850A40C)Memmap_GetFragmentVaddr(WidgetTree_InitBorderFrame))(sp58, 0x90, 6, 0x48, 0x18);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(sp5C, sp58);
     ptr = arg0->unk_30;
-    ptr->unk_18[1] = sp58;
+    ptr->items[1] = sp58;
 
     sp4C = mem_pool_alloc(arg3, sizeof(unk_func_8850878C));
     ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(sp4C, 6, 2, Text_GetString(NULL, 0, D_88224FC4, 0x18), 8);
@@ -233,14 +233,14 @@ void LabItem_InitConfirmDialog(unk_func_8821421C_034* arg0, s32 arg1, s32 arg2, 
     sp48 = mem_pool_alloc(arg3, sizeof(WidgetAnimatedFrame));
     ((func88503340)Memmap_GetFragmentVaddr(WidgetTree_InitAnimatedFrameVariantA))(sp48, 0, 0, 0x10, 0x10, D_88217FE4);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(sp5C, sp48);
-    arg0->unk_30->unk_1C = sp48;
+    arg0->unk_30->cursor = sp48;
 }
 
 s32 LabItem_ConfirmDialog_HandleInput(unk_func_8821421C_034* arg0, Controller* arg1) {
     s32 var_v1;
 
-    if (arg0->unk_2C->unk_30 & 2) {
-        var_v1 = arg0->unk_30->unk_10(arg0->unk_30, arg1);
+    if (arg0->unk_2C->animState & 2) {
+        var_v1 = arg0->unk_30->inputCallback(arg0->unk_30, arg1);
         if (var_v1 == 0) {
             if (arg1->buttonPressed & 0x4000) {
                 var_v1 = 0x80000002;
@@ -255,8 +255,8 @@ s32 LabItem_ConfirmDialog_HandleInput(unk_func_8821421C_034* arg0, Controller* a
 }
 
 void LabItem_ConfirmDialog_SetSelectedIndex(unk_func_8821421C_034* arg0, s32 arg1) {
-    arg0->unk_00.unk_2A = arg1;
-    arg0->unk_30->unk_14(arg0->unk_30, arg1);
+    arg0->unk_00.state = arg1;
+    arg0->unk_30->setStateCallback(arg0->unk_30, arg1);
 }
 
 void LabItem_SetConfirmDialogText(unk_func_8821421C_034* arg0, char* arg1) {
@@ -267,7 +267,7 @@ s32 LabItem_RunConfirmDialog(unk_func_8821421C_034* arg0, Controller* arg1) {
     s32 var_s0;
     s32 var_s1 = 0;
 
-    arg0->unk_30->unk_14(arg0->unk_30, 1);
+    arg0->unk_30->setStateCallback(arg0->unk_30, 1);
 
     ((func88502C98)Memmap_GetFragmentVaddr(WidgetTree_OpenAnimatedPanel))(arg0->unk_2C);
 
@@ -280,7 +280,7 @@ s32 LabItem_RunConfirmDialog(unk_func_8821421C_034* arg0, Controller* arg1) {
             if (var_s0 & 2) {
                 var_s1 = 1;
             } else if (var_s0 & 4) {
-                switch (arg0->unk_30->unk_24) {
+                switch (arg0->unk_30->selectedIndex) {
                     case 0:
                         var_s1 = 2;
                         Audio_PlaySoundEffectById(0x1F);
@@ -298,7 +298,7 @@ s32 LabItem_RunConfirmDialog(unk_func_8821421C_034* arg0, Controller* arg1) {
         ((func8850BC94)Memmap_GetFragmentVaddr(Ui_PlayInputActionSound))(var_s0);
     }
 
-    arg0->unk_2C->unk_2C = 0xB;
+    arg0->unk_2C->animFrame = 0xB;
     return var_s1 - 1;
 }
 
@@ -362,10 +362,10 @@ void LabItem_InitDropdownMenu(unk_func_8821421C_02C_070* arg0, s32 arg1, s32 arg
 
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(arg0, sizeof(unk_func_8821421C_02C_070));
 
-    arg0->unk_00.unk_20 = LabItem_DropdownMenu_HandleInput;
-    arg0->unk_00.unk_24 = LabItem_DropdownMenu_SetSelectedIndex;
-    arg0->unk_00.unk_10.unk_00 = ((arg3 - sp4C) / 2) + arg1;
-    arg0->unk_00.unk_10.unk_02 = arg2;
+    arg0->unk_00.inputCallback = LabItem_DropdownMenu_HandleInput;
+    arg0->unk_00.setStateCallback = LabItem_DropdownMenu_SetSelectedIndex;
+    arg0->unk_00.position.x = ((arg3 - sp4C) / 2) + arg1;
+    arg0->unk_00.position.y = arg2;
     arg0->unk_40 = arg6;
 
     PointerList_Initialize(&arg0->unk_34, arg4, arg5, arg5);
@@ -373,9 +373,9 @@ void LabItem_InitDropdownMenu(unk_func_8821421C_02C_070* arg0, s32 arg1, s32 arg
     arg0->unk_2C = mem_pool_alloc(arg7, sizeof(WidgetAnimatedPanel));
     ((func88502274)Memmap_GetFragmentVaddr(WidgetTree_InitAnimatedPanel))(arg0->unk_2C, 0, 0, sp4C, arg5 * 0x1C);
 
-    arg0->unk_2C->unk_00.unk_28 |= 0x200;
-    arg0->unk_2C->unk_00.unk_28 |= 0x400;
-    arg0->unk_2C->unk_00.unk_28 &= ~1;
+    arg0->unk_2C->node.flags |= 0x200;
+    arg0->unk_2C->node.flags |= 0x400;
+    arg0->unk_2C->node.flags &= ~1;
 
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_2C);
 
@@ -389,8 +389,8 @@ void LabItem_InitDropdownMenu(unk_func_8821421C_02C_070* arg0, s32 arg1, s32 arg
 s32 LabItem_DropdownMenu_HandleInput(unk_func_8821421C_02C_070* arg0, Controller* arg1) {
     s32 var_v1;
 
-    if (arg0->unk_2C->unk_30 & 2) {
-        var_v1 = arg0->unk_30->unk_00.unk_20(arg0->unk_30, arg1);
+    if (arg0->unk_2C->animState & 2) {
+        var_v1 = arg0->unk_30->unk_00.inputCallback(arg0->unk_30, arg1);
     } else {
         var_v1 = 1;
     }
@@ -400,8 +400,8 @@ s32 LabItem_DropdownMenu_HandleInput(unk_func_8821421C_02C_070* arg0, Controller
 void LabItem_DropdownMenu_SetSelectedIndex(unk_func_8821421C_02C_070* arg0, s32 arg1) {
     unk_func_88200FA0_030_030* temp_a0;
 
-    arg0->unk_00.unk_2A = arg1;
-    arg0->unk_30->unk_00.unk_24(&arg0->unk_30->unk_00, arg1);
+    arg0->unk_00.state = arg1;
+    arg0->unk_30->unk_00.setStateCallback(&arg0->unk_30->unk_00, arg1);
 }
 
 s32 LabItem_DropdownMenu_GetSelectedIndex(unk_func_8821421C_02C_070* arg0) {
@@ -422,19 +422,19 @@ void LabItem_DropdownMenu_Open(unk_func_8821421C_02C_070* arg0) {
 }
 
 void LabItem_DropdownMenu_Close(unk_func_8821421C_02C_070* arg0) {
-    arg0->unk_2C->unk_2C = 0xB;
+    arg0->unk_2C->animFrame = 0xB;
 }
 
 s32 LabItem_RunDropdownMenuModal(unk_func_8821421C_02C_070* arg0, Controller* arg1) {
     s32 var_s0;
     s32 var_s1 = 0;
 
-    arg0->unk_00.unk_24(&arg0->unk_00, 1);
+    arg0->unk_00.setStateCallback(&arg0->unk_00, 1);
 
     while (var_s1 == 0) {
         Ui_SendMessageAndPollInput(NULL);
 
-        var_s0 = arg0->unk_00.unk_20(arg0, arg1);
+        var_s0 = arg0->unk_00.inputCallback(arg0, arg1);
 
         if (!(var_s0 & 1)) {
             if (arg1->buttonPressed & 0x4000) {
@@ -600,11 +600,11 @@ void LabItem_DrawItemGridCell(s32 arg0, s32 arg1, u8* arg2, s32 arg3, s32 arg4, 
 void LabItem_InitItemRowWidget(unk_func_8821421C_02C_06C_02C_060* arg0, s32 arg1, s32 arg2, s32 arg3) {
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(arg0, sizeof(unk_func_8821421C_02C_06C_02C_060));
 
-    arg0->unk_00.unk_18 = LabItem_ItemRowWidget_Draw;
-    arg0->unk_00.unk_10.unk_00 = arg1;
-    arg0->unk_00.unk_10.unk_02 = arg2;
-    arg0->unk_00.unk_14.unk_00 = arg3;
-    arg0->unk_00.unk_14.unk_02 = 0;
+    arg0->unk_00.drawCallback = LabItem_ItemRowWidget_Draw;
+    arg0->unk_00.position.x = arg1;
+    arg0->unk_00.position.y = arg2;
+    arg0->unk_00.size.x = arg3;
+    arg0->unk_00.size.y = 0;
     arg0->unk_2C.unk_00.unk_00 = 1;
     arg0->unk_2C.unk_00.unk_01 = 1;
 }
@@ -614,15 +614,15 @@ void LabItem_ItemRowWidget_SetItem(unk_func_8821421C_02C_06C_02C_060* arg0, unk_
 }
 
 s32 LabItem_ItemRowWidget_Draw(unk_func_8821421C_02C_06C_02C_060* arg0, s32 arg1, s32 arg2) {
-    return LabItem_DrawItemRow(&arg0->unk_2C, arg1, arg2, arg0->unk_00.unk_14.unk_00);
+    return LabItem_DrawItemRow(&arg0->unk_2C, arg1, arg2, arg0->unk_00.size.x);
 }
 
 void LabItem_QuantitySpinner_Init(unk_func_8820E99C_030* arg0, s32 arg1) {
-    arg0->unk_30.unk_0C = 2;
-    arg0->unk_30.unk_00 = 1;
-    arg0->unk_30.unk_04 = 1;
-    arg0->unk_30.unk_08 = arg1;
-    arg0->unk_30.unk_10 = 0;
+    arg0->unk_30.maxDigits = 2;
+    arg0->unk_30.value = 1;
+    arg0->unk_30.minValue = 1;
+    arg0->unk_30.maxValue = arg1;
+    arg0->unk_30.digitIndex = 0;
 }
 
 void LabItem_InitQuantitySpinnerDigits(unk_func_8820E99C_030* arg0, s32 arg1, s32 arg2, MemoryPool* arg3) {
@@ -630,36 +630,36 @@ void LabItem_InitQuantitySpinnerDigits(unk_func_8820E99C_030* arg0, s32 arg1, s3
 
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(arg0, sizeof(unk_func_8820E99C_030));
 
-    arg0->unk_00.unk_1C = LabItem_QuantitySpinnerDigits_PositionArrow;
-    arg0->unk_00.unk_18 = LabItem_DrawQuantitySpinnerDigits;
-    arg0->unk_00.unk_20 = LabItem_QuantitySpinnerInput;
-    arg0->unk_00.unk_24 = LabItem_QuantitySpinnerDigits_SetSelected;
-    arg0->unk_00.unk_10.unk_00 = arg1;
-    arg0->unk_00.unk_10.unk_02 = arg2;
+    arg0->unk_00.updateCallback = LabItem_QuantitySpinnerDigits_PositionArrow;
+    arg0->unk_00.drawCallback = LabItem_DrawQuantitySpinnerDigits;
+    arg0->unk_00.inputCallback = LabItem_QuantitySpinnerInput;
+    arg0->unk_00.setStateCallback = LabItem_QuantitySpinnerDigits_SetSelected;
+    arg0->unk_00.position.x = arg1;
+    arg0->unk_00.position.y = arg2;
 
     LabItem_QuantitySpinner_Init(arg0, 0);
     sp2C = Font_MeasureTextExtent(8, 0, "0");
 
     arg0->unk_44 = mem_pool_alloc(arg3, sizeof(unk_func_8820E99C_030_044));
     ((func88504F98)Memmap_GetFragmentVaddr(WidgetTree_InitDirectionalIndicator))(arg0->unk_44, -1, 0, sp2C + 2, 0x14);
-    arg0->unk_44->unk_00.unk_28 &= ~1;
+    arg0->unk_44->unk_00.flags &= ~1;
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_44);
 }
 
 void LabItem_QuantitySpinnerDigits_SetSelected(unk_func_8820E99C_030* arg0, s32 arg1) {
-    arg0->unk_00.unk_2A = arg1;
-    arg0->unk_44->unk_00.unk_24(&arg0->unk_44->unk_00, arg1);
-    arg0->unk_44->unk_00.unk_28 &= ~1;
+    arg0->unk_00.state = arg1;
+    arg0->unk_44->unk_00.setStateCallback(&arg0->unk_44->unk_00, arg1);
+    arg0->unk_44->unk_00.flags &= ~1;
     if (arg1 & 0x101) {
-        arg0->unk_44->unk_00.unk_28 |= 1;
+        arg0->unk_44->unk_00.flags |= 1;
     }
 }
 
 s32 LabItem_QuantitySpinnerDigits_PositionArrow(unk_func_8820E99C_030* arg0) {
-    s32 tmp = ((arg0->unk_30.unk_0C - arg0->unk_30.unk_10) - 1) * arg0->unk_44->unk_00.unk_14.unk_00;
+    s32 tmp = ((arg0->unk_30.maxDigits - arg0->unk_30.digitIndex) - 1) * arg0->unk_44->unk_00.size.x;
 
-    arg0->unk_44->unk_00.unk_10.unk_00 = tmp;
-    arg0->unk_44->unk_00.unk_10.unk_02 = arg0->unk_44->unk_00.unk_10.unk_02;
+    arg0->unk_44->unk_00.position.x = tmp;
+    arg0->unk_44->unk_00.position.y = arg0->unk_44->unk_00.position.y;
     return 0;
 }
 
@@ -669,8 +669,8 @@ s32 LabItem_DrawQuantitySpinnerDigits(unk_func_8820E99C_030* arg0, s32 arg1, s32
     Font_BeginTranslucentTextRendering();
     Font_SetActive(8, 0);
     Gfx_SetEnvColor(D_8821801C.r, D_8821801C.g, D_8821801C.b, D_8821801C.a);
-    Font_DrawCharAt(arg1, arg2, (arg0->unk_30.unk_00 / 10) + 0x30);
-    Font_DrawCharAt(arg0->unk_44->unk_00.unk_14.unk_00 + arg1, arg2, (arg0->unk_30.unk_00 % 10) + 0x30);
+    Font_DrawCharAt(arg1, arg2, (arg0->unk_30.value / 10) + 0x30);
+    Font_DrawCharAt(arg0->unk_44->unk_00.size.x + arg1, arg2, (arg0->unk_30.value % 10) + 0x30);
     Font_EndTexturedTextRendering();
     return 0;
 }
@@ -709,17 +709,17 @@ void LabItem_InitQuantitySpinner(unk_func_8820E99C* arg0, s32 arg1, s32 arg2, Me
 
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(arg0, sizeof(unk_func_8820E99C));
 
-    arg0->unk_00.unk_20 = LabItem_QuantitySpinner_HandleInput;
-    arg0->unk_00.unk_24 = LabItem_QuantitySpinner_SetSelected;
-    arg0->unk_00.unk_10.unk_00 = arg1;
-    arg0->unk_00.unk_10.unk_02 = arg2;
+    arg0->unk_00.inputCallback = LabItem_QuantitySpinner_HandleInput;
+    arg0->unk_00.setStateCallback = LabItem_QuantitySpinner_SetSelected;
+    arg0->unk_00.position.x = arg1;
+    arg0->unk_00.position.y = arg2;
 
     arg0->unk_2C = mem_pool_alloc(arg3, sizeof(WidgetAnimatedPanel));
     ((func88502274)Memmap_GetFragmentVaddr(WidgetTree_InitAnimatedPanel))(arg0->unk_2C, 0, 0, sp40, 0x28);
 
-    arg0->unk_2C->unk_00.unk_28 |= 0x200;
-    arg0->unk_2C->unk_00.unk_28 |= 0x400;
-    arg0->unk_2C->unk_00.unk_28 &= ~1;
+    arg0->unk_2C->node.flags |= 0x200;
+    arg0->unk_2C->node.flags |= 0x400;
+    arg0->unk_2C->node.flags &= ~1;
 
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_2C);
 
@@ -738,15 +738,15 @@ void LabItem_InitQuantitySpinner(unk_func_8820E99C* arg0, s32 arg1, s32 arg2, Me
 }
 
 void LabItem_QuantitySpinner_SetSelected(unk_func_8820E99C* arg0, s32 arg1) {
-    arg0->unk_00.unk_2A = arg1;
-    arg0->unk_30->unk_00.unk_24(&arg0->unk_30->unk_00, arg1);
+    arg0->unk_00.state = arg1;
+    arg0->unk_30->unk_00.setStateCallback(&arg0->unk_30->unk_00, arg1);
 }
 
 s32 LabItem_QuantitySpinner_HandleInput(unk_func_8820E99C* arg0, Controller* arg1) {
     s32 var_v1;
 
-    if (arg0->unk_2C->unk_30 & 2) {
-        var_v1 = arg0->unk_30->unk_00.unk_20(arg0->unk_30, arg1);
+    if (arg0->unk_2C->animState & 2) {
+        var_v1 = arg0->unk_30->unk_00.inputCallback(arg0->unk_30, arg1);
     } else {
         var_v1 = 1;
     }
@@ -758,15 +758,15 @@ void LabItem_QuantitySpinner_Open(unk_func_8820E99C* arg0) {
 }
 
 void LabItem_QuantitySpinner_Close(unk_func_8820E99C* arg0) {
-    arg0->unk_2C->unk_2C = 0xB;
+    arg0->unk_2C->animFrame = 0xB;
 }
 
 void LabItem_InitGamePakLabelWidget(unk_func_8821421C_038_02C* arg0, unk_func_8850143C* arg1) {
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(arg0, sizeof(unk_func_8821421C_038_02C));
 
-    arg0->unk_00.unk_18 = LabItem_DrawGamePakLabel;
-    arg0->unk_00.unk_14.unk_00 = arg1->unk_00.unk_14.unk_00;
-    arg0->unk_00.unk_14.unk_02 = arg1->unk_00.unk_14.unk_02;
+    arg0->unk_00.drawCallback = LabItem_DrawGamePakLabel;
+    arg0->unk_00.size.x = arg1->unk_00.size.x;
+    arg0->unk_00.size.y = arg1->unk_00.size.y;
     arg0->unk_30 = 0;
     arg0->unk_2C = arg1;
 }
@@ -961,11 +961,11 @@ void LabItem_InitBoxScreen(unk_func_8821421C_038* arg0, s32 arg1, s32 arg2, Widg
 
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(arg0, 0x78);
 
-    arg0->unk_00.unk_1C = LabItem_BoxScreen_UpdatePageSelection;
-    arg0->unk_00.unk_20 = LabItem_BoxScreen_HandleInput;
-    arg0->unk_00.unk_24 = LabItem_BoxScreen_SetMenuState;
+    arg0->unk_00.updateCallback = LabItem_BoxScreen_UpdatePageSelection;
+    arg0->unk_00.inputCallback = LabItem_BoxScreen_HandleInput;
+    arg0->unk_00.setStateCallback = LabItem_BoxScreen_SetMenuState;
     // clang-format off
-    arg0->unk_00.unk_10.unk_00 = arg1;arg0->unk_00.unk_10.unk_02 = arg2;
+    arg0->unk_00.position.x = arg1;arg0->unk_00.position.y = arg2;
     // clang-format on
     arg0->unk_60 = 0;
 
@@ -978,9 +978,9 @@ void LabItem_InitBoxScreen(unk_func_8821421C_038* arg0, s32 arg1, s32 arg2, Widg
     arg0->unk_44 = mem_pool_alloc(arg5, sizeof(WidgetAnimatedPanel));
     ((func88502274)Memmap_GetFragmentVaddr(WidgetTree_InitAnimatedPanel))(arg0->unk_44, 0, 0, 0x228, 0x162);
 
-    arg0->unk_44->unk_00.unk_28 |= 0x200;
-    arg0->unk_44->unk_00.unk_28 |= 0x400;
-    arg0->unk_44->unk_00.unk_28 &= ~1;
+    arg0->unk_44->node.flags |= 0x200;
+    arg0->unk_44->node.flags |= 0x400;
+    arg0->unk_44->node.flags &= ~1;
 
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_44);
 
@@ -1097,7 +1097,7 @@ void LabItem_InitBoxScreen(unk_func_8821421C_038* arg0, s32 arg1, s32 arg2, Widg
 
         ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_44, temp_v0_6);
 
-        arg0->unk_4C->unk_28->unk_18[i * arg0->unk_4C->unk_28->unk_2C] = &temp_v0_6->unk_00;
+        arg0->unk_4C->unk_28->items[i * arg0->unk_4C->unk_28->columnCount] = &temp_v0_6->unk_00;
     }
 
     ((func8850CAB4)Memmap_GetFragmentVaddr(WidgetTree_SelectFirstEnabledGridItem))(arg0->unk_4C->unk_28);
@@ -1105,7 +1105,7 @@ void LabItem_InitBoxScreen(unk_func_8821421C_038* arg0, s32 arg1, s32 arg2, Widg
     temp_s0_6 = mem_pool_alloc(arg5, sizeof(WidgetAnimatedFrame));
     ((func88503340)Memmap_GetFragmentVaddr(WidgetTree_InitAnimatedFrameVariantA))(temp_s0_6, 0, 0, 0x10, 0x10, D_88218098);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_44, temp_s0_6);
-    arg0->unk_4C->unk_28->unk_1C = temp_s0_6;
+    arg0->unk_4C->unk_28->cursor = temp_s0_6;
 
     arg0->unk_30 = mem_pool_alloc(arg5, sizeof(unk_func_8820BE14_02C_038));
     LabPC_InitScrollableBoxGrid(arg0->unk_30, 0x136, 0x34, 8, LabItem_DrawItemGridCell, 0xEC, 0x1C, arg5);
@@ -1117,7 +1117,7 @@ void LabItem_InitBoxScreen(unk_func_8821421C_038* arg0, s32 arg1, s32 arg2, Widg
 
     sp68 = mem_pool_alloc(arg5, sizeof(unk_func_88507D4C));
     ((func88507D4C)Memmap_GetFragmentVaddr(WidgetTree_InitScrollableGridScrollbar))(
-        sp68, 0x136, arg0->unk_30->unk_00.unk_00.unk_14.unk_02 + 0x34, 0xEC, 1, arg0->unk_30);
+        sp68, 0x136, arg0->unk_30->unk_00.unk_00.size.y + 0x34, 0xEC, 1, arg0->unk_30);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_44, sp68);
     LabPC_BoxGrid_BindMessagePanel(arg0->unk_30, sp68);
 
@@ -1159,14 +1159,14 @@ s32 LabItem_BoxScreen_UpdatePageSelection(unk_func_8821421C_038* arg0) {
 
         case 1:
             ((func88500A6C)Memmap_GetFragmentVaddr(WidgetTree_SelectPage))(arg0->unk_38, 1);
-            ((func88500A6C)Memmap_GetFragmentVaddr(WidgetTree_SelectPage))(arg0->unk_3C, arg0->unk_4C->unk_28->unk_24);
+            ((func88500A6C)Memmap_GetFragmentVaddr(WidgetTree_SelectPage))(arg0->unk_3C, arg0->unk_4C->unk_28->selectedIndex);
             break;
 
         case 2:
             sp2C = NULL;
             ((func88500A6C)Memmap_GetFragmentVaddr(WidgetTree_SelectPage))(arg0->unk_38, 2);
             temp_t0 = &((u8*)arg0->unk_30->unk_00.unk_2C
-                            ->unk_00)[arg0->unk_30->unk_00.unk_2C->unk_0C * arg0->unk_30->unk_00.unk_38];
+                            ->data)[arg0->unk_30->unk_00.unk_2C->rowStride * arg0->unk_30->unk_00.unk_38];
             if (temp_t0 != NULL) {
                 sp2C = Text_GetString(NULL, 0, D_88224FCC, temp_t0[0] - 1);
             }
@@ -1179,7 +1179,7 @@ s32 LabItem_BoxScreen_UpdatePageSelection(unk_func_8821421C_038* arg0) {
 s32 LabItem_BoxScreen_HandleInput(unk_func_8821421C_038* arg0, Controller* arg1) {
     s32 var_v1;
 
-    if (arg0->unk_44->unk_30 & 2) {
+    if (arg0->unk_44->animState & 2) {
         var_v1 = arg0->unk_4C->unk_00.unk_10(&arg0->unk_4C->unk_00, arg1);
     } else {
         var_v1 = 1;
@@ -1188,7 +1188,7 @@ s32 LabItem_BoxScreen_HandleInput(unk_func_8821421C_038* arg0, Controller* arg1)
 }
 
 void LabItem_BoxScreen_SetMenuState(unk_func_8821421C_038* arg0, s32 arg1) {
-    arg0->unk_00.unk_2A = arg1;
+    arg0->unk_00.state = arg1;
     arg0->unk_4C->unk_00.unk_14(&arg0->unk_4C->unk_00, arg1);
 }
 
@@ -1215,7 +1215,7 @@ s32 LabItem_RunBoxScreenModal(unk_func_8821421C_038* arg0, Controller* arg1) {
             if (temp_v0 & 2) {
                 var_s0 = 1;
             } else if (temp_v0 & 4) {
-                if (arg0->unk_48->unk_30->unk_24 == 0) {
+                if (arg0->unk_48->unk_30->selectedIndex == 0) {
                     var_v0 = 1;
                 } else {
                     var_v0 = 0;
@@ -1226,18 +1226,19 @@ s32 LabItem_RunBoxScreenModal(unk_func_8821421C_038* arg0, Controller* arg1) {
         ((func8850BC94)Memmap_GetFragmentVaddr(Ui_PlayInputActionSound))(temp_v0);
     }
 
-    arg0->unk_44->unk_2C = 0xB;
+    arg0->unk_44->animFrame = 0xB;
     return var_s0 - 1;
 }
 
 void LabItem_InitBoxScreenMenu(unk_func_8821421C_038_04C* arg0, unk_func_8821421C_038* arg1) {
     ((func8850BDF0)Memmap_GetFragmentVaddr(WidgetTree_InitVerticalMenu))(arg0);
 
-    arg0->unk_00.unk_10 = func_88210380;
+    arg0->unk_00.unk_10 = LabItem_BoxScreenMenu_HandleInput;
     arg0->unk_00.unk_24 = arg1;
 }
 
-s32 func_88210380(unk_func_8821421C_038_04C* arg0, Controller* arg1) {
+#ifdef NON_MATCHING
+s32 LabItem_BoxScreenMenu_HandleInput(unk_func_8821421C_038_04C* arg0, Controller* arg1) {
     s32 var_v1;
     s32 i;
     unk_func_8821421C_038_04C_000* var_a0;
@@ -1250,43 +1251,80 @@ s32 func_88210380(unk_func_8821421C_038_04C* arg0, Controller* arg1) {
         }
         var_v1 = var_a0->unk_10(var_a0, arg1);
     }
-    if (var_v1 & 1) return var_v1;
-    if (var_v1 == 0) {
-        if (arg1->buttonPressed & 0x4000) var_v1 = 0x80000002;
-        else if (arg1->buttonPressed & 0x8000) var_v1 = 0x80000004;
+
+    if (var_v1 & 1) {
+        return var_v1;
     }
+
+    if (var_v1 == 0) {
+        if (arg1->buttonPressed & 0x4000) {
+            var_v1 = 0x80000002;
+        } else if (arg1->buttonPressed & 0x8000) {
+            var_v1 = 0x80000004;
+        }
+    }
+
     if (var_v1 & 2) {
         switch (arg0->unk_00.unk_1C) {
-            case 1: ((func8850C064)Memmap_GetFragmentVaddr(WidgetTree_SetVerticalMenuSelection))(arg0, 0); var_v1 |= 1; break;
-            case 2: ((func8850C064)Memmap_GetFragmentVaddr(WidgetTree_SetVerticalMenuSelection))(arg0, 1); var_v1 |= 1; break;
+            case 1:
+                ((func8850C064)Memmap_GetFragmentVaddr(WidgetTree_SetVerticalMenuSelection))(arg0, 0);
+                var_v1 |= 1;
+                break;
+
+            case 2:
+                ((func8850C064)Memmap_GetFragmentVaddr(WidgetTree_SetVerticalMenuSelection))(arg0, 1);
+                var_v1 |= 1;
+                break;
         }
     } else if (var_v1 & 4) {
         switch (arg0->unk_00.unk_1C) {
             case 0:
-                LabItem_GamePakLabelWidget_SetSlot(arg0->unk_00.unk_24->unk_2C, arg0->unk_00.unk_24->unk_50[0] + arg0->unk_00.unk_24->unk_34->unk_00.unk_38);
+                LabItem_GamePakLabelWidget_SetSlot(arg0->unk_00.unk_24->unk_2C,
+                              &arg0->unk_00.unk_24->unk_50[arg0->unk_00.unk_24->unk_34->unk_00.unk_38]);
                 LabItem_LoadBoxScreenSlotItems(arg0->unk_00.unk_24, arg0->unk_00.unk_24->unk_34->unk_00.unk_38);
+
                 ((func8850CB48)Memmap_GetFragmentVaddr(WidgetTree_SetGridMenuSelection))(arg0->unk_28, 0);
                 ((func8850C064)Memmap_GetFragmentVaddr(WidgetTree_SetVerticalMenuSelection))(arg0, 1);
+
                 var_v1 |= 1;
                 break;
+
             case 1:
-                switch (arg0->unk_28->unk_24) {
-                    case 0: ((func8850C064)Memmap_GetFragmentVaddr(WidgetTree_SetVerticalMenuSelection))(arg0, 2); var_v1 |= 1; break;
+                switch (arg0->unk_28->selectedIndex) {
+                    case 0:
+                        ((func8850C064)Memmap_GetFragmentVaddr(WidgetTree_SetVerticalMenuSelection))(arg0, 2);
+                        var_v1 |= 1;
+                        break;
+
                     case 1:
                         LabItem_SetConfirmDialogText(arg0->unk_00.unk_24->unk_48, Text_GetString(NULL, 0, D_88224FC4, 0x16));
                         ((func8850CB48)Memmap_GetFragmentVaddr(WidgetTree_SetGridMenuSelection))(arg0->unk_00.unk_24->unk_48->unk_30, 1);
                         Audio_PlaySoundEffectById(2);
-                        arg0->unk_28->unk_14(arg0->unk_28, 0x100);
-                        if (LabItem_RunConfirmDialog(arg0->unk_00.unk_24->unk_48, arg1) == 1) var_v1 = 4; else var_v1 = 1;
-                        arg0->unk_28->unk_14(arg0->unk_28, 1);
+
+                        arg0->unk_28->setStateCallback(arg0->unk_28, 0x100);
+
+                        if (LabItem_RunConfirmDialog(arg0->unk_00.unk_24->unk_48, arg1) == 1) {
+                            var_v1 = 4;
+                        } else {
+                            var_v1 = 1;
+                        }
+
+                        arg0->unk_28->setStateCallback(arg0->unk_28, 1);
                         break;
                 }
                 break;
-            case 2: var_v1 = 1; break;
+
+            case 2:
+                var_v1 = 1;
+                break;
         }
     }
+
     return var_v1;
 }
+#else
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/23/fragment23_1B4EA0/LabItem_BoxScreenMenu_HandleInput.s")
+#endif
 
 void LabItem_InitOperationController(unk_func_8821421C_02C_06C_02C* arg0, unk_func_8820BE14_02C_038* arg1,
                    unk_func_8820BE14_02C_038* arg2, unk_func_8820E99C* arg3, unk_func_88217740* arg4,
@@ -1342,7 +1380,7 @@ void LabItem_OperationController_RefreshHighlight(unk_func_8821421C_02C_06C_02C*
         if (i == arg0->unk_1C) {
             var_v0 = 1;
         }
-        arg0->unk_20[i]->unk_00.unk_00.unk_24(&arg0->unk_20[i]->unk_00.unk_00, (var_v0 & temp_s3) | temp_s4);
+        arg0->unk_20[i]->unk_00.unk_00.setStateCallback(&arg0->unk_20[i]->unk_00.unk_00, (var_v0 & temp_s3) | temp_s4);
     }
 }
 
@@ -1372,25 +1410,25 @@ void LabItem_GetSelectedEntryPair(unk_func_8821421C_02C_06C_02C* arg0, unk_func_
         case 0:
             *arg1 =
                 &((u8*)arg0->unk_2C[0]
-                      ->unk_00.unk_2C->unk_00)[arg0->unk_2C[0]->unk_00.unk_2C->unk_0C * arg0->unk_2C[0]->unk_00.unk_38];
+                      ->unk_00.unk_2C->data)[arg0->unk_2C[0]->unk_00.unk_2C->rowStride * arg0->unk_2C[0]->unk_00.unk_38];
             *arg2 = NULL;
             break;
 
         case 1:
             *arg1 =
-                &((u8*)arg0->unk_2C[0]->unk_00.unk_2C->unk_00)[arg0->unk_2C[0]->unk_00.unk_2C->unk_0C * arg0->unk_40];
+                &((u8*)arg0->unk_2C[0]->unk_00.unk_2C->data)[arg0->unk_2C[0]->unk_00.unk_2C->rowStride * arg0->unk_40];
             *arg2 =
                 &((u8*)arg0->unk_2C[0]
-                      ->unk_00.unk_2C->unk_00)[arg0->unk_2C[0]->unk_00.unk_2C->unk_0C * arg0->unk_2C[0]->unk_00.unk_38];
+                      ->unk_00.unk_2C->data)[arg0->unk_2C[0]->unk_00.unk_2C->rowStride * arg0->unk_2C[0]->unk_00.unk_38];
             break;
 
         case 2:
             *arg1 =
                 &((u8*)arg0->unk_2C[0]
-                      ->unk_00.unk_2C->unk_00)[arg0->unk_2C[0]->unk_00.unk_2C->unk_0C * arg0->unk_2C[0]->unk_00.unk_38];
+                      ->unk_00.unk_2C->data)[arg0->unk_2C[0]->unk_00.unk_2C->rowStride * arg0->unk_2C[0]->unk_00.unk_38];
             *arg2 =
                 &((u8*)arg0->unk_2C[1]
-                      ->unk_00.unk_2C->unk_00)[arg0->unk_2C[1]->unk_00.unk_2C->unk_0C * arg0->unk_2C[1]->unk_00.unk_38];
+                      ->unk_00.unk_2C->data)[arg0->unk_2C[1]->unk_00.unk_2C->rowStride * arg0->unk_2C[1]->unk_00.unk_38];
             break;
     }
 }
@@ -1401,39 +1439,39 @@ void LabItem_GetSelectedSlotPositions(unk_func_8821421C_02C_06C_02C* arg0, Widge
 
     switch (arg0->unk_38) {
         case 0:
-            arg1->unk_00 = arg0->unk_2C[0]->unk_00.unk_00.unk_10.unk_00;
-            arg1->unk_02 =
-                arg0->unk_2C[0]->unk_00.unk_00.unk_10.unk_02 + (arg0->unk_2C[0]->unk_5C - arg0->unk_2C[0]->unk_58);
+            arg1->x = arg0->unk_2C[0]->unk_00.unk_00.position.x;
+            arg1->y =
+                arg0->unk_2C[0]->unk_00.unk_00.position.y + (arg0->unk_2C[0]->unk_5C - arg0->unk_2C[0]->unk_58);
 
-            arg2->unk_00 = arg0->unk_2C[1]->unk_00.unk_00.unk_10.unk_00;
-            arg2->unk_02 =
-                arg0->unk_2C[1]->unk_00.unk_00.unk_10.unk_02 + (arg0->unk_2C[1]->unk_5C - arg0->unk_2C[1]->unk_58);
+            arg2->x = arg0->unk_2C[1]->unk_00.unk_00.position.x;
+            arg2->y =
+                arg0->unk_2C[1]->unk_00.unk_00.position.y + (arg0->unk_2C[1]->unk_5C - arg0->unk_2C[1]->unk_58);
             break;
 
         case 1:
             var_v1 = (arg0->unk_2C[0]->unk_00.unk_3E * arg0->unk_40) - arg0->unk_2C[0]->unk_58;
             if (var_v1 < -arg0->unk_2C[0]->unk_00.unk_3E) {
                 var_v1 = -arg0->unk_2C[0]->unk_00.unk_3E;
-            } else if (arg0->unk_2C[0]->unk_00.unk_00.unk_14.unk_02 < var_v1) {
-                var_v1 = arg0->unk_2C[0]->unk_00.unk_00.unk_14.unk_02;
+            } else if (arg0->unk_2C[0]->unk_00.unk_00.size.y < var_v1) {
+                var_v1 = arg0->unk_2C[0]->unk_00.unk_00.size.y;
             }
 
-            arg1->unk_00 = arg0->unk_2C[0]->unk_00.unk_00.unk_10.unk_00;
-            arg1->unk_02 = arg0->unk_2C[0]->unk_00.unk_00.unk_10.unk_02 + var_v1;
+            arg1->x = arg0->unk_2C[0]->unk_00.unk_00.position.x;
+            arg1->y = arg0->unk_2C[0]->unk_00.unk_00.position.y + var_v1;
 
-            arg2->unk_00 = arg0->unk_2C[0]->unk_00.unk_00.unk_10.unk_00;
-            arg2->unk_02 =
-                arg0->unk_2C[0]->unk_00.unk_00.unk_10.unk_02 + (arg0->unk_2C[0]->unk_5C - arg0->unk_2C[0]->unk_58);
+            arg2->x = arg0->unk_2C[0]->unk_00.unk_00.position.x;
+            arg2->y =
+                arg0->unk_2C[0]->unk_00.unk_00.position.y + (arg0->unk_2C[0]->unk_5C - arg0->unk_2C[0]->unk_58);
             break;
 
         case 2:
-            arg1->unk_00 = arg0->unk_2C[0]->unk_00.unk_00.unk_10.unk_00;
-            arg1->unk_02 =
-                arg0->unk_2C[0]->unk_00.unk_00.unk_10.unk_02 + (arg0->unk_2C[0]->unk_5C - arg0->unk_2C[0]->unk_58);
+            arg1->x = arg0->unk_2C[0]->unk_00.unk_00.position.x;
+            arg1->y =
+                arg0->unk_2C[0]->unk_00.unk_00.position.y + (arg0->unk_2C[0]->unk_5C - arg0->unk_2C[0]->unk_58);
 
-            arg2->unk_00 = arg0->unk_2C[1]->unk_00.unk_00.unk_10.unk_00;
-            arg2->unk_02 =
-                arg0->unk_2C[1]->unk_00.unk_00.unk_10.unk_02 + (arg0->unk_2C[1]->unk_5C - arg0->unk_2C[1]->unk_58);
+            arg2->x = arg0->unk_2C[1]->unk_00.unk_00.position.x;
+            arg2->y =
+                arg0->unk_2C[1]->unk_00.unk_00.position.y + (arg0->unk_2C[1]->unk_5C - arg0->unk_2C[1]->unk_58);
             break;
     }
 }
@@ -1443,7 +1481,7 @@ void LabItem_OpenQuantitySpinnerForSelection(unk_func_8821421C_02C_06C_02C* arg0
     s32 var_v1;
     unk_func_8820BE14_06C* temp_v1 = arg0->unk_2C[0]->unk_00.unk_2C;
 
-    LabItem_QuantitySpinner_SetMax(arg0->unk_34, ((u8*)temp_v1->unk_00 + (arg0->unk_2C[0]->unk_00.unk_38 * temp_v1->unk_0C))[1], arg1);
+    LabItem_QuantitySpinner_SetMax(arg0->unk_34, ((u8*)temp_v1->data + (arg0->unk_2C[0]->unk_00.unk_38 * temp_v1->rowStride))[1], arg1);
 
     var_v1 = arg0->unk_2C[0]->unk_5C - arg0->unk_2C[0]->unk_58;
 
@@ -1451,15 +1489,15 @@ void LabItem_OpenQuantitySpinnerForSelection(unk_func_8821421C_02C_06C_02C* arg0
         (!(&arg0->unk_2C[0]->unk_00.unk_00))) {}
 
     if (var_v1 == 0xC4) {
-        var_v1 -= arg0->unk_34->unk_2C->unk_00.unk_14.unk_02;
+        var_v1 -= arg0->unk_34->unk_2C->node.size.y;
         var_v1 -= 4;
     } else {
         var_v1 += 0x20;
     }
 
-    arg0->unk_34->unk_00.unk_10.unk_00 =
-        0xD3 + (arg0->unk_2C[0]->unk_00.unk_00.unk_10.unk_00 - arg0->unk_34->unk_2C->unk_00.unk_14.unk_00);
-    arg0->unk_34->unk_00.unk_10.unk_02 = arg0->unk_2C[0]->unk_00.unk_00.unk_10.unk_02 + var_v1 & 0xFFFF;
+    arg0->unk_34->unk_00.position.x =
+        0xD3 + (arg0->unk_2C[0]->unk_00.unk_00.position.x - arg0->unk_34->unk_2C->node.size.x);
+    arg0->unk_34->unk_00.position.y = arg0->unk_2C[0]->unk_00.unk_00.position.y + var_v1 & 0xFFFF;
 
     LabItem_QuantitySpinner_Open(arg0->unk_34);
 }
@@ -1527,9 +1565,9 @@ void func_88210DA8(void) {
 s32 LabItem_ComputeRemainingCapacity(s32 arg0, unk_func_8820BE14_06C* arg1) {
     s32 i;
     s32 var_v1 = 0;
-    u8* var_v0 = arg1->unk_00;
+    u8* var_v0 = arg1->data;
 
-    for (i = 0; i < arg1->unk_08; i++, var_v0 += 2) {
+    for (i = 0; i < arg1->count; i++, var_v0 += 2) {
         if (arg0 == var_v0[0]) {
             var_v1 = (var_v1 - var_v0[1]) + 0x63;
         }
@@ -1542,12 +1580,12 @@ s32 LabItem_ComputeMaxTransferQuantity(s32 arg0, unk_func_8820BE14_06C* arg1) {
     s32 var_v1;
 
     if (LabItem_IsQuantitylessItemForOperation(arg0) != 0) {
-        if (arg1->unk_08 < arg1->unk_04) {
+        if (arg1->count < arg1->capacity) {
             var_v1 = 1;
         } else {
             var_v1 = 0;
         }
-    } else if (arg1->unk_08 < arg1->unk_04) {
+    } else if (arg1->count < arg1->capacity) {
         var_v1 = 0x63;
     } else {
         var_v1 = LabItem_ComputeRemainingCapacity(arg0, arg1);
@@ -1578,41 +1616,38 @@ void LabItem_RemoveSelectedGridEntry(unk_func_8820BE14_02C_038* arg0) {
 
     sp1C = arg0->unk_00.unk_38;
     ByteMatrix_RemoveRow(arg0->unk_00.unk_2C, sp1C);
-    if ((sp1C > 0) && (sp1C >= arg0->unk_00.unk_2C->unk_08)) {
+    if ((sp1C > 0) && (sp1C >= arg0->unk_00.unk_2C->count)) {
         sp1C -= 1;
     }
     ((func88507AE4)Memmap_GetFragmentVaddr(WidgetTree_SetScrollableGridIndex))(arg0, sp1C);
 }
 
-void func_88210F74(unk_func_8820BE14_02C_038* arg0, s32 arg1, s32 arg2) {
+#ifdef NON_MATCHING
+void LabItem_AddItemStacksToGrid(unk_func_8820BE14_02C_038* arg0, s32 arg1, s32 arg2) {
     UNUSED s32 pad;
     s32 i;
     s32 var_s3;
     s32 var_v0;
     unk_func_8821421C_02C_06C_02C_060_02C_000 sp44;
     unk_func_8820BE14_06C* temp_s4;
-    void* temp_v1;
     u8* var_s2;
 
     temp_s4 = arg0->unk_00.unk_2C;
     var_s3 = arg0->unk_00.unk_38;
-    temp_v1 = temp_s4->unk_00;
+    var_s2 = temp_s4->data;
     i = 0;
 
-    if (temp_s4->unk_08 > 0) {
-        var_s2 = (u8*)temp_v1;
-        do {
-            if (arg1 == var_s2[0]) {
-                arg2 += var_s2[1];
-                ByteMatrix_RemoveRow(temp_s4, i);
-                if (i < var_s3) {
-                    var_s3--;
-                }
-            } else {
-                i++;
-                var_s2 += 2;
+    while (i < temp_s4->count) {
+        if (arg1 == var_s2[0]) {
+            arg2 += var_s2[1];
+            ByteMatrix_RemoveRow(temp_s4, i);
+            if (i < var_s3) {
+                var_s3--;
             }
-        } while (i < temp_s4->unk_08);
+        } else {
+            i++;
+            var_s2 += 2;
+        }
     }
 
     sp44.unk_00 = arg1;
@@ -1630,9 +1665,12 @@ void func_88210F74(unk_func_8820BE14_02C_038* arg0, s32 arg1, s32 arg2) {
 
     ((func88507AE4)Memmap_GetFragmentVaddr(WidgetTree_SetScrollableGridIndex))(arg0, var_s3 - 1);
 }
+#else
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/23/fragment23_1B4EA0/LabItem_AddItemStacksToGrid.s")
+#endif
 
 void LabItem_SubtractSelectedItemQuantity(unk_func_8820BE14_02C_038* arg0, s32 arg1) {
-    u8* temp_v1 = &((u8*)arg0->unk_00.unk_2C->unk_00)[arg0->unk_00.unk_2C->unk_0C * arg0->unk_00.unk_38];
+    u8* temp_v1 = &((u8*)arg0->unk_00.unk_2C->data)[arg0->unk_00.unk_2C->rowStride * arg0->unk_00.unk_38];
 
     if (arg1 >= temp_v1[1]) {
         LabItem_RemoveSelectedGridEntry(arg0);
@@ -1642,14 +1680,14 @@ void LabItem_SubtractSelectedItemQuantity(unk_func_8820BE14_02C_038* arg0, s32 a
 }
 
 void LabItem_MoveSelectedItem(unk_func_8820BE14_02C_038* arg0, unk_func_8820BE14_02C_038* arg1, unk_func_8820E99C* arg2) {
-    u8* sp24 = &((u8*)arg0->unk_00.unk_2C->unk_00)[arg0->unk_00.unk_2C->unk_0C * arg0->unk_00.unk_38];
+    u8* sp24 = &((u8*)arg0->unk_00.unk_2C->data)[arg0->unk_00.unk_2C->rowStride * arg0->unk_00.unk_38];
 
     if (LabItem_IsQuantitylessItemForOperation(sp24[0]) != 0) {
-        LabItem_InsertGridEntry(arg1, &((u8*)arg0->unk_00.unk_2C->unk_00)[arg0->unk_00.unk_2C->unk_0C * arg0->unk_00.unk_38]);
+        LabItem_InsertGridEntry(arg1, &((u8*)arg0->unk_00.unk_2C->data)[arg0->unk_00.unk_2C->rowStride * arg0->unk_00.unk_38]);
         LabItem_RemoveSelectedGridEntry(arg0);
     } else {
-        func_88210F74(arg1, sp24[0], arg2->unk_30->unk_30.unk_00);
-        LabItem_SubtractSelectedItemQuantity(arg0, arg2->unk_30->unk_30.unk_00);
+        LabItem_AddItemStacksToGrid(arg1, sp24[0], arg2->unk_30->unk_30.value);
+        LabItem_SubtractSelectedItemQuantity(arg0, arg2->unk_30->unk_30.value);
     }
 
     *arg1->unk_88 = 1;
@@ -1672,8 +1710,8 @@ s32 LabItem_CombineStackQuantities(unk_func_8821421C_02C_06C_02C_060_02C_000* ar
 }
 
 #ifdef NON_MATCHING
-void func_882111F8(unk_func_8820BE14_02C_038* arg0, s32 arg1, s32 arg2) {
-    unk_func_8821421C_02C_06C_02C_060_02C_000* ptr = arg0->unk_00.unk_2C->unk_00;
+void LabItem_ReorderAndMergeSlots(unk_func_8820BE14_02C_038* arg0, s32 arg1, s32 arg2) {
+    unk_func_8821421C_02C_06C_02C_060_02C_000* ptr = arg0->unk_00.unk_2C->data;
     unk_func_8821421C_02C_06C_02C_060_02C_000 sp30;
     unk_func_8821421C_02C_06C_02C_060_02C_000 sp2C;
     s32 var_v1;
@@ -1705,13 +1743,13 @@ void func_882111F8(unk_func_8820BE14_02C_038* arg0, s32 arg1, s32 arg2) {
     *arg0->unk_88 = 1;
 }
 #else
-void func_882111F8(unk_func_8820BE14_02C_038* arg0, s32 arg1, s32 arg2);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc/lab_pc_1B4EA0/func_882111F8.s")
+void LabItem_ReorderAndMergeSlots(unk_func_8820BE14_02C_038* arg0, s32 arg1, s32 arg2);
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/23/fragment23_1B4EA0/LabItem_ReorderAndMergeSlots.s")
 #endif
 
 void LabItem_SwapEntries(unk_func_8820BE14_02C_038* arg0, unk_func_8820BE14_02C_038* arg1) {
-    unk_func_8821421C_02C_06C_02C_060_02C_000* temp_v0 = arg0->unk_00.unk_2C->unk_00;
-    unk_func_8821421C_02C_06C_02C_060_02C_000* temp_v1 = arg1->unk_00.unk_2C->unk_00;
+    unk_func_8821421C_02C_06C_02C_060_02C_000* temp_v0 = arg0->unk_00.unk_2C->data;
+    unk_func_8821421C_02C_06C_02C_060_02C_000* temp_v1 = arg1->unk_00.unk_2C->data;
     unk_func_8821421C_02C_06C_02C_060_02C_000 sp4;
 
     sp4 = temp_v1[arg1->unk_00.unk_38];
@@ -1734,7 +1772,7 @@ void LabItem_CommitMove(unk_func_8821421C_02C_06C_02C* arg0, Controller* arg1) {
     sp34.unk_00 = *sp38;
 
     if (LabItem_IsQuantitylessItemForOperation(sp38->unk_00) == 0) {
-        sp34.unk_00.unk_01 = arg0->unk_34->unk_30->unk_30.unk_00;
+        sp34.unk_00.unk_01 = arg0->unk_34->unk_30->unk_30.value;
     }
 
     LabItem_ItemRowWidget_SetItem(arg0->unk_60[0], sp34.unk_00);
@@ -1798,7 +1836,7 @@ void LabItem_CommitReorder(unk_func_8821421C_02C_06C_02C* arg0, Controller* arg1
 
     arg0->unk_14(arg0, 1);
 
-    func_882111F8(arg0->unk_2C[0], arg0->unk_40, arg0->unk_2C[0]->unk_00.unk_38);
+    LabItem_ReorderAndMergeSlots(arg0->unk_2C[0], arg0->unk_40, arg0->unk_2C[0]->unk_00.unk_38);
     LabItem_ResetOperation(arg0);
 }
 
@@ -1834,7 +1872,7 @@ s32 LabItem_OperationInputHandler(unk_func_8821421C_02C_06C_02C* arg0, Controlle
     u8* sp24;
     u8* new_var2;
 
-    sp2C = arg0->unk_20[arg0->unk_1C]->unk_00.unk_00.unk_20(arg0->unk_20[arg0->unk_1C], arg1);
+    sp2C = arg0->unk_20[arg0->unk_1C]->unk_00.unk_00.inputCallback(arg0->unk_20[arg0->unk_1C], arg1);
     if (sp2C & 1) {
         return sp2C;
     }
@@ -1853,11 +1891,11 @@ s32 LabItem_OperationInputHandler(unk_func_8821421C_02C_06C_02C* arg0, Controlle
                 case 0:
                     if (!(sp2C & 2) && (sp2C & 4)) {
                         new_var =
-                            &((u8*)arg0->unk_2C[0]->unk_00.unk_2C->unk_00)[arg0->unk_2C[0]->unk_00.unk_2C->unk_0C *
+                            &((u8*)arg0->unk_2C[0]->unk_00.unk_2C->data)[arg0->unk_2C[0]->unk_00.unk_2C->rowStride *
                                                                            arg0->unk_2C[0]->unk_00.unk_38];
                         sp24 = new_var;
 
-                        if (arg0->unk_2C[0]->unk_00.unk_2C->unk_08 == 0) {
+                        if (arg0->unk_2C[0]->unk_00.unk_2C->count == 0) {
                             Audio_PlaySoundEffectById(8);
                             ((func8850A10C)Memmap_GetFragmentVaddr(WidgetTree_SetMessagePanelText))(
                                 arg0->unk_4C, arg0->unk_78[0].unk_00, arg0->unk_78[0].unk_04, arg0->unk_78[0].unk_08);
@@ -1895,7 +1933,7 @@ s32 LabItem_OperationInputHandler(unk_func_8821421C_02C_06C_02C* arg0, Controlle
 
                 case 1:
                     if (!(sp2C & 2) && (sp2C & 4)) {
-                        if (arg0->unk_2C[0]->unk_00.unk_2C->unk_08 == 0) {
+                        if (arg0->unk_2C[0]->unk_00.unk_2C->count == 0) {
                             Audio_PlaySoundEffectById(8);
                             ((func8850A10C)Memmap_GetFragmentVaddr(WidgetTree_SetMessagePanelText))(
                                 arg0->unk_4C, arg0->unk_78[1].unk_00, arg0->unk_78[1].unk_04, arg0->unk_78[1].unk_08);
@@ -1912,10 +1950,10 @@ s32 LabItem_OperationInputHandler(unk_func_8821421C_02C_06C_02C* arg0, Controlle
 
                 case 2:
                     if (!(sp2C & 2) && (sp2C & 4)) {
-                        sp24 = &((u8*)arg0->unk_2C[0]->unk_00.unk_2C->unk_00)[arg0->unk_2C[0]->unk_00.unk_2C->unk_0C *
+                        sp24 = &((u8*)arg0->unk_2C[0]->unk_00.unk_2C->data)[arg0->unk_2C[0]->unk_00.unk_2C->rowStride *
                                                                               arg0->unk_2C[0]->unk_00.unk_38];
-                        if ((arg0->unk_2C[0]->unk_00.unk_2C->unk_08 == 0) ||
-                            (arg0->unk_2C[1]->unk_00.unk_2C->unk_08 == 0)) {
+                        if ((arg0->unk_2C[0]->unk_00.unk_2C->count == 0) ||
+                            (arg0->unk_2C[1]->unk_00.unk_2C->count == 0)) {
                             Audio_PlaySoundEffectById(8);
                             ((func8850A10C)Memmap_GetFragmentVaddr(WidgetTree_SetMessagePanelText))(
                                 arg0->unk_4C, arg0->unk_78[2].unk_00, arg0->unk_78[2].unk_04, arg0->unk_78[2].unk_08);
@@ -1943,12 +1981,12 @@ s32 LabItem_OperationInputHandler(unk_func_8821421C_02C_06C_02C* arg0, Controlle
                 LabItem_SetOperationState(arg0, 0);
                 sp2C |= 1;
             } else if (sp2C & 4) {
-                if (arg0->unk_34->unk_34 < arg0->unk_34->unk_30->unk_30.unk_00) {
+                if (arg0->unk_34->unk_34 < arg0->unk_34->unk_30->unk_30.value) {
                     Audio_PlaySoundEffectById(8);
                     ((func8850A10C)Memmap_GetFragmentVaddr(WidgetTree_SetMessagePanelText))(
                         arg0->unk_4C, arg0->unk_78[3].unk_00, arg0->unk_78[3].unk_04, arg0->unk_78[3].unk_08);
                     ((func8850A3CC)Memmap_GetFragmentVaddr(WidgetTree_RunMessagePanelWithSound))(arg0->unk_4C, arg1);
-                    arg0->unk_34->unk_30->unk_30.unk_00 = arg0->unk_34->unk_34;
+                    arg0->unk_34->unk_30->unk_30.value = arg0->unk_34->unk_34;
                     sp2C = 1;
                 } else {
                     LabItem_SetOperationState(arg0, 1);
@@ -1959,7 +1997,7 @@ s32 LabItem_OperationInputHandler(unk_func_8821421C_02C_06C_02C* arg0, Controlle
 
         case 1:
             if (sp2C & 2) {
-                if (arg0->unk_34->unk_2C->unk_00.unk_28 & 1) {
+                if (arg0->unk_34->unk_2C->node.flags & 1) {
                     LabItem_SetOperationState(arg0, 4);
                 } else {
                     LabItem_SetOperationState(arg0, 0);
@@ -1969,7 +2007,7 @@ s32 LabItem_OperationInputHandler(unk_func_8821421C_02C_06C_02C* arg0, Controlle
             } else if (sp2C & 4) {
                 Audio_PlaySoundEffectById(0x18);
                 arg0->unk_2C[0]->unk_00.unk_34[arg0->unk_2C[0]->unk_00.unk_38] |= 0x100;
-                if (arg0->unk_34->unk_2C->unk_00.unk_28 & 1) {
+                if (arg0->unk_34->unk_2C->node.flags & 1) {
                     LabItem_QuantitySpinner_Close(arg0->unk_34);
                 }
                 LabItem_CommitMove(arg0, arg1);
@@ -2003,7 +2041,7 @@ s32 LabItem_OperationInputHandler(unk_func_8821421C_02C_06C_02C* arg0, Controlle
                 LabItem_SetOperationState(arg0, 0);
                 sp2C |= 1;
             } else if (sp2C & 4) {
-                new_var2 = &((u8*)arg0->unk_2C[1]->unk_00.unk_2C->unk_00)[arg0->unk_2C[1]->unk_00.unk_2C->unk_0C *
+                new_var2 = &((u8*)arg0->unk_2C[1]->unk_00.unk_2C->data)[arg0->unk_2C[1]->unk_00.unk_2C->rowStride *
                                                                           arg0->unk_2C[1]->unk_00.unk_38];
                 if ((LabItem_IsQuantitylessItem(new_var2[0]) != 0) && ((arg0->unk_2C[0]->unk_8C >> 0x10) == 2)) {
                     Audio_PlaySoundEffectById(8);
@@ -2049,10 +2087,10 @@ u8* LabItem_GetHighlightedEntry(unk_func_8821421C_02C_06C_02C* arg0) {
 
     temp_v1 = arg0->unk_2C[sp0]->unk_00.unk_38;
     temp_a1 = arg0->unk_2C[sp0]->unk_00.unk_2C;
-    if (temp_v1 >= temp_a1->unk_08) {
+    if (temp_v1 >= temp_a1->count) {
         return NULL;
     }
-    return &((u8*)temp_a1->unk_00)[temp_a1->unk_0C * temp_v1];
+    return &((u8*)temp_a1->data)[temp_a1->rowStride * temp_v1];
 }
 
 void LabItem_BuildOperationNode(unk_func_8821421C_02C* arg0, s32 arg1, s32 arg2, unk_func_8821421C_03C* arg3, s32* arg4,
@@ -2213,11 +2251,11 @@ void LabItem_BuildOperationNode(unk_func_8821421C_02C* arg0, s32 arg1, s32 arg2,
 
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(arg0, 0xA4);
 
-    arg0->unk_00.unk_1C = LabItem_RefreshDescriptionPanel;
-    arg0->unk_00.unk_20 = LabPC_ItemMenu_HandleInput;
-    arg0->unk_00.unk_24 = LabItem_SetMenuState;
-    arg0->unk_00.unk_10.unk_00 = arg1;
-    arg0->unk_00.unk_10.unk_02 = arg2;
+    arg0->unk_00.updateCallback = LabItem_RefreshDescriptionPanel;
+    arg0->unk_00.inputCallback = LabPC_ItemMenu_HandleInput;
+    arg0->unk_00.setStateCallback = LabItem_SetMenuState;
+    arg0->unk_00.position.x = arg1;
+    arg0->unk_00.position.y = arg2;
     arg0->unk_78 = arg3;
     arg0->unk_7C = arg4;
     arg0->unk_90 = arg5;
@@ -2231,7 +2269,7 @@ void LabItem_BuildOperationNode(unk_func_8821421C_02C* arg0, s32 arg1, s32 arg2,
 
     arg0->unk_2C = mem_pool_alloc(argB, sizeof(WidgetAnimatedPanel));
     ((func88502274)Memmap_GetFragmentVaddr(WidgetTree_InitAnimatedPanel))(arg0->unk_2C, 0, 0, 0x228, 0x162);
-    arg0->unk_2C->unk_00.unk_28 |= 0x400;
+    arg0->unk_2C->node.flags |= 0x400;
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_2C);
 
     spC8 = mem_pool_alloc(argB, sizeof(unk_func_885012A4));
@@ -2350,7 +2388,7 @@ void LabItem_BuildOperationNode(unk_func_8821421C_02C* arg0, s32 arg1, s32 arg2,
 
         ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, arg0->unk_44[x]);
 
-        arg0->unk_6C->unk_28->unk_18[x * arg0->unk_6C->unk_28->unk_2C] = arg0->unk_44[x];
+        arg0->unk_6C->unk_28->items[x * arg0->unk_6C->unk_28->columnCount] = arg0->unk_44[x];
     }
 
     ((func8850CB48)Memmap_GetFragmentVaddr(WidgetTree_SetGridMenuSelection))(arg0->unk_6C->unk_28, 2);
@@ -2358,7 +2396,7 @@ void LabItem_BuildOperationNode(unk_func_8821421C_02C* arg0, s32 arg1, s32 arg2,
     temp_s0_5 = mem_pool_alloc(argB, sizeof(WidgetAnimatedFrame));
     ((func88503340)Memmap_GetFragmentVaddr(WidgetTree_InitAnimatedFrameVariantA))(temp_s0_5, 0, 0, 0x10, 0x10, D_88218198);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, temp_s0_5);
-    arg0->unk_6C->unk_28->unk_1C = temp_s0_5;
+    arg0->unk_6C->unk_28->cursor = temp_s0_5;
 
     arg0->unk_38[0] = mem_pool_alloc(argB, sizeof(unk_func_8820BE14_02C_038));
     LabPC_InitScrollableBoxGrid(arg0->unk_38[0], 6, 0x34, 8, LabItem_DrawItemGridCell, 0xEC, 0x1C, argB);
@@ -2370,7 +2408,7 @@ void LabItem_BuildOperationNode(unk_func_8821421C_02C* arg0, s32 arg1, s32 arg2,
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, sp8C);
 
     sp90 = mem_pool_alloc(argB, sizeof(unk_func_88507D4C));
-    ((func88507D4C)Memmap_GetFragmentVaddr(WidgetTree_InitScrollableGridScrollbar))(sp90, 6, arg0->unk_38[0]->unk_00.unk_00.unk_14.unk_02 + 0x34,
+    ((func88507D4C)Memmap_GetFragmentVaddr(WidgetTree_InitScrollableGridScrollbar))(sp90, 6, arg0->unk_38[0]->unk_00.unk_00.size.y + 0x34,
                                                            0xEC, 1, arg0->unk_38[0]);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, sp90);
     LabPC_BoxGrid_BindMessagePanel(arg0->unk_38[0], sp90);
@@ -2391,7 +2429,7 @@ void LabItem_BuildOperationNode(unk_func_8821421C_02C* arg0, s32 arg1, s32 arg2,
 
     sp84 = mem_pool_alloc(argB, sizeof(unk_func_88507D4C));
     ((func88507D4C)Memmap_GetFragmentVaddr(WidgetTree_InitScrollableGridScrollbar))(
-        sp84, 0x136, arg0->unk_38[1]->unk_00.unk_00.unk_14.unk_02 + 0x34, 0xEC, 1, arg0->unk_38[1]);
+        sp84, 0x136, arg0->unk_38[1]->unk_00.unk_00.size.y + 0x34, 0xEC, 1, arg0->unk_38[1]);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, sp84);
     LabPC_BoxGrid_BindMessagePanel(arg0->unk_38[1], sp84);
 
@@ -2485,10 +2523,10 @@ s32 LabItem_RefreshDescriptionPanel(unk_func_8821421C_02C* arg0) {
 
     switch (var_a1) {
         case 0:
-            if ((arg0->unk_6C->unk_28->unk_20 == 0x100) && (arg0->unk_6C->unk_28->unk_24 < 2)) {
+            if ((arg0->unk_6C->unk_28->itemState == 0x100) && (arg0->unk_6C->unk_28->selectedIndex < 2)) {
                 ((func88500A6C)Memmap_GetFragmentVaddr(WidgetTree_SelectPage))(arg0->unk_5C, 1);
                 temp_v1_2 = (func88500A6C)Memmap_GetFragmentVaddr(WidgetTree_SelectPage);
-                if (arg0->unk_6C->unk_28->unk_24 == 0) {
+                if (arg0->unk_6C->unk_28->selectedIndex == 0) {
                     var_a1 = 0;
                 } else {
                     var_a1 = 1;
@@ -2496,7 +2534,7 @@ s32 LabItem_RefreshDescriptionPanel(unk_func_8821421C_02C* arg0) {
                 temp_v1_2(arg0->unk_64, var_a1);
             } else {
                 ((func88500A6C)Memmap_GetFragmentVaddr(WidgetTree_SelectPage))(arg0->unk_5C, 0);
-                ((func88500A6C)Memmap_GetFragmentVaddr(WidgetTree_SelectPage))(arg0->unk_60, arg0->unk_6C->unk_28->unk_24);
+                ((func88500A6C)Memmap_GetFragmentVaddr(WidgetTree_SelectPage))(arg0->unk_60, arg0->unk_6C->unk_28->selectedIndex);
             }
             break;
 
@@ -2516,7 +2554,7 @@ s32 LabItem_RefreshDescriptionPanel(unk_func_8821421C_02C* arg0) {
 s32 LabPC_ItemMenu_HandleInput(unk_func_8821421C_02C* arg0, Controller* arg1) {
     s32 var_v1;
 
-    if (arg0->unk_2C->unk_30 & 2) {
+    if (arg0->unk_2C->animState & 2) {
         var_v1 = LabItem_BoxPairMenu_HandleInput(arg0->unk_6C, arg1);
     } else {
         var_v1 = 1;
@@ -2528,14 +2566,14 @@ s32 LabPC_ItemMenu_ModalLoop(unk_func_8821421C_02C* arg0, Controller* arg1) {
     s32 temp_v0;
     s32 var_s4 = 0;
 
-    arg0->unk_00.unk_24(&arg0->unk_00, 1);
+    arg0->unk_00.setStateCallback(&arg0->unk_00, 1);
 
     ((func88502C98)Memmap_GetFragmentVaddr(WidgetTree_OpenAnimatedPanel))(arg0->unk_2C);
 
     while (var_s4 == 0) {
         Ui_SendMessageAndPollInput(NULL);
 
-        temp_v0 = arg0->unk_00.unk_20(arg0, gPlayer1Controller);
+        temp_v0 = arg0->unk_00.inputCallback(arg0, gPlayer1Controller);
 
         if (!(temp_v0 & 1) && (temp_v0 & 2)) {
             var_s4 = 1;
@@ -2545,12 +2583,12 @@ s32 LabPC_ItemMenu_ModalLoop(unk_func_8821421C_02C* arg0, Controller* arg1) {
         ((func8850BC94)Memmap_GetFragmentVaddr(Ui_PlayInputActionSound))(temp_v0);
     }
 
-    arg0->unk_2C->unk_2C = 0xB;
+    arg0->unk_2C->animFrame = 0xB;
     return var_s4;
 }
 
 void LabItem_SetMenuState(unk_func_8821421C_02C* arg0, s32 arg1) {
-    arg0->unk_00.unk_2A = arg1;
+    arg0->unk_00.state = arg1;
     ((func8850BF60)Memmap_GetFragmentVaddr(WidgetTree_SetVerticalMenuState))(arg0->unk_6C, arg1);
 }
 
@@ -2583,12 +2621,12 @@ s32 LabItem_DeckHasChanged(unk_func_8821421C_03C* arg0, s32 arg1, s32 arg2, s32 
     }
 
     arg0->unk_00 = 0;
-    if (Deck_GetEntryCountForType(arg1, arg2, arg3) != arg0->unk_04.unk_08) {
+    if (Deck_GetEntryCountForType(arg1, arg2, arg3) != arg0->unk_04.count) {
         arg0->unk_00 = 1;
         sp40 = 1;
     } else {
-        var_s0 = arg0->unk_04.unk_00;
-        for (i = 0; i < arg0->unk_04.unk_08; i++, var_s0++) {
+        var_s0 = arg0->unk_04.data;
+        for (i = 0; i < arg0->unk_04.count; i++, var_s0++) {
             Deck_ReadEntries(&sp34, 1, temp_v0);
             if (bcmp(&sp34, var_s0, sizeof(unk_func_8821421C_02C_06C_02C_060_02C_000)) != 0) {
                 arg0->unk_00 = 1;
@@ -2627,7 +2665,7 @@ s32 LabItem_CheckDirtyDecks(unk_func_8821421C_02C* arg0) {
             if (LabItem_DeckHasChanged(&arg0->unk_78[2], 0x12, 0, arg0->unk_7C->unk_00) != 0) {
                 sp20 |= 4;
             }
-        } else if (arg0->unk_78[2].unk_04.unk_08 > 0) {
+        } else if (arg0->unk_78[2].unk_04.count > 0) {
             sp20 |= 4;
         } else {
             arg0->unk_78[2].unk_00 = 0;
@@ -2653,7 +2691,7 @@ void LabItem_CommitChanges(unk_func_8821421C_02C* arg0, s32 arg1) {
 
     if (arg0->unk_78[2].unk_00 != 0) {
         if (arg0->unk_90[arg0->unk_7C->unk_00].unk_00 != 0) {
-            if (arg0->unk_78[2].unk_04.unk_08 == 0) {
+            if (arg0->unk_78[2].unk_04.count == 0) {
                 Save_ResetAndCommitTypedRecord(0x12, arg0->unk_7C->unk_00);
             } else {
                 LabItem_WriteDeckBack(0x12, 0, arg0->unk_7C->unk_00, &arg0->unk_78[2].unk_04, 0, NULL, -1);
@@ -2684,7 +2722,7 @@ s32 LabItem_RunConfirmSaveFlow(unk_func_8821421C_02C* arg0, Controller* arg1) {
     s32 temp_v0_2;
 
     if (sp20 != 0) {
-        arg0->unk_6C->unk_28->unk_14(arg0->unk_6C->unk_28, 0);
+        arg0->unk_6C->unk_28->setStateCallback(arg0->unk_6C->unk_28, 0);
 
         ((func889006D4)Memmap_GetFragmentVaddr(LabUI_OpenConfirmDialog))(arg0->unk_A0, 0);
         temp_v0_2 = ((func88900808)Memmap_GetFragmentVaddr(LabUI_RunConfirmDialog))(arg0->unk_A0, arg1, 1);
@@ -2699,7 +2737,7 @@ s32 LabItem_RunConfirmSaveFlow(unk_func_8821421C_02C* arg0, Controller* arg1) {
             sp24 = 0;
         }
 
-        arg0->unk_6C->unk_28->unk_14(arg0->unk_6C->unk_28, 1);
+        arg0->unk_6C->unk_28->setStateCallback(arg0->unk_6C->unk_28, 1);
     }
     return sp24;
 }
@@ -2754,17 +2792,17 @@ s32 LabItem_BoxPairMenu_HandleInput(unk_func_8821421C_02C_06C* arg0, Controller*
         }
     } else if (var_s0 & 4) {
         if (arg0->unk_00.unk_1C == 0) {
-            switch (arg0->unk_28->unk_24) {
+            switch (arg0->unk_28->selectedIndex) {
                 case 0:
                 case 1:
-                    if (arg0->unk_28->unk_24 == 0) {
+                    if (arg0->unk_28->selectedIndex == 0) {
                         sp4C = 0;
                     } else {
                         sp4C = 1;
                     }
                     Audio_PlaySoundEffectById(2);
 
-                    arg0->unk_28->unk_14(arg0->unk_28, 0x100);
+                    arg0->unk_28->setStateCallback(arg0->unk_28, 0x100);
 
                     LabItem_DropdownMenu_SetSelection(arg0->unk_00.unk_24->unk_70[sp4C], LabItem_BoxLocationWidget_GetSelection(arg0->unk_00.unk_24->unk_30[sp4C]));
                     LabItem_DropdownMenu_SetDisabledIndex(arg0->unk_00.unk_24->unk_70[sp4C],
@@ -2774,7 +2812,7 @@ s32 LabItem_BoxPairMenu_HandleInput(unk_func_8821421C_02C_06C* arg0, Controller*
                     while (LabItem_RunDropdownMenuModal(arg0->unk_00.unk_24->unk_70[sp4C], arg1) == 1) {
                         sp48 = LabItem_DropdownMenu_GetSelectedIndex(arg0->unk_00.unk_24->unk_70[sp4C]);
                         if ((sp48 == 2) && (arg0->unk_00.unk_24->unk_7C->unk_00 == -1)) {
-                            arg0->unk_00.unk_24->unk_70[sp4C]->unk_00.unk_24(&arg0->unk_00.unk_24->unk_70[sp4C]->unk_00,
+                            arg0->unk_00.unk_24->unk_70[sp4C]->unk_00.setStateCallback(&arg0->unk_00.unk_24->unk_70[sp4C]->unk_00,
                                                                              0x100);
 
                             ((func8850A10C)Memmap_GetFragmentVaddr(WidgetTree_SetMessagePanelText))(
@@ -2792,7 +2830,7 @@ s32 LabItem_BoxPairMenu_HandleInput(unk_func_8821421C_02C_06C* arg0, Controller*
                                 LabPC_BindGridStridedData(arg0->unk_00.unk_24->unk_38[sp4C], &arg0->unk_00.unk_24->unk_78[2],
                                               arg0->unk_00.unk_24->unk_7C->unk_00 | 0x20000);
                             } else {
-                                arg0->unk_00.unk_24->unk_70[sp4C]->unk_00.unk_24(
+                                arg0->unk_00.unk_24->unk_70[sp4C]->unk_00.setStateCallback(
                                     &arg0->unk_00.unk_24->unk_70[sp4C]->unk_00, 1);
                                 continue;
                             }
@@ -2806,7 +2844,7 @@ s32 LabItem_BoxPairMenu_HandleInput(unk_func_8821421C_02C_06C* arg0, Controller*
                     }
 
                     LabItem_DropdownMenu_Close(arg0->unk_00.unk_24->unk_70[sp4C]);
-                    arg0->unk_28->unk_14(arg0->unk_28, 1);
+                    arg0->unk_28->setStateCallback(arg0->unk_28, 1);
                     var_s0 = 1;
                     break;
 
@@ -2883,8 +2921,8 @@ void LabPC_BuildItemScreenWidget(unk_func_8821421C* arg0, s32 arg1, s32 arg2, Me
 
     sp84 = GbSave_GetActivePort();
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(arg0, sizeof(unk_func_8821421C));
-    arg0->unk_00.unk_10.unk_00 = arg1;
-    arg0->unk_00.unk_10.unk_02 = arg2;
+    arg0->unk_00.position.x = arg1;
+    arg0->unk_00.position.y = arg2;
 
     for (i = 0; i < 3; i++) {
         arg0->unk_3C[i].unk_00 = 0;
@@ -2968,7 +3006,7 @@ void LabPC_ItemScreen_DrawLoop(unk_func_8821421C* arg0) {
 void LabPC_ItemScreen_InputThread(unk_func_8821421C* arg0) {
     s32 sp24 = LabPC_ItemMenu_ModalLoop(arg0->unk_2C, gPlayer1Controller);
 
-    while (arg0->unk_2C->unk_2C->unk_00.unk_28 & 1) {
+    while (arg0->unk_2C->unk_2C->node.flags & 1) {
         Ui_SendMessageAndPollInput(0);
     }
 

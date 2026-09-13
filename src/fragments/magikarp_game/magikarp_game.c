@@ -1,6 +1,6 @@
 #include "global.h"
 #include "src/memory.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/gfx_buffer.h"
 #include "src/stage_loader.h"
 #include "src/graphics_textures.h"
@@ -142,20 +142,20 @@ typedef struct unk_D_86002F58_004 {
 } unk_D_86002F58_004; // size = 0x170
 
 typedef struct MagikarpPlayer {
-    /* 0x000 */ s16 unk_000;
+    /* 0x000 */ s16 aiDifficulty;
     /* 0x002 */ char pad2[2];
     /* 0x004 */ unk_D_86002F58_004 unk_004;
-    /* 0x174 */ u16 unk_174;
-    /* 0x176 */ u16 unk_176[2];
-    /* 0x17A */ u16 unk_17A;
-    /* 0x17C */ u16 unk_17C[2];
+    /* 0x174 */ u16 currentButtonDown;
+    /* 0x176 */ u16 buttonDownHistory[2];
+    /* 0x17A */ u16 currentButtonPressed;
+    /* 0x17C */ u16 buttonPressedHistory[2];
     /* 0x180 */ char pad180[2];
     /* 0x182 */ s16 unk_182;
     /* 0x184 */ s16 unk_184;
     /* 0x186 */ s16 unk_186;
-    /* 0x188 */ s16 unk_188;
-    /* 0x18A */ s16 unk_18A;
-    /* 0x18C */ s16 unk_18C;
+    /* 0x188 */ s16 cooldownTimer;
+    /* 0x18A */ s16 playerIndex;
+    /* 0x18C */ s16 comboFlag;
     /* 0x18E */ char pad18E[2];
 } MagikarpPlayer; // size = 0x190
 
@@ -177,25 +177,25 @@ void MagikarpGame_UpdateAIInputBias(void) {
     s32 i;
     s32 j;
 
-    D_86002F58[0].unk_17A = gPlayer1Controller->buttonPressed;
-    D_86002F58[1].unk_17A = gPlayer2Controller->buttonPressed;
-    D_86002F58[2].unk_17A = gPlayer3Controller->buttonPressed;
-    D_86002F58[3].unk_17A = gPlayer4Controller->buttonPressed;
+    D_86002F58[0].currentButtonPressed = gPlayer1Controller->buttonPressed;
+    D_86002F58[1].currentButtonPressed = gPlayer2Controller->buttonPressed;
+    D_86002F58[2].currentButtonPressed = gPlayer3Controller->buttonPressed;
+    D_86002F58[3].currentButtonPressed = gPlayer4Controller->buttonPressed;
 
-    D_86002F58[0].unk_174 = gPlayer1Controller->buttonDown;
-    D_86002F58[1].unk_174 = gPlayer2Controller->buttonDown;
-    D_86002F58[2].unk_174 = gPlayer3Controller->buttonDown;
-    D_86002F58[3].unk_174 = gPlayer4Controller->buttonDown;
+    D_86002F58[0].currentButtonDown = gPlayer1Controller->buttonDown;
+    D_86002F58[1].currentButtonDown = gPlayer2Controller->buttonDown;
+    D_86002F58[2].currentButtonDown = gPlayer3Controller->buttonDown;
+    D_86002F58[3].currentButtonDown = gPlayer4Controller->buttonDown;
 
     for (i = 0; i < 4; i++) {
         D_86003B5C = &D_86002F58[i];
 
-        if (D_86003B5C->unk_000 == 0) {
+        if (D_86003B5C->aiDifficulty == 0) {
             s32 temp = D_86002F48;
 
             if ((temp != 0) && (temp != 2) && (temp != 3) && (temp != 5)) {
-                D_86003B5C->unk_174 = 0;
-                D_86003B5C->unk_17A = 0;
+                D_86003B5C->currentButtonDown = 0;
+                D_86003B5C->currentButtonPressed = 0;
             }
         } else if (D_86002F48 == 2) {
             switch (D_86003B5C->unk_004.unk_168) {
@@ -203,42 +203,42 @@ void MagikarpGame_UpdateAIInputBias(void) {
                 case 12:
                 case 13:
                     if (Rand_Range(0x64) < D_86002920[D_8780FA38].unk_06) {
-                        D_86003B5C->unk_17A = 0x8000;
+                        D_86003B5C->currentButtonPressed = 0x8000;
                     }
                     break;
 
                 case 5:
                 case 7:
                     if (Rand_Range(0x64) < D_86002920[D_8780FA38].unk_04) {
-                        D_86003B5C->unk_174 = 0x8000;
+                        D_86003B5C->currentButtonDown = 0x8000;
                     }
                     break;
 
                 case 8:
                     if ((D_86003B5C->unk_004.unk_000.unk_040.unk_08 > 0x90000) &&
                         (Rand_Range(0x64) < D_86002920[D_8780FA38].unk_08)) {
-                        D_86003B5C->unk_17A = 0x8000;
+                        D_86003B5C->currentButtonPressed = 0x8000;
                     }
                     break;
 
                 case 9:
                     if ((D_86003B5C->unk_004.unk_000.unk_040.unk_08 > 0xD0000) &&
                         (Rand_Range(0x64) < D_86002920[D_8780FA38].unk_08)) {
-                        D_86003B5C->unk_17A = 0x8000;
+                        D_86003B5C->currentButtonPressed = 0x8000;
                     }
                     break;
 
                 case 10:
                     if ((D_86003B5C->unk_004.unk_000.unk_040.unk_08 > 0xB0000) &&
                         (Rand_Range(0x64) < D_86002920[D_8780FA38].unk_08)) {
-                        D_86003B5C->unk_17A = 0x8000;
+                        D_86003B5C->currentButtonPressed = 0x8000;
                     }
                     break;
 
                 case 11:
                     if ((D_86003B5C->unk_004.unk_000.unk_040.unk_08 > 0xF0000) &&
                         (Rand_Range(0x64) < D_86002920[D_8780FA38].unk_08)) {
-                        D_86003B5C->unk_17A = 0x8000;
+                        D_86003B5C->currentButtonPressed = 0x8000;
                     }
                     break;
             }
@@ -250,19 +250,19 @@ void MagikarpGame_UpdateAIInputBias(void) {
             D_86003B5C = &D_86002F58[j];
 
             for (i = 1; i > 0; i--) {
-                D_86003B5C->unk_176[i] = D_86003B5C->unk_176[i - 1];
-                D_86003B5C->unk_17C[i] = D_86003B5C->unk_17C[i - 1];
+                D_86003B5C->buttonDownHistory[i] = D_86003B5C->buttonDownHistory[i - 1];
+                D_86003B5C->buttonPressedHistory[i] = D_86003B5C->buttonPressedHistory[i - 1];
             }
-            D_86003B5C->unk_176[0] = D_86003B5C->unk_174;
-            D_86003B5C->unk_17C[0] = D_86003B5C->unk_17A;
+            D_86003B5C->buttonDownHistory[0] = D_86003B5C->currentButtonDown;
+            D_86003B5C->buttonPressedHistory[0] = D_86003B5C->currentButtonPressed;
         }
     } else {
         for (j = 0; j < 4; j++) {
             D_86003B5C = &D_86002F58[j];
 
             for (i = 0; i < 2; i++) {
-                D_86003B5C->unk_176[i] = 0;
-                D_86003B5C->unk_17C[i] = 0;
+                D_86003B5C->buttonDownHistory[i] = 0;
+                D_86003B5C->buttonPressedHistory[i] = 0;
             }
         }
     }
@@ -307,7 +307,7 @@ void MagikarpGame_UpdateCameraLookAt(void) {
 }
 
 #ifdef NON_MATCHING
-void func_860005B8(s32 arg0) {
+void MagikarpGame_DrawTutorialOverlay(s32 arg0) {
     s32 i;
     UNUSED u8 sp68[] = {
         0,
@@ -327,7 +327,7 @@ void func_860005B8(s32 arg0) {
         for (i = 0; i < 4; i++) {
             unk_D_86002A98* tmp = &D_86002A98[i];
 
-            if (D_86002F58[i].unk_000 == 0) {
+            if (D_86002F58[i].aiDifficulty == 0) {
                 Widget_DrawPlayerIcon(i, tmp->unk_00, tmp->unk_02, 0.75f);
             } else {
                 Widget_DrawPlayerIcon(-1 - i, tmp->unk_00, tmp->unk_02, 0.75f);
@@ -431,8 +431,8 @@ static u8 D_86002B88[] = {
     0,
     150,
 };
-void func_860005B8(s32 arg0);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/magikarp_game/magikarp_game/func_860005B8.s")
+void MagikarpGame_DrawTutorialOverlay(s32 arg0);
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/6/fragment6/MagikarpGame_DrawTutorialOverlay.s")
 #endif
 
 static Gfx D_86002B90[] = {
@@ -497,8 +497,8 @@ void MagikarpGame_DrawScoreMarkers(void) {
 
     for (i = 0; i < 4; i++) {
         D_86003B60 = &D_86002F58[i].unk_004;
-        temp_f20 = (410.0f - D_86003B60->unk_000.unk_0A8[0].unk_04.y) / 510.0f;
-        guTranslate(&sp100, D_86003B60->unk_000.unk_0A8[0].unk_04.x, 0.0f, 0.0f);
+        temp_f20 = (410.0f - D_86003B60->unk_000.anchors[0].unk_04.y) / 510.0f;
+        guTranslate(&sp100, D_86003B60->unk_000.anchors[0].unk_04.x, 0.0f, 0.0f);
         guScale(&spC0, temp_f20, temp_f20, temp_f20);
         guMtxCatL(&spC0, &sp100, var_s1);
 
@@ -514,7 +514,7 @@ void MagikarpGame_DrawScoreMarkers(void) {
 void MagikarpGame_DrawFrame(s32 arg0) {
     BgStage_DrawFrame();
     GfxImage_ClearDepthRectangle(&gDisplayListHead, 0, 0, 0x140, 0xF0);
-    func_87A00DB8(D_86002F50);
+    MiniGfx_DrawBackgroundTiles(D_86002F50);
 
     if (D_8780FC94 != 1) {
         GeoRender_AdvanceFrameCounter();
@@ -526,7 +526,7 @@ void MagikarpGame_DrawFrame(s32 arg0) {
     MagikarpGame_DrawScoreMarkers();
 
     if (D_8780FC98 == 0) {
-        func_860005B8(arg0);
+        MagikarpGame_DrawTutorialOverlay(arg0);
     }
 
     Widget_PauseMenuUpdate();
@@ -588,7 +588,7 @@ s32 MagikarpGame_WaitForStart(void) {
 
     for (i = 0; i < 4; i++) {
         D_86003B5C = &D_86002F58[i];
-        D_86003B5C->unk_000 = (D_8780FA30[i] == 0) ? 0 : D_8780FA38 + 1;
+        D_86003B5C->aiDifficulty = (D_8780FA30[i] == 0) ? 0 : D_8780FA38 + 1;
     }
 
     D_86002F48 = 0;
@@ -653,15 +653,15 @@ void MagikarpGame_StartTrickPose(s16 arg0) {
     switch (arg0) {
         case 0:
         case 1:
-            MiniSound_DispatchCommand(0x20006, D_86003B5C->unk_18A + 1, 4);
+            MiniSound_DispatchCommand(0x20006, D_86003B5C->playerIndex + 1, 4);
             break;
 
         case 2:
-            MiniSound_DispatchCommand(0x20005, D_86003B5C->unk_18A + 1, 4);
+            MiniSound_DispatchCommand(0x20005, D_86003B5C->playerIndex + 1, 4);
             break;
 
         default:
-            MiniSound_DispatchCommand(0x20004, D_86003B5C->unk_18A + 1, 4);
+            MiniSound_DispatchCommand(0x20004, D_86003B5C->playerIndex + 1, 4);
             break;
     }
 
@@ -722,7 +722,7 @@ void MagikarpGame_FinishTrickOrChain(s32 arg0) {
     D_86003B70[arg0] = 0;
 
     for (i = 0; i < 2; i++) {
-        if (D_86003B5C->unk_17C[i] & 0x8000) {
+        if (D_86003B5C->buttonPressedHistory[i] & 0x8000) {
             MagikarpGame_StartTrickPose(i);
             return;
         }
@@ -758,7 +758,7 @@ void MagikarpGame_UpdatePlayerState(s32 arg0) {
     if (D_8780FC94 != 1) {
         switch (D_86003B5C->unk_004.unk_168) {
             case 12:
-                if (D_86003B5C->unk_17C[1] & 0x8000) {
+                if (D_86003B5C->buttonPressedHistory[1] & 0x8000) {
                     MagikarpGame_StartTrickPose(2);
                 } else if (ModelAnim_IsFinished(&D_86003B60->unk_000)) {
                     MagikarpGame_LandTrick(arg0);
@@ -766,7 +766,7 @@ void MagikarpGame_UpdatePlayerState(s32 arg0) {
                 break;
 
             case 13:
-                if (D_86003B5C->unk_17C[1] & 0x8000) {
+                if (D_86003B5C->buttonPressedHistory[1] & 0x8000) {
                     MagikarpGame_StartTrickPose(3);
                 } else if (ModelAnim_IsFinished(&D_86003B60->unk_000)) {
                     MagikarpGame_ResetPlayerState(arg0);
@@ -774,10 +774,10 @@ void MagikarpGame_UpdatePlayerState(s32 arg0) {
                 break;
 
             case 0:
-                if (D_86003B5C->unk_17C[1] & 0x8000) {
-                    if (D_86003B5C->unk_18C == 1) {
+                if (D_86003B5C->buttonPressedHistory[1] & 0x8000) {
+                    if (D_86003B5C->comboFlag == 1) {
                         MagikarpGame_StartTrickPose(2);
-                        D_86003B5C->unk_18C = 0;
+                        D_86003B5C->comboFlag = 0;
                     } else {
                         MagikarpGame_StartTrickPose(4);
                     }
@@ -786,7 +786,7 @@ void MagikarpGame_UpdatePlayerState(s32 arg0) {
 
             case 5:
                 if (ModelAnim_IsFinished(&D_86003B60->unk_000)) {
-                    if (D_86003B5C->unk_176[1] & 0x8000) {
+                    if (D_86003B5C->buttonDownHistory[1] & 0x8000) {
                         MagikarpGame_AdvanceTrickPoseC();
                     } else {
                         MagikarpGame_AdvanceTrickPoseB();
@@ -796,7 +796,7 @@ void MagikarpGame_UpdatePlayerState(s32 arg0) {
 
             case 7:
                 if (ModelAnim_IsFinished(&D_86003B60->unk_000)) {
-                    if (D_86003B5C->unk_176[1] & 0x8000) {
+                    if (D_86003B5C->buttonDownHistory[1] & 0x8000) {
                         s16 tmp = D_86003B5C->unk_004.unk_16A;
 
                         if (tmp < 2) {
@@ -857,9 +857,9 @@ void MagikarpGame_UpdatePlayerState(s32 arg0) {
             BattleHud_ApproachDigitRotations(arg0, D_86003B64->unk_16A);
         }
 
-        if (D_86003B5C->unk_188 > 0) {
-            D_86003B5C->unk_188--;
-            if (D_86003B5C->unk_188 == 0) {
+        if (D_86003B5C->cooldownTimer > 0) {
+            D_86003B5C->cooldownTimer--;
+            if (D_86003B5C->cooldownTimer == 0) {
                 Model_SetMaterialColor(&D_86003B5C->unk_004.unk_000, 0xFF, 0xFF, 0xFF, 0);
             }
         }
@@ -884,7 +884,7 @@ void MagikarpGame_Play(void) {
 
         D_86003B70[i] = 0;
 
-        D_86003B5C->unk_18C = 1;
+        D_86003B5C->comboFlag = 1;
     }
 
     D_86003B58 = 0;
@@ -1056,7 +1056,7 @@ void MagikarpGame_ShowWinnerSequence(void) {
 
         for (i = 0; i < 4; i++) {
             D_86003B5C = &D_86002F58[i];
-            if (D_86003B5C->unk_17A & 0x8000) {
+            if (D_86003B5C->currentButtonPressed & 0x8000) {
                 var_s5 = 0;
             }
         }
@@ -1150,13 +1150,13 @@ void MagikarpGame_InitActors(void) {
         D_86003B5C->unk_182 = 0;
         D_86003B5C->unk_184 = 0;
         D_86003B5C->unk_186 = 0;
-        D_86003B5C->unk_188 = 0;
-        D_86003B5C->unk_18A = i;
+        D_86003B5C->cooldownTimer = 0;
+        D_86003B5C->playerIndex = i;
 
         if (i == 0) {
-            D_86003B5C->unk_000 = 0;
+            D_86003B5C->aiDifficulty = 0;
         } else {
-            D_86003B5C->unk_000 = D_8780FA38 + 1;
+            D_86003B5C->aiDifficulty = D_8780FA38 + 1;
         }
 
         ModelAnim_SetAnimation(&D_86003B60->unk_000, 0);
@@ -1184,7 +1184,7 @@ void MagikarpGame_InitActors(void) {
         D_86003B64->unk_16A = 0;
         D_86003B64->unk_16C = 0;
         BattleHud_SetDigitRotationTargets(i, 0);
-        D_86003B64->unk_000.unk_0A6 = i;
+        D_86003B64->unk_000.poolIndex = i;
         ModelAnim_SetAnimation(&D_86003B60->unk_000, 0);
         ModelAnim_ClearTransformChannel(&D_86003B60->unk_000);
     }

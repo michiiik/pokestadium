@@ -35,25 +35,25 @@ typedef union {
 } FileHeaders;
 
 typedef struct unk_D_800FC6CC {
-    /* 0x00 */ u32 unk_00;
+    /* 0x00 */ u32 offset; // relocated by adding gAudioRegions[6] (Audio_InitBanks)
     /* 0x04 */ u32 unk_04;
 } unk_D_800FC6CC; // size = 0x8
 
 typedef struct unk_D_800FC6D4_entry {
-    /* 0x00 */ u16 unk_00;
-    /* 0x02 */ u8 unk_02;
-    /* 0x03 */ u8 unk_03;
+    /* 0x00 */ u16 sequenceId; // GbMusic_StartTableSequence: 1-based index consumed by GbMusic_StartSfx
+    /* 0x02 */ u8 frequencyTranspose; // GbMusic_WriteTransposedFrequency adds this to the written GB frequency
+    /* 0x03 */ u8 tempoOffset; // GbMusic_UpdateHighChannelTempo: this + 0x80 becomes the SFX tempo scale
 } unk_D_800FC6D4_entry; // size = 0x4
 
 typedef struct unk_D_800FC6D4_008 {
-    /* 0x00 */ u32 unk_00;
+    /* 0x00 */ u32 unk_00; // GbMusic_RelocateSequenceTable: relocated by adding the table's own base address
     /* 0x04 */ u8 unk_04;
 } unk_D_800FC6D4_008; // size = 0x5
 
 typedef struct unk_D_800FC6D4 {
-    /* 0x00 */ u16 flags;
+    /* 0x00 */ u16 flags; // GbMusic_RelocateSequenceTable: nonzero once relocation has run
     /* 0x02 */ u16 num_entries;
-    /* 0x04 */ u16 unk_04;
+    /* 0x04 */ u16 relocationEntryCount; // GbMusic_RelocateSequenceTable's loop bound (this * 3 = number of offset-table entries to relocate)
     /* 0x06 */ u16 unk_06;
     /* 0x08 */ unk_D_800FC6D4_008* offset;
     /* 0x0C */ char unk_0C[0x4];

@@ -81,111 +81,152 @@ void miniRankingActorSetup3rd(f32 arg0, f32 arg1, f32 arg2, f32 arg3, s16 arg4, 
     sp34->unk_000.unk_000.unk_14 = 2;
 }
 
-Gfx* MiniFx_BuildNodeColorRampDisplayList(Gfx* gfx, arg1_func_87903D64_014* arg1) {
-    u8 tmp1;
-    u8 tmp2;
-    u8 tmp3;
-    u8 tmp4;
-    u8 tmp5;
-    u8 tmp6;
-    u8 tmp7;
-    u8 tmp8;
-    u8 tmp9;
-    u32 sp38;
-    u32 sp34;
-    u32 sp30;
+#ifdef NON_MATCHING
+Gfx* MiniFx_BuildNodeColorRampDisplayList(Gfx* arg0, arg1_func_87903D64_014* arg1) {
+    s32 sp38;
+    s32 sp34;
+    s32 sp30;
+
     unk_D_86002F34_000_014_004* sp2C;
     unk_D_86002F34_000_014_004* sp28;
     unk_D_86002F34_000_014_010* sp24;
     unk_D_86002F34_000_014_010* sp20;
-    u32 pad;
-    u32 temp_a2;
+
+    s32 temp_a2;
+    UNUSED s32 temp_t1;
+    UNUSED s32 temp_t1_2;
+    UNUSED s32 temp_t2;
+    UNUSED s32 temp_t2_2;
+    UNUSED s32 temp_t2_3;
+    UNUSED s32 temp_t4;
+    s32 var_a0;
+    s32 var_v1;
     u32 temp_a3;
+    u32 var_v0;
+    UNUSED u8* temp_t1_3;
+    UNUSED u8* temp_v1;
+    unk_D_86002F34_000_014_004* var_a1;
+    unk_D_86002F34_000_014_004* var_a2;
+    unk_D_86002F34_000_014_010* var_a3;
+    unk_D_86002F34_000_014_010* var_t0;
+    u32 tmp1;
+    u32 tmp2;
+    u32 tmp3;
+    u32 tmp4;
+    u32 tmp5;
+    u32 tmp6;
+    u32 tmp7;
+    u32 tmp8;
+    u32 tmp9;
 
     temp_a2 = D_8006F09C->unk_000.unk_14;
     temp_a3 = (D_8006F09C->unk_040.unk_08 >> 0x10) + 1;
 
-    pad = arg1->unk_00;
-    switch (pad) {
+    switch (arg1->unk_00) {
+        default:
+            var_a0 = sp34;
+            var_v1 = sp38;
+            var_v0 = sp30;
+            break;
+
         case 1:
             if (temp_a3 < 0xF) {
-                sp38 = 0;
-                sp34 = 1;
-                sp30 = (temp_a3 << 8) / 15;
+                var_v1 = 0;
+                var_v0 = (temp_a3 << 8) / 15;
+                var_a0 = 1;
             } else if (temp_a3 < 0x1D) {
-                sp38 = 1;
-                sp34 = 2;
-                sp30 = ((temp_a3 << 8) - 0xF00) / 14;
+                var_v1 = 1;
+                var_v0 = ((temp_a3 << 8) - 0xF00) / 14;
+                var_a0 = 2;
             } else {
-                sp38 = 2;
-                sp34 = 2;
-                sp30 = 0;
+                var_v1 = 2;
+                var_a0 = 2;
+                var_v0 = 0;
             }
             break;
 
         case 2:
             if (temp_a3 < 5) {
-                sp38 = 0;
-                sp34 = 1;
-                sp30 = (temp_a3 << 8) / 5;
+                var_v1 = 0;
+                var_v0 = (temp_a3 << 8) / 5;
+                var_a0 = 1;
             } else if (temp_a3 < 0xF) {
-                sp38 = 1;
-                sp34 = 2;
-                sp30 = ((temp_a3 << 8) - 0x500) / 10;
+                var_v1 = 1;
+                var_v0 = ((temp_a3 << 8) - 0x500) / 10;
+                var_a0 = 2;
             } else if (temp_a3 < 0x1D) {
-                sp38 = 2;
-                sp34 = 3;
-                sp30 = ((temp_a3 << 8) - 0xF00) / 14;
+                var_v1 = 2;
+                var_v0 = ((temp_a3 << 8) - 0xF00) / 14;
+                var_a0 = 3;
             } else {
-                sp38 = 3;
-                sp34 = 3;
-                sp30 = 0;
+                var_v1 = 3;
+                var_a0 = 3;
+                var_v0 = 0;
             }
             break;
     }
 
     switch (temp_a2) {
+        default:
+            var_t0 = sp20;
+            var_a3 = sp24;
+            var_a2 = sp28;
+            var_a1 = sp2C;
+            break;
+
         case 0:
-            sp2C = &arg1->unk_04[sp38];
-            sp28 = &arg1->unk_04[sp34];
-            sp24 = &arg1->unk_10[sp38];
-            sp20 = &arg1->unk_10[sp34];
+            var_a3 = &arg1->unk_10[var_v1];
+            var_t0 = &arg1->unk_10[var_a0];
+            var_a1 = &arg1->unk_04[var_v1];
+            var_a2 = &arg1->unk_04[var_a0];
             break;
 
         case 1:
-            sp2C = &arg1->unk_08[sp38];
-            sp28 = &arg1->unk_08[sp34];
-            sp24 = &arg1->unk_14[sp38];
-            sp20 = &arg1->unk_14[sp34];
+            var_a3 = &arg1->unk_14[var_v1];
+            var_t0 = &arg1->unk_14[var_a0];
+            var_a1 = &arg1->unk_08[var_v1];
+            var_a2 = &arg1->unk_08[var_a0];
             break;
 
         case 2:
-            sp2C = &arg1->unk_0C[sp38];
-            sp28 = &arg1->unk_0C[sp34];
-            sp24 = &arg1->unk_18[sp38];
-            sp20 = &arg1->unk_18[sp34];
+            var_a3 = &arg1->unk_18[var_v1];
+            var_t0 = &arg1->unk_18[var_a0];
+            var_a1 = &arg1->unk_0C[var_v1];
+            var_a2 = &arg1->unk_0C[var_a0];
             break;
     }
 
+    gDPPipeSync(arg0++);
 
+    tmp5 = ((var_a1->unk_00[4] * (0x100 - var_v0)) + (var_a2->unk_00[4] * var_v0)) >> 8;
 
-    tmp1 = ((sp28->unk_00[0] * sp30) + (sp2C->unk_00[0] * (0x100 - sp30))) >> 8;
-    tmp2 = ((sp28->unk_00[1] * sp30) + (sp2C->unk_00[1] * (0x100 - sp30))) >> 8;
-    tmp3 = ((sp28->unk_00[2] * sp30) + (sp2C->unk_00[2] * (0x100 - sp30))) >> 8;
-    tmp4 = ((sp28->unk_00[3] * sp30) + (sp2C->unk_00[3] * (0x100 - sp30))) >> 8;
-    tmp5 = ((sp28->unk_00[4] * sp30) + (sp2C->unk_00[4] * (0x100 - sp30))) >> 8;
+    tmp1 = ((var_a1->unk_00[0] * (0x100 - var_v0)) + (var_a2->unk_00[0] * var_v0));
+    tmp1 >>= 8;
+    tmp2 = ((var_a1->unk_00[1] * (0x100 - var_v0)) + (var_a2->unk_00[1] * var_v0));
+    tmp2 >>= 8;
+    tmp3 = ((var_a1->unk_00[2] * (0x100 - var_v0)) + (var_a2->unk_00[2] * var_v0));
+    tmp3 >>= 8;
+    tmp4 = ((var_a1->unk_00[3] * (0x100 - var_v0)) + (var_a2->unk_00[3] * var_v0));
+    tmp4 >>= 8;
 
-    tmp6 = ((sp20->unk_00[0] * sp30) + (sp24->unk_00[0] * (0x100 - sp30))) >> 8;
-    tmp7 = ((sp20->unk_00[1] * sp30) + (sp24->unk_00[1] * (0x100 - sp30))) >> 8;
-    tmp8 = ((sp20->unk_00[2] * sp30) + (sp24->unk_00[2] * (0x100 - sp30))) >> 8;
-    tmp9 = ((sp20->unk_00[3] * sp30) + (sp24->unk_00[3] * (0x100 - sp30))) >> 8;
+    tmp6 = ((var_a3->unk_00[0] * (0x100 - var_v0)) + (var_t0->unk_00[0] * var_v0));
+    tmp6 >>= 8;
+    tmp7 = ((var_a3->unk_00[1] * (0x100 - var_v0)) + (var_t0->unk_00[1] * var_v0));
+    tmp7 >>= 8;
+    tmp8 = ((var_a3->unk_00[2] * (0x100 - var_v0)) + (var_t0->unk_00[2] * var_v0));
+    tmp8 >>= 8;
+    tmp9 = ((var_a3->unk_00[3] * (0x100 - var_v0)) + (var_t0->unk_00[3] * var_v0));
+    tmp9 >>= 8;
 
-    gDPPipeSync(gfx++);
-    gDPSetPrimColor(gfx++, 0, tmp5, tmp1, tmp2, tmp3, tmp4);
-    gDPSetEnvColor(gfx++, tmp6, tmp7, tmp8, tmp9);
+    gDPSetPrimColor(arg0++, 0, tmp5, tmp1, tmp2, tmp3, tmp4);
 
-    return gfx;
+    gDPSetEnvColor(arg0++, tmp1, tmp2, tmp3, tmp4);
+
+    return arg0;
 }
+#else
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/3/fragment3_11BF90/MiniFx_BuildNodeColorRampDisplayList.s")
+#endif
 
 void MiniFx_GraphNodeBuildColorRampList(s32 arg0, arg1_func_87903D64* arg1) {
     if (arg0 == 5) {

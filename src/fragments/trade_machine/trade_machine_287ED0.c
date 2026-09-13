@@ -8,7 +8,7 @@
 #include "src/gb_data.h"
 #include "src/pokemon_stats.h"
 #include "src/text_system.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/audio_sfx.h"
 #include "src/audio_loop_point.h"
 #include "src/gfx_buffer.h"
@@ -285,8 +285,8 @@ void Trade_ScanPorts(void) {
     for (i = 0, ptr = &D_82F14450[0]; i < 4; i++, ptr++) {
         GbSave_CopyPlayerIdentity(i, &sp40);
         GbSave_EnsureMainDataLoaded(i);
-        Text_UntranscodeNameWrapper(ptr->unk_08, sp40.unk_02);
-        ptr->unk_06 = sp40.unk_00;
+        Text_UntranscodeNameWrapper(ptr->unk_08, sp40.playerName);
+        ptr->unk_06 = sp40.trainerId;
         ptr->unk_01 = GbSave_GetPortGame(i);
         ptr->unk_00 = GbSave_GetSaveState(i);
         ptr->unk_03 = GbSave_SavedAtPokemonCenter(i);

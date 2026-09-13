@@ -25,7 +25,7 @@ typedef struct Controller {
     /* 0x04 */ s16 rawStickY;
     /* 0x06 */ u16 buttonDown;
     /* 0x08 */ u16 buttonPressed;
-    /* 0x0A */ u16 unk_0A;
+    /* 0x0A */ u16 buttonReleased; // Cont_ReadInputs: buttons held last frame that are no longer held this frame
     /* 0x0C */ char fillerC[2];
     /* 0x0E */ s16 angle;
     /* 0x10 */ f32 stickMag;

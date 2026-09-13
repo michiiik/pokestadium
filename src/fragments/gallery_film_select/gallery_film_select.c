@@ -4,7 +4,7 @@
 #include "src/input.h"
 #include "src/text_system.h"
 #include "src/gallery.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/ui_graphics.h"
 #include "src/audio_sfx.h"
 #include "src/gfx_buffer.h"
@@ -28,7 +28,7 @@ s32 D_836033C8;
 void Gallery_FilmSelectCommitPhotos(unk_D_83407B38* arg0) {
     s32 i;
     s32 sp40;
-    unk_D_83403C60* temp_s0;
+    GalleryPhotoRecord* temp_s0;
     s32 temp_v0;
     s32 idx;
 
@@ -49,7 +49,7 @@ void Gallery_FilmSelectCommitPhotos(unk_D_83407B38* arg0) {
         if (D_83403C00[i] != 0) {
             idx = Gallery_FindNthEmptySlot(D_83403C60, 0x24, sp40, 0);
 
-            temp_s0 = arg0->unk_20[i]->unk_18;
+            temp_s0 = arg0->sceneInstances[i]->photoRecord;
 
             D_83403C60[idx] = *temp_s0;
 
@@ -82,9 +82,9 @@ s32 Gallery_FilmSelectHasUnsavedPhoto(void) {
 
 void Gallery_FilmSelectUpdatePageAvailability(unk_D_83407B38* arg0) {
     UNUSED s32 pad;
-    s32 sp18 = arg0->unk_08 + 1;
+    s32 sp18 = arg0->currentPage + 1;
 
-    if (Gallery_CountReadyScenesOnPage(arg0, arg0->unk_08 - 1) > 0) {
+    if (Gallery_CountReadyScenesOnPage(arg0, arg0->currentPage - 1) > 0) {
         D_836033C4 = 1;
     } else {
         D_836033C4 = 0;
@@ -111,14 +111,14 @@ s32 Gallery_FilmSelectHandleInput(unk_D_83407B38* arg0) {
     unk_func_80031270* ptr;
 
     sp54 = 0;
-    sp50 = arg0->unk_08;
-    sp4C = arg0->unk_00;
-    sp48 = arg0->unk_00 % 3;
-    sp44 = arg0->unk_00 / 3;
+    sp50 = arg0->currentPage;
+    sp4C = arg0->selectedIndex;
+    sp48 = arg0->selectedIndex % 3;
+    sp44 = arg0->selectedIndex / 3;
     sp40 = 0;
     sp3C = 0;
 
-    if (Gallery_FindReadyScene(arg0->unk_20, 0x25) != -1) {
+    if (Gallery_FindReadyScene(arg0->sceneInstances, 0x25) != -1) {
         return 0;
     }
 
@@ -178,28 +178,28 @@ s32 Gallery_FilmSelectHandleInput(unk_D_83407B38* arg0) {
 
     sp1C = sp44 * 3;
 
-    arg0->unk_00 = sp1C + sp48;
-    if (sp4C != arg0->unk_00) {
+    arg0->selectedIndex = sp1C + sp48;
+    if (sp4C != arg0->selectedIndex) {
         D_836032F4 = 0;
         Audio_PlaySoundEffectById(1);
     }
 
     if ((gPlayer1Controller->buttonPressed & 0x20) || (sp40 != 0)) {
-        s32 tmp = arg0->unk_08;
+        s32 tmp = arg0->currentPage;
         if (D_836033C4 != 0) {
             tmp--;
-            arg0->unk_08 = tmp;
+            arg0->currentPage = tmp;
         }
     } else if ((gPlayer1Controller->buttonPressed & 0x10) || (sp3C != 0)) {
-        s32 tmp = arg0->unk_08;
+        s32 tmp = arg0->currentPage;
         if (D_836033C8 != 0) {
             tmp++;
-            arg0->unk_08 = tmp;
+            arg0->currentPage = tmp;
         }
     } else if (gPlayer1Controller->buttonPressed & 0x8000) {
-        idx = (arg0->unk_08 * arg0->unk_14) + arg0->unk_00;
+        idx = (arg0->currentPage * arg0->scenesPerPage) + arg0->selectedIndex;
         if (sp1C < 6) {
-            if (Gallery_IsSceneReady(arg0->unk_20[idx]) != 0) {
+            if (Gallery_IsSceneReady(arg0->sceneInstances[idx]) != 0) {
                 if (D_83403C00[idx] == 0) {
                     if (D_836033B4 < D_836033B8) {
                         D_83403C00[idx] = 1;
@@ -229,26 +229,26 @@ s32 Gallery_FilmSelectHandleInput(unk_D_83407B38* arg0) {
             Audio_PlaySoundEffectById(3);
         }
     } else if (gPlayer1Controller->buttonPressed & 4) {
-        idx = (arg0->unk_08 * arg0->unk_14) + arg0->unk_00;
-        if ((sp1C < 6) && (Gallery_IsSceneReady(arg0->unk_20[idx]) != 0)) {
+        idx = (arg0->currentPage * arg0->scenesPerPage) + arg0->selectedIndex;
+        if ((sp1C < 6) && (Gallery_IsSceneReady(arg0->sceneInstances[idx]) != 0)) {
             Audio_PlaySoundEffectById(0x19);
-            Gallery_SetEnlargeTarget(arg0->unk_20[idx]->unk_18);
+            Gallery_SetEnlargeTarget(arg0->sceneInstances[idx]->photoRecord);
             sp54 = 2;
         } else {
             Audio_PlaySoundEffectById(8);
         }
     }
 
-    if (sp50 != arg0->unk_08) {
+    if (sp50 != arg0->currentPage) {
         D_836032F4 = 0;
         Audio_PlaySoundEffectById(0x27);
         Gallery_FilmSelectUpdatePageAvailability(arg0);
 
-        for (i = 0; i < arg0->unk_14; i++) {
-            ptr = arg0->unk_20[(arg0->unk_08 * arg0->unk_14) + i];
+        for (i = 0; i < arg0->scenesPerPage; i++) {
+            ptr = arg0->sceneInstances[(arg0->currentPage * arg0->scenesPerPage) + i];
 
             if (ptr != NULL) {
-                ptr->unk_00 = 0;
+                ptr->state = 0;
             }
         }
     }
@@ -279,7 +279,7 @@ void Gallery_FilmSelectInit(s32 arg0) {
 
     Gallery_InitSceneGrid(&D_83603300, 0x88, 0x66, 6, 3, PokeIcon_AllocFramebuffers(5), D_836032F8, D_83402EE0, 0x18, 1);
 
-    if (D_83407AF8.unk_00 != -1) {
+    if (D_83407AF8.savedIndex != -1) {
         Gallery_RestorePosition(&D_83603300, &D_83407AF8);
     }
 
@@ -423,13 +423,13 @@ void Gallery_FilmSelectDrawPhotoGrid(unk_D_83407B38* arg0) {
     s32 i;
     unk_func_80031270* temp_s0;
 
-    for (i = 0; i < arg0->unk_14; i++) {
-        temp_s5 = (arg0->unk_08 * arg0->unk_14) + i;
-        temp_s0 = arg0->unk_20[temp_s5];
-        if ((Gallery_IsSceneReady(temp_s0) != 0) && (temp_s0->unk_00 == 2)) {
+    for (i = 0; i < arg0->scenesPerPage; i++) {
+        temp_s5 = (arg0->currentPage * arg0->scenesPerPage) + i;
+        temp_s0 = arg0->sceneInstances[temp_s5];
+        if ((Gallery_IsSceneReady(temp_s0) != 0) && (temp_s0->state == 2)) {
             temp_s4 = (i / 3) * 0x6E;
             temp_s1 = (i % 3) * 0xA4;
-            Gallery_DrawPhotoThumbnail(temp_s0->unk_08->img_p, temp_s1 + 0x58, temp_s4 + 0x6E, 0x88, 0x66, 8, 0);
+            Gallery_DrawPhotoThumbnail(temp_s0->colorBuffer->img_p, temp_s1 + 0x58, temp_s4 + 0x6E, 0x88, 0x66, 8, 0);
             if (D_83403C00[temp_s5] != 0) {
                 Gallery_FilmSelectDrawPhotoBadge(temp_s1 + 0xB0, temp_s4 + 0xA6, D_83603280);
             }
@@ -447,8 +447,8 @@ void Gallery_FilmSelectDrawPhotoGrid(unk_D_83407B38* arg0) {
 }
 
 void Gallery_FilmSelectDrawSelectionCursor(unk_D_83407B38* arg0) {
-    s32 temp_hi = arg0->unk_00 % 3;
-    s32 temp_lo = arg0->unk_00 / 3;
+    s32 temp_hi = arg0->selectedIndex % 3;
+    s32 temp_lo = arg0->selectedIndex / 3;
     s32 var_a0;
 
     gSPDisplayList(gDisplayListHead++, D_8006F518);
@@ -641,8 +641,8 @@ char* Gallery_FilmSelectGetHelpText(unk_D_83407B38* arg0) {
     static s32 D_836032B4[] = { 0x21, 0x24 };
 
     char* var_v0;
-    s32 temp_lo = arg0->unk_00 % 3;
-    s32 temp_hi = arg0->unk_00 / 3;
+    s32 temp_lo = arg0->selectedIndex % 3;
+    s32 temp_hi = arg0->selectedIndex / 3;
 
     if (D_836032F4 == 0) {
         if (temp_hi < 2) {
@@ -746,7 +746,7 @@ void Gallery_FilmSelectDraw(void) {
     f32 sp1C;
     f32 sp18;
 
-    Gallery_IndexToGridPos(&D_83603300, &sp28, &sp24, D_83603300.unk_00);
+    Gallery_IndexToGridPos(&D_83603300, &sp28, &sp24, D_83603300.selectedIndex);
     BgStage_DrawFrame();
     Gallery_FilmSelectDrawBackgroundGradient();
     Gallery_FilmSelectDrawBandedStrip(0, 0x4F, 0x280, 1);
@@ -859,8 +859,8 @@ void Gallery_FilmSelectRunLoop(void) {
 }
 
 s32 Gallery_FilmSelectFinalize(unk_D_83407B38* arg0) {
-    s32 temp_hi = arg0->unk_00 % 3;
-    s32 temp_lo = arg0->unk_00 / 3;
+    s32 temp_hi = arg0->selectedIndex % 3;
+    s32 temp_lo = arg0->selectedIndex / 3;
     s32 sp1C;
 
     if (temp_lo < 2) {

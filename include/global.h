@@ -45,22 +45,22 @@ typedef struct unk_D_86002F58_004_000_010_024 {
 } unk_D_86002F58_004_000_010_024; // size >= 0xC
 
 typedef struct unk_D_86002F58_004_000_010 {
-    /* 0x00 */ u8 unk_00;
-    /* 0x01 */ u8 unk_01;
-    /* 0x02 */ u8 unk_02;
-    /* 0x04 */ s32 unk_04[1];
+    /* 0x00 */ u8 configFlags; // PokeIcon_AllocFramebuffers's arg0: bit0=frame-load enabled, bit1=background-load enabled, bit2=double-buffered, bit3=quad-buffered
+    /* 0x01 */ u8 pendingFlags; // bit0=frame load pending, bit1=background load pending (PokeIcon_RequestFrameLoad/RequestBackgroundLoad/ApplyLoadResult)
+    /* 0x02 */ u8 activeVariant; // index into framebuffers[], flipped by configFlags bit2 in PokeIcon_RequestFrameLoad
+    /* 0x04 */ s32 framebuffers[1]; // declared size undersells - up to 5 entries when configFlags bit3 is set (PokeIcon_AllocFramebuffers)
     /* 0x08 */ char pad8[0x10];
-    /* 0x18 */ s32 unk_18;
-    /* 0x1C */ s32 unk_1C;
-    /* 0x20 */ s32 unk_20;
-    /* 0x24 */ unk_D_86002F58_004_000_010_024* unk_24;
-    /* 0x28 */ s32 unk_28;
-    /* 0x2C */ arg1_func_80010CA8 unk_2C;
-    /* 0x30 */ OSMesgQueue unk_30;
-    /* 0x48 */ OSMesg unk_48;
+    /* 0x18 */ s32 backgroundBuffer; // PokeIcon_RequestBackgroundLoad's poolPtr
+    /* 0x1C */ s32 frameResultSize; // PokeIcon_ApplyLoadResult's case 1: poolSize
+    /* 0x20 */ s32 backgroundResultSize; // case 2: poolSize
+    /* 0x24 */ unk_D_86002F58_004_000_010_024* lastLoadedFragment; // case 1: result; PokeIcon_RequestFrameLoad reuses the load if this matches the requested species
+    /* 0x28 */ s32 backgroundResult; // case 2: result
+    /* 0x2C */ arg1_func_80010CA8 colorAdjust; // cached alongside lastLoadedFragment for the reuse check
+    /* 0x30 */ OSMesgQueue frameQueue;
+    /* 0x48 */ OSMesg frameMsgBuf;
     /* 0x4C */ char pad4C[0x4];
-    /* 0x50 */ OSMesgQueue unk_50;
-    /* 0x68 */ OSMesg unk_68;
+    /* 0x50 */ OSMesgQueue backgroundQueue;
+    /* 0x68 */ OSMesg backgroundMsgBuf;
     /* 0x6C */ char pad6C[0x4];
 } unk_D_86002F58_004_000_010; // size = 0x70
 
@@ -136,10 +136,10 @@ typedef struct unk_D_86002F58_004_000_0A8 {
 
 typedef struct unk_D_86002F58_004_000 {
     /* 0x000 */ unk_D_86002F58_004_000_000 unk_000;
-    /* 0x018 */ s16 unk_018;
-    /* 0x01A */ s16 unk_01A;
-    /* 0x01C */ u8 unk_01C;
-    /* 0x01D */ u8 unk_01D;
+    /* 0x018 */ s16 animType; // Model_InitDisplayObject's arg1
+    /* 0x01A */ s16 modelId; // Model_InitDisplayObject's arg2; a species id in most battle-scene consumers
+    /* 0x01C */ u8 textureMode; // Model_SetMaterialTextureMode
+    /* 0x01D */ u8 materialAlpha; // Model_SetMaterialAlpha
     /* 0x01E */ Vec3s unk_01E;			//	total Rotation
     /* 0x024 */ Vec3f unk_024;			//	global Position
     /* 0x030 */ Vec3f unk_030;			//	scale
@@ -149,9 +149,9 @@ typedef struct unk_D_86002F58_004_000 {
     /* 0x060 */ MtxF unk_060;
     /* 0x0A0 */ Color_RGBA8_u32 unk_0A0;    //  vertex color ?
     /* 0x0A4 */ char unk0A4[2];
-    /* 0x0A6 */ u8 unk_0A6;
-    /* 0x0A7 */ u8 unk_0A7;
-    /* 0x0A8 */ unk_D_86002F58_004_000_0A8 unk_0A8[1];
+    /* 0x0A6 */ u8 poolIndex; // stable index into the shared displayObjectPool; GeoRender_RecordAnchorPosition/etc.
+    /* 0x0A7 */ u8 anchorCount; // GeoRender_RecordAnchorPosition/FindAnchorPosition; caps at 0xC (12)
+    /* 0x0A8 */ unk_D_86002F58_004_000_0A8 anchors[1]; // declared size undersells - indexed up to anchorCount (max 12)
     /* 0x0B8 */ char unk0B8[0x24];
     /* 0x0DC */ Vec3f unk_0DC;
     /* 0x0E0 */ char unk0E0[0x4];
@@ -461,25 +461,25 @@ typedef struct unk_D_86002F30 {
     /* 0x08 */ unk_D_86002F58_004_000_004* unk_08;
 } unk_D_86002F30; // size = 0x18 ??
 
-typedef struct UnkInputStruct8000D738 {
-    /* 0x00 */ s16 unk_00;
-    /* 0x02 */ u8 unk_02;
-    /* 0x03 */ u8 unk_03;
-    /* 0x04 */ u16 (*unk_04)[6][0x640];
-} UnkInputStruct8000D738; // size = 0x8
+typedef struct GbTowerLaunchData {
+    /* 0x00 */ u16 buttonBindingsPacked;
+    /* 0x02 */ u8 presentationMode;
+    /* 0x03 */ u8 partyCount;
+    /* 0x04 */ u16 (*partyIconFrames)[6][0x640];
+} GbTowerLaunchData; // size = 0x8
 
 typedef struct unk_D_800AA660 {
     /* 0x0000 */ OSThread thread;
     /* 0x01B0 */ char unk01B0[0x10];
     /* 0x01C0 */ OSMesgQueue queue1;
-    /* 0x01D8 */ struct unk_D_800AA660* unk_01D8;
-    /* 0x01DC */ s32 unk_01DC;
+    /* 0x01D8 */ struct unk_D_800AA660* nextClient; // Sched_AddClient/NotifyClients linked-list traversal
+    /* 0x01DC */ s32 eventFilter; // Sched_InitClientQueue's arg1; gates which broadcast events this client receives
     /* 0x01E0 */ char unk01E0[0x2000];
     /* 0x21E0 */ OSMesg mesg;
     /* 0x21E4 */ OSMesgQueue queue2;
     /* 0x21FC */ u8* font1;
     /* 0x2200 */ u8* font2;
-    /* 0x2204 */ UnkInputStruct8000D738 unk_2204;
+    /* 0x2204 */ GbTowerLaunchData launchData;
     /* 0x220C */ char unk220C[4];
 } unk_D_800AA660; // size = 0x2210
 

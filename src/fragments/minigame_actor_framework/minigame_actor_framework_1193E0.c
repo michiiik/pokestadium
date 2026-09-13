@@ -86,7 +86,7 @@ void miniUpdateCamera(void) {
     Camera_ComputeEyeFromAngles(&D_87906054->unk_60.at, &D_87906054->unk_60.eye, miniCameraDistance, miniCameraXRot, miniCameraYRot);
 }
 
-s32 minigameDebuggModeControl(void) {
+void minigameDebuggModeControl(void) {
     s16 sp6;
 
     if (miniDebugMode == 0) {

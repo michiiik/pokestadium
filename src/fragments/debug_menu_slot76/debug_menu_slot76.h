@@ -3,6 +3,6 @@
 
 #include "global.h"
 
-s32 func_8FB00020(UNUSED s32 arg0, UNUSED s32 arg1);
+s32 DebugMenu_ForwardSlot76(UNUSED s32 arg0, UNUSED s32 arg1);
 
 #endif // _FRAGMENT76_H_

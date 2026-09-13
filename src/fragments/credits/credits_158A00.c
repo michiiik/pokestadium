@@ -6,7 +6,7 @@
 #include "src/graphics_textures.h"
 #include "src/input.h"
 #include "src/text_system.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/audio_loop_point.h"
 #include "src/audio_category_fade.h"
 #include "src/gfx_buffer.h"
@@ -46,6 +46,16 @@ u8 D_86A06212;
 unk_D_86A03014* D_86A06214;
 char** D_86A06218;
 u32 D_86A0621C;
+u16 D_86A06220;
+u16 D_86A06222;
+Vec3f D_86A06228;
+f32 D_86A06234;
+Vec3f D_86A06238;
+f32 D_86A06244;
+Vec3f D_86A06248;
+unk_D_86002F34_00C* D_86A06254;
+s16 D_86A06258;
+s16* D_86A0625C;
 
 unk_D_86A025A0 D_86A025A0[9] = {
     {
@@ -177,18 +187,18 @@ void Credits_LoadBackgroundScene(s8 arg0, u8 arg1) {
         D_86A06170.unk_00.unk_14 = 0;
         D_86A06170.unk_00.unk_01 &= ~1;
     } else {
-        D_86A06170.unk_18.unk_00 = temp_v0_4->unk_00;
-        D_86A06170.unk_18.unk_02 = temp_v0_4->unk_02;
-        D_86A06170.unk_18.unk_04.rgba = temp_v0_4->unk_04.rgba;
+        D_86A06170.unk_18.fogNear = temp_v0_4->fogNear;
+        D_86A06170.unk_18.fogFar = temp_v0_4->fogFar;
+        D_86A06170.unk_18.fogColor.rgba = temp_v0_4->fogColor.rgba;
         D_86A06170.unk_00.unk_14 = 1;
     }
 
     Credits_SetBackgroundTint(0xFF, 0xFF, 0xFF);
 
     if (arg1 < 6) {
-        func_86A01CF0(&D_86A061EC, &D_86A061EE, &D_86A061F0, D_86A061E8, D_86A025A0[D_86A025C4].unk_02, arg0, arg1);
+        Credits_InitCameraYawBlend(&D_86A061EC, &D_86A061EE, &D_86A061F0, D_86A061E8, D_86A025A0[D_86A025C4].unk_02, arg0, arg1);
     } else if (arg1 < 9) {
-        func_86A01CF0(&D_86A061EC, &D_86A061EE, &D_86A061F0, D_86A061E8, D_86A025A0[D_86A025C4].unk_02, arg0, arg1);
+        Credits_InitCameraYawBlend(&D_86A061EC, &D_86A061EE, &D_86A061F0, D_86A061E8, D_86A025A0[D_86A025C4].unk_02, arg0, arg1);
     } else if (arg1 < 0xF) {
         if (D_86A025C4 == 7) {
             Credits_InitCameraKeyframeBlend(D_86A061E8, D_86A025A0[D_86A025C4].unk_02 - 0x28, arg0, arg1);
@@ -327,7 +337,7 @@ void Credits_MainLoop(s32 arg0) {
     Credits_LoadBackgroundScene(D_86A061D8, D_86A061D9);
 
     while (var_s6 != 0) {
-        func_86A01490();
+        Credits_UpdateScrollDelta();
         Particle_UpdateFrameCounters();
 
         if (D_86A025A0[D_86A025C4].unk_02 != 0) {
@@ -1442,7 +1452,7 @@ void Credits_InitScene(s32 arg0) {
     MainPool_FinalizeAllocation(sp2C);
     ModelRenderer_InitDisplayRoots();
     Credits_InitCamera();
-    func_86A013C8(1, arg0, D_86A03014);
+    Credits_InitRoleList(1, arg0, D_86A03014);
     D_86A061D8 = -1;
 
     main_pool_push_state('BACK');
@@ -1525,26 +1535,8 @@ s32 Credits_InterpolateRoleColor(Color_RGBA8_u32* arg0, u16 arg1, u16 arg2, u8 a
 }
 
 #ifdef NON_MATCHING
-/**
- * Instruction-exact with the block-scope `static char** D_86A06218` below (a file-scope
- * definition, static or not, costs an extra callee-saved register and a larger frame), but
- * IDO then emits that static's `.lcomm` immediately *before* the file's non-static bss
- * symbols instead of after them, so it is allocated at 0x86A06200 rather than 0x86A06218
- * and D_86A06200 slides to 0x86A06204.
- *
- * The `.lcomm` order is not declaration order for block-scope statics and does not depend
- * on the symbol name, the type, or the position of the declaration within the function.
- * A block-scope static in most functions of this file is emitted last (correct), but one in
- * func_86A013C8 (or in Credits_InterpolateRoleColor) is emitted just ahead of the globals.
- *
- * Merging this file with credits_15A2B0.c so that D_86A06210/11 need not be extern does not
- * help: the bss run is per translation unit and already sized correctly here, and the merge
- * is independently wrong -- the ROM has 12 bytes of padding between the end of
- * Credits_DrawRoleList (0x15A294) and Credits_GetRoleCount (0x15A2A0) plus 8 more before
- * 0x15A2B0, which IDO only emits at object boundaries, so these are three separate
- * translation units.
- */
-void func_86A013C8(u8 arg0, u8 arg1, unk_D_86A03014* arg2) {
+// Needs the in-fucntion static but that breaks bss ordering
+void Credits_InitRoleList(u8 arg0, u8 arg1, unk_D_86A03014* arg2) {
     static char** D_86A06218;
 
     u16 i;
@@ -1565,33 +1557,26 @@ void func_86A013C8(u8 arg0, u8 arg1, unk_D_86A03014* arg2) {
     D_86A06214 = arg2;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/credits/credits_158A00/func_86A013C8.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/16/fragment16_158A00/Credits_InitRoleList.s")
 #endif
 
-/**
- * Same bss-allocation problem as func_86A013C8, plus one register-allocation difference:
- * the target moves temp_v0 through an extra register (addiu t5, v0, 0; subu t9, t5, v1).
- * Note that making D_86A0621C a block-scope static here *does* land it at 0x86A0621C, so
- * long as D_86A06218 stays at file scope.
- */
 #ifdef NON_MATCHING
-void func_86A01490(void) {
+void Credits_UpdateScrollDelta(void) {
     static u32 D_86A0621C;
-    s32 temp_v0 = D_800A62E0.unk_A34;
+
+    s32 temp_v0 = D_800A6CF4.unk_20;
 
     if (D_86A06212 == 0) {
         D_86A06212 = 1;
-    } else if ((u32) D_86A0621C < (u32) temp_v0) {
+    } else if (D_86A0621C < temp_v0) {
         D_86A06210 = temp_v0 - D_86A0621C;
     } else {
-        temp_v0++;
-        temp_v0--;
         D_86A06210 = temp_v0 - D_86A0621C;
     }
     D_86A0621C = temp_v0;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/credits/credits_158A00/func_86A01490.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/16/fragment16_158A00/Credits_UpdateScrollDelta.s")
 #endif
 
 void Credits_DrawRoleList(void) {

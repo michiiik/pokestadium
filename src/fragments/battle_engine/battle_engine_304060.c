@@ -156,16 +156,16 @@ static unk_D_843859E0 D_843859E0[] = {
 s32 BattleScene_AreBothParticipantModelsCompact(void) {
     if (((BattleScene_GetParticipantModelWidth(D_84390010[0]) + BattleScene_GetParticipantModelWidth(D_84390010[1])) <= 85.0f) &&
         (BattleScene_GetParticipantModelHeight(D_84390010[0]) == 0.0f) && (BattleScene_GetParticipantModelHeight(D_84390010[1]) == 0.0f) &&
-        (D_84390010[0]->unk_000.unk_024.y == 0.0f) && (D_84390010[1]->unk_000.unk_024.y == 0.0f)) {
+        (D_84390010[0]->model.unk_024.y == 0.0f) && (D_84390010[1]->model.unk_024.y == 0.0f)) {
         return 1;
     }
     return 0;
 }
 
 s32 BattleScene_SkipIntroIfFainted(UNUSED Battler* arg0, unk_D_86002F34_00C* arg1) {
-    BattlerState* ptr = &D_84390010[gBattleScene.unk_00->unk_2C]->unk_654;
+    BattlerState* ptr = &D_84390010[gBattleScene.scene->activeBattlerIndex]->unk_654;
 
-    if ((ptr->unk_2D == 0x10) || ((ptr->unk_34 & 0x4000) != 0)) {
+    if ((ptr->faintSequenceState == 0x10) || ((ptr->battleStateFlags & 0x4000) != 0)) {
         BattleScene_SelectNextIntroCameraShot(arg1);
         return 1;
     }
@@ -173,11 +173,11 @@ s32 BattleScene_SkipIntroIfFainted(UNUSED Battler* arg0, unk_D_86002F34_00C* arg
 }
 
 s32 BattleScene_IsEitherBattlerFainted(UNUSED Battler* arg0, UNUSED unk_D_86002F34_00C* arg1) {
-    BattlerState* ptr = &D_84390010[gBattleScene.unk_00->unk_2C]->unk_654;
-    s32 idx = gBattleScene.unk_00->unk_2C == 0;
+    BattlerState* ptr = &D_84390010[gBattleScene.scene->activeBattlerIndex]->unk_654;
+    s32 idx = gBattleScene.scene->activeBattlerIndex == 0;
     BattlerState* ptr2 = &D_84390010[idx]->unk_654;
 
-    if ((ptr->unk_34 & 0x4000) || (ptr2->unk_34 & 0x4000)) {
+    if ((ptr->battleStateFlags & 0x4000) || (ptr2->battleStateFlags & 0x4000)) {
         return 1;
     }
     return 0;
@@ -194,7 +194,7 @@ void BattleScene_IntroCameraStep0(unk_D_86002F34_00C* arg0) {
         BattleScene_SetCameraEyeAndStoreAngles(arg0, D_84385B90, 0x5B0, 0, 550.0f, 0.0f);
     }
     arg0->unk_60.eye.z *= 0.6;
-    gBattleScene.unk_00->unk_20++;
+    gBattleScene.scene->scenePhase++;
 }
 
 void BattleScene_IntroCameraStep2(unk_D_86002F34_00C* arg0) {
@@ -207,7 +207,7 @@ void BattleScene_IntroCameraStep2(unk_D_86002F34_00C* arg0) {
         BattleScene_SetCameraAtFromPosition(arg0, D_84385B90, 0, 0, 0.0f, 0.0f);
         BattleScene_SetCameraEyeAndStoreAngles(arg0, D_84385B90, 0x1A4E, 0, 1000.0f, 0.0f);
     }
-    gBattleScene.unk_00->unk_20++;
+    gBattleScene.scene->scenePhase++;
 }
 
 void BattleScene_IntroCameraStep4Or6(unk_D_86002F34_00C* arg0, s32 arg1) {
@@ -223,11 +223,11 @@ void BattleScene_IntroCameraStep4Or6(unk_D_86002F34_00C* arg0, s32 arg1) {
     sp44 = &D_84390010[arg1]->unk_654;
     BattleScene_ClearCameraOffsetVectors();
     BattleScene_SetActiveBattlerIndex(arg1);
-    temp_s0 = D_84390010[gBattleScene.unk_00->unk_2C];
+    temp_s0 = D_84390010[gBattleScene.scene->activeBattlerIndex];
 
     if (BattleScene_SkipIntroIfFainted(temp_s0, arg0) == 0) {
-        BattleAnim_GetOwnerDefaultAnchorPosition(temp_s0, &gBattleScene.unk_00->unk_D0);
-        if (!(sp44->unk_34 & 2)) {
+        BattleAnim_GetOwnerDefaultAnchorPosition(temp_s0, &gBattleScene.scene->unk_D0);
+        if (!(sp44->battleStateFlags & 2)) {
             BattleScene_EnterStateRow(temp_s0, 1);
         }
 
@@ -243,21 +243,21 @@ void BattleScene_IntroCameraStep4Or6(unk_D_86002F34_00C* arg0, s32 arg1) {
         sp4C = BattleAnim_GetOwnerModelHeight(temp_s0) * sp3E;
         sp4A = BattleAnim_RandomRange(0xB4);
 
-        if (sp44->unk_34 & 0x200) {
+        if (sp44->battleStateFlags & 0x200) {
             sp4C = 0.0f;
         }
 
-        BattleScene_SetCameraAtFromAnchor(temp_s0, arg0, gBattleScene.unk_00->unk_D0, 0, 0, 0, 0.0f);
-        BattleScene_SetCameraEyeFromPosition(arg0, gBattleScene.unk_00->unk_D0, 0, 0x4000 - (sp4A * 0xB6), sp50, sp4C);
+        BattleScene_SetCameraAtFromAnchor(temp_s0, arg0, gBattleScene.scene->unk_D0, 0, 0, 0, 0.0f);
+        BattleScene_SetCameraEyeFromPosition(arg0, gBattleScene.scene->unk_D0, 0, 0x4000 - (sp4A * 0xB6), sp50, sp4C);
         BattleScene_CameraPresetNop(arg0);
         BattleScene_UpdateCameraModelOffset(temp_s0, arg0);
 
-        if (temp_s0->unk_000.unk_01A == 0x5F) {
+        if (temp_s0->model.modelId == 0x5F) {
             arg0->unk_24.fovy = 50.0f;
         } else {
             arg0->unk_24.fovy = 30.0f;
         }
-        gBattleScene.unk_00->unk_20++;
+        gBattleScene.scene->scenePhase++;
     }
 }
 
@@ -269,10 +269,10 @@ void BattleScene_IntroCameraStep8Or10(unk_D_86002F34_00C* arg0, s32 arg1) {
 
     BattleScene_ClearCameraOffsetVectors();
     BattleScene_SetActiveBattlerIndex(arg1);
-    temp_s0 = D_84390010[gBattleScene.unk_00->unk_2C];
+    temp_s0 = D_84390010[gBattleScene.scene->activeBattlerIndex];
 
     if (BattleScene_SkipIntroIfFainted(temp_s0, arg0) == 0) {
-        if (temp_s0->unk_654.unk_34 & 0x200) {
+        if (temp_s0->unk_654.battleStateFlags & 0x200) {
             sp24 = &D_84384888[0];
         } else {
             var_a0 = BattleAnim_RandomRange(5);
@@ -286,7 +286,7 @@ void BattleScene_IntroCameraStep8Or10(unk_D_86002F34_00C* arg0, s32 arg1) {
         BattleScene_LoadCameraPreset(sp24, arg0, temp_s0);
         BattleScene_ApplyCameraPreset(arg0, temp_s0, 1);
         BattleScene_CameraPresetNop(arg0);
-        gBattleScene.unk_00->unk_20++;
+        gBattleScene.scene->scenePhase++;
     }
 }
 
@@ -295,29 +295,29 @@ void BattleScene_IntroCameraStep12Or14(unk_D_86002F34_00C* arg0, s32 arg1) {
     BattleScene_SetActiveBattlerIndex(arg1);
     if (BattleScene_SkipIntroIfFainted(D_84390010[arg1], arg0) == 0) {
         BattleScene_SetCameraSendOutShot(arg0, arg1);
-        gBattleScene.unk_00->unk_20++;
+        gBattleScene.scene->scenePhase++;
     }
 }
 
 void BattleScene_IntroCameraStep16(unk_D_86002F34_00C* arg0) {
-    BattleScene_SetActiveBattlerIndex(gBattleScene.unk_00->unk_54 - 1);
-    if (BattleScene_IsEitherBattlerFainted(D_84390010[gBattleScene.unk_00->unk_2C], arg0) != 0) {
-        gBattleScene.unk_00->unk_54 = 0;
+    BattleScene_SetActiveBattlerIndex(gBattleScene.scene->unk_54 - 1);
+    if (BattleScene_IsEitherBattlerFainted(D_84390010[gBattleScene.scene->activeBattlerIndex], arg0) != 0) {
+        gBattleScene.scene->unk_54 = 0;
         BattleScene_SelectNextIntroCameraShot(arg0);
     } else {
-        BattleScene_SetCameraBattlerHeightShot(arg0, gBattleScene.unk_00->unk_2C);
-        gBattleScene.unk_00->unk_20++;
+        BattleScene_SetCameraBattlerHeightShot(arg0, gBattleScene.scene->activeBattlerIndex);
+        gBattleScene.scene->scenePhase++;
     }
 }
 
 void BattleScene_IntroCameraStep18(unk_D_86002F34_00C* arg0) {
-    BattleScene_SetActiveBattlerIndex(gBattleScene.unk_00->unk_2C);
-    gBattleScene.unk_00->unk_54 = 0;
-    if (BattleScene_IsEitherBattlerFainted(D_84390010[gBattleScene.unk_00->unk_2C], arg0) != 0) {
+    BattleScene_SetActiveBattlerIndex(gBattleScene.scene->activeBattlerIndex);
+    gBattleScene.scene->unk_54 = 0;
+    if (BattleScene_IsEitherBattlerFainted(D_84390010[gBattleScene.scene->activeBattlerIndex], arg0) != 0) {
         BattleScene_SelectNextIntroCameraShot(arg0);
     } else {
-        BattleScene_SetCameraBattlerHeightShot(arg0, gBattleScene.unk_00->unk_2C);
-        gBattleScene.unk_00->unk_20++;
+        BattleScene_SetCameraBattlerHeightShot(arg0, gBattleScene.scene->activeBattlerIndex);
+        gBattleScene.scene->scenePhase++;
     }
 }
 
@@ -325,22 +325,22 @@ void BattleScene_IntroCameraStep20(unk_D_86002F34_00C* arg0) {
     s16 var_v1;
 
     BattleScene_ResetCameraFrameCounter();
-    if (D_800AE540.unk_0000 == 0x10) {
-        var_v1 = D_843859E0[D_800AE540.unk_0001].unk_00;
-        if (D_800AE540.unk_0001 == 7) {
-            var_v1 += D_800AE540.unk_0002;
+    if (D_800AE540.sessionMode == 0x10) {
+        var_v1 = D_843859E0[D_800AE540.modeCategory].unk_00;
+        if (D_800AE540.modeCategory == 7) {
+            var_v1 += D_800AE540.progressIndex;
         }
     } else {
-        var_v1 = D_843859E0[D_800AE540.unk_0000].unk_00;
-        if (D_800AE540.unk_0000 == 7) {
-            var_v1 += D_800AE540.unk_0002;
+        var_v1 = D_843859E0[D_800AE540.sessionMode].unk_00;
+        if (D_800AE540.sessionMode == 7) {
+            var_v1 += D_800AE540.progressIndex;
         }
     }
     arg0->unk_24.fovy = D_843859E0[var_v1].unk_0C;
     Vec3f_SetComponentsDuplicate(&arg0->unk_60.at, 0.0f, 10.0f, 0.0f);
     Camera_ComputeEyeFromAngles(&arg0->unk_60.at, &arg0->unk_60.eye, D_843859E0[var_v1].unk_04, D_843859E0[var_v1].unk_08,
                   D_843859E0[var_v1].unk_0A);
-    gBattleScene.unk_00->unk_20++;
+    gBattleScene.scene->scenePhase++;
 }
 
 void BattleScene_IntroCameraStep22Or24(unk_D_86002F34_00C* arg0, s32 arg1) {
@@ -358,28 +358,28 @@ void BattleScene_IntroCameraStep22Or24(unk_D_86002F34_00C* arg0, s32 arg1) {
     temp_s0 = D_84390010[arg1];
 
     if (BattleScene_SkipIntroIfFainted(temp_s0, arg0) == 0) {
-        if ((temp_s0->unk_000.unk_01A == 0x98) || (temp_s0->unk_654.unk_34 & 2)) {
+        if ((temp_s0->model.modelId == 0x98) || (temp_s0->unk_654.battleStateFlags & 2)) {
             BattleScene_SelectNextIntroCameraShot(arg0);
             return;
         }
 
-        if ((temp_s0->unk_000.unk_01A == 0x5F) && (arg1 == 1)) {
+        if ((temp_s0->model.modelId == 0x5F) && (arg1 == 1)) {
             var_v1 = 0x97;
         } else {
-            var_v1 = (temp_s0->unk_000.unk_01A - 1) & 0xFF;
+            var_v1 = (temp_s0->model.modelId - 1) & 0xFF;
         }
 
-        tmp2 = (D_84384580[arg1]->unk_00.y + temp_s0->unk_000.unk_024.y) + D_84384C30[var_v1].z;
-        tmp1 = ((D_84384580[arg1]->unk_00.z + D_84384C30[var_v1].y) * temp_s0->unk_4B0) + temp_s0->unk_000.unk_024.x;
+        tmp2 = (D_84384580[arg1]->positionOffset.y + temp_s0->model.unk_024.y) + D_84384C30[var_v1].z;
+        tmp1 = ((D_84384580[arg1]->positionOffset.z + D_84384C30[var_v1].y) * temp_s0->yawBase) + temp_s0->model.unk_024.x;
 
-        Vec3f_SetComponentsDuplicate(&arg0->unk_60.at, tmp1, tmp2, temp_s0->unk_000.unk_024.z);
+        Vec3f_SetComponentsDuplicate(&arg0->unk_60.at, tmp1, tmp2, temp_s0->model.unk_024.z);
 
-        tmp1 = D_84384580[gBattleScene.unk_00->unk_2C]->unk_00.x * D_84384C30[var_v1].x;
-        tmp4 = D_84384580[gBattleScene.unk_00->unk_2C]->unk_0C;
-        tmp3 = (temp_s0->unk_4B0 * D_84384580[gBattleScene.unk_00->unk_2C]->unk_0E) + BattleScene_GetParticipantFacingAngle(temp_s0);
+        tmp1 = D_84384580[gBattleScene.scene->activeBattlerIndex]->positionOffset.x * D_84384C30[var_v1].x;
+        tmp4 = D_84384580[gBattleScene.scene->activeBattlerIndex]->rotationOffset;
+        tmp3 = (temp_s0->yawBase * D_84384580[gBattleScene.scene->activeBattlerIndex]->rotationScale) + BattleScene_GetParticipantFacingAngle(temp_s0);
 
         Camera_ComputeEyeFromAngles(&arg0->unk_60.at, &arg0->unk_60.eye, tmp1, tmp4, tmp3);
-        gBattleScene.unk_00->unk_20++;
+        gBattleScene.scene->scenePhase++;
     }
 }
 
@@ -393,22 +393,22 @@ void BattleScene_SelectNextIntroCameraShot(unk_D_86002F34_00C* arg0) {
 
     BattleScene_SetCameraClipPlanes(arg0, 20.0f, 12800.0f);
     arg0->unk_24.fovy = 30.0f;
-    if ((gBattleScene.unk_00->unk_54 != 0) && (BattleScene_AreBattlerHeightsSeparated(arg0) != 0)) {
-        gBattleScene.unk_00->unk_20 = 0x10;
+    if ((gBattleScene.scene->unk_54 != 0) && (BattleScene_AreBattlerHeightsSeparated(arg0) != 0)) {
+        gBattleScene.scene->scenePhase = 0x10;
     } else {
-        gBattleScene.unk_00->unk_54 = 0;
-        if (sp20[gBattleScene.unk_00->unk_0C] == 0xFF) {
-            gBattleScene.unk_00->unk_0C = 0;
+        gBattleScene.scene->unk_54 = 0;
+        if (sp20[gBattleScene.scene->unk_0C] == 0xFF) {
+            gBattleScene.scene->unk_0C = 0;
         }
-        gBattleScene.unk_00->unk_20 = sp20[gBattleScene.unk_00->unk_0C];
-        gBattleScene.unk_00->unk_0C++;
+        gBattleScene.scene->scenePhase = sp20[gBattleScene.scene->unk_0C];
+        gBattleScene.scene->unk_0C++;
     }
 
     Battle_ResetModelToIdleAnim(*D_84390010);
     Battle_ResetModelToIdleAnim(D_84390010[1]);
     BattleScene_ResetCameraFrameCounter();
 
-    switch (gBattleScene.unk_00->unk_20) {
+    switch (gBattleScene.scene->scenePhase) {
         case 0:
             BattleScene_IntroCameraStep0(arg0);
             break;
@@ -480,30 +480,30 @@ void BattleScene_IntroCameraRollStepNoFov(unk_D_86002F34_00C* arg0) {
 
 void BattleScene_IntroCameraAnimationHoldStep(unk_D_86002F34_00C* arg0) {
     UNUSED s32 pad;
-    BattlerState* sp18 = &D_84390010[gBattleScene.unk_00->unk_2C]->unk_654;
+    BattlerState* sp18 = &D_84390010[gBattleScene.scene->activeBattlerIndex]->unk_654;
 
-    if ((sp18->unk_2D == 0x10) || ((sp18->unk_34 & 0x4000) != 0)) {
+    if ((sp18->faintSequenceState == 0x10) || ((sp18->battleStateFlags & 0x4000) != 0)) {
         BattleScene_SelectNextIntroCameraShot(arg0);
         return;
     }
 
-    if (!(sp18->unk_34 & 0x200)) {
-        BattleScene_ApplyOwnerFramingOnly(arg0, D_84390010[gBattleScene.unk_00->unk_2C]);
+    if (!(sp18->battleStateFlags & 0x200)) {
+        BattleScene_ApplyOwnerFramingOnly(arg0, D_84390010[gBattleScene.scene->activeBattlerIndex]);
     }
 
-    if ((sp18->unk_34 & 1) || (sp18->unk_34 & 2) || (D_84390010[gBattleScene.unk_00->unk_2C]->unk_000.unk_01A == 0x98)) {
+    if ((sp18->battleStateFlags & 1) || (sp18->battleStateFlags & 2) || (D_84390010[gBattleScene.scene->activeBattlerIndex]->model.modelId == 0x98)) {
         if (BattleScene_AdvanceCameraFrameCounter(0x5A) != 0) {
             BattleScene_SelectNextIntroCameraShot(arg0);
         }
-    } else if (ModelAnim_IsAnimationDone(&D_84390010[gBattleScene.unk_00->unk_2C]->unk_000) != 0) {
+    } else if (ModelAnim_IsAnimationDone(&D_84390010[gBattleScene.scene->activeBattlerIndex]->model) != 0) {
         BattleScene_SelectNextIntroCameraShot(arg0);
     }
 }
 
 void BattleScene_IntroCameraPresetHoldStep(unk_D_86002F34_00C* arg0) {
-    Battler* sp1C = D_84390010[gBattleScene.unk_00->unk_2C];
+    Battler* sp1C = D_84390010[gBattleScene.scene->activeBattlerIndex];
 
-    if ((sp1C->unk_654.unk_2D == 0x10) || (sp1C->unk_654.unk_34 & 0x4000)) {
+    if ((sp1C->unk_654.faintSequenceState == 0x10) || (sp1C->unk_654.battleStateFlags & 0x4000)) {
         BattleScene_SelectNextIntroCameraShot(arg0);
     } else if ((BattleScene_AdvanceCameraFrameCounter(0x5A) != 0) || (BattleScene_AnimateCameraPreset(arg0, sp1C, 1, 0) != 0)) {
         BattleScene_SelectNextIntroCameraShot(arg0);
@@ -511,9 +511,9 @@ void BattleScene_IntroCameraPresetHoldStep(unk_D_86002F34_00C* arg0) {
 }
 
 void BattleScene_IntroCameraWideHoldStep(unk_D_86002F34_00C* arg0) {
-    BattlerState* ptr = &D_84390010[gBattleScene.unk_00->unk_2C]->unk_654;
+    BattlerState* ptr = &D_84390010[gBattleScene.scene->activeBattlerIndex]->unk_654;
 
-    if ((ptr->unk_2D == 0x10) || (ptr->unk_34 & 0x4000)) {
+    if ((ptr->faintSequenceState == 0x10) || (ptr->battleStateFlags & 0x4000)) {
         BattleScene_SelectNextIntroCameraShot(arg0);
     } else {
         arg0->unk_24.fovy = 60.0f;
@@ -524,17 +524,17 @@ void BattleScene_IntroCameraWideHoldStep(unk_D_86002F34_00C* arg0) {
 }
 
 void BattleScene_IntroCameraHeightShotSwapStep(unk_D_86002F34_00C* arg0) {
-    if (BattleScene_ApproachCameraBattlerHeightShot(arg0, gBattleScene.unk_00->unk_2C) != 0) {
-        s32 idx = gBattleScene.unk_00->unk_2C == 0;
+    if (BattleScene_ApproachCameraBattlerHeightShot(arg0, gBattleScene.scene->activeBattlerIndex) != 0) {
+        s32 idx = gBattleScene.scene->activeBattlerIndex == 0;
 
-        gBattleScene.unk_00->unk_2C = idx;
-        gBattleScene.unk_00->unk_20 = 0x12;
+        gBattleScene.scene->activeBattlerIndex = idx;
+        gBattleScene.scene->scenePhase = 0x12;
         BattleScene_IntroCameraStep18(arg0);
     }
 }
 
 void BattleScene_IntroCameraHeightShotStep(unk_D_86002F34_00C* arg0) {
-    if (BattleScene_ApproachCameraBattlerHeightShot(arg0, gBattleScene.unk_00->unk_2C) != 0) {
+    if (BattleScene_ApproachCameraBattlerHeightShot(arg0, gBattleScene.scene->activeBattlerIndex) != 0) {
         BattleScene_SelectNextIntroCameraShot(arg0);
     }
 }
@@ -554,19 +554,19 @@ void BattleScene_IntroCameraFinalHoldStep(unk_D_86002F34_00C* arg0) {
 }
 
 void BattleScene_UpdateIntroCameraSequence(unk_D_86002F34_00C* arg0) {
-    if ((D_800AE540.unk_0000 == 0x10) && (gBattleScene.unk_00->unk_1C == 1)) {
+    if ((D_800AE540.sessionMode == 0x10) && (gBattleScene.scene->unk_1C == 1)) {
         BattleScene_UpdateActionSelectPhase();
-    } else if (gBattleScene.unk_00->unk_1C == 1) {
-        if ((gBattleScene.unk_00->unk_30 == 0) && (D_84390010[0]->unk_728.unk_168->unk_1C == 0x17) &&
-            (D_84390010[1]->unk_728.unk_168->unk_1C == 0x103)) {
+    } else if (gBattleScene.scene->unk_1C == 1) {
+        if ((gBattleScene.scene->unk_30 == 0) && (D_84390010[0]->presentation.layout->hudX == 0x17) &&
+            (D_84390010[1]->presentation.layout->hudX == 0x103)) {
             BattleScene_UpdateActionSelectPhase();
-        } else if ((gBattleScene.unk_00->unk_30 == 0) && (D_84390010[0]->unk_728.unk_168->unk_1C < 0xE) &&
-                   (D_84390010[1]->unk_728.unk_168->unk_1C >= 0x10D)) {
+        } else if ((gBattleScene.scene->unk_30 == 0) && (D_84390010[0]->presentation.layout->hudX < 0xE) &&
+                   (D_84390010[1]->presentation.layout->hudX >= 0x10D)) {
             BattleScene_ResetActionSelectionTimers();
         }
     }
 
-    switch (gBattleScene.unk_00->unk_20) {
+    switch (gBattleScene.scene->scenePhase) {
         case 1:
             BattleScene_IntroCameraRollStep(arg0);
             break;

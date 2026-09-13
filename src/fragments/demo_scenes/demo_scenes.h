@@ -4,32 +4,32 @@
 #include "global.h"
 
 typedef struct unk_D_86B0E5D4_04 {
-    /* 0x00 */ Vec3f unk_00;
-    /* 0x0C */ s16 unk_0C;
-    /* 0x0E */ s16 unk_0E;
+    /* 0x00 */ Vec3f eye; // computed by Camera_ComputeEyeFromAngles from eyeYaw/eyePitch/eyeDistance
+    /* 0x0C */ s16 eyeYaw;
+    /* 0x0E */ s16 eyePitch;
     /* 0x10 */ char unk10[0x2];
-    /* 0x12 */ s16 unk_12;
-    /* 0x14 */ s16 unk_14;
-    /* 0x18 */ f32 unk_18;
-    /* 0x1C */ f32 unk_1C;
-    /* 0x20 */ s16 unk_20;
-    /* 0x22 */ s16 unk_22;
+    /* 0x12 */ s16 atYaw;
+    /* 0x14 */ s16 atPitch;
+    /* 0x18 */ f32 eyeDistance;
+    /* 0x1C */ f32 atDistance;
+    /* 0x20 */ s16 eyeYawEnd; // DioramaCamKeyframe_SetAngles' second angle pair, for keyframe-transition blending
+    /* 0x22 */ s16 eyePitchEnd;
     /* 0x24 */ char unk24[0x2];
-    /* 0x26 */ s16 unk_26;
-    /* 0x28 */ s16 unk_28;
-    /* 0x2C */ f32 unk_2C;
-    /* 0x30 */ f32 unk_30;
-    /* 0x34 */ f32 unk_34;
-    /* 0x38 */ f32 unk_38;
-    /* 0x3C */ f32 unk_3C;
+    /* 0x26 */ s16 atYawEnd;
+    /* 0x28 */ s16 atPitchEnd;
+    /* 0x2C */ f32 eyeDistanceEnd;
+    /* 0x30 */ f32 atDistanceEnd;
+    /* 0x34 */ f32 eyeTransitionSpeed;
+    /* 0x38 */ f32 atTransitionSpeed;
+    /* 0x3C */ f32 fovy;
     /* 0x40 */ char unk40[0x4];
     /* 0x44 */ s32 unk_44;
     /* 0x48 */ s32 unk_48;
     /* 0x4C */ s32 unk_4C;
     /* 0x50 */ s32 unk_50;
     /* 0x54 */ char unk54[0x14];
-    /* 0x68 */ f32 unk_68;
-    /* 0x6C */ f32 unk_6C;
+    /* 0x68 */ f32 currentBlendDistance; // stepped toward the eye/target-eye separation each tick by Math_StepToF
+    /* 0x6C */ f32 blendRemaining; // <= 5.0 means the keyframe transition is complete (Diorama_UpdateCameraKeyframe's return value)
     /* 0x70 */ f32 unk_70;
     /* 0x74 */ f32 unk_74;
 } unk_D_86B0E5D4_04; // size >= 0x78

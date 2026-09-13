@@ -6,7 +6,7 @@
 #include "src/game_state.h"
 #include "src/session.h"
 #include "src/text_system.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/audio_sfx.h"
 #include "src/DDC0.h"
 #include "src/matrix.h"
@@ -747,13 +747,13 @@ void FreeBattle_ApplyRuleSelection(void) {
     }
 
     if (D_84002D18.unk_02 == 3) {
-        D_800AE540.unk_11EC = D_84002BE4;
+        D_800AE540.cpuTrainerId = D_84002BE4;
         temp_v0 = Trainer_Create(-1, 0, "COM", Text_GetPlayerLabel(3));
         Team_AddTrainer(1, temp_v0);
         if (D_84002D18.unk_00 == 3) {
-            temp_v0->unk_001 = 2;
+            temp_v0->trainerSlotId = 2;
         } else {
-            temp_v0->unk_001 = 3;
+            temp_v0->trainerSlotId = 3;
         }
     } else {
         for (i = 0; i < 4; i++) {
@@ -764,14 +764,14 @@ void FreeBattle_ApplyRuleSelection(void) {
         }
     }
 
-    if (D_800AE540.unk_1194[0].unk_01 == 2) {
-        D_800AE540.unk_1194[0].unk_08[0]->unk_214->unk_003 = 0x35;
-        D_800AE540.unk_1194[0].unk_08[1]->unk_214->unk_003 = 0x35;
+    if (D_800AE540.unk_1194[0].playerCount == 2) {
+        D_800AE540.unk_1194[0].teams[0]->extendedRoster->trainerIdHigh = 0x35;
+        D_800AE540.unk_1194[0].teams[1]->extendedRoster->trainerIdHigh = 0x35;
     }
 
-    if (D_800AE540.unk_1194[1].unk_01 == 2) {
-        D_800AE540.unk_1194[1].unk_08[0]->unk_214->unk_003 = 0x35;
-        D_800AE540.unk_1194[1].unk_08[1]->unk_214->unk_003 = 0x35;
+    if (D_800AE540.unk_1194[1].playerCount == 2) {
+        D_800AE540.unk_1194[1].teams[0]->extendedRoster->trainerIdHigh = 0x35;
+        D_800AE540.unk_1194[1].teams[1]->extendedRoster->trainerIdHigh = 0x35;
     }
 }
 

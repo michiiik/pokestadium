@@ -7,7 +7,7 @@
 #include "src/graphics_textures.h"
 #include "src/input.h"
 #include "src/save_data.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/gfx_buffer.h"
 #include "src/gfx_rect.h"
 #include "src/DDC0.h"
@@ -149,12 +149,12 @@ s32 Stage_ShowMewtwoIntro(void) {
     FRAGMENT_LOAD(fragment31);
 
     Save_EnsureBankLoaded(2);
-    Save_GetModeSettings(&D_86B10830, D_800AE540.unk_11F2);
+    Save_GetModeSettings(&D_86B10830, D_800AE540.roundSelector);
 
-    if (D_800AE540.unk_11F2 == 1) {
+    if (D_800AE540.roundSelector == 1) {
         D_86B10824 = ASSET_LOAD2(backgrounds, 1, 1);
         D_86B10828 = BinArchive_GetFile(D_86B10824, 2);
-    } else if (D_86B10830.unk_00 & 0x100) {
+    } else if (D_86B10830.flags & 0x100) {
         D_86B10824 = ASSET_LOAD2(backgrounds, 1, 1);
         D_86B10828 = BinArchive_GetFile(D_86B10824, 1);
     } else {

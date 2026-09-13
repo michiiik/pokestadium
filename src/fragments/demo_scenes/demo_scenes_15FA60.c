@@ -8,7 +8,7 @@
 #include "src/input.h"
 #include "src/save_data.h"
 #include "src/text_system.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/audio_loop_point.h"
 #include "src/gfx_rect.h"
 #include "src/matrix.h"
@@ -150,9 +150,9 @@ void Diorama_InitModelSlot(unk_D_86B0E5F0* arg0, unk_D_86B0C4C8* arg1) {
     ModelAnim_SetAnimation(&arg0->unk_004, arg1->unk_10);
 
     if (arg1->unk_0C == 6) {
-        arg0->unk_004.unk_0A6 = 0;
+        arg0->unk_004.poolIndex = 0;
     } else {
-        arg0->unk_004.unk_0A6 = 0xFF;
+        arg0->unk_004.poolIndex = 0xFF;
     }
 
     ModelAnim_SetFrame(&arg0->unk_004, 0);
@@ -229,9 +229,9 @@ void Diorama_SetGroupCamera(s32 arg0) {
         D_86B0E5D4->unk_00->unk_60.eye.z = 177.41f;
         D_86B0E5D4->unk_00->unk_24.fovy = 25.0f;
     } else {
-        D_86B0E5D4->unk_04.unk_00.x = D_86B0C264[arg0].unk_00.x;
-        D_86B0E5D4->unk_04.unk_00.y = D_86B0C264[arg0].unk_00.y;
-        D_86B0E5D4->unk_04.unk_00.z = D_86B0C264[arg0].unk_00.z;
+        D_86B0E5D4->unk_04.eye.x = D_86B0C264[arg0].unk_00.x;
+        D_86B0E5D4->unk_04.eye.y = D_86B0C264[arg0].unk_00.y;
+        D_86B0E5D4->unk_04.eye.z = D_86B0C264[arg0].unk_00.z;
 
         Diorama_LoadCameraKeyframe(&D_86B0C160[arg0], D_86B0E5D4);
         Diorama_SetCameraToKeyframeStart(&D_86B0E5D4->unk_04, D_86B0E5D4);
@@ -418,7 +418,7 @@ s32 Diorama_UpdateStateMachine(void) {
                     if (Diorama_SlideModelsForward(D_86B0E5D4->unk_04.unk_44) != 0) {
                         Diorama_BeginGroupTransition();
                     }
-                } else if (D_86B0E5D4->unk_04.unk_6C < D_86B0E5D4->unk_04.unk_30) {
+                } else if (D_86B0E5D4->unk_04.blendRemaining < D_86B0E5D4->unk_04.atDistanceEnd) {
                     Diorama_BeginGroupTransition();
                 }
 

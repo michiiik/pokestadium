@@ -1,21 +1,21 @@
 #include "table_view.h"
 
 void TableView_Initialize(unk_func_88201DA0_038* arg0, unk_func_88201DA0_034* arg1, s32 arg2, s32 arg3, s32 arg4) {
-    arg0->unk_00 = arg1;
-    arg0->unk_0C = arg2;
-    arg0->unk_04 = arg3;
-    arg0->unk_08 = arg4;
+    arg0->data = arg1;
+    arg0->rowStride = arg2;
+    arg0->capacity = arg3;
+    arg0->count = arg4;
 }
 
 void ByteMatrix_Allocate(unk_func_8820BE14_06C* arg0, s32 arg1, s32 arg2, MemoryPool* arg3) {
-    arg0->unk_00 = mem_pool_alloc(arg3, arg1 * arg2);
-    arg0->unk_0C = arg1;
-    arg0->unk_04 = arg2;
-    arg0->unk_08 = 0;
+    arg0->data = mem_pool_alloc(arg3, arg1 * arg2);
+    arg0->rowStride = arg1;
+    arg0->capacity = arg2;
+    arg0->count = 0;
 }
 
 void ByteMatrix_Free(unk_func_8820BE14_06C* arg0, MemoryPool* arg1) {
-    mem_pool_free(arg1, arg0->unk_00);
+    mem_pool_free(arg1, arg0->data);
 }
 
 s32 ByteMatrix_AppendRow(unk_func_8820BE14_06C* arg0, s8* a1) {
@@ -23,18 +23,18 @@ s32 ByteMatrix_AppendRow(unk_func_8820BE14_06C* arg0, s8* a1) {
     s32 i;
     s8* arg1;
 
-    if (arg0->unk_08 >= arg0->unk_04) {
+    if (arg0->count >= arg0->capacity) {
         return 1;
     }
 
-    var_v0 = (u8*)arg0->unk_00 + (arg0->unk_0C * arg0->unk_08);
+    var_v0 = (u8*)arg0->data + (arg0->rowStride * arg0->count);
     arg1 = a1;
 
-    for (i = arg0->unk_0C; i > 0; i--) {
+    for (i = arg0->rowStride; i > 0; i--) {
         *var_v0++ = *arg1++;
     }
 
-    arg0->unk_08++;
+    arg0->count++;
     return 0;
 }
 
@@ -43,13 +43,13 @@ s32 ByteMatrix_InsertRow(unk_func_8820BE14_06C* arg0, s8* arg1, s32 arg2) {
     s8* var_t0;
     s8* var_v1;
 
-    if ((arg0->unk_08 >= arg0->unk_04) || (arg0->unk_08 < arg2)) {
+    if ((arg0->count >= arg0->capacity) || (arg0->count < arg2)) {
         return 1;
     }
 
-    var_v1 = (s8*)arg0->unk_00 + (arg0->unk_0C * arg0->unk_08);
-    var_t0 = var_v1 + arg0->unk_0C;
-    var_t1 = (arg0->unk_08 - arg2) * arg0->unk_0C;
+    var_v1 = (s8*)arg0->data + (arg0->rowStride * arg0->count);
+    var_t0 = var_v1 + arg0->rowStride;
+    var_t1 = (arg0->count - arg2) * arg0->rowStride;
 
     while (var_t1 > 0) {
         *--var_t0 = *--var_v1;
@@ -57,15 +57,15 @@ s32 ByteMatrix_InsertRow(unk_func_8820BE14_06C* arg0, s8* arg1, s32 arg2) {
     }
 
     var_v1 = arg1;
-    var_t1 = arg0->unk_0C;
-    var_t0 = (u8*)arg0->unk_00 + (arg0->unk_0C * arg2);
+    var_t1 = arg0->rowStride;
+    var_t0 = (u8*)arg0->data + (arg0->rowStride * arg2);
 
     while (var_t1 > 0) {
         *var_t0++ = *var_v1++;
         var_t1--;
     }
 
-    arg0->unk_08 += 1;
+    arg0->count += 1;
     return 0;
 }
 
@@ -74,16 +74,16 @@ s32 ByteMatrix_RemoveRow(unk_func_8820BE14_06C* arg0, s32 arg1) {
     s8* var_a3;
     s8* var_v1;
 
-    if (arg1 >= arg0->unk_08) {
+    if (arg1 >= arg0->count) {
         return 1;
     }
 
-    var_v1 = (s8*)arg0->unk_00 + (arg0->unk_0C * arg1);
+    var_v1 = (s8*)arg0->data + (arg0->rowStride * arg1);
 
-    arg0->unk_08--;
+    arg0->count--;
 
-    var_a3 = arg0->unk_0C + var_v1;
-    var_t0 = (arg0->unk_08 - arg1) * arg0->unk_0C;
+    var_a3 = arg0->rowStride + var_v1;
+    var_t0 = (arg0->count - arg1) * arg0->rowStride;
 
     while (var_t0 > 0) {
         *var_v1++ = *var_a3++;
@@ -98,14 +98,14 @@ s32 ByteMatrix_CopyRow(unk_func_8820BE14_06C* arg0, s8* a1, s32 arg2) {
     s32 i;
     s8* arg1;
 
-    if (arg2 >= arg0->unk_08) {
+    if (arg2 >= arg0->count) {
         return 1;
     }
 
-    var_v0 = (s8*)arg0->unk_00 + (arg0->unk_0C * arg2);
+    var_v0 = (s8*)arg0->data + (arg0->rowStride * arg2);
     arg1 = a1;
 
-    for (i = arg0->unk_0C; i > 0; i--) {
+    for (i = arg0->rowStride; i > 0; i--) {
         *arg1++ = *var_v0++;
     }
 
@@ -117,14 +117,14 @@ s32 ByteMatrix_CopyRowAt(unk_func_8820BE14_06C* arg0, s8* a1, s32 arg2) {
     s32 i;
     s8* arg1;
 
-    if (arg2 >= arg0->unk_08) {
+    if (arg2 >= arg0->count) {
         return 1;
     }
 
-    var_v0 = (s8*)arg0->unk_00 + (arg0->unk_0C * arg2);
+    var_v0 = (s8*)arg0->data + (arg0->rowStride * arg2);
     arg1 = a1;
 
-    for (i = arg0->unk_0C; i > 0; i--) {
+    for (i = arg0->rowStride; i > 0; i--) {
         *var_v0++ = *arg1++;
     }
 
@@ -136,16 +136,16 @@ s32 WordList_Remove(unk_func_8830867C_04C_030_02C_000_000_00C* arg0, s32 arg1) {
     s32 var_a3;
     s16* var_v1;
 
-    if (arg1 >= arg0->unk_08) {
+    if (arg1 >= arg0->count) {
         return 1;
     }
 
-    var_v1 = (s16*)arg0->unk_00 + arg1;
+    var_v1 = (s16*)arg0->data + arg1;
 
-    arg0->unk_08--;
+    arg0->count--;
 
     var_a2 = var_v1 + 1;
-    var_a3 = arg0->unk_08 - arg1;
+    var_a3 = arg0->count - arg1;
 
     while (var_a3 > 0) {
         *var_v1++ = *var_a2++;
@@ -156,19 +156,19 @@ s32 WordList_Remove(unk_func_8830867C_04C_030_02C_000_000_00C* arg0, s32 arg1) {
 }
 
 void PointerList_Initialize(unk_func_88205880_A030* arg0, void** arg1, s32 arg2, s32 arg3) {
-    arg0->unk_00 = arg1;
-    arg0->unk_04 = arg2;
-    arg0->unk_08 = arg3;
+    arg0->data = arg1;
+    arg0->capacity = arg2;
+    arg0->count = arg3;
 }
 
 void PointerList_Allocate(unk_func_88200FA0_030_038* arg0, s32 arg1, MemoryPool* arg2) {
-    arg0->unk_00 = mem_pool_alloc(arg2, arg1 * 4);
-    arg0->unk_04 = arg1;
-    arg0->unk_08 = 0;
+    arg0->data = mem_pool_alloc(arg2, arg1 * 4);
+    arg0->capacity = arg1;
+    arg0->count = 0;
 }
 
 void PointerList_Free(unk_func_88200FA0_030_038* arg0, MemoryPool* arg1) {
-    mem_pool_free(arg1, arg0->unk_00);
+    mem_pool_free(arg1, arg0->data);
 }
 
 void PointerList_Insert(unk_func_88200FA0_030_038* arg0, char* arg1, s32 arg2) {
@@ -176,17 +176,17 @@ void PointerList_Insert(unk_func_88200FA0_030_038* arg0, char* arg1, s32 arg2) {
     unk_func_88205880_00D0** var_t0;
     unk_func_88205880_00D0** var_v0;
 
-    var_v0 = &arg0->unk_00[arg0->unk_08];
+    var_v0 = &arg0->data[arg0->count];
     var_t0 = var_v0 + 1;
-    var_t1 = arg0->unk_08 - arg2;
+    var_t1 = arg0->count - arg2;
 
     while (var_t1 > 0) {
         *--var_t0 = *--var_v0;
         var_t1--;
     }
 
-    arg0->unk_00[arg2] = arg1;
-    arg0->unk_08++;
+    arg0->data[arg2] = arg1;
+    arg0->count++;
 }
 
 void PointerList_Remove(unk_func_8830867C_02C_0CC* arg0, s32 arg1) {
@@ -194,12 +194,12 @@ void PointerList_Remove(unk_func_8830867C_02C_0CC* arg0, s32 arg1) {
     unk_func_8830867C_02C_0CC_000** var_v0;
     unk_func_8830867C_02C_0CC_000** var_v1;
 
-    var_v0 = &arg0->unk_00[arg1];
+    var_v0 = &arg0->data[arg1];
     var_v1 = var_v0 + 1;
 
-    arg0->unk_08--;
+    arg0->count--;
 
-    var_a2 = arg0->unk_08 - arg1;
+    var_a2 = arg0->count - arg1;
 
     while (var_a2 > 0) {
         *var_v0++ = *var_v1++;
@@ -226,17 +226,30 @@ s32* Sort_SelectMedianPointer(s32* arg0, s32* arg1, s32* arg2, s32 (*arg3)(s32, 
                                       : arg0;
 }
 
+#ifdef NON_MATCHING
 void Sort_QuickSort(void** base, s32 n, s32 (*cmp)(s32, s32)) {
     void** sp8C;
+    s32 temp_s1;
     s32 temp_s2;
+    s32 temp_s3;
     void* temp_s4;
     s32 temp_s4_2;
+    void* temp_t7_2;
+    void* temp_t8;
     void* temp_v0;
     s32 temp_v0_2;
+    void* temp_v0_3;
+    void* temp_v0_4;
+    void* temp_v0_5;
     s32 temp_v0_6;
+    s32 temp_v0_7;
     s32 var_a2_2;
+    s32 var_a2_3;
     s32 var_v0;
+    s32 var_v0_2;
     void** var_a2;
+    void** temp_t5;
+    void** temp_t7;
     void** var_s0;
     void** var_s0_2;
     void** var_s1;
@@ -244,128 +257,150 @@ void Sort_QuickSort(void** base, s32 n, s32 (*cmp)(s32, s32)) {
     void** var_s2;
     void** var_s2_2;
     void** var_s3;
-    void** var_s6;
+    s32 pad[1];
+    void** sp44;
 
-    if (n < 7) {
-        for (var_s1 = base; var_s1 < base + n; var_s1++) {
-            var_s0 = var_s1;
-            if ((base < var_s1) && (cmp(*(var_s1 - 1), *var_s1) > 0)) {
-                while (1) {
-                    temp_v0 = *var_s0;
-                    *(var_s0) = *(var_s0 - 1);
-                    *(var_s0 - 1) = temp_v0;
-                    var_s0--;
-                    if (base < var_s0) {
-                        if (cmp(*(var_s0 - 1), *var_s0) > 0) {
-                            continue;
+    while(1) {
+        var_s2 = base;
+        if (n < 7) {
+            temp_t7 = n + base;
+            sp44 = temp_t7;
+            var_s1 = base;
+            if (base < temp_t7) {
+                do {
+                    var_s0 = var_s1;
+                    if ((base < var_s1) && (cmp(*(var_s1 - 1), *var_s1) > 0)) {
+                        while(1) {    
+                            temp_v0 = *var_s0;
+                            temp_t8 = *(var_s0 - 1);
+                            var_s0 -= 1;
+                            *var_s0 = temp_v0;
+                            *(var_s0 + 1) = temp_t8;
+                            if (base < var_s0) {
+                                if (cmp(*(var_s0 - 1), *var_s0) > 0) {
+                                    continue;
+                                }
+                            }
+                            break;
                         }
                     }
-                    break;
+                    var_s1 += 1;
+                } while (var_s1 < sp44);
+            }
+        } else {
+            sp8C = ((n / 2) * 1) + base;
+            if (n >= 8) {
+                var_a2 = ((n * 4) + base) - 4;
+                if (n >= 0x29) {
+                    temp_v0_2 = n / 8;
+                    temp_s1 = temp_v0_2 * 4;
+                    temp_s3 = temp_v0_2 * 8;
+                    var_s2 = Sort_SelectMedianPointer(base, temp_s1 + base, temp_s3 + base, cmp);
+                    sp8C = Sort_SelectMedianPointer(sp8C - temp_s1, sp8C, &sp8C[temp_v0_2], cmp);
+                    var_a2 = Sort_SelectMedianPointer(var_a2 - temp_s3, var_a2 - temp_s1, var_a2, cmp);
                 }
+                sp8C = Sort_SelectMedianPointer(var_s2, sp8C, var_a2, cmp);
+            }
+            temp_t5 = (n * 4) + base;
+            var_s3 = temp_t5 - 4;
+            temp_s4 = *sp8C;
+            sp44 = temp_t5;
+            var_s0_2 = var_s3;
+            var_s2_2 = base;
+            var_s1_2 = base;
+    loop_14:
+            if (var_s0_2 >= var_s1_2) {
+                var_v0 = cmp(*var_s1_2, temp_s4);
+                if (var_v0 <= 0) {
+        loop_16:
+                    if (var_v0 == 0) {
+                        temp_v0_3 = *var_s2_2;
+                        var_s2_2 += 1;
+                        *(var_s2_2 - 1) = *var_s1_2;
+                        *var_s1_2 = temp_v0_3;
+                    }
+                    var_s1_2 += 1;
+                    if (var_s0_2 >= var_s1_2) {
+                        var_v0 = cmp(*var_s1_2, temp_s4);
+                        if (var_v0 <= 0) {
+                            goto loop_16;
+                        }
+                    }
+                }
+            }
+            if (var_s0_2 >= var_s1_2) {
+                var_v0_2 = cmp(*var_s0_2, temp_s4);
+                if (var_v0_2 >= 0) {
+        loop_22:
+                    if (var_v0_2 == 0) {
+                        temp_t7_2 = *var_s3;
+                        temp_v0_4 = *var_s0_2;
+                        var_s3 -= 1;
+                        *var_s0_2 = temp_t7_2;
+                        *(var_s3 + 1) = temp_v0_4;
+                    }
+                    var_s0_2 -= 1;
+                    if (var_s0_2 >= var_s1_2) {
+                        var_v0_2 = cmp(*var_s0_2, temp_s4);
+                        if (var_v0_2 >= 0) {
+                            goto loop_22;
+                        }
+                    }
+                }
+            }
+            if (var_s0_2 >= var_s1_2) {
+                temp_v0_5 = *var_s1_2;
+                var_s1_2 += 1;
+                *(var_s1_2 - 1) = *var_s0_2;
+                var_s0_2 -= 1;
+                *(var_s0_2 + 1) = temp_v0_5;
+                goto loop_14;
+            }
+            temp_s4_2 = (s32) (var_s1_2 - var_s2_2);
+            temp_v0_6 = (s32) (var_s2_2 - base);
+            if (temp_v0_6 < temp_s4_2) {
+                var_a2_2 = temp_v0_6;
+            } else {
+                var_a2_2 = temp_s4_2;
+            }
+            PointerList_SwapRange(base, var_s1_2 - var_a2_2, var_a2_2);
+            temp_s2 = (s32) (var_s3 - var_s0_2);
+            temp_v0_7 = ((s32) (sp44 - var_s3)) - 1;
+            if (temp_s2 < temp_v0_7) {
+                var_a2_3 = temp_s2;
+            } else {
+                var_a2_3 = temp_v0_7;
+            }
+            PointerList_SwapRange(var_s1_2, sp44 - var_a2_3, var_a2_3);
+            if (temp_s4_2 >= 2) {
+                Sort_QuickSort(base, temp_s4_2, cmp);
+            }
+            if (temp_s2 >= 2) {
+                base = sp44 - temp_s2;
+                n = temp_s2;
+                continue;
             }
         }
         return;
     }
-
-    sp8C = base + (n / 2);
-    if (n >= 8) {
-        var_s2 = base;
-        var_a2 = (base + n) - 1;
-        if (n >= 0x29) {
-            temp_v0_2 = n / 8;
-            var_s2 = (void**)Sort_SelectMedianPointer((s32*)base, (s32*)(base + temp_v0_2), (s32*)(base + temp_v0_2 * 2), cmp);
-            sp8C = (void**)Sort_SelectMedianPointer((s32*)(sp8C - temp_v0_2), (s32*)sp8C, (s32*)(sp8C + temp_v0_2), cmp);
-            var_a2 = (void**)Sort_SelectMedianPointer((s32*)(var_a2 - temp_v0_2 * 2), (s32*)(var_a2 - temp_v0_2), (s32*)var_a2, cmp);
-        }
-        sp8C = (void**)Sort_SelectMedianPointer((s32*)var_s2, (s32*)sp8C, (s32*)var_a2, cmp);
-    }
-
-    temp_s4 = *sp8C;
-    var_s0_2 = (base + n) - 1;
-    var_s2_2 = base;
-    var_s1_2 = base;
-    var_s3 = (base + n) - 1;
-
-    while (1) {
-        if (var_s0_2 >= var_s1_2) {
-            var_v0 = cmp(*var_s1_2, temp_s4);
-            while (var_v0 <= 0) {
-                if (var_v0 == 0) {
-                    temp_v0 = *var_s2_2;
-                    *var_s2_2 = *var_s1_2;
-                    *var_s1_2 = temp_v0;
-                    var_s2_2++;
-                }
-                var_s1_2++;
-                if (var_s0_2 < var_s1_2) {
-                    break;
-                }
-                var_v0 = cmp(*var_s1_2, temp_s4);
-            }
-        }
-        if (var_s0_2 >= var_s1_2) {
-            var_v0 = cmp(*var_s0_2, temp_s4);
-            while (var_v0 >= 0) {
-                if (var_v0 == 0) {
-                    temp_v0 = *var_s0_2;
-                    *var_s0_2 = *var_s3;
-                    *var_s3 = temp_v0;
-                    var_s3 -= 1;
-                }
-                var_s0_2 -= 1;
-                if (var_s0_2 < var_s1_2) {
-                    break;
-                }
-                var_v0 = cmp(*var_s0_2, temp_s4);
-            }
-        }
-        if (var_s0_2 < var_s1_2) {
-            break;
-        }
-        temp_v0 = *var_s1_2;
-        *var_s1_2 = *var_s0_2;
-        *var_s0_2 = temp_v0;
-        var_s1_2++;
-        var_s0_2--;
-    }
-    temp_s4_2 = (s32)(var_s1_2 - var_s2_2);
-    temp_v0_6 = (s32)(var_s2_2 - base);
-    if (temp_v0_6 < temp_s4_2) {
-        var_a2_2 = temp_v0_6;
-    } else {
-        var_a2_2 = temp_s4_2;
-    }
-    var_s6 = base + n;
-    PointerList_SwapRange(base, var_s1_2 - var_a2_2, var_a2_2);
-    temp_s2 = (s32)(var_s3 - var_s0_2);
-    temp_v0_6 = ((s32)(var_s6 - var_s3)) - 1;
-    if (temp_s2 < temp_v0_6) {
-        var_a2_2 = temp_s2;
-    } else {
-        var_a2_2 = temp_v0_6;
-    }
-    PointerList_SwapRange(var_s1_2, var_s6 - var_a2_2, var_a2_2);
-    if (temp_s4_2 >= 2) {
-        Sort_QuickSort(base, temp_s4_2, cmp);
-    }
-    if (temp_s2 >= 2) {
-        Sort_QuickSort(var_s6 - temp_s2, temp_s2, cmp);
-    }
 }
+#else
+#pragma GLOBAL_ASM("asm/us/nonmatchings/2D340/Sort_QuickSort.s")
+#endif
 
 void PointerList_Sort(unk_func_8830867C_02C_0CC* arg0, s32 (*arg1)(s32, s32)) {
-    Sort_QuickSort(arg0->unk_00, arg0->unk_08, arg1);
+    Sort_QuickSort(arg0->data, arg0->count, arg1);
 }
 
 void PointerList_Filter(unk_func_8830867C_02C_0CC* arg0, unk_func_8830867C_02C_0CC* arg1,
-                   s32 (*arg2)(unk_func_8830867C_02C_0CC_000*, s32*), s32* arg3) {
+                        s32 (*arg2)(unk_func_8830867C_02C_0CC_000*, s32*), s32* arg3) {
     s32 var_s2;
     unk_func_8830867C_02C_0CC_000** var_s0;
     unk_func_8830867C_02C_0CC_000** var_s1;
 
-    var_s1 = arg1->unk_00;
-    var_s2 = arg0->unk_08;
-    var_s0 = arg0->unk_00;
+    var_s1 = arg1->data;
+    var_s2 = arg0->count;
+    var_s0 = arg0->data;
 
     while (var_s2 > 0) {
         if (arg2(*var_s0, arg3) != 0) {
@@ -375,7 +410,7 @@ void PointerList_Filter(unk_func_8830867C_02C_0CC* arg0, unk_func_8830867C_02C_0
         var_s0++;
     }
 
-    arg1->unk_08 = ((s32)var_s1 - (s32)arg1->unk_00) >> 2;
+    arg1->count = ((s32)var_s1 - (s32)arg1->data) >> 2;
 }
 
 s32 Text_CompareU16Terminated(u16* a0, u16* a1) {

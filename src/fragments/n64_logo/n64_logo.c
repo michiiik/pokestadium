@@ -4,7 +4,7 @@
 #include "src/ui_graphics.h"
 #include "src/text_system.h"
 #include "src/3D140.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/audio_sfx.h"
 #include "src/audio_channel.h"
 #include "src/gfx_buffer.h"

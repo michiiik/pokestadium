@@ -239,7 +239,7 @@ void GalleryUI_DrawRotatedSprite(u8* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg
 }
 
 #ifdef NON_MATCHING
-void func_86905734(u8* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, u8 arg6) {
+void GalleryUI_DrawRotatedCornerMarker(u8* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, u8 arg6) {
     f32 a1;
     f32 a2;
     s16 spF8[4];
@@ -317,8 +317,8 @@ void func_86905734(u8* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, u
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF);
 }
 #else
-void func_86905734(u8* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, u8 arg6);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gallery_camera/gallery_camera_150AC0/func_86905734.s")
+void GalleryUI_DrawRotatedCornerMarker(u8* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, u8 arg6);
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/15/fragment15_150AC0/GalleryUI_DrawRotatedCornerMarker.s")
 #endif
 
 void GalleryUI_DrawRotateArrowIcon(u8* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, u8 arg6) {
@@ -813,10 +813,10 @@ void Gallery_DrawPhotoCounterReelExit(void) {
 
 void Gallery_DrawFrameMarkers(void) {
     if (D_8690B348 == 0) {
-        func_86905734(&D_50011D0, D_8690B308.unk_00[0], D_8690B308.unk_00[4], 0x30, 0x19, 0, 0);
-        func_86905734(&D_50011D0, D_8690B308.unk_00[1], D_8690B308.unk_00[5], 0x30, 0x19, 0x4000, 1);
-        func_86905734(&D_50011D0, D_8690B308.unk_00[2], D_8690B308.unk_00[6], 0x30, 0x19, -0x8000, 1);
-        func_86905734(&D_50011D0, D_8690B308.unk_00[3], D_8690B308.unk_00[7], 0x30, 0x19, -0x4000, 1);
+        GalleryUI_DrawRotatedCornerMarker(&D_50011D0, D_8690B308.unk_00[0], D_8690B308.unk_00[4], 0x30, 0x19, 0, 0);
+        GalleryUI_DrawRotatedCornerMarker(&D_50011D0, D_8690B308.unk_00[1], D_8690B308.unk_00[5], 0x30, 0x19, 0x4000, 1);
+        GalleryUI_DrawRotatedCornerMarker(&D_50011D0, D_8690B308.unk_00[2], D_8690B308.unk_00[6], 0x30, 0x19, -0x8000, 1);
+        GalleryUI_DrawRotatedCornerMarker(&D_50011D0, D_8690B308.unk_00[3], D_8690B308.unk_00[7], 0x30, 0x19, -0x4000, 1);
         GalleryUI_DrawRotateArrowIcon(&D_5000C90, D_8690B308.unk_10, D_8690B308.unk_20, 0x18, 0x38, 0, 0);
         GalleryUI_DrawRotateArrowIconMirrored(&D_5000C90, D_8690B308.unk_10, D_8690B308.unk_20, 0x18, 0x38, 0, 1);
         GalleryUI_DrawRotateArrowIcon(&D_5000C90, D_8690B308.unk_14, D_8690B308.unk_24, 0x18, 0x38, 0x4000, 1);

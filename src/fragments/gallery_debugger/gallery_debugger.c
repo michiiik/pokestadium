@@ -2,7 +2,7 @@
 #include "src/graphics_textures.h"
 #include "src/input.h"
 #include "src/save_data.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/gfx_buffer.h"
 #include "src/controller.h"
 #include "src/memory.h"

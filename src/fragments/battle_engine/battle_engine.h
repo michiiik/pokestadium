@@ -9,8 +9,18 @@
 #include "src/fragments/demo_scenes/demo_scenes.h"
 #include "src/fragments/particle_math/particle_math.h"
 
-typedef s32 (*func_D_84390300)(void);
-typedef void (*func_D_84390320)(void);
+typedef void (*BattleAnimEffectInitFunc)(void);
+typedef s32 (*BattleAnimEffectUpdateFunc)(void);
+typedef void (*BattleAnimEffectDrawFunc)(void);
+
+typedef struct BattleAnimMoveScriptRow {
+    /* The five pointers are zero/0x3F-terminated script or resource lists. */
+    /* 0x00 */ u8* start;
+    /* 0x04 */ u8* alternateStart;
+    /* 0x08 */ u8* end;
+    /* 0x0C */ u8* resourceListA;
+    /* 0x10 */ u8* resourceListB;
+} BattleAnimMoveScriptRow; // size = 0x14
 
 typedef struct unk_D_84390010_654_09C {
     /* 0x00 */ char unk00[0x10];
@@ -31,41 +41,41 @@ typedef struct unk_D_84390010_168 {
 
 typedef struct BattlerState {
     /* 0x00 */ char unk00[0x4];
-    /* 0x04 */ u32 unk_04;
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ s32 unk_0C;
-    /* 0x10 */ u32 unk_10;
-    /* 0x14 */ s32 unk_14;
-    /* 0x18 */ u32 unk_18;
-    /* 0x1C */ u8 unk_1C;
+    /* 0x04 */ u32 actionState; // BattleScene_HandlePlayerActionInput's dispatch (1=move select, 2=party/replacement select, 3=forfeit prompt)
+    /* 0x08 */ s32 partyIndex;
+    /* 0x0C */ s32 committedMoveSlot; // BattleScene_CommitSelectedMoveAction: copied from selectedMoveSlot
+    /* 0x10 */ u32 menuSubState; // BattleScene_HandleNoUsableMoveSelection/ValidateSelectedMove's caption/menu sub-state
+    /* 0x14 */ s32 selectedMoveSlot; // BattleScene_SelectMoveFromButtons: 0-3, or 4 = no valid move selected
+    /* 0x18 */ u32 selectedPartyIndex;
+    /* 0x1C */ u8 unk_1C; // toggled 0/1 by a button-held check in BattleScene_HandlePartySlotCursorInput's caller
     /* 0x1E */ u16 unk_1E;
     /* 0x20 */ char unk20[0x8];
     /* 0x28 */ u16 unk_28;
     /* 0x2A */ u8 unk_2A;
-    /* 0x2B */ u8 unk_2B;
-    /* 0x2C */ u8 unk_2C;
-    /* 0x2D */ u8 unk_2D;
-    /* 0x2E */ u8 unk_2E;
-    /* 0x2F */ u8 unk_2F;
-    /* 0x30 */ u16 unk_30;
+    /* 0x2B */ u8 activeSideIndex; // BattleScene_SetParticipantSelectedSide/GetActiveSidePartyCount; indexes sessionTeams->teams[]
+    /* 0x2C */ u8 sideIndex;
+    /* 0x2D */ u8 faintSequenceState; // 0=normal, 0xF-0x13 = various faint/switch-in presentation phases (Battle_CheckSideDefeatAfter*/BattleScene_FinishSendOutCameraClose)
+    /* 0x2E */ u8 modelAlpha; // Model_SetMaterialColor's alpha arg
+    /* 0x2F */ u8 replacementPage; // party-replacement select screen's left/right page cursor (0/1)
+    /* 0x30 */ u16 moveResourceFlags; // BattleScene_SetMonMoveResourceFlag sets bit 0x800
     /* 0x32 */ char unk32[0x2];
-    /* 0x34 */ u16 unk_34;
+    /* 0x34 */ u16 battleStateFlags;
     /* 0x36 */ u16 unk_36;
-    /* 0x38 */ BattleMonRuntime unk_38;
+    /* 0x38 */ BattleMonRuntime monRuntime;
     /* 0x9C */ unk_D_84390010_654_09C unk_9C;
     /* 0xAC */ unk_D_84390010_654_0AC unk_AC;
-    /* 0xBC */ s16 unk_BC;
+    /* 0xBC */ s16 cachedModelId; // mirrors model.modelId; restored into sessionTeams->iconSpeciesId later
     /* 0xBE */ s16 unk_BE;
     /* 0xC0 */ char unkC0[1];
-    /* 0xC1 */ u8 unk_C1[4];
-    /* 0xC8 */ Controller* unk_C8;
+    /* 0xC1 */ u8 moveHighlightFlags[4]; // per-move-slot highlight flag, drawn with a different env color in the move menu
+    /* 0xC8 */ Controller* controller;
 } BattlerState; // size = 0xCC
 
 typedef struct PresentationLayout {
     /* 0x00 */ unk_D_86002F58_004_000_000 unk_00;
     /* 0x18 */ char unk18[0x4];
-    /* 0x1C */ s16 unk_1C;
-    /* 0x1E */ s16 unk_1E;
+    /* 0x1C */ s16 hudX; // BattleHud_DrawMonStatusBoxPlayer/Opponent's panel x, animated via Math_StepToS32
+    /* 0x1E */ s16 hudY;
     /* 0x20 */ s16 unk_20;
     /* 0x22 */ char unk22[0xA];
     /* 0x2C */ f32 unk_2C;
@@ -78,41 +88,41 @@ typedef struct PresentationLayout {
 } PresentationLayout; // size >= 0xC0
 
 typedef struct PresentationState {
-    /* 0x000 */ unk_D_86002F58_004_000 unk_000;
-    /* 0x168 */ PresentationLayout* unk_168;
-    /* 0x16C */ s32 unk_16C;
-    /* 0x170 */ s32 unk_170;
+    /* 0x000 */ unk_D_86002F58_004_000 model;
+    /* 0x168 */ PresentationLayout* layout;
+    /* 0x16C */ s32 trainerIndex;
+    /* 0x170 */ s32 visible;
     /* 0x174 */ char unk174[0x4];
-    /* 0x178 */ s32 unk_178;
-    /* 0x17C */ s32 unk_17C;
-    /* 0x180 */ s32 unk_180;
-    /* 0x184 */ s16 unk_184;
-    /* 0x186 */ s16 unk_186;
-    /* 0x188 */ f32 unk_188;
-    /* 0x18C */ s32 unk_18C;
-    /* 0x190 */ f32 unk_190;
-    /* 0x194 */ f32 unk_194;
+    /* 0x178 */ s32 cameraConfigIndex; // BattleScene_SetCameraAtAndEyeFromAngles setup; ==1 selects the mirrored/opponent-side config
+    /* 0x17C */ s32 animationId;
+    /* 0x180 */ s32 animationFrame;
+    /* 0x184 */ s16 cameraYaw;
+    /* 0x186 */ s16 cameraPitch;
+    /* 0x188 */ f32 cameraDistance;
+    /* 0x18C */ s32 modelReadyState; // 0/2, gated on ModelRenderer_IsReady
+    /* 0x190 */ f32 cameraOffsetX;
+    /* 0x194 */ f32 cameraOffsetZ;
     /* 0x198 */ char unk198[0x4];
 } PresentationState; // size = 0x19C
 
 typedef struct MonCaptionState {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ s32 unk_04;
-    /* 0x08 */ s8 unk_08[4];
+    /* 0x00 */ s32 active;
+    /* 0x04 */ s32 revealedCharCount;
+    /* 0x08 */ s8 revealedText[4];
     /* 0x0C */ char unk0C[0x3C];
-    /* 0x48 */ s8 unk_48[4];
+    /* 0x48 */ s8 sourceText[4];
     /* 0x4C */ char unk4C[0x3C];
 } MonCaptionState; // size = 0x88
 
 typedef struct SpeciesLearnsetBuffer {
-    /* 0x00 */ u8 unk_00[10];
-    /* 0x0A */ u8 unk_0A[4];
+    /* 0x00 */ u8 levelThresholds[10];
+    /* 0x0A */ u8 moveIds[4];
     /* 0x0E */ char unk0E[0x12];
 } SpeciesLearnsetBuffer; // size = 0x20
 
 typedef struct SwayLayoutConfig {
-    /* 0x00 */ Vec3f unk_00;
-    /* 0x0C */ Vec3f unk_0C;
+    /* 0x00 */ Vec3f primaryAmplitude; // scaled by Battler.yawBase; feeds sway.anchorPosition
+    /* 0x0C */ Vec3f secondaryAmplitude; // scaled by Battler.yawBase
     /* 0x18 */ u8 unk_18;
     /* 0x19 */ u8 unk_19;
     /* 0x1A */ u8 unk_1A;
@@ -121,74 +131,74 @@ typedef struct SwayLayoutConfig {
 } SwayLayoutConfig; // size = 0x20
 
 typedef struct SwayState {
-    /* 0x00 */ Vec3f unk_00;
-    /* 0x0C */ Vec3f unk_0C;
-    /* 0x18 */ Vec3f unk_18;
-    /* 0x24 */ SwayLayoutConfig unk_24;
-    /* 0x44 */ s16 unk_44;
-    /* 0x46 */ s16 unk_46;
+    /* 0x00 */ Vec3f basePosition;
+    /* 0x0C */ Vec3f swayOffset;
+    /* 0x18 */ Vec3f anchorPosition;
+    /* 0x24 */ SwayLayoutConfig layoutConfig;
+    /* 0x44 */ s16 cameraYaw; // Camera_ComputeEyeFromAngles's yaw arg, derived via Vec3f_CalculateDistanceAngles
+    /* 0x46 */ s16 cameraPitch;
     /* 0x48 */ char unk48[0x4];
-    /* 0x4C */ f32 unk_4C;
+    /* 0x4C */ f32 cameraDistance;
 } SwayState; // size >= 0x50
 
 typedef struct Battler {
-    /* 0x000 */ unk_D_86002F58_004_000 unk_000;
-    /* 0x168 */ unk_D_84390010_168 unk_168[2];
-    /* 0x448 */ SwayState unk_448;
-    /* 0x498 */ f32 unk_498;
-    /* 0x49C */ f32 unk_49C;
-    /* 0x4A0 */ f32 unk_4A0;
-    /* 0x4A4 */ s16 unk_4A4;
-    /* 0x4A6 */ s16 unk_4A6;
-    /* 0x4A8 */ s16 unk_4A8;
-    /* 0x4AC */ s32 unk_4AC;
-    /* 0x4B0 */ s32 unk_4B0;
-    /* 0x4B4 */ s32 unk_4B4;
-    /* 0x4B8 */ s32 unk_4B8;
+    /* 0x000 */ unk_D_86002F58_004_000 model;
+    /* 0x168 */ unk_D_84390010_168 swayModels[2];
+    /* 0x448 */ SwayState sway;
+    /* 0x498 */ f32 swayRadius;
+    /* 0x49C */ f32 swayDamping;
+    /* 0x4A0 */ f32 swayAmplitude;
+    /* 0x4A4 */ s16 swayWobbleAngle;
+    /* 0x4A6 */ s16 swayAngle;
+    /* 0x4A8 */ s16 swayWobbleOffset;
+    /* 0x4AC */ s32 swayCycleCounter; // increments each tick, capped/reset at 0x3C
+    /* 0x4B0 */ s32 yawBase;
+    /* 0x4B4 */ s32 presentationSubState;
+    /* 0x4B8 */ s32 presentationSubStateArg;
     /* 0x4BC */ char unk4BC[0x4];
-    /* 0x4C0 */ s32 unk_4C0;
-    /* 0x4C4 */ s32 unk_4C4;
-    /* 0x4C8 */ s32 unk_4C8;
-    /* 0x4CC */ Vec3f unk_4CC;
-    /* 0x4D8 */ Vec3f unk_4D8;
-    /* 0x4E4 */ f32 unk_4E4;
-    /* 0x4E8 */ u8 unk_4E8;
-    /* 0x4E9 */ u8 unk_4E9;
-    /* 0x4EC */ unk_D_86002F58_004_000 unk_4EC;
+    /* 0x4C0 */ s32 swayStepCount;
+    /* 0x4C4 */ s32 presentationPhase;
+    /* 0x4C8 */ s32 runtimeStateWritten; // set after Battle_WriteBackRuntimeState (BattleScene_Phase31)
+    /* 0x4CC */ Vec3f secondaryBasePosition;
+    /* 0x4D8 */ Vec3f secondarySwayOffset;
+    /* 0x4E4 */ f32 secondarySwayRadius;
+    /* 0x4E8 */ u8 secondaryStatusFlags1;
+    /* 0x4E9 */ u8 secondaryStatusFlags2;
+    /* 0x4EC */ unk_D_86002F58_004_000 secondaryModel;
     /* 0x654 */ BattlerState unk_654;
-    /* 0x720 */ BattleSessionTeams* unk_720;
-    /* 0x724 */ TeamRoster* unk_724;
-    /* 0x728 */ PresentationState unk_728;
-    /* 0x8C4 */ MonCaptionState unk_8C4;
-    /* 0x94C */ SpeciesLearnsetBuffer unk_94C;
-    /* 0x96C */ SpeciesLearnsetBuffer unk_96C;
-    /* 0x98C */ SpeciesLearnsetBuffer unk_98C;
-    /* 0x9AC */ SpeciesLearnsetBuffer unk_9AC;
-    /* 0x9CC */ SpeciesLearnsetBuffer unk_9CC;
-    /* 0x9EC */ SpeciesLearnsetBuffer unk_9EC;
+    /* 0x720 */ BattleSessionTeams* sessionTeams;
+    /* 0x724 */ TeamRoster* ownRoster;
+    /* 0x728 */ PresentationState presentation;
+    /* 0x8C4 */ MonCaptionState caption;
+    /* 0x94C */ SpeciesLearnsetBuffer ownLearnsetA;
+    /* 0x96C */ SpeciesLearnsetBuffer partner1LearnsetA;
+    /* 0x98C */ SpeciesLearnsetBuffer partner2LearnsetA;
+    /* 0x9AC */ SpeciesLearnsetBuffer ownLearnsetB;
+    /* 0x9CC */ SpeciesLearnsetBuffer partner1LearnsetB;
+    /* 0x9EC */ SpeciesLearnsetBuffer partner2LearnsetB;
 } Battler; // size = 0xA0C
 
 typedef struct MovePresentationCue {
-    /* 0x00 */ u8 unk_00;
-    /* 0x01 */ u8 unk_01;
-    /* 0x02 */ u8 unk_02;
+    /* 0x00 */ u8 animationId;
+    /* 0x01 */ u8 eventTrackId;
+    /* 0x02 */ u8 effectListId;
     /* 0x03 */ u8 unk_03;
-    /* 0x04 */ u8 unk_04;
-    /* 0x05 */ u8 unk_05;
-    /* 0x06 */ u8 unk_06;
-    /* 0x07 */ u8 unk_07;
+    /* 0x04 */ u8 phaseThreshold; // compared against presentationPhase - 1 to gate phase advancement
+    /* 0x05 */ u8 subState;
+    /* 0x06 */ u8 transitionFrame; // becomes the next presentationPhase and a ModelAnim frame/event-frame arg
+    /* 0x07 */ u8 opposingPhaseThreshold; // compared against the opposing Battler's presentationPhase - 1
     /* 0x08 */ u8 unk_08;
-    /* 0x09 */ u8 unk_09;
-    /* 0x0A */ u8 unk_0A;
-    /* 0x0B */ u8 unk_0B;
-    /* 0x0C */ u8 unk_0C;
+    /* 0x09 */ u8 phaseThreshold2; // same role as phaseThreshold for a different presentation branch
+    /* 0x0A */ u8 cameraFrameCount;
+    /* 0x0B */ u8 eventFrame;
+    /* 0x0C */ u8 finalPhase; // nonzero gates a presentationPhase == finalPhase check
     /* 0x0D */ u8 unk_0D;
     /* 0x0E */ u8 unk_0E;
     /* 0x0F */ u8 unk_0F;
 } MovePresentationCue; // size = 0x10
 
 typedef struct unk_D_8438E7B0 {
-    /* 0x000 */ MovePresentationCue unk_000[165];
+    /* 0x000 */ MovePresentationCue moveCues[165];
     /* 0xA50 */ MovePresentationCue unk_A50;
     /* 0xA60 */ char unkA60[0x10];
     /* 0xA70 */ MovePresentationCue unk_A70;
@@ -212,34 +222,34 @@ typedef struct BattleScene {
     /* 0x18 */ u16 unk_18;
     /* 0x1A */ u8 unk_1A;
     /* 0x1C */ s32 unk_1C;
-    /* 0x20 */ s32 unk_20;
+    /* 0x20 */ s32 scenePhase; // BattleScene_Phase31 and friends' incrementing phase dispatch
     /* 0x24 */ s32 unk_24;
     /* 0x28 */ char unk28[0x2];
     /* 0x2A */ u16 unk_2A;
-    /* 0x2C */ u16 unk_2C;
+    /* 0x2C */ u16 activeBattlerIndex; // indexes D_84390010[]; the battler currently being presented
     /* 0x2E */ u16 unk_2E;
     /* 0x30 */ s32 unk_30;
-    /* 0x34 */ s32 unk_34;
+    /* 0x34 */ s32 simultaneousActionFlag; // gates various move/faint animation branches alongside Battler.faintSequenceState==0xF
     /* 0x38 */ s32 unk_38;
     /* 0x3C */ s32 unk_3C;
-    /* 0x40 */ s32 unk_40;
+    /* 0x40 */ s32 battleOutcome; // 0=ongoing, 1/2=side1/2 won (activeBattlerIndex+1), 3=final presentation done
     /* 0x44 */ s32 unk_44;
     /* 0x48 */ s32 unk_48;
     /* 0x4C */ s32 unk_4C;
     /* 0x50 */ s32 unk_50;
     /* 0x54 */ u8 unk_54;
-    /* 0x56 */ s16 unk_56;
-    /* 0x58 */ s16 unk_58;
+    /* 0x56 */ s16 cameraYaw; // Camera_ComputeEyeFromAngles's yaw arg
+    /* 0x58 */ s16 cameraRoll; // BattleScene_ApproachCameraRoll's target; Camera_ComputeEyeFromAngles's pitch/roll arg
     /* 0x5A */ char unk5A[0x2];
-    /* 0x5C */ f32 unk_5C;
-    /* 0x60 */ f32 unk_60;
+    /* 0x5C */ f32 cameraDistance; // Camera_ComputeEyeFromAngles's distance arg
+    /* 0x60 */ f32 cameraFovy; // default 30.0f
     /* 0x64 */ char unk64[0x4];
-    /* 0x68 */ f32 unk_68;
+    /* 0x68 */ f32 hpDamageShakeMagnitude; // derived from HP delta, clamped 20-50, decays toward 0 via BattleAnim_ApproachF
     /* 0x6C */ f32 unk_6C;
     /* 0x70 */ f32 unk_70;
     /* 0x74 */ f32 unk_74;
     /* 0x78 */ u8 unk_78;
-    /* 0x7A */ s16 unk_7A;
+    /* 0x7A */ s16 shakeAngle; // COSS(shakeAngle) * hpDamageShakeMagnitude drives the screen-shake offset
     /* 0x7C */ char unk7C[0x8];
     /* 0x84 */ f32 unk_84;
     /* 0x88 */ char unk88[0xC];
@@ -253,7 +263,7 @@ typedef struct BattleScene {
 } BattleScene; // size = 0xE0
 
 typedef struct unk_D_84390240 {
-    /* 0x00 */ BattleScene* unk_00;
+    /* 0x00 */ BattleScene* scene;
     /* 0x04 */ char unk04[0x3C];
 } unk_D_84390240; // size = 0x40
 
@@ -284,8 +294,8 @@ typedef struct BattleSceneStateTickSlot {
 } BattleSceneStateTickSlot; // size = 0x8
 
 typedef struct TagTeamPartners {
-    /* 0x00 */ u8 unk_00;
-    /* 0x01 */ u8 unk_01;
+    /* 0x00 */ u8 partner1SpeciesId;
+    /* 0x01 */ u8 partner2SpeciesId;
     /* 0x02 */ char unk02[0xE];
 } TagTeamPartners; // size = 0x10
 
@@ -295,11 +305,11 @@ typedef struct unk_D_84390178 {
 } unk_D_84390178; // size >= 0x18
 
 typedef struct SpeciesModelTransform {
-    /* 0x00 */ Vec3f unk_00;
-    /* 0x0C */ s16 unk_0C;
-    /* 0x0E */ s16 unk_0E;
-    /* 0x10 */ s16 unk_10;
-    /* 0x12 */ u16 unk_12;
+    /* 0x00 */ Vec3f positionOffset;
+    /* 0x0C */ s16 rotationOffset;
+    /* 0x0E */ s16 rotationScale;
+    /* 0x10 */ s16 chainIndex;
+    /* 0x12 */ u16 animationFrame;
     /* 0x14 */ char unk14[0xC];
 } SpeciesModelTransform; // size = 0x20
 
@@ -524,7 +534,7 @@ typedef struct Trail40Variant {
 
 typedef struct TexturedRibbonSheetNode {
     /* 0x00 */ f32 unk_00;
-    /* 0x08 */ u8 unk_04;
+    /* 0x04 */ u8 unk_04;
     /* 0x08 */ f32 unk_08;
     /* 0x0C */ Vec3f unk_0C;
     /* 0x18 */ Vec3f unk_18;
@@ -619,7 +629,7 @@ typedef struct OwnerAnchoredFourStream {
     /* 0x004 */ s16 unk_004;
     /* 0x006 */ s16 unk_006;
     /* 0x008 */ Color_RGB8 unk_008;
-    /* 0x010 */ f32 unk_00C;
+    /* 0x00C */ f32 unk_00C;
     /* 0x010 */ f32 unk_010;
     /* 0x014 */ Vtx* unk_014;
     /* 0x018 */ Particle* unk_018;
@@ -775,34 +785,34 @@ typedef struct TypeEffectivenessEntry {
     /* 0x02 */ u8 unk_02;
 } TypeEffectivenessEntry; // size = 0x3
 
-typedef struct BattleAiMonState {
-    /* 0x00 */ u8 unk_00;
-    /* 0x01 */ u8 unk_01;
-    /* 0x02 */ u8 unk_02;
+typedef struct AIMoveCandidate {
+    /* 0x00 */ u8 slotIndex;
+    /* 0x01 */ u8 knownMoveMask;
+    /* 0x02 */ u8 pendingMoveId;
     /* 0x03 */ u8 unk_03;
-    /* 0x04 */ u8 unk_04;
-    /* 0x05 */ u8 unk_05[1];
+    /* 0x04 */ u8 decisionLockedFlag;
+    /* 0x05 */ u8 rememberedMoveIds[1];
     /* 0x0C */ char unk06[0xC];
-    /* 0x12 */ BattleMonRuntime unk_12;
-} BattleAiMonState; // size = 0x76
+    /* 0x12 */ BattleMonRuntime monRuntime;
+} AIMoveCandidate; // size = 0x76
 
-typedef struct BattleAiTeamState {
-    /* 0x00 */ u8 unk_00;
-    /* 0x01 */ u8 unk_01[2];
+typedef struct AICandidateGroup {
+    /* 0x00 */ u8 groupCount;
+    /* 0x01 */ u8 groupOffsets[2];
     /* 0x03 */ u8 unk_03;
-    /* 0x04 */ u8 unk_04[2];
+    /* 0x04 */ u8 groupSizes[2];
     /* 0x06 */ u8 unk_06;
     /* 0x07 */ u8 unk_07[1];
     /* 0x08 */ u8 unk_08;
     /* 0x09 */ u8 unk_09;
     /* 0x0A */ u8 unk_0A[1];
     /* 0x0B */ char unk0B[0x5];
-    /* 0x10 */ u8 unk_10;
+    /* 0x10 */ u8 activeCandidateIndex;
     /* 0x11 */ u8 unk_11;
     /* 0x12 */ u8 unk_12;
     /* 0x13 */ u8 unk_13;
-    /* 0x14 */ BattleAiMonState unk_14[1];
-} BattleAiTeamState; // size >= 0x8A
+    /* 0x14 */ AIMoveCandidate candidates[1];
+} AICandidateGroup; // size >= 0x8A
 
 typedef struct unk_D_843C5568 {
     /* 0x000 */ u8 unk_000;
@@ -819,11 +829,11 @@ typedef struct unk_D_843C5568 {
     /* 0x00D */ char unk00D[0x5];
     /* 0x012 */ u8 unk_012;
     /* 0x013 */ char unk013[0x3];
-    /* 0x016 */ BattleAiMonState unk_016[1];
+    /* 0x016 */ AIMoveCandidate unk_016[1];
     /* 0x08C */ char unk08C[0x510];
 } unk_D_843C5568; // size = 0x59C
 
-typedef struct BattleAiScoredMove {
+typedef struct unk_func_843794CC {
     /* 0x00 */ u8 unk_00;
     /* 0x01 */ u8 unk_01;
     /* 0x02 */ u8 unk_02;
@@ -847,26 +857,26 @@ typedef struct BattleAiScoredMove {
     /* 0x20 */ s16 unk_20;
     /* 0x24 */ s32 unk_24;
     /* 0x28 */ s32 unk_28;
-} BattleAiScoredMove; // size = 0x2C
+} unk_func_843794CC; // size = 0x2C
 
 typedef struct SpeciesLevelUpLearnset {
-    /* 0x00 */ u8 unk_00[1];
+    /* 0x00 */ u8 levelThresholds[1];
     /* 0x01 */ char unk01[9];
-    /* 0x0A */ u8 unk_0A[1];
+    /* 0x0A */ u8 moveIds[1];
     /* 0x0B */ char unk0B[0x15];
 } SpeciesLevelUpLearnset; // size = 0x20
 
 typedef struct AIDecisionScratch {
-    /* 0x00 */ u8 unk_00;
-    /* 0x01 */ u8 unk_01;
-    /* 0x02 */ u8 unk_02;
-    /* 0x04 */ s32 unk_04[1];
+    /* 0x00 */ u8 attackVsSwitchScore;
+    /* 0x01 */ u8 recommendedAction;
+    /* 0x02 */ u8 candidateCount;
+    /* 0x04 */ s32 candidateScores[1];
     /* 0x08 */ char unk08[0xC];
 } AIDecisionScratch; // size = 0x14
 
 typedef struct AIDifficultyConfig {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ u8 unk_04;
+    /* 0x00 */ s32 behaviorFlags;
+    /* 0x04 */ u8 difficultyWeight;
     /* 0x05 */ u8 unk_05;
     /* 0x06 */ u8 unk_06;
     /* 0x07 */ u8 unk_07;
@@ -903,7 +913,7 @@ typedef struct unk_D_843C6148 {
 typedef struct unk_func_8438220C {
     /* 0x00 */ u8 unk_00;
     /* 0x01 */ char unk01[0x3];
-    /* 0x04 */ BattleAiScoredMove unk_04[4];
+    /* 0x04 */ unk_func_843794CC unk_04[4];
     /* 0xB4 */ u8 unk_B4;
     /* 0xB8 */ s32 unk_B8;
 } unk_func_8438220C; // size = 0xBC
@@ -945,12 +955,12 @@ extern Vtx D_84385D40[];
 extern Vtx D_84385DC0[];
 extern Vtx D_84385E00[];
 extern ParticleDescriptor gBattleAnimParticleDescriptors[86];
-extern func_D_84390320 gMoveAnimEffectStartFuncs[];
-extern func_D_84390320 gMoveAnimEffectEndFuncs[];
-extern func_D_84390320 gMoveAnimEffectStartUpdateFuncs[];
-extern func_D_84390320 gMoveAnimEffectEndUpdateFuncs[];
-extern func_D_84390320 gMoveAnimEffectStartDrawFuncs[];
-extern func_D_84390320 gMoveAnimEffectEndDrawFuncs[];
+extern BattleAnimEffectInitFunc gMoveAnimEffectStartFuncs[];
+extern BattleAnimEffectInitFunc gMoveAnimEffectEndFuncs[];
+extern BattleAnimEffectUpdateFunc gMoveAnimEffectStartUpdateFuncs[];
+extern BattleAnimEffectUpdateFunc gMoveAnimEffectEndUpdateFuncs[];
+extern BattleAnimEffectDrawFunc gMoveAnimEffectStartDrawFuncs[];
+extern BattleAnimEffectDrawFunc gMoveAnimEffectEndDrawFuncs[];
 extern Gfx D_84389AE0[];
 extern u32 D_8438A648[];
 extern Gfx D_8438A980[];
@@ -1008,8 +1018,8 @@ extern Battler* gBattleAnimSecondaryOwner;
 extern Battler* gBattleAnimTertiaryOwner;
 extern s32 D_843902F4;
 extern s32 D_843902F8;
-extern func_D_84390300 gBattleAnimEffectUpdateFuncs[8];
-extern func_D_84390320 gBattleAnimEffectDrawFuncs[8];
+extern BattleAnimEffectUpdateFunc gBattleAnimEffectUpdateFuncs[8];
+extern BattleAnimEffectDrawFunc gBattleAnimEffectDrawFuncs[8];
 extern s32 D_84390340;
 extern Vec3f D_84390348;
 extern s16 D_8439037A;
@@ -1051,18 +1061,18 @@ void Battle_RenderStageThumbnail(GraphNode* arg0, unk_D_80068BB0* arg1);
 void Battle_DrawClippedTextureRect(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 void Battle_DrawTexturedRectSegment(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8* arg4, s32 arg5);
 void Battle_DrawFaintOrderMarker(GraphNode* arg0, unk_D_80068BB0* arg1);
-void func_84300D44(void);
-void func_84300DC0(void);
+void Battle_ClearFaintOrderMarkers(void);
+void Battle_StampFaintOrderMarkers(void);
 void func_84300E78(void);
 void func_84300E80(void);
 s32 BattleScene_UpdateFrame(s32 arg0);
 s32 BattleScene_UpdatePausedFrame(s32 arg0);
 void Battle_UpdateCompletionGate(void);
 s32 Battle_FrameCallback(s32 arg0);
-void func_8430123C(u8* arg0, s32 arg1);
-void func_8430128C(void);
+void Battle_FillMissingOrderSlots(u8* arg0, s32 arg1);
+void Battle_PrepareCpuOrder(void);
 void BattleScene_InitializeParticipantPresentation(BattleSessionTeams* arg0, unk_D_86002F30* arg1);
-void func_84301430(unk_func_80007444* arg0);
+void BattleScene_Initialize(unk_func_80007444* arg0);
 void func_84301A24(void);
 s32 Battle_Main(s32 arg0, SessionContext* arg1);
 
@@ -1092,7 +1102,7 @@ void Battle_FilterUnusableMoves(Battler* arg0, u16 arg1, SpeciesLearnsetBuffer* 
 void Battle_InitializeMoveUsabilityMask(Battler* arg0);
 void Battle_DmaLoadAnimRecord(u8 arg0, u32 arg1);
 void Battle_DmaLoadAnimRecordPair(s32 arg0, SpeciesLearnsetBuffer* arg1, SpeciesLearnsetBuffer* arg2);
-void func_84302658(Battler* arg0, s32 arg1);
+void Battle_LoadSpeciesDataTables(Battler* arg0, s32 arg1);
 void BattleScene_TickRow10CleanupAndEnterState18(Battler* arg0);
 void BattleScene_EnterRow3StartMoveAnim(Battler* arg0);
 void BattleScene_TickRow3PlayMoveEffectScript(Battler* arg0);
@@ -1148,7 +1158,7 @@ s32 BattleScene_IsRowWaitCompleteWithEventCount(Battler* arg0, s32 arg1);
 s32 Battle_IsRowAnimationSettled(Battler* arg0, s32 arg1);
 s32 BattleScene_IsMoveKeyedRowWaitComplete(Battler* arg0, s32 arg1);
 s32 BattleScene_IsRowAnimWaitComplete(Battler* arg0, s32 arg1);
-void func_843060EC(Battler* arg0);
+void BattleAnim_QueueModelRecordEffectList3(Battler* arg0);
 void Battle_SetRuntimeFlags(Battler* arg0, u16 arg1);
 s32 Battle_ClearRuntimeFlags(Battler* arg0, u16 arg1);
 void BattleScene_ResetParticipantAnimationFlags(Battler* arg0);
@@ -1197,7 +1207,7 @@ void BattleScene_SetBothOwnerActiveFlags(void);
 void BattleScene_SetOwnerPoseFlag(PresentationLayout* arg0);
 void BattleScene_LoadOwnerCameraFramingConstants(Battler* arg0);
 void BattleScene_SetupOwnerCameraFraming(Battler* arg0, Battler* arg1);
-void BattleScene_OwnerCameraLifecycleNop(void);
+void func_84307630(void);
 void BattleScene_ApplyOwnerCameraFraming(Battler* arg0);
 void BattleScene_TickOwnerCameraFraming(Battler* arg0);
 void BattleScene_InitializeOwnerCameraFraming(unk_D_86002F34_00C* arg0, Battler* arg1, unk_D_86002F34_00C* arg2, Battler* arg3);
@@ -1480,7 +1490,7 @@ void BattleHud_DrawOpponentSideStatus(Battler* arg0, BattlerState* arg1);
 
 void Battle_ClearAllMessageQueues(void);
 void Battle_ClearMessageCursor(void);
-void func_84317940(s8* arg0, s8* arg1, ...);
+void Battle_FormatString(s8* arg0, s8* arg1, ...);
 void Battle_QueueMessage(s8* arg0, s8 arg1);
 void Battle_QueueStatusText(char* arg0, s32 arg1);
 void func_84317B38(void);
@@ -1796,7 +1806,7 @@ void BattleScene_StartBattleMusic(void);
 void BattleAnim_PlayBattleSequenceById(Battler* arg0, s32 arg1);
 void BattleAnim_RunEffectInitStart(s16 arg0);
 void BattleAnim_RunEffectInitEnd(s16 arg0);
-void BattleAnim_RegisterEffectSlot(func_D_84390300 arg0, func_D_84390320 arg1);
+void BattleAnim_RegisterEffectSlot(BattleAnimEffectUpdateFunc arg0, BattleAnimEffectDrawFunc arg1);
 void BattleAnim_RunEffectList(s32 arg0, s32 arg1, s32 arg2);
 void BattleAnim_ProcessQueuedEffects(void);
 void BattleAnim_UpdateFrame(UNUSED unk_D_86002F34_00C* arg0);
@@ -2095,20 +2105,20 @@ void BattleAnim_CallbackEndEffect59Descriptor4FRotatingColorScaleFade_AdvancePha
 void BattleAnim_CallbackEndEffect59Descriptor4FRotatingColorScaleFade(Particle* arg0);
 void BattleAnim_CallbackEndEffect59Descriptor4FColorScaleFade_InitParticle(Particle* arg0);
 void BattleAnim_CallbackEndEffect59Descriptor4FColorScaleFade(Particle* arg0);
-void func_84336B8C(void);
-void func_84336C80(void);
-void func_84336DD8(void);
-void func_84336EE8(void);
-void func_84337000(void);
-void func_843371C0(void);
-void func_843372D8(void);
-void func_843374A4(void);
-void func_843375B0(void);
-void func_8433765C(void);
+void BattleAnim_StartEffect22Descriptor34_3D_46BurstSequence(void);
+void BattleAnim_EndEffect56Descriptor46_3D_47RisingSequence(void);
+void BattleAnim_EndEffect54Descriptor46And3DRisingSequence(void);
+void BattleAnim_StartEffect23Descriptor4FAnd3DRepeatingSequence(void);
+void BattleAnim_EndEffect22Descriptor4EAnd3DSequence(void);
+void BattleAnim_StartEffect35Descriptor4FAnd3DRepeatingSequence(void);
+void BattleAnim_EndEffect15Descriptor4EAnd3DSequence(void);
+void BattleAnim_StartEffect84Descriptor4FAnd3DRepeatingSequence(void);
+void BattleAnim_EndEffect29Descriptor02And4FSequence(void);
+void BattleAnim_StartEffect126Nop(void);
 void func_84337664(void);
-void func_8433766C(void);
-void func_843378CC(void);
-void func_843378D4(void);
+void BattleAnim_EndEffect40Descriptor04_46_48_3DSequence(void);
+void BattleAnim_StartEffect20Nop(void);
+void BattleAnim_EndEffect59Descriptor3DAnd4FSequence(void);
 
 
 void BattleAnim_CallbackEndEffect16Descriptor45DelayedRotatingMotion_InitParticle(Particle* arg0);
@@ -2180,28 +2190,28 @@ void BattleAnim_CallbackEndEffects2And27Descriptor0AFallingSparkFade_InitParticl
 void BattleAnim_CallbackEndEffects2And27Descriptor0AFallingSparkFade(Particle* arg0);
 void BattleAnim_StartEffect15Descriptor08IndexedScaleDelayFade(void);
 void BattleAnim_StartEffect2Descriptor08IndexedScaleDelayFade(void);
-void func_8433B374(void);
-void func_8433B3D8(void);
+void BattleAnim_StartEffect48Descriptor45RisingSparkStream(void);
+void BattleAnim_EndEffect34Descriptor34And45BounceSequence(void);
 void BattleAnim_StartEffect6AnimatedScaleAndBurstEmitter(void);
-void func_8433B58C(void);
-void func_8433B6FC(void);
-void func_8433B7E4(void);
-void func_8433B988(void);
+void BattleAnim_EndEffect2Descriptor19_4B_0ASequence(void);
+void BattleAnim_StartEffect58TintAnimatedScaleAndBurst(void);
+void BattleAnim_EndEffect27Descriptor04_19_4B_0ASequence(void);
+void BattleAnim_StartEffect47TintDescriptor53And4ASequence(void);
 void BattleAnim_StartEffect4TintDescriptor53ScalePulse(void);
-void func_8433BB78(void);
-void func_8433BC38(void);
-void func_8433BD08(void);
-void func_8433BDFC(void);
-void func_8433BECC(void);
-void func_8433BF54(void);
-void func_8433C06C(void);
-void func_8433C284(void);
-void func_8433C3A0(void);
-void func_8433C4EC(void);
-void func_8433C604(void);
-void func_8433C784(void);
+void BattleAnim_StartEffects77And120TintDescriptor45SparkStreams(void);
+void BattleAnim_StartEffect26TintDescriptor53ScalePulse(void);
+void BattleAnim_StartEffect39TintDescriptor53ScalePulse(void);
+void BattleAnim_StartEffect70TintDescriptor53ScalePulse(void);
+void BattleAnim_StartEffect78TintDescriptor53Grow(void);
+void BattleAnim_EndEffect20Descriptor04And19Sequence(void);
+void BattleAnim_EndEffect67Descriptor04_19_54_3D_42Sequence(void);
+void BattleAnim_EndEffect68Descriptor54_1B_19Sequence(void);
+void BattleAnim_EndEffect53Descriptor04_19_45Sequence(void);
+void BattleAnim_EndEffect69Descriptor54And19Sequence(void);
+void BattleAnim_EndEffect70Descriptor04_34_54_19Sequence(void);
+void BattleAnim_EndEffect71Descriptor04_34_54_19Sequence(void);
 void BattleAnim_EndEffect25Descriptor13DelegateSequence(void);
-void func_8433CAFC(void);
+void BattleAnim_EndEffect86Descriptor19ModePositionedSequence(void);
 
 
 void BattleAnim_SetupStartEffects18And73Descriptor11ScatterRiseFade(Particle* arg0);
@@ -2226,11 +2236,11 @@ void BattleAnim_CallbackEndEffect28Descriptor10UpwardBurstFade(Particle* arg0);
 void BattleAnim_SetupEndEffect28Descriptor10WideScatterBurstFade(Particle* arg0);
 void BattleAnim_CallbackEndEffect28Descriptor10WideScatterBurstFade(Particle* arg0);
 void BattleAnim_StartEffect18ScatterRadialAndColumnSequence(void);
-void func_8433DECC(void);
-void func_8433DFF4(void);
-void func_8433E124(void);
-void func_8433E33C(void);
-void func_8433E46C(void);
+void BattleAnim_EndEffect8DirectionalSprayAndColumnSequence(void);
+void BattleAnim_EndEffect72DirectionalSprayAndColumnSequence(void);
+void BattleAnim_StartEffect59DirectionalStreamAndSpraySequence(void);
+void BattleAnim_EndEffect28BurstAndDirectionalStreamSequence(void);
+void BattleAnim_StartEffect73Descriptor11And15Sequence(void);
 void BattleAnim_EndEffect70Descriptor0F_13SprayColumnSequence(void);
 
 
@@ -2272,40 +2282,40 @@ void BattleAnim_SetupEndEffects85And87GravityFallDelay(Particle* arg0);
 void BattleAnim_CallbackEndEffects85And87GravityFallDelay(Particle* arg0);
 void func_84340AC4(void);
 void BattleAnim_OrphanDescriptor2BAnd2EEmitterSequence(void);
-void func_84340CB0(void);
-void func_84340D14(void);
+void BattleAnim_EndEffect26Descriptor2CGravityAndChildSequence(void);
+void BattleAnim_EndEffect87Descriptor2DGravityFallSequence(void);
 
 
-void func_84342808(void);
-void func_84342908(void);
+void BattleAnim_StartEffect38Move86Descriptor24Sequence(void);
+void BattleAnim_EndEffect17Move86Descriptor24Sequence(void);
 void BattleAnim_StartEffect1Descriptor2FPhaseFadeOut(void);
 void BattleAnim_StartEffect12DelayedModelAnim(void);
 void BattleAnim_ApplySpeciesMotionOffset(Particle*);
 void BattleAnim_StartEffect14ModelAnimAndMoveKeyedTintParticles(void);
-void func_84344094(void);
-void func_84344248(void);
-void func_843443E0(void);
-void func_84344474(void);
-void func_84344508(void);
+void BattleAnim_StartEffect125ModelBurstAndOwnerColorFade(void);
+void BattleAnim_StartEffect65Descriptors31And32FadeIn(void);
+void BattleAnim_StartEffect28Descriptor33And47Sequence(void);
+void BattleAnim_StartEffect76Descriptor33And47Sequence(void);
+void BattleAnim_StartEffect53Descriptor33And47Sequence(void);
 void BattleAnim_StartEffect8ModelBurstAndVerticalFade(void);
-void func_84344B04(void);
-void func_84344BDC(void);
-void func_84345038(void);
-void func_843450B4(void);
-void func_8434575C(void);
-void func_84345B28(void);
-void func_84345B84(void);
-void func_84345D74(void);
-void func_84345EC0(void);
-void func_84346B58(void);
-void func_84346BE0(void);
-void func_84346DC4(void);
-void func_84346E50(void);
-void func_84346EEC(void);
-void func_84346F40(void);
+void BattleAnim_EndEffect31Move73ModelAndDescriptor42Sequence(void);
+void BattleAnim_EndEffect13ModelAnimAndDescriptor42Sequence(void);
+void BattleAnim_StartEffect34TintDescriptor25AndModelFadeIn(void);
+void BattleAnim_EndEffect23ModelTintAndDescriptorSequence(void);
+void BattleAnim_EndEffect6Move146ModelAnimSequence(void);
+void BattleAnim_EndEffect49Model33Anim34Sequence(void);
+void BattleAnim_EndEffect21MoveKeyedTintAndModelAnimSequence(void);
+void BattleAnim_StartEffect40ModelFadeCycle(void);
+void BattleAnim_StartEffect86ModelAndOwnerAlphaFadeSequence(void);
+void BattleAnim_StartEffect63DualModelSequence(void);
+void BattleAnim_EndEffect10ModelColorFadeAndDescriptor3FSequence(void);
+void BattleAnim_StartEffect75DualModelSequence(void);
+void BattleAnim_EndEffect50ModelColorFadeAndDescriptor3ESequence(void);
+void BattleAnim_StartEffect64ModelAnim23Wait(void);
+void BattleAnim_StartEffect66ModelAnim24AndDescriptor42Sequence(void);
 void BattleAnim_StartEffect10Model60AndModelAnimWait(void);
 void BattleAnim_ApplySpeciesXZOffsetVariantA(Particle*);
-void func_84347448(void);
+void BattleAnim_StartEffect72ModelAnim25Wait(void);
 
 
 void BattleAnim_SetupReflectiveCamera(void);
@@ -2327,8 +2337,8 @@ void BattleAnim_CallbackMove86EndDescriptor24(Particle* arg0);
 void BattleAnim_ApplyMove86SpeciesOffset(Particle* arg0);
 void BattleAnim_SetupMove86StartDescriptor24(Particle* arg0);
 void BattleAnim_CallbackMove86StartDescriptor24(Particle* arg0);
-void func_84342808(void);
-void func_84342908(void);
+void BattleAnim_StartEffect38Move86Descriptor24Sequence(void);
+void BattleAnim_EndEffect17Move86Descriptor24Sequence(void);
 void BattleAnim_ApplyEffect1SpeciesMotion(Particle* arg0);
 void BattleAnim_SetupEffect1Descriptor2F(Particle* arg0);
 void BattleAnim_CallbackStartEffect1Descriptor2FPhaseFadeOut(Particle* arg0);
@@ -2346,15 +2356,15 @@ void BattleAnim_InitEffect125Model(Particle* arg0, UNUSED s16 arg1);
 void BattleAnim_CallbackStartEffect125ModelBurstEmitter(Particle* arg0);
 void BattleAnim_BuildEffect125DisplayList(Gfx* arg0, u16 arg1);
 void BattleAnim_AllocateEffect125DisplayList(s32 arg0, arg1_func_84344CE8* arg1);
-void func_84344094(void);
+void BattleAnim_StartEffect125ModelBurstAndOwnerColorFade(void);
 void BattleAnim_InitEffect65Overlay(Particle* arg0);
 void BattleAnim_CallbackStartEffect65Descriptors31And32FadeIn(Particle* arg0);
-void func_84344248(void);
+void BattleAnim_StartEffect65Descriptors31And32FadeIn(void);
 void BattleAnim_InitEffect28Overlay(Particle* arg0);
 void BattleAnim_CallbackStartEffects28And53And76Descriptor33FadeIn(Particle* arg0);
-void func_843443E0(void);
-void func_84344474(void);
-void func_84344508(void);
+void BattleAnim_StartEffect28Descriptor33And47Sequence(void);
+void BattleAnim_StartEffect76Descriptor33And47Sequence(void);
+void BattleAnim_StartEffect53Descriptor33And47Sequence(void);
 void BattleAnim_InitEffect8Descriptor4A(Particle* arg0);
 void BattleAnim_CallbackStartEffect8Descriptor4ABurstChild(Particle* arg0);
 void BattleAnim_InitEffect8ModelBurst(Particle* arg0);
@@ -2363,16 +2373,16 @@ void BattleAnim_ApplyEffect31SpeciesOffset(Particle* arg0);
 void BattleAnim_InitEffect31Model(Particle* arg0);
 void BattleAnim_CallbackMove73EndEffect31SpawnDescriptor42(Particle* arg0);
 void BattleAnim_StartEffect8ModelBurstAndVerticalFade(void);
-void func_84344B04(void);
-void func_84344BDC(void);
+void BattleAnim_EndEffect31Move73ModelAndDescriptor42Sequence(void);
+void BattleAnim_EndEffect13ModelAnimAndDescriptor42Sequence(void);
 void func_84344C7C(Gfx* arg0, u8* arg1);
 void func_84344CE8(s32 arg0, arg1_func_84344CE8* arg1);
 void BattleAnim_CallbackStartEffect34SpecialModelFadeIn_InitParticle(Particle* arg0);
 void BattleAnim_CallbackStartEffect34SpecialModelFadeIn(Particle* arg0);
 void BattleAnim_CallbackEndEffect23Descriptor4AAnimatedFade_InitParticle(Particle* arg0);
 void BattleAnim_CallbackEndEffect23Descriptor4AAnimatedFade(Particle* arg0);
-void func_84345038(void);
-void func_843450B4(void);
+void BattleAnim_StartEffect34TintDescriptor25AndModelFadeIn(void);
+void BattleAnim_EndEffect23ModelTintAndDescriptorSequence(void);
 void func_8434523C(Gfx* arg0, s32 arg1, u16 arg2);
 void func_843452F0(s32 arg0, arg1_func_84344CE8* arg1);
 void func_84345338(Gfx* arg0, arg1_func_8434E21C* arg1, UNUSED u16 arg2);
@@ -2383,20 +2393,20 @@ void func_84345490(void);
 void BattleAnim_ApplyMove146SpeciesOffset(Particle* arg0);
 void BattleAnim_InitMove146Model(Particle* arg0);
 void BattleAnim_CallbackMove146EndEffect6ModelAnimWait(Particle* arg0);
-void func_8434575C(void);
+void BattleAnim_EndEffect6Move146ModelAnimSequence(void);
 void BattleAnim_InitEffect49Model(Particle* arg0);
 void BattleAnim_CallbackEndEffect49Model33Anim34WaitCleanup(Particle* arg0);
 void BattleAnim_CallbackEndEffect21ModelAnimWait(Particle* arg0);
 void BattleAnim_BuildEffect49DisplayList(Gfx* arg0, UNUSED s32 arg1, UNUSED u16 arg2);
 void BattleAnim_AllocateEffect49DisplayList(s32 arg0, arg1_func_84344CE8* arg1);
-void func_84345B28(void);
-void func_84345B84(void);
+void BattleAnim_EndEffect49Model33Anim34Sequence(void);
+void BattleAnim_EndEffect21MoveKeyedTintAndModelAnimSequence(void);
 void BattleAnim_InitEffect40Model(Particle* arg0);
 void BattleAnim_CallbackStartEffect40ModelFadeCycle(Particle* arg0);
-void func_84345D74(void);
+void BattleAnim_StartEffect40ModelFadeCycle(void);
 void BattleAnim_InitEffect86Model(Particle* arg0);
 void BattleAnim_CallbackStartEffect86ModelFadeCycle(Particle* arg0);
-void func_84345EC0(void);
+void BattleAnim_StartEffect86ModelAndOwnerAlphaFadeSequence(void);
 void BattleAnim_BuildEffect63DisplayList(Gfx* arg0, s32 arg1, u16 arg2);
 void BattleAnim_AllocateEffect63DisplayList(s32 arg0, arg1_func_84344CE8* arg1);
 void BattleAnim_BuildEffect75DisplayList(Gfx* arg0, UNUSED s32 arg1, UNUSED u16 arg2);
@@ -2414,12 +2424,12 @@ void func_843467F8(Gfx* arg0, u8* arg1, UNUSED u16 arg2);
 void func_84346960(s32 arg0, arg1_func_84344CE8* arg1);
 void func_843469A8(Gfx* arg0, u8* arg1, UNUSED u16 arg2);
 void func_84346B10(s32 arg0, arg1_func_84344CE8* arg1);
-void func_84346B58(void);
-void func_84346BE0(void);
-void func_84346DC4(void);
-void func_84346E50(void);
-void func_84346EEC(void);
-void func_84346F40(void);
+void BattleAnim_StartEffect63DualModelSequence(void);
+void BattleAnim_EndEffect10ModelColorFadeAndDescriptor3FSequence(void);
+void BattleAnim_StartEffect75DualModelSequence(void);
+void BattleAnim_EndEffect50ModelColorFadeAndDescriptor3ESequence(void);
+void BattleAnim_StartEffect64ModelAnim23Wait(void);
+void BattleAnim_StartEffect66ModelAnim24AndDescriptor42Sequence(void);
 void BattleAnim_CallbackStartEffect10Model60AlphaFadeIn_InitParticle(Particle* arg0);
 void BattleAnim_CallbackStartEffect10Model60AlphaFadeIn(Particle* arg0);
 void func_8434719C(Gfx* arg0, arg1_func_8434E21C* arg1, UNUSED u16 arg2);
@@ -2427,7 +2437,7 @@ void func_84347254(s32 arg0, arg1_func_84344CE8* arg1);
 void func_8434729C(Gfx* arg0, arg1_func_8434E21C* arg1, UNUSED u16 arg2);
 void func_84347374(s32 arg0, arg1_func_84344CE8* arg1);
 void BattleAnim_StartEffect10Model60AndModelAnimWait(void);
-void func_84347448(void);
+void BattleAnim_StartEffect72ModelAnim25Wait(void);
 void BattleAnim_ApplySpeciesXZOffsetVariantA(Particle* arg0);
 void BattleAnim_CallbackStartEffects50And82ModelDelay(Particle* arg0);
 void BattleAnim_CallbackStartEffects50And82ScalePulse_InitParticle(Particle* arg0);
@@ -2445,35 +2455,35 @@ void BattleAnim_CallbackEndEffects81And82Descriptor4AAnimatedColorFade_InitParti
 void BattleAnim_CallbackEndEffects81And82Descriptor4AAnimatedColorFade(Particle* arg0);
 void BattleAnim_CallbackEndEffects81And82Descriptor4FAnimatedPaletteFade_InitParticle(Particle* arg0);
 void BattleAnim_CallbackEndEffects81And82Descriptor4FAnimatedPaletteFade(Particle* arg0);
-void func_84348630(void);
-void func_843489FC(void);
+void BattleAnim_StartEffects50And82ModelTintAndDescriptorSequence(void);
+void BattleAnim_EndEffects81And82ModelTintAndDescriptorSequence(void);
 void func_84348C6C(UNUSED s32 arg0, UNUSED s32 arg1);
 void func_84348C78(UNUSED s32 arg0, UNUSED s32 arg1);
 void BattleAnim_CallbackStartEffects71And74And111SpecialModelColorCycle_InitParticle(Particle* arg0);
 void BattleAnim_CallbackStartEffects71And74And111SpecialModelColorCycle(Particle* arg0);
 void func_84348F24(Gfx* arg0, s32 arg1, u16 arg2);
 void func_84349010(s32 arg0, arg1_func_84344CE8* arg1);
-void func_84349058(void);
-void func_843490A8(void);
-void func_84349108(void);
-void func_8434915C(void);
-void func_8434917C(void);
+void BattleAnim_StartEffect71SpecialModelColorCycle(void);
+void BattleAnim_StartEffect111TintAndSpecialModelColorCycle(void);
+void BattleAnim_StartEffect74SpecialModelColorCycle(void);
+void BattleAnim_EndEffect41Delegate(void);
+void BattleAnim_EndEffect83TintAndDelegate(void);
 void func_843491D4(Gfx* arg0, u8* arg1, UNUSED u16 arg2);
 void func_84349264(s32 arg0, arg1_func_84344CE8* arg1);
 void func_843492AC(Gfx* arg0, u8* arg1, UNUSED u16 arg2);
 void func_8434933C(s32 arg0, arg1_func_84344CE8* arg1);
-void func_84349384(void);
+void BattleAnim_StartEffect68ModelAnim28AndDescriptor42Sequence(void);
 f32 BattleAnim_GetSpeciesScaleAdjust(Particle* arg0);
 void BattleAnim_CallbackStartEffect69ModelPhaseWait(Particle* arg0);
-void func_84349504(void);
+void BattleAnim_StartEffect69ModelAnim29AndDescriptorSequence(void);
 void BattleAnim_ApplySpeciesXZOffsetVariantB(Particle* arg0);
-void func_84349628(void);
-void func_8434967C(void);
+void BattleAnim_StartEffect52ModelAnim16(void);
+void BattleAnim_EndEffect78ModelAnim1DAndDescriptorSequence(void);
 void BattleAnim_ApplySpeciesYOffsetVariantA(Particle* arg0);
-void func_84349830(void);
-void func_843498D8(void);
+void BattleAnim_StartEffect55ModelAnimAndDescriptor42Sequence(void);
+void BattleAnim_StartEffect79ModelAnim1AndDescriptor25Fade(void);
 void BattleAnim_ApplySpeciesYOffsetVariantB(Particle* arg0);
-void func_84349A14(void);
+void BattleAnim_StartEffect80AnchoredModelAnim2Wait(void);
 void BattleAnim_CallbackStartEffect17ModelAnimFinish_InitParticle(Particle* arg0);
 void BattleAnim_CallbackStartEffect17ModelAnimFinish(Particle* arg0);
 void BattleAnim_CallbackEndEffect7ModelScaleAlphaFade_InitParticle(Particle* arg0);
@@ -2486,108 +2496,108 @@ s16 BattleAnim_GetMoveKeyedModelVariantIndex(void);
 s16 BattleAnim_GetMoveKeyedTintRampParam(void);
 s16 BattleAnim_GetMoveKeyedTrailVariantParam(void);
 void BattleAnim_StartEffect17ModelAnimFinish(void);
-void func_8434A384(void);
+void BattleAnim_EndEffect7MoveKeyedModelAndDescriptor3DSequence(void);
 f32 BattleAnim_GetSpeciesScaleAndApplyYOffset(Particle* arg0);
 void func_8434A654(Gfx* arg0, arg1_func_8434E21C* arg1, UNUSED u16 arg2);
 void func_8434A6D8(s32 arg0, arg1_func_84344CE8* arg1);
 void func_8434A720(Gfx* arg0, UNUSED arg1_func_8434E21C* arg1, UNUSED u16 arg2);
 void func_8434A794(s32 arg0, arg1_func_84344CE8* arg1);
-void func_8434A7DC(void);
+void BattleAnim_StartEffect83TintAndModelAlphaFade(void);
 void BattleAnim_StartEffect39Descriptor26ModelAnimWaitSequence(void);
-void func_8434A898(void);
-void func_8434A930(void);
-void func_8434A9CC(void);
-void func_8434A9EC(void);
-void func_8434AA6C(void);
+void BattleAnim_StartEffect37MoveKeyedTintAndModelAnim26(void);
+void BattleAnim_EndEffect58ModelAnimAndDelegateSequence(void);
+void BattleAnim_EndEffect75EndEffect58Alias(void);
+void BattleAnim_StartEffect87TintModelAnim6AndDelegateSequence(void);
+void BattleAnim_StartEffect88TintModelAnim7AndDelegateSequence(void);
 void func_8434AAEC(Gfx* arg0, u8 arg1, UNUSED u16 arg2);
 void func_8434AC44(s32 arg0, arg1_func_84344CE8* arg1);
-void func_8434AC8C(void);
-void func_8434ACEC(void);
-void func_8434AD1C(void);
-void func_8434AD70(void);
+void BattleAnim_StartEffect90RepeatingModelAnim8(void);
+void BattleAnim_StartEffect112TintAndRepeatingModelAnim8(void);
+void BattleAnim_StartEffect91ModelAnim9(void);
+void BattleAnim_StartEffect92SpeciesGatedModelAnim10(void);
 f32 BattleAnim_GetSpeciesScaleAndOffset(Particle* arg0);
-void func_8434B000(void);
-void func_8434B064(void);
+void BattleAnim_StartEffect94ModelAnim11AndTintFade(void);
+void BattleAnim_EndEffect60OwnerTintAndModelAnim12(void);
 void BattleAnim_ApplySpeciesYOffsetVariantC(Particle* arg0);
 void BattleAnim_CallbackStartEffects95To97EndEffects62And63ModelFadeIn_InitParticle(Particle* arg0);
 void BattleAnim_CallbackStartEffects95To97EndEffects62And63ModelFadeIn(Particle* arg0);
 void func_8434B2B8(Gfx* arg0, u8* arg1, UNUSED u16 arg2);
 void func_8434BA28(s32 arg0, arg1_func_84344CE8* arg1);
-void func_8434BA70(void);
-void func_8434BCD4(void);
-void func_8434BF2C(void);
-void func_8434C070(void);
-void func_8434C0C4(void);
-void func_8434C144(void);
+void BattleAnim_StartEffect95ModelFadeAndModelAnim13Sequence(void);
+void BattleAnim_EndEffect62ModelFadeAndModelAnim13Sequence(void);
+void BattleAnim_StartEffect24MoveKeyedTintAndModelAnimSequence(void);
+void BattleAnim_StartEffect96ModelFadeIn(void);
+void BattleAnim_StartEffect97ModelFadeInAndTintDelay(void);
+void BattleAnim_EndEffect63ModelFadeDescriptor34AndTintSequence(void);
 void BattleAnim_CallbackStartEffects21And93ModelAlphaAnchorFollow_InitParticle(Particle* arg0);
 void BattleAnim_CallbackStartEffects21And93ModelAlphaAnchorFollow(Particle* arg0);
 void BattleAnim_CallbackEndEffect60Model42AnimC2RotationYFollow_InitParticle(Particle* arg0);
 void BattleAnim_CallbackEndEffect60Model42AnimC2RotationYFollow(Particle* arg0);
 void func_8434C3F0(Gfx* arg0, u8 arg1, UNUSED u16 arg2);
 void func_8434C548(s32 arg0, arg1_func_84344CE8* arg1);
-void func_8434C590(void);
-void func_8434C5F0(void);
-void func_8434C618(void);
-void func_8434C720(void);
+void BattleAnim_StartEffect21TintAndModel42AnchorFollow(void);
+void BattleAnim_EndEffect51GlobalTintFade(void);
+void BattleAnim_StartEffect93Model42TintAndDescriptor34Sequence(void);
+void BattleAnim_EndEffect61Model42TintAndDescriptor34Sequence(void);
 void func_8434C814(Gfx* arg0, u8* arg1, UNUSED u16 arg2);
 void func_8434CA48(s32 arg0, arg1_func_84344CE8* arg1);
 f32 BattleAnim_GetSpeciesScaleAdjustSmall(Particle* arg0);
-void func_8434CAD8(void);
-void func_8434CC68(void);
-void func_8434CE14(void);
-void func_8434CF64(void);
-void func_8434D0F8(void);
+void BattleAnim_StartEffect99ModelAnimAndMultiDescriptorSequence(void);
+void BattleAnim_EndEffect64ModelAnimAndDescriptor04_19_0ASequence(void);
+void BattleAnim_StartEffect36DelayedMultiDescriptorSequence(void);
+void BattleAnim_EndEffect16MultiDescriptorFallFadeSequence(void);
+void BattleAnim_StartEffect100AnchoredModelAnim16AndDescriptor25Fade(void);
 void BattleAnim_CallbackStartEffect101EndEffect65Descriptor4ABurstChild_InitParticle(Particle* arg0);
 void BattleAnim_CallbackStartEffect101EndEffect65Descriptor4ABurstChild(Particle* arg0);
 void BattleAnim_CallbackStartEffect101ModelBurstEmitter_InitParticle(Particle* arg0);
 void BattleAnim_CallbackStartEffect101ModelBurstEmitter(Particle* arg0);
-void func_8434D448(void);
+void BattleAnim_StartEffect101ModelBurstSequence(void);
 void BattleAnim_CallbackMove140EndEffect65EmitDescriptor4A_InitParticle(Particle* arg0);
 void BattleAnim_CallbackMove140EndEffect65EmitDescriptor4A(Particle* arg0);
-void func_8434D5EC(void);
+void BattleAnim_EndEffect65ModelBurstAndDescriptor34_3DSequence(void);
 void BattleAnim_CallbackStartEffect49EndEffect66ModelFadeIn_InitParticle(Particle* arg0);
 void BattleAnim_CallbackStartEffect49EndEffect66ModelFadeIn(Particle* arg0);
 void func_8434D77C(Gfx* arg0, arg1_func_8434E21C* arg1, UNUSED u16 arg2);
 void func_8434D890(s32 arg0, arg1_func_84344CE8* arg1);
-void func_8434D8D8(void);
-void func_8434D938(void);
+void BattleAnim_StartEffect49TintAndModelFadeIn(void);
+void BattleAnim_EndEffect66TintModelFadeAndDescriptor34Sequence(void);
 void BattleAnim_CallbackEndEffects73And74DefaultDescriptorFade(Particle* arg0);
-void func_8434DA94(void);
-void func_8434DB40(void);
-void func_8434DBEC(void);
-void func_8434DD08(void);
+void BattleAnim_StartEffect106TintModelAndDescriptor25Sequence(void);
+void BattleAnim_StartEffect107TintModelAndDescriptor25Sequence(void);
+void BattleAnim_EndEffect74TintModelAndDescriptor34Sequence(void);
+void BattleAnim_EndEffect73TintModelAndDescriptor34Sequence(void);
 f32 BattleAnim_GetSpeciesScaleAdjustTiny(Particle* arg0);
 void BattleAnim_StartEffect3ModelTintAndVerticalFade(void);
 void BattleAnim_EndEffect85TintAndDescriptorMode2Sequence(void);
-void func_8434E02C(void);
-void func_8434E0CC(void);
-void func_8434E1B8(void);
+void BattleAnim_StartEffect104TintAndDelayedDescriptor4FSpiral(void);
+void BattleAnim_StartEffect103TintModelAlphaAndDescriptor3DSequence(void);
+void BattleAnim_EndEffect25ModelAnim13AndDelegateSequence(void);
 void func_8434E21C(Gfx* arg0, arg1_func_8434E21C* arg1, UNUSED u16 arg2);
 void func_8434E6AC(s32 arg0, arg1_func_84344CE8* arg1);
 void BattleAnim_EndEffect72Descriptor20ModelAnimWaitSequence(void);
-void func_8434E74C(void);
+void BattleAnim_StartEffect105ModelAnimAndTintDefaultBurstAndDescriptor3CSequence(void);
 void BattleAnim_CallbackEndEffect76DefaultDescriptorModelFade(Particle* arg0);
-void func_8434E870(void);
-void func_8434E8E0(void);
-void func_8434E940(void);
-void func_8434E9A0(void);
-void func_8434EA10(void);
+void BattleAnim_EndEffect76TintAndModelAnim19Fade(void);
+void BattleAnim_StartEffect113AnchoredModelAnim1B(void);
+void BattleAnim_EndEffect77AnchoredModelAnim1C(void);
+void BattleAnim_StartEffect121TintAndAnchoredModelAnim1B(void);
+void BattleAnim_EndEffect84TintAndAnchoredModelAnim1C(void);
 void BattleAnim_CallbackStartEffects118And119ModelPalettePulse(Particle* arg0);
-void func_8434EBA0(void);
-void func_8434EC08(void);
+void BattleAnim_StartEffect118RepeatingModelPalettePulse(void);
+void BattleAnim_StartEffect119ModelPalettePulse(void);
 void BattleAnim_CallbackEndEffect79DefaultDescriptorPaletteFade(Particle* arg0);
-void func_8434ECF4(void);
-void func_8434ED48(void);
+void BattleAnim_EndEffect79ModelAnim1FPaletteFade(void);
+void BattleAnim_StartEffect45GlobalTintFade(void);
 void BattleAnim_CallbackStartEffects127And128Descriptor39ScaleFade_InitParticle(Particle* arg0);
 void BattleAnim_CallbackStartEffects127And128Descriptor39ScaleFade(Particle* arg0);
-void func_8434EF68(void);
-void func_8434EFBC(void);
-void func_8434F010(void);
-void func_8434F060(void);
-void func_8434F0B8(void);
+void BattleAnim_StartEffect127Descriptor39ScaleFade(void);
+void BattleAnim_StartEffect128Descriptor39ScaleFade(void);
+void BattleAnim_StartEffect129DelayedModelAnimWait(void);
+void BattleAnim_StartEffect130Descriptor34DelayedFrameMotion(void);
+void BattleAnim_StartEffect131DelayedDescriptor34FrameMotion(void);
 void BattleAnim_CallbackStartEffect132Descriptor39DelayedRiseFade_InitParticle(Particle* arg0);
 void BattleAnim_CallbackStartEffect132Descriptor39DelayedRiseFade(Particle* arg0);
-void func_8434F350(void);
+void BattleAnim_StartEffect132Descriptor39DelayedRiseFade(void);
 void BattleAnim_CallbackSharedDescriptor29ScaleAnimFade_InitParticle(Particle* arg0);
 void BattleAnim_CallbackSharedDescriptor29ScaleAnimFade(Particle* arg0);
 void BattleAnim_CallbackEndEffect3Descriptor29DirectionalScaleFade_InitParticle(Particle* arg0);
@@ -2685,62 +2695,62 @@ void BattleAnim_CallbackDescriptor26BurstEmitter_InitParticle(Particle* arg0);
 void BattleAnim_CallbackDescriptor26BurstEmitter(Particle* arg0);
 void BattleAnim_SetupUnusedGrowingSparkVariant(Particle* arg0);
 void BattleAnim_CallbackUnusedGrowingSparkVariant(Particle* arg0);
-void func_84355E58(void);
-void func_84355EF0(void);
-void func_84355F88(void);
-void func_84356020(void);
-void func_843560B4(void);
-void func_84356148(void);
-void func_843561A0(void);
-void func_843561F8(void);
-void func_84356254(void);
-void func_8435643C(void);
-void func_843565DC(void);
+void BattleAnim_EndEffect14Descriptor34And3DSequence(void);
+void BattleAnim_EndEffect35Descriptor34And3DSequence(void);
+void BattleAnim_EndEffect36Descriptor34And3DSequence(void);
+void BattleAnim_EndEffect44Descriptor34And3DSequence(void);
+void BattleAnim_EndEffect80Descriptor34And3DSequence(void);
+void BattleAnim_EndEffect37Descriptor34BurstEmitter(void);
+void BattleAnim_EndEffect38Descriptor34BurstEmitter(void);
+void BattleAnim_EndEffect47Descriptor34DelayedFrameMotion(void);
+void BattleAnim_StartEffect41Descriptor42And4ASequence(void);
+void BattleAnim_EndEffect42Descriptor34_3D_42Sequence(void);
+void BattleAnim_EndEffect43Descriptor34_40_11Sequence(void);
 void BattleAnim_OrphanDescriptor34Emitter(void);
-void func_8435674C(void);
-void func_843567F4(void);
-void func_843568C8(void);
-void func_843569A0(void);
+void BattleAnim_StartEffect108Descriptor3FRiseFade(void);
+void BattleAnim_EndEffect39Descriptor34_36_3FSequence(void);
+void BattleAnim_EndEffect45Descriptor34_36_3FSequence(void);
+void BattleAnim_EndEffect46Descriptor34_36_3FSequence(void);
 void BattleAnim_EndEffects41And83Descriptor34BurstSequence(void);
 void BattleAnim_StartEffect7GlobalTintFade(void);
-void func_84356AF0(void);
+void BattleAnim_EndEffect52Descriptor42AndDefaultBurstSequence(void);
 void BattleAnim_StartEffect137Descriptor3FRisingFade(void);
-void func_84356D04(void);
-void func_84356DBC(void);
-void func_84356EF4(void);
+void BattleAnim_StartEffect138TieredDescriptor4ARiseImpulseBursts(void);
+void BattleAnim_StartEffect61SecondaryOwnerDescriptor29Sequence(void);
+void BattleAnim_EndEffect30SecondaryOwnerDescriptor2AAnd41Sequence(void);
 void BattleAnim_StartEffect13SecondaryOwnerSpeciesBranch(void);
-void func_84357110(void);
-void func_8435727C(void);
-void func_8435742C(void);
-void func_843574FC(void);
-void func_84357700(void);
-void func_8435783C(void);
-void func_843579C0(void);
-void func_84357A64(void);
+void BattleAnim_EndEffect5SecondaryOwnerDescriptor2AAnd28Sequence(void);
+void BattleAnim_StartEffect123SecondaryOwnerDescriptor29Variant(void);
+void BattleAnim_StartEffect124SecondaryOwnerColorFade(void);
+void BattleAnim_EndEffect88SecondaryOwnerDescriptor2AAnd28Sequence(void);
+void BattleAnim_StartEffect117SecondaryOwnerDescriptor29Sequence(void);
+void BattleAnim_EndEffect85SecondaryOwnerAndDescriptor2BGravitySequence(void);
+void BattleAnim_StartEffect56Descriptor46And40Sequence(void);
+void BattleAnim_EndEffect3Descriptor29DirectionalScaleFade(void);
 void BattleAnim_StartEffect11GlobalTintFade(void);
-void func_84357AE0(void);
-void func_84357B80(void);
+void BattleAnim_EndEffect4Descriptor29ScatterAndTintSequence(void);
+void BattleAnim_StartEffect57GlobalTintFade(void);
 void BattleAnim_EndEffect26DelayedDescriptor29ScatterSequence(void);
-void func_84357CC8(void);
-void func_84357E60(void);
-void func_84357F64(void);
-void func_84358034(void);
+void BattleAnim_EndEffect18MoveKeyedTintDescriptor47Sequence(void);
+void BattleAnim_StartEffect31Descriptor49And47TieredRise(void);
+void BattleAnim_EndEffect55Descriptor49And47Sequence(void);
+void BattleAnim_StartEffect81ModelAlphaAndDescriptor4B3DSequence(void);
 void BattleAnim_StartEffect16TintDescriptor34Sequence(void);
-void func_843581FC(void);
-void func_84358288(void);
-void func_8435839C(void);
-void func_843584C0(void);
-void func_84358538(void);
+void BattleAnim_EndEffect57TintFadeSequence(void);
+void BattleAnim_StartEffect85TintVerticalAndSpiralSequence(void);
+void BattleAnim_StartEffect114TintDescriptor3FAnd3DSequence(void);
+void BattleAnim_StartEffect115TintDescriptor3FRiseFade(void);
+void BattleAnim_StartEffect116Descriptor3FRiseFade(void);
 void BattleAnim_EndEffect58Descriptor4AAnd51Sequence(void);
 void BattleAnim_EndEffectUnusedVerticalFadeAndDelayedFrameSequence(void);
 void BattleAnim_StartEffects87And88Descriptor3DVerticalFadeSequence(void);
-void func_84358A5C(void);
+void BattleAnim_StartEffect89TintDescriptor3DVerticalSequence(void);
 void BattleAnim_SpawnDefaultDescriptorBurstEmitterSequence(s32 arg0);
-void func_84358DE4(void);
+void BattleAnim_StartEffects29And60TintDefaultBurstSequence(void);
 void BattleAnim_StartEffect105TintDefaultBurstAndDescriptor3CSequence(void);
-void func_84358EA0(void);
-void func_84358EDC(void);
-void func_84358F6C(void);
+void BattleAnim_StartEffect109OwnerTintPulse(void);
+void BattleAnim_StartEffect110TintDefaultBurstAndDescriptor42(void);
+void BattleAnim_StartEffect30TintDescriptor42ScaleFall(void);
 
 
 void BattleAnim_RenderNop1(void);
@@ -2906,7 +2916,7 @@ void Radial20_VariantE(f32 arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg
 void Radial20_RotateVertexOffset(f32 arg0, UNUSED Vec3f* arg1, Vec3f* arg2, f32 arg3, UNUSED f32 arg4, UNUSED f32 arg5, UNUSED f32 arg6);
 void Radial20_UpdateNode(Radial20* arg0);
 s32 Radial20_IsComplete(void);
-Gfx* func_84362084(Gfx* arg0);
+Gfx* Radial20_Draw(Gfx* arg0);
 
 
 void Trail40_Init(s16 arg0);
@@ -2942,7 +2952,7 @@ s32 TexturedRibbonSheet_IsComplete(void);
 Gfx* TexturedRibbonSheet_Draw(Gfx* arg0);
 
 
-Gfx* func_84367660(Gfx* arg0, Vec3f* arg1, Vec3f* arg2, Vec3f* arg3, f32 arg4, u8 arg5, u8 arg6, u8 arg7, u8 arg8);
+Gfx* BattleAnim_BuildBladeStreakDisplayList(Gfx* arg0, Vec3f* arg1, Vec3f* arg2, Vec3f* arg3, f32 arg4, u8 arg5, u8 arg6, u8 arg7, u8 arg8);
 
 
 void FourStreamTrail_Init(void);
@@ -2990,7 +3000,7 @@ void DoubleTextureTrail_Spawn(f32 arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, 
 void DoubleTextureTrail_RotateVertexOffset(f32 arg0, Vec3f* arg1, f32 arg2);
 void DoubleTextureTrail_Update(DoubleTextureTrail* arg0);
 s32 DoubleTextureTrail_UpdateAll(void);
-Gfx* func_8436C6A4(Gfx* arg0, DoubleTextureTrail* arg1, s16 arg2, s16 arg3);
+Gfx* DoubleTextureTrail_DrawSegment(Gfx* arg0, DoubleTextureTrail* arg1, s16 arg2, s16 arg3);
 Gfx* DoubleTextureTrail_LoadTextures(Gfx* arg0, DoubleTextureTrail* arg1);
 Gfx* DoubleTextureTrail_DrawAll(Gfx* arg0);
 
@@ -3028,37 +3038,37 @@ void func_8436F6C0(void);
 void func_8436F6D0(void);
 u8 Battle_Random(void);
 u8 Battle_RandomAccuracy(void);
-void func_8436F838(s32 arg0, s32 arg1);
+void Battle_QueueHpStatusMessage(s32 arg0, s32 arg1);
 void Battle_ResetTransientRuntimeState(s32 arg0, s32 arg1);
-void func_8436FA80(Battler* arg0);
+void Battle_QueueDamageSummaryMessages(Battler* arg0);
 void Battle_ApplyDamageRandomFactor(void);
 u16 Battle_DetermineMoveOrder(Battler* arg0, Battler* arg1);
-s32 func_8436FD54(u8 arg0, u8* arg1, s32 arg2);
+s32 Battle_ValueInList(u8 arg0, u8* arg1, s32 arg2);
 void Battle_SetActiveMoveFromSlotIndex(void);
-s32 func_8436FDBC(void);
-void func_8436FDF4(s32 arg0, BattleMon* arg1);
-void func_84370090(BattleMon* arg0);
-void func_843700F0(void);
+s32 Battle_ExecuteMoveEffectAndCheckSuccess(void);
+void Battle_CalculateStat(s32 arg0, BattleMon* arg1);
+void Battle_RecalculateStats(BattleMon* arg0);
+void Battle_CalculateDamage(void);
 s32 Battle_CalcDamage(void);
 void Battle_ApplyDamage(void);
 void Battle_DecrementPP(s32 arg0);
-void func_84370790(void);
-void func_843708A0(void);
-void func_843708CC(void);
-void func_84370ADC(Battler* arg0);
-void func_84370B0C(Battler* arg0);
-void func_84370B44(Battler* arg0);
-void func_84370B7C(Battler* arg0);
+void Battle_ApplyAccuracyStatStages(void);
+void Battle_FailMove(void);
+void Battle_CheckMoveFailureConditions(void);
+void Battle_WriteBackRuntimeState(Battler* arg0);
+void Battle_ApplyParalysisSpeedPenalty(Battler* arg0);
+void Battle_ApplyBurnAttackPenalty(Battler* arg0);
+void Battle_InitializeRuntimeMon(Battler* arg0);
 s32 Battle_IsPartyMemberAlive(Battler* arg0);
 void func_84370E70(void);
 void func_84370E78(void);
-void func_84370E80(void);
+void Battle_LoadMoveData(void);
 void Battle_ApplyRageContinuation(void);
-void func_84371010(void);
-void func_84371080(void);
-void func_8437114C(void);
+void Battle_QueueTypeEffectivenessMessage(void);
+void Battle_RecordCriticalHitAndQueueMessage(void);
+void Battle_ApplySpecialMoveDamage(void);
 void Battle_QueueMoveFailureAndApplyRecoil(void);
-void func_843714D8(void);
+void Battle_RestoreMovePP(void);
 s32 Battle_Effect_Metronome(void);
 void Battle_ApplyPoisonOrBurnDamage(void);
 void Battle_ApplyLeechSeedDamage(void);
@@ -3069,16 +3079,16 @@ void Battle_ApplyTypeEffectAndSTAB(void);
 s32 Battle_Effect_Counter(void);
 s32 Battle_CheckCriticalHit(void);
 s32 Battle_CheckMonCanAct(void);
-void func_84372670(void);
+void Battle_ExecuteAttackerTurn(void);
 void Battle_HandleFaint(Battler* arg0);
-void func_84372C40(Battler* arg0);
-void func_84372D88(Battler* arg0);
-void func_84372ED0(Battler* arg0);
-void func_84373018(Battler* arg0);
+void Battle_CheckSideDefeatAfterPoisonOrBurn(Battler* arg0);
+void Battle_CheckSideDefeatAfterLeechSeed(Battler* arg0);
+void Battle_CheckSideDefeatAfterRecoil(Battler* arg0);
+void Battle_CheckSideDefeatAfterDamage(Battler* arg0);
 s32 Battle_CheckSideDefeatAfterResidualStatus(Battler* arg0);
 s32 Battle_CheckFaintAfterMove(void);
 void Battle_ResolveMonAction(void);
-void func_84373570(Battler* arg0);
+void Battle_InitializeSwitchedInRuntimeMon(Battler* arg0);
 
 
 u16 Battle_ApplyStatStageMultiplier(u16* arg0, u16 arg1, u8 arg2);
@@ -3132,7 +3142,7 @@ void BattleAI_ApplyTypeEffectAndStab(BattleMonRuntime* arg0, BattleMonRuntime* a
 void BattleAI_PrepareDamageCalcState(BattleMonRuntime* arg0, BattleMonRuntime* arg1, u8 arg2);
 void BattleAI_CalcDamage(BattleMonRuntime* arg0, BattleMonRuntime* arg1);
 u16 BattleAI_PredictDamage(BattleMonRuntime* arg0, BattleMonRuntime* arg1, u8 arg2, u8 arg3);
-void BattleAI_ResetTeamState(BattleAiMonState* arg0);
+void BattleAI_ResetTeamState(AIMoveCandidate* arg0);
 s32 BattleAI_ScaleSignedRatio(s32 arg0, s32 arg1);
 void BattleAI_AppendTrainerTeamSpecies(TeamRoster* arg0);
 s32 BattleAI_FindSpeciesIndex(s32 arg0);
@@ -3140,59 +3150,59 @@ s32 BattleAI_IsThresholdMet(u8 arg0, u8 arg1);
 u16 BattleAI_ScaleStatHigh(BattleMonRuntime* arg0);
 u16 BattleAI_ScaleStatLow(BattleMonRuntime* arg0);
 f32 Battle_GetTypeEffectiveness(u8 arg0, BattleMonRuntime* arg1);
-s32 BattleAI_AllCandidatesResistType(u8 arg0, BattleAiTeamState* arg1);
+s32 BattleAI_AllCandidatesResistType(u8 arg0, AICandidateGroup* arg1);
 s32 BattleAI_IsTypeMatchupAllowed(u8 arg0, u8 arg1);
-s32 BattleAI_HasCandidateStatusMask(BattleAiTeamState* arg0, u8 arg1);
-u8 BattleAI_ClassifyMoveAvailability(BattleAiMonState* arg0, BattleAiMonState* arg1, u8 arg2);
+s32 BattleAI_HasCandidateStatusMask(AICandidateGroup* arg0, u8 arg1);
+u8 BattleAI_ClassifyMoveAvailability(AIMoveCandidate* arg0, AIMoveCandidate* arg1, u8 arg2);
 void func_843779C0(void);
-u8 BattleAI_FindHeuristicMove(BattleAiMonState* arg0, BattleAiMonState* arg1, u8 arg2, u8* arg3);
-u8 BattleAI_SelectBestHeuristicCandidate(BattleAiMonState* arg0, BattleAiTeamState* arg1, u8* arg2, u8 arg3, u8* arg4);
+u8 BattleAI_FindHeuristicMove(AIMoveCandidate* arg0, AIMoveCandidate* arg1, u8 arg2, u8* arg3);
+u8 BattleAI_SelectBestHeuristicCandidate(AIMoveCandidate* arg0, AICandidateGroup* arg1, u8* arg2, u8 arg3, u8* arg4);
 s32 BattleAI_IsPriorityTableMove(u8 arg0, u8 arg1);
-u8 BattleAI_ScoreCategorySetLowPP(BattleAiMonState* arg0, BattleAiMonState* arg1);
-u8 BattleAI_ScoreCategorySetReady(BattleAiMonState* arg0, BattleAiMonState* arg1);
-s32 BattleAI_HasExactlyOneUsableCandidate(BattleAiTeamState* arg0);
+u8 BattleAI_ScoreCategorySetLowPP(AIMoveCandidate* arg0, AIMoveCandidate* arg1);
+u8 BattleAI_ScoreCategorySetReady(AIMoveCandidate* arg0, AIMoveCandidate* arg1);
+s32 BattleAI_HasExactlyOneUsableCandidate(AICandidateGroup* arg0);
 void BattleAI_InitializeOrderCandidates(TeamRoster* arg0, TeamRoster* arg1, TeamRoster* arg2, unk_D_843C5568* arg3, s32 arg4);
-void BattleAI_UpdateRememberedMoveCandidate(BattleAiMonState* arg0, u8 arg1);
+void BattleAI_UpdateRememberedMoveCandidate(AIMoveCandidate* arg0, u8 arg1);
 u16 BattleAI_ScoreMove(BattleMonRuntime* arg0, BattleMonRuntime* arg1, u8 arg2);
 void BattleAI_PickBestMove(BattleMonRuntime* arg0, BattleMonRuntime* arg1, u16* arg2, u8* arg3, u8 arg4, u8 arg5);
-s32 BattleAI_ScoreAllCandidateMoves(BattleAiMonState* arg0, BattleAiMonState* arg1, u8* arg2, u8 arg3);
-s32 BattleAI_ScoreAllCandidateMovesRatioToMaxHp(BattleAiMonState* arg0, BattleAiMonState* arg1, u8* arg2, u8 arg3);
-s32 BattleAI_ScoreAllCandidateMovesRatioToCurrentHp(BattleAiMonState* arg0, BattleAiMonState* arg1, u8* arg2, u8 arg3);
+s32 BattleAI_ScoreAllCandidateMoves(AIMoveCandidate* arg0, AIMoveCandidate* arg1, u8* arg2, u8 arg3);
+s32 BattleAI_ScoreAllCandidateMovesRatioToMaxHp(AIMoveCandidate* arg0, AIMoveCandidate* arg1, u8* arg2, u8 arg3);
+s32 BattleAI_ScoreAllCandidateMovesRatioToCurrentHp(AIMoveCandidate* arg0, AIMoveCandidate* arg1, u8* arg2, u8 arg3);
 void func_8437921C(void);
 u8 BattleAI_CalcStagedMovePower(BattleMonRuntime* arg0, BattleMonRuntime* arg1, u8 arg2, u8 arg3);
 void BattleAI_ApplyInverseWeightScale(u8 arg0, u8* arg1);
-void BattleAI_BuildMoveCandidateScores(BattleAiMonState* arg0, BattleAiMonState* arg1, s32 arg2, u8 arg3, u8 arg4, BattleAiScoredMove* arg5);
-s32 BattleAI_HasScoredMoveAtValue(BattleAiScoredMove* arg0, u8 arg1, u8 arg2);
-s32 BattleAI_IsCandidateScoreBelowPeers(BattleAiScoredMove* arg0, u8 arg1, u8 arg2, u8 arg3);
-u8 BattleAI_HasOtherCandidateAtLeastScore(BattleAiScoredMove* arg0, u8 arg1, u8 arg2, u8 arg3);
-void func_8437B0CC(BattleAiTeamState* arg0, BattleAiTeamState* arg1, u8 arg2, BattleAiScoredMove* arg3, u8 arg4);
+void BattleAI_BuildMoveCandidateScores(AIMoveCandidate* arg0, AIMoveCandidate* arg1, s32 arg2, u8 arg3, u8 arg4, unk_func_843794CC* arg5);
+s32 BattleAI_HasScoredMoveAtValue(unk_func_843794CC* arg0, u8 arg1, u8 arg2);
+s32 BattleAI_IsCandidateScoreBelowPeers(unk_func_843794CC* arg0, u8 arg1, u8 arg2, u8 arg3);
+u8 BattleAI_HasOtherCandidateAtLeastScore(unk_func_843794CC* arg0, u8 arg1, u8 arg2, u8 arg3);
+void BattleAI_RefineMoveCandidateScores(AICandidateGroup* arg0, AICandidateGroup* arg1, u8 arg2, unk_func_843794CC* arg3, u8 arg4);
 s32 BattleAI_IsScoreBetter(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
-s32 BattleAI_SelectBestScoredMove(BattleAiMonState* arg0, UNUSED BattleAiMonState* arg1, u8 arg2, BattleAiScoredMove* arg3);
+s32 BattleAI_SelectBestScoredMove(AIMoveCandidate* arg0, UNUSED AIMoveCandidate* arg1, u8 arg2, unk_func_843794CC* arg3);
 s32 BattleAI_ChooseMoveForCandidate(void);
 u16 BattleAI_ComputeDifficultyThreshold(u8 arg0, u8 arg1);
 u8 BattleAI_GetPpWeight(u8 arg0);
-void BattleAI_InitTeamContext(TeamRoster* arg0, TeamRoster* arg1, BattleAiTeamState* arg2, u8 arg3);
-s32 BattleAI_IsSpeciesUnselected(BattleAiTeamState* arg0, u8* arg1, u8 arg2);
-s32 BattleAI_IsSpeciesInList(BattleAiTeamState* arg0, u8* arg1, u8 arg2, u8 arg3);
-s32 BattleAI_MeetsHpBudgetConstraint(BattleAiTeamState* arg0, u8* arg1, u8 arg2, s32 arg3);
-s32 BattleAI_IsCandidateEligible(BattleAiTeamState* arg0, u8* arg1, u8 arg2, u8 arg3);
-s32 BattleAI_GroupSharesTypeWeakness(BattleAiTeamState* arg0, u8* arg1, u8 arg2);
-s32 BattleAI_ScoreAllTeamCandidates(BattleAiTeamState* arg0, BattleAiTeamState* arg1, u8* arg2, s32* arg3);
-s32 BattleAI_InsertRankedCandidateGroup(BattleAiTeamState* arg0, s32* arg1, s32 arg2, unk_func_8437F85C_arg3* arg3, u8* arg4, u8 arg5, u8 arg6);
-void BattleAI_SelectRandomFallbackOrder(BattleAiTeamState* arg0, u8* arg1, s32 arg2);
-s32 BattleAI_SelectRandomUsableCandidate(BattleAiTeamState* arg0);
+void BattleAI_InitTeamContext(TeamRoster* arg0, TeamRoster* arg1, AICandidateGroup* arg2, u8 arg3);
+s32 BattleAI_IsSpeciesUnselected(AICandidateGroup* arg0, u8* arg1, u8 arg2);
+s32 BattleAI_IsSpeciesInList(AICandidateGroup* arg0, u8* arg1, u8 arg2, u8 arg3);
+s32 BattleAI_MeetsHpBudgetConstraint(AICandidateGroup* arg0, u8* arg1, u8 arg2, s32 arg3);
+s32 BattleAI_IsCandidateEligible(AICandidateGroup* arg0, u8* arg1, u8 arg2, u8 arg3);
+s32 BattleAI_GroupSharesTypeWeakness(AICandidateGroup* arg0, u8* arg1, u8 arg2);
+s32 BattleAI_ScoreAllTeamCandidates(AICandidateGroup* arg0, AICandidateGroup* arg1, u8* arg2, s32* arg3);
+s32 BattleAI_InsertRankedCandidateGroup(AICandidateGroup* arg0, s32* arg1, s32 arg2, unk_func_8437F85C_arg3* arg3, u8* arg4, u8 arg5, u8 arg6);
+void BattleAI_SelectRandomFallbackOrder(AICandidateGroup* arg0, u8* arg1, s32 arg2);
+s32 BattleAI_SelectRandomUsableCandidate(AICandidateGroup* arg0);
 s32 BattleAI_SelectRandomUsableMoveSlot(BattleMonRuntime* arg0);
-s32 func_8437FD74(BattleAiTeamState* arg0, s32* arg1, s32* arg2, u8 arg3);
-s32 BattleAI_SelectLeadFromScoredGroup(BattleAiTeamState* arg0, BattleAiTeamState* arg1, u8* arg2, u8* arg3, s32* arg4);
-s32 BattleAI_TryBuildScoredOrder(BattleAiTeamState* arg0, BattleAiTeamState* arg1, u8* arg2, u8* arg3, s32 arg4);
+s32 BattleAI_SelectBestCandidateSubset(AICandidateGroup* arg0, s32* arg1, s32* arg2, u8 arg3);
+s32 BattleAI_SelectLeadFromScoredGroup(AICandidateGroup* arg0, AICandidateGroup* arg1, u8* arg2, u8* arg3, s32* arg4);
+s32 BattleAI_TryBuildScoredOrder(AICandidateGroup* arg0, AICandidateGroup* arg1, u8* arg2, u8* arg3, s32 arg4);
 void BattleAI_UpdateTeamAdvantageBias(void);
-u8 BattleAI_SelectBestSwitchCandidateIndex(BattleAiTeamState* arg0, BattleAiTeamState* arg1);
-u8 BattleAI_SelectBestAttackTargetIndex(BattleAiMonState* arg0, s32* arg1, s32* arg2, BattleAiTeamState* arg3, u8 arg4, s32 arg5);
-s32 BattleAI_ScoreSwitchUrgencyFromThreatMove(BattleAiMonState* arg0, BattleAiMonState* arg1, u8 arg2);
+u8 BattleAI_SelectBestSwitchCandidateIndex(AICandidateGroup* arg0, AICandidateGroup* arg1);
+u8 BattleAI_SelectBestAttackTargetIndex(AIMoveCandidate* arg0, s32* arg1, s32* arg2, AICandidateGroup* arg3, u8 arg4, s32 arg5);
+s32 BattleAI_ScoreSwitchUrgencyFromThreatMove(AIMoveCandidate* arg0, AIMoveCandidate* arg1, u8 arg2);
 s32 BattleAI_ComputeAttackTargetScore(unk_func_8438220C* arg0);
-s32 BattleAI_ScoreAttackOption(BattleAiMonState* arg0, BattleAiMonState* arg1, BattleAiTeamState* arg2, u8* arg3, s32* arg4, s32* arg5, s32* arg6, s32* arg7, s32* arg8);
-s32 BattleAI_ScoreAttackOptionDoubles(BattleAiMonState* arg0, BattleAiMonState* arg1, BattleAiTeamState* arg2, u8* arg3, unk_func_8438220C* arg4);
-u8 BattleAI_ScoreAttackVsSwitch(BattleAiMonState* arg0, BattleAiMonState* arg1, BattleAiTeamState* arg2, BattleAiTeamState* arg3, u8* arg4, unk_func_8438220C* arg5);
+s32 BattleAI_ScoreAttackOption(AIMoveCandidate* arg0, AIMoveCandidate* arg1, AICandidateGroup* arg2, u8* arg3, s32* arg4, s32* arg5, s32* arg6, s32* arg7, s32* arg8);
+s32 BattleAI_ScoreAttackOptionDoubles(AIMoveCandidate* arg0, AIMoveCandidate* arg1, AICandidateGroup* arg2, u8* arg3, unk_func_8438220C* arg4);
+u8 BattleAI_ScoreAttackVsSwitch(AIMoveCandidate* arg0, AIMoveCandidate* arg1, AICandidateGroup* arg2, AICandidateGroup* arg3, u8* arg4, unk_func_8438220C* arg5);
 u16 BattleAI_ApplyStatStageModifier(u16* arg0, u16 arg1, u8 arg2);
 void BattleAI_SimulateStatBoostGuess(BattleMonRuntime* arg0, BattleMonRuntime* arg1, u8 arg2, u8 arg3);
 void BattleAI_BuildAllCandidateMoveScores(unk_func_8438220C* arg0);
@@ -3207,7 +3217,7 @@ s32 BattleAI_IsRestrictedRandomMove(u8 arg0);
 s32 BattleAI_IsMoveExcludedForSpecies(BattleMonRuntime* arg0, s32 arg1, u8 arg2, u8 arg3);
 s32 BattleAI_IsMoveIneffective(BattleMonRuntime* arg0, BattleMonRuntime* arg1, u8 arg2);
 void BattleAI_SyncTeamStateFromRuntime(void);
-s32 func_843831A0(TeamRoster* arg0, TeamRoster* arg1, TeamRoster* arg2, s32 arg3, u8* arg4, s32 arg5, s32 arg6);
+s32 Battle_SelectCpuOrder(TeamRoster* arg0, TeamRoster* arg1, TeamRoster* arg2, s32 arg3, u8* arg4, s32 arg5, s32 arg6);
 void BattleAI_RecordUsedMove(UNUSED s32 arg0, UNUSED s32 arg1, s32 arg2);
 s32 BattleAI_ChooseAction(UNUSED s32 arg0);
 void BattleAI_InitTrainerRecords(void);

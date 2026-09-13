@@ -237,7 +237,7 @@ s32 DoubleTextureTrail_UpdateAll(void) {
     }
 
 #ifdef NON_MATCHING
-Gfx* func_8436C6A4(Gfx* arg0, DoubleTextureTrail* arg1, s16 arg2, s16 arg3) {
+Gfx* DoubleTextureTrail_DrawSegment(Gfx* arg0, DoubleTextureTrail* arg1, s16 arg2, s16 arg3) {
     s32 i;
     s32 j;
     Vtx* sp44;
@@ -290,7 +290,7 @@ Gfx* func_8436C6A4(Gfx* arg0, DoubleTextureTrail* arg1, s16 arg2, s16 arg3) {
     return arg0;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/battle_engine/battle_engine_356730/func_8436C6A4.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/62/fragment62_356730/DoubleTextureTrail_DrawSegment.s")
 #endif
 
 Gfx* DoubleTextureTrail_LoadTextures(Gfx* arg0, DoubleTextureTrail* arg1) {
@@ -365,7 +365,7 @@ Gfx* DoubleTextureTrail_DrawAll(Gfx* arg0) {
                 spDC.x = spD8->unk_60.eye.x;
                 spDC.y = spD8->unk_60.eye.y;
                 spDC.z = spD8->unk_60.eye.z;
-                arg0 = func_84367660(arg0, &spF4, &spE8, &spDC, 20.0f, var_fp->unk_086.r, var_fp->unk_086.g,
+                arg0 = BattleAnim_BuildBladeStreakDisplayList(arg0, &spF4, &spE8, &spDC, 20.0f, var_fp->unk_086.r, var_fp->unk_086.g,
                                      var_fp->unk_086.b, var_fp->unk_086.a * var_fp->unk_08C);
             }
 
@@ -387,13 +387,13 @@ Gfx* DoubleTextureTrail_DrawAll(Gfx* arg0) {
             gSPSetGeometryMode(arg0++, G_CULL_FRONT);
             gDPPipeSync(arg0++);
 
-            arg0 = func_8436C6A4(arg0, var_fp, i, 0);
+            arg0 = DoubleTextureTrail_DrawSegment(arg0, var_fp, i, 0);
 
             gSPClearGeometryMode(arg0++, G_CULL_BOTH);
             gSPSetGeometryMode(arg0++, G_CULL_BACK);
             gDPPipeSync(arg0++);
 
-            arg0 = func_8436C6A4(arg0, var_fp, i, 1);
+            arg0 = DoubleTextureTrail_DrawSegment(arg0, var_fp, i, 1);
         }
     }
 

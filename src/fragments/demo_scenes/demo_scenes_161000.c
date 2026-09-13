@@ -48,32 +48,32 @@ u16 Diorama_IsModelInCameraCone(unk_D_86002F34_00C* arg0, unk_D_86002F58_004_000
 }
 
 void DioramaCamKeyframe_SetAngles(unk_D_86B0E5D4_04* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4) {
-    arg0->unk_0C = arg1;
-    arg0->unk_0E = arg2;
-    arg0->unk_20 = arg3;
-    arg0->unk_22 = arg4;
+    arg0->eyeYaw = arg1;
+    arg0->eyePitch = arg2;
+    arg0->eyeYawEnd = arg3;
+    arg0->eyePitchEnd = arg4;
 }
 
 void DioramaCamKeyframe_SetDistance(unk_D_86B0E5D4_04* arg0, f32 arg1, f32 arg2) {
-    arg0->unk_18 = arg1;
-    arg0->unk_2C = arg2;
+    arg0->eyeDistance = arg1;
+    arg0->eyeDistanceEnd = arg2;
 }
 
 void DioramaCamKeyframe_SetAtAngles(unk_D_86B0E5D4_04* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4) {
-    arg0->unk_12 = arg1;
-    arg0->unk_14 = arg2;
-    arg0->unk_26 = arg3;
-    arg0->unk_28 = arg4;
+    arg0->atYaw = arg1;
+    arg0->atPitch = arg2;
+    arg0->atYawEnd = arg3;
+    arg0->atPitchEnd = arg4;
 }
 
 void DioramaCamKeyframe_SetAtDistance(unk_D_86B0E5D4_04* arg0, f32 arg1, f32 arg2) {
-    arg0->unk_1C = arg1;
-    arg0->unk_30 = arg2;
+    arg0->atDistance = arg1;
+    arg0->atDistanceEnd = arg2;
 }
 
 void DioramaCamKeyframe_SetTransitionSpeed(unk_D_86B0E5D4_04* arg0, f32 arg1, f32 arg2) {
-    arg0->unk_34 = arg1;
-    arg0->unk_38 = arg2;
+    arg0->eyeTransitionSpeed = arg1;
+    arg0->atTransitionSpeed = arg2;
 }
 
 void Diorama_LoadCameraKeyframe(unk_D_86B0C160* arg0, unk_D_86B0E5D4* arg1) {
@@ -85,12 +85,12 @@ void Diorama_LoadCameraKeyframe(unk_D_86B0C160* arg0, unk_D_86B0E5D4* arg1) {
     f32 sp28;
 
     ptr->unk_74 = 0.0f;
-    ptr->unk_68 = 0;
+    ptr->currentBlendDistance = 0;
 
     if (arg0->unk_30 != 255.0f) {
-        ptr2->unk_24.fovy = ptr->unk_3C = arg0->unk_30;
+        ptr2->unk_24.fovy = ptr->fovy = arg0->unk_30;
     } else {
-        ptr->unk_3C = arg0->unk_30;
+        ptr->fovy = arg0->unk_30;
     }
 
     sp34 = arg0->unk_0C;
@@ -108,8 +108,8 @@ void Diorama_LoadCameraKeyframe(unk_D_86B0C160* arg0, unk_D_86B0E5D4* arg1) {
 void Diorama_SetCameraToKeyframeStart(unk_D_86B0E5D4_04* arg0, unk_D_86B0E5D4* arg1) {
     unk_D_86002F34_00C* sp2C = arg1->unk_00;
 
-    Camera_ComputeEyeFromAngles(&arg0->unk_00, &sp2C->unk_60.at, arg0->unk_18, arg0->unk_0C, arg0->unk_0E);
-    Camera_ComputeEyeFromAngles(&sp2C->unk_60.at, &sp2C->unk_60.eye, arg0->unk_1C, arg0->unk_12, arg0->unk_14);
+    Camera_ComputeEyeFromAngles(&arg0->eye, &sp2C->unk_60.at, arg0->eyeDistance, arg0->eyeYaw, arg0->eyePitch);
+    Camera_ComputeEyeFromAngles(&sp2C->unk_60.at, &sp2C->unk_60.eye, arg0->atDistance, arg0->atYaw, arg0->atPitch);
 }
 
 s32 Diorama_UpdateCameraKeyframe(unk_D_86B0E5D4_04* arg0, unk_D_86B0E5D4* arg1) {
@@ -121,23 +121,23 @@ s32 Diorama_UpdateCameraKeyframe(unk_D_86B0E5D4_04* arg0, unk_D_86B0E5D4* arg1) 
     s16 sp3A;
     s16 sp38;
 
-    if (arg0->unk_3C != 255.0f) {
-        temp_s2->unk_24.fovy = arg0->unk_3C;
+    if (arg0->fovy != 255.0f) {
+        temp_s2->unk_24.fovy = arg0->fovy;
     } else {
         Math_EaseTowardF(&temp_s2->unk_24.fovy, 30.0f, 0.06f);
     }
 
-    Camera_ComputeEyeFromAngles(&arg0->unk_00, &sp58, arg0->unk_18, arg0->unk_0C, arg0->unk_0E);
-    Camera_ComputeEyeFromAngles(&arg0->unk_00, &sp4C, arg0->unk_2C, arg0->unk_20, arg0->unk_22);
+    Camera_ComputeEyeFromAngles(&arg0->eye, &sp58, arg0->eyeDistance, arg0->eyeYaw, arg0->eyePitch);
+    Camera_ComputeEyeFromAngles(&arg0->eye, &sp4C, arg0->eyeDistanceEnd, arg0->eyeYawEnd, arg0->eyePitchEnd);
     Vec3f_CalculateDistanceAngles(&sp58, &sp4C, &sp3C, &sp3A, &sp38);
 
-    arg1->unk_04.unk_68 = Math_StepToF(arg1->unk_04.unk_68, sp3C, arg0->unk_34, arg0->unk_34);
+    arg1->unk_04.currentBlendDistance = Math_StepToF(arg1->unk_04.currentBlendDistance, sp3C, arg0->eyeTransitionSpeed, arg0->eyeTransitionSpeed);
 
-    Camera_ComputeEyeFromAngles(&sp58, &temp_s2->unk_60.at, arg1->unk_04.unk_68, sp3A, sp38);
-    Camera_ComputeEyeFromAngles(&temp_s2->unk_60.at, &temp_s2->unk_60.eye, arg0->unk_1C, arg0->unk_12, arg0->unk_14);
+    Camera_ComputeEyeFromAngles(&sp58, &temp_s2->unk_60.at, arg1->unk_04.currentBlendDistance, sp3A, sp38);
+    Camera_ComputeEyeFromAngles(&temp_s2->unk_60.at, &temp_s2->unk_60.eye, arg0->atDistance, arg0->atYaw, arg0->atPitch);
 
-    arg1->unk_04.unk_6C = sp3C - arg1->unk_04.unk_68;
-    if (arg1->unk_04.unk_6C <= 5.0f) {
+    arg1->unk_04.blendRemaining = sp3C - arg1->unk_04.currentBlendDistance;
+    if (arg1->unk_04.blendRemaining <= 5.0f) {
         return 1;
     }
 

@@ -6,13 +6,13 @@
 
 typedef struct unk_func_80011B94 {
     /* 0x00 */ unk_D_86002F58_004_000_000 unk_00;
-    /* 0x18 */ Gfx* unk_18;
+    /* 0x18 */ Gfx* displayList; // GeoNode_CreateDisplayList's arg3
 } unk_func_80011B94; // size = 0x1C
 
 typedef struct unk_D_8690A610_018 {
-    /* 0x00 */ s16 unk_00;
-    /* 0x02 */ s16 unk_02;
-    /* 0x04 */ Color_RGBA8_u32 unk_04;
+    /* 0x00 */ s16 fogNear; // GeoNode_CreateFog's arg2
+    /* 0x02 */ s16 fogFar; // GeoNode_CreateFog's arg3
+    /* 0x04 */ Color_RGBA8_u32 fogColor;
 } unk_D_8690A610_018; // size = 0x8
 
 typedef struct unk_D_8690A610 {
@@ -35,7 +35,7 @@ unk_D_8690A610* GeoNode_CreateFog(s32 arg0, unk_D_8690A610* arg1, s16 arg2, s16 
 unk_D_86002F34_alt18* GeoNode_CreateLight(MainPoolState* arg0, unk_D_86002F34_alt18* arg1, s16 arg2, s16 arg3, u8 r, u8 g, u8 b, u8 a);
 unk_D_86002F34_alt19* GeoNode_CreateAmbientLight(MainPoolState* arg0, unk_D_86002F34_alt19* arg1, u8 r, u8 g, u8 b);
 unk_D_86002F34* GeoNode_CreateShadowContext(MainPoolState* arg0, unk_D_86002F34* arg1, s32 arg2,
-                              unk_D_86002F34_018* arg3, s32 arg4, unk_D_86002F34_01C* arg5,
+                              unk_D_86002F34_018* arg3, s32 arg4, unk_D_86002F34_01C* arg5, 
                               s32 arg6, Vtx* arg7);
 unk_D_86002F34_alt12* GeoNode_CreateShadow(MainPoolState* arg0, unk_D_86002F34_alt12* arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5);
 unk_D_86002F34_alt20* GeoNode_CreateCullDistance(MainPoolState* arg0, unk_D_86002F34_alt20* arg1, s16 arg2, s16 arg3);

@@ -35,39 +35,39 @@ typedef struct unk_D_82508B30_03C {
 } unk_D_82508B30_03C; // size >= 0x3C
 
 typedef struct unk_D_8250A228 {
-    /* 0x00 */ s16 unk_00;
-    /* 0x02 */ s16 unk_02;
+    /* 0x00 */ s16 widgetType; // 0 = inactive; MiniGameSelect_SetWidgetState loops while nonzero
+    /* 0x02 */ s16 state; // MiniGameSelect_SetWidgetState's arg1
     /* 0x04 */ s16 unk_04;
-    /* 0x06 */ u16 unk_06;
-    /* 0x08 */ s16 unk_08;
-    /* 0x08 */ s16 unk_0A;
-    /* 0x0C */ s16 unk_0C;
-    /* 0x0E */ s16 unk_0E[4];
+    /* 0x06 */ u16 flags;
+    /* 0x08 */ s16 timer; // reset to 0xA on most state transitions
+    /* 0x08 */ s16 currentTarget; // compared against targetValue in MiniGameSelect_SetWidgetTargetState
+    /* 0x0C */ s16 targetValue;
+    /* 0x0E */ s16 channelStates[4]; // MiniGameSelect_CountWidgetChannels; reset to 0xFF on several state transitions
     /* 0x16 */ char unk16[0x16];
-    /* 0x2C */ struct unk_D_8250A228* unk_2C;
-    /* 0x30 */ struct unk_D_8250A228* unk_30;
-    /* 0x34 */ struct unk_D_8250A228* unk_34;
-    /* 0x38 */ unk_D_80068BB0* unk_38;
-    /* 0x3C */ unk_D_82508B30_03C unk_3C;
+    /* 0x2C */ struct unk_D_8250A228* prevWidget; // MiniGameSelect_LinkWidgets
+    /* 0x30 */ struct unk_D_8250A228* nextWidget;
+    /* 0x34 */ struct unk_D_8250A228* chainWidget; // MiniGameSelect_ChainWidget; SetWidgetState propagates state changes along this link
+    /* 0x38 */ unk_D_80068BB0* icon;
+    /* 0x3C */ unk_D_82508B30_03C subState;
 } unk_D_8250A228; // size >= 0x78
 
 typedef struct unk_D_82508B30 {
-    /* 0x000 */ s16 unk_000;
-    /* 0x002 */ u16 unk_002;
+    /* 0x000 */ s16 widgetType;
+    /* 0x002 */ u16 state;
     /* 0x004 */ s16 unk_004;
-    /* 0x004 */ u16 unk_006;
-    /* 0x008 */ s16 unk_008;
-    /* 0x00A */ s16 unk_00A;
-    /* 0x00C */ s16 unk_00C;
-    /* 0x00E */ s16 unk_00E[4];
+    /* 0x004 */ u16 flags;
+    /* 0x008 */ s16 timer; // MiniGameSelect_UpdateWidgetFade counts this down to drive channelStates fade
+    /* 0x00A */ s16 currentTarget;
+    /* 0x00C */ s16 targetValue;
+    /* 0x00E */ s16 channelStates[4];
     /* 0x018 */ f32 unk_018;
     /* 0x01C */ f32 unk_01C;
     /* 0x020 */ Vec3f unk_020;
-    /* 0x02C */ unk_D_8250A228* unk_02C;
-    /* 0x030 */ unk_D_8250A228* unk_030;
+    /* 0x02C */ unk_D_8250A228* prevWidget;
+    /* 0x030 */ unk_D_8250A228* nextWidget;
     /* 0x034 */ s32 unk_034;
-    /* 0x034 */ s32 unk_038;
-    /* 0x03C */ unk_D_82508B30_03C unk_03C;
+    /* 0x034 */ s32 renderTarget; // GfxImage_SetRenderTarget/FillCurrent target in MiniGameSelect_RenderPlayerPanel/RenderNumberSpinner
+    /* 0x03C */ unk_D_82508B30_03C subState;
     /* 0x078 */ char unk078[0x12C];
 } unk_D_82508B30; // size = 0x1A4
 
@@ -129,7 +129,7 @@ unk_D_8250A228* MiniGameSelect_FindFreeWidgetSlot(void);
 unk_D_8250A228* MiniGameSelect_CreateMenuWidget(s16 arg0, s16 arg1, GraphNode* arg2);
 void MiniGameSelect_LinkWidgets(unk_D_8250A228* arg0, unk_D_8250A228* arg1);
 void MiniGameSelect_ChainWidget(unk_D_8250A228* arg0, unk_D_8250A228* arg1);
-void func_82501B18(unk_D_8250A228* arg0, s16 arg1);
+void MiniGameSelect_SetWidgetState(unk_D_8250A228* arg0, s16 arg1);
 void MiniGameSelect_SetWidgetTargetState(unk_D_8250A228* arg0, s16 arg1, s32 arg2);
 s32 MiniGameSelect_IsWidgetInState(unk_D_8250A228* arg0, s16 arg1);
 void MiniGameSelect_UpdateWidgetFade(unk_D_82508B30* arg0);
@@ -140,7 +140,7 @@ void MiniGameSelect_ClearOptionPanelState(void);
 void MiniGameSelect_ResetSelection(void);
 void MiniGameSelect_LoadSavedSelection(s16 arg0, s16 arg1);
 void MiniGameSelect_InitMenuNodes(s16 arg0, s16 arg1);
-void func_8250281C(void);
+void MiniGameSelect_DrawSelectionMarker(void);
 void MiniGameSelect_RenderDirtyPanels(void);
 void MiniGameSelect_DrawOptionPanel(void);
 void MiniGameSelect_DrawFrame(void);

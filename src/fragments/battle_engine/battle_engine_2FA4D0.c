@@ -412,15 +412,15 @@ void BattleHud_DrawSpeciesNameLabelAuto(Battler* arg0, TeamRoster* arg1, s16 arg
     s32 i;
 
     for (i = 0; i < 4; i++) {
-        if (ptr->unk_C1[i] == 1) {
+        if (ptr->moveHighlightFlags[i] == 1) {
             var_t0 = 1;
         }
     }
 
     if (arg6 == 0) {
-        BattleHud_DrawSpeciesNameLabel(arg2, arg3, arg4, &arg1->unk_008, var_t0);
+        BattleHud_DrawSpeciesNameLabel(arg2, arg3, arg4, &arg1->shortName, var_t0);
     } else {
-        BattleHud_DrawSpeciesNameLabelBlink(arg2, arg3, arg4, &arg1->unk_008, arg5, var_t0);
+        BattleHud_DrawSpeciesNameLabelBlink(arg2, arg3, arg4, &arg1->shortName, arg5, var_t0);
     }
 }
 
@@ -440,9 +440,9 @@ void BattleHud_DrawMonInfoPanel(Battler* arg0, BattleMon* arg1, unk_D_84385790* 
         Gfx_FillRectWithDisplayState(arg3, arg4, arg5, arg6, arg7, arg8, arg9, argA);
     }
 
-    BattleHud_DrawLevelNumber(arg3 + 3, arg4 + 0x10, arg1->unk_24);
-    BattleHud_DrawHpBar(arg3 + 2, arg4 + 0x19, D_843900A8[BattleScene_GetParticipantSideIndex(arg0)], arg1->unk_26);
-    BattleHud_DrawHpFractionText(arg3 + 0xC, arg4 + 0x1F, arg1->unk_02, arg1->unk_26);
+    BattleHud_DrawLevelNumber(arg3 + 3, arg4 + 0x10, arg1->level);
+    BattleHud_DrawHpBar(arg3 + 2, arg4 + 0x19, D_843900A8[BattleScene_GetParticipantSideIndex(arg0)], arg1->maxHP);
+    BattleHud_DrawHpFractionText(arg3 + 0xC, arg4 + 0x1F, arg1->currentHP, arg1->maxHP);
     Font_BeginTranslucentTextRendering();
     Font_SetActive(2, 0);
 
@@ -587,11 +587,11 @@ void BattleHud_DrawPartyBallRow(Battler* arg0, s16 arg1, s16 arg2) {
     gSPDisplayList(gDisplayListHead++, D_8006F518);
 
     if (arg0 == D_84390010[0]) {
-        if (arg0->unk_720->unk_01 == 1) {
-            for (i = 0; i < arg0->unk_720->unk_08[0]->unk_002; i++) {
-                if (arg0->unk_720->unk_08[0]->unk_01C[i].unk_02 == 0) {
+        if (arg0->sessionTeams->playerCount == 1) {
+            for (i = 0; i < arg0->sessionTeams->teams[0]->partyCount; i++) {
+                if (arg0->sessionTeams->teams[0]->party[i].currentHP == 0) {
                     var_v0_2 = 2;
-                } else if (arg0->unk_720->unk_08[0]->unk_01C[i].unk_05 != 0) {
+                } else if (arg0->sessionTeams->teams[0]->party[i].status != 0) {
                     var_v0_2 = 1;
                 } else {
                     var_v0_2 = 0;
@@ -599,10 +599,10 @@ void BattleHud_DrawPartyBallRow(Battler* arg0, s16 arg1, s16 arg2) {
                 Gfx_DrawTextureRgba16(arg1 + i * 7, arg2, 8, 6, sp74[var_v0_2], 8, 0);
             }
         } else {
-            for (i = 0; i < arg0->unk_720->unk_08[0]->unk_002; i++) {
-                if (arg0->unk_720->unk_08[0]->unk_01C[i].unk_02 == 0) {
+            for (i = 0; i < arg0->sessionTeams->teams[0]->partyCount; i++) {
+                if (arg0->sessionTeams->teams[0]->party[i].currentHP == 0) {
                     var_v0_2 = 2;
-                } else if (arg0->unk_720->unk_08[0]->unk_01C[i].unk_05 != 0) {
+                } else if (arg0->sessionTeams->teams[0]->party[i].status != 0) {
                     var_v0_2 = 1;
                 } else {
                     var_v0_2 = 0;
@@ -610,10 +610,10 @@ void BattleHud_DrawPartyBallRow(Battler* arg0, s16 arg1, s16 arg2) {
                 Gfx_DrawTextureRgba16(arg1 + i * 7, arg2, 8, 6, sp74[var_v0_2], 8, 0);
             }
 
-            for (j = 0; j < arg0->unk_720->unk_08[1]->unk_002; j++) {
-                if (arg0->unk_720->unk_08[1]->unk_01C[j].unk_02 == 0) {
+            for (j = 0; j < arg0->sessionTeams->teams[1]->partyCount; j++) {
+                if (arg0->sessionTeams->teams[1]->party[j].currentHP == 0) {
                     var_v0_2 = 2;
-                } else if (arg0->unk_720->unk_08[1]->unk_01C[j].unk_05 != 0) {
+                } else if (arg0->sessionTeams->teams[1]->party[j].status != 0) {
                     var_v0_2 = 1;
                 } else {
                     var_v0_2 = 0;
@@ -624,11 +624,11 @@ void BattleHud_DrawPartyBallRow(Battler* arg0, s16 arg1, s16 arg2) {
     }
 
     if (arg0 == D_84390010[1]) {
-        if (arg0->unk_720->unk_01 == 1) {
-            for (i = 0; i < arg0->unk_720->unk_08[0]->unk_002; i++) {
-                if (arg0->unk_720->unk_08[0]->unk_01C[i].unk_02 == 0) {
+        if (arg0->sessionTeams->playerCount == 1) {
+            for (i = 0; i < arg0->sessionTeams->teams[0]->partyCount; i++) {
+                if (arg0->sessionTeams->teams[0]->party[i].currentHP == 0) {
                     var_v0_2 = 2;
-                } else if (arg0->unk_720->unk_08[0]->unk_01C[i].unk_05 != 0) {
+                } else if (arg0->sessionTeams->teams[0]->party[i].status != 0) {
                     var_v0_2 = 1;
                 } else {
                     var_v0_2 = 0;
@@ -636,10 +636,10 @@ void BattleHud_DrawPartyBallRow(Battler* arg0, s16 arg1, s16 arg2) {
                 Gfx_DrawTextureRgba16(arg1 - i * 7, arg2, 8, 6, sp74[var_v0_2], 8, 0);
             }
         } else {
-            for (i = 0; i < arg0->unk_720->unk_08[0]->unk_002; i++) {
-                if (arg0->unk_720->unk_08[0]->unk_01C[i].unk_02 == 0) {
+            for (i = 0; i < arg0->sessionTeams->teams[0]->partyCount; i++) {
+                if (arg0->sessionTeams->teams[0]->party[i].currentHP == 0) {
                     var_v0_2 = 2;
-                } else if (arg0->unk_720->unk_08[0]->unk_01C[i].unk_05 != 0) {
+                } else if (arg0->sessionTeams->teams[0]->party[i].status != 0) {
                     var_v0_2 = 1;
                 } else {
                     var_v0_2 = 0;
@@ -647,10 +647,10 @@ void BattleHud_DrawPartyBallRow(Battler* arg0, s16 arg1, s16 arg2) {
                 Gfx_DrawTextureRgba16(arg1 - i * 7, arg2, 8, 6, sp74[var_v0_2], 8, 0);
             }
 
-            for (j = 0; j < arg0->unk_720->unk_08[1]->unk_002; j++) {
-                if (arg0->unk_720->unk_08[1]->unk_01C[j].unk_02 == 0) {
+            for (j = 0; j < arg0->sessionTeams->teams[1]->partyCount; j++) {
+                if (arg0->sessionTeams->teams[1]->party[j].currentHP == 0) {
                     var_v0_2 = 2;
-                } else if (arg0->unk_720->unk_08[1]->unk_01C[j].unk_05 != 0) {
+                } else if (arg0->sessionTeams->teams[1]->party[j].status != 0) {
                     var_v0_2 = 1;
                 } else {
                     var_v0_2 = 0;
@@ -670,19 +670,19 @@ void BattleHud_DrawMonStatusBoxPlayer(Battler* arg0, s16 arg1, s16 arg2, u16 arg
     Color_RGB8* temp_v0_2;
     u32 var_v1;
 
-    sp80 = arg0->unk_720->unk_08[arg0->unk_728.unk_16C];
-    sp7C = &arg0->unk_720->unk_08[arg0->unk_728.unk_16C]->unk_01C[arg0->unk_654.unk_08];
+    sp80 = arg0->sessionTeams->teams[arg0->presentation.trainerIndex];
+    sp7C = &arg0->sessionTeams->teams[arg0->presentation.trainerIndex]->party[arg0->unk_654.partyIndex];
 
-    if (sp7C->unk_02 == 0) {
+    if (sp7C->currentHP == 0) {
         var_v1 = 1;
     } else {
-        var_v1 = Status_ToDisplayIconIndex(sp7C->unk_05);
+        var_v1 = Status_ToDisplayIconIndex(sp7C->status);
     }
 
-    temp_v0_2 = &D_84385860[sp80->unk_001];
+    temp_v0_2 = &D_84385860[sp80->trainerSlotId];
     BattleHud_DrawMonInfoPanel(arg0, sp7C, &D_84385790[var_v1], arg1 + 1, arg2 + 0x12, 0x46, 0x28, temp_v0_2->r, temp_v0_2->g,
                   temp_v0_2->b, 0xB2);
-    BattleHud_DrawSpeciesNameLabelAuto(arg0, sp80, arg1 + 1, arg2 + 1, sp80->unk_001, arg3, arg4);
+    BattleHud_DrawSpeciesNameLabelAuto(arg0, sp80, arg1 + 1, arg2 + 1, sp80->trainerSlotId, arg3, arg4);
 
     gSPDisplayList(gDisplayListHead++, D_8006F518);
 
@@ -758,19 +758,19 @@ void BattleHud_DrawMonStatusBoxOpponent(Battler* arg0, s16 arg1, s16 arg2, u16 a
     Color_RGB8* temp_v0;
     u32 var_v1;
 
-    sp80 = arg0->unk_720->unk_08[arg0->unk_728.unk_16C];
-    sp7C = &arg0->unk_720->unk_08[arg0->unk_728.unk_16C]->unk_01C[arg0->unk_654.unk_08];
+    sp80 = arg0->sessionTeams->teams[arg0->presentation.trainerIndex];
+    sp7C = &arg0->sessionTeams->teams[arg0->presentation.trainerIndex]->party[arg0->unk_654.partyIndex];
 
-    if (sp7C->unk_02 == 0) {
+    if (sp7C->currentHP == 0) {
         var_v1 = 1;
     } else {
-        var_v1 = Status_ToDisplayIconIndex(sp7C->unk_05);
+        var_v1 = Status_ToDisplayIconIndex(sp7C->status);
     }
 
-    temp_v0 = &D_84385860[sp80->unk_001];
+    temp_v0 = &D_84385860[sp80->trainerSlotId];
     BattleHud_DrawMonInfoPanel(arg0, sp7C, &D_84385790[var_v1], arg1, arg2 + 0x28, 0x46, 0x28, temp_v0->r, temp_v0->g, temp_v0->b,
                   0xB2);
-    BattleHud_DrawSpeciesNameLabelAuto(arg0, sp80, arg1, arg2 + 0x50, sp80->unk_001, arg3, arg4);
+    BattleHud_DrawSpeciesNameLabelAuto(arg0, sp80, arg1, arg2 + 0x50, sp80->trainerSlotId, arg3, arg4);
 
     gSPDisplayList(gDisplayListHead++, D_8006F518);
 
@@ -1001,59 +1001,59 @@ void BattleHud_DrawMoveSelectMenu(Battler* arg0, s16 arg1, s16 arg2, s32 arg3) {
     BattleMon* sp58;
     UNUSED s32 pad;
 
-    sp58 = &arg0->unk_720->unk_08[arg0->unk_728.unk_16C]->unk_01C[arg0->unk_654.unk_08];
-    temp_s0 = &arg0->unk_654.unk_38;
+    sp58 = &arg0->sessionTeams->teams[arg0->presentation.trainerIndex]->party[arg0->unk_654.partyIndex];
+    temp_s0 = &arg0->unk_654.monRuntime;
 
     Battle_DrawGradientRectWrapper(arg1 + 1, arg2 + 1, 0xC7, 0x38, &D_84385860[arg3], &D_84385870[arg3]);
     BattleHud_DrawBoxBorder(arg1, arg2, 0xC7, 0x38);
 
     for (i = 0; i < 4; i++) {
-        if (temp_s0->unk_4E & 8) {
-            sp60[i] = gMoveData[temp_s0->unk_1F[i] - 1].unk_05 / 5;
+        if (temp_s0->auxStatusFlags & 8) {
+            sp60[i] = gMoveData[temp_s0->moveIds[i] - 1].basePP / 5;
             if (sp60[i] >= 8) {
                 sp60[i] = 7;
             }
-            sp60[i] = gMoveData[temp_s0->unk_1F[i] - 1].unk_05 + (((temp_s0->unk_32[i] & 0xC0) >> 6) * sp60[i]);
+            sp60[i] = gMoveData[temp_s0->moveIds[i] - 1].basePP + (((temp_s0->currentPP[i] & 0xC0) >> 6) * sp60[i]);
         } else {
-            sp60[i] = gMoveData[sp58->unk_09[i] - 1].unk_05 / 5;
+            sp60[i] = gMoveData[sp58->moves[i] - 1].basePP / 5;
             if (sp60[i] >= 8) {
                 sp60[i] = 7;
             }
-            sp60[i] = gMoveData[sp58->unk_09[i] - 1].unk_05 + (((sp58->unk_20[i] & 0xC0) >> 6) * sp60[i]);
+            sp60[i] = gMoveData[sp58->moves[i] - 1].basePP + (((sp58->pp[i] & 0xC0) >> 6) * sp60[i]);
         }
     }
 
-    if (temp_s0->unk_4E & 8) {
-        if ((temp_s0->unk_1F[0] != 0) && (temp_s0->unk_1F[0] < 0xA6)) {
-            sp64[0] = BattleHud_DrawMovePpTextRTL(arg1 + 0x52, arg2 + 0xF, temp_s0->unk_32[0], sp60[0]);
+    if (temp_s0->auxStatusFlags & 8) {
+        if ((temp_s0->moveIds[0] != 0) && (temp_s0->moveIds[0] < 0xA6)) {
+            sp64[0] = BattleHud_DrawMovePpTextRTL(arg1 + 0x52, arg2 + 0xF, temp_s0->currentPP[0], sp60[0]);
         }
 
-        if ((temp_s0->unk_1F[1] != 0) && (temp_s0->unk_1F[1] < 0xA6)) {
-            sp64[1] = BattleHud_DrawMovePpTextLTR(arg1 + 0x7C, arg2 + 0x1C, temp_s0->unk_32[1], sp60[1]);
+        if ((temp_s0->moveIds[1] != 0) && (temp_s0->moveIds[1] < 0xA6)) {
+            sp64[1] = BattleHud_DrawMovePpTextLTR(arg1 + 0x7C, arg2 + 0x1C, temp_s0->currentPP[1], sp60[1]);
         }
 
-        if ((temp_s0->unk_1F[2] != 0) && (temp_s0->unk_1F[2] < 0xA6)) {
-            sp64[2] = BattleHud_DrawMovePpTextLTR(arg1 + 0x70, arg2 + 0x30, temp_s0->unk_32[2], sp60[2]);
+        if ((temp_s0->moveIds[2] != 0) && (temp_s0->moveIds[2] < 0xA6)) {
+            sp64[2] = BattleHud_DrawMovePpTextLTR(arg1 + 0x70, arg2 + 0x30, temp_s0->currentPP[2], sp60[2]);
         }
 
-        if ((temp_s0->unk_1F[3] != 0) && (temp_s0->unk_1F[3] < 0xA6)) {
-            sp64[3] = BattleHud_DrawMovePpTextRTL(arg1 + 0x44, arg2 + 0x23, temp_s0->unk_32[3], sp60[3]);
+        if ((temp_s0->moveIds[3] != 0) && (temp_s0->moveIds[3] < 0xA6)) {
+            sp64[3] = BattleHud_DrawMovePpTextRTL(arg1 + 0x44, arg2 + 0x23, temp_s0->currentPP[3], sp60[3]);
         }
     } else {
-        if ((sp58->unk_09[0] != 0) && (sp58->unk_09[0] < 0xA6)) {
-            sp64[0] = BattleHud_DrawMovePpTextRTL(arg1 + 0x52, arg2 + 0xF, sp58->unk_20[0], sp60[0]);
+        if ((sp58->moves[0] != 0) && (sp58->moves[0] < 0xA6)) {
+            sp64[0] = BattleHud_DrawMovePpTextRTL(arg1 + 0x52, arg2 + 0xF, sp58->pp[0], sp60[0]);
         }
 
-        if ((sp58->unk_09[1] != 0) && (sp58->unk_09[1] < 0xA6)) {
-            sp64[1] = BattleHud_DrawMovePpTextLTR(arg1 + 0x7C, arg2 + 0x1C, sp58->unk_20[1], sp60[1]);
+        if ((sp58->moves[1] != 0) && (sp58->moves[1] < 0xA6)) {
+            sp64[1] = BattleHud_DrawMovePpTextLTR(arg1 + 0x7C, arg2 + 0x1C, sp58->pp[1], sp60[1]);
         }
 
-        if ((sp58->unk_09[2] != 0) && (sp58->unk_09[2] < 0xA6)) {
-            sp64[2] = BattleHud_DrawMovePpTextLTR(arg1 + 0x70, arg2 + 0x30, sp58->unk_20[2], sp60[2]);
+        if ((sp58->moves[2] != 0) && (sp58->moves[2] < 0xA6)) {
+            sp64[2] = BattleHud_DrawMovePpTextLTR(arg1 + 0x70, arg2 + 0x30, sp58->pp[2], sp60[2]);
         }
 
-        if ((sp58->unk_09[3] != 0) && (sp58->unk_09[3] < 0xA6)) {
-            sp64[3] = BattleHud_DrawMovePpTextRTL(arg1 + 0x44, arg2 + 0x23, sp58->unk_20[3], sp60[3]);
+        if ((sp58->moves[3] != 0) && (sp58->moves[3] < 0xA6)) {
+            sp64[3] = BattleHud_DrawMovePpTextRTL(arg1 + 0x44, arg2 + 0x23, sp58->pp[3], sp60[3]);
         }
     }
 
@@ -1067,44 +1067,44 @@ void BattleHud_DrawMoveSelectMenu(Battler* arg0, s16 arg1, s16 arg2, s32 arg3) {
     gSPDisplayList(gDisplayListHead++, D_8006F630);
     gSPDisplayList(gDisplayListHead++, D_8006F518);
 
-    if (temp_s0->unk_4E & 8) {
-        if ((temp_s0->unk_1F[0] != 0) && (temp_s0->unk_1F[0] < 0xA6)) {
-            Gfx_DrawTextureRgba16(sp64[0] - 0x19, arg2 + 0xE, 0x20, 9, D_843857C8[gMoveData[temp_s0->unk_1F[0] - 1].unk_03],
+    if (temp_s0->auxStatusFlags & 8) {
+        if ((temp_s0->moveIds[0] != 0) && (temp_s0->moveIds[0] < 0xA6)) {
+            Gfx_DrawTextureRgba16(sp64[0] - 0x19, arg2 + 0xE, 0x20, 9, D_843857C8[gMoveData[temp_s0->moveIds[0] - 1].type],
                           0x20, 0);
         }
 
-        if ((temp_s0->unk_1F[1] != 0) && (temp_s0->unk_1F[1] < 0xA6)) {
-            Gfx_DrawTextureRgba16(sp64[1], arg2 + 0x1B, 0x20, 9, D_843857C8[gMoveData[temp_s0->unk_1F[1] - 1].unk_03], 0x20,
+        if ((temp_s0->moveIds[1] != 0) && (temp_s0->moveIds[1] < 0xA6)) {
+            Gfx_DrawTextureRgba16(sp64[1], arg2 + 0x1B, 0x20, 9, D_843857C8[gMoveData[temp_s0->moveIds[1] - 1].type], 0x20,
                           0);
         }
 
-        if ((temp_s0->unk_1F[2] != 0) && (temp_s0->unk_1F[2] < 0xA6)) {
-            Gfx_DrawTextureRgba16(sp64[2], arg2 + 0x2F, 0x20, 9, D_843857C8[gMoveData[temp_s0->unk_1F[2] - 1].unk_03], 0x20,
+        if ((temp_s0->moveIds[2] != 0) && (temp_s0->moveIds[2] < 0xA6)) {
+            Gfx_DrawTextureRgba16(sp64[2], arg2 + 0x2F, 0x20, 9, D_843857C8[gMoveData[temp_s0->moveIds[2] - 1].type], 0x20,
                           0);
         }
 
-        if ((temp_s0->unk_1F[3] != 0) && (temp_s0->unk_1F[3] < 0xA6)) {
-            Gfx_DrawTextureRgba16(sp64[3] - 0x18, arg2 + 0x22, 0x20, 9, D_843857C8[gMoveData[temp_s0->unk_1F[3] - 1].unk_03],
+        if ((temp_s0->moveIds[3] != 0) && (temp_s0->moveIds[3] < 0xA6)) {
+            Gfx_DrawTextureRgba16(sp64[3] - 0x18, arg2 + 0x22, 0x20, 9, D_843857C8[gMoveData[temp_s0->moveIds[3] - 1].type],
                           0x20, 0);
         }
     } else {
-        if ((temp_s0->unk_1F[0] != 0) && (temp_s0->unk_1F[0] < 0xA6)) {
-            Gfx_DrawTextureRgba16(sp64[0] - 0x19, arg2 + 0xE, 0x20, 9, D_843857C8[gMoveData[temp_s0->unk_1F[0] - 1].unk_03],
+        if ((temp_s0->moveIds[0] != 0) && (temp_s0->moveIds[0] < 0xA6)) {
+            Gfx_DrawTextureRgba16(sp64[0] - 0x19, arg2 + 0xE, 0x20, 9, D_843857C8[gMoveData[temp_s0->moveIds[0] - 1].type],
                           0x20, 0);
         }
 
-        if ((temp_s0->unk_1F[1] != 0) && (temp_s0->unk_1F[1] < 0xA6)) {
-            Gfx_DrawTextureRgba16(sp64[1], arg2 + 0x1B, 0x20, 9, D_843857C8[gMoveData[temp_s0->unk_1F[1] - 1].unk_03], 0x20,
+        if ((temp_s0->moveIds[1] != 0) && (temp_s0->moveIds[1] < 0xA6)) {
+            Gfx_DrawTextureRgba16(sp64[1], arg2 + 0x1B, 0x20, 9, D_843857C8[gMoveData[temp_s0->moveIds[1] - 1].type], 0x20,
                           0);
         }
 
-        if ((temp_s0->unk_1F[2] != 0) && (temp_s0->unk_1F[2] < 0xA6)) {
-            Gfx_DrawTextureRgba16(sp64[2], arg2 + 0x2F, 0x20, 9, D_843857C8[gMoveData[temp_s0->unk_1F[2] - 1].unk_03], 0x20,
+        if ((temp_s0->moveIds[2] != 0) && (temp_s0->moveIds[2] < 0xA6)) {
+            Gfx_DrawTextureRgba16(sp64[2], arg2 + 0x2F, 0x20, 9, D_843857C8[gMoveData[temp_s0->moveIds[2] - 1].type], 0x20,
                           0);
         }
 
-        if ((temp_s0->unk_1F[3] != 0) && (temp_s0->unk_1F[3] < 0xA6)) {
-            Gfx_DrawTextureRgba16(sp64[3] - 0x18, arg2 + 0x22, 0x20, 9, D_843857C8[gMoveData[temp_s0->unk_1F[3] - 1].unk_03],
+        if ((temp_s0->moveIds[3] != 0) && (temp_s0->moveIds[3] < 0xA6)) {
+            Gfx_DrawTextureRgba16(sp64[3] - 0x18, arg2 + 0x22, 0x20, 9, D_843857C8[gMoveData[temp_s0->moveIds[3] - 1].type],
                           0x20, 0);
         }
     }
@@ -1114,95 +1114,95 @@ void BattleHud_DrawMoveSelectMenu(Battler* arg0, s16 arg1, s16 arg2, s32 arg3) {
     Font_BeginTranslucentTextRendering();
     Font_SetActive(1, 0);
 
-    if (temp_s0->unk_4E & 8) {
-        if ((temp_s0->unk_1F[0] != 0) && (temp_s0->unk_1F[0] < 0xA6)) {
-            if (arg0->unk_654.unk_C1[0] == 1) {
+    if (temp_s0->auxStatusFlags & 8) {
+        if ((temp_s0->moveIds[0] != 0) && (temp_s0->moveIds[0] < 0xA6)) {
+            if (arg0->unk_654.moveHighlightFlags[0] == 1) {
                 Gfx_SetEnvColor(0xFF, 0x64, 0xFF, 0xFF);
             } else {
                 Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
             }
-            Battle_DrawRightAlignedText(arg1 + 0x5A, arg2 + 4, Text_GetString(NULL, 0, D_843900B8, temp_s0->unk_1F[0] - 1));
+            Battle_DrawRightAlignedText(arg1 + 0x5A, arg2 + 4, Text_GetString(NULL, 0, D_843900B8, temp_s0->moveIds[0] - 1));
         }
 
-        if ((temp_s0->unk_1F[1] != 0) && (temp_s0->unk_1F[1] < 0xA6)) {
-            if (arg0->unk_654.unk_C1[1] == 1) {
+        if ((temp_s0->moveIds[1] != 0) && (temp_s0->moveIds[1] < 0xA6)) {
+            if (arg0->unk_654.moveHighlightFlags[1] == 1) {
                 Gfx_SetEnvColor(0xFF, 0x64, 0xFF, 0xFF);
             } else {
                 Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
             }
-            Font_Printf(arg1 + 0x7C, arg2 + 0x11, Text_GetString(NULL, 0, D_843900B8, temp_s0->unk_1F[1] - 1));
+            Font_Printf(arg1 + 0x7C, arg2 + 0x11, Text_GetString(NULL, 0, D_843900B8, temp_s0->moveIds[1] - 1));
         }
 
-        if ((temp_s0->unk_1F[2] != 0) && (temp_s0->unk_1F[2] < 0xA6)) {
-            if (arg0->unk_654.unk_C1[2] == 1) {
+        if ((temp_s0->moveIds[2] != 0) && (temp_s0->moveIds[2] < 0xA6)) {
+            if (arg0->unk_654.moveHighlightFlags[2] == 1) {
                 Gfx_SetEnvColor(0xFF, 0x64, 0xFF, 0xFF);
             } else {
                 Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
             }
-            Font_Printf(arg1 + 0x6E, arg2 + 0x25, Text_GetString(NULL, 0, D_843900B8, temp_s0->unk_1F[2] - 1));
+            Font_Printf(arg1 + 0x6E, arg2 + 0x25, Text_GetString(NULL, 0, D_843900B8, temp_s0->moveIds[2] - 1));
         }
 
-        if ((temp_s0->unk_1F[3] != 0) && (temp_s0->unk_1F[3] < 0xA6)) {
-            if (arg0->unk_654.unk_C1[3] == 1) {
+        if ((temp_s0->moveIds[3] != 0) && (temp_s0->moveIds[3] < 0xA6)) {
+            if (arg0->unk_654.moveHighlightFlags[3] == 1) {
                 Gfx_SetEnvColor(0xFF, 0x64, 0xFF, 0xFF);
             } else {
                 Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
             }
-            Battle_DrawRightAlignedText(arg1 + 0x4C, arg2 + 0x18, Text_GetString(NULL, 0, D_843900B8, temp_s0->unk_1F[3] - 1));
+            Battle_DrawRightAlignedText(arg1 + 0x4C, arg2 + 0x18, Text_GetString(NULL, 0, D_843900B8, temp_s0->moveIds[3] - 1));
         }
     } else {
-        if ((temp_s0->unk_1F[0] != 0) && (temp_s0->unk_1F[0] < 0xA6)) {
-            if (arg0->unk_654.unk_C1[0] == 1) {
+        if ((temp_s0->moveIds[0] != 0) && (temp_s0->moveIds[0] < 0xA6)) {
+            if (arg0->unk_654.moveHighlightFlags[0] == 1) {
                 Gfx_SetEnvColor(0xFF, 0x64, 0xFF, 0xFF);
             } else {
                 Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
             }
-            Battle_DrawRightAlignedText(arg1 + 0x5A, arg2 + 4, Text_GetString(NULL, 0, D_843900B8, temp_s0->unk_1F[0] - 1));
+            Battle_DrawRightAlignedText(arg1 + 0x5A, arg2 + 4, Text_GetString(NULL, 0, D_843900B8, temp_s0->moveIds[0] - 1));
         }
 
-        if ((temp_s0->unk_1F[1] != 0) && (temp_s0->unk_1F[1] < 0xA6)) {
-            if (arg0->unk_654.unk_C1[1] == 1) {
+        if ((temp_s0->moveIds[1] != 0) && (temp_s0->moveIds[1] < 0xA6)) {
+            if (arg0->unk_654.moveHighlightFlags[1] == 1) {
                 Gfx_SetEnvColor(0xFF, 0x64, 0xFF, 0xFF);
             } else {
                 Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
             }
-            Font_Printf(arg1 + 0x7C, arg2 + 0x11, Text_GetString(NULL, 0, D_843900B8, temp_s0->unk_1F[1] - 1));
+            Font_Printf(arg1 + 0x7C, arg2 + 0x11, Text_GetString(NULL, 0, D_843900B8, temp_s0->moveIds[1] - 1));
         }
 
-        if ((temp_s0->unk_1F[2] != 0) && (temp_s0->unk_1F[2] < 0xA6)) {
-            if (arg0->unk_654.unk_C1[2] == 1) {
+        if ((temp_s0->moveIds[2] != 0) && (temp_s0->moveIds[2] < 0xA6)) {
+            if (arg0->unk_654.moveHighlightFlags[2] == 1) {
                 Gfx_SetEnvColor(0xFF, 0x64, 0xFF, 0xFF);
             } else {
                 Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
             }
-            Font_Printf(arg1 + 0x6E, arg2 + 0x25, Text_GetString(NULL, 0, D_843900B8, temp_s0->unk_1F[2] - 1));
+            Font_Printf(arg1 + 0x6E, arg2 + 0x25, Text_GetString(NULL, 0, D_843900B8, temp_s0->moveIds[2] - 1));
         }
 
-        if ((temp_s0->unk_1F[3] != 0) && (temp_s0->unk_1F[3] < 0xA6)) {
-            if (arg0->unk_654.unk_C1[3] == 1) {
+        if ((temp_s0->moveIds[3] != 0) && (temp_s0->moveIds[3] < 0xA6)) {
+            if (arg0->unk_654.moveHighlightFlags[3] == 1) {
                 Gfx_SetEnvColor(0xFF, 0x64, 0xFF, 0xFF);
             } else {
                 Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
             }
-            Battle_DrawRightAlignedText(arg1 + 0x4C, arg2 + 0x18, Text_GetString(NULL, 0, D_843900B8, temp_s0->unk_1F[3] - 1));
+            Battle_DrawRightAlignedText(arg1 + 0x4C, arg2 + 0x18, Text_GetString(NULL, 0, D_843900B8, temp_s0->moveIds[3] - 1));
         }
     }
 
     Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
 
-    if (temp_s0->unk_1F[0] >= 0xA6) {
+    if (temp_s0->moveIds[0] >= 0xA6) {
         Battle_DrawRightAlignedText(arg1 + 0x5A, arg2 + 4, "？？？？？");
     }
 
-    if (temp_s0->unk_1F[1] >= 0xA6) {
+    if (temp_s0->moveIds[1] >= 0xA6) {
         Font_Printf(arg1 + 0x7C, arg2 + 0x11, "？？？？？");
     }
 
-    if (temp_s0->unk_1F[2] >= 0xA6) {
+    if (temp_s0->moveIds[2] >= 0xA6) {
         Font_Printf(arg1 + 0x6E, arg2 + 0x25, "？？？？？");
     }
 
-    if (temp_s0->unk_1F[3] >= 0xA6) {
+    if (temp_s0->moveIds[3] >= 0xA6) {
         Battle_DrawRightAlignedText(arg1 + 0x4C, arg2 + 0x18, "？？？？？");
     }
 
@@ -1214,7 +1214,7 @@ void BattleHud_DrawForfeitConfirmDialog(s16 arg0, s16 arg1, s16 arg2, s32 arg3) 
     UNUSED s32 pad[2];
     s32 var_v1;
 
-    if (Trainer_GetSlots()[arg2].unk_000 & 2) {
+    if (Trainer_GetSlots()[arg2].slotState & 2) {
         var_v1 = 4;
     } else {
         var_v1 = arg2;
@@ -1249,9 +1249,9 @@ void BattleHud_DrawDoublesRosterRow(Battler* arg0, TeamRoster* arg1, BattleMon* 
                    s32 arg5) {
     s32 var_t0;
 
-    BattleHud_DrawLevelNumber(arg3 + 3, arg4 + 4, arg2->unk_24);
-    BattleHud_DrawHpBar(arg3 + 0x1E, arg4 + 0xE, arg2->unk_02, arg2->unk_26);
-    BattleHud_DrawHpFractionText(arg3 + 0x26, arg4 + 0x14, arg2->unk_02, arg2->unk_26);
+    BattleHud_DrawLevelNumber(arg3 + 3, arg4 + 4, arg2->level);
+    BattleHud_DrawHpBar(arg3 + 0x1E, arg4 + 0xE, arg2->currentHP, arg2->maxHP);
+    BattleHud_DrawHpFractionText(arg3 + 0x26, arg4 + 0x14, arg2->currentHP, arg2->maxHP);
 
     gSPDisplayList(gDisplayListHead++, D_8006F5A0);
 
@@ -1283,13 +1283,13 @@ void BattleHud_DrawDoublesRosterRow(Battler* arg0, TeamRoster* arg1, BattleMon* 
 
     Font_BeginTranslucentTextRendering();
     Font_SetActive(1, 0);
-    Font_Printf(arg3 + 0x1D, arg4 + 2, arg2->unk_30);
+    Font_Printf(arg3 + 0x1D, arg4 + 2, arg2->nickname);
     Font_EndTexturedTextRendering();
 
-    if (arg1->unk_01C[arg5].unk_02 == 0) {
+    if (arg1->party[arg5].currentHP == 0) {
         var_t0 = 1;
     } else {
-        var_t0 = Status_ToDisplayIconIndex(arg1->unk_01C[arg5].unk_05);
+        var_t0 = Status_ToDisplayIconIndex(arg1->party[arg5].status);
     }
 
     if (var_t0 != 0) {
@@ -1304,9 +1304,9 @@ void BattleHud_DrawPartyRosterRow(Battler* arg0, TeamRoster* arg1, BattleMon* ar
                    s32 arg5) {
     s32 var_t0;
 
-    BattleHud_DrawLevelNumber(arg3 + 3, arg4 + 4, arg2->unk_24);
-    BattleHud_DrawHpBar(arg3 + 0x1E, arg4 + 0xE, arg2->unk_02, arg2->unk_26);
-    BattleHud_DrawHpFractionText(arg3 + 0x26, arg4 + 0x14, arg2->unk_02, arg2->unk_26);
+    BattleHud_DrawLevelNumber(arg3 + 3, arg4 + 4, arg2->level);
+    BattleHud_DrawHpBar(arg3 + 0x1E, arg4 + 0xE, arg2->currentHP, arg2->maxHP);
+    BattleHud_DrawHpFractionText(arg3 + 0x26, arg4 + 0x14, arg2->currentHP, arg2->maxHP);
 
     gSPDisplayList(gDisplayListHead++, D_8006F5A0);
 
@@ -1326,13 +1326,13 @@ void BattleHud_DrawPartyRosterRow(Battler* arg0, TeamRoster* arg1, BattleMon* ar
 
     Font_BeginTranslucentTextRendering();
     Font_SetActive(1, 0);
-    Font_Printf(arg3 + 0x1D, arg4 + 2, arg2->unk_30);
+    Font_Printf(arg3 + 0x1D, arg4 + 2, arg2->nickname);
     Font_EndTexturedTextRendering();
 
-    if (arg1->unk_01C[arg5].unk_02 == 0) {
+    if (arg1->party[arg5].currentHP == 0) {
         var_t0 = 1;
     } else {
-        var_t0 = Status_ToDisplayIconIndex(arg1->unk_01C[arg5].unk_05);
+        var_t0 = Status_ToDisplayIconIndex(arg1->party[arg5].status);
     }
 
     if (var_t0 != 0) {
@@ -1365,18 +1365,18 @@ void BattleHud_DrawTeamStatusList(Battler* arg0, TeamRoster* arg1, s16 arg2, s16
     Battle_DrawGradientRectWrapper(arg2 + 1, arg3 + 0x2D, 0x63, 0x1D, &sp88[arg4][2], &sp78[arg4][2]);
     Battle_DrawGradientRectWrapper(arg2 + 1, arg3 + 0x4A, 0x63, 0x1D, &sp88[arg4][3], &sp78[arg4][3]);
 
-    BattleHud_DrawPlainText((arg2 - (Font_MeasureTextExtent(1, 0, arg1->unk_008) / 2)) + 0x32, arg3 + 3, arg1->unk_008);
+    BattleHud_DrawPlainText((arg2 - (Font_MeasureTextExtent(1, 0, arg1->shortName) / 2)) + 0x32, arg3 + 3, arg1->shortName);
 
-    if (arg1->unk_002 > 0) {
-        BattleHud_DrawPartyRosterRow(arg0, arg1, &arg1->unk_01C[0], arg2 + 1, arg3 + 0x10, 0);
+    if (arg1->partyCount > 0) {
+        BattleHud_DrawPartyRosterRow(arg0, arg1, &arg1->party[0], arg2 + 1, arg3 + 0x10, 0);
     }
 
-    if (arg1->unk_002 >= 2) {
-        BattleHud_DrawPartyRosterRow(arg0, arg1, &arg1->unk_01C[1], arg2 + 1, arg3 + 0x2D, 1);
+    if (arg1->partyCount >= 2) {
+        BattleHud_DrawPartyRosterRow(arg0, arg1, &arg1->party[1], arg2 + 1, arg3 + 0x2D, 1);
     }
 
-    if (arg1->unk_002 >= 3) {
-        BattleHud_DrawPartyRosterRow(arg0, arg1, &arg1->unk_01C[2], arg2 + 1, arg3 + 0x4A, 2);
+    if (arg1->partyCount >= 3) {
+        BattleHud_DrawPartyRosterRow(arg0, arg1, &arg1->party[2], arg2 + 1, arg3 + 0x4A, 2);
     }
 
     gSPDisplayList(gDisplayListHead++, D_8006F518);
@@ -1392,7 +1392,7 @@ void BattleHud_DrawTeamStatusList(Battler* arg0, TeamRoster* arg1, s16 arg2, s16
 void BattleHud_DrawDoublesTeamStatusList(Battler* arg0, s16 arg1, s16 arg2, s32 arg3) {
     TeamRoster* temp_s0;
     TeamRoster* temp_s1;
-    BattleMon* ptr = &arg0->unk_724->unk_01C[0];
+    BattleMon* ptr = &arg0->ownRoster->party[0];
     s32 i;
     Color_RGB8* sp88[] = {
         D_84385888,
@@ -1409,23 +1409,23 @@ void BattleHud_DrawDoublesTeamStatusList(Battler* arg0, s16 arg1, s16 arg2, s32 
     s32 tmp;
     BattleMon* sp5C[6];
 
-    temp_s0 = arg0->unk_720->unk_08[arg0->unk_728.unk_16C];
-    temp_s1 = arg0->unk_724;
+    temp_s0 = arg0->sessionTeams->teams[arg0->presentation.trainerIndex];
+    temp_s1 = arg0->ownRoster;
 
-    sp5C[5] = &temp_s1->unk_01C[0];
-    sp5C[5] = &temp_s1->unk_01C[0];
-    sp5C[4] = &temp_s1->unk_01C[1];
-    sp5C[3] = &temp_s1->unk_01C[2];
-    sp5C[2] = &temp_s1->unk_01C[3];
-    sp5C[1] = &temp_s1->unk_01C[4];
-    sp5C[0] = &temp_s1->unk_01C[5];
+    sp5C[5] = &temp_s1->party[0];
+    sp5C[5] = &temp_s1->party[0];
+    sp5C[4] = &temp_s1->party[1];
+    sp5C[3] = &temp_s1->party[2];
+    sp5C[2] = &temp_s1->party[3];
+    sp5C[1] = &temp_s1->party[4];
+    sp5C[0] = &temp_s1->party[5];
 
     Battle_DrawGradientRectWrapper(arg1 + 1, arg2 + 1, 0xC8, 0xF, &sp88[arg3][0], &sp78[arg3][0]);
     Battle_DrawGradientRectWrapper(arg1 + 1, arg2 + 0x10, 0xC8, 0x1D, &sp88[arg3][1], &sp78[arg3][1]);
     Battle_DrawGradientRectWrapper(arg1 + 1, arg2 + 0x2D, 0xC8, 0x1D, &sp88[arg3][2], &sp78[arg3][2]);
     Battle_DrawGradientRectWrapper(arg1 + 1, arg2 + 0x4A, 0xC8, 0x1D, &sp88[arg3][3], &sp78[arg3][3]);
-    tmp = Font_MeasureTextExtent(1, 0, temp_s0->unk_008) / 2;
-    BattleHud_DrawPlainText((arg1 - tmp) + 0x32, arg2 + 3, temp_s0->unk_008);
+    tmp = Font_MeasureTextExtent(1, 0, temp_s0->shortName) / 2;
+    BattleHud_DrawPlainText((arg1 - tmp) + 0x32, arg2 + 3, temp_s0->shortName);
 
     gSPDisplayList(gDisplayListHead++, D_8006F518);
 
@@ -1433,27 +1433,27 @@ void BattleHud_DrawDoublesTeamStatusList(Battler* arg0, s16 arg1, s16 arg2, s32 
 
     gSPDisplayList(gDisplayListHead++, D_8006F630);
 
-    if (temp_s0->unk_002 > 0) {
+    if (temp_s0->partyCount > 0) {
         BattleHud_DrawDoublesRosterRow(arg0, temp_s0, sp5C[5], arg1 + 1, arg2 + 0x10, 0);
     }
 
-    if (temp_s0->unk_002 >= 2) {
+    if (temp_s0->partyCount >= 2) {
         BattleHud_DrawDoublesRosterRow(arg0, temp_s0, sp5C[4], arg1 + 1, arg2 + 0x2D, 1);
     }
 
-    if (temp_s0->unk_002 >= 3) {
+    if (temp_s0->partyCount >= 3) {
         BattleHud_DrawDoublesRosterRow(arg0, temp_s0, sp5C[3], arg1 + 1, arg2 + 0x4A, 2);
     }
 
-    if (temp_s0->unk_002 >= 4) {
+    if (temp_s0->partyCount >= 4) {
         BattleHud_DrawDoublesRosterRow(arg0, temp_s0, sp5C[2], arg1 + 0x66, arg2 + 0x10, 3);
     }
 
-    if (temp_s0->unk_002 >= 5) {
+    if (temp_s0->partyCount >= 5) {
         BattleHud_DrawDoublesRosterRow(arg0, temp_s0, sp5C[1], arg1 + 0x66, arg2 + 0x2D, 4);
     }
 
-    if (temp_s0->unk_002 >= 6) {
+    if (temp_s0->partyCount >= 6) {
         BattleHud_DrawDoublesRosterRow(arg0, temp_s0, sp5C[0], arg1 + 0x66, arg2 + 0x4A, 5);
     }
 
@@ -1469,20 +1469,20 @@ void BattleHud_DrawCompactMonStatusBox(Battler* arg0, s16 arg1, s16 arg2, s32 ar
     u16 tmp;
     BattleMon* sp40;
 
-    sp40 = &arg0->unk_720->unk_08[arg0->unk_728.unk_16C]->unk_01C[arg0->unk_654.unk_08];
+    sp40 = &arg0->sessionTeams->teams[arg0->presentation.trainerIndex]->party[arg0->unk_654.partyIndex];
     temp_v0 = &arg0->unk_654;
 
-    if (sp40->unk_02 == 0) {
+    if (sp40->currentHP == 0) {
         var_t0 = 1;
     } else {
-        var_t0 = Status_ToDisplayIconIndex(sp40->unk_05);
+        var_t0 = Status_ToDisplayIconIndex(sp40->status);
     }
 
-    if (temp_v0->unk_30 < 0xFF00) {
-        temp_v0->unk_30 -= 0x30;
+    if (temp_v0->moveResourceFlags < 0xFF00) {
+        temp_v0->moveResourceFlags -= 0x30;
     }
 
-    tmp = temp_v0->unk_30;
+    tmp = temp_v0->moveResourceFlags;
     if ((tmp >> 8) & 1) {
         var_v0 = &D_84385860[arg3];
     } else {
@@ -1525,8 +1525,8 @@ void BattleHud_DrawExpandingCaptionBox(unk_D_843901A0_4C8* arg0, s16 arg1, s16 a
     TeamRoster* tmp;
 
     temp_v1 = D_84390010[arg0->unk_0C];
-    tmp = temp_v1->unk_720->unk_08[temp_v1->unk_728.unk_16C];
-    temp_v0 = &D_84385860[tmp->unk_001];
+    tmp = temp_v1->sessionTeams->teams[temp_v1->presentation.trainerIndex];
+    temp_v0 = &D_84385860[tmp->trainerSlotId];
 
     sp2C = (arg1 - arg3.x) * 2;
     sp28 = (arg2 - arg3.y) * 2;
@@ -1633,7 +1633,7 @@ void BattleHud_DrawTwoOptionCursorMenu(Battler* arg0, s16 arg1, s16 arg2, s32 ar
 
     gSPDisplayList(gDisplayListHead++, D_8006F5A0);
 
-    Gfx_DrawTextureRgba16Ia8(arg1 + (arg0->unk_654.unk_2F * 0x49) + 0x1B, arg2 + 0x14, 0x18, 0xE, &D_30092C0, &D_3009560, 0x18,
+    Gfx_DrawTextureRgba16Ia8(arg1 + (arg0->unk_654.replacementPage * 0x49) + 0x1B, arg2 + 0x14, 0x18, 0xE, &D_30092C0, &D_3009560, 0x18,
                   0x100000);
 
     gSPDisplayList(gDisplayListHead++, D_8006F630);
@@ -1775,59 +1775,59 @@ void Battle_DrawSpectatorModeScrollingText(void) {
 }
 
 void BattleHud_DrawOwnSideStatus(Battler* arg0, BattlerState* arg1) {
-    TeamRoster* sp34 = arg0->unk_720->unk_08[arg0->unk_728.unk_16C];
+    TeamRoster* sp34 = arg0->sessionTeams->teams[arg0->presentation.trainerIndex];
     UNUSED s32 pad;
     s32 var_v1;
 
-    if (D_800AE540.unk_0000 != 0x10) {
-        if (arg1->unk_10 == 3) {
-            BattleHud_DrawMonStatusBoxPlayer(arg0, arg0->unk_728.unk_168->unk_1C - 2, arg0->unk_728.unk_168->unk_1E - 0x3A, arg1->unk_1E,
+    if (D_800AE540.sessionMode != 0x10) {
+        if (arg1->menuSubState == 3) {
+            BattleHud_DrawMonStatusBoxPlayer(arg0, arg0->presentation.layout->hudX - 2, arg0->presentation.layout->hudY - 0x3A, arg1->unk_1E,
                           1);
         } else {
-            BattleHud_DrawMonStatusBoxPlayer(arg0, arg0->unk_728.unk_168->unk_1C - 2, arg0->unk_728.unk_168->unk_1E - 0x3A, arg1->unk_1E,
+            BattleHud_DrawMonStatusBoxPlayer(arg0, arg0->presentation.layout->hudX - 2, arg0->presentation.layout->hudY - 0x3A, arg1->unk_1E,
                           0);
         }
 
-        if ((arg1->unk_10 != 3) && (arg0->unk_728.unk_168->unk_1C == 0x17)) {
-            switch (arg1->unk_10) {
+        if ((arg1->menuSubState != 3) && (arg0->presentation.layout->hudX == 0x17)) {
+            switch (arg1->menuSubState) {
                 case 2:
                     if (arg1->unk_1C == 1) {
-                        if (arg0->unk_720->unk_01 == 2) {
-                            if (arg0->unk_720->unk_08[1]->unk_001 < arg0->unk_720->unk_08[0]->unk_001) {
+                        if (arg0->sessionTeams->playerCount == 2) {
+                            if (arg0->sessionTeams->teams[1]->trainerSlotId < arg0->sessionTeams->teams[0]->trainerSlotId) {
                                 var_v1 = 0;
                             } else {
                                 var_v1 = 1;
                             }
-                            BattleHud_DrawTeamStatusList(arg0, arg0->unk_720->unk_08[var_v1], 0x60, 0xF,
-                                          arg0->unk_720->unk_08[var_v1]->unk_001);
-                            BattleHud_DrawTeamStatusList(arg0, arg0->unk_720->unk_08[var_v1 == 0], 0xC6, 0xF,
-                                          arg0->unk_720->unk_08[var_v1 == 0]->unk_001);
-                        } else if (arg0->unk_724->unk_002 < 4) {
-                            BattleHud_DrawTeamStatusList(arg0, arg0->unk_720->unk_08[0], 0x60, 0xF, sp34->unk_001);
+                            BattleHud_DrawTeamStatusList(arg0, arg0->sessionTeams->teams[var_v1], 0x60, 0xF,
+                                          arg0->sessionTeams->teams[var_v1]->trainerSlotId);
+                            BattleHud_DrawTeamStatusList(arg0, arg0->sessionTeams->teams[var_v1 == 0], 0xC6, 0xF,
+                                          arg0->sessionTeams->teams[var_v1 == 0]->trainerSlotId);
+                        } else if (arg0->ownRoster->partyCount < 4) {
+                            BattleHud_DrawTeamStatusList(arg0, arg0->sessionTeams->teams[0], 0x60, 0xF, sp34->trainerSlotId);
                         } else {
-                            BattleHud_DrawDoublesTeamStatusList(arg0, 0x60, 0xF, sp34->unk_001);
+                            BattleHud_DrawDoublesTeamStatusList(arg0, 0x60, 0xF, sp34->trainerSlotId);
                         }
-                    } else if (arg1->unk_2D == 0x10) {
-                        BattleHud_DrawOneOptionLabelBar(arg0, 0x60, 0xF, sp34->unk_001);
+                    } else if (arg1->faintSequenceState == 0x10) {
+                        BattleHud_DrawOneOptionLabelBar(arg0, 0x60, 0xF, sp34->trainerSlotId);
                     } else {
-                        BattleHud_DrawTwoOptionLabelBar(arg0, 0x60, 0xF, sp34->unk_001);
+                        BattleHud_DrawTwoOptionLabelBar(arg0, 0x60, 0xF, sp34->trainerSlotId);
                     }
                     break;
 
                 case 1:
                     if (arg1->unk_1C == 1) {
-                        BattleHud_DrawMoveSelectMenu(arg0, 0x60, 0xF, sp34->unk_001);
+                        BattleHud_DrawMoveSelectMenu(arg0, 0x60, 0xF, sp34->trainerSlotId);
                     } else {
-                        BattleHud_DrawTwoOptionLabelBar(arg0, 0x60, 0xF, sp34->unk_001);
+                        BattleHud_DrawTwoOptionLabelBar(arg0, 0x60, 0xF, sp34->trainerSlotId);
                     }
                     break;
 
                 case 4:
-                    BattleHud_DrawTwoOptionCursorMenu(arg0, 0x5F, 0xE, sp34->unk_001);
+                    BattleHud_DrawTwoOptionCursorMenu(arg0, 0x5F, 0xE, sp34->trainerSlotId);
                     break;
 
                 default:
-                    BattleHud_DrawThreeOptionLabelBar(arg0, 0x60, 0xF, sp34->unk_001);
+                    BattleHud_DrawThreeOptionLabelBar(arg0, 0x60, 0xF, sp34->trainerSlotId);
                     break;
             }
         }
@@ -1835,58 +1835,58 @@ void BattleHud_DrawOwnSideStatus(Battler* arg0, BattlerState* arg1) {
 }
 
 void BattleHud_DrawOpponentSideStatus(Battler* arg0, BattlerState* arg1) {
-    TeamRoster* sp24 = arg0->unk_720->unk_08[arg0->unk_728.unk_16C];
+    TeamRoster* sp24 = arg0->sessionTeams->teams[arg0->presentation.trainerIndex];
     s32 sp20;
 
-    if (D_800AE540.unk_0000 != 0x10) {
-        if (arg1->unk_10 == 3) {
-            BattleHud_DrawMonStatusBoxOpponent(arg0, arg0->unk_728.unk_168->unk_1C - 0x20, arg0->unk_728.unk_168->unk_1E - 2, arg1->unk_1E,
+    if (D_800AE540.sessionMode != 0x10) {
+        if (arg1->menuSubState == 3) {
+            BattleHud_DrawMonStatusBoxOpponent(arg0, arg0->presentation.layout->hudX - 0x20, arg0->presentation.layout->hudY - 2, arg1->unk_1E,
                           1);
         } else {
-            BattleHud_DrawMonStatusBoxOpponent(arg0, arg0->unk_728.unk_168->unk_1C - 0x20, arg0->unk_728.unk_168->unk_1E - 2, arg1->unk_1E,
+            BattleHud_DrawMonStatusBoxOpponent(arg0, arg0->presentation.layout->hudX - 0x20, arg0->presentation.layout->hudY - 2, arg1->unk_1E,
                           0);
         }
 
-        if ((arg1->unk_10 != 3) && (arg0->unk_728.unk_168->unk_1C == 0x103)) {
-            switch (arg1->unk_10) {
+        if ((arg1->menuSubState != 3) && (arg0->presentation.layout->hudX == 0x103)) {
+            switch (arg1->menuSubState) {
                 case 2:
                     if (arg1->unk_1C == 1) {
-                        if (arg0->unk_720->unk_01 == 2) {
-                            if (arg0->unk_720->unk_08[1]->unk_001 < arg0->unk_720->unk_08[0]->unk_001) {
+                        if (arg0->sessionTeams->playerCount == 2) {
+                            if (arg0->sessionTeams->teams[1]->trainerSlotId < arg0->sessionTeams->teams[0]->trainerSlotId) {
                                 sp20 = 0;
                             } else {
                                 sp20 = 1;
                             }
-                            BattleHud_DrawTeamStatusList(arg0, arg0->unk_720->unk_08[sp20 == 0], 0x16, 0x79,
-                                          arg0->unk_720->unk_08[sp20 == 0]->unk_001);
-                            BattleHud_DrawTeamStatusList(arg0, arg0->unk_720->unk_08[sp20], 0x7C, 0x79,
-                                          arg0->unk_720->unk_08[sp20]->unk_001);
-                        } else if (arg0->unk_724->unk_002 < 4) {
-                            BattleHud_DrawTeamStatusList(arg0, arg0->unk_720->unk_08[0], 0x7C, 0x79, sp24->unk_001);
+                            BattleHud_DrawTeamStatusList(arg0, arg0->sessionTeams->teams[sp20 == 0], 0x16, 0x79,
+                                          arg0->sessionTeams->teams[sp20 == 0]->trainerSlotId);
+                            BattleHud_DrawTeamStatusList(arg0, arg0->sessionTeams->teams[sp20], 0x7C, 0x79,
+                                          arg0->sessionTeams->teams[sp20]->trainerSlotId);
+                        } else if (arg0->ownRoster->partyCount < 4) {
+                            BattleHud_DrawTeamStatusList(arg0, arg0->sessionTeams->teams[0], 0x7C, 0x79, sp24->trainerSlotId);
                         } else {
-                            BattleHud_DrawDoublesTeamStatusList(arg0, 0x18, 0x79, sp24->unk_001);
+                            BattleHud_DrawDoublesTeamStatusList(arg0, 0x18, 0x79, sp24->trainerSlotId);
                         }
-                    } else if (arg1->unk_2D == 0x10) {
-                        BattleHud_DrawOneOptionLabelBar(arg0, 0x98, 0xCE, sp24->unk_001);
+                    } else if (arg1->faintSequenceState == 0x10) {
+                        BattleHud_DrawOneOptionLabelBar(arg0, 0x98, 0xCE, sp24->trainerSlotId);
                     } else {
-                        BattleHud_DrawTwoOptionLabelBar(arg0, 0x62, 0xCE, sp24->unk_001);
+                        BattleHud_DrawTwoOptionLabelBar(arg0, 0x62, 0xCE, sp24->trainerSlotId);
                     }
                     break;
 
                 case 1:
                     if (arg1->unk_1C == 1) {
-                        BattleHud_DrawMoveSelectMenu(arg0, 0x19, 0xA6, sp24->unk_001);
+                        BattleHud_DrawMoveSelectMenu(arg0, 0x19, 0xA6, sp24->trainerSlotId);
                     } else {
-                        BattleHud_DrawTwoOptionLabelBar(arg0, 0x62, 0xCE, sp24->unk_001);
+                        BattleHud_DrawTwoOptionLabelBar(arg0, 0x62, 0xCE, sp24->trainerSlotId);
                     }
                     break;
 
                 case 4:
-                    BattleHud_DrawTwoOptionCursorMenu(arg0, 0x17, 0xBB, sp24->unk_001);
+                    BattleHud_DrawTwoOptionCursorMenu(arg0, 0x17, 0xBB, sp24->trainerSlotId);
                     break;
 
                 default:
-                    BattleHud_DrawThreeOptionLabelBar(arg0, 0x18, 0xCE, sp24->unk_001);
+                    BattleHud_DrawThreeOptionLabelBar(arg0, 0x18, 0xCE, sp24->trainerSlotId);
                     break;
             }
         }

@@ -4,7 +4,7 @@
 #include "src/save_data.h"
 #include "src/game_state.h"
 #include "src/text_system.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/audio_sfx.h"
 #include "src/audio_commands_category2.h"
 #include "src/DDC0.h"
@@ -504,7 +504,7 @@ void Glc_Draw(void) {
         D_84A030F0 = 0xFF;
     }
 
-    if (D_800AE540.unk_11F2 == 1) {
+    if (D_800AE540.roundSelector == 1) {
         gSPDisplayList(gDisplayListHead++, D_8006F518);
 
         Gfx_DrawTextureRgba16(0x22C, 0x28, 0x24, 0x24, D_3019C38, 0x24, 0);
@@ -612,7 +612,7 @@ void Glc_LoadTrainerPanels(void) {
         var_a1 = D_84A030E0 + 0xA;
     }
 
-    if (D_800AE540.unk_11F2 != 0) {
+    if (D_800AE540.roundSelector != 0) {
         var_a1 += 0x1F;
     }
 
@@ -714,7 +714,7 @@ s32 GymLeaderCastle_ShowIntro(void) {
         }
         Glc_ClearTrainerPanels();
 
-        if (D_84A03180.unk_04 < 8) {
+        if (D_84A03180.regionIndex < 8) {
             Audio_PlayMusicIfChanged(0x2A);
         } else {
             Audio_PlayMusicIfChanged(0x27);
@@ -735,7 +735,7 @@ s32 GymLeaderCastle_ShowIntro(void) {
 s32 Glc_AdvanceRoom(void) {
     s16 i;
 
-    if (D_800AE540.unk_0002 == 7) {
+    if (D_800AE540.progressIndex == 7) {
         Audio_PlayCategory11SoundCommand(0x01100015, 0, 0);
         D_84A030F0 = 5;
     }
@@ -753,13 +753,13 @@ s32 Glc_AdvanceRoom(void) {
 
     Audio_PlaySoundEffectById(0x01100011);
 
-    if (D_800AE540.unk_0002 == 8) {
+    if (D_800AE540.progressIndex == 8) {
         D_84A02F00[11].unk_01 = 0x3C;
     } else {
-        D_84A02F00[D_84A03180.unk_04].unk_01 = 0x3C;
+        D_84A02F00[D_84A03180.regionIndex].unk_01 = 0x3C;
     }
 
-    if (D_84A03180.unk_04 == 8) {
+    if (D_84A03180.regionIndex == 8) {
         D_84A02F00[9].unk_01 = 0x3C;
         D_84A02F00[10].unk_01 = 0x3C;
     }
@@ -803,11 +803,11 @@ s16 Glc_RunMenu(s16 arg0) {
         }
     }
 
-    D_800AE540.unk_0003 = 1;
+    D_800AE540.opponentNumber = 1;
     if (D_84A030E0 < 8) {
-        D_800AE540.unk_0002 = D_84A030E0;
+        D_800AE540.progressIndex = D_84A030E0;
     } else {
-        D_800AE540.unk_0002 = D_84A030E0 - 2;
+        D_800AE540.progressIndex = D_84A030E0 - 2;
     }
     return arg0;
 }
@@ -815,17 +815,17 @@ s16 Glc_RunMenu(s16 arg0) {
 s16 Glc_InitMenu(s16 arg0) {
     s16 i;
     s16 sp2C = 2;
-    s16 var_v1 = D_84A03180.unk_04;
+    s16 var_v1 = D_84A03180.regionIndex;
 
-    if (D_800AE540.unk_0002 < 8) {
-        D_84A030E0 = D_800AE540.unk_0002;
+    if (D_800AE540.progressIndex < 8) {
+        D_84A030E0 = D_800AE540.progressIndex;
     } else {
-        D_84A030E0 = D_800AE540.unk_0002 + 2;
+        D_84A030E0 = D_800AE540.progressIndex + 2;
     }
 
     if (arg0 == 1) {
         sp2C = 4;
-        if (D_800AE540.unk_0002 < 8) {
+        if (D_800AE540.progressIndex < 8) {
             var_v1--;
         }
     }
@@ -870,7 +870,7 @@ s32 GymLeaderCastle_Main(s32 arg0, UNUSED s32 arg1) {
     D_84A03130 = Text_GetStringTable(0x19);
     D_84A03134 = Text_GetStringTable(0x22);
     Save_EnsureBankLoaded(2);
-    Save_GetModeSettings(&D_84A03180, D_800AE540.unk_11F2);
+    Save_GetModeSettings(&D_84A03180, D_800AE540.roundSelector);
     D_84A03168 = BinArchive_Open(0x898000, NULL, 1, 1);
     D_84A0316C = ASSET_LOAD2(battle_portraits, 1, 1);
     D_84A03170 = ASSET_LOAD2(backgrounds, 1, 1);
@@ -880,7 +880,7 @@ s32 GymLeaderCastle_Main(s32 arg0, UNUSED s32 arg1) {
     StageLoader_UpdateSegments();
 
     sp1E = Glc_InitMenu(arg0);
-    if (D_84A03180.unk_04 < 8) {
+    if (D_84A03180.regionIndex < 8) {
         Audio_PlayMusicIfChanged(0x2A);
     } else {
         Audio_PlayMusicIfChanged(0x27);

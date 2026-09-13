@@ -157,9 +157,9 @@ unk_D_8690A610* GeoNode_CreateFog(s32 arg0, unk_D_8690A610* arg1, s16 arg2, s16 
     }
 
     if (arg1 != NULL) {
-        arg1->unk_18.unk_00 = arg2;
-        arg1->unk_18.unk_02 = arg3;
-        arg1->unk_18.unk_04.rgba = (r << 0x18) | (g << 0x10) | (b << 8) | a;
+        arg1->unk_18.fogNear = arg2;
+        arg1->unk_18.fogFar = arg3;
+        arg1->unk_18.fogColor.rgba = (r << 0x18) | (g << 0x10) | (b << 8) | a;
         GeoNode_Init(arg1, 0xA);
     }
 
@@ -333,14 +333,14 @@ unk_D_86002F58_004_000* GeoNode_CreateModelPart(MainPoolState* arg0, unk_D_86002
     }
 
     if (arg1 != NULL) {
-        arg1->unk_018 = 0;
-        arg1->unk_01A = arg2;
+        arg1->animType = 0;
+        arg1->modelId = arg2;
         arg1->unk_024 = *arg3;
         arg1->unk_030 = *arg5;
         arg1->unk_01E = *arg4;
-        arg1->unk_01D = 0xFF;
-        arg1->unk_01C = 0;
-        arg1->unk_0A6 = 0;
+        arg1->materialAlpha = 0xFF;
+        arg1->textureMode = 0;
+        arg1->poolIndex = 0;
         arg1->unk_0A0.rgba = 0xFFFFFF00;
         arg1->unk_03C.rgba = 0xFFFFFF00;
         arg1->unk_040.unk_00 = 0;
@@ -409,7 +409,7 @@ unk_func_80011B94* GeoNode_CreateDisplayList(MainPoolState* arg0, unk_func_80011
     }
 
     if (arg1 != NULL) {
-        arg1->unk_18 = arg3;
+        arg1->displayList = arg3;
         GeoNode_Init(arg1, 0x19);
         arg1->unk_00.unk_03 = arg2;
     }

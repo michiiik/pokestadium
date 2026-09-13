@@ -55,7 +55,7 @@ s32 TransferPak_PortSelectLoop(s32 arg0);
 void TransferPak_InitPortModels(void);
 void TransferPak_InitScene(void);
 s32 TransferPak_SelectMain(s32 arg0, s32 arg1);
-void func_8130306C(u8* arg0);
-void func_8130337C(void);
+void TransferPak_DrawBackgroundTiles(u8* arg0);
+void TransferPak_DrawPresentationBackground(void);
 
 #endif // _FRAGMENT33_H_

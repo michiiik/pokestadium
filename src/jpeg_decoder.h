@@ -1,67 +1,123 @@
-#ifndef JPEG_DECODER_H
-#define JPEG_DECODER_H
+#ifndef _3FB0_H_
+#define _3FB0_H_
 
 #include "global.h"
+#include "scheduler.h"
 #include "jpegutils.h"
+#include "jpeg_mcus.h"
+#include "src/memmap.h"
+#include "src/memory.h"
 
-typedef union JpegTaskData {
-    struct {
-    /* 0x00 */ u32 address;
-    /* 0x04 */ u32 mbCount;
-    /* 0x08 */ u32 mode;
-    /* 0x0C */ u32 qTableYPtr;
-    /* 0x10 */ u32 qTableUPtr;
-    /* 0x14 */ u32 qTableVPtr;
-    /* 0x18 */ u32 mbSize; // This field is used by the microcode to save the macroblock size during a yield
+typedef struct ret_func_8000484C {
+	/* 0x00 */ char unk00[0x90];
+	/* 0x90 */ s32 glyphTable; // Font_LoadSet: &fontAsset->glyphTable stored as this font set's glyph-table pointer
+} ret_func_8000484C; // size >= 0x94
+
+typedef struct PERSSZP {
+    /* 0x00 */ char magic[0x8]; // PERS-SZP
+    /* 0x08 */ u32 header_size;
+    /* 0x0C */ u32 decompressed_size1; // How do these differ?
+    /* 0x10 */ u32 decompressed_size2;
+    /* 0x14 */ u32 relocationCount; // Yay0_DecompressAndRelocate: (value, offset) pair count following the header
+} PERSSZP; // sze = 0x18
+
+typedef struct PRESJPEG {
+    /* 0x00 */ char magic[0x8]; // PRESJPEG
+    /* 0x08 */ u32 unk_08; // header size? always 0x10
+    /* 0x0C */ u32 unk_0C; 
+} PRESJPEG; // size = 0x10
+
+typedef struct Yay0 {
+    /* 0x00 */ char magic[0x4]; // Yay0
+    /* 0x04 */ u32 decompressed_size;
+    /* 0x08 */ u32 link_table_offset;
+    /* 0x0C */ u32 byte_chunk_offset;
+} Yay0; // size = 0x10
+
+typedef struct BinArchive {
+    union {
+        struct {
+            /* 0x00 */ u16 flags; // bit0=preloaded-flat, bit1=lazy/two-pass load, bit2=arg3 variant, bit7=buffered load
+            /* 0x02 */ u16 fragmentModuleId; // BinArchive_Open's arg3; Fragment_Register's arg0 for FRAGMENT-tagged files
+        };
+        s32 raw;
     };
-    long long int force_structure_alignment;
-} JpegTaskData; // size = 0x20
+    /* 0x04 */ u32 romStart; // BinArchive_Open's romStart, kept for on-demand file loads
+    /* 0x08 */ u32 total_size;
+    /* 0x0C */ u32 num_files;
+} BinArchive; // size = 0x10
 
-typedef struct JpegWork {
-    /* 0x000 */ JpegTaskData taskData;
-    /* 0x020 */ u64 yieldData[0x200 / sizeof(u64)];
-    /* 0x220 */ JpegQuantizationTable qTableY;
-    /* 0x2A0 */ JpegQuantizationTable qTableU;
-    /* 0x320 */ JpegQuantizationTable qTableV;
-    /* 0x3A0 */ u8 codesLengths[0x110];
-    /* 0x4B0 */ u16 codes[0x108];
-    /* 0x6C0 */ u16 data[4][0x180];
-} JpegWork; // size = 0x12C0
+typedef struct BinArchiveFile {
+    /* 0x00 */ u32 offset;
+    /* 0x04 */ u32 size;
+    /* 0x08 */ u32 cachedPtr; // BinArchive_GetFile: cached loaded-file pointer, populated on first access
+    /* 0x0C */ char unk0C[0x4];
+} BinArchiveFile; // size = 0x10
 
-typedef struct JpegDecoder {
-    /* 0x00 */ void* imageData;
-    /* 0x04 */ u8 mode;
-    /* 0x05 */ u8 unk_05;
-    /* 0x08 */ JpegHuffmanTable* hTablePtrs[4];
-    /* 0x18 */ u8 unk_18;
-} JpegDecoder; // size = 0x1C
+typedef struct unk_func_800041C0 {
+    /* 0x00 */ u16 startLba; // Storage_SetLbaRange's arg1
+    /* 0x02 */ u16 lbaCount; // Storage_SetLbaRange: arg2 - arg1
+    /* 0x04 */ s32 headerOffset; // Storage_LoadAssetByLbaRange: offset into the DMA'd buffer where the asset header begins
+    /* 0x08 */ s32 byteSize; // LeoLBAToByte(startLba, lbaCount, ...) result
+} unk_func_800041C0; // size >= 0x8
 
-typedef struct JpegContext {
-    /* 0x00 */ u8 dqtCount;
-    /* 0x04 */ u8* dqtPtr[3];
-    /* 0x10 */ u8 dhtCount;
-    /* 0x14 */ u8* dhtPtr[4];
-    /* 0x24 */ void* imageData;
-    /* 0x28 */ u32 mode; // 0 if Y V0 is 1 and 2 if Y V0 is 2
-    /* 0x30 */ OSScTask scTask;
-    /* 0x98 */ OSMesgQueue mq;
-    /* 0xB0 */ OSMesg msg;
-    /* 0xB4 */ JpegWork* workBuf;
-} JpegContext; // size = 0xB8
+typedef struct unk_func_80003680_sp300 {
+    /* 0x00 */ u8 chromaSubsamplingMode; // Jpeg_ParseStreamMarkers: 0/2 from the 2nd component's id byte; feeds Jpeg_BuildDspInput/Output
+    /* 0x01 */ u8 hasRestartMarkers; // Jpeg_ParseStreamMarkers: set when a JPEG_MARKER_RESTARTn is seen
+    /* 0x02 */ char unk02[0x2];
+    /* 0x04 */ s16 width;
+    /* 0x06 */ s16 height;
+    /* 0x08 */ u8* quantization_table;
+    /* 0x0C */ u8* huffman_table;
+    /* 0x10 */ u8* start_of_frame;
+    /* 0x14 */ u8* start_of_scan;
+} unk_func_80003680_sp300; // size = 0x18
 
-typedef struct JpegDecoderState {
-    /* 0x00 */ u32 byteIdx;
-    /* 0x04 */ u8 bitIdx;
-    /* 0x05 */ u8 dontSkip;
-    /* 0x08 */ u32 curWord;
-    /* 0x0C */ s16 unk_0C;
-    /* 0x0E */ s16 unk_0E;
-    /* 0x10 */ s16 unk_10;
-} JpegDecoderState; // size = 0x14
+typedef struct unk_func_80003680_sp90 {
+    /* 0x00 */ s32 unk_00; // Jpeg_BuildDspOutput: always 0
+    /* 0x04 */ s32 unk_04; // Jpeg_BuildDspOutput: always 1
+    /* 0x08 */ s32 chromaSubsamplingMode; // mirrors unk_func_80003680_sp300's chromaSubsamplingMode
+    /* 0x0C */ s32 outputBufferA; // (u32)&arg1[0], segment-masked
+    /* 0x10 */ s32 outputBufferB; // (u32)&arg1[1], segment-masked
+    /* 0x14 */ s32 outputBufferC; // Jpeg_BuildDspOutput: also (u32)&arg1[1] - same value as outputBufferB
+} unk_func_80003680_sp90; // size >= 0x18
 
-s32 Jpeg_DecodeMcus(JpegDecoder*, u16*, s32, u8, JpegDecoderState*);
-s32 Jpeg_DecodeBlock(JpegHuffmanTable*, JpegHuffmanTable*, u16*, s16*);
-s32 Jpeg_DecodeHuffmanSymbol(JpegHuffmanTable*, s16*, s8*);
-u16 Jpeg_ReadBits(u8);
+typedef void (*ret_func_80004454)(void);
 
-#endif // JPEG_DECODER_H
+s32 Jpeg_ReadBigEndianU16(u8* arg0);
+void Jpeg_ParseStreamMarkers(unk_func_80003680_sp300* arg0, u8* arg1);
+void Jpeg_InitializeDspTask(UnkStruct80001380* arg0, unk_func_80003680_sp90* arg1);
+void Jpeg_BuildDspInput(unk_func_80003680_sp27* arg0, JpegHuffmanTable* arg1, unk_func_80003680_sp300* arg2);
+void Jpeg_BuildDspOutput(unk_func_80003680_sp90* arg0, u8(arg1)[2][0x80], unk_func_80003680_sp300* arg2);
+s32 Jpeg_DecodeImage(u32 addr, s32 arg1, u8* arg2);
+void Dma_InitializeCompletionQueue(void);
+void Yay0_DecompressAndRelocate(u8* in_header, u8* memory);
+void Dma_ReadChunks(u8* arg0, s32 arg1, s32 arg2, s32 arg3);
+s32 Flash_ProgramPages(u8* arg0, s16 arg1, s16 arg2, s32 arg3);
+s32 Flash_EraseSectorByIndex(s16 arg0);
+void Dma_WriteChunks(u32 arg0, u32 arg1, u32 arg2, s32 arg3);
+void Dma_CopyChunks(u8* arg0, u8* arg1, u8* arg2);
+void* Jpeg_LoadDecodedImage(u8* addr, PRESJPEG* arg1, s32 side);
+s32 Yay0_LoadDecompressedAsset(s32 arg0, PERSSZP* arg1, s32 side);
+u32* Asset_CopyUncompressed(u8* arg0, s32 arg1, u32 arg2, s32 arg3);
+void* Asset_LoadCompressed(u8* romStart, u8* romEnd, s32 arg2, s32 arg3);
+void* Storage_LoadAssetByLbaRange(unk_func_800041C0* arg0, s32 arg1);
+unk_func_800041C0* Storage_SetLbaRange(unk_func_800041C0* arg0, s32 arg1, s32 arg2);
+unk_func_800041C0* Storage_SetByteRange(unk_func_800041C0* arg0, u32 arg1, u32 offset, u32 size);
+void Storage_PrefetchLbaRange(s32 arg0, s32 arg1, s32 arg2);
+void Memmap_ClearSegmentOnBlockFree(u32 block_addr, u32 addr);
+u8* Asset_LoadToSegment(s32 id, u8* rom_start, u8* rom_end, s32 arg3);
+MainPoolBlock* Asset_LoadToSegmentByLbaRange(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
+void Fragment_FreeCallback(u32 base_addr, u32 addr);
+void Fragment_Register(s32 arg0, Fragment* addr);
+ret_func_80004454 Fragment_Load(s32 arg0, u8* romStart, u8* romEnd);
+void* Fragment_LoadByLbaRange(s32 arg0, s32 arg1, s32 arg2);
+BinArchive* BinArchive_Open(u8* romStart, u8* romEnd, s32 arg2, s32 arg3);
+void* BinArchive_LoadByLbaRange(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
+void BinArchive_Free(void* arg0);
+Fragment* BinArchive_LoadFileFromRom(BinArchive* arg0, BinArchiveFile* arg1);
+void* BinArchive_LoadFileBuffered(BinArchive* arg0, BinArchiveFile* arg1);
+void* BinArchive_GetFile(BinArchive* archive, s32 file_number);
+s32 BinArchive_GetCachedFile(BinArchive* archive, s32 file_number);
+
+#endif // _3FB0_H_

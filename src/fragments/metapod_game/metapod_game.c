@@ -7,7 +7,7 @@
 #include "src/graphics_textures.h"
 #include "src/ui_graphics.h"
 #include "src/text_system.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/audio_sound_state.h"
 #include "src/audio_sfx.h"
 #include "src/audio_channel.h"
@@ -593,7 +593,7 @@ void miniInitMetapodPlayer(MiniActor* metapod, s32 arg1) {
 
     ModelAnim_SetAnimation(&metapod->unk_000, 0);
     ModelAnim_ClearEventTrack(&metapod->unk_000);
-    metapod->unk_000.unk_01C = 0;
+    metapod->unk_000.textureMode = 0;
     miniActorUpdateTransform(metapod);
     metapod->isComp = D_879060C4[arg1];
 }
@@ -611,7 +611,7 @@ void miniInitMetapodPlayers(void) {
 void MetapodGame_BeginHarden(MiniActor* metapod) {
     metapod->damageTimer++;
     metapod->unk_272 = 4;
-    metapod->unk_000.unk_01C = 1;
+    metapod->unk_000.textureMode = 1;
 }
 
 void miniMetapodHumanControls(MiniActor* metapod) {
@@ -878,7 +878,7 @@ void miniMetapodCompControls(MiniActor* compMetapod, s32 nPlayer) {
 
             compMetapod->damageTimer++;
             compMetapod->unk_272 = 4;
-            compMetapod->unk_000.unk_01C = 1;
+            compMetapod->unk_000.textureMode = 1;
             if (ModelAnim_HasCrossedFrame(&compMetapod->unk_000, 5) != 0) {
                 compMetapod->unk_000.unk_000.unk_02 &= ~0x20;
             }
@@ -901,7 +901,7 @@ void miniUpdateMetapods(void) {
     miniMetapodPtr = miniMetapods;
 
     for (i = 0; i < 4; i++) {
-        miniMetapodPtr->unk_000.unk_01C = 0;
+        miniMetapodPtr->unk_000.textureMode = 0;
         miniMetapodPtr->unk_272 = 0;
 
         if (minigameInputLock != 0) {
@@ -1220,7 +1220,7 @@ void miniRockStateMachine(MiniActor* rock) {
             break;
 
         case 0x64:
-            if (ParticleMath_ApproachU8(&rock->unk_000.unk_01D, 0, 0x40) != 0) {
+            if (ParticleMath_ApproachU8(&rock->unk_000.materialAlpha, 0, 0x40) != 0) {
                 MetapodGame_DespawnRock(rock);
             }
             break;

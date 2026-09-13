@@ -3,6 +3,6 @@
 
 #include "global.h"
 
-s32 Minigame2SampleViewer_PollInput(s32 arg0, s32 arg1);
+s32 GbTower_UnusedEntryWrapper(s32 arg0, s32 arg1);
 
 #endif // _FRAGMENT51_H_

@@ -11,7 +11,7 @@
 #include "src/text_system.h"
 #include "src/gb_save.h"
 #include "src/3D140.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/audio_sfx.h"
 #include "src/gfx_rect.h"
 #include "src/controller.h"
@@ -81,11 +81,11 @@ void Pokedex_DrawCheckboxIcon(s32 arg0, s32 arg1, s32 arg2) {
 void Pokedex_BuildListScrollArrowWidget(unk_func_888044BC_050* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
                    unk_func_888044BC_038_02C* arg5) {
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(&arg0->unk_00, sizeof(unk_func_888044BC_050));
-    arg0->unk_00.unk_18 = Pokedex_DrawListScrollArrows;
-    arg0->unk_00.unk_10.unk_00 = arg1;
-    arg0->unk_00.unk_10.unk_02 = arg2;
-    arg0->unk_00.unk_14.unk_00 = arg3;
-    arg0->unk_00.unk_14.unk_02 = 0x10;
+    arg0->unk_00.drawCallback = Pokedex_DrawListScrollArrows;
+    arg0->unk_00.position.x = arg1;
+    arg0->unk_00.position.y = arg2;
+    arg0->unk_00.size.x = arg3;
+    arg0->unk_00.size.y = 0x10;
     arg0->unk_30 = arg4;
     arg0->unk_2C = arg5;
 }
@@ -93,7 +93,7 @@ void Pokedex_BuildListScrollArrowWidget(unk_func_888044BC_050* arg0, s32 arg1, s
 s32 Pokedex_DrawListScrollArrows(unk_func_888044BC_050* arg0, s32 arg1, s32 arg2) {
     UNUSED s32 pad;
     s32 tmp = arg0->unk_2C->unk_00.unk_3E * arg0->unk_2C->unk_00.unk_4A;
-    s32 temp_s0 = ((arg0->unk_00.unk_14.unk_00 / 2) + arg1) - 9;
+    s32 temp_s0 = ((arg0->unk_00.size.x / 2) + arg1) - 9;
 
     gDPPipeSync(gDisplayListHead++);
     gDPSetCycleType(gDisplayListHead++, G_CYC_COPY);
@@ -102,7 +102,7 @@ s32 Pokedex_DrawListScrollArrows(unk_func_888044BC_050* arg0, s32 arg1, s32 arg2
     gDPSetTexturePersp(gDisplayListHead++, G_TP_NONE);
 
     if (arg0->unk_30 == 0) {
-        s32 var_t4 = (arg0->unk_00.unk_28 & 0x100) != 0;
+        s32 var_t4 = (arg0->unk_00.flags & 0x100) != 0;
         if (var_t4 != 0) {
             var_t4 = arg0->unk_2C->unk_00.unk_58 > 0;
         }
@@ -120,7 +120,7 @@ s32 Pokedex_DrawListScrollArrows(unk_func_888044BC_050* arg0, s32 arg1, s32 arg2
                             G_TX_RENDERTILE, 0, 0, 0x1000, 0x0400);
     } else {
         s32 var_t4 = 0;
-        if (arg0->unk_00.unk_28 & 0x100) {
+        if (arg0->unk_00.flags & 0x100) {
             if ((arg0->unk_2C->unk_00.unk_2C != NULL) &&
                 ((arg0->unk_2C->unk_00.unk_58 + tmp) <
                  (arg0->unk_2C->unk_00.unk_3E * arg0->unk_2C->unk_00.unk_2C->unk_08))) {
@@ -231,10 +231,10 @@ void Pokedex_BuildSpeciesListWidget(unk_func_888044BC_038_02C* arg0, s32 arg1, s
 
     ((func88506DCC)Memmap_GetFragmentVaddr(WidgetTree_InitScrollableGrid))(arg0, arg1, arg2, Pokedex_DrawSpeciesListRow, 0xF8, 0x20, arg3, arg5);
 
-    arg0->unk_00.unk_50.unk_00 = 0;
-    arg0->unk_00.unk_50.unk_02 = 0;
-    arg0->unk_00.unk_44->unk_00.unk_14.unk_00 = 0xF6;
-    arg0->unk_00.unk_44->unk_00.unk_14.unk_02 = 0x1E;
+    arg0->unk_00.unk_50.x = 0;
+    arg0->unk_00.unk_50.y = 0;
+    arg0->unk_00.unk_44->unk_00.size.x = 0xF6;
+    arg0->unk_00.unk_44->unk_00.size.y = 0x1E;
 
     sp40 = mem_pool_alloc(arg5, sizeof(unk_D_8006FF00*) * 151);
     for (i = 0; i < 151; i++) {
@@ -289,17 +289,17 @@ void Pokedex_ToggleListSortOrder(unk_func_888044BC_038_02C* arg0) {
 
 void Pokedex_BuildSpeciesListPanel(unk_func_888044BC_038* arg0, s32 arg1, s32 arg2, s32 arg3, MemoryPool* arg4) {
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(&arg0->unk_00, sizeof(unk_func_888044BC_038));
-    arg0->unk_00.unk_20 = Pokedex_HandleSpeciesListInput;
-    arg0->unk_00.unk_10.unk_00 = arg1;
-    arg0->unk_00.unk_10.unk_02 = arg2;
+    arg0->unk_00.inputCallback = Pokedex_HandleSpeciesListInput;
+    arg0->unk_00.position.x = arg1;
+    arg0->unk_00.position.y = arg2;
 
     arg0->unk_2C = mem_pool_alloc(arg4, sizeof(unk_func_888044BC_038_02C));
     Pokedex_BuildSpeciesListWidget(arg0->unk_2C, 0, 0, 6, arg3, arg4);
-    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&arg0->unk_00.unk_00, &arg0->unk_2C->unk_00.unk_00.unk_00);
+    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&arg0->unk_00.link, &arg0->unk_2C->unk_00.unk_00.link);
 }
 
 s32 Pokedex_HandleSpeciesListInput(unk_func_888044BC_038* arg0, Controller* arg1) {
-    return arg0->unk_2C->unk_00.unk_00.unk_20(&arg0->unk_2C->unk_00.unk_00, arg1);
+    return arg0->unk_2C->unk_00.unk_00.inputCallback(&arg0->unk_2C->unk_00.unk_00, arg1);
 }
 
 void Pokedex_DrawListSelectionFrame(s32 arg0, s32 arg1, s32 arg2, s32 arg3, Color_RGBA8 arg4) {
@@ -335,9 +335,9 @@ void Pokedex_DrawListSelectionFrame(s32 arg0, s32 arg1, s32 arg2, s32 arg3, Colo
 
 void Pokedex_InitTrainerInfoWidget(unk_func_888044BC_03C_02C* arg0, s32 arg1, s32 arg2) {
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(&arg0->unk_00, sizeof(unk_func_888044BC_03C_02C));
-    arg0->unk_00.unk_18 = Pokedex_DrawTrainerInfoCard;
-    arg0->unk_00.unk_10.unk_00 = arg1;
-    arg0->unk_00.unk_10.unk_02 = arg2;
+    arg0->unk_00.drawCallback = Pokedex_DrawTrainerInfoCard;
+    arg0->unk_00.position.x = arg1;
+    arg0->unk_00.position.y = arg2;
 }
 
 void Pokedex_LoadTrainerInfo(unk_func_888044BC_03C_02C* arg0, s32 arg1) {
@@ -390,24 +390,24 @@ void Pokedex_BuildTrainerInfoPanel(unk_func_888044BC_03C* arg0, s32 arg1, s32 ar
 
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(&arg0->unk_00, sizeof(unk_func_888044BC_03C));
 
-    arg0->unk_00.unk_10.unk_00 = arg1;
-    arg0->unk_00.unk_10.unk_02 = arg2;
+    arg0->unk_00.position.x = arg1;
+    arg0->unk_00.position.y = arg2;
 
     sp34 = mem_pool_alloc(arg4, sizeof(unk_func_885012A4));
     ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(sp34, 0, 0, 0xD8, 0x98, D_88808200);
-    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&arg0->unk_00.unk_00, &sp34->unk_00.unk_00);
+    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&arg0->unk_00.link, &sp34->unk_00.link);
 
     arg0->unk_2C = mem_pool_alloc(arg4, sizeof(unk_func_888044BC_03C_02C));
     Pokedex_InitTrainerInfoWidget(arg0->unk_2C, 0, 0);
     Pokedex_LoadTrainerInfo(arg0->unk_2C, arg3);
-    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&sp34->unk_00.unk_00, &arg0->unk_2C->unk_00.unk_00);
+    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&sp34->unk_00.link, &arg0->unk_2C->unk_00.link);
 }
 
 void Pokedex_InitSortOrderLabel(unk_func_888044BC_040_030* arg0, s32 arg1, s32 arg2) {
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(&arg0->unk_00, sizeof(unk_func_888044BC_040_030) + 0x18);
-    arg0->unk_00.unk_18 = Pokedex_DrawSortOrderLabel;
-    arg0->unk_00.unk_10.unk_00 = arg1;
-    arg0->unk_00.unk_10.unk_02 = arg2;
+    arg0->unk_00.drawCallback = Pokedex_DrawSortOrderLabel;
+    arg0->unk_00.position.x = arg1;
+    arg0->unk_00.position.y = arg2;
     arg0->unk_2C = 0;
 }
 
@@ -484,17 +484,17 @@ void Pokedex_BuildEntryMenuWidget(unk_func_888044BC_040* arg0, s32 arg1, s32 arg
     UNUSED s32 pad2[4];
 
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(&arg0->unk_00, sizeof(unk_func_888044BC_040));
-    arg0->unk_00.unk_20 = Pokedex_HandleEntryMenuInput;
-    arg0->unk_00.unk_10.unk_00 = arg1;
-    arg0->unk_00.unk_10.unk_02 = arg2;
+    arg0->unk_00.inputCallback = Pokedex_HandleEntryMenuInput;
+    arg0->unk_00.position.x = arg1;
+    arg0->unk_00.position.y = arg2;
 
     sp58 = mem_pool_alloc(arg3, sizeof(unk_func_885012A4));
     ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(sp58, 0, 0, 0x1D8, 0x68, D_88808210);
-    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&arg0->unk_00.unk_00, &sp58->unk_00.unk_00);
+    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&arg0->unk_00.link, &sp58->unk_00.link);
 
     arg0->unk_30 = mem_pool_alloc(arg3, sizeof(unk_func_888044BC_040_030));
     Pokedex_InitSortOrderLabel(arg0->unk_30, 0, 0);
-    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&sp58->unk_00.unk_00, &arg0->unk_30->unk_00.unk_00);
+    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&sp58->unk_00.link, &arg0->unk_30->unk_00.link);
     PointerList_Allocate(&arg0->unk_38, 4, arg3);
     PointerList_Insert(&arg0->unk_38, Text_GetString(NULL, 0, D_888267A0, 3), 0);
     PointerList_Insert(&arg0->unk_38, Text_GetString(NULL, 0, D_888267A0, 4), 1);
@@ -506,21 +506,21 @@ void Pokedex_BuildEntryMenuWidget(unk_func_888044BC_040* arg0, s32 arg1, s32 arg
                                                            arg3);
     arg0->unk_34->unk_50 = -4;
     arg0->unk_34->unk_52 = -2;
-    arg0->unk_34->unk_44->unk_00.unk_14.unk_00 = 0x78;
-    arg0->unk_34->unk_44->unk_00.unk_14.unk_02 = 0x1C;
+    arg0->unk_34->unk_44->node.size.x = 0x78;
+    arg0->unk_34->unk_44->node.size.y = 0x1C;
     ((func88506384)Memmap_GetFragmentVaddr(WidgetTree_BindPagedGridPage))(arg0->unk_34, &arg0->unk_38, arg3);
-    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&sp58->unk_00.unk_00, &arg0->unk_34->unk_00.unk_00);
+    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&sp58->unk_00.link, &arg0->unk_34->unk_00.link);
 }
 
 s32 Pokedex_HandleEntryMenuInput(unk_func_888044BC_040* arg0, Controller* arg1) {
-    return arg0->unk_34->unk_00.unk_20(&arg0->unk_34->unk_00, arg1);
+    return arg0->unk_34->unk_00.inputCallback(&arg0->unk_34->unk_00, arg1);
 }
 
 void Pokedex_InitDataPanel(unk_func_888044BC_044_02C* arg0, s32 arg1, s32 arg2) {
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(&arg0->unk_00, sizeof(unk_func_888044BC_044_02C));
-    arg0->unk_00.unk_18 = Pokedex_DrawDataPanel;
-    arg0->unk_00.unk_10.unk_00 = arg1;
-    arg0->unk_00.unk_10.unk_02 = arg2;
+    arg0->unk_00.drawCallback = Pokedex_DrawDataPanel;
+    arg0->unk_00.position.x = arg1;
+    arg0->unk_00.position.y = arg2;
 }
 
 void Pokedex_SetDataPanelSpecies(unk_func_888044BC_044_02C* arg0, s32 arg1) {
@@ -585,8 +585,8 @@ s32 Pokedex_DrawDataPanel(unk_func_888044BC_044_02C* arg0, s32 arg1, s32 arg2) {
     Font_Printf(arg1 + sp44, arg2 + 0x64, sp4C);
     Font_Printf(arg1 + sp44, arg2 + 0x7C, sp48);
     if (GbSave_GetSpeciesProgressLevel(D_88826938, sp54->unk_00) >= 2) {
-        Pokedex_FormatHeightString(arg1 + sp44, arg2 + 0x64, D_8007596C[sp54->unk_00].unk_00);
-        Pokedex_FormatWeightString(arg1 + sp44, arg2 + 0x7C, D_8007596C[sp54->unk_00].unk_02);
+        Pokedex_FormatHeightString(arg1 + sp44, arg2 + 0x64, D_8007596C[sp54->unk_00].height);
+        Pokedex_FormatWeightString(arg1 + sp44, arg2 + 0x7C, D_8007596C[sp54->unk_00].weight);
     } else {
         sprintf(sp34, "?%s??", Text_GetString(NULL, 0, D_888267A0, 0x11));
         Font_Printf((arg1 + sp44) - Font_MeasureTextExtent(0, 0, sp34), arg2 + 0x64, sp34);
@@ -604,16 +604,16 @@ void Pokedex_BuildDataPanel(unk_func_888044BC_044* arg0, s32 arg1, s32 arg2, Mem
     unk_func_885012A4* sp34;
 
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(&arg0->unk_00, sizeof(unk_func_888044BC_044));
-    arg0->unk_00.unk_10.unk_00 = arg1;
-    arg0->unk_00.unk_10.unk_02 = arg2;
+    arg0->unk_00.position.x = arg1;
+    arg0->unk_00.position.y = arg2;
 
     sp34 = mem_pool_alloc(arg3, sizeof(unk_func_885012A4));
     ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(sp34, 0, 0, 0xD8, 0x98, D_8880821C);
-    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&arg0->unk_00.unk_00, &sp34->unk_00.unk_00);
+    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&arg0->unk_00.link, &sp34->unk_00.link);
 
     arg0->unk_2C = mem_pool_alloc(arg3, sizeof(unk_func_888044BC_044_02C));
     Pokedex_InitDataPanel(arg0->unk_2C, 0, 0);
-    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&sp34->unk_00.unk_00, &arg0->unk_2C->unk_00.unk_00);
+    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&sp34->unk_00.link, &arg0->unk_2C->unk_00.link);
 }
 
 void Pokedex_BuildFlavorTextPanel(unk_func_888044BC_048* arg0, s32 arg1, s32 arg2, MemoryPool* arg3) {
@@ -623,20 +623,20 @@ void Pokedex_BuildFlavorTextPanel(unk_func_888044BC_048* arg0, s32 arg1, s32 arg
     unk_func_885012A4* sp34;
 
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(&arg0->unk_00, sizeof(unk_func_888044BC_048));
-    arg0->unk_00.unk_10.unk_00 = arg1;
-    arg0->unk_00.unk_10.unk_02 = arg2;
+    arg0->unk_00.position.x = arg1;
+    arg0->unk_00.position.y = arg2;
     // clang-format off
-    arg0->unk_00.unk_14.unk_00 = 0x1D8; arg0->unk_00.unk_14.unk_02 = 0x68;
+    arg0->unk_00.size.x = 0x1D8; arg0->unk_00.size.y = 0x68;
     // clang-format on
 
     sp34 = mem_pool_alloc(arg3, sizeof(unk_func_885012A4));
     ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(sp34, 0, 0, 0x1D8, 0x68, D_88808220);
-    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&arg0->unk_00.unk_00, &sp34->unk_00.unk_00);
+    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&arg0->unk_00.link, &sp34->unk_00.link);
 
     arg0->unk_2C = mem_pool_alloc(arg3, sizeof(unk_func_8850878C));
     ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(arg0->unk_2C, 0x11, 0xC, 0, 0x10);
     arg0->unk_2C->unk_3C = 0x1C;
-    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&sp34->unk_00.unk_00, &arg0->unk_2C->unk_00.unk_00);
+    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&sp34->unk_00.link, &arg0->unk_2C->unk_00.link);
 }
 
 void Pokedex_SetFlavorText(unk_func_888044BC_048* arg0, s32 arg1, s32 arg2) {
@@ -648,16 +648,16 @@ void Pokedex_SetFlavorText(unk_func_888044BC_048* arg0, s32 arg1, s32 arg2) {
     } else {
         sp18 = "\n???";
     }
-    arg0->unk_2C->unk_00.unk_10.unk_00 = (arg0->unk_00.unk_14.unk_00 - Font_MeasureTextExtent(0x10, 0, sp18)) / 2;
-    arg0->unk_2C->unk_00.unk_10.unk_02 = 0xC;
+    arg0->unk_2C->unk_00.position.x = (arg0->unk_00.size.x - Font_MeasureTextExtent(0x10, 0, sp18)) / 2;
+    arg0->unk_2C->unk_00.position.y = 0xC;
     arg0->unk_2C->unk_40 = sp18;
 }
 
 void Pokedex_InitPreviewWidget(unk_func_888044BC_04C_02C* arg0, s32 arg1, s32 arg2) {
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(&arg0->unk_00, sizeof(unk_func_888044BC_04C_02C));
-    arg0->unk_00.unk_18 = Pokedex_DrawPreview;
-    arg0->unk_00.unk_10.unk_00 = arg1;
-    arg0->unk_00.unk_10.unk_02 = arg2;
+    arg0->unk_00.drawCallback = Pokedex_DrawPreview;
+    arg0->unk_00.position.x = arg1;
+    arg0->unk_00.position.y = arg2;
 }
 
 void Pokedex_SetPreviewSpecies(unk_func_888044BC_04C_02C* arg0, s32 arg1) {
@@ -705,12 +705,12 @@ s32 Pokedex_DrawPreview(unk_func_888044BC_04C_02C* arg0, s32 arg1, s32 arg2) {
 
 void Pokedex_BuildPreviewPanel(unk_func_888044BC_04C* arg0, s32 arg1, s32 arg2, MemoryPool* arg3) {
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(&arg0->unk_00, sizeof(unk_func_888044BC_04C));
-    arg0->unk_00.unk_10.unk_00 = arg1;
-    arg0->unk_00.unk_10.unk_02 = arg2;
+    arg0->unk_00.position.x = arg1;
+    arg0->unk_00.position.y = arg2;
 
     arg0->unk_2C = mem_pool_alloc(arg3, sizeof(unk_func_888044BC_04C_02C));
     Pokedex_InitPreviewWidget(arg0->unk_2C, 0, 0);
-    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&arg0->unk_00.unk_00, &arg0->unk_2C->unk_00.unk_00);
+    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&arg0->unk_00.link, &arg0->unk_2C->unk_00.link);
 }
 
 void Pokedex_BuildRootWidget(unk_func_888044BC* arg0, s32 arg1, s32 arg2, u8* arg3, MemoryPool* arg4) {
@@ -721,21 +721,21 @@ void Pokedex_BuildRootWidget(unk_func_888044BC* arg0, s32 arg1, s32 arg2, u8* ar
 
     sp48 = GbSave_GetActivePort();
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(&arg0->unk_00, sizeof(unk_func_888044BC));
-    arg0->unk_00.unk_10.unk_00 = arg1;
-    arg0->unk_00.unk_10.unk_02 = arg2;
+    arg0->unk_00.position.x = arg1;
+    arg0->unk_00.position.y = arg2;
 
     arg0->unk_34 = mem_pool_alloc(arg4, sizeof(WidgetDelayedNode));
     ((func88503118)Memmap_GetFragmentVaddr(WidgetTree_InitDelayedWidget))(arg0->unk_34, 0, 0, 0x280, 0x1E0);
-    arg0->unk_34->unk_2C = 0;
-    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&arg0->unk_00.unk_00, &arg0->unk_34->unk_00.unk_00);
+    arg0->unk_34->delayCounter = 0;
+    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&arg0->unk_00.link, &arg0->unk_34->node.link);
 
     sp4C = mem_pool_alloc(arg4, sizeof(unk_func_88500E34));
     ((func88500E34)Memmap_GetFragmentVaddr(WidgetTree_InitTiledTextureRegion))(sp4C, 0, 0, 0x280, 0x1E0, arg3);
-    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&arg0->unk_34->unk_00.unk_00, &sp4C->unk_00.unk_00);
+    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&arg0->unk_34->node.link, &sp4C->unk_00.link);
 
     arg0->unk_2C = mem_pool_alloc(arg4, sizeof(unk_func_88500994));
     ((func88500994)Memmap_GetFragmentVaddr(WidgetTree_InitPagedContainer))(arg0->unk_2C, 0, 0);
-    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&arg0->unk_34->unk_00.unk_00, &arg0->unk_2C->unk_00.unk_00);
+    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&arg0->unk_34->node.link, &arg0->unk_2C->unk_00.link);
 
     arg0->unk_3C = mem_pool_alloc(arg4, sizeof(unk_func_888044BC_03C));
     Pokedex_BuildTrainerInfoPanel(arg0->unk_3C, 0x168, 0x4C, sp48, arg4);
@@ -747,15 +747,15 @@ void Pokedex_BuildRootWidget(unk_func_888044BC* arg0, s32 arg1, s32 arg2, u8* ar
 
     arg0->unk_44 = mem_pool_alloc(arg4, sizeof(unk_func_888044BC_044));
     Pokedex_BuildDataPanel(arg0->unk_44, 0x168, 0x4C, arg4);
-    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&sp44->unk_00, &arg0->unk_44->unk_00.unk_00);
+    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&sp44->link, &arg0->unk_44->unk_00.link);
 
     arg0->unk_48 = mem_pool_alloc(arg4, sizeof(unk_func_888044BC_048));
     Pokedex_BuildFlavorTextPanel(arg0->unk_48, 0x48, 0x140, arg4);
-    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&sp44->unk_00, &arg0->unk_48->unk_00.unk_00);
+    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&sp44->link, &arg0->unk_48->unk_00.link);
 
     arg0->unk_30 = mem_pool_alloc(arg4, sizeof(unk_func_88500994));
     ((func88500994)Memmap_GetFragmentVaddr(WidgetTree_InitPagedContainer))(arg0->unk_30, 0, 0);
-    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&arg0->unk_00.unk_00, &arg0->unk_30->unk_00.unk_00);
+    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&arg0->unk_00.link, &arg0->unk_30->unk_00.link);
 
     sp40 = mem_pool_alloc(arg4, sizeof(WidgetNode));
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(sp40, sizeof(WidgetNode));
@@ -763,41 +763,41 @@ void Pokedex_BuildRootWidget(unk_func_888044BC* arg0, s32 arg1, s32 arg2, u8* ar
 
     arg0->unk_38 = mem_pool_alloc(arg4, sizeof(unk_func_888044BC_038));
     Pokedex_BuildSpeciesListPanel(arg0->unk_38, 0x48, 0x48, sp48, arg4);
-    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&sp40->unk_00, &arg0->unk_38->unk_00.unk_00);
+    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&sp40->link, &arg0->unk_38->unk_00.link);
 
     arg0->unk_40 = mem_pool_alloc(arg4, sizeof(unk_func_888044BC_040));
     Pokedex_BuildEntryMenuWidget(arg0->unk_40, 0x48, 0x140, arg4);
-    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&sp40->unk_00, &arg0->unk_40->unk_00.unk_00);
+    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&sp40->link, &arg0->unk_40->unk_00.link);
 
     arg0->unk_4C = mem_pool_alloc(arg4, sizeof(unk_func_888044BC_04C));
     Pokedex_BuildPreviewPanel(arg0->unk_4C, 0x48, 0x48, arg4);
     ((func88500A3C)Memmap_GetFragmentVaddr(WidgetTree_AddPage))(arg0->unk_30, &arg0->unk_4C->unk_00);
 
     arg0->unk_50 = mem_pool_alloc(arg4, sizeof(unk_func_888044BC_050));
-    Pokedex_BuildListScrollArrowWidget(arg0->unk_50, arg0->unk_38->unk_00.unk_10.unk_00 + 0x94, arg0->unk_38->unk_00.unk_10.unk_02 - 0x16,
+    Pokedex_BuildListScrollArrowWidget(arg0->unk_50, arg0->unk_38->unk_00.position.x + 0x94, arg0->unk_38->unk_00.position.y - 0x16,
                   0x4A, 0, arg0->unk_38->unk_2C);
-    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&arg0->unk_00.unk_00, &arg0->unk_50->unk_00.unk_00);
+    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&arg0->unk_00.link, &arg0->unk_50->unk_00.link);
 
     arg0->unk_54 = mem_pool_alloc(arg4, sizeof(unk_func_888044BC_050));
-    Pokedex_BuildListScrollArrowWidget(arg0->unk_54, arg0->unk_38->unk_00.unk_10.unk_00 + 0x94,
-                  arg0->unk_38->unk_00.unk_10.unk_02 + arg0->unk_38->unk_2C->unk_00.unk_00.unk_14.unk_02 + 6, 0x4A, 1,
+    Pokedex_BuildListScrollArrowWidget(arg0->unk_54, arg0->unk_38->unk_00.position.x + 0x94,
+                  arg0->unk_38->unk_00.position.y + arg0->unk_38->unk_2C->unk_00.unk_00.size.y + 6, 0x4A, 1,
                   arg0->unk_38->unk_2C);
-    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&arg0->unk_00.unk_00, &arg0->unk_54->unk_00.unk_00);
+    ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&arg0->unk_00.link, &arg0->unk_54->unk_00.link);
 }
 
 #ifdef NON_MATCHING
-s32 func_88803614(void) {
+s32 Pokedex_ShowSpeciesList(void) {
     s32 var_s0;
     u16 var_s2 = 1;
 
     ((func88500A6C)Memmap_GetFragmentVaddr(WidgetTree_SelectPage))(D_88826940->unk_2C, 0);
     ((func88500A6C)Memmap_GetFragmentVaddr(WidgetTree_SelectPage))(D_88826940->unk_30, 0);
-    D_88826940->unk_50->unk_00.unk_28 |= 0x100;
-    D_88826940->unk_54->unk_00.unk_28 |= 0x100;
-    D_88826940->unk_34->unk_2C = 0;
+    D_88826940->unk_50->unk_00.flags |= 0x100;
+    D_88826940->unk_54->unk_00.flags |= 0x100;
+    D_88826940->unk_34->delayCounter = 0;
 
-    D_88826940->unk_38->unk_00.unk_24(&D_88826940->unk_38->unk_00, 1);
-    D_88826940->unk_40->unk_00.unk_24(&D_88826940->unk_40->unk_00, 0);
+    D_88826940->unk_38->unk_00.setStateCallback(&D_88826940->unk_38->unk_00, 1);
+    D_88826940->unk_40->unk_00.setStateCallback(&D_88826940->unk_40->unk_00, 0);
 
     ((func8850628C)Memmap_GetFragmentVaddr(WidgetTree_ClearEntryFlags))(&D_88826940->unk_38->unk_2C->unk_00);
     Input_SetRepeatController(gPlayer1Controller);
@@ -807,7 +807,7 @@ s32 func_88803614(void) {
         Cont_ReadInputs();
         Input_ResetRepeatState();
 
-        var_s0 = D_88826940->unk_38->unk_00.unk_20(&D_88826940->unk_38->unk_00, gPlayer1Controller);
+        var_s0 = D_88826940->unk_38->unk_00.inputCallback(&D_88826940->unk_38->unk_00, gPlayer1Controller);
         if (!(var_s0 & 1)) {
             if (gPlayer1Controller->buttonPressed & 1) {
                 var_s0 |= 0x80000005;
@@ -838,31 +838,29 @@ s32 func_88803614(void) {
     return var_s2;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/pokedex/pokedex_214920/func_88803614.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/28/fragment28_214920/Pokedex_ShowSpeciesList.s")
 #endif
 
-s32 Pokedex_ShowEntryMenu(void) {
+#ifdef NON_MATCHING
+u8 Pokedex_ShowEntryMenu(void) {
     s32 var_s0;
-    s32 var_s1;
-    s32 var_s3;
-    UNUSED s32 pad[1];
+    u8 var_s1 = 2;
+    UNUSED s32 pad[2];
 
-
-    var_s1 = var_s3 = 2;
     ((func88500A6C)Memmap_GetFragmentVaddr(WidgetTree_SelectPage))(D_88826940->unk_2C, 0);
     ((func88500A6C)Memmap_GetFragmentVaddr(WidgetTree_SelectPage))(D_88826940->unk_30, 0);
-    D_88826940->unk_50->unk_00.unk_28 |= 0x100;
-    D_88826940->unk_54->unk_00.unk_28 |= 0x100;
-    D_88826940->unk_34->unk_2C = 0;
-    D_88826940->unk_38->unk_00.unk_24(&D_88826940->unk_38->unk_00, 0x100);
-    D_88826940->unk_40->unk_00.unk_24(&D_88826940->unk_40->unk_00, 1);
+    D_88826940->unk_50->unk_00.flags |= 0x100;
+    D_88826940->unk_54->unk_00.flags |= 0x100;
+    D_88826940->unk_34->delayCounter = 0;
+    D_88826940->unk_38->unk_00.setStateCallback(&D_88826940->unk_38->unk_00, 0x100);
+    D_88826940->unk_40->unk_00.setStateCallback(&D_88826940->unk_40->unk_00, 1);
     Input_SetRepeatController(gPlayer1Controller);
 
     while (var_s1 == 2) {
         Cont_StartReadInputs();
         Cont_ReadInputs();
         Input_ResetRepeatState();
-        var_s0 = D_88826940->unk_40->unk_00.unk_20(&D_88826940->unk_40->unk_00, gPlayer1Controller);
+        var_s0 = D_88826940->unk_40->unk_00.inputCallback(&D_88826940->unk_40->unk_00, gPlayer1Controller);
         if (!(var_s0 & 1)) {
             if (gPlayer1Controller->buttonPressed & 1) {
                 Pokedex_ToggleListSortOrder(D_88826940->unk_38->unk_2C);
@@ -877,7 +875,7 @@ s32 Pokedex_ShowEntryMenu(void) {
                 } else {
                     switch (D_88826940->unk_40->unk_34->unk_38) {
                         case 0:
-                            var_s1 = 3;
+                            var_s1 = 3u;
                             Cry_PlayFromPokedex(Pokedex_GetSelectedSpeciesIndex(D_88826940->unk_38->unk_2C) + 1);
                             var_s0 |= 5;
                             break;
@@ -893,7 +891,7 @@ s32 Pokedex_ShowEntryMenu(void) {
                             break;
 
                         case 3:
-                            D_88826940->unk_40->unk_00.unk_24(&D_88826940->unk_40->unk_00, 0x100);
+                            D_88826940->unk_40->unk_00.setStateCallback(&D_88826940->unk_40->unk_00, 0x100);
                             var_s0 |= 0x80000002;
                             var_s1 = 0;
                             break;
@@ -908,11 +906,13 @@ s32 Pokedex_ShowEntryMenu(void) {
         ((func885008C4)Memmap_GetFragmentVaddr(WidgetTree_Update))(D_88826940);
         ((func88500828)Memmap_GetFragmentVaddr(WidgetTree_Draw))(D_88826940, 0, 0);
         BgStage_AdvanceFrame();
-        var_s3 = var_s1;
-    };
+    }
 
-    return var_s3;
+    return var_s1;
 }
+#else
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/28/fragment28_214920/Pokedex_ShowEntryMenu.s")
+#endif
 
 void Pokedex_LoadIcon(u8* arg0, s32 arg1) {
     unk_func_8001A024* sp1C;
@@ -921,7 +921,7 @@ void Pokedex_LoadIcon(u8* arg0, s32 arg1) {
     main_pool_push_state('ICON');
     sp1C = PokeIcon_CreateRenderList(D_8882692C, 1, 0x50, 0x50);
     sp18 = PokeIcon_GetImage(sp1C, 0);
-    func_8001A324(sp1C, 0, arg1, 0x9530);
+    PokeIcon_SetSlotFromSpecies(sp1C, 0, arg1, 0x9530);
     PokeIcon_ProcessAllSlots(sp1C, 0);
     StageLoader_RunFrames(2);
     osInvalDCache(sp18, 0x3200);
@@ -6120,9 +6120,9 @@ s32 Pokedex_ShowEntry(void) {
     Pokedex_SetFlavorText(D_88826940->unk_48, GbSave_GetActivePort(), temp_s0);
     ((func88500A6C)Memmap_GetFragmentVaddr(WidgetTree_SelectPage))(D_88826940->unk_2C, 1);
     ((func88500A6C)Memmap_GetFragmentVaddr(WidgetTree_SelectPage))(D_88826940->unk_30, 1);
-    D_88826940->unk_50->unk_00.unk_28 &= ~0x100;
-    D_88826940->unk_54->unk_00.unk_28 &= ~0x100;
-    D_88826940->unk_34->unk_2C = 0;
+    D_88826940->unk_50->unk_00.flags &= ~0x100;
+    D_88826940->unk_54->unk_00.flags &= ~0x100;
+    D_88826940->unk_34->delayCounter = 0;
 
     do {
         Cont_StartReadInputs();
@@ -6148,8 +6148,8 @@ s32 Pokedex_ShowEntry(void) {
 }
 
 s32 Pokedex_PlayCry(void) {
-    D_88826940->unk_38->unk_00.unk_24(&D_88826940->unk_38->unk_00, 0x100);
-    D_88826940->unk_40->unk_00.unk_24(&D_88826940->unk_40->unk_00, 0x100);
+    D_88826940->unk_38->unk_00.setStateCallback(&D_88826940->unk_38->unk_00, 0x100);
+    D_88826940->unk_40->unk_00.setStateCallback(&D_88826940->unk_40->unk_00, 0x100);
     Cry_PlayFromPokedex(Pokedex_GetSelectedSpeciesIndex(D_88826940->unk_38->unk_2C) + 1);
 
     while (Cry_IsPlaying() != 0) {
@@ -6162,7 +6162,7 @@ s32 Pokedex_PlayCry(void) {
 }
 
 s32 Pokedex_RedrawAreaMapTransition(u8 arg0) {
-    D_88826940->unk_34->unk_2C = -1;
+    D_88826940->unk_34->delayCounter = -1;
     BgStage_DrawFrame();
     ((func885008C4)Memmap_GetFragmentVaddr(WidgetTree_Update))(D_88826940);
     ((func88500828)Memmap_GetFragmentVaddr(WidgetTree_Draw))(D_88826940, 0, 0);
@@ -6172,15 +6172,15 @@ s32 Pokedex_RedrawAreaMapTransition(u8 arg0) {
 void Pokedex_EnterAreaMapScreen(void) {
     s32 sp2C;
 
-    D_88826940->unk_38->unk_00.unk_24(&D_88826940->unk_38->unk_00, 0x100);
-    D_88826940->unk_40->unk_00.unk_24(&D_88826940->unk_40->unk_00, 0x100);
+    D_88826940->unk_38->unk_00.setStateCallback(&D_88826940->unk_38->unk_00, 0x100);
+    D_88826940->unk_40->unk_00.setStateCallback(&D_88826940->unk_40->unk_00, 0x100);
     StageFade_Start(8);
     BgStage_RunUntilCondition(8, Pokedex_RedrawAreaMapTransition);
     StageLoader_RunFrames(2);
     StageContext_SaveAndSwitch(D_88826928);
     StageLoader_RunFrames(2);
     sp2C = Pokedex_GetSelectedSpeciesIndex(D_88826940->unk_38->unk_2C) + 1;
-    func_88807D04(sp2C, D_88826930, 0x70800, D_88826934, 0x4B000, Text_GetString(NULL, 0, D_888267A4, sp2C - 1),
+    Pokedex_ShowAreaMap(sp2C, D_88826930, 0x70800, D_88826934, 0x4B000, Text_GetString(NULL, 0, D_888267A4, sp2C - 1),
                   D_888267B0);
     StageFade_Start(8);
     BgStage_RunUntilCondition(0xA, Pokedex_DrawAreaMapFrame);
@@ -6218,7 +6218,7 @@ s32 Pokedex_ShowAreaMapScreen(void) {
 }
 
 s32 Pokedex_RedrawRootTransition(u8 arg0) {
-    D_88826940->unk_34->unk_2C = -1;
+    D_88826940->unk_34->delayCounter = -1;
     BgStage_DrawFrame();
     ((func885008C4)Memmap_GetFragmentVaddr(WidgetTree_Update))(&D_88826940->unk_00);
     ((func88500828)Memmap_GetFragmentVaddr(WidgetTree_Draw))(&D_88826940->unk_00, 0, 0);
@@ -6231,7 +6231,7 @@ void Pokedex_RunEntryFlow(void) {
     while (var_v0 != 0) {
         switch (var_v0) {
             case 1:
-                var_v0 = func_88803614();
+                var_v0 = Pokedex_ShowSpeciesList();
                 break;
 
             case 2:
@@ -6273,20 +6273,20 @@ void Pokedex_InitFramebuffers(void) {
 
     sp28 = main_pool_alloc(sizeof(unk_D_80068BB0), 0);
 
-    sp34 = D_88826924->unk_18[0]->img_p;
-    D_88826930 = D_88826924->unk_18[0]->img_p + 0x25800;
-    sp30 = D_88826924->unk_18[1]->img_p;
-    D_88826934 = D_88826924->unk_18[1]->img_p + 0x25800;
-    sp2C = D_88826924->unk_18[1]->img_p + 0x70800;
+    sp34 = D_88826924->framebuffers[0]->img_p;
+    D_88826930 = D_88826924->framebuffers[0]->img_p + 0x25800;
+    sp30 = D_88826924->framebuffers[1]->img_p;
+    D_88826934 = D_88826924->framebuffers[1]->img_p + 0x25800;
+    sp2C = D_88826924->framebuffers[1]->img_p + 0x70800;
 
-    D_88826928->unk_18[0] = main_pool_alloc(sizeof(unk_D_80068BB0), 0);
-    D_88826928->unk_18[1] = main_pool_alloc(sizeof(unk_D_80068BB0), 0);
+    D_88826928->framebuffers[0] = main_pool_alloc(sizeof(unk_D_80068BB0), 0);
+    D_88826928->framebuffers[1] = main_pool_alloc(sizeof(unk_D_80068BB0), 0);
 
-    GfxImage_Initialize(D_88826928->unk_18[0], 0, 2, 0x140, 0xF0, sp34);
-    GfxImage_Initialize(D_88826928->unk_18[1], 0, 2, 0x140, 0xF0, sp30);
+    GfxImage_Initialize(D_88826928->framebuffers[0], 0, 2, 0x140, 0xF0, sp34);
+    GfxImage_Initialize(D_88826928->framebuffers[1], 0, 2, 0x140, 0xF0, sp30);
     GfxImage_Initialize(sp28, 0, 2, 0x140, 0xF0, sp2C);
-    GfxImage_AttachDepthBuffer(D_88826928->unk_18[0], sp28);
-    GfxImage_AttachDepthBuffer(D_88826928->unk_18[1], sp28);
+    GfxImage_AttachDepthBuffer(D_88826928->framebuffers[0], sp28);
+    GfxImage_AttachDepthBuffer(D_88826928->framebuffers[1], sp28);
 }
 
 s32 Pokedex_Main(UNUSED s32 arg0, UNUSED s32 arg1) {

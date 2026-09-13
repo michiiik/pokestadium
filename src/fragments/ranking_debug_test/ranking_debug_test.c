@@ -3,7 +3,7 @@
 #include "src/display_object_textures.h"
 #include "src/model_renderer.h"
 #include "src/graphics_textures.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/gfx_buffer.h"
 #include "src/gfx_rect.h"
 #include "src/fragments/minigame_actor_framework/minigame_actor_framework.h"

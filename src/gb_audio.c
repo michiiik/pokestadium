@@ -40,7 +40,7 @@ static u8 D_800FCEB4;
 static u8 D_800FCEB6[2];
 static u8* D_800FCEB8[2];
 static u8 D_800FCEC0[8];
-static u32 D_800FCEC8;
+static unk_D_800FC6D4_008* D_800FCEC8;
 static u8 D_800FCECC;
 static u8 D_800FCECD;
 
@@ -87,7 +87,7 @@ s32 GbMusic_StartTableSequence(u16 arg0) {
         return 0;
     }
 
-    func_80044A50(D_800FC6D4);
+    GbMusic_RelocateSequenceTable(D_800FC6D4);
 
     if (D_800FC6D4->num_entries < arg0) {
         return 0;
@@ -98,10 +98,10 @@ s32 GbMusic_StartTableSequence(u16 arg0) {
 
     arg0--;
 
-    a = D_800FC6D4->entries[arg0].unk_00;
+    a = D_800FC6D4->entries[arg0].sequenceId;
     D_800FCEB4 = a;
-    D_800FCECC = D_800FC6D4->entries[arg0].unk_02;
-    D_800FCECD = D_800FC6D4->entries[arg0].unk_03;
+    D_800FCECC = D_800FC6D4->entries[arg0].frequencyTranspose;
+    D_800FCECD = D_800FC6D4->entries[arg0].tempoOffset;
     D_800FCEC8 = offset + a * 0x18;
 
     GbMusic_StartSfx(a);
@@ -307,33 +307,28 @@ u8 GbMusic_CmdToggleFinePitch(u32 arg0) {
     return 0;
 }
 
+#ifdef NON_MATCHING
 u8 GbMusic_CmdSetEnvelope(u32 arg0) {
     u8 temp_a0;
     u8 temp_a1;
     u8 temp_v0;
-    u8 temp_t9;
 
     temp_v0 = GbMusic_ReadStreamByte(arg0);
     D_800FCD70[arg0].unk_03 = temp_v0;
     D_800FCD70[arg0].unk_04 = temp_v0;
-
     temp_v0 = GbMusic_ReadStreamByte(arg0);
     temp_a0 = temp_v0 & 0xF0;
-    temp_a0 >>= 4;
-    temp_a1 = temp_a0;
-    temp_a1 >>= 1;
-    temp_t9 = temp_a0 & 1;
-    temp_a0 = temp_a1 + temp_t9;
-    temp_a0 <<= 4;
-    temp_t9 = temp_a0 | temp_a1;
-    D_800FCD70[arg0].unk_00 = temp_t9;
-
-    temp_t9 = temp_v0 & 0xF;
-    temp_v0 = temp_t9 << 4;
-    temp_v0 |= temp_t9;
-    D_800FCD70[arg0].unk_01 = temp_v0;
+    temp_a0 = (temp_a0 >> 4) & 0xFF;
+    temp_a1 = temp_a0 >> 1;
+    temp_v0 &= 0xF;
+    temp_a0 &= 1;
+    D_800FCD70[arg0].unk_00 = ((temp_a1 + temp_a0) * 0x10) | temp_a1;
+    D_800FCD70[arg0].unk_01 = (temp_v0 * 0x10) | temp_v0;
     return 0;
 }
+#else
+#pragma GLOBAL_ASM("asm/us/nonmatchings/435D0/GbMusic_CmdSetEnvelope.s")
+#endif
 
 u8 GbMusic_CmdPitchSlide(u32 arg0) {
     UNUSED s32 pad;
@@ -432,7 +427,8 @@ u8 GbMusic_CmdSetOctave(u32 arg0, u8 arg1) {
     return 0;
 }
 
-s32 GbMusic_CmdPlayNoteWithDuty(u32 arg0, u8 arg1) {
+#ifdef NON_MATCHING
+u8 GbMusic_CmdPlayNoteWithDuty(u32 arg0, u8 arg1) {
     u8 sp27;
     u8 sp26;
     u8 sp25;
@@ -457,6 +453,9 @@ s32 GbMusic_CmdPlayNoteWithDuty(u32 arg0, u8 arg1) {
     }
     return var_v1;
 }
+#else
+#pragma GLOBAL_ASM("asm/us/nonmatchings/435D0/GbMusic_CmdPlayNoteWithDuty.s")
+#endif
 
 u8 GbMusic_CmdPlayNote(u32 arg0, u8 arg1) {
     if (arg0 < 4) {
@@ -887,37 +886,61 @@ void GbMusic_ResetApu(void) {
     D_800FCE40[1] = 0xFF;
 }
 
+#ifdef NON_MATCHING
 void GbMusic_BindSequenceTracks(u8 arg0) {
-    u32 i;
-    u8 x;
-    u8 temp;
+    s32 sp1C = arg0;
+    s32 temp_a0;
+    u8 var_a1;
+    s32 var_a3;
+    unk_D_800FC6D4_008* var_t0;
+    unk_D_800FC6D4_008* var_t1;
+    u32 var_a2;
+    u8 temp_t3;
     u8 temp_v1;
+    u8* temp_t9;
+    u8* temp_v0;
+    u32 tmp;
+    s32 tmp2;
+    s32 i;
+    u8* tmp3;
 
-    temp_v1 = ((unk_D_800FC6D4_008*)D_800FCEC8)->unk_04;
-    temp = (temp_v1 >> 6) & 3;
-    x = temp_v1 & 0xF;
-    i = 0;
-    while (1) {
-        D_800FCD48[x] = arg0 + 1;
-        if (x >= 3) {
-            D_800FCD58[x] |= 4;
+    var_t0 = D_800FCEC8;
+    tmp2 = var_t0->unk_04;
+    tmp = ((tmp2 >> 6) & 3) & 0xFF;
+    var_a1 = tmp2 & 0xF;
+    var_a2 = 0;
+    var_a3 = 0;
+
+    while (true) {
+        D_800FCD48[var_a1] = sp1C + 1;
+        if (var_a1 >= 3) {
+            D_800FCD58[var_a1] |= 4;
         }
+        var_a2++;
 
-        D_800FCE48[x] = ((unk_D_800FC6D4_008*)D_800FCEC8 + i)->unk_00;
-        D_800FCE88[x] = D_800FCE48[x];
-        i++;
-        
-        if (i > temp) {
+        D_800FCE88[var_a1] = D_800FCE48[var_a1] = var_t0->unk_00;
+
+        var_a3 += 8;
+        if (tmp < var_a2) {
             break;
         }
-        x = ((unk_D_800FC6D4_008*)D_800FCEC8 + i)->unk_04 & 0xF;
+
+        // var_t0 = &D_800FCEC8[var_a2];
+        var_t0 = (u8*)D_800FCE48 + var_a3;
+        var_a1 = var_t0->unk_04 & 0xF;
     }
 
-    if ((arg0 >= D_800785A0) && (arg0 < D_800785A4)) {
-        D_800FCD48[4] = arg0 + 1;
-        D_800FCD48[5] = arg0 + 1;
-        D_800FCD48[6] = arg0 + 1;
-        D_800FCD48[7] = arg0 + 1;
+    if ((sp1C >= D_800785A0) && (sp1C < D_800785A4)) {
+        // tmp3[4] = tmp3[5] = tmp3[6] = tmp3[7] = sp1C + 1;
+
+        for (i = 0; i < 4; i++) {
+            D_800FCD48[4 + i] = sp1C + 1;
+        }
+        // D_800FCD48[4] = sp1C + 1;
+        // D_800FCD48[5] = sp1C + 1;
+        // D_800FCD48[6] = sp1C + 1;
+        // D_800FCD48[7] = sp1C + 1;
+
         D_800FCE48[6] = &D_800785B8;
         if (D_800FCE40[0] == 0) {
             D_800FCE40[0] = GbAudio_GetRegisterValue(0xFF24);
@@ -925,6 +948,9 @@ void GbMusic_BindSequenceTracks(u8 arg0) {
         }
     }
 }
+#else
+#pragma GLOBAL_ASM("asm/us/nonmatchings/435D0/GbMusic_BindSequenceTracks.s")
+#endif
 
 s32 GbMusic_CountActiveHighChannels(void) {
     s32 ret = 0;
@@ -940,7 +966,7 @@ s32 GbMusic_CountActiveHighChannels(void) {
 }
 
 #ifdef NON_MATCHING
-void func_80044A50(unk_D_800FC6D4* arg0) {
+void GbMusic_RelocateSequenceTable(unk_D_800FC6D4* arg0) {
     u32 i;
     u32 end;
     unk_D_800FC6D4_008* ptr;
@@ -950,7 +976,7 @@ void func_80044A50(unk_D_800FC6D4* arg0) {
         return;
     }
 
-    end = arg0->unk_04 * 3;
+    end = arg0->relocationEntryCount * 3;
     ptr = arg0->offset + a0;
     arg0->offset = ptr;
 
@@ -961,5 +987,5 @@ void func_80044A50(unk_D_800FC6D4* arg0) {
     arg0->flags = 1;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/gb_audio/func_80044A50.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/435D0/GbMusic_RelocateSequenceTable.s")
 #endif

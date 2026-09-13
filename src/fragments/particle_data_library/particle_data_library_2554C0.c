@@ -4,25 +4,6 @@
 #include "src/battle_hud.h"
 #include "src/model_renderer_callbacks.h"
 
-const char D_810041C0[0xC] = "DUMMY NAME";
-const char D_810041CC[0x4] = "";
-
-const Gfx D_810041D0[] = {
-    gsDPPipeSync(),
-    gsDPSetCycleType(G_CYC_2CYCLE),
-    gsDPSetTextureLUT(G_TT_NONE),
-    gsSPLoadGeometryMode(0),
-    gsSPSetGeometryMode(G_ZBUFFER | G_SHADE | G_LIGHTING | G_SHADING_SMOOTH),
-    gsDPSetCombineLERP(PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, 0, 0, 0, TEXEL0, COMBINED, 0, PRIM_LOD_FRAC, 0, 0, 0, 0, COMBINED),
-    gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
-    gsSPEndDisplayList(),
-};
-
-const char D_81004210[0x4] = "Ａ";
-const char D_81004214[0x4] = "";
-const char D_81004218[0x4] = "";
-const char D_8100421C[0x4] = "";
-
 Gfx* DisplayList_BuildIndexedTextureSegment(Gfx* gfx, DisplayListAddresses* addresses, s32 index) {
     gSPDisplayList(gfx++, addresses->segments[0]);
     // TODO: Convert to gDPLoadTextureBlock

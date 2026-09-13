@@ -36,14 +36,14 @@ void LabPC_BuildMenuTitleLabel(unk_func_88503298* arg0, s32 arg1, s32 arg2, Memo
     var_s1 += 0x10;
 
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(arg0, sizeof(unk_func_88503298));
-    arg0->unk_00.unk_10.unk_00 = ((0x280 - var_s1) / 2) - arg1;
-    arg0->unk_00.unk_10.unk_02 = arg2;
+    arg0->unk_00.position.x = ((0x280 - var_s1) / 2) - arg1;
+    arg0->unk_00.position.y = arg2;
 
     arg0->unk_2C = mem_pool_alloc(arg3, sizeof(WidgetAnimatedPanel));
     ((func88502274)Memmap_GetFragmentVaddr(WidgetTree_InitAnimatedPanel))(arg0->unk_2C, 0, 0, var_s1, 0x68);
-    arg0->unk_2C->unk_00.unk_28 |= 0x200;
-    arg0->unk_2C->unk_00.unk_28 |= 0x400;
-    arg0->unk_2C->unk_00.unk_28 &= ~1;
+    arg0->unk_2C->node.flags |= 0x200;
+    arg0->unk_2C->node.flags |= 0x400;
+    arg0->unk_2C->node.flags &= ~1;
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_2C);
 
     temp_s0 = mem_pool_alloc(arg3, sizeof(unk_func_885012A4));
@@ -89,15 +89,15 @@ void LabPC_BuildMenuGridWidget(unk_func_88200FA0_030* arg0, s32 arg1, s32 arg2, 
     var_s2 += 0x10;
 
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(arg0, sizeof(unk_func_88200FA0_030));
-    arg0->unk_00.unk_20 = LabPC_MenuGridWidget_HandleInput;
-    arg0->unk_00.unk_10.unk_00 = (0x280 - var_s2) / 2;
-    arg0->unk_00.unk_10.unk_02 = arg1;
+    arg0->unk_00.inputCallback = LabPC_MenuGridWidget_HandleInput;
+    arg0->unk_00.position.x = (0x280 - var_s2) / 2;
+    arg0->unk_00.position.y = arg1;
 
     arg0->unk_2C = mem_pool_alloc(arg4, sizeof(WidgetAnimatedPanel));
     ((func88502274)Memmap_GetFragmentVaddr(WidgetTree_InitAnimatedPanel))(arg0->unk_2C, 0, 0, var_s2, 0xA4);
-    arg0->unk_2C->unk_00.unk_28 |= 0x200;
-    arg0->unk_2C->unk_00.unk_28 |= 0x400;
-    arg0->unk_2C->unk_00.unk_28 &= ~1;
+    arg0->unk_2C->node.flags |= 0x200;
+    arg0->unk_2C->node.flags |= 0x400;
+    arg0->unk_2C->node.flags &= ~1;
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_2C);
 
     sp6C = mem_pool_alloc(arg4, sizeof(unk_func_8850B254));
@@ -128,7 +128,7 @@ void LabPC_BuildMenuGridWidget(unk_func_88200FA0_030* arg0, s32 arg1, s32 arg2, 
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(temp_s0_2, arg0->unk_30);
 
     arg0->unk_34 = mem_pool_alloc(arg4, sizeof(unk_func_88503298));
-    LabPC_BuildMenuTitleLabel(arg0->unk_34, arg0->unk_00.unk_10.unk_00, 0xB4, arg4);
+    LabPC_BuildMenuTitleLabel(arg0->unk_34, arg0->unk_00.position.x, 0xB4, arg4);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_34);
     LabPC_MenuGridWidget_RefreshTitle(arg0, arg2);
 
@@ -154,12 +154,12 @@ void LabPC_DrawMenuGridCell(s32 arg0, s32 arg1, char* arg2, s32 arg3) {
 s32 LabPC_MenuGridWidget_HandleInput(unk_func_88200FA0_030* arg0, Controller* arg1) {
     s32 sp1C;
 
-    if (arg0->unk_2C->unk_30 & 2) {
-        sp1C = arg0->unk_30->unk_00.unk_20(arg0->unk_30, arg1);
+    if (arg0->unk_2C->animState & 2) {
+        sp1C = arg0->unk_30->unk_00.inputCallback(arg0->unk_30, arg1);
         if ((sp1C & 1) && (sp1C & 8)) {
             LabPC_MenuGridWidget_RefreshTitle(arg0, arg0->unk_30->unk_38);
         }
-    } else if (!(arg0->unk_2C->unk_00.unk_28 & 1)) {
+    } else if (!(arg0->unk_2C->node.flags & 1)) {
         sp1C = 2;
     } else {
         sp1C = 1;
@@ -168,14 +168,14 @@ s32 LabPC_MenuGridWidget_HandleInput(unk_func_88200FA0_030* arg0, Controller* ar
 }
 
 void LabPC_MenuGridWidget_Open(unk_func_88200FA0_030* arg0) {
-    arg0->unk_2C->unk_00.unk_28 |= 1;
-    arg0->unk_34->unk_2C->unk_00.unk_28 |= 1;
+    arg0->unk_2C->node.flags |= 1;
+    arg0->unk_34->unk_2C->node.flags |= 1;
 }
 
 void LabPC_MenuGridWidget_Close(unk_func_88200FA0_030* arg0) {
-    arg0->unk_2C->unk_2C = 0xB;
-    arg0->unk_34->unk_2C->unk_2C = 0xB;
-    while (arg0->unk_2C->unk_00.unk_28 & 1) {
+    arg0->unk_2C->animFrame = 0xB;
+    arg0->unk_34->unk_2C->animFrame = 0xB;
+    while (arg0->unk_2C->node.flags & 1) {
         Ui_SendMessageAndPollInput(NULL);
     }
 }
@@ -215,8 +215,8 @@ void LabPC_BuildMenuWidget(unk_func_88200FA0* arg0, s32 arg1, s32 arg2, s32 arg3
     unk_func_88509E34* sp40;
 
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(arg0, 0x34);
-    arg0->unk_00.unk_10.unk_00 = arg1;
-    arg0->unk_00.unk_10.unk_02 = arg2;
+    arg0->unk_00.position.x = arg1;
+    arg0->unk_00.position.y = arg2;
 
     sp4C = mem_pool_alloc(arg4, sizeof(WidgetNode));
     ((func885031E8)Memmap_GetFragmentVaddr(WidgetTree_InitVisibilityGate))(sp4C, 0, 0, 0x280, 0x1E0);
@@ -247,7 +247,7 @@ void LabPC_BuildMenuWidget(unk_func_88200FA0* arg0, s32 arg1, s32 arg2, s32 arg3
     LabPC_BuildMenuGridWidget(arg0->unk_30, 0x78, arg3, sp4C, arg4);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_30);
 
-    arg0->unk_00.unk_24(&arg0->unk_00, 1);
+    arg0->unk_00.setStateCallback(&arg0->unk_00, 1);
 }
 
 s32 LabPC_RunWidgetLoop(unk_func_88200FA0* arg0) {

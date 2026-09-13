@@ -30,7 +30,7 @@ void Trade_OpenInfoBox(unk_D_82F144D0* arg0, u8* arg1, s16 arg2, s16 arg3) {
     ptr->unk_1C = NULL;
     ptr->unk_20 = PokeIcon_AllocFramebuffers(1);
     ptr->unk_24 = PokeIcon_CreateModelPreview(ptr->unk_20, 0xE4, 0xA0, 0, 0, 0xE0, 0xA0, D_3014468);
-    ptr->unk_24->unk_00 &= ~2;
+    ptr->unk_24->flags &= ~2;
     PokeIcon_SetPreviewMon(ptr->unk_24, ptr->unk_14, 0x108D);
     Audio_PlaySoundEffectById(4);
 }
@@ -251,7 +251,7 @@ void Trade_DrawInfoBox(unk_D_82F20A10* arg0) {
         }
 
         Trade_DrawFilledFrame(arg0->unk_04, arg0->unk_06 + 0x124, 0x210, 0x24, 0x28, 0x28, 0x64);
-        BattleHud_DrawHpBarTexture(arg0->unk_04 + 0x140, arg0->unk_06 + 0x5A, 0x94, sp11C->unk_02, sp11C->unk_26);
+        BattleHud_DrawHpBarTexture(arg0->unk_04 + 0x140, arg0->unk_06 + 0x5A, 0x94, sp11C->currentHP, sp11C->maxHP);
 
         gSPDisplayList(gDisplayListHead++, D_8006F4E0);
 
@@ -261,13 +261,13 @@ void Trade_DrawInfoBox(unk_D_82F20A10* arg0) {
         Gfx_DrawTextureRgba16(arg0->unk_04 + 0xF8, arg0->unk_06 + 0x104, 0x1C, 0x1A, D_302E418, 0x1C, 0x200000);
 
         for (i = 0; i < 4; i++) {
-            if (sp11C->unk_09[i] == 0) {
+            if (sp11C->moves[i] == 0) {
                 break;
             }
 
-            if (Trade_IsMoveInvalid(sp11C->unk_09[i]) == 0) {
+            if (Trade_IsMoveInvalid(sp11C->moves[i]) == 0) {
                 Gfx_DrawTextureRgba16(D_82F13C54[i] + arg0->unk_04, D_82F13C5C[i] + arg0->unk_06, 0x14, 0x14,
-                              D_82F13C68[gMoveDisplayInfo[sp11C->unk_09[i] - 1].unk_01], 0x14, 0x200000);
+                              D_82F13C68[gMoveDisplayInfo[sp11C->moves[i] - 1].unk_01], 0x14, 0x200000);
             }
         }
 
@@ -276,69 +276,69 @@ void Trade_DrawInfoBox(unk_D_82F20A10* arg0) {
         gSPDisplayList(gDisplayListHead++, D_8006F518);
 
         for (i = 0; i < 4; i++) {
-            if (sp11C->unk_09[i] == 0) {
+            if (sp11C->moves[i] == 0) {
                 break;
             }
 
-            if (Trade_IsMoveInvalid(sp11C->unk_09[i]) == 0) {
-                ptr = &gMoveData[sp11C->unk_09[i] - 1];
+            if (Trade_IsMoveInvalid(sp11C->moves[i]) == 0) {
+                ptr = &gMoveData[sp11C->moves[i] - 1];
 
-                var_t0 = ptr->unk_05 / 5;
+                var_t0 = ptr->basePP / 5;
                 if (var_t0 >= 7) {
                     var_t0 = 7;
                 }
 
-                sp80 = ((sp11C->unk_20[i] >> 6) * var_t0) + ptr->unk_05;
+                sp80 = ((sp11C->pp[i] >> 6) * var_t0) + ptr->basePP;
                 Gfx_DrawTextureIa8(D_82F13C54[i] + arg0->unk_04 + 0xB6, D_82F13C5C[i] + arg0->unk_06 + 6, 8, 0xC, D_302F528,
                               8, 0);
                 Trade_DrawNumberTwoDigits(D_82F13C54[i] + arg0->unk_04 + 0xA4, D_82F13C5C[i] + arg0->unk_06 + 6,
-                              sp11C->unk_20[i] & 0x3F);
+                              sp11C->pp[i] & 0x3F);
                 Trade_DrawNumberTwoDigits(D_82F13C54[i] + arg0->unk_04 + 0xC0, D_82F13C5C[i] + arg0->unk_06 + 6, sp80);
             }
         }
 
         Font_BeginTranslucentTextRendering();
         Font_SetActive(0x10, 0);
-        Font_Printf(arg0->unk_04 + 0x10, arg0->unk_06 + 6, sp11C->unk_30);
+        Font_Printf(arg0->unk_04 + 0x10, arg0->unk_06 + 6, sp11C->nickname);
         Font_SetActive(0x10, 0);
         Font_Printf(arg0->unk_04 + 0xA0, arg0->unk_06 + 6, "%s%d", Text_GetString(NULL, 0, D_82F13B74, 0x15),
-                      sp11C->unk_24);
+                      sp11C->level);
         Font_SetActive(8, 0);
         Font_Printf(arg0->unk_04 + 0x12E, arg0->unk_06 + 8, "%s%03d", Text_GetString(NULL, 0, D_82F13B74, 0x16),
-                      sp11C->unk_00.unk_00);
+                      sp11C->species.dexId);
         Font_SetActive(8, 0);
-        Font_Printf(arg0->unk_04 + 0x19C, arg0->unk_06 + 8, Trade_GetSpeciesName(sp11C->unk_00.unk_00));
+        Font_Printf(arg0->unk_04 + 0x19C, arg0->unk_06 + 8, Trade_GetSpeciesName(sp11C->species.dexId));
 
-        temp_s0 = PokemonType_ToDisplayIndex(sp11C->unk_06);
-        temp_s1_2 = PokemonType_ToDisplayIndex(sp11C->unk_07);
+        temp_s0 = PokemonType_ToDisplayIndex(sp11C->type1);
+        temp_s1_2 = PokemonType_ToDisplayIndex(sp11C->type2);
 
         Font_SetActive(8, 0);
         Font_Printf(arg0->unk_04 + 0xE4, arg0->unk_06 + 0x28, Text_GetString(NULL, 0, gTradeStrings, 0xC));
         Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
         Font_Printf(arg0->unk_04 + 0x120, arg0->unk_06 + 0x28, "1/");
         Gfx_SetEnvColor(D_80071D88[temp_s0].color.r, D_80071D88[temp_s0].color.g, D_80071D88[temp_s0].color.b, 0xFF);
-        Font_Printf(arg0->unk_04 + 0x13E, arg0->unk_06 + 0x28, "%s", Trade_GetTypeName(sp11C->unk_06));
+        Font_Printf(arg0->unk_04 + 0x13E, arg0->unk_06 + 0x28, "%s", Trade_GetTypeName(sp11C->type1));
 
-        if (sp11C->unk_06 != sp11C->unk_07) {
+        if (sp11C->type1 != sp11C->type2) {
             Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
             Font_Printf(arg0->unk_04 + 0x19E, arg0->unk_06 + 0x28, "2/");
             Gfx_SetEnvColor(D_80071D88[temp_s1_2].color.r, D_80071D88[temp_s1_2].color.g, D_80071D88[temp_s1_2].color.b,
                           0xFF);
-            Font_Printf(arg0->unk_04 + 0x1BC, arg0->unk_06 + 0x28, "%s", Trade_GetTypeName(sp11C->unk_07));
+            Font_Printf(arg0->unk_04 + 0x1BC, arg0->unk_06 + 0x28, "%s", Trade_GetTypeName(sp11C->type2));
         }
 
         Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
         Font_SetActive(8, 0);
         Font_Printf(arg0->unk_04 + 0x144, arg0->unk_06 + 0x44, Text_GetString(NULL, 0, D_82F13B74, 8));
         Font_SetActive(8, 0);
-        sprintf(sp94, "%d", sp11C->unk_26);
+        sprintf(sp94, "%d", sp11C->maxHP);
         Font_Printf((arg0->unk_04 - Font_MeasureTextExtent(0, 0, sp94)) + 0x1D0, arg0->unk_06 + 0x44, sp94);
         temp_s1_3 = 0x1D0 - Font_MeasureTextExtent(0, 0, "999");
         sprintf(sp94, "/");
         temp_v0_5 = Font_MeasureTextExtent(0, 0, sp94);
         Font_Printf((arg0->unk_04 + temp_s1_3) - temp_v0_5, arg0->unk_06 + 0x44, sp94);
         temp_s1_3 -= temp_v0_5;
-        sprintf(sp94, "%d", sp11C->unk_02);
+        sprintf(sp94, "%d", sp11C->currentHP);
         Font_Printf((arg0->unk_04 + temp_s1_3) - Font_MeasureTextExtent(0, 0, sp94), arg0->unk_06 + 0x44, sp94);
         Font_SetActive(8, 0);
         Font_Printf(arg0->unk_04 + 0x144, arg0->unk_06 + 0x6A, Text_GetString(NULL, 0, gTradeStrings, 0xD));
@@ -347,13 +347,13 @@ void Trade_DrawInfoBox(unk_D_82F20A10* arg0) {
         Font_Printf(arg0->unk_04 + 0x144, arg0->unk_06 + 0xAC, Text_GetString(NULL, 0, gTradeStrings, 0x10));
         Font_SetActive(8, 0);
 
-        sprintf(sp94, "%d", sp11C->unk_28);
+        sprintf(sp94, "%d", sp11C->attack);
         Font_Printf((arg0->unk_04 - Font_MeasureTextExtent(0, 0, sp94)) + 0x1D0, arg0->unk_06 + 0x6A, sp94);
-        sprintf(sp94, "%d", sp11C->unk_2A);
+        sprintf(sp94, "%d", sp11C->defense);
         Font_Printf((arg0->unk_04 - Font_MeasureTextExtent(0, 0, sp94)) + 0x1D0, arg0->unk_06 + 0x80, sp94);
-        sprintf(sp94, "%d", sp11C->unk_2C);
+        sprintf(sp94, "%d", sp11C->speed);
         Font_Printf((arg0->unk_04 - Font_MeasureTextExtent(0, 0, sp94)) + 0x1D0, arg0->unk_06 + 0x96, sp94);
-        sprintf(sp94, "%d", sp11C->unk_2E);
+        sprintf(sp94, "%d", sp11C->special);
         Font_Printf((arg0->unk_04 - Font_MeasureTextExtent(0, 0, sp94)) + 0x1D0, arg0->unk_06 + 0xAC, sp94);
         Font_SetActive(8, 0);
 
@@ -366,13 +366,13 @@ void Trade_DrawInfoBox(unk_D_82F20A10* arg0) {
             for (i = 0; i < 4; i++) {
                 sp6C = D_82F13C48;
 
-                if (sp11C->unk_09[i] == 0) {
+                if (sp11C->moves[i] == 0) {
                     break;
                 }
 
-                if (Trade_IsMoveInvalid(sp11C->unk_09[i]) == 0) {
-                    sp70 = &D_80071D88[gMoveDisplayInfo[sp11C->unk_09[i] - 1].unk_01].color;
-                    sp74 = Trade_GetMoveName(sp11C->unk_09[i]);
+                if (Trade_IsMoveInvalid(sp11C->moves[i]) == 0) {
+                    sp70 = &D_80071D88[gMoveDisplayInfo[sp11C->moves[i] - 1].unk_01].color;
+                    sp74 = Trade_GetMoveName(sp11C->moves[i]);
                 } else {
                     // "？？？？？？？"
                     static const char D_29C080[] = { 0xA1, 0xA9, 0xA1, 0xA9, 0xA1, 0xA9, 0xA1,

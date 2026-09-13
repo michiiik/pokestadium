@@ -2,7 +2,7 @@
 #define _SRC_DP_INTRO_H_
 
 #include "global.h"
-#include "jpeg_stream.h"
+#include "jpeg_decoder.h"
 
 void DisplayTask_Initialize(UnkStruct80001380* arg0);
 void DisplayTask_Submit(UnkStruct80001380* arg0, struct UnkArray4* arg1, s32 arg2);

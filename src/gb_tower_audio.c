@@ -4,14 +4,14 @@
 #include "sections.h"
 #include "memory.h"
 #include "dp_intro.h"
-#include "jpeg_stream.h"
+#include "jpeg_decoder.h"
 #include "scheduler.h"
 #include "util.h"
 #include "src/fragments/gb_tower_emulator/gb_tower_emulator.h"
 
-unk_D_800AA660* D_800AA660;
-unk_D_800AA664* D_800AA664;
-static char D_800AA668;
+extern unk_D_800AA660* D_800AA660;
+extern unk_D_800AA664* D_800AA664;
+extern char D_800AA668;
 
 extern u8 D_81200000[];
 
@@ -24,7 +24,7 @@ void GbTower_AudioThread(UNUSED void* arg0) {
 
     while (1) {
         Sched_WaitClientQueue(D_800AA664);
-        if (D_800A62E0.unk_A38 >= 0x15) {
+        if (D_800A62E0.shutdownCounter >= 0x15) {
             continue;
         }
         func(D_800AA664);
@@ -43,14 +43,14 @@ void GbTower_EmuThread(UNUSED void* arg0) {
 
     while (1) {
         Sched_WaitClientQueue(D_800AA660);
-        if (D_800A62E0.unk_A38 >= 0x15) {
+        if (D_800A62E0.shutdownCounter >= 0x15) {
             continue;
         }
         func2(D_800AA660);
     }
 }
 
-void GbTower_Start(UnkInputStruct8000D738* arg0) {
+void GbTower_Start(GbTowerLaunchData* arg0) {
     s32 temp_v0;
 
     main_pool_push_state('GBEM');
@@ -62,7 +62,7 @@ void GbTower_Start(UnkInputStruct8000D738* arg0) {
 
     D_800AA660->font1 = BinArchive_GetFile(temp_v0, 0);
     D_800AA660->font2 = BinArchive_GetFile(temp_v0, 1);
-    D_800AA660->unk_2204 = *arg0;
+    D_800AA660->launchData = *arg0;
     osCreateMesgQueue(&D_800AA660->queue2, &D_800AA660->mesg, 1);
     osCreateThread(&D_800AA664->thread, 10, GbTower_AudioThread, NULL, (u32)D_800AA664 + 0x21E0, 0x11);
     osCreateThread(&D_800AA660->thread, 8, GbTower_EmuThread, NULL, (u32)D_800AA660 + 0x21E0, 0xF);
@@ -77,8 +77,8 @@ OSMesg* GbTower_RecvExitMesg(void) {
     return mesg;
 }
 
-void GbTower_Stop(UnkInputStruct8000D738* arg0) {
-    *arg0 = D_800AA660->unk_2204;
+void GbTower_Stop(GbTowerLaunchData* arg0) {
+    *arg0 = D_800AA660->launchData;
     GbTower_SetPollMask(D_800AA668);
     osViBlack(1U);
     Display_ApplyPendingVideoMode();

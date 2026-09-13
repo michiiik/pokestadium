@@ -9,7 +9,7 @@
 #include "src/input.h"
 #include "src/ui_graphics.h"
 #include "src/text_system.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/audio_sfx.h"
 #include "src/gfx_rect.h"
 #include "src/audio_loop_point.h"
@@ -164,7 +164,7 @@ static s16 D_8620829C;
 u32 D_862082A0[4];
 
 void RattataGame_InitAIDifficulty(RattataRacer* arg0) {
-    arg0->unk_002 = D_8780FA38 + 1;
+    arg0->aiDifficulty = D_8780FA38 + 1;
 }
 
 void RattataGame_DrawRankBanners(void) {
@@ -180,8 +180,8 @@ void RattataGame_DrawRankBanners(void) {
     for (i = 0; i < 4; i++) {
         D_86204590 = &D_86203E50[i];
         D_86204594 = &D_86204590->unk_008;
-        if (D_86204590->unk_19E == 2) {
-            switch (D_86204590->unk_1B2) {
+        if (D_86204590->racePhase == 2) {
+            switch (D_86204590->rankPlace) {
                 case 0:
                     gDisplayListHead = MiniGfx_DrawTexturedQuad(gDisplayListHead, &sp98, -(i - 1.5f) * 40.0f, 5.0f, 30.0f, 0.25f,
                                                      &D_4000008, 0x20, 0x20);
@@ -226,22 +226,22 @@ void RattataGame_UpdateAIInput(void) {
         for (i = 0; i < 4; i++) {
             D_86204590 = &D_86203E50[i];
 
-            if (D_86204590->unk_002 == 0) {
-                D_86204590->unk_170 = sp60[i];
+            if (D_86204590->aiDifficulty == 0) {
+                D_86204590->inputFlags = sp60[i];
             } else {
-                D_86204590->unk_170 = 0;
-                if (D_86204590->unk_002 > 0) {
-                    temp_s0 = &D_86203CEC[D_86204590->unk_002 - 1];
+                D_86204590->inputFlags = 0;
+                if (D_86204590->aiDifficulty > 0) {
+                    temp_s0 = &D_86203CEC[D_86204590->aiDifficulty - 1];
 
                     if (Rand_Range(0x64) < temp_s0->unk_04) {
-                        D_86204590->unk_170 |= 0x8000;
+                        D_86204590->inputFlags |= 0x8000;
                     }
 
                     if (Rand_Range(0x64) < temp_s0->unk_06) {
-                        temp_fv0 = D_86204590->unk_1A8;
-                        temp_fv1 = D_86204590->unk_1A4;
+                        temp_fv0 = D_86204590->racerZPosition;
+                        temp_fv1 = D_86204590->hurdleDistance;
                         if (((temp_fv0 + 10.0f) < temp_fv1) && (temp_fv1 < (temp_fv0 + 20.0f))) {
-                            D_86204590->unk_170 |= 0x800;
+                            D_86204590->inputFlags |= 0x800;
                         }
                     }
                 }
@@ -252,7 +252,7 @@ void RattataGame_UpdateAIInput(void) {
     }
 
     for (i = 0; i < 4; i++) {
-        D_86203E50[i].unk_170 = sp60[i];
+        D_86203E50[i].inputFlags = sp60[i];
     }
 }
 
@@ -470,7 +470,7 @@ void RattataGame_DrawFrame(s32 arg0) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
-        D_862082A0[i] = D_86203E50[i].unk_190 * 36.0f;
+        D_862082A0[i] = D_86203E50[i].trackPosition * 36.0f;
     }
 
     BgStage_DrawFrame();
@@ -518,7 +518,7 @@ s32 RattataGame_WaitForStart(void) {
     for (i = 0; i < 4; i++) {
         D_86204590 = &D_86203E50[i];
         if ((D_8780FA30[i] == 0) && (D_86204718 == 0)) {
-            D_86204590->unk_002 = 0;
+            D_86204590->aiDifficulty = 0;
         } else {
             RattataGame_InitAIDifficulty(D_86204590);
         }
@@ -607,42 +607,42 @@ void RattataGame_UpdateStartCountdown(void) {
 }
 
 void RattataGame_SyncRacerZPosition(RattataRacer* arg0) {
-    f32 temp_fv0 = arg0->unk_178 - 30.0f;
+    f32 temp_fv0 = arg0->currentSpeed - 30.0f;
 
     arg0->unk_008.unk_024.z = temp_fv0;
-    arg0->unk_194 = temp_fv0 / 3.0f;
+    arg0->raceProgressOffset = temp_fv0 / 3.0f;
 }
 
 void RattataGame_ResetRacerState(RattataRacer* arg0) {
-    arg0->unk_19C = 0;
-    arg0->unk_180 = 30.0f;
-    arg0->unk_184 = 30.0f;
-    arg0->unk_17C = 5.0f;
-    arg0->unk_188 = 3.0f;
-    arg0->unk_174 = 0.0f;
-    arg0->unk_178 = 0.0f;
-    arg0->unk_198 = -1.0f;
+    arg0->runAnimState = 0;
+    arg0->topSpeed = 30.0f;
+    arg0->minSpeed = 30.0f;
+    arg0->minSpeedThreshold = 5.0f;
+    arg0->accelRate = 3.0f;
+    arg0->targetSpeed = 0.0f;
+    arg0->currentSpeed = 0.0f;
+    arg0->finishTime = -1.0f;
     RattataGame_SyncRacerZPosition(arg0);
-    arg0->unk_190 = 0.0f - arg0->unk_194;
+    arg0->trackPosition = 0.0f - arg0->raceProgressOffset;
 }
 
 s32 RattataGame_CheckHurdleCollision(RattataRacer* arg0, RattataHurdleMarker* arg1) {
     f32 temp_fv0;
     f32 temp_fv1;
 
-    arg0->unk_1A4 = -1.0f;
+    arg0->hurdleDistance = -1.0f;
 
-    if ((arg1->unk_000 == 0) || (arg1->unk_002 == 0) || (arg1->unk_002 >= 2)) {
+    if ((arg1->activeFlag == 0) || (arg1->markerState == 0) || (arg1->markerState >= 2)) {
         return 0;
     }
 
     temp_fv0 = 30.0f - (arg1->unk_004.unk_040.unk_08 / 111411.2f);
     temp_fv1 = arg0->unk_008.unk_024.z / 3.0f;
 
-    arg0->unk_1A8 = temp_fv1;
-    arg0->unk_1A4 = temp_fv0;
+    arg0->racerZPosition = temp_fv1;
+    arg0->hurdleDistance = temp_fv0;
 
-    if ((temp_fv0 <= temp_fv1 - 3.0f) && (arg0->unk_19C == 1) && (arg0->unk_008.unk_040.unk_08 >= 0xC0001) &&
+    if ((temp_fv0 <= temp_fv1 - 3.0f) && (arg0->runAnimState == 1) && (arg0->unk_008.unk_040.unk_08 >= 0xC0001) &&
         (arg1->unk_170 == 0)) {
         arg1->unk_170 = 1;
     }
@@ -651,7 +651,7 @@ s32 RattataGame_CheckHurdleCollision(RattataRacer* arg0, RattataHurdleMarker* ar
         return 0;
     }
 
-    if (arg0->unk_19C == 1) {
+    if (arg0->runAnimState == 1) {
         if ((arg0->unk_008.unk_040.unk_08 >= 0x20001) && (arg0->unk_008.unk_040.unk_08 < 0x100000)) {
             return 0;
         }
@@ -661,7 +661,7 @@ s32 RattataGame_CheckHurdleCollision(RattataRacer* arg0, RattataHurdleMarker* ar
 }
 
 void RattataGame_UpdateRunAnimSpeed(RattataRacer* arg0) {
-    arg0->unk_008.unk_040.unk_0C = (arg0->unk_178 * 196608.0f) / arg0->unk_180;
+    arg0->unk_008.unk_040.unk_0C = (arg0->currentSpeed * 196608.0f) / arg0->topSpeed;
 }
 
 void RattataGame_SetRacerAnimState(RattataRacer* arg0, s32 arg1) {
@@ -669,54 +669,62 @@ void RattataGame_SetRacerAnimState(RattataRacer* arg0, s32 arg1) {
 
     switch (arg1) {
         case 3:
-            arg0->unk_19C = 3;
+            arg0->runAnimState = 3;
             ModelAnim_SetAnimation(temp_s0, 0);
             temp_s0->unk_040.unk_0C = 0x10000;
             break;
 
         case 0:
-            arg0->unk_19C = 0;
+            arg0->runAnimState = 0;
             ModelAnim_SetAnimation(temp_s0, 1);
             RattataGame_UpdateRunAnimSpeed(arg0);
             break;
 
         case 1:
-            arg0->unk_19C = 1;
+            arg0->runAnimState = 1;
             ModelAnim_SetAnimation(temp_s0, 2);
             temp_s0->unk_040.unk_0C = 0x10000;
-            MiniSound_DispatchCommand(0x60003, arg0->unk_000, 0);
+            MiniSound_DispatchCommand(0x60003, arg0->racerIndex, 0);
             break;
 
         case 2:
-            arg0->unk_19C = 2;
+            arg0->runAnimState = 2;
             ModelAnim_SetAnimation(temp_s0, 3);
             temp_s0->unk_040.unk_0C = 0x10000;
-            MiniSound_DispatchCommand(0x60004, arg0->unk_000, 0);
+            MiniSound_DispatchCommand(0x60004, arg0->racerIndex, 0);
             break;
     }
 }
 
+#ifdef NON_MATCHING
 void RattataGame_UpdateHurdleMarkers(RattataRacer* arg0) {
     s32 i;
+    f32 sp64;
     f32 temp_fs1;
     u32 temp_v0;
     unk_D_86002F58_004_000* temp_s1;
-    s32 arg0_unk000 = arg0->unk_000;
-    f32 unk_190;
+    s32 arg0_unk000 = arg0->racerIndex;
 
     for (i = 0; i < 10; i++) {
+        f32 unk_190;
         D_86208280 = &D_86204720[arg0_unk000][i];
-        temp_s1 = &D_86208280->unk_004;
-        D_86208280->unk_000 = 0;
-        unk_190 = arg0->unk_190;
-        temp_fs1 = D_86203BA0[D_8620471C][i] * 10.44f * 1.7f;
+        D_86208280->activeFlag = 0;
 
-        if (((temp_fs1 - 30.0f) <= unk_190) && (unk_190 <= ((temp_fs1 - 30.0f) + 67.64706f))) {
+        temp_fs1 = D_86203BA0[D_8620471C][i];
+        sp64 = temp_fs1 * 10.44f * 1.7f - 30.0f;
+        temp_s1 = &D_86204720[arg0_unk000][i].unk_004;
+        unk_190 = arg0->trackPosition;
 
-            switch (D_86208280->unk_002) {
+        // if ((sp64 >= unk_190) || (unk_190 >= (sp64 + 67.64706f))) {
+        //	continue;
+        // }
+
+        if ((sp64 >= unk_190) && (unk_190 >= (sp64 + 67.64706f))) {
+
+            switch (D_86208280->markerState) {
                 case 0:
-                    if ((unk_190 - (temp_fs1 - 30.0f)) < 5.0f) {
-                        D_86208280->unk_002 = 1;
+                    if ((unk_190 - sp64) < 5.0f) {
+                        D_86208280->markerState = 1;
                         Model_InitDisplayObject(temp_s1, 0, 0xB0, D_86203E34->unk_08->unk_00[arg0_unk000]);
                     }
                     break;
@@ -725,7 +733,7 @@ void RattataGame_UpdateHurdleMarkers(RattataRacer* arg0) {
                     D_86208280->unk_17A++;
                     if (D_86208280->unk_17A >= 5) {
                         D_86208280->unk_17A = 0;
-                        D_86208280->unk_002 = 3;
+                        D_86208280->markerState = 3;
                     }
                     break;
 
@@ -733,45 +741,49 @@ void RattataGame_UpdateHurdleMarkers(RattataRacer* arg0) {
                     D_86208280->unk_17A++;
                     if (D_86208280->unk_17A >= 5) {
                         D_86208280->unk_17A = 0;
-                        D_86208280->unk_002 = 2;
+                        D_86208280->markerState = 2;
                     }
                     break;
             }
 
-            if ((D_86208280->unk_002 > 0) && ((unk_190 - (temp_fs1 - 30.0f)) > 64.70588f)) {
-                D_86208280->unk_002 = 0;
+            if ((D_86208280->markerState > 0) && ((unk_190 - sp64) > 64.70588f)) {
+                D_86208280->markerState = 0;
                 ModelRenderer_ClearDisplayObject(temp_s1);
             }
 
-            if (D_86208280->unk_002 >= 2) {
-                D_86208280->unk_178++;
-                if (D_86208280->unk_178 >= 0x1F) {
-                    D_86208280->unk_002 = 0;
+            if (D_86208280->markerState >= 2) {
+                D_86208280->flashCounter++;
+                if (D_86208280->flashCounter >= 0x1F) {
+                    D_86208280->markerState = 0;
                     ModelRenderer_ClearDisplayObject(temp_s1);
                 }
             }
 
-            temp_v0 = ((unk_190 - temp_fs1) + 30.0f) * 1.7f * 65536.0f;
+            temp_v0 = ((unk_190 - temp_fs1 * 10.44f * 1.7f) + 30.0f) * 1.7f * 65536.0f;
             temp_s1->unk_040.unk_08 = (D_86208280->unk_16C + temp_v0) >> 1;
             D_86208280->unk_16C = temp_v0;
 
-            if (D_86208280->unk_002 == 1) {
+            if (D_86208280->markerState == 1) {
                 ModelAnim_SetAnimation(temp_s1, 0);
-                temp_s1->unk_01D = 0xFF;
-            } else if (D_86208280->unk_002 == 3) {
+                temp_s1->materialAlpha = 0xFF;
+            } else if (D_86208280->markerState == 3) {
                 ModelAnim_SetAnimation(temp_s1, 0);
-                temp_s1->unk_01D = 0x80;
-            } else if ((D_86208280->unk_002 == 0) || (D_86208280->unk_002 == 2)) {
+                temp_s1->materialAlpha = 0x80;
+            } else if ((D_86208280->markerState == 0) || (D_86208280->markerState == 2)) {
                 temp_s1->unk_040.unk_08 = 0x730000;
             }
 
             temp_s1->unk_040.unk_0C = 0;
-            D_86208280->unk_000 = 1;
+            D_86208280->activeFlag = 1;
         }
     }
 
     if (arg0) {}
 }
+#else
+void RattataGame_UpdateHurdleMarkers(RattataRacer* arg0);
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/8/fragment8/RattataGame_UpdateHurdleMarkers.s")
+#endif
 
 s16 RattataGame_UpdateRacers(void) {
     s32 i;
@@ -786,41 +798,41 @@ s16 RattataGame_UpdateRacers(void) {
         D_86204590 = &D_86203E50[i];
         D_86204594 = &D_86204590->unk_008;
 
-        D_86204590->unk_1A0 = 0;
+        D_86204590->finishedFlag = 0;
 
-        if (D_86204590->unk_178 < D_86204590->unk_174) {
-            var_fa0 = D_86204590->unk_174 - D_86204590->unk_178;
+        if (D_86204590->currentSpeed < D_86204590->targetSpeed) {
+            var_fa0 = D_86204590->targetSpeed - D_86204590->currentSpeed;
             if (var_fa0 < 1.0f) {
-                D_86204590->unk_178 += var_fa0;
+                D_86204590->currentSpeed += var_fa0;
             } else {
-                D_86204590->unk_178 += 1.0f;
+                D_86204590->currentSpeed += 1.0f;
             }
-        } else if (D_86204590->unk_174 < D_86204590->unk_178) {
-            var_fa0 = D_86204590->unk_178 - D_86204590->unk_174;
+        } else if (D_86204590->targetSpeed < D_86204590->currentSpeed) {
+            var_fa0 = D_86204590->currentSpeed - D_86204590->targetSpeed;
             if (var_fa0 < 1.0f) {
-                D_86204590->unk_178 -= var_fa0;
+                D_86204590->currentSpeed -= var_fa0;
             } else {
-                D_86204590->unk_178 -= 1.0f;
+                D_86204590->currentSpeed -= 1.0f;
             }
         }
 
-        if (D_86204590->unk_19E == 0) {
-            switch (D_86204590->unk_19C) {
+        if (D_86204590->racePhase == 0) {
+            switch (D_86204590->runAnimState) {
                 case 0:
-                    if (D_86204590->unk_170 & 0x800) {
+                    if (D_86204590->inputFlags & 0x800) {
                         RattataGame_SetRacerAnimState(D_86204590, 1);
                     } else {
-                        if (D_86204590->unk_170 & 0x8000) {
-                            D_86204590->unk_174 += D_86204590->unk_188;
-                            if (D_86204590->unk_174 < D_86204590->unk_184) {
-                                D_86204590->unk_174 = D_86204590->unk_184;
+                        if (D_86204590->inputFlags & 0x8000) {
+                            D_86204590->targetSpeed += D_86204590->accelRate;
+                            if (D_86204590->targetSpeed < D_86204590->minSpeed) {
+                                D_86204590->targetSpeed = D_86204590->minSpeed;
                             }
                         }
 
-                        D_86204590->unk_174 -= (D_86204590->unk_188 / 10.0f);
+                        D_86204590->targetSpeed -= (D_86204590->accelRate / 10.0f);
 
-                        if (D_86204590->unk_180 < D_86204590->unk_174) {
-                            D_86204590->unk_174 = D_86204590->unk_180;
+                        if (D_86204590->topSpeed < D_86204590->targetSpeed) {
+                            D_86204590->targetSpeed = D_86204590->topSpeed;
                             D_86204590->unk_1A2 = 5;
                         } else {
                             D_86204590->unk_1A2 -= 1;
@@ -829,14 +841,14 @@ s16 RattataGame_UpdateRacers(void) {
                             }
                         }
 
-                        if (D_86204590->unk_174 < 0.0f) {
-                            D_86204590->unk_174 = 0.0f;
+                        if (D_86204590->targetSpeed < 0.0f) {
+                            D_86204590->targetSpeed = 0.0f;
                         }
 
                         RattataGame_UpdateRunAnimSpeed(D_86204590);
                     }
 
-                    if (D_86204590->unk_174 <= D_86204590->unk_17C) {
+                    if (D_86204590->targetSpeed <= D_86204590->minSpeedThreshold) {
                         RattataGame_SetRacerAnimState(D_86204590, 3);
                     }
                     break;
@@ -848,80 +860,80 @@ s16 RattataGame_UpdateRacers(void) {
                     break;
 
                 case 2:
-                    D_86204590->unk_174 = 0.0f;
+                    D_86204590->targetSpeed = 0.0f;
                     if (ModelAnim_IsFinished(D_86204594) != 0) {
                         RattataGame_SetRacerAnimState(D_86204590, 3);
                     }
                     break;
 
                 case 3:
-                    D_86204590->unk_174 = 0.0f;
-                    if (D_86204590->unk_170 & 0x8000) {
-                        D_86204590->unk_174 = D_86204590->unk_184;
+                    D_86204590->targetSpeed = 0.0f;
+                    if (D_86204590->inputFlags & 0x8000) {
+                        D_86204590->targetSpeed = D_86204590->minSpeed;
                         RattataGame_SetRacerAnimState(D_86204590, 0);
                     }
                     break;
             }
 
-            D_86204590->unk_18C = D_86204590->unk_190;
-            D_86204590->unk_190 += D_86204590->unk_178 * 0.05f;
+            D_86204590->prevTrackPosition = D_86204590->trackPosition;
+            D_86204590->trackPosition += D_86204590->currentSpeed * 0.05f;
 
             RattataGame_SyncRacerZPosition(D_86204590);
 
             for (j = 0; j < 10; j++) {
                 D_86208280 = &D_86204720[i][j];
 
-                if ((D_86208280->unk_002 == 1) && (RattataGame_CheckHurdleCollision(D_86204590, D_86208280) != 0)) {
+                if ((D_86208280->markerState == 1) && (RattataGame_CheckHurdleCollision(D_86204590, D_86208280) != 0)) {
                     RattataGame_SetRacerAnimState(D_86204590, 2);
-                    D_86208280->unk_002 = 2;
+                    D_86208280->markerState = 2;
                     D_86208280->unk_17A = 0;
                     D_86204590->unk_1AC += 1;
                 }
             }
 
-            if (D_86204590->unk_190 + D_86204590->unk_194 >= 885.0f) {
+            if (D_86204590->trackPosition + D_86204590->raceProgressOffset >= 885.0f) {
                 var_fa0 = 0.0f;
-                if (D_86204590->unk_178 > 0.0f) {
-                    f32 var_fa1 = (885.0f - D_86204590->unk_18C);
+                if (D_86204590->currentSpeed > 0.0f) {
+                    f32 var_fa1 = (885.0f - D_86204590->prevTrackPosition);
 
-                    var_fa0 = var_fa1 / (D_86204590->unk_178 * 0.05f);
+                    var_fa0 = var_fa1 / (D_86204590->currentSpeed * 0.05f);
                 }
 
-                D_86204590->unk_198 = D_86204704 + var_fa0;
-                D_86204590->unk_19E = 1;
-                D_86204590->unk_174 = D_86204590->unk_180;
-                D_86204590->unk_178 = D_86204590->unk_174;
+                D_86204590->finishTime = D_86204704 + var_fa0;
+                D_86204590->racePhase = 1;
+                D_86204590->targetSpeed = D_86204590->topSpeed;
+                D_86204590->currentSpeed = D_86204590->targetSpeed;
 
                 ModelAnim_SetAnimation(D_86204594, 2);
                 D_86204594->unk_040.unk_0C = 0x10000;
 
                 switch (D_86208298) {
                     case 0:
-                        MiniSound_DispatchCommand(0x60006, D_86204590->unk_000, 0);
+                        MiniSound_DispatchCommand(0x60006, D_86204590->racerIndex, 0);
                         break;
 
                     case 3:
-                        MiniSound_DispatchCommand(0x60008, D_86204590->unk_000, 0);
+                        MiniSound_DispatchCommand(0x60008, D_86204590->racerIndex, 0);
                         break;
 
                     default:
-                        MiniSound_DispatchCommand(0x60007, D_86204590->unk_000, 0);
+                        MiniSound_DispatchCommand(0x60007, D_86204590->racerIndex, 0);
                         break;
                 }
 
                 D_86208288[D_86208298] = i;
                 D_86208298++;
-                D_86204590->unk_1A0 = 1;
+                D_86204590->finishedFlag = 1;
                 sp86++;
             } else {
-                D_86204590->unk_18C = D_86204590->unk_190 + D_86204590->unk_194;
+                D_86204590->prevTrackPosition = D_86204590->trackPosition + D_86204590->raceProgressOffset;
             }
         } else {
-            D_86204590->unk_190 += D_86204590->unk_178 * 0.05f;
+            D_86204590->trackPosition += D_86204590->currentSpeed * 0.05f;
 
-            if (D_86204590->unk_190 > 910.0f) {
-                D_86204590->unk_190 = 910.0f;
-                D_86204590->unk_19E = 2;
+            if (D_86204590->trackPosition > 910.0f) {
+                D_86204590->trackPosition = 910.0f;
+                D_86204590->racePhase = 2;
             }
 
             RattataGame_SyncRacerZPosition(D_86204590);
@@ -944,11 +956,11 @@ void RattataGame_AdvanceFinishLineApproach(void) {
         D_86204590 = &D_86203E50[i];
         D_86204594 = &D_86204590->unk_008;
 
-        if (D_86204590->unk_19E == 1) {
-            D_86204590->unk_190 += D_86204590->unk_178 * 0.05f;
-            if (D_86204590->unk_190 > 910.0f) {
-                D_86204590->unk_190 = 910.0f;
-                D_86204590->unk_19E = 2;
+        if (D_86204590->racePhase == 1) {
+            D_86204590->trackPosition += D_86204590->currentSpeed * 0.05f;
+            if (D_86204590->trackPosition > 910.0f) {
+                D_86204590->trackPosition = 910.0f;
+                D_86204590->racePhase = 2;
             }
 
             RattataGame_SyncRacerZPosition(D_86204590);
@@ -986,10 +998,10 @@ void RattataGame_MainLoop(void) {
         ModelAnim_ClearEventTrack(var_s2);
         var_s2->unk_040.unk_08 = (Rand_Range(5) * 0x3) << 0x10;
         RattataGame_ResetRacerState(temp_s1);
-        temp_s1->unk_1C8 = 0;
-        temp_s1->unk_1B2 = 4;
-        temp_s1->unk_19E = 0;
-        temp_s1->unk_198 = -1.0f;
+        temp_s1->celebratingFlag = 0;
+        temp_s1->rankPlace = 4;
+        temp_s1->racePhase = 0;
+        temp_s1->finishTime = -1.0f;
     }
 
     D_86204704 = 0;
@@ -1045,8 +1057,8 @@ void RattataGame_MainLoop(void) {
                 var_v0_2 = 0;
                 for (i = 0; i < 4; i++) {
                     var_s0_3 = &D_86203E50[i];
-                    if (var_s0_3->unk_1A0 == 1) {
-                        f32 tmp = var_s0_3->unk_198;
+                    if (var_s0_3->finishedFlag == 1) {
+                        f32 tmp = var_s0_3->finishTime;
 
                         if (tmp < D_86204710) {
                             D_86204710 = tmp;
@@ -1056,12 +1068,12 @@ void RattataGame_MainLoop(void) {
                 }
 
                 if (temp_s1_2 == 1) {
-                    sp78[0]->unk_1B2 = D_86203E4C;
-                    sp78[0]->unk_1A0 = 0;
+                    sp78[0]->rankPlace = D_86203E4C;
+                    sp78[0]->finishedFlag = 0;
                 } else {
                     for (i = 0; i < temp_s1_2 - 1; i++) {
                         for (j = i + 1; j < temp_s1_2; j++) {
-                            if (sp78[j]->unk_198 < sp78[i]->unk_198) {
+                            if (sp78[j]->finishTime < sp78[i]->finishTime) {
                                 temp_v1 = sp78[j];
                                 sp78[j] = sp78[i];
                                 sp78[i] = temp_v1;
@@ -1069,16 +1081,16 @@ void RattataGame_MainLoop(void) {
                         }
                     }
 
-                    sp78[0]->unk_1B2 = D_86203E4C;
+                    sp78[0]->rankPlace = D_86203E4C;
                     for (i = 1; i < temp_s1_2; i++) {
-                        if (sp78[i - 1]->unk_198 < sp78[i]->unk_198) {
+                        if (sp78[i - 1]->finishTime < sp78[i]->finishTime) {
                             D_86203E4C++;
                         }
-                        sp78[i]->unk_1B2 = D_86203E4C;
+                        sp78[i]->rankPlace = D_86203E4C;
                     }
 
                     for (i = 0; i < temp_s1_2; i++) {
-                        sp78[i]->unk_1A0 = 0;
+                        sp78[i]->finishedFlag = 0;
                     }
                 }
 
@@ -1087,7 +1099,7 @@ void RattataGame_MainLoop(void) {
 
             var_s3 = 0;
             for (i = 0; i < 4; i++) {
-                if (D_86203E50[i].unk_19E == 2) {
+                if (D_86203E50[i].racePhase == 2) {
                     var_s3++;
                 }
             }
@@ -1104,7 +1116,7 @@ void RattataGame_MainLoop(void) {
 
     var_s3 = 0;
     for (i = 0; i < 4; i++) {
-        if (D_86203E50[i].unk_19E == 1) {
+        if (D_86203E50[i].racePhase == 1) {
             var_s3++;
         }
     }
@@ -1122,7 +1134,7 @@ void RattataGame_MainLoop(void) {
                 }
 
                 for (i = 0; i < 4; i++) {
-                    if (D_86203E50[i].unk_19E == 1) {
+                    if (D_86203E50[i].racePhase == 1) {
                         var_s3++;
                     }
                 }
@@ -1140,11 +1152,11 @@ void RattataGame_MainLoop(void) {
     for (i = 0; i < 4; i++) {
         temp_s1 = &D_86203E50[i];
 
-        if ((temp_s1->unk_19E > 0) && (temp_s1->unk_1B2 == 0)) {
+        if ((temp_s1->racePhase > 0) && (temp_s1->rankPlace == 0)) {
             Widget_PauseMenuRecordWin(i);
             D_86204708++;
-            temp_s1->unk_1C8 = 1;
-            if (temp_s1->unk_002 == 0) {
+            temp_s1->celebratingFlag = 1;
+            if (temp_s1->aiDifficulty == 0) {
                 var_s3 = 1;
             }
         }
@@ -1159,6 +1171,7 @@ void RattataGame_MainLoop(void) {
     }
 }
 
+#ifdef NON_MATCHING
 void RattataGame_UpdatePostRaceIdleAnim(void) {
     s32 i;
 
@@ -1166,18 +1179,17 @@ void RattataGame_UpdatePostRaceIdleAnim(void) {
         D_86204590 = &D_86203E50[i];
         D_86204594 = &D_86204590->unk_008;
 
-        if ((D_86204590->unk_19E > 0) && (D_86204590->unk_1C8 == 1)) {
-            continue;
+        if (((D_86204590->racePhase <= 0) || (D_86204590->celebratingFlag != 1)) &&
+            ((ModelAnim_IsFinished(D_86204594) != 0) || (D_86204594->unk_040.unk_08 >= 0x340000))) {
+            ModelAnim_SetAnimation(D_86204594, 5);
+            D_86204594->unk_040.unk_08 = 0x270000;
         }
-
-        if ((ModelAnim_IsFinished(D_86204594) == 0) && (D_86204594->unk_040.unk_08 < 0x340000)) {
-            continue;
-        }
-
-        ModelAnim_SetAnimation(D_86204594, 5);
-        D_86204594->unk_040.unk_08 = 0x270000;
     }
 }
+#else
+void RattataGame_UpdatePostRaceIdleAnim(void);
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/8/fragment8/RattataGame_UpdatePostRaceIdleAnim.s")
+#endif
 
 void RattataGame_PlayResultAnimation(void) {
     s32 i;
@@ -1185,7 +1197,7 @@ void RattataGame_PlayResultAnimation(void) {
     for (i = 0; i < 4; i++) {
         D_86204590 = &D_86203E50[i];
         D_86204594 = &D_86204590->unk_008;
-        if ((D_86204590->unk_19E > 0) && (D_86204590->unk_1C8 == 1)) {
+        if ((D_86204590->racePhase > 0) && (D_86204590->celebratingFlag == 1)) {
             ModelAnim_SetAnimation(D_86204594, 4);
             D_86204594->unk_040.unk_0C = 0x10000;
         } else {
@@ -1287,7 +1299,7 @@ void RattataGame_LoadAssets(void) {
     for (i = 0; i < 4; i++) {
         D_86204590 = &D_86203E50[i];
         temp_s0 = &D_86204590->unk_008;
-        D_86204590->unk_000 = i;
+        D_86204590->racerIndex = i;
 
         RattataGame_InitAIDifficulty(D_86204590);
         ModelRenderer_AttachDisplayObject(temp_s0);
@@ -1312,8 +1324,8 @@ void RattataGame_LoadAssets(void) {
 
             ModelRenderer_AttachDisplayObject(temp_s0);
 
-            D_86208280->unk_000 = 0;
-            D_86208280->unk_002 = 0;
+            D_86208280->activeFlag = 0;
+            D_86208280->markerState = 0;
             temp_s0->unk_024.x = -(i - 1.5f) * 40.0f;
             temp_s0->unk_024.y = -25.0f;
             temp_s0->unk_040.unk_08 = 0x730000;
@@ -1338,16 +1350,16 @@ void RattataGame_InitPlayerSlots(void) {
         D_86204590 = &D_86203E50[i];
         temp_s0 = &D_86204590->unk_008;
 
-        D_86204590->unk_000 = i;
-        D_86204590->unk_19E = 0;
+        D_86204590->racerIndex = i;
+        D_86204590->racePhase = 0;
         RattataGame_InitAIDifficulty(D_86204590);
         D_86204590->unk_1A2 = 0;
         D_86204590->unk_1AE = 0;
         D_86204590->unk_1B0 = 0;
         D_86204590->unk_1AC = 0;
-        D_86204590->unk_1B2 = 4;
+        D_86204590->rankPlace = 4;
         D_86204590->unk_1B4 = 0;
-        D_86204590->unk_170 = 0;
+        D_86204590->inputFlags = 0;
         RattataGame_ResetRacerState(D_86204590);
         temp_s0->unk_024.x = -(i - 1.5f) * 40.0f;
         temp_s0->unk_024.y = 0.0f;
@@ -1362,9 +1374,9 @@ void RattataGame_InitPlayerSlots(void) {
             D_86208280 = &D_86204720[i][j];
             temp_s0 = &D_86208280->unk_004;
 
-            D_86208280->unk_000 = 0;
-            D_86208280->unk_002 = 0;
-            D_86208280->unk_178 = 0;
+            D_86208280->activeFlag = 0;
+            D_86208280->markerState = 0;
+            D_86208280->flashCounter = 0;
             D_86208280->unk_170 = 0;
             temp_s0->unk_024.x = -(i - 1.5f) * 40.0f;
             temp_s0->unk_024.y = -25.0f;

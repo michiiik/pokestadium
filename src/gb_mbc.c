@@ -16,7 +16,7 @@
         return ret
 
 // Track ram banks for channels
-static u8 D_800AA670[16];
+extern u8 D_800AA670[16];
 
 s32 osGbmbcRamEnable(OSPfs* pfs) {
   s32 i;
@@ -63,47 +63,51 @@ s32 osGbmbcSelectRamBank(OSPfs* pfs, u8 bank) {
     return ret;
 }
 
-s32 osGbmbcReadWrite(OSPfs* pfs, u16 flag, u32 address, u8* buffer, u32 size) {
-    s32 ret;
-    s32 var_s0;
-    u8 status;
-    u8 var_s2;
+#ifdef NON_MATCHING
+s32 osGbmbcReadWrite(OSPfs* pfs,  u16 flag, u32 address, u8* buffer, u32 size) {
+  s32 ret;
+  s32 var_s0;
+  u8 status;
+  u8 var_s2;
 
-    ERRCK(osGbpakGetStatus(pfs, &status));
+  ERRCK(osGbpakGetStatus(pfs, &status));
 
-    var_s2 = address >> 0xD;
-    if (var_s2 != D_800AA670[pfs->channel]) {
-        ERRCK(osGbmbcSelectRamBank(pfs, var_s2));
-    }
-    address &= 0x1FFF;
-    var_s0 = address + size;
+  var_s2 = (address >> 0xD);
+  if (var_s2 != D_800AA670[pfs->channel]) {
+      ERRCK(osGbmbcSelectRamBank(pfs, var_s2));
+  }
+  address &= 0x1FFF;
+  var_s0 = address + size;
+  
+  while (var_s0 > MBC_ROM_BANK_ADDRESS) {
+      var_s0 -= MBC_ROM_BANK_ADDRESS;
+      ret = osGbpakReadWrite(pfs, flag, address + RAM_BASE_ADDRESS, buffer, MBC_ROM_BANK_ADDRESS - address);
+      if (ret != 0) {
+          goto end;
+      }
+      buffer = (buffer - address) + MBC_ROM_BANK_ADDRESS;
+      var_s2++;
+      ret = osGbmbcSelectRamBank(pfs, var_s2);
+      if (ret != 0) {
+          goto end;
+      }
+      size = var_s0;
+      address = 0;
+      if (0) {        }
+  }
+  
+  ret = osGbpakReadWrite(pfs, flag, address + RAM_BASE_ADDRESS, buffer, size);
 
-    while (1) {
-        if (var_s0 > MBC_ROM_BANK_ADDRESS) {
-            var_s0 -= MBC_ROM_BANK_ADDRESS;
-            ret = osGbpakReadWrite(pfs, flag, address + RAM_BASE_ADDRESS, buffer, MBC_ROM_BANK_ADDRESS - address);
-            if (ret != 0) {
-                break;
-            }
-            buffer = (buffer - address) + MBC_ROM_BANK_ADDRESS;
-            var_s2++;
-            ret = osGbmbcSelectRamBank(pfs, var_s2);
-            if (ret != 0) {
-                break;
-            }
-            size = var_s0;
-            address = 0;
-        } else {
-            ret = osGbpakReadWrite(pfs, flag, address + RAM_BASE_ADDRESS, buffer, size);
-            break;
-        }
-    }
-
-    if (ret == 0) {
-        ret = osGbpakGetStatus(pfs, &status);
-    }
-    if ((ret == 0) && !(status & 1)) {
-        ret = PFS_ERR_CONTRFAIL;
-    }
-    return ret;
+end:
+  if (ret == 0) {
+      ret = osGbpakGetStatus(pfs, &status);
+  }
+  
+  if ((ret == 0) && !(status & 1)) {
+      ret = PFS_ERR_CONTRFAIL;
+  }
+  return ret;
 }
+#else
+#pragma GLOBAL_ASM("asm/us/nonmatchings/gb_mbc/osGbmbcReadWrite.s")
+#endif

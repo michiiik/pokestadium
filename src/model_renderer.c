@@ -12,9 +12,6 @@
 #include "hal_libc.h"
 #include "src/geo_render.h"
 
-struct unk_D_86002F58_004_000_000 D_800AC840;
-struct unk_D_86002F58_004_000_000 D_800AC858;
-
 void ModelRenderer_InitDisplayRoots(void) {
     GeoNode_CreateContainer(0, &D_800AC840);
     GeoNode_CreateContainer(0, &D_800AC858);
@@ -23,7 +20,7 @@ void ModelRenderer_InitDisplayRoots(void) {
 void ModelRenderer_AttachDisplayObject(unk_D_86002F58_004_000* arg0) {
     GeoNode_CreateModelPart(NULL, arg0, 0, &D_8006F050, &D_8006F05C, &D_8006F064);
     GraphNode_AppendChild(&D_800AC840, &arg0->unk_000);
-    arg0->unk_0A6 = 0;
+    arg0->poolIndex = 0;
     arg0->unk_000.unk_01 &= ~1;
 }
 
@@ -36,11 +33,11 @@ void ModelRenderer_AttachSecondaryDisplayObject(unk_D_86002F58_004_000* arg0) {
 void Model_InitDisplayObject(unk_D_86002F58_004_000* arg0, s16 arg1, s16 arg2, unk_D_86002F58_004_000_004* arg3) {
     GraphNode_AppendChild(&arg0->unk_000, arg3);
     MtxF_Identity(&arg0->unk_060);
-    arg0->unk_018 = arg1;
-    arg0->unk_01A = arg2;
+    arg0->animType = arg1;
+    arg0->modelId = arg2;
 
-    arg0->unk_01D = 0xFF;
-    arg0->unk_01C = 0;
+    arg0->materialAlpha = 0xFF;
+    arg0->textureMode = 0;
 
     arg0->unk_000.unk_01 |= 0x1;
 
@@ -101,11 +98,11 @@ void Model_SetMaterialColor(unk_D_86002F58_004_000* arg0, u8 arg1, u8 arg2, u8 a
 }
 
 void Model_SetMaterialAlpha(unk_D_86002F58_004_000* arg0, u8 arg1) {
-    arg0->unk_01D = arg1;
+    arg0->materialAlpha = arg1;
 }
 
 void Model_SetMaterialTextureMode(unk_D_86002F58_004_000* arg0, u8 arg1) {
-    arg0->unk_01C = arg1;
+    arg0->textureMode = arg1;
 }
 
 unk_D_86002F58_004_000_00C_028* ModelAnim_GetAnimationRecord(unk_D_86002F58_004_000* arg0, s32 arg1) {
@@ -133,23 +130,23 @@ arg1_func_80010CA8* Model_ComputeSizeVariant(arg1_func_80010CA8* arg0, BattleMon
     u8 var_a0;
     s8* var_v1;
 
-    sp30 = &D_8006FF00[arg1->unk_00.unk_00 - 1];
+    sp30 = &D_8006FF00[arg1->species.dexId - 1];
     sp34.raw = 0;
 
-    Text_CopySpeciesName(sp38, arg1->unk_00.unk_00);
+    Text_CopySpeciesName(sp38, arg1->species.dexId);
 
-    if (HAL_Strcmp(arg1->unk_30, sp38) != 0) {
-        var_a0 = ((arg1->unk_0E >> 8) & 0xFF) + (arg1->unk_0E & 0xFF);
+    if (HAL_Strcmp(arg1->nickname, sp38) != 0) {
+        var_a0 = ((arg1->otId >> 8) & 0xFF) + (arg1->otId & 0xFF);
 
         if (1) {}
 
-        var_v1 = arg1->unk_30;
+        var_v1 = arg1->nickname;
         while (*var_v1) {
             var_a0 += *var_v1++ & 0xFF;
             var_a0 += 0;
         }
 
-        var_v1 = arg1->unk_3B;
+        var_v1 = arg1->otName;
         while (*var_v1) {
             var_a0 += *var_v1++ & 0xFF;
             var_a0 += 0;
@@ -165,11 +162,11 @@ arg1_func_80010CA8* Model_ComputeSizeVariant(arg1_func_80010CA8* arg0, BattleMon
 void Model_ComputeSizeVariantFromRecord(arg1_func_80010CA8* arg0, unk_func_8001C014* arg1, u16 arg2) {
     BattleMon stack;
 
-    stack.unk_00.unk_00 = arg2;
-    stack.unk_0E = arg1->unk_02;
+    stack.species.dexId = arg2;
+    stack.otId = arg1->otId;
 
-    _bcopy(arg1->unk_04, stack.unk_30, 0x10);
-    _bcopy(arg1->unk_14, stack.unk_3B, 0x10);
+    _bcopy(arg1->nickname, stack.nickname, 0x10);
+    _bcopy(arg1->otName, stack.otName, 0x10);
     Model_ComputeSizeVariant(arg0, &stack);
 }
 
@@ -178,34 +175,34 @@ void Trainer_RequestPokeIcon(BattleSessionTeams* arg0) {
     s16 sp2A;
     TeamRoster* temp_a1;
 
-    sp2A = arg0->unk_02;
+    sp2A = arg0->iconSpeciesId;
     sp2C.raw = 0;
-    if (!(arg0->unk_00 & 0x40) && (arg0->unk_00 & 0x80)) {
-        temp_a1 = arg0->unk_04;
-        if ((temp_a1 != NULL) && (sp2A == arg0->unk_04->unk_000)) {
-            Model_ComputeSizeVariant(&sp2C, (BattleMon*)arg0->unk_04);
-            if ((sp2A == 0x19) && (arg0->unk_04->unk_01C[0].unk_30[6] & 0x80)) {
+    if (!(arg0->modelLoadFlags & 0x40) && (arg0->modelLoadFlags & 0x80)) {
+        temp_a1 = arg0->activeMon;
+        if ((temp_a1 != NULL) && (sp2A == arg0->activeMon->slotState)) {
+            Model_ComputeSizeVariant(&sp2C, (BattleMon*)arg0->activeMon);
+            if ((sp2A == 0x19) && (arg0->activeMon->party[0].nickname[6] & 0x80)) {
                 sp2A = 0x99;
             }
         }
-        if (!(arg0->unk_10->unk_00 & 4)) {
+        if (!(arg0->unk_10->configFlags & 4)) {
             while (Display_IsFrameReady() == 0) {}
         }
         PokeIcon_RequestFrameLoad(arg0->unk_10, (u16) sp2A, sp2C);
-        arg0->unk_00 |= 0x40;
-        arg0->unk_00 &= ~0x10;
+        arg0->modelLoadFlags |= 0x40;
+        arg0->modelLoadFlags &= ~0x10;
 
-        if (arg0->unk_00 & 0x20) {
+        if (arg0->modelLoadFlags & 0x20) {
             PokeIcon_WaitFrameLoad(arg0->unk_10);
-            arg0->unk_14 = arg0->unk_10->unk_24;
-            arg0->unk_00 &= ~0xE0;
+            arg0->moveEffectListRoot = arg0->unk_10->lastLoadedFragment;
+            arg0->modelLoadFlags &= ~0xE0;
         }
     }
 }
 
 void PokeIcon_PollFrameLoadForObject(unk_func_8001C248* arg0) {
     if (PokeIcon_PollFrameLoad(arg0->unk_000.unk_10)) {
-        arg0->unk_000.unk_14 = arg0->unk_000.unk_10->unk_24;
+        arg0->unk_000.unk_14 = arg0->unk_000.unk_10->lastLoadedFragment;
         arg0->unk_000.unk_00 &= ~0xE0;
         arg0->unk_000.unk_00 |= 0x10;
     }
@@ -213,29 +210,29 @@ void PokeIcon_PollFrameLoadForObject(unk_func_8001C248* arg0) {
 
 void PokeIcon_WaitFrameLoadForObject(unk_func_8001C248* arg0) {
     if (arg0->unk_000.unk_00 & 0x40 && PokeIcon_WaitFrameLoad(arg0->unk_000.unk_10) != 0) {
-        arg0->unk_000.unk_14 = arg0->unk_000.unk_10->unk_24;
+        arg0->unk_000.unk_14 = arg0->unk_000.unk_10->lastLoadedFragment;
         arg0->unk_000.unk_00 &= ~0xE0;
         arg0->unk_000.unk_00 |= 0x10;
     }
 }
 
 void PokeIcon_RequestBackgroundForObject(unk_func_8001C248* arg0) {
-    if (!(arg0->unk_01D & 0x40) && (arg0->unk_01D & 0x80)) {
-        PokeIcon_RequestBackgroundLoad(arg0->unk_000.unk_10, arg0->unk_020, arg0->unk_024);
-        arg0->unk_01D |= 0x40;
-        arg0->unk_01D &= ~0x10;
-        if (arg0->unk_01D & 0x20) {
+    if (!(arg0->flags & 0x40) && (arg0->flags & 0x80)) {
+        PokeIcon_RequestBackgroundLoad(arg0->unk_000.unk_10, arg0->backgroundStartAddr, arg0->backgroundResult);
+        arg0->flags |= 0x40;
+        arg0->flags &= ~0x10;
+        if (arg0->flags & 0x20) {
             PokeIcon_WaitBackgroundLoad(arg0->unk_000.unk_10);
-            arg0->unk_024 = arg0->unk_000.unk_10->unk_28;
-            arg0->unk_01D &= ~0xE0;
+            arg0->backgroundResult = arg0->unk_000.unk_10->backgroundResult;
+            arg0->flags &= ~0xE0;
         }
     }
 }
 
 void PokeIcon_PollBackgroundForObject(unk_func_8001C248* arg0) {
     if (PokeIcon_PollBackgroundLoad(arg0->unk_000.unk_10) != 0) {
-        arg0->unk_024 = arg0->unk_000.unk_10->unk_28;
-        arg0->unk_01D &= ~0xE0;
-        arg0->unk_01D |= 0x10;
+        arg0->backgroundResult = arg0->unk_000.unk_10->backgroundResult;
+        arg0->flags &= ~0xE0;
+        arg0->flags |= 0x10;
     }
 }

@@ -12,7 +12,7 @@
  */
 u32 gExpansionRAMStart = FALSE;
 
-MainPool** gMainPool;
+extern MainPool** gMainPool; // gMainPool
 
 void Dma_InitializeCompletionQueue(void);
 s32 StageContext_IsHighResolution(void);

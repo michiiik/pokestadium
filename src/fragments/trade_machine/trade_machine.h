@@ -93,133 +93,133 @@ typedef struct unk_D_82F20A10 {
     /* 0x24 */ unk_func_8001B1FC* unk_24;
 } unk_D_82F20A10; // size >= 0x28
 
-typedef struct unk_D_82F20A40_00E {
-    /* 0x00 */ s16 unk_00;
-    /* 0x02 */ s16 unk_02;
-    /* 0x04 */ s16 unk_04;
-    /* 0x06 */ s16 unk_06;
-} unk_D_82F20A40_00E; // size = 0x8
+typedef struct TradeRect {
+    /* 0x00 */ s16 x; // Gfx_FillRectRgba/Trade_DrawPickScreenFrame(x, y, width, height, ...)
+    /* 0x02 */ s16 y;
+    /* 0x04 */ s16 width;
+    /* 0x06 */ s16 height;
+} TradeRect; // size = 0x8
 
 typedef struct unk_D_82F20A40 {
-    /* 0x00 */ s16 unk_00;
-    /* 0x02 */ s16 unk_02;
-    /* 0x04 */ s16 unk_04;
-    /* 0x06 */ unk_D_82F20A40_00E unk_06;
-    /* 0x0E */ unk_D_82F20A40_00E unk_0E[3];
-    /* 0x26 */ unk_D_82F20A40_00E unk_26;
-    /* 0x2E */ unk_D_82F20A40_00E unk_2E;
-    /* 0x36 */ unk_D_82F20A40_00E unk_36;
-    /* 0x40 */ unk_D_82F20A40_00E* unk_40;
-    /* 0x44 */ unk_D_82F20A40_00E* unk_44;
+    /* 0x00 */ s16 flowState; // Trade_GetBoxMachineFlowState
+    /* 0x02 */ s16 timer; // countdown driving each Trade_UpdateBoxMachineFlow*'s rect interpolation
+    /* 0x04 */ s16 selectedPanelType; // copied from D_82F20A88[slot].unk_004; selects which target-rect pair (targetRectA/B) to use
+    /* 0x06 */ TradeRect topBarRect; // Trade_DrawBoxMachineTopBar
+    /* 0x0E */ TradeRect panelRects[3];
+    /* 0x26 */ TradeRect titleRect; // Trade_DrawBoxMachineTitle
+    /* 0x2E */ TradeRect confirmRect; // Trade_DrawBoxMachineConfirm / Trade_UpdateBoxMachineRect
+    /* 0x36 */ TradeRect bannerRect; // Trade_DrawBoxMachineBanner
+    /* 0x40 */ TradeRect* targetRectA;
+    /* 0x44 */ TradeRect* targetRectB;
 } unk_D_82F20A40; // size = 0x48
 
 typedef struct unk_D_82F20A88 {
-    /* 0x000 */ s16 unk_000;
+    /* 0x000 */ s16 animState; // Trade_SetBoxSlotAnimState's arg1
     /* 0x002 */ s16 unk_002;
-    /* 0x004 */ s16 unk_004;
-    /* 0x006 */ s16 unk_006;
-    /* 0x008 */ s16 unk_008;
-    /* 0x00A */ s16 unk_00A;
-    /* 0x00C */ s16 unk_00C;
-    /* 0x00E */ s16 unk_00E;
-    /* 0x010 */ s16 unk_010;
+    /* 0x004 */ s16 slotType; // copied to unk_D_82F20A40.selectedPanelType on selection
+    /* 0x006 */ s16 screenX;
+    /* 0x008 */ s16 screenY;
+    /* 0x00A */ s16 targetX; // mirrors screenX at the start of a fly-in/rotate transition
+    /* 0x00C */ s16 rotationA; // binary-angle-format spin value, alternates -0x8000/0 by slot parity
+    /* 0x00E */ s16 rotationB;
+    /* 0x010 */ s16 timer; // countdown driving scaleX's fly-in interpolation
     /* 0x012 */ s16 unk_012;
-    /* 0x014 */ s16 unk_014;
-    /* 0x018 */ f32 unk_018;
-    /* 0x01C */ f32 unk_01C;
-    /* 0x020 */ f32 unk_020;
+    /* 0x014 */ s16 alpha; // 0x80 or 0xFF depending on slotType
+    /* 0x018 */ f32 scaleX; // animated by timer during fly-in; scaleY/scaleZ stay constant in most states
+    /* 0x01C */ f32 scaleY;
+    /* 0x020 */ f32 scaleZ;
     /* 0x024 */ u8* unk_024;
-    /* 0x028 */ unk_D_86002F58_004_000 unk_028;
+    /* 0x028 */ unk_D_86002F58_004_000 model;
 } unk_D_82F20A88; // size = 0x190
 
 typedef struct unk_D_82F210E0 {
-    /* 0x00 */ s16 unk_00;
-    /* 0x02 */ s16 unk_02;
-    /* 0x04 */ u16 unk_04;
-    /* 0x06 */ s16 unk_06;
-    /* 0x08 */ s16 unk_08;
-    /* 0x0A */ s16 unk_0A;
+    /* 0x00 */ s16 state; // Trade_InitSaveSequence's sequence state
+    /* 0x02 */ s16 timer; // countdown driving each Trade_UpdateSaveSeq*'s rect interpolation
+    /* 0x04 */ u16 flags;
+    /* 0x06 */ s16 writeStep; // Trade_StepCartWriteSequence: <0 = not started, gates the initial checksum-invalidate pass
+    /* 0x08 */ s16 validatedPortCount; // Trade_StepCartWriteSequence's per-port GbSave_InvalidateMainDataChecksum progress
+    /* 0x0A */ s16 writtenPortCount; // Trade_StepCartWriteSequence's per-port Trade_WriteDeckAndCommitCart progress
     /* 0x0C */ s16 unk_0C;
     /* 0x0E */ s16 unk_0E;
-    /* 0x10 */ s16 unk_10;
-    /* 0x12 */ s16 unk_12;
-    /* 0x14 */ unk_D_82F20A40_00E unk_14[2];
-    /* 0x24 */ unk_D_82F20A40_00E unk_24;
-    /* 0x2C */ unk_D_82F20A40_00E unk_2C;
-    /* 0x34 */ unk_D_82F20A40_00E unk_34;
+    /* 0x10 */ s16 menuSelection; // Trade_UpdateSaveSeqMenuInput; -1 = none, 0-3 = option index
+    /* 0x12 */ s16 blinkTimer; // decremented in Trade_UpdateSaveSeqConfirmWait-adjacent code
+    /* 0x14 */ TradeRect boxPanelRects[2]; // Trade_DrawSaveSeqBoxPanels
+    /* 0x24 */ TradeRect menuPanelRect; // Trade_DrawSaveSeqMenuPanel
+    /* 0x2C */ TradeRect bannerPanelRect; // Trade_DrawSaveSeqBannerPanel
+    /* 0x34 */ TradeRect subBannerRect; // Trade_DrawSaveSeqSubBanner
 } unk_D_82F210E0; // size = 0x3C
 
 typedef struct unk_D_82F21160 {
-    /* 0x00 */ s16 unk_00;
-    /* 0x02 */ s16 unk_02;
-    /* 0x04 */ s16 unk_04;
+    /* 0x00 */ s16 state; // TradeCable_SetLightState's arg1
+    /* 0x02 */ s16 baseOffset; // per-side constant added to scrollOffset to produce screenX
+    /* 0x04 */ s16 screenX; // = D_82F21140.scrollOffset + baseOffset
     /* 0x06 */ s16 unk_06;
     /* 0x08 */ s16 unk_08;
     /* 0x0A */ s16 unk_0A;
     /* 0x0C */ s16 unk_0C;
     /* 0x0E */ s16 unk_0E;
     /* 0x10 */ s16 unk_10;
-    /* 0x12 */ s16 unk_12;
-    /* 0x14 */ f32 unk_14;
+    /* 0x12 */ s16 animPhase; // sine-LUT phase counter, advances by 0x800 per tick (TradeCable_UpdateLightIdlePulse etc.)
+    /* 0x14 */ f32 opacity; // 0.0-1.0 range, set per light-state
     /* 0x18 */ f32 unk_18;
     /* 0x1C */ f32 unk_1C;
 } unk_D_82F21160; // size = 0x20
 
 typedef struct unk_D_82F21140 {
-    /* 0x00 */ s16 unk_00;
-    /* 0x02 */ s16 unk_02;
-    /* 0x04 */ s16 unk_04;
-    /* 0x06 */ s16 unk_06;
-    /* 0x08 */ s16 unk_08;
-    /* 0x0A */ s16 unk_0A;
-    /* 0x0C */ u16 unk_0C;
-    /* 0x0E */ s16 unk_0E;
-    /* 0x10 */ f32 unk_10;
-    /* 0x14 */ u16 unk_14;
-    /* 0x16 */ u16 unk_16;
-    /* 0x18 */ s16 unk_18;
+    /* 0x00 */ s16 state; // TradeCable_SetSequenceState's arg0
+    /* 0x02 */ s16 scrollOffset; // added to each TradeCable light's baseOffset to compute its screenX; also passed as the tube's X to every TradeCable_DrawTube* call
+    /* 0x04 */ s16 tubeY; // passed as the tube's Y to every TradeCable_DrawTube* call
+    /* 0x06 */ s16 unk_06; // passed to TradeCable_DrawTubeRailBar; role beyond that not evidenced
+    /* 0x08 */ s16 unk_08; // passed to TradeCable_DrawTubeRailBar; role beyond that not evidenced
+    /* 0x0A */ s16 unk_0A; // passed to TradeCable_DrawTubeRailBar; role beyond that not evidenced
+    /* 0x0C */ u16 flags; // bitmask gating which TradeCable_DrawTube* calls run in TradeCable_DrawSequence
+    /* 0x0E */ s16 sequenceTimer; // TradeCable_SetSequenceTimer/GetSequenceState-adjacent; decremented once per TradeCable_UpdateSequence/DrawSequence call, independent of transitionTimer
+    /* 0x10 */ f32 tubeScale; // passed as the tube's scale to every TradeCable_DrawTube* call
+    /* 0x14 */ u16 brightness; // fed directly into gDPSetEnvColor's RGB in TradeCable_DrawSequence
+    /* 0x16 */ u16 railAlpha; // drives the rail bar's fade alpha calculation in TradeCable_DrawSequence
+    /* 0x18 */ s16 transitionTimer; // per-state countdown driving each TradeCable_UpdateSequence* transition's interpolation
 } unk_D_82F21140; // size = 0x1C
 
 typedef struct unk_D_82F211A0_010 {
-    /* 0x00 */ s16 unk_00;
-    /* 0x02 */ s16 unk_02;
-    /* 0x04 */ s16 unk_04;
+    /* 0x00 */ s16 x; // TradeCable_SpawnBallTrailGhost
+    /* 0x02 */ s16 y;
+    /* 0x04 */ s16 timer; // lifetime countdown, TradeCable_UpdateBallTrailGhosts
 } unk_D_82F211A0_010; // size = 0x6
 
 typedef struct unk_D_82F211A0 {
-    /* 0x00 */ s16 unk_00;
-    /* 0x02 */ s16 unk_02;
-    /* 0x00 */ s16 unk_04;
-    /* 0x06 */ s16 unk_06;
-    /* 0x08 */ s16 unk_08;
-    /* 0x0A */ s16 unk_0A;
-    /* 0x0C */ s16 unk_0C;
-    /* 0x0E */ s16 unk_0E;
-    /* 0x10 */ unk_D_82F211A0_010 unk_10[10];
+    /* 0x00 */ s16 state; // TradeCable_SetBallState's arg1
+    /* 0x02 */ s16 screenX; // advances by velocityX each tick (TradeCable_UpdateBallTravel)
+    /* 0x00 */ s16 screenY;
+    /* 0x06 */ s16 spawnTimer; // fade-in countdown and inter-ghost spawn countdown, reused across ball states
+    /* 0x08 */ s16 velocityX; // added to screenX each tick; sign depends on which side the ball travels from
+    /* 0x0A */ s16 spinAngle; // sine-LUT phase for the spin-pulse alpha animation, advances by 0x200 per tick
+    /* 0x0C */ s16 alpha; // 0-0xFF
+    /* 0x0E */ s16 ghostCount; // number of active entries in trailGhosts
+    /* 0x10 */ unk_D_82F211A0_010 trailGhosts[10];
 } unk_D_82F211A0; // size = 0x4C
 
 typedef struct unk_D_82F21238 {
-    /* 0x00 */ s16 unk_00;
-    /* 0x02 */ s16 unk_02;
-    /* 0x04 */ s16 unk_04;
-    /* 0x06 */ s16 unk_06;
-    /* 0x08 */ s16 unk_08;
-    /* 0x0A */ s16 unk_0A;
-    /* 0x0C */ s16 unk_0C;
-    /* 0x0E */ s16 unk_0E;
-    /* 0x10 */ s16 unk_10;
-    /* 0x12 */ s16 unk_12;
-    /* 0x14 */ s16 unk_14;
-    /* 0x16 */ s16 unk_16;
-    /* 0x18 */ s16 unk_18;
-    /* 0x1A */ s16 unk_1A;
-    /* 0x1C */ s16 unk_1C;
+    /* 0x00 */ s16 partySlot; // TradeEvo_BeginSequence's arg0
+    /* 0x02 */ s16 phase; // sequence phase, starts at 1
+    /* 0x04 */ s16 gbPort; // fed to GbSave_SetSeenOwnedBits as the port index
+    /* 0x06 */ s16 animState; // 1 or 2, ModelAnim_SetAnimation(modelPreview->unk_24, animState)
+    /* 0x08 */ s16 flashTriggered; // TradeEvo_UpdateWaitForConfirm; gates the flash-in transition
+    /* 0x0A */ s16 coinFlip; // MathUtil_Random16() % 2
+    /* 0x0C */ s16 timer; // countdown reused across every TradeEvo_Update* phase, driving alpha/flashAngle/flashRadius/flashHeight interpolation
+    /* 0x0E */ s16 rectX1; // preview panel scissor-rect, animated open/closed by TradeEvo_UpdateOpenPreview/ClosePreview
+    /* 0x10 */ s16 rectY1;
+    /* 0x12 */ s16 rectX2;
+    /* 0x14 */ s16 rectY2;
+    /* 0x16 */ s16 alpha;
+    /* 0x18 */ s16 flashAngle; // sine-LUT-like phase, advances by 0x1000 per tick during TradeEvo_UpdateFlashIn/UpdateApplyEvolution
+    /* 0x1A */ s16 flashRadius; // interpolated 0x800-0x1000 range during the flash transition
+    /* 0x1C */ s16 flashHeight; // interpolated 0-0xF0 range during the flash transition
     /* 0x1E */ s16 unk_1E;
-    /* 0x20 */ s32 unk_20;
-    /* 0x24 */ BattleMon* unk_24;
-    /* 0x28 */ unk_D_86002F58_004_000_010* unk_28;
-    /* 0x2C */ unk_func_8001B1FC* unk_2C;
-    /* 0x30 */ unk_D_82F20A40_00E unk_30;
+    /* 0x20 */ s32 renderResult; // PokeIcon_RenderPreview's return value
+    /* 0x24 */ BattleMon* mon; // the evolving Pokemon
+    /* 0x28 */ unk_D_86002F58_004_000_010* framebuffers; // PokeIcon_AllocFramebuffers
+    /* 0x2C */ unk_func_8001B1FC* modelPreview; // PokeIcon_CreateModelPreview
+    /* 0x30 */ TradeRect captionBox; // TradeEvo_DrawEvolutionCaption; width==-1 means hidden
 } unk_D_82F21238; // size = 0x38
 
 extern s32 D_82F14424;
@@ -281,7 +281,7 @@ void Trade_DrawRoundedFrameLarge(s16, s16, s16, s16, u8, u8, u8, u8);
 void Trade_DrawBoxTabIcon(s16 arg0, s16 arg1, u8* arg2, s16 arg3);
 void Trade_DrawBoxTabBar(unk_D_82F144D0* arg0, s16 arg1, s16 arg2, s32 arg3);
 void Trade_DrawPortInfoPanel(s16 arg0, s16 arg1, s16 arg2);
-void func_82F04604(unk_D_82F144D0* arg0);
+void Trade_DrawPickScreenGrid(unk_D_82F144D0* arg0);
 void Trade_ResetPickScreens(void);
 void Trade_UpdatePickScreens(void);
 void Trade_DrawPickScreens(void);
@@ -328,7 +328,7 @@ void Trade_UpdateBoxMachineSlots(unk_D_82F20A40* arg0, s16 arg1, s16 arg2);
 void Trade_UpdateBoxMachineFlowPanelsFull(unk_D_82F20A40* arg0);
 void Trade_UpdateBoxMachineFlowConfirmOpen(unk_D_82F20A40* arg0);
 void Trade_UpdateBoxMachineFlowConfirmInput(unk_D_82F20A40* arg0);
-void Trade_UpdateBoxMachineRect(unk_D_82F20A40_00E* arg0, s16 arg1, s16 arg2);
+void Trade_UpdateBoxMachineRect(TradeRect* arg0, s16 arg1, s16 arg2);
 void Trade_UpdateBoxMachineFlowConfirmDone(unk_D_82F20A40* arg0);
 void Trade_UpdateBoxMachineFlowClose(unk_D_82F20A40* arg0);
 void Trade_DrawBoxMachineTopBar(unk_D_82F20A40* arg0);
@@ -359,7 +359,7 @@ void Trade_DrawSaveSeqMenuPanel(unk_D_82F210E0* arg0);
 void Trade_DrawSaveSeqBannerPanel(unk_D_82F210E0* arg0);
 void Trade_DrawSaveSeqSubBanner(unk_D_82F210E0* arg0);
 void Trade_DrawSaveSeqMessageBackdrop(s16 arg0, s16 arg1, s16 arg2, s16 arg3);
-void func_82F0BEF8(unk_D_82F210E0* arg0);
+void Trade_DrawSaveSeqMessageText(unk_D_82F210E0* arg0);
 s32 Trade_GetSaveSeqState(void);
 s32 Trade_GetSaveDirection(void);
 s32 Trade_GetSaveSlotIndex(void);
@@ -395,7 +395,7 @@ void TradeEvo_DrawGlowBackdrop(s16 arg0, s16 arg1, s16 arg2);
 void TradeEvo_DrawPreviewFrame(s16 arg0, s16 arg1, s16 arg2, s16 arg3);
 void TradeEvo_DrawPreviewStrips(unk_D_82F21238* arg0);
 void func_82F0ECA4(void);
-void TradeEvo_DrawEvolutionCaption(unk_D_82F20A40_00E* arg0, BattleMon* arg1);
+void TradeEvo_DrawEvolutionCaption(TradeRect* arg0, BattleMon* arg1);
 void TradeEvo_Draw(void);
 void TradeCable_ResetLights(void);
 void TradeCable_SetLightState(s32 arg0, s16 arg1);
@@ -427,7 +427,7 @@ void TradeCable_UpdateSequenceSlideToEvoSlot1(unk_D_82F21140* arg0);
 void TradeCable_UpdateSequenceWaitEvoSlot1(unk_D_82F21140* arg0);
 void TradeCable_UpdateSequenceFinishEvo(unk_D_82F21140* arg0);
 void TradeCable_UpdateSequenceClose(unk_D_82F21140* arg0);
-void func_82F10BB4(s16 arg0, s16 arg1, f32 arg2);
+void TradeCable_DrawTubeWalls(s16 arg0, s16 arg1, f32 arg2);
 void TradeCable_DrawTubeRailBar(s16 arg0, s16 arg1, f32 arg2, s16 arg3, s16 arg4, s16 arg5);
 void TradeCable_DrawTubeCenterBar(s16 arg0, s16 arg1, f32 arg2, s16 arg3, s16 arg4, s16 arg5);
 void TradeCable_DrawTubeJoint(s16 arg0, s16 arg1, f32 arg2, s16 arg3, s16 arg4, s16 arg5);

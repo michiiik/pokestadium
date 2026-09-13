@@ -3,7 +3,7 @@
 
 #include "global.h"
 #include "src/fragments/particle_math/particle_math.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/controller.h"
 
 typedef struct MiniActor {
@@ -226,7 +226,7 @@ void miniRestoreCameraState(void);
 
 void miniApplyCameraDebugOffset(void);
 void miniUpdateCamera(void);
-s32 minigameDebuggModeControl(void);
+void minigameDebuggModeControl(void);
 void showDebuggCameraInfo(void);
 void showDebuggJoystickInfo(void);
 void minigameDebuggVectorEditor(void);

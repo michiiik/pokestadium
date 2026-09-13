@@ -11,7 +11,7 @@
 #include "src/save_data.h"
 #include "src/game_state.h"
 #include "src/text_system.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/audio_sfx.h"
 #include "src/audio_loop_point.h"
 #include "src/gfx_buffer.h"
@@ -111,7 +111,7 @@ s32 TransferPak_RenderPortNodeCallback(s32 arg0, GraphNode* arg1) {
             gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, 639, 202);
         }
 
-        gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, D_8006F09C->unk_01D);
+        gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, D_8006F09C->materialAlpha);
 
         if (D_81304008[idx].unk_01C != NULL) {
             gSPSegment(gDisplayListHead++, 0x0F, Memmap_GetSegmentVaddr(D_81304008[idx].unk_01C));
@@ -128,7 +128,7 @@ s32 TransferPak_GetPresentationMode(void) {
 
     Save_EnsureBankLoaded(2);
     Save_GetOptions(&sp18);
-    return sp18.unk_00;
+    return sp18.presentationMode;
 }
 
 void TransferPak_LaunchSelectedPortAnim(void) {
@@ -543,9 +543,9 @@ void TransferPak_PollInput(void) {
 void TransferPak_DrawFrame(s32 arg0) {
     BgStage_DrawFrame();
     if (gCurrentGameState == 0x25) {
-        func_8130306C(D_81303FA0);
+        TransferPak_DrawBackgroundTiles(D_81303FA0);
     } else {
-        func_8130337C();
+        TransferPak_DrawPresentationBackground();
     }
 
     if (arg0 != 0) {
@@ -566,8 +566,8 @@ void TransferPak_ScanAllPorts(void) {
 
     for (i = 0; i < 4; i++) {
         GbSave_CopyPlayerIdentity(i, &sp48);
-        Text_UntranscodeNameWrapper(D_81303FA8[i].unk_08, sp48.unk_02);
-        D_81303FA8[i].unk_06 = sp48.unk_00;
+        Text_UntranscodeNameWrapper(D_81303FA8[i].unk_08, sp48.playerName);
+        D_81303FA8[i].unk_06 = sp48.trainerId;
         D_81303FA8[i].unk_01 = GbSave_GetPortGame(i);
         D_81303FA8[i].unk_00 = GbSave_GetSaveState(i);
         D_81303FA8[i].unk_03 = GbSave_SavedAtPokemonCenter(i);
@@ -833,7 +833,7 @@ s32 TransferPak_SelectMain(s32 arg0, UNUSED s32 arg1) {
 }
 
 #ifdef NON_MATCHING
-void func_8130306C(u8* arg0) {
+void TransferPak_DrawBackgroundTiles(u8* arg0) {
     Gfx* gfx = gDisplayListHead;
     u8* var_t0;
     s32 i;
@@ -865,11 +865,11 @@ void func_8130306C(u8* arg0) {
     gDisplayListHead = gfx;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/transfer_pak_select/transfer_pak_select/func_8130306C.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/33/fragment33/TransferPak_DrawBackgroundTiles.s")
 #endif
 
 #ifdef NON_MATCHING
-void func_8130337C(void) {
+void TransferPak_DrawPresentationBackground(void) {
     Gfx* gfx = gDisplayListHead;
     u8* sp30;
     s32 i;
@@ -954,5 +954,5 @@ void func_8130337C(void) {
     gDisplayListHead = gfx;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/transfer_pak_select/transfer_pak_select/func_8130337C.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/33/fragment33/TransferPak_DrawPresentationBackground.s")
 #endif

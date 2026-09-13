@@ -4,7 +4,7 @@
 #include "src/input.h"
 #include "src/pokemon_stats.h"
 #include "src/text_system.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/gfx_buffer.h"
 #include "src/controller.h"
 #include "src/fragments/minigame_select/minigame_select.h"
@@ -66,7 +66,7 @@ void Gallery_RentalViewerDrawFrame(void) {
         Gallery_RentalViewerDrawTitleBar();
     }
     Gallery_RentalViewerDrawTeamList(1);
-    func_838043F8(1);
+    Gallery_RentalViewerDrawBoxPicker(1);
     Gallery_DrawConfirmPrompt(1);
     BgStage_AdvanceFrame();
     if (D_83805668 > 0) {

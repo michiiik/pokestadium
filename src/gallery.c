@@ -12,7 +12,7 @@
 #include "src/model_renderer.h"
 #include "src/graphics_textures.h"
 #include "src/game_state.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/audio_sfx_wrapper.h"
 #include "src/audio_loop_point.h"
 #include "src/matrix.h"
@@ -239,20 +239,20 @@ void Gallery_ClearPhotoRenderTarget(void) {
     D_80075F90 = 0;
 }
 
-s32 Gallery_GetPhotoPoseIndex(unk_D_83403C60* arg0) {
-    return ((s32) arg0->unk_6C >> 2) & 3;
+s32 Gallery_GetPhotoPoseIndex(GalleryPhotoRecord* arg0) {
+    return ((s32) arg0->flags >> 2) & 3;
 }
 
-f32 Gallery_GetPhotoScaleIndex(unk_D_83403C60* arg0) {
+f32 Gallery_GetPhotoScaleIndex(GalleryPhotoRecord* arg0) {
     s32 index;
     f32* table;
-    index = ((s32) arg0->unk_6C >> 1) & 1;
+    index = ((s32) arg0->flags >> 1) & 1;
     table = (f32*)Util_ConvertAddrToVirtAddr(&D_80075F88);
     return table[index];
 }
 
-u32 Gallery_GetPhotoVariantIndex(unk_D_83403C60* arg0) {
-    u8 v1 = arg0->unk_6C;
+u32 Gallery_GetPhotoVariantIndex(GalleryPhotoRecord* arg0) {
+    u8 v1 = arg0->flags;
     v1 = v1 >> 4;
     return v1 & 0xF;
 }
@@ -275,35 +275,45 @@ s32 Gallery_GetScenePoseIndex(s32 arg0) {
     }
     sp1C = var_a1;
     if (Gallery_IsSceneReady(var_a1) != 0) {
-        return Gallery_GetPhotoPoseIndex(var_a1->unk_18);
+        return Gallery_GetPhotoPoseIndex(var_a1->photoRecord);
     }
     return 0;
 }
 
+#ifdef NON_MATCHING
 s32 Gallery_ConfigurePhotoCamera(s32 arg0, unk_D_86002F34_00C* arg1) {
-    s32 pad;
-    unk_D_83403C60_050_00C* src;
+    s32* src;
+    s32* dst;
 
     if (arg0 == 2) {
-        src = (unk_D_83403C60_050_00C*)((u8*)D_80075F84->unk_18 + 0x50);
-        GeoCamera_SetViewport(arg1, 0, 0, D_80075F84->unk_04, D_80075F84->unk_06);
-        GeoCamera_SetPerspective(arg1, Gallery_GetPhotoScaleIndex(D_80075F84->unk_18), 20.0f, 10000.0f);
-        ((unk_D_83403C60_050_00C*)((u8*)arg1 + 0xA8))[0] = src[0];
-        ((unk_D_83403C60_050_00C*)((u8*)arg1 + 0xA8))[1] = src[1];
-        pad = 0;
+        src = (s32*)((u8*)D_80075F84->photoRecord + 0x50);
+        GeoCamera_SetViewport(arg1, 0, 0, D_80075F84->width, D_80075F84->height);
+        GeoCamera_SetPerspective(arg1, Gallery_GetPhotoScaleIndex(D_80075F84->photoRecord), 20.0f, 10000.0f);
+        dst = (s32*)((u8*)arg1 + 0xA8);
+        dst[0] = src[0];
+        dst[1] = src[1];
+        dst[2] = src[2];
+        dst[3] = src[3];
+        dst[4] = src[4];
+        dst[5] = src[5];
     }
     return 0;
 }
+#else
+#pragma GLOBAL_ASM("asm/us/nonmatchings/30640/Gallery_ConfigurePhotoCamera.s")
+#endif
 
+#ifdef NON_MATCHING
 s32 Gallery_SetScenePoseCamera(s32 arg0, unk_D_86002F34_00C* arg1) {
-    if (Gallery_GetScenePoseIndex(arg0) != 0) {
-        if (arg0 == 2) {
-            GeoCamera_SetViewport(arg1, 0, 0, D_80075F84->unk_04, D_80075F84->unk_06);
-            GeoCamera_SetPerspective(arg1, 45.0f, 20.0f, 8000.0f);
-        }
+    if ((Gallery_GetScenePoseIndex(arg0) != 0) && (arg0 == 2)) {
+        GeoCamera_SetViewport(arg1, 0, 0, D_80075F84->width, D_80075F84->height);
+        GeoCamera_SetPerspective(arg1, 45.0f, 20.0f, 8000.0f);
     }
     return 0;
 }
+#else
+#pragma GLOBAL_ASM("asm/us/nonmatchings/30640/Gallery_SetScenePoseCamera.s")
+#endif
 
 s32 Gallery_SetCameraAngleOffsets(s32 arg0, unk_func_8003013C_arg1* arg1) {
     UNUSED s32 pad;
@@ -335,14 +345,14 @@ s32 Gallery_SetCameraAngleOffsetsAlternate(s32 arg0, unk_func_8003013C_arg1* arg
 
 s32 Gallery_SetSceneModelNode(s32 arg0, unk_D_86002F58_004_000* arg1) {
     if (arg0 == 0) {
-        D_80075F80->unk_20 = arg1;
+        D_80075F80->modelNode = arg1;
     }
     return 0;
 }
 
 s32 Gallery_SetSceneRenderState(s32 arg0, unk_func_80031270_024* arg1) {
     if (arg0 == 0) {
-        D_80075F80->unk_24 = arg1;
+        D_80075F80->photoModel = arg1;
     }
     return 0;
 }
@@ -354,13 +364,13 @@ s32 Gallery_SetSceneGraphNode(s32 arg0, GraphNode* arg1) {
         temp_v0 = arg1->unk_14;
         switch (temp_v0) {                          /* irregular */
         case 0:
-            D_80075F80->unk_28 = arg1;
+            D_80075F80->sceneContainer0 = arg1;
             break;
         case 1:
-            D_80075F80->unk_2C = arg1;
+            D_80075F80->sceneContainer1 = arg1;
             break;
         case 2:
-            D_80075F80->unk_30 = arg1;
+            D_80075F80->sceneContainer2 = arg1;
             break;
         }
         arg1->unk_14 = 0;
@@ -404,37 +414,76 @@ void Gallery_InitializePhotoGrid(s32 arg0, s32 arg1) {
     }
 }
 
+#ifdef NON_MATCHING
 s32 func_800303C8(s32 arg0, UNUSED GraphNode* arg1) {
-    s32 temp_v0;
-    s32 i;
     char* sp16C;
+    u8* sp40;
+    char* temp_s2;
+    s32 temp_v0;
+    s32 var_a0;
+    s32 var_a0_2;
+    s32 var_a1;
+    s32 var_ra;
+    s32 var_ra_2;
+    s32 var_s1;
+    s32 var_s2;
+    s32 var_s4;
+    s32 var_s5;
+    s32 var_t4;
+    s32 var_t4_2;
+    s32 var_t5;
+    s32 var_v0;
+    s32 var_v1;
 
     temp_v0 = Gallery_GetScenePoseIndex(arg0);
     if ((temp_v0 != 0) && (arg0 == 2)) {
-        sp16C = (char*)((u8*)D_80075F84->unk_18 + 0x73);
-        D_80075F9C = Font_MeasureTextExtent(0x10, 0, sp16C);
+        temp_s2 = (char*)((u8*)D_80075F84->photoRecord + 0x73);
+        D_80075F9C = Font_MeasureTextExtent(0x10, 0, temp_s2);
         Gallery_InitializePhotoGrid(0, -0x96);
         GfxImage_SetRenderTarget(&gDisplayListHead, D_80075F90);
         GfxImage_FillCurrent(&gDisplayListHead, 0);
         gDPPipeSync(gDisplayListHead++);
-        gDPSetTexturePersp(gDisplayListHead++, G_TP_NONE);
-        gDPSetTextureFilter(gDisplayListHead++, G_TF_BILERP);
-        gDPSetTextureConvert(gDisplayListHead++, G_TC_FILT);
-        gDPSetTextureLOD(gDisplayListHead++, G_TL_TILE);
-        gDPSetTextureDetail(gDisplayListHead++, G_TD_CLAMP);
-        gDPSetCycleType(gDisplayListHead++, G_CYC_1CYCLE);
-        gDPSetCombineMode(gDisplayListHead++, G_CC_DECALRGBA, G_CC_DECALRGBA);
-        gDPSetRenderMode(gDisplayListHead++, G_RM_AA_TEX_EDGE, G_RM_AA_TEX_EDGE2);
-
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE3000C00;    _gfx->words.w1 = 0;    }
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE3001201;    _gfx->words.w1 = 0x2000;    }
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE3001402;    _gfx->words.w1 = 0xC00;    }
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE3000F00;    _gfx->words.w1 = 0;    }
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE3000D01;    _gfx->words.w1 = 0;    }
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE3000A01;    _gfx->words.w1 = 0;    }
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xFCFFFFFF;    _gfx->words.w1 = 0xFFFCF279;    }
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE200001C;    _gfx->words.w1 = 0x553048;    }
+        sp16C = temp_s2;
         if (temp_v0 == 1) {
-            for (i = 0; i < 2; i++) {
-                gDPLoadTextureTile(gDisplayListHead++, D_5001950, G_IM_FMT_RGBA, G_IM_SIZ_16b, 100, 0, 0, (i * 15), 99, ((i + 1) * 15) - 1, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-                gSPTextureRectangle(gDisplayListHead++, 0, (i * 15) << 2, 100 << 2, ((i + 1) * 15) << 2, 0, 0, (i * 15) << 5, 1 << 10, 1 << 10);
-                gSPTextureRectangle(gDisplayListHead++, 100 << 2, (i * 15) << 2, 200 << 2, ((i + 1) * 15) << 2, 0, 100 << 5, (i * 15) << 5, -(1 << 10), 1 << 10);
+            var_t4 = 0;
+            var_ra = 0xF;
+            for (var_t5 = 0xE; var_t5 < 0x2C; var_t5 += 0xF) {
+                {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xFD100063;    _gfx->words.w1 = &D_5001950;    }
+                {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xF5103200;    _gfx->words.w1 = 0x07080200;    }
+                gDPLoadSync(gDisplayListHead++);
+                {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = (s32) (((var_t4 * 4) & 0xFFF) | 0xF4000000);    _gfx->words.w1 = (s32) (((var_t5 * 4) & 0xFFF) | 0x0718C000);    }
+                gDPPipeSync(gDisplayListHead++);
+                {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xF5103200;    _gfx->words.w1 = 0x80200;    }
+                {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = (s32) (((var_t4 * 4) & 0xFFF) | 0xF2000000);    _gfx->words.w1 = (s32) (((var_t5 * 4) & 0xFFF) | 0x18C000);    }
+                {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = (s32) (((var_ra * 4) & 0xFFF) | 0xE4190000);    _gfx->words.w1 = (var_t4 * 4) & 0xFFF;    }
+                {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE1000000;    _gfx->words.w1 = (var_t4 << 5) & 0xFFFF;    }
+                {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xF1000000;    _gfx->words.w1 = 0x04000400;    }
+                {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = (s32) (((var_ra * 4) & 0xFFF) | 0xE4320000);    _gfx->words.w1 = (s32) (((var_t4 * 4) & 0xFFF) | 0x190000);    }
+                {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE1000000;    _gfx->words.w1 = (s32) (((var_t4 << 5) & 0xFFFF) | 0x0C800000);    }
+                var_t4 += 0xF;
+                var_ra += 0xF;
             }
-            gDPLoadTextureTile(gDisplayListHead++, D_5001950, G_IM_FMT_RGBA, G_IM_SIZ_16b, 100, 0, 0, 30, 99, 42, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-            gSPTextureRectangle(gDisplayListHead++, 0, 30 << 2, 100 << 2, 43 << 2, 0, 0, 30 << 5, 1 << 10, 1 << 10);
-            gSPTextureRectangle(gDisplayListHead++, 100 << 2, 30 << 2, 200 << 2, 43 << 2, 0, 100 << 5, 30 << 5, -(1 << 10), 1 << 10);
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xFD100063;    _gfx->words.w1 = &D_5001950;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xF5103200;    _gfx->words.w1 = 0x07080200;    }
+            gDPLoadSync(gDisplayListHead++);
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xF4000078;    _gfx->words.w1 = 0x0718C0A8;    }
+            gDPPipeSync(gDisplayListHead++);
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xF5103200;    _gfx->words.w1 = 0x80200;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xF2000078;    _gfx->words.w1 = 0x18C0A8;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE41900AC;    _gfx->words.w1 = 0x78;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE1000000;    _gfx->words.w1 = 0x3C0;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xF1000000;    _gfx->words.w1 = 0x04000400;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE43200AC;    _gfx->words.w1 = 0x190078;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE1000000;    _gfx->words.w1 = 0x0C8003C0;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xF1000000;    _gfx->words.w1 = 0xFC000400;    }
             Font_BeginTranslucentTextRendering();
             Font_EnableTwoCycleTexturing();
             Gfx_SetEnvColor(0xF0, 0x78, 0x6E, 0xFF);
@@ -444,9 +493,19 @@ s32 func_800303C8(s32 arg0, UNUSED GraphNode* arg1) {
             Font_DisableTwoCycleTexturing();
             Font_EndTexturedTextRendering();
         } else {
-            gDPLoadTextureTile(gDisplayListHead++, D_5003AE8, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 40, 0, 0, 31, 39, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-            gSPTextureRectangle(gDisplayListHead++, 16 << 2, 0 << 2, 152 << 2, 40 << 2, 0, 0, 0, 1 << 10, 1 << 10);
-            gSPTextureRectangle(gDisplayListHead++, 152 << 2, 0 << 2, 185 << 2, 40 << 2, 0, 32 << 5, 0, -(1 << 10), 1 << 10);
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xFD10001F;    _gfx->words.w1 = &D_5003AE8;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xF5101000;    _gfx->words.w1 = 0x07080200;    }
+            gDPLoadSync(gDisplayListHead++);
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xF4000000;    _gfx->words.w1 = 0x0707C09C;    }
+            gDPPipeSync(gDisplayListHead++);
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xF5101000;    _gfx->words.w1 = 0x80200;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xF2000000;    _gfx->words.w1 = 0x7C09C;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE42600A0;    _gfx->words.w1 = 0x40000;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE1000000;    _gfx->words.w1 = 0;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xF1000000;    _gfx->words.w1 = 0x04000400;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE42E40A0;    _gfx->words.w1 = 0x260000;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE1000000;    _gfx->words.w1 = 0x04000000;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xF1000000;    _gfx->words.w1 = 0xFC000400;    }
             Font_BeginTranslucentTextRendering();
             Font_EnableTwoCycleTexturing();
             Gfx_SetEnvColor(0xDC, 0xFF, 0xDC, 0xFF);
@@ -456,55 +515,109 @@ s32 func_800303C8(s32 arg0, UNUSED GraphNode* arg1) {
             Font_DisableTwoCycleTexturing();
             Font_EndTexturedTextRendering();
         }
-        GfxImage_SetRenderTarget(&gDisplayListHead, D_80075F84->unk_08);
+        GfxImage_SetRenderTarget(&gDisplayListHead, D_80075F84->colorBuffer);
         gDPPipeSync(gDisplayListHead++);
-        gDPSetCycleType(gDisplayListHead++, G_CYC_1CYCLE);
-        gDPSetCombineMode(gDisplayListHead++, G_CC_DECALRGBA, G_CC_DECALRGBA);
-        gDPSetRenderMode(gDisplayListHead++, G_RM_AA_TEX_EDGE, G_RM_AA_TEX_EDGE2);
-        gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
-        gSPMatrix(gDisplayListHead++, &D_8006F010, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gSPVertex(gDisplayListHead++, D_800761B0, 12, 0);
-        for (i = 0; i < 10; i += 2) {
-            gDPLoadMultiTile(gDisplayListHead++, D_80075F90->img_p, 0, 0, G_IM_FMT_RGBA, G_IM_SIZ_16b, D_80075F94, D_80075F98, 0, i * 5, D_80075F94 - 1, (i + 2) * 5 - 1, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-            gSP2Triangles(gDisplayListHead++, i, 2 + i, 1 + i, i, 1 + i, 2 + i, 3 + i, i);
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE3000A01;    _gfx->words.w1 = 0;    }
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xFCFFFFFF;    _gfx->words.w1 = 0xFFFCF279;    }
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE200001C;    _gfx->words.w1 = 0x553048;    }
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xD7000002;    _gfx->words.w1 = -1;    }
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xDA380003;    _gfx->words.w1 = &D_8006F010;    }
+        var_s4 = 0;
+        var_s5 = 9;
+        var_ra_2 = 0;
+        var_s1 = 4;
+        var_s2 = 2;
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0x0100C018;    _gfx->words.w1 = &D_800761B0;    }
+        for (var_t4_2 = 6; var_t4_2 < 0x1A; var_t4_2 += 4) {
+            var_s5 += 0xA;
+            var_s4 += 0xA;
+            var_v1 = var_s2 & 0xFF;
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = (s32) (((D_80075F94 - 1) & 0xFFF) | 0xFD100000);    _gfx->words.w1 = (s32) D_80075F90->img_p;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = (s32) (((((s32) ((D_80075F94 * 2) + 7) >> 3) & 0x1FF) << 9) | 0xF5100000);    _gfx->words.w1 = 0x07080200;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xE6000000;    _gfx->words.w1 = 0;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = (s32) (((var_s4 * 4) & 0xFFF) | 0xF4000000);    _gfx->words.w1 = (s32) (((((D_80075F94 - 1) * 4) & 0xFFF) << 0xC) | 0x07000000 | ((var_s5 * 4) & 0xFFF));    }
+            gDPPipeSync(gDisplayListHead++);
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = (s32) (((((s32) ((D_80075F94 * 2) + 7) >> 3) & 0x1FF) << 9) | 0xF5100000);    _gfx->words.w1 = 0x80200;    }
+            {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = (s32) (((var_s4 * 4) & 0xFFF) | 0xF2000000);    _gfx->words.w1 = (s32) (((((D_80075F94 - 1) * 4) & 0xFFF) << 0xC) | ((var_s5 * 4) & 0xFFF));    }
+            {   
+                Gfx *_gfx = (Gfx *)(gDisplayListHead++);
+                var_v0 = var_s1 & 0xFF;
+                if (var_t4_2 == 6) {
+                    var_a0 = ((var_ra_2 & 0xFF) << 0x10) | (var_v0 << 8) | var_v1;
+                } else {
+                    var_v1 = var_s2 & 0xFF;
+                    if (var_t4_2 == 8) {
+                        var_v0 = var_s1 & 0xFF;
+                        var_v1 = var_s2 & 0xFF;
+                        var_a1 = (var_v0 << 0x10) | (var_v1 << 8) | (var_ra_2 & 0xFF);
+                    } else {
+                        var_v0 = var_s1 & 0xFF;
+                        var_a1 = (var_v1 << 0x10) | ((var_ra_2 & 0xFF) << 8) | var_v0;
+                    }
+                    var_a0 = var_a1;
+                }
+                _gfx->words.w0 = (s32) (var_a0 | 0x06000000);
+                if (var_t4_2 == 6) {
+                    _gfx->words.w1 = (s32) ((var_v1 << 0x10) | (var_v0 << 8) | (var_t4_2 & 0xFF));
+                } else {
+                    if (var_t4_2 == 8) {
+                        var_a0_2 = (var_v0 << 0x10) | ((var_t4_2 & 0xFF) << 8) | var_v1;
+                    } else {
+                        var_a0_2 = ((var_t4_2 & 0xFF) << 0x10) | (var_v1 << 8) | var_v0;
+                    }
+                    _gfx->words.w1 = var_a0_2;
+                }
+            }
+            var_ra_2 += 4;
+            var_s1 += 4;
+            var_s2 += 4;
         }
-        gDPLoadMultiTile(gDisplayListHead++, D_80075F90->img_p, 0, 0, G_IM_FMT_RGBA, G_IM_SIZ_16b, D_80075F94, D_80075F98, 0, 40, D_80075F94 - 1, D_80075F98 - 1, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+        gDPSetTextureImage(gDisplayListHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, D_80075F94, D_80075F90->img_p);
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = (s32) (((((s32) ((D_80075F94 * 2) + 7) >> 3) & 0x1FF) << 9) | 0xF5100000);    _gfx->words.w1 = 0;    }
+        gDPLoadSync(gDisplayListHead++);
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xF40000A0;    _gfx->words.w1 = (s32) (((((D_80075F94 - 1) * 4) & 0xFFF) << 0xC) | 0x07000000 | (((D_80075F98 - 1) * 4) & 0xFFF));    }
+        gDPPipeSync(gDisplayListHead++);
+        gDPSetTile(gDisplayListHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, (((D_80075F94 * 2) + 7) >> 3), 0, 0, 0, G_TX_CLAMP, 0, 0, G_TX_CLAMP, 0, 0);
+        {    Gfx *_gfx = (Gfx *)(gDisplayListHead++);    _gfx->words.w0 = 0xF20000A0;    _gfx->words.w1 = (s32) (((((D_80075F94 - 1) * 4) & 0xFFF) << 0xC) | (((D_80075F98 - 1) * 4) & 0xFFF));    }
         gSP2Triangles(gDisplayListHead++, 9, 8, 10, 0, 11, 9, 10, 0);
-        gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF);
+        gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
     }
     return 0;
 }
+#else
+#pragma GLOBAL_ASM("asm/us/nonmatchings/30640/func_800303C8.s")
+#endif
 
-void Gallery_CopyPhotoMonFromBattleMon(unk_D_83402EE0_070* arg0, BattleMon* arg1) {
+void Gallery_CopyPhotoMonFromBattleMon(GalleryPhotoMon* arg0, BattleMon* arg1) {
     s32 i;
 
-    bzero(arg0, sizeof(unk_D_83402EE0_070));
-    arg0->unk_00 = arg1->unk_0E;
-    arg0->unk_02 = arg1->unk_00.unk_00;
+    bzero(arg0, sizeof(GalleryPhotoMon));
+    arg0->otId = arg1->otId;
+    arg0->species = arg1->species.dexId;
 
     for (i = 0; i < 11; i++) {
-        arg0->unk_03[i] = ((s8*)arg1->unk_30)[i];
+        arg0->nickname[i] = ((s8*)arg1->nickname)[i];
     }
 
     for (i = 0; i < 11; i++) {
-        arg0->unk_0E[i] = ((s8*)arg1->unk_3B)[i];
+        arg0->otName[i] = ((s8*)arg1->otName)[i];
     }
 }
 
-void Gallery_CopyBattleMonFromPhotoMon(BattleMon* arg0, unk_D_83407AC8* arg1) {
+void Gallery_CopyBattleMonFromPhotoMon(BattleMon* arg0, GalleryPhotoMon* arg1) {
     s32 i;
 
     bzero(arg0, sizeof(BattleMon));
 
-    arg0->unk_0E = arg1->unk_00;
-    arg0->unk_00.unk_00 = arg1->unk_02;
+    arg0->otId = arg1->otId;
+    arg0->species.dexId = arg1->species;
 
     for (i = 0; i < 11; i++) {
-        arg0->unk_30[i] = arg1->unk_03[i];
+        arg0->nickname[i] = arg1->nickname[i];
     }
 
     for (i = 0; i < 11; i++) {
-        arg0->unk_3B[i] = arg1->unk_0E[i];
+        arg0->otName[i] = arg1->otName[i];
     }
 }
 
@@ -514,40 +627,40 @@ void Geo_LoadSceneGraphNode(unk_func_80031270* arg0, UNUSED s16 arg1, UNUSED s16
 
     sp18 = MainPool_AllocState(main_pool_get_available(), 0);
     D_80075F80 = arg0;
-    arg0->unk_1C = process_geo_layout(sp18, D_80075FA0);
+    arg0->sceneGraph = process_geo_layout(sp18, D_80075FA0);
     D_80075F80 = NULL;
     MainPool_FinalizeAllocation(sp18);
 }
 
 unk_func_80031270* Geo_CreateSceneInstance(s16 arg0, s16 arg1, unk_D_80068BB0* arg2, unk_D_80068BB0* arg3,
-                                 unk_D_86002F58_004_000_010* arg4, BinArchive* arg5, unk_D_83403C60* arg6) {
+                                 unk_D_86002F58_004_000_010* arg4, BinArchive* arg5, GalleryPhotoRecord* arg6) {
     UNUSED unk_D_80068BB0* var_v0;
     unk_func_80031270* temp_v0 = main_pool_alloc(sizeof(unk_func_80031270), 0);
 
     if (temp_v0 != NULL) {
-        temp_v0->unk_00 = 0;
-        temp_v0->unk_02 = 0;
-        temp_v0->unk_04 = arg0;
-        temp_v0->unk_06 = arg1;
+        temp_v0->state = 0;
+        temp_v0->renderStep = 0;
+        temp_v0->width = arg0;
+        temp_v0->height = arg1;
 
         if (arg2 != NULL) {
-            temp_v0->unk_08 = arg2;
+            temp_v0->colorBuffer = arg2;
         } else {
-            temp_v0->unk_08 = GfxImage_Allocate(0, 2, arg0, arg1, 0);
+            temp_v0->colorBuffer = GfxImage_Allocate(0, 2, arg0, arg1, 0);
         }
 
         if (arg3 != NULL) {
-            temp_v0->unk_0C = arg3;
+            temp_v0->depthBuffer = arg3;
         } else {
-            temp_v0->unk_0C = GfxImage_Allocate(0, 2, arg0, arg1, 1);
+            temp_v0->depthBuffer = GfxImage_Allocate(0, 2, arg0, arg1, 1);
         }
 
-        GfxImage_AttachDepthBuffer(temp_v0->unk_08, temp_v0->unk_0C);
+        GfxImage_AttachDepthBuffer(temp_v0->colorBuffer, temp_v0->depthBuffer);
 
-        temp_v0->unk_10 = arg4;
-        temp_v0->unk_14 = arg5;
-        temp_v0->unk_18 = arg6;
-        temp_v0->unk_34 = 0;
+        temp_v0->parentNode = arg4;
+        temp_v0->archive = arg5;
+        temp_v0->photoRecord = arg6;
+        temp_v0->fillColorArg = 0;
 
         if (D_80075F90 == 0) {
             D_80075F90 = GfxImage_Allocate(0, 2, 0xC8, 0x2B, 0);
@@ -558,84 +671,34 @@ unk_func_80031270* Geo_CreateSceneInstance(s16 arg0, s16 arg1, unk_D_80068BB0* a
     return temp_v0;
 }
 
-typedef union unk_func_80026268_arg0_000_raw {
-    struct {
-        u8 unk_00;
-        u8 unk_01;
-        u16 unk_02;
-    };
-    f32 raw;
-} unk_func_80026268_arg0_000_raw; // size = 0x4
-
-typedef struct unk_func_80026268_arg0_raw {
-    /* 0x00 */ unk_func_80026268_arg0_000_raw unk_00;
-    /* 0x04 */ u8 unk_04;
-    /* 0x05 */ u8 unk_05;
-    /* 0x06 */ s16 unk_06;
-    /* 0x08 */ u8 unk_08;
-    /* 0x09 */ u8 unk_09[4];
-    /* 0x0D */ u8 pad0D;
-    /* 0x0E */ u16 unk_0E;
-    /* 0x10 */ u32 unk_10;
-    /* 0x14 */ u16 unk_14;
-    /* 0x16 */ u16 unk_16;
-    /* 0x18 */ u16 unk_18;
-    /* 0x1A */ u16 unk_1A;
-    /* 0x1C */ u16 unk_1C;
-    /* 0x1E */ u16 unk_1E;
-    /* 0x20 */ u8 unk_20[4];
-    /* 0x24 */ u8 unk_24;
-    /* 0x25 */ u8 unk_25;
-    /* 0x26 */ u16 unk_26;
-    /* 0x28 */ u16 unk_28;
-    /* 0x2A */ u16 unk_2A;
-    /* 0x2C */ u16 unk_2C;
-    /* 0x2E */ u16 unk_2E;
-    /* 0x30 */ u8 unk_30[11];
-    /* 0x3B */ u8 unk_3B[11];
-    /* 0x46 */ u8 unk_46[11];
-    /* 0x51 */ char unk51[0x1];
-    /* 0x52 */ u8 unk_52;
-    /* 0x53 */ u8 unk_53;
-} unk_func_80026268_arg0_raw; // size = 0x54
-
-typedef struct unk_D_83403C60_raw {
-    /* 0x00 */ unk_func_80026268_arg0_raw unk_00;
-    /* 0x54 */ char unk54[0x18];
-    /* 0x6C */ u8 unk_6C;
-    /* 0x6D */ char unk6D[0x3];
-    /* 0x70 */ unk_D_83407AC8 unk_70;
-    /* 0x8A */ char unk8A[0x2];
-} unk_D_83403C60_raw; // size = 0x8C
-
 void Gallery_InitializePhotoModel(unk_func_80031270* arg0) {
     s32 sp94;
     arg1_func_80010CA8 sp90;
     UNUSED s32 pad[3]; // BattleMon potentially bigger?
     BattleMon sp30;
-    unk_D_83403C60_raw* temp_s1;
+    GalleryPhotoRecord* temp_s1;
     void (*sp28)(void*, u32);
 
-    temp_s1 = (unk_D_83403C60_raw*)arg0->unk_18;
-    Gallery_CopyBattleMonFromPhotoMon(&sp30, &temp_s1->unk_70);
-    Vec3f_SetComponentsDuplicate(&arg0->unk_20->unk_024, 0, temp_s1->unk_00.unk_00.raw, 0); //?
-    arg0->unk_20->unk_0A6 = 0xFE;
-    sp94 = sp30.unk_00.unk_00;
-    if (sp30.unk_00.unk_00 == 0x99) {
-        sp30.unk_00.unk_00 = 0x19;
+    temp_s1 = arg0->photoRecord;
+    Gallery_CopyBattleMonFromPhotoMon(&sp30, &temp_s1->mon);
+    Vec3f_SetComponentsDuplicate(&arg0->modelNode->unk_024, 0, temp_s1->yPos, 0);
+    arg0->modelNode->poolIndex = 0xFE;
+    sp94 = sp30.species.dexId;
+    if (sp30.species.dexId == 0x99) {
+        sp30.species.dexId = 0x19;
     }
     Model_ComputeSizeVariant(&sp90, &sp30);
-    sp30.unk_00.unk_00 = sp94;
-    PokeIcon_RequestFrameLoad(arg0->unk_10, sp30.unk_00.unk_00, sp90);
-    PokeIcon_WaitFrameLoad(arg0->unk_10);
-    ModelRenderer_ClearDisplayObject(arg0->unk_20);
-    Model_InitDisplayObject(arg0->unk_20, 0, sp30.unk_00.unk_00, arg0->unk_10->unk_24->unk_08->unk_00[0]);
+    sp30.species.dexId = sp94;
+    PokeIcon_RequestFrameLoad(arg0->parentNode, sp30.species.dexId, sp90);
+    PokeIcon_WaitFrameLoad(arg0->parentNode);
+    ModelRenderer_ClearDisplayObject(arg0->modelNode);
+    Model_InitDisplayObject(arg0->modelNode, 0, sp30.species.dexId, arg0->parentNode->lastLoadedFragment->unk_08->unk_00[0]);
     sp28 = Util_ConvertAddrToVirtAddr(&Particle31_UnpackSlotData);
-    sp28(arg0->unk_20, Util_ConvertAddrToVirtAddr(&temp_s1->unk_00.unk_09[1]));
-    ModelAnim_SetAnimation(arg0->unk_20, temp_s1->unk_00.unk_05);
-    ModelAnim_SetFrame(arg0->unk_20, temp_s1->unk_00.unk_06);
-    ModelAnim_SetEventTrack(arg0->unk_20, temp_s1->unk_00.unk_08);
-    ModelAnim_SetEventFrame(arg0->unk_20, (s16)temp_s1->unk_00.unk_09[0]);
+    sp28(arg0->modelNode, Util_ConvertAddrToVirtAddr(&temp_s1->parts[0]));
+    ModelAnim_SetAnimation(arg0->modelNode, temp_s1->animIndex);
+    ModelAnim_SetFrame(arg0->modelNode, temp_s1->animFrame);
+    ModelAnim_SetEventTrack(arg0->modelNode, temp_s1->eventTrack);
+    ModelAnim_SetEventFrame(arg0->modelNode, temp_s1->eventFrame);
 }
 
 void Gallery_LoadPhotoSceneGraph(unk_func_80031270* arg0) {
@@ -647,98 +710,98 @@ void Gallery_LoadPhotoSceneGraph(unk_func_80031270* arg0) {
     unk_func_800314BC_temp_v4* temp_v0_4;
     unk_func_80031270_024* temp_v1;
 
-    GeoNode_CreateContainer(0, arg0->unk_28);
-    GeoNode_CreateContainer(0, arg0->unk_2C);
-    GeoNode_CreateContainer(0, arg0->unk_30);
-    sp20 = BinArchive_GetFile(arg0->unk_14, D_8007616C[Gallery_GetPhotoVariantIndex(arg0->unk_18)]);
+    GeoNode_CreateContainer(0, arg0->sceneContainer0);
+    GeoNode_CreateContainer(0, arg0->sceneContainer1);
+    GeoNode_CreateContainer(0, arg0->sceneContainer2);
+    sp20 = BinArchive_GetFile(arg0->archive, D_8007616C[Gallery_GetPhotoVariantIndex(arg0->photoRecord)]);
     sp24 = MainPool_AllocState(main_pool_get_available(), 0);
     temp_v0 = sp20(0, 0);
     if (temp_v0 != NULL) {
-        GraphNode_AppendChild(arg0->unk_28, process_geo_layout(sp24, temp_v0));
+        GraphNode_AppendChild(arg0->sceneContainer0, process_geo_layout(sp24, temp_v0));
     }
     temp_v0_2 = sp20(1, 0);
     if (temp_v0_2 != NULL) {
-        GraphNode_AppendChild(arg0->unk_2C, process_geo_layout(sp24, temp_v0_2));
+        GraphNode_AppendChild(arg0->sceneContainer1, process_geo_layout(sp24, temp_v0_2));
     }
     temp_v0_3 = sp20(3, 0);
     if (temp_v0_3 != NULL) {
-        GraphNode_AppendChild(arg0->unk_30, process_geo_layout(sp24, temp_v0_3));
+        GraphNode_AppendChild(arg0->sceneContainer2, process_geo_layout(sp24, temp_v0_3));
     }
-    arg0->unk_34 = sp20(2, 0);
+    arg0->fillColorArg = sp20(2, 0);
     MainPool_FinalizeAllocation(sp24);
     temp_v0_4 = sp20(4, 0);
     if (temp_v0_4 == NULL) {
-        temp_v1 = arg0->unk_24;
-        temp_v1->unk_01 = (u8) (temp_v1->unk_01 & 0xFFFE);
-        arg0->unk_24->unk_14 = 0;
+        temp_v1 = arg0->photoModel;
+        temp_v1->flags = (u8) (temp_v1->flags & 0xFFFE);
+        arg0->photoModel->hasAnimData = 0;
         return;
     }
-    arg0->unk_24->unk_18 = (s16) temp_v0_4->unk_00;
-    arg0->unk_24->unk_1A = (s16) temp_v0_4->unk_02;
-    arg0->unk_24->unk_1C = (s32) temp_v0_4->unk_04;
-    arg0->unk_24->unk_14 = 1;
-    temp_v1 = arg0->unk_24;
-    temp_v1->unk_01 = (u8) (temp_v1->unk_01 | 1);
+    arg0->photoModel->animParamA = (s16) temp_v0_4->animParamA;
+    arg0->photoModel->animParamB = (s16) temp_v0_4->animParamB;
+    arg0->photoModel->animParamC = (s32) temp_v0_4->animParamC;
+    arg0->photoModel->hasAnimData = 1;
+    temp_v1 = arg0->photoModel;
+    temp_v1->flags = (u8) (temp_v1->flags | 1);
 }
 
 u8* Gallery_ProcessSceneInstance(unk_func_80031270* arg0) {
     unk_func_80031660_sp24* sp24;
     void (*sp20)();
 
-    sp24 = (unk_func_80031660_sp24*)((u8*)arg0->unk_18 + 0x50);
+    sp24 = (unk_func_80031660_sp24*)((u8*)arg0->photoRecord + 0x50);
     sp20 = Util_ConvertAddrToVirtAddr(&Particle_UpdateFrameCountersAlias);
     D_80075F84 = arg0;
-    if (arg0->unk_00 == 1) {
-        switch (arg0->unk_02) {
+    if (arg0->state == 1) {
+        switch (arg0->renderStep) {
             case 2:
                 Gallery_InitializePhotoModel(arg0);
                 Gallery_LoadPhotoSceneGraph(arg0);
                 break;
             case 1:
-                GfxImage_SetRenderTarget(&gDisplayListHead, arg0->unk_08);
+                GfxImage_SetRenderTarget(&gDisplayListHead, arg0->colorBuffer);
 
-                if ((arg0->unk_34 == -1) || (arg0->unk_34 == 0)) {
+                if ((arg0->fillColorArg == -1) || (arg0->fillColorArg == 0)) {
                     GfxImage_FillCurrent(&gDisplayListHead, 1);
-                } else if (arg0->unk_34 < 0x10000U) {
-                    GfxImage_FillCurrent(&gDisplayListHead, arg0->unk_34);
+                } else if (arg0->fillColorArg < 0x10000U) {
+                    GfxImage_FillCurrent(&gDisplayListHead, arg0->fillColorArg);
                 } else {
                     GfxImage_FillCurrent(&gDisplayListHead, 0xA6BF);
                 }
                 GeoRender_AdvanceFrameCounter();
                 *((s32*)Util_ConvertAddrToVirtAddr(&gParticleFrameCounter)) = sp24->unk_18;
                 sp20();
-                Geo_RenderRootNode(arg0->unk_1C);
+                Geo_RenderRootNode(arg0->sceneGraph);
                 break;
             default:
                 break;
         }
  
     }
-    switch (arg0->unk_00) {
+    switch (arg0->state) {
         case 0:
-            arg0->unk_00 = 1;
-            arg0->unk_02 = 2;
+            arg0->state = 1;
+            arg0->renderStep = 2;
             break;
         case 1:
-            arg0->unk_02--;
-            if (arg0->unk_02 <= 0) {
-                arg0->unk_00 = 2;
+            arg0->renderStep--;
+            if (arg0->renderStep <= 0) {
+                arg0->state = 2;
             }
             break;
         case 2:
             break;
     }
-    return arg0->unk_08->img_p;
+    return arg0->colorBuffer->img_p;
 }
 
 s32 Gallery_IsSceneReady(unk_func_80031270* arg0) {
     s32 var_v1;
     s32 sp1C;
-    unk_D_83403C60* temp_a0;
+    GalleryPhotoRecord* temp_a0;
 
     var_v1 = 0;
     if (arg0 != NULL) {
-        temp_a0 = arg0->unk_18;
+        temp_a0 = arg0->photoRecord;
         if (temp_a0 != 0) {
             sp1C = 0;
             var_v1 = sp1C;
@@ -759,7 +822,7 @@ s32 Gallery_FindReadyScene(unk_func_80031270** arg0, s32 arg1) {
 
     for (i = 0; i < arg1; i++) {
         temp_s1 = arg0[i];
-        if ((Gallery_IsSceneReady(temp_s1) != 0) && (temp_s1->unk_00 == 1)) {
+        if ((Gallery_IsSceneReady(temp_s1) != 0) && (temp_s1->state == 1)) {
             sp30 = i;
             break;
         }
@@ -775,10 +838,10 @@ void Gallery_ClearActiveScene(void) {
     D_80075F84 = 0;
 }
 
-s32 Gallery_IsPhotoSpeciesValid(unk_D_83403C60* arg0) {
+s32 Gallery_IsPhotoSpeciesValid(GalleryPhotoRecord* arg0) {
     s32 v1 = 0;
 
-    if ((arg0->unk_00.unk_04 > 0 && arg0->unk_00.unk_04 < 0x98) || arg0->unk_00.unk_04 == 0x99) {
+    if ((arg0->species > 0 && arg0->species < 0x98) || arg0->species == 0x99) {
         v1 = 1;
     }
     return v1;

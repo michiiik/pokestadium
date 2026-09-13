@@ -620,7 +620,7 @@ s32 BattlePrep_BindCarouselSegment0(s32 arg0, unk_func_80011B94* arg1) {
         temp_a0 = (unk_D_84B259E8*)D_8006F09C->unk_000.unk_14;
 
         gDPPipeSync(gDisplayListHead++);
-        gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a0->unk_0C & 0x1FFFFFFF);
+        gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a0->badgeTextureData & 0x1FFFFFFF);
         gSPDisplayList(gDisplayListHead++, arg1->unk_00.unk_14);
 
         GeoRender_ApplyMaterialState();
@@ -635,7 +635,7 @@ s32 BattlePrep_BindCarouselSegment1(s32 arg0, unk_func_80011B94* arg1) {
         temp_a0 = (unk_D_84B259E8*)D_8006F09C->unk_000.unk_14;
 
         gDPPipeSync(gDisplayListHead++);
-        gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a0->unk_10[0] & 0x1FFFFFFF);
+        gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a0->glowTextureData[0] & 0x1FFFFFFF);
         gSPDisplayList(gDisplayListHead++, arg1->unk_00.unk_14);
 
         GeoRender_ApplyMaterialState();
@@ -650,8 +650,8 @@ s32 BattlePrep_BindCarouselSegment3(s32 arg0, unk_func_80011B94* arg1) {
         temp_a0 = (unk_D_84B259E8*)D_8006F09C->unk_000.unk_14;
 
         gDPPipeSync(gDisplayListHead++);
-        gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a0->unk_10[2] & 0x1FFFFFFF);
-        gSPSegment(gDisplayListHead++, 0x0E, (u32)temp_a0->unk_10[3] & 0x1FFFFFFF);
+        gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a0->glowTextureData[2] & 0x1FFFFFFF);
+        gSPSegment(gDisplayListHead++, 0x0E, (u32)temp_a0->glowTextureData[3] & 0x1FFFFFFF);
         gSPDisplayList(gDisplayListHead++, arg1->unk_00.unk_14);
 
         GeoRender_ApplyMaterialState();
@@ -666,7 +666,7 @@ s32 BattlePrep_BindCarouselSegment2(s32 arg0, unk_func_80011B94* arg1) {
         temp_a0 = (unk_D_84B259E8*)D_8006F09C->unk_000.unk_14;
 
         gDPPipeSync(gDisplayListHead++);
-        gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a0->unk_10[1] & 0x1FFFFFFF);
+        gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a0->glowTextureData[1] & 0x1FFFFFFF);
         gSPDisplayList(gDisplayListHead++, arg1->unk_00.unk_14);
 
         GeoRender_ApplyMaterialState();
@@ -680,7 +680,7 @@ s32 BattlePrep_CarouselDepthCallback(s32 arg0, unk_D_86002F34_alt5* arg1) {
     if (arg0 == 2) {
         temp_a0 = (unk_D_84B259A8*)D_8006F09C->unk_000.unk_14;
 
-        arg1->unk_24.z = temp_a0->unk_02[(D_8006F09C->unk_0A6 - temp_a0->unk_20->unk_0A6) - 9];
+        arg1->unk_24.z = temp_a0->unk_02[(D_8006F09C->poolIndex - temp_a0->displayObjects->poolIndex) - 9];
     }
     return 0;
 }
@@ -691,7 +691,7 @@ void BattlePrep_CarouselStepFirstItem(unk_D_84B259A8* arg0, s16 arg1) {
     }
 
     if (arg1 < 0xA) {
-        arg0->unk_20->unk_024.x = (arg1 << 5) - 0x120;
+        arg0->displayObjects->unk_024.x = (arg1 << 5) - 0x120;
     }
 }
 
@@ -703,23 +703,23 @@ void BattlePrep_CarouselStepNTSC(unk_D_84B259A8* arg0, s16 arg1) {
     }
 
     for (i = 1; i < 7; i += 2) {
-        arg0->unk_20[i].unk_024 = arg0->unk_20[2 + i].unk_024;
-        arg0->unk_20[1 + i].unk_024 = arg0->unk_20[3 + i].unk_024;
+        arg0->displayObjects[i].unk_024 = arg0->displayObjects[2 + i].unk_024;
+        arg0->displayObjects[1 + i].unk_024 = arg0->displayObjects[3 + i].unk_024;
 
-        arg0->unk_20[i].unk_030 = arg0->unk_20[2 + i].unk_030;
-        arg0->unk_20[1 + i].unk_030 = arg0->unk_20[3 + i].unk_030;
+        arg0->displayObjects[i].unk_030 = arg0->displayObjects[2 + i].unk_030;
+        arg0->displayObjects[1 + i].unk_030 = arg0->displayObjects[3 + i].unk_030;
     }
 
     if (arg1 < 0x12) {
-        arg0->unk_20[7].unk_024.x = (arg1 * 0x14) - 0x154;
+        arg0->displayObjects[7].unk_024.x = (arg1 * 0x14) - 0x154;
     }
 
     if (arg1 < 0x10) {
-        arg0->unk_20[8].unk_024.x = (arg1 * 0x14) - 0x12C;
+        arg0->displayObjects[8].unk_024.x = (arg1 * 0x14) - 0x12C;
     }
 
     if ((arg1 >= 0x12) && (arg1 < 0x2B)) {
-        arg0->unk_20[7].unk_024.x = SINS((arg1 * 0x1555) + 0xFFFE955B) * (s16)(0x54 - (arg1 * 2));
+        arg0->displayObjects[7].unk_024.x = SINS((arg1 * 0x1555) + 0xFFFE955B) * (s16)(0x54 - (arg1 * 2));
     }
 }
 
@@ -731,23 +731,23 @@ void BattlePrep_CarouselStepPAL(unk_D_84B259A8* arg0, s16 arg1) {
     }
 
     for (i = 1; i < 7; i += 2) {
-        arg0->unk_20[i].unk_024 = arg0->unk_20[2 + i].unk_024;
-        arg0->unk_20[1 + i].unk_024 = arg0->unk_20[3 + i].unk_024;
+        arg0->displayObjects[i].unk_024 = arg0->displayObjects[2 + i].unk_024;
+        arg0->displayObjects[1 + i].unk_024 = arg0->displayObjects[3 + i].unk_024;
 
-        arg0->unk_20[i].unk_030 = arg0->unk_20[2 + i].unk_030;
-        arg0->unk_20[1 + i].unk_030 = arg0->unk_20[3 + i].unk_030;
+        arg0->displayObjects[i].unk_030 = arg0->displayObjects[2 + i].unk_030;
+        arg0->displayObjects[1 + i].unk_030 = arg0->displayObjects[3 + i].unk_030;
     }
 
     if (arg1 < 0xF) {
-        arg0->unk_20[7].unk_024.x = (arg1 * 0x18) - 0x150;
+        arg0->displayObjects[7].unk_024.x = (arg1 * 0x18) - 0x150;
     }
 
     if (arg1 < 0xD) {
-        arg0->unk_20[8].unk_024.x = (arg1 * 0x18) - 0x120;
+        arg0->displayObjects[8].unk_024.x = (arg1 * 0x18) - 0x120;
     }
 
     if ((arg1 >= 0xF) && (arg1 < 0x28)) {
-        arg0->unk_20[7].unk_024.x = SINS((arg1 * 0x1555) + 0xFFFED55A) * (s16)(0x4E - (arg1 * 2));
+        arg0->displayObjects[7].unk_024.x = SINS((arg1 * 0x1555) + 0xFFFED55A) * (s16)(0x4E - (arg1 * 2));
     }
 }
 
@@ -764,13 +764,13 @@ void BattlePrep_CarouselStepFinalNTSC(unk_D_84B259A8* arg0, s16 arg1) {
     }
 
     for (i = 0; i < 3; i++) {
-        arg0->unk_20[9 + i].unk_024 = arg0->unk_20[10 + i].unk_024;
-        arg0->unk_20[9 + i].unk_030 = arg0->unk_20[10 + i].unk_030;
+        arg0->displayObjects[9 + i].unk_024 = arg0->displayObjects[10 + i].unk_024;
+        arg0->displayObjects[9 + i].unk_030 = arg0->displayObjects[10 + i].unk_030;
 
         arg0->unk_02[i] = arg0->unk_02[i + 1];
 
-        arg0->unk_20[13 + i].unk_024 = arg0->unk_20[14 + i].unk_024;
-        arg0->unk_20[13 + i].unk_030 = arg0->unk_20[14 + i].unk_030;
+        arg0->displayObjects[13 + i].unk_024 = arg0->displayObjects[14 + i].unk_024;
+        arg0->displayObjects[13 + i].unk_030 = arg0->displayObjects[14 + i].unk_030;
     }
 
     if (arg1 < 0x12) {
@@ -778,22 +778,22 @@ void BattlePrep_CarouselStepFinalNTSC(unk_D_84B259A8* arg0, s16 arg1) {
         s32 sp24 = (arg1 << 0xC) - 0x1000;
 
         arg0->unk_02[3] = sp24;
-        arg0->unk_20[12].unk_024.x = 0.0f;
-        arg0->unk_20[16].unk_024.x = 0.0f;
+        arg0->displayObjects[12].unk_024.x = 0.0f;
+        arg0->displayObjects[16].unk_024.x = 0.0f;
 
-        Vec3f_SetComponentsDuplicate(&arg0->unk_20[12].unk_030, sp28, sp28, sp28);
-        Vec3f_SetComponentsDuplicate(&arg0->unk_20[16].unk_030, sp28, sp28, sp28);
+        Vec3f_SetComponentsDuplicate(&arg0->displayObjects[12].unk_030, sp28, sp28, sp28);
+        Vec3f_SetComponentsDuplicate(&arg0->displayObjects[16].unk_030, sp28, sp28, sp28);
         if (sp24 >= 0xF000) {
-            Vec3f_SetComponentsDuplicate(&arg0->unk_20[7].unk_030, sp28, sp28, sp28);
-            Vec3f_SetComponentsDuplicate(&arg0->unk_20[8].unk_030, sp28, sp28, sp28);
+            Vec3f_SetComponentsDuplicate(&arg0->displayObjects[7].unk_030, sp28, sp28, sp28);
+            Vec3f_SetComponentsDuplicate(&arg0->displayObjects[8].unk_030, sp28, sp28, sp28);
         }
     } else if (arg1 < 0x1F) {
         f32 sp2C = (SINS((arg1 << 0xD) + 0xFFFE0000) * ((0x12C - (arg1 * 0xA)) / 1000.0f)) + 1.0f;
 
-        Vec3f_SetComponentsDuplicate(&arg0->unk_20[7].unk_030, sp2C, sp2C, sp2C);
-        Vec3f_SetComponentsDuplicate(&arg0->unk_20[8].unk_030, sp2C, sp2C, sp2C);
-        Vec3f_SetComponentsDuplicate(&arg0->unk_20[12].unk_030, sp2C, sp2C, sp2C);
-        Vec3f_SetComponentsDuplicate(&arg0->unk_20[16].unk_030, sp2C, sp2C, sp2C);
+        Vec3f_SetComponentsDuplicate(&arg0->displayObjects[7].unk_030, sp2C, sp2C, sp2C);
+        Vec3f_SetComponentsDuplicate(&arg0->displayObjects[8].unk_030, sp2C, sp2C, sp2C);
+        Vec3f_SetComponentsDuplicate(&arg0->displayObjects[12].unk_030, sp2C, sp2C, sp2C);
+        Vec3f_SetComponentsDuplicate(&arg0->displayObjects[16].unk_030, sp2C, sp2C, sp2C);
     }
 }
 
@@ -810,13 +810,13 @@ void BattlePrep_CarouselStepFinalPAL(unk_D_84B259A8* arg0, s16 arg1) {
     }
 
     for (i = 0; i < 3; i++) {
-        arg0->unk_20[9 + i].unk_024 = arg0->unk_20[10 + i].unk_024;
-        arg0->unk_20[9 + i].unk_030 = arg0->unk_20[10 + i].unk_030;
+        arg0->displayObjects[9 + i].unk_024 = arg0->displayObjects[10 + i].unk_024;
+        arg0->displayObjects[9 + i].unk_030 = arg0->displayObjects[10 + i].unk_030;
 
         arg0->unk_02[i] = arg0->unk_02[i + 1];
 
-        arg0->unk_20[13 + i].unk_024 = arg0->unk_20[14 + i].unk_024;
-        arg0->unk_20[13 + i].unk_030 = arg0->unk_20[14 + i].unk_030;
+        arg0->displayObjects[13 + i].unk_024 = arg0->displayObjects[14 + i].unk_024;
+        arg0->displayObjects[13 + i].unk_030 = arg0->displayObjects[14 + i].unk_030;
     }
 
     if (arg1 < 0xF) {
@@ -824,23 +824,23 @@ void BattlePrep_CarouselStepFinalPAL(unk_D_84B259A8* arg0, s16 arg1) {
         s32 sp24 = (arg1 * 0x1333) - 0xCCA;
 
         arg0->unk_02[3] = sp24;
-        arg0->unk_20[12].unk_024.x = 0.0f;
-        arg0->unk_20[16].unk_024.x = 0.0f;
+        arg0->displayObjects[12].unk_024.x = 0.0f;
+        arg0->displayObjects[16].unk_024.x = 0.0f;
 
-        Vec3f_SetComponentsDuplicate(&arg0->unk_20[12].unk_030, sp28, sp28, sp28);
-        Vec3f_SetComponentsDuplicate(&arg0->unk_20[16].unk_030, sp28, sp28, sp28);
+        Vec3f_SetComponentsDuplicate(&arg0->displayObjects[12].unk_030, sp28, sp28, sp28);
+        Vec3f_SetComponentsDuplicate(&arg0->displayObjects[16].unk_030, sp28, sp28, sp28);
 
         if (sp24 >= 0xECCD) {
-            Vec3f_SetComponentsDuplicate(&arg0->unk_20[7].unk_030, sp28, sp28, sp28);
-            Vec3f_SetComponentsDuplicate(&arg0->unk_20[8].unk_030, sp28, sp28, sp28);
+            Vec3f_SetComponentsDuplicate(&arg0->displayObjects[7].unk_030, sp28, sp28, sp28);
+            Vec3f_SetComponentsDuplicate(&arg0->displayObjects[8].unk_030, sp28, sp28, sp28);
         }
     } else if (arg1 < 0x1C) {
         f32 sp2C = (SINS((arg1 << 0xD) + 0xFFFE6000) * ((0x10E - (arg1 * 0xA)) / 1000.0f)) + 1.0f;
 
-        Vec3f_SetComponentsDuplicate(&arg0->unk_20[7].unk_030, sp2C, sp2C, sp2C);
-        Vec3f_SetComponentsDuplicate(&arg0->unk_20[8].unk_030, sp2C, sp2C, sp2C);
-        Vec3f_SetComponentsDuplicate(&arg0->unk_20[12].unk_030, sp2C, sp2C, sp2C);
-        Vec3f_SetComponentsDuplicate(&arg0->unk_20[16].unk_030, sp2C, sp2C, sp2C);
+        Vec3f_SetComponentsDuplicate(&arg0->displayObjects[7].unk_030, sp2C, sp2C, sp2C);
+        Vec3f_SetComponentsDuplicate(&arg0->displayObjects[8].unk_030, sp2C, sp2C, sp2C);
+        Vec3f_SetComponentsDuplicate(&arg0->displayObjects[12].unk_030, sp2C, sp2C, sp2C);
+        Vec3f_SetComponentsDuplicate(&arg0->displayObjects[16].unk_030, sp2C, sp2C, sp2C);
     }
 }
 
@@ -848,103 +848,103 @@ void BattlePrep_UpdateCarousel(unk_D_84B259A8* arg0) {
     s32 i;
 
     if (osTvType == OS_TV_PAL) {
-        if (arg0->unk_01 >= 0) {
-            BattlePrep_CarouselStepFirstItem(arg0, arg0->unk_01);
+        if (arg0->animTimer >= 0) {
+            BattlePrep_CarouselStepFirstItem(arg0, arg0->animTimer);
         }
 
-        if (arg0->unk_01 >= 2) {
-            BattlePrep_CarouselStepPAL(arg0, arg0->unk_01 - 2);
+        if (arg0->animTimer >= 2) {
+            BattlePrep_CarouselStepPAL(arg0, arg0->animTimer - 2);
         }
 
-        if (arg0->unk_01 >= 0x1B) {
-            BattlePrep_CarouselStepFinalPAL(arg0, arg0->unk_01 - 0x1B);
+        if (arg0->animTimer >= 0x1B) {
+            BattlePrep_CarouselStepFinalPAL(arg0, arg0->animTimer - 0x1B);
         }
     } else {
-        if (arg0->unk_01 >= 0) {
-            BattlePrep_CarouselStepFirstItem(arg0, arg0->unk_01);
+        if (arg0->animTimer >= 0) {
+            BattlePrep_CarouselStepFirstItem(arg0, arg0->animTimer);
         }
 
-        if (arg0->unk_01 >= 2) {
-            BattlePrep_CarouselStepNTSC(arg0, arg0->unk_01 - 2);
+        if (arg0->animTimer >= 2) {
+            BattlePrep_CarouselStepNTSC(arg0, arg0->animTimer - 2);
         }
 
-        if (arg0->unk_01 >= 0x1E) {
-            BattlePrep_CarouselStepFinalNTSC(arg0, arg0->unk_01 - 0x1E);
+        if (arg0->animTimer >= 0x1E) {
+            BattlePrep_CarouselStepFinalNTSC(arg0, arg0->animTimer - 0x1E);
         }
     }
 
-    if (arg0->unk_01 == 0xDC) {
+    if (arg0->animTimer == 0xDC) {
         for (i = 0; i < 17; i++) {
-            arg0->unk_20[i].unk_024.x = -320.0f;
+            arg0->displayObjects[i].unk_024.x = -320.0f;
         }
     }
 
-    arg0->unk_01++;
+    arg0->animTimer++;
 }
 
 void BattlePrep_CarouselExitAnimation(unk_D_84B259A8* arg0) {
     s32 i;
 
-    if (arg0->unk_01++ == 0) {
+    if (arg0->animTimer++ == 0) {
         Audio_PlayCategory11SoundCommand(0x01100005, 0, 0);
     }
 
     for (i = 0; i < 5; i += 2) {
-        arg0->unk_20[1 + i].unk_024 = arg0->unk_20[3 + i].unk_024;
-        arg0->unk_20[2 + i].unk_024 = arg0->unk_20[4 + i].unk_024;
+        arg0->displayObjects[1 + i].unk_024 = arg0->displayObjects[3 + i].unk_024;
+        arg0->displayObjects[2 + i].unk_024 = arg0->displayObjects[4 + i].unk_024;
     }
 
     for (i = 0; i < 3; i++) {
-        arg0->unk_20[9 + i].unk_024 = arg0->unk_20[10 + i].unk_024;
-        arg0->unk_20[13 + i].unk_024 = arg0->unk_20[14 + i].unk_024;
+        arg0->displayObjects[9 + i].unk_024 = arg0->displayObjects[10 + i].unk_024;
+        arg0->displayObjects[13 + i].unk_024 = arg0->displayObjects[14 + i].unk_024;
     }
 
-    arg0->unk_20[0].unk_024.x += 32.0f;
-    arg0->unk_20[7].unk_024.x += 32.0f;
-    arg0->unk_20[8].unk_024.x += 32.0f;
-    arg0->unk_20[12].unk_024.x += 32.0f;
-    arg0->unk_20[16].unk_024.x += 32.0f;
+    arg0->displayObjects[0].unk_024.x += 32.0f;
+    arg0->displayObjects[7].unk_024.x += 32.0f;
+    arg0->displayObjects[8].unk_024.x += 32.0f;
+    arg0->displayObjects[12].unk_024.x += 32.0f;
+    arg0->displayObjects[16].unk_024.x += 32.0f;
 
-    if (arg0->unk_20->unk_024.x >= 416.0f) {
+    if (arg0->displayObjects->unk_024.x >= 416.0f) {
         for (i = 0; i < 17; i++) {
-            BattlePrep_ResetDisplayObject(&arg0->unk_20[i]);
+            BattlePrep_ResetDisplayObject(&arg0->displayObjects[i]);
         }
-        arg0->unk_00 = 0;
+        arg0->state = 0;
     }
 }
 
 void BattlePrep_CarouselEntryAnimation(unk_D_84B259A8* arg0) {
     s32 i;
 
-    if (arg0->unk_01 == 0) {
+    if (arg0->animTimer == 0) {
         Audio_PlayCategory11SoundCommand(0x01100001, 0, 0);
         Audio_PlayCategory11SoundCommand(0x01100002, 0, 0);
     }
 
     for (i = 0; i < 5; i += 2) {
-        arg0->unk_20[1 + i].unk_024 = arg0->unk_20[3 + i].unk_024;
-        arg0->unk_20[2 + i].unk_024 = arg0->unk_20[4 + i].unk_024;
+        arg0->displayObjects[1 + i].unk_024 = arg0->displayObjects[3 + i].unk_024;
+        arg0->displayObjects[2 + i].unk_024 = arg0->displayObjects[4 + i].unk_024;
     }
 
     for (i = 0; i < 3; i++) {
-        arg0->unk_20[9 + i].unk_024 = arg0->unk_20[10 + i].unk_024;
+        arg0->displayObjects[9 + i].unk_024 = arg0->displayObjects[10 + i].unk_024;
     }
 
-    if (arg0->unk_01 < 0xA) {
-        arg0->unk_20[0].unk_024.x += 32.0f;
-        arg0->unk_20[7].unk_024.x -= 32.0f;
-        arg0->unk_20[8].unk_024.x -= 32.0f;
-        arg0->unk_20[12].unk_024.x -= 32.0f;
+    if (arg0->animTimer < 0xA) {
+        arg0->displayObjects[0].unk_024.x += 32.0f;
+        arg0->displayObjects[7].unk_024.x -= 32.0f;
+        arg0->displayObjects[8].unk_024.x -= 32.0f;
+        arg0->displayObjects[12].unk_024.x -= 32.0f;
     }
 
-    if (arg0->unk_01 == 0x20) {
-        arg0->unk_00 = 0;
+    if (arg0->animTimer == 0x20) {
+        arg0->state = 0;
     }
-    arg0->unk_01++;
+    arg0->animTimer++;
 }
 
 void BattlePrep_UpdateCarouselState(unk_D_84B259A8* arg0) {
-    switch (arg0->unk_00) {
+    switch (arg0->state) {
         case 1:
             BattlePrep_UpdateCarousel(arg0);
             break;
@@ -960,8 +960,8 @@ void BattlePrep_UpdateCarouselState(unk_D_84B259A8* arg0) {
 }
 
 void BattlePrep_InitCarouselBanner(unk_D_84B259A8* arg0, s16 arg1, s16 arg2) {
-    Model_InitDisplayObject(arg0->unk_20, 0, 0, arg0->unk_24);
-    Vec3f_SetComponentsDuplicate(&arg0->unk_20->unk_024, arg1, arg2, -289.0f);
+    Model_InitDisplayObject(arg0->displayObjects, 0, 0, arg0->bannerModel);
+    Vec3f_SetComponentsDuplicate(&arg0->displayObjects->unk_024, arg1, arg2, -289.0f);
 }
 
 void BattlePrep_InitCarouselGymBadgeSlot(unk_D_84B259A8* arg0, s16 arg1, s16 arg2, s16 arg3) {
@@ -976,17 +976,17 @@ void BattlePrep_InitCarouselGymBadgeSlot(unk_D_84B259A8* arg0, s16 arg1, s16 arg
     temp_s0 = (arg1 * 2) + 1;
     if (sp2C) {}
 
-    Model_InitDisplayObject(&arg0->unk_20[temp_s0], sp2C, 0, arg0->unk_28);
-    Model_InitDisplayObject(&arg0->unk_20[temp_s0 + 1], sp2C, 0, arg0->unk_2C);
-    Vec3f_SetComponentsDuplicate(&arg0->unk_20[temp_s0].unk_024, arg2, arg3, -289.0f);
-    Vec3f_SetComponentsDuplicate(&arg0->unk_20[temp_s0 + 1].unk_024, arg2, arg3, -289.0f);
+    Model_InitDisplayObject(&arg0->displayObjects[temp_s0], sp2C, 0, arg0->gymBadgeModel);
+    Model_InitDisplayObject(&arg0->displayObjects[temp_s0 + 1], sp2C, 0, arg0->gymBadgeModelAlt);
+    Vec3f_SetComponentsDuplicate(&arg0->displayObjects[temp_s0].unk_024, arg2, arg3, -289.0f);
+    Vec3f_SetComponentsDuplicate(&arg0->displayObjects[temp_s0 + 1].unk_024, arg2, arg3, -289.0f);
 
     if (arg1 == 3) {
-        arg0->unk_20[temp_s0].unk_01D = 0xFF;
-        arg0->unk_20[temp_s0 + 1].unk_01D = 0xFF;
+        arg0->displayObjects[temp_s0].materialAlpha = 0xFF;
+        arg0->displayObjects[temp_s0 + 1].materialAlpha = 0xFF;
     } else {
-        arg0->unk_20[temp_s0].unk_01D = (arg1 * 0x28) + 0x50;
-        arg0->unk_20[temp_s0 + 1].unk_01D = (arg1 * 0x28) + 0x50;
+        arg0->displayObjects[temp_s0].materialAlpha = (arg1 * 0x28) + 0x50;
+        arg0->displayObjects[temp_s0 + 1].materialAlpha = (arg1 * 0x28) + 0x50;
     }
 }
 
@@ -1000,13 +1000,13 @@ void BattlePrep_InitCarouselLeftIcon(unk_D_84B259A8* arg0, s16 arg1) {
         var_a1 = 0;
     }
 
-    Model_InitDisplayObject(&arg0->unk_20[temp_v1], var_a1, 0, arg0->unk_30);
-    Vec3f_SetComponentsDuplicate(&arg0->unk_20[temp_v1].unk_024, -320.0f, 48.0f, -289.0f);
+    Model_InitDisplayObject(&arg0->displayObjects[temp_v1], var_a1, 0, arg0->leftIconModel);
+    Vec3f_SetComponentsDuplicate(&arg0->displayObjects[temp_v1].unk_024, -320.0f, 48.0f, -289.0f);
 
     if (arg1 == 3) {
-        arg0->unk_20[temp_v1].unk_01D = 0xFF;
+        arg0->displayObjects[temp_v1].materialAlpha = 0xFF;
     } else {
-        arg0->unk_20[temp_v1].unk_01D = (arg1 * 0x28) + 0x50;
+        arg0->displayObjects[temp_v1].materialAlpha = (arg1 * 0x28) + 0x50;
     }
 }
 
@@ -1020,13 +1020,13 @@ void BattlePrep_InitCarouselRightIcon(unk_D_84B259A8* arg0, s16 arg1) {
         var_a1 = 0;
     }
 
-    Model_InitDisplayObject(&arg0->unk_20[temp_v1], var_a1, 0, arg0->unk_38);
-    Vec3f_SetComponentsDuplicate(&arg0->unk_20[temp_v1].unk_024, 320.0f, 0.0f, -289.0f);
+    Model_InitDisplayObject(&arg0->displayObjects[temp_v1], var_a1, 0, arg0->rightIconModel);
+    Vec3f_SetComponentsDuplicate(&arg0->displayObjects[temp_v1].unk_024, 320.0f, 0.0f, -289.0f);
 
     if (arg1 == 3) {
-        arg0->unk_20[temp_v1].unk_01D = 0xFF;
+        arg0->displayObjects[temp_v1].materialAlpha = 0xFF;
     } else {
-        arg0->unk_20[temp_v1].unk_01D = (arg1 * 0x28) + 0x50;
+        arg0->displayObjects[temp_v1].materialAlpha = (arg1 * 0x28) + 0x50;
     }
 }
 
@@ -1040,48 +1040,48 @@ void BattlePrep_InitCarouselCupIcon(unk_D_84B259A8* arg0, s16 arg1) {
         var_a1 = 0;
     }
 
-    Model_InitDisplayObject(&arg0->unk_20[temp_v1], var_a1, 0, arg0->unk_34);
-    Vec3f_SetComponentsDuplicate(&arg0->unk_20[temp_v1].unk_024, -320.0f, 48.0f, -289.0f);
+    Model_InitDisplayObject(&arg0->displayObjects[temp_v1], var_a1, 0, arg0->cupIconModel);
+    Vec3f_SetComponentsDuplicate(&arg0->displayObjects[temp_v1].unk_024, -320.0f, 48.0f, -289.0f);
 
     if (arg1 == 3) {
-        arg0->unk_20[temp_v1].unk_01D = 0xFF;
+        arg0->displayObjects[temp_v1].materialAlpha = 0xFF;
     } else {
-        arg0->unk_20[temp_v1].unk_01D = (arg1 * 0x28) + 0x50;
+        arg0->displayObjects[temp_v1].materialAlpha = (arg1 * 0x28) + 0x50;
     }
 }
 
 void BattlePrep_InitCarouselEntry(unk_D_84B259A8* arg0, unk_D_86002F58_004_000* arg1) {
     s32 i;
 
-    arg0->unk_20 = arg1;
-    arg0->unk_01 = 0;
-    arg0->unk_00 = 1;
+    arg0->displayObjects = arg1;
+    arg0->animTimer = 0;
+    arg0->state = 1;
     BattlePrep_InitCarouselBanner(arg0, -0x140, 0x30);
 
     for (i = 0; i < 4; i++) {
         BattlePrep_InitCarouselGymBadgeSlot(arg0, i, -0x140, 0x30);
         BattlePrep_InitCarouselLeftIcon(arg0, i);
-        if ((D_800AE540.unk_0000 == 3) || (D_800AE540.unk_0000 == 6)) {
+        if ((D_800AE540.sessionMode == 3) || (D_800AE540.sessionMode == 6)) {
             BattlePrep_InitCarouselCupIcon(arg0, i);
         }
     }
 
     for (i = 0; i < 17; i++) {
-        arg0->unk_20[i].unk_000.unk_14 = arg0;
+        arg0->displayObjects[i].unk_000.unk_14 = arg0;
     }
 }
 
 void BattlePrep_StartCarouselExit(unk_D_84B259A8* arg0) {
-    arg0->unk_01 = 0;
-    arg0->unk_00 = 3;
+    arg0->animTimer = 0;
+    arg0->state = 3;
 }
 
 void BattlePrep_InitCarouselExit(unk_D_84B259A8* arg0, unk_D_86002F58_004_000* arg1) {
     s32 i;
 
-    arg0->unk_20 = arg1;
-    arg0->unk_01 = 0;
-    arg0->unk_00 = 2;
+    arg0->displayObjects = arg1;
+    arg0->animTimer = 0;
+    arg0->state = 2;
     BattlePrep_InitCarouselBanner(arg0, -0x140, 0);
 
     for (i = 0; i < 4; i++) {
@@ -1090,56 +1090,56 @@ void BattlePrep_InitCarouselExit(unk_D_84B259A8* arg0, unk_D_86002F58_004_000* a
     }
 
     for (i = 0; i < 13; i++) {
-        arg0->unk_20[i].unk_000.unk_14 = arg0;
+        arg0->displayObjects[i].unk_000.unk_14 = arg0;
     }
 }
 
 void BattlePrep_LoadBannerAssets(unk_D_84B259A8* arg0) {
     BinArchive* temp_a0 = ASSET_LOAD2(battle_headers, 1, 1);
 
-    if (D_800AE540.unk_0000 == 7) {
-        arg0->unk_0C = BinArchive_GetFile(temp_a0, D_84B0FC48[D_800AE540.unk_0002]);
-        arg0->unk_10 = Util_ConvertAddrToVirtAddr(D_84B0FC6C[D_800AE540.unk_0002]);
+    if (D_800AE540.sessionMode == 7) {
+        arg0->bannerTextureData = BinArchive_GetFile(temp_a0, D_84B0FC48[D_800AE540.progressIndex]);
+        arg0->gymBadgeTextureData = Util_ConvertAddrToVirtAddr(D_84B0FC6C[D_800AE540.progressIndex]);
 
-        switch (D_800AE540.unk_0002) {
+        switch (D_800AE540.progressIndex) {
             default:
-                if (D_800AE540.unk_0003 == 4) {
-                    arg0->unk_18 = Util_ConvertAddrToVirtAddr(D_302CA70);
+                if (D_800AE540.opponentNumber == 4) {
+                    arg0->cupIconTextureData = Util_ConvertAddrToVirtAddr(D_302CA70);
                 } else {
-                    arg0->unk_18 = Util_ConvertAddrToVirtAddr(D_302BA70);
+                    arg0->cupIconTextureData = Util_ConvertAddrToVirtAddr(D_302BA70);
                 }
                 break;
 
             case 8:
-                arg0->unk_18 = Util_ConvertAddrToVirtAddr(D_302DA70);
+                arg0->cupIconTextureData = Util_ConvertAddrToVirtAddr(D_302DA70);
                 break;
 
             case 9:
-                arg0->unk_18 = Util_ConvertAddrToVirtAddr(D_302EA70);
+                arg0->cupIconTextureData = Util_ConvertAddrToVirtAddr(D_302EA70);
                 break;
         }
     } else {
-        arg0->unk_0C = BinArchive_GetFile(temp_a0, D_84B0FC40[D_800AE540.unk_0000 - 1]);
-        arg0->unk_10 = Util_ConvertAddrToVirtAddr(D_84B0FC54[D_800AE540.unk_0000 - 1]);
-        arg0->unk_14 = Util_ConvertAddrToVirtAddr(D_84B0FCAC[D_800AE540.unk_0002]);
+        arg0->bannerTextureData = BinArchive_GetFile(temp_a0, D_84B0FC40[D_800AE540.sessionMode - 1]);
+        arg0->gymBadgeTextureData = Util_ConvertAddrToVirtAddr(D_84B0FC54[D_800AE540.sessionMode - 1]);
+        arg0->gymBadgeTextureDataAlt = Util_ConvertAddrToVirtAddr(D_84B0FCAC[D_800AE540.progressIndex]);
 
-        switch (D_800AE540.unk_0003) {
+        switch (D_800AE540.opponentNumber) {
             default:
-                arg0->unk_18 = Util_ConvertAddrToVirtAddr(D_302AA70);
+                arg0->cupIconTextureData = Util_ConvertAddrToVirtAddr(D_302AA70);
                 break;
 
             case 7:
-                arg0->unk_18 = Util_ConvertAddrToVirtAddr(D_30497F0);
+                arg0->cupIconTextureData = Util_ConvertAddrToVirtAddr(D_30497F0);
                 break;
 
             case 8:
-                arg0->unk_18 = Util_ConvertAddrToVirtAddr(D_3048210);
+                arg0->cupIconTextureData = Util_ConvertAddrToVirtAddr(D_3048210);
                 break;
         }
     }
 
-    if (D_800AE540.unk_0003 < 7) {
-        arg0->unk_1C = Util_ConvertAddrToVirtAddr(D_84B0FC90[D_800AE540.unk_0003]);
+    if (D_800AE540.opponentNumber < 7) {
+        arg0->leftRightIconTextureData = Util_ConvertAddrToVirtAddr(D_84B0FC90[D_800AE540.opponentNumber]);
     }
 }
 
@@ -1154,8 +1154,8 @@ void BattlePrep_AdjustBannerTextureOffset(unk_D_84B259A8* arg0) {
 
     var_v0 = -1;
     var_v1 = 1;
-    var_a1 = (u8*)arg0->unk_10 + 0xC7;
-    ptr = arg0->unk_28;
+    var_a1 = (u8*)arg0->gymBadgeTextureData + 0xC7;
+    ptr = arg0->gymBadgeModel;
     temp_a3 = ptr->unk_20;
 
     while (var_v1 != 0) {
@@ -1181,40 +1181,40 @@ void BattlePrep_LoadBannerGeoLayouts(unk_D_84B259A8* arg0) {
     MemoryBlock* temp_v0;
 
     temp_v0 = MainPool_AllocState(main_pool_get_available(), 0);
-    arg0->unk_24 = process_geo_layout(temp_v0, D_84B10378);
-    arg0->unk_38 = process_geo_layout(temp_v0, D_84B10E78);
-    arg0->unk_34 = process_geo_layout(temp_v0, D_84B109F0);
-    if (D_800AE540.unk_11F2 == 0) {
-        arg0->unk_28 = process_geo_layout(temp_v0, D_84B10568);
-        arg0->unk_2C = process_geo_layout(temp_v0, D_84B105A8);
+    arg0->bannerModel = process_geo_layout(temp_v0, D_84B10378);
+    arg0->rightIconModel = process_geo_layout(temp_v0, D_84B10E78);
+    arg0->cupIconModel = process_geo_layout(temp_v0, D_84B109F0);
+    if (D_800AE540.roundSelector == 0) {
+        arg0->gymBadgeModel = process_geo_layout(temp_v0, D_84B10568);
+        arg0->gymBadgeModelAlt = process_geo_layout(temp_v0, D_84B105A8);
     } else {
-        arg0->unk_28 = process_geo_layout(temp_v0, D_84B10838);
-        arg0->unk_2C = process_geo_layout(temp_v0, D_84B10878);
+        arg0->gymBadgeModel = process_geo_layout(temp_v0, D_84B10838);
+        arg0->gymBadgeModelAlt = process_geo_layout(temp_v0, D_84B10878);
         BattlePrep_AdjustBannerTextureOffset(arg0);
     }
 
-    if (D_800AE540.unk_0000 == 7) {
-        switch (D_800AE540.unk_0002) {
+    if (D_800AE540.sessionMode == 7) {
+        switch (D_800AE540.progressIndex) {
             default:
-                if (D_800AE540.unk_0003 < 4) {
-                    arg0->unk_30 = process_geo_layout(temp_v0, D_84B11060);
+                if (D_800AE540.opponentNumber < 4) {
+                    arg0->leftIconModel = process_geo_layout(temp_v0, D_84B11060);
                 } else {
-                    arg0->unk_30 = process_geo_layout(temp_v0, D_84B10D70);
+                    arg0->leftIconModel = process_geo_layout(temp_v0, D_84B10D70);
                 }
                 break;
 
             case 8:
-                arg0->unk_30 = process_geo_layout(temp_v0, D_84B11060);
+                arg0->leftIconModel = process_geo_layout(temp_v0, D_84B11060);
                 break;
 
             case 9:
-                arg0->unk_30 = process_geo_layout(temp_v0, D_84B10D70);
+                arg0->leftIconModel = process_geo_layout(temp_v0, D_84B10D70);
                 break;
         }
-    } else if (D_800AE540.unk_0003 < 7) {
-        arg0->unk_30 = process_geo_layout(temp_v0, D_84B11060);
+    } else if (D_800AE540.opponentNumber < 7) {
+        arg0->leftIconModel = process_geo_layout(temp_v0, D_84B11060);
     } else {
-        arg0->unk_30 = process_geo_layout(temp_v0, D_84B10BE8);
+        arg0->leftIconModel = process_geo_layout(temp_v0, D_84B10BE8);
     }
     MainPool_FinalizeAllocation(temp_v0);
 }
@@ -1243,20 +1243,20 @@ void BattlePrep_ApplyBannerColors(unk_D_84B259A8* arg0) {
     UNUSED s32 pad[2];
     s16 var_v1;
 
-    var_v1 = D_800AE540.unk_0000 - 1;
-    if (D_800AE540.unk_0000 == 7) {
-        var_v1 += D_800AE540.unk_0002;
+    var_v1 = D_800AE540.sessionMode - 1;
+    if (D_800AE540.sessionMode == 7) {
+        var_v1 += D_800AE540.progressIndex;
     }
 
-    BattlePrep_SetVertexGradientColors(arg0->unk_28, &D_84B0FCBC[var_v1], &D_84B0FCFC[var_v1]);
-    BattlePrep_SetVertexGradientColors(arg0->unk_34, &D_84B0FCFC[var_v1], &D_84B0FCFC[var_v1]);
-    BattlePrep_SetVertexGradientColors(arg0->unk_30, &D_84B0FCFC[var_v1], &D_84B0FCBC[var_v1]);
-    BattlePrep_SetVertexGradientColors(arg0->unk_38, &D_84B0FCFC[var_v1], &D_84B0FCBC[var_v1]);
+    BattlePrep_SetVertexGradientColors(arg0->gymBadgeModel, &D_84B0FCBC[var_v1], &D_84B0FCFC[var_v1]);
+    BattlePrep_SetVertexGradientColors(arg0->cupIconModel, &D_84B0FCFC[var_v1], &D_84B0FCFC[var_v1]);
+    BattlePrep_SetVertexGradientColors(arg0->leftIconModel, &D_84B0FCFC[var_v1], &D_84B0FCBC[var_v1]);
+    BattlePrep_SetVertexGradientColors(arg0->rightIconModel, &D_84B0FCFC[var_v1], &D_84B0FCBC[var_v1]);
 }
 
 void BattlePrep_InitBannerScene(unk_D_84B259A8* arg0) {
-    arg0->unk_00 = 0;
-    arg0->unk_01 = 0;
+    arg0->state = 0;
+    arg0->animTimer = 0;
     BattlePrep_LoadBannerAssets(arg0);
     BattlePrep_LoadBannerGeoLayouts(arg0);
     BattlePrep_ApplyBannerColors(arg0);
@@ -1269,11 +1269,11 @@ s32 BattlePrep_BadgeCarouselGeoCallback(s32 arg0, unk_func_80011B94* arg1) {
 
     if (arg0 == 5) {
         temp_a0 = (unk_D_84B259E8*)D_8006F09C->unk_000.unk_14;
-        tmp = ((D_8006F09C->unk_0A6 - temp_a0->unk_08->unk_0A6) % 8) - 4;
+        tmp = ((D_8006F09C->poolIndex - temp_a0->displayObjects->poolIndex) % 8) - 4;
         tmp2 = (arg1->unk_00.unk_14 * 4) + tmp;
 
         gDPPipeSync(gDisplayListHead++);
-        gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a0->unk_10[tmp2] & 0x1FFFFFFF);
+        gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a0->glowTextureData[tmp2] & 0x1FFFFFFF);
         gSPDisplayList(gDisplayListHead++, D_84B113C0);
 
         GeoRender_ApplyMaterialState();
@@ -1291,10 +1291,10 @@ s32 BattlePrep_BadgeCarouselGlowCallback(s32 arg0, unk_func_80011B94* arg1) {
 
     if (arg0 == 5) {
         temp_v0 = (unk_D_84B259E8*)D_8006F09C->unk_000.unk_14;
-        tmp = ((D_8006F09C->unk_0A6 - temp_v0->unk_08->unk_0A6) % 8) - 4;
+        tmp = ((D_8006F09C->poolIndex - temp_v0->displayObjects->poolIndex) % 8) - 4;
         tmp2 = tmp + arg1->unk_00.unk_14 * 4;
 
-        if ((temp_v0->unk_02 != 0) && ((tmp2 + 1) == D_800AE540.unk_0003)) {
+        if ((temp_v0->direction != 0) && ((tmp2 + 1) == D_800AE540.opponentNumber)) {
             // clang-format off
             if (D_84B11C18 >= 0) { var_t1 = (s32)(SINS((s32)(SINS(D_84B11C18) * 16384.0f)) * 127.0f) + 0x7F;
             } else {
@@ -1303,7 +1303,7 @@ s32 BattlePrep_BadgeCarouselGlowCallback(s32 arg0, unk_func_80011B94* arg1) {
             // clang-format on
 
             gDPPipeSync(gDisplayListHead++);
-            gDPSetPrimColor(gDisplayListHead++, 0, D_8006F09C->unk_01D, 200, 200, 30, var_t1);
+            gDPSetPrimColor(gDisplayListHead++, 0, D_8006F09C->materialAlpha, 200, 200, 30, var_t1);
             gDPSetEnvColor(gDisplayListHead++, 200, 30, 30, var_t1);
             gSPDisplayList(gDisplayListHead++, D_84B114F8);
 
@@ -1320,11 +1320,11 @@ s32 BattlePrep_BadgeCarouselTextureCallback(s32 arg0, unk_func_80011B94* arg1) {
 
     if (arg0 == 5) {
         temp_a0 = (unk_D_84B259E8*)D_8006F09C->unk_000.unk_14;
-        tmp = ((D_8006F09C->unk_0A6 - temp_a0->unk_08->unk_0A6) % 8) - 4;
+        tmp = ((D_8006F09C->poolIndex - temp_a0->displayObjects->poolIndex) % 8) - 4;
 
         gDPPipeSync(gDisplayListHead++);
 
-        gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a0->unk_30[tmp]->img_p & 0x1FFFFFFF);
+        gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a0->glowRenderTargets[tmp]->img_p & 0x1FFFFFFF);
         gSPDisplayList(gDisplayListHead++, arg1->unk_00.unk_14);
 
         GeoRender_ApplyMaterialState();
@@ -1341,10 +1341,10 @@ s32 BattlePrep_BadgeCarouselGlowCallback2(s32 arg0, unk_func_80011B94* arg1) {
 
     if (arg0 == 5) {
         temp_v0 = (unk_D_84B259E8*)D_8006F09C->unk_000.unk_14;
-        tmp = ((D_8006F09C->unk_0A6 - temp_v0->unk_08->unk_0A6) % 8);
+        tmp = ((D_8006F09C->poolIndex - temp_v0->displayObjects->poolIndex) % 8);
         tmp -= 4;
 
-        if ((temp_v0->unk_02 != 0) && ((tmp + 1) == D_800AE540.unk_0003)) {
+        if ((temp_v0->direction != 0) && ((tmp + 1) == D_800AE540.opponentNumber)) {
             // clang-format off
             if (D_84B11C1C >= 0) {                var_t1 = (s32)(SINS((s32)(SINS(D_84B11C1C) * 16384.0f)) * 127.0f)+ 0x7F;
             } else {
@@ -1353,7 +1353,7 @@ s32 BattlePrep_BadgeCarouselGlowCallback2(s32 arg0, unk_func_80011B94* arg1) {
             // clang-format on
             gDPPipeSync(gDisplayListHead++);
 
-            gDPSetPrimColor(gDisplayListHead++, 0, D_8006F09C->unk_01D, 200, 200, 30, var_t1);
+            gDPSetPrimColor(gDisplayListHead++, 0, D_8006F09C->materialAlpha, 200, 200, 30, var_t1);
             gDPSetEnvColor(gDisplayListHead++, 200, 30, 30, var_t1);
             gSPDisplayList(gDisplayListHead++, arg1->unk_00.unk_14);
 
@@ -1383,26 +1383,26 @@ void BattlePrep_ResetBadgeSlideSlots(unk_D_84B259E8* arg0) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
-        ModelRenderer_ClearDisplayObject(&arg0->unk_08[i + 4]);
-        BattlePrep_ResetDisplayObject(&arg0->unk_08[i + 12]);
-        Model_InitDisplayObject(&arg0->unk_08[i + 4], 1, 0, arg0->unk_0C);
-        arg0->unk_08[i + 4].unk_01E.x = 0;
-        arg0->unk_08[i + 4].unk_000.unk_14 = arg0;
+        ModelRenderer_ClearDisplayObject(&arg0->displayObjects[i + 4]);
+        BattlePrep_ResetDisplayObject(&arg0->displayObjects[i + 12]);
+        Model_InitDisplayObject(&arg0->displayObjects[i + 4], 1, 0, arg0->badgeTextureData);
+        arg0->displayObjects[i + 4].unk_01E.x = 0;
+        arg0->displayObjects[i + 4].unk_000.unk_14 = arg0;
     }
 }
 
 void BattlePrep_BadgeSlideInLeft(unk_D_84B259E8* arg0) {
     s32 i;
 
-    arg0->unk_01++;
+    arg0->animTimer++;
 
     for (i = 0; i < 4; i++) {
-        arg0->unk_08[4 + i].unk_024.x = (0xE0 + i * 0x40) - (arg0->unk_01 << 5);
+        arg0->displayObjects[4 + i].unk_024.x = (0xE0 + i * 0x40) - (arg0->animTimer << 5);
     }
 
-    if (arg0->unk_01 == 0xA) {
-        arg0->unk_01 = 0;
-        arg0->unk_00 = 0;
+    if (arg0->animTimer == 0xA) {
+        arg0->animTimer = 0;
+        arg0->state = 0;
     }
 }
 
@@ -1410,18 +1410,18 @@ void BattlePrep_BadgeSlideInRight(unk_D_84B259E8* arg0) {
     s32 i;
     s32 var_v0;
 
-    arg0->unk_01++;
+    arg0->animTimer++;
 
     for (i = 0, var_v0 = -0x60; i < 4; i++, var_v0 += 0x40) {
-        arg0->unk_08[4 + i].unk_024.x = (s16)var_v0 - (arg0->unk_01 << 5);
+        arg0->displayObjects[4 + i].unk_024.x = (s16)var_v0 - (arg0->animTimer << 5);
     }
 
-    if (arg0->unk_01 == 0xA) {
+    if (arg0->animTimer == 0xA) {
         for (i = 0; i < 4; i++) {
-            BattlePrep_ResetDisplayObject(&arg0->unk_08[4 + i]);
+            BattlePrep_ResetDisplayObject(&arg0->displayObjects[4 + i]);
         }
-        arg0->unk_01 = 0;
-        arg0->unk_00 = 0;
+        arg0->animTimer = 0;
+        arg0->state = 0;
     }
 }
 
@@ -1429,38 +1429,38 @@ void BattlePrep_BadgeRevealSpin(unk_D_84B259E8* arg0) {
     s32 i;
     s32 var_a2;
 
-    arg0->unk_01++;
-    if (arg0->unk_01 < 0x10) {
+    arg0->animTimer++;
+    if (arg0->animTimer < 0x10) {
         for (i = 0; i < 4; i++) {
-            arg0->unk_08[4 + i].unk_01E.x += 0x800;
-            arg0->unk_08[12 + i].unk_01E.x += 0x800;
+            arg0->displayObjects[4 + i].unk_01E.x += 0x800;
+            arg0->displayObjects[12 + i].unk_01E.x += 0x800;
         }
-    } else if (arg0->unk_01 == 0x10) {
+    } else if (arg0->animTimer == 0x10) {
         Audio_PlayCategory11SoundCommand(0x0110000C, 0, 0);
         BattlePrep_ResetBadgeSlideSlots(arg0);
-    } else if (arg0->unk_01 == 0x20) {
-        if (D_800AE540.unk_0000 == 7) {
+    } else if (arg0->animTimer == 0x20) {
+        if (D_800AE540.sessionMode == 7) {
             var_a2 = 4;
         } else {
             var_a2 = 8;
         }
 
-        Audio_PlayCategory11SoundCommand(0x01100014, D_800AE540.unk_0003, var_a2);
-        BattlePrep_RenderBadgeGlowTexture(arg0->unk_10[D_800AE540.unk_0003 - 1]);
+        Audio_PlayCategory11SoundCommand(0x01100014, D_800AE540.opponentNumber, var_a2);
+        BattlePrep_RenderBadgeGlowTexture(arg0->glowTextureData[D_800AE540.opponentNumber - 1]);
 
-        if (D_800AE540.unk_0000 == 7) {
-            GfxImage_SetRenderTarget(&gDisplayListHead, arg0->unk_30[D_800AE540.unk_0003 - 1]);
+        if (D_800AE540.sessionMode == 7) {
+            GfxImage_SetRenderTarget(&gDisplayListHead, arg0->glowRenderTargets[D_800AE540.opponentNumber - 1]);
 
             gSPDisplayList(gDisplayListHead++, D_8006F4E0);
 
-            Gfx_DrawTextureRgba16(4, 0x24, 0x38, 0x1C, &arg0->unk_10[D_800AE540.unk_0003 - 1][0x208], 0x40, 0x200000);
-            Gfx_DrawTextureRgba16(4, 0x40, 0x38, 0x1C, &arg0->unk_10[D_800AE540.unk_0003 - 1][0x1008], 0x40, 0x200000);
+            Gfx_DrawTextureRgba16(4, 0x24, 0x38, 0x1C, &arg0->glowTextureData[D_800AE540.opponentNumber - 1][0x208], 0x40, 0x200000);
+            Gfx_DrawTextureRgba16(4, 0x40, 0x38, 0x1C, &arg0->glowTextureData[D_800AE540.opponentNumber - 1][0x1008], 0x40, 0x200000);
 
             gSPDisplayList(gDisplayListHead++, D_8006F630);
         }
 
-        arg0->unk_01 = 0;
-        arg0->unk_00 = 0;
+        arg0->animTimer = 0;
+        arg0->state = 0;
     }
 }
 
@@ -1468,21 +1468,21 @@ void BattlePrep_BadgeHideSpin(unk_D_84B259E8* arg0) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
-        arg0->unk_08[4 + i].unk_01E.x -= 0x800;
-        arg0->unk_08[12 + i].unk_01E.x -= 0x800;
+        arg0->displayObjects[4 + i].unk_01E.x -= 0x800;
+        arg0->displayObjects[12 + i].unk_01E.x -= 0x800;
     }
 
-    arg0->unk_01++;
-    if (arg0->unk_01 == 0x10) {
+    arg0->animTimer++;
+    if (arg0->animTimer == 0x10) {
         Audio_PlayCategory11SoundCommand(0x0110000C, 0, 0);
         BattlePrep_ResetBadgeSlideSlots(arg0);
-        arg0->unk_01 = 0;
-        arg0->unk_00 = 0;
+        arg0->animTimer = 0;
+        arg0->state = 0;
     }
 }
 
 void BattlePrep_UpdateBadgeCarousel(unk_D_84B259E8* arg0) {
-    switch (arg0->unk_00) {
+    switch (arg0->state) {
         case 1:
             BattlePrep_BadgeSlideInLeft(arg0);
             break;
@@ -1505,37 +1505,37 @@ void BattlePrep_InitBadgeCarousel(unk_D_84B259E8* arg0, unk_D_86002F58_004_000* 
     s32 i;
     s16 var_s2;
 
-    arg0->unk_08 = arg1;
-    arg0->unk_01 = 0;
+    arg0->displayObjects = arg1;
+    arg0->animTimer = 0;
 
     if (arg2 == 0) {
         for (i = 4; i < 8; i++) {
-            Model_InitDisplayObject(&arg0->unk_08[i], 1, 0, arg0->unk_0C);
-            Vec3f_SetComponentsDuplicate(&arg0->unk_08[i].unk_024, 320.0f, -48.0f, -289.0f);
-            arg0->unk_08[i].unk_000.unk_14 = (s32)arg0;
+            Model_InitDisplayObject(&arg0->displayObjects[i], 1, 0, arg0->badgeTextureData);
+            Vec3f_SetComponentsDuplicate(&arg0->displayObjects[i].unk_024, 320.0f, -48.0f, -289.0f);
+            arg0->displayObjects[i].unk_000.unk_14 = (s32)arg0;
         }
-        arg0->unk_00 = 1;
+        arg0->state = 1;
     } else {
         for (i = 12, var_s2 = -0x60; i < 16; i++) {
-            Model_InitDisplayObject(&arg0->unk_08[i], 1, 0, arg0->unk_0C);
-            Vec3f_SetComponentsDuplicate(&arg0->unk_08[i].unk_024, var_s2, -48.0f, -289.0f);
-            arg0->unk_08[i].unk_01E.x = -0x8000;
+            Model_InitDisplayObject(&arg0->displayObjects[i], 1, 0, arg0->badgeTextureData);
+            Vec3f_SetComponentsDuplicate(&arg0->displayObjects[i].unk_024, var_s2, -48.0f, -289.0f);
+            arg0->displayObjects[i].unk_01E.x = -0x8000;
             var_s2 += 0x40;
-            arg0->unk_08[i].unk_000.unk_14 = arg0;
+            arg0->displayObjects[i].unk_000.unk_14 = arg0;
         }
 
         if (arg2 == 1) {
-            arg0->unk_02 = 0;
-            arg0->unk_00 = 3;
+            arg0->direction = 0;
+            arg0->state = 3;
         } else {
-            arg0->unk_02 = 1;
-            arg0->unk_00 = 4;
+            arg0->direction = 1;
+            arg0->state = 4;
         }
     }
 }
 
 void BattlePrep_RenderBadgeBackground(unk_D_84B259E8* arg0, s16 arg1, char* arg2) {
-    GfxImage_SetRenderTarget(&gDisplayListHead, arg0->unk_30[arg1]);
+    GfxImage_SetRenderTarget(&gDisplayListHead, arg0->glowRenderTargets[arg1]);
 
     gSPDisplayList(gDisplayListHead++, D_8006F4E0);
 
@@ -1543,14 +1543,14 @@ void BattlePrep_RenderBadgeBackground(unk_D_84B259E8* arg0, s16 arg1, char* arg2
     Gfx_DrawTextureRgba16(0, 0x20, 0x40, 0x20, D_3013000, 0x40, 0x200000);
     Gfx_DrawTextureRgba16(0, 0x40, 0x40, 0x20, D_3014000, 0x40, 0x200000);
 
-    if ((D_800AE540.unk_0002 < 9) || (arg1 == 0)) {
-        Gfx_DrawTextureRgba16(4, 0x24, 0x38, 0x1C, arg0->unk_10[arg1] + 0x208, 0x40, 0x200000);
-        Gfx_DrawTextureRgba16(4, 0x40, 0x38, 0x1C, arg0->unk_10[arg1] + 0x1008, 0x40, 0x200000);
+    if ((D_800AE540.progressIndex < 9) || (arg1 == 0)) {
+        Gfx_DrawTextureRgba16(4, 0x24, 0x38, 0x1C, arg0->glowTextureData[arg1] + 0x208, 0x40, 0x200000);
+        Gfx_DrawTextureRgba16(4, 0x40, 0x38, 0x1C, arg0->glowTextureData[arg1] + 0x1008, 0x40, 0x200000);
     }
 
     gSPDisplayList(gDisplayListHead++, D_8006F630);
 
-    if ((D_800AE540.unk_0002 < 9) || (arg1 == 0)) {
+    if ((D_800AE540.progressIndex < 9) || (arg1 == 0)) {
         s32 sp34 = Font_MeasureTextExtent(2, 0, arg2);
 
         Font_BeginTranslucentTextRendering();
@@ -1592,7 +1592,7 @@ void BattlePrep_LoadBadgeTextures(unk_D_84B259E8* arg0, BinArchive* arg1, BinArc
     unk_func_84B067B4* ptr;
     s16 tmp;
 
-    switch (D_800AE540.unk_0000) {
+    switch (D_800AE540.sessionMode) {
         case 1:
             sp44 = 6;
             break;
@@ -1602,7 +1602,7 @@ void BattlePrep_LoadBadgeTextures(unk_D_84B259E8* arg0, BinArchive* arg1, BinArc
             break;
 
         case 3:
-            sp44 = D_800AE540.unk_0002 + 8;
+            sp44 = D_800AE540.progressIndex + 8;
             break;
 
         case 4:
@@ -1614,11 +1614,11 @@ void BattlePrep_LoadBadgeTextures(unk_D_84B259E8* arg0, BinArchive* arg1, BinArc
             break;
 
         case 6:
-            sp44 = D_800AE540.unk_0002 + 2;
+            sp44 = D_800AE540.progressIndex + 2;
             break;
 
         case 7:
-            sp44 = D_800AE540.unk_0002 + 0xC;
+            sp44 = D_800AE540.progressIndex + 0xC;
             break;
 
         case 8:
@@ -1626,34 +1626,34 @@ void BattlePrep_LoadBadgeTextures(unk_D_84B259E8* arg0, BinArchive* arg1, BinArc
             break;
     }
 
-    if (D_800AE540.unk_11F2 != 0) {
+    if (D_800AE540.roundSelector != 0) {
         sp44 += 0x1F;
     }
 
     temp_s5 = BinArchive_GetFile(arg1, sp44);
-    if (D_800AE540.unk_0000 == 7) {
+    if (D_800AE540.sessionMode == 7) {
         for (i = 0; i < 4; i++) {
             ptr = i + ((void)0, temp_s5);
 
             tmp = (ptr->unk_038 >> 8) & 0xFF;
-            arg0->unk_10[i] = BattlePrep_Align64PoolBlock(BinArchive_GetFile(arg2, tmp));
-            if (i < (D_800AE540.unk_0003 - 1)) {
-                BattlePrep_RenderBadgeGlowTexture(arg0->unk_10[i]);
+            arg0->glowTextureData[i] = BattlePrep_Align64PoolBlock(BinArchive_GetFile(arg2, tmp));
+            if (i < (D_800AE540.opponentNumber - 1)) {
+                BattlePrep_RenderBadgeGlowTexture(arg0->glowTextureData[i]);
             }
-            arg0->unk_30[i] = GfxImage_Allocate(0, 2, 0x40, 0x60, 0);
+            arg0->glowRenderTargets[i] = GfxImage_Allocate(0, 2, 0x40, 0x60, 0);
             BattlePrep_RenderBadgeBackground(arg0, i, ptr->unk_010);
         }
     } else {
         for (i = 0; i < 8; i++) {
-            if (i < D_800AE540.unk_0003) {
+            if (i < D_800AE540.opponentNumber) {
                 tmp = (temp_s5[D_800AE540.unk_11E4[0][i]].unk_038 >> 8) & 0xFF;
 
-                arg0->unk_10[i] = BattlePrep_Align64PoolBlock(BinArchive_GetFile(arg2, tmp));
-                if (i < (D_800AE540.unk_0003 - 1)) {
-                    BattlePrep_RenderBadgeGlowTexture(arg0->unk_10[i]);
+                arg0->glowTextureData[i] = BattlePrep_Align64PoolBlock(BinArchive_GetFile(arg2, tmp));
+                if (i < (D_800AE540.opponentNumber - 1)) {
+                    BattlePrep_RenderBadgeGlowTexture(arg0->glowTextureData[i]);
                 }
             } else {
-                arg0->unk_10[i] = BinArchive_GetFile(arg2, 0);
+                arg0->glowTextureData[i] = BinArchive_GetFile(arg2, 0);
             }
         }
     }
@@ -1663,20 +1663,20 @@ void BattlePrep_InitBadgeCarouselScene(unk_D_84B259E8* arg0, BinArchive* arg1, B
     s32 i;
     MemoryBlock* temp_v0;
 
-    arg0->unk_00 = 0;
-    arg0->unk_01 = 0;
-    arg0->unk_02 = 1;
+    arg0->state = 0;
+    arg0->animTimer = 0;
+    arg0->direction = 1;
     arg0->unk_04 = 0;
 
     for (i = 0; i < 4; i++) {
-        arg0->unk_30[i] = GfxImage_Allocate(0, 2, 0x40, 0x60, 0);
+        arg0->glowRenderTargets[i] = GfxImage_Allocate(0, 2, 0x40, 0x60, 0);
     }
 
     temp_v0 = MainPool_AllocState(main_pool_get_available(), 0);
-    if (D_800AE540.unk_0000 == 7) {
-        arg0->unk_0C = process_geo_layout(temp_v0, D_84B11BD0);
+    if (D_800AE540.sessionMode == 7) {
+        arg0->badgeTextureData = process_geo_layout(temp_v0, D_84B11BD0);
     } else {
-        arg0->unk_0C = process_geo_layout(temp_v0, D_84B11640);
+        arg0->badgeTextureData = process_geo_layout(temp_v0, D_84B11640);
     }
 
     MainPool_FinalizeAllocation(temp_v0);

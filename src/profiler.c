@@ -2,6 +2,8 @@
 #include "profiler.h"
 #include "scheduler.h"
 
+extern Gfx* gDisplayListHead;
+
 struct Profiler gProfiler;
 
 /*

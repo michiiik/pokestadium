@@ -29,58 +29,58 @@ typedef void (*WidgetSetStateCallback)(struct WidgetNode*, s32);
 typedef void (*WidgetDestructorCallback)(struct WidgetLinkHeader*, MemoryPool*);
 
 typedef struct WidgetLinkHeader {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ struct WidgetLinkHeader* unk_04;
-    /* 0x08 */ struct WidgetLinkHeader* unk_08;
-    /* 0x0C */ WidgetDestructorCallback unk_0C;
+    /* 0x00 */ s32 recordSize;
+    /* 0x04 */ struct WidgetLinkHeader* firstChild;
+    /* 0x08 */ struct WidgetLinkHeader* nextSibling;
+    /* 0x0C */ WidgetDestructorCallback destructor;
 } WidgetLinkHeader; // size = 0x10
 
 typedef struct WidgetPoint {
-    /* 0x00 */ s16 unk_00;
-    /* 0x02 */ s16 unk_02;
+    /* 0x00 */ s16 x;
+    /* 0x02 */ s16 y;
 } WidgetPoint; // size = 0x4
 
 typedef struct WidgetNode {
-    /* 0x00 */ WidgetLinkHeader unk_00;
-    /* 0x10 */ WidgetPoint unk_10;
-    /* 0x14 */ WidgetPoint unk_14;
-    /* 0x18 */ WidgetDrawCallback unk_18;
-    /* 0x1C */ WidgetUpdateCallback unk_1C;
-    /* 0x20 */ WidgetInputCallback unk_20;
-    /* 0x24 */ WidgetSetStateCallback unk_24;
-    /* 0x28 */ u16 unk_28;
-    /* 0x2A */ u16 unk_2A;
+    /* 0x00 */ WidgetLinkHeader link;
+    /* 0x10 */ WidgetPoint position;
+    /* 0x14 */ WidgetPoint size;
+    /* 0x18 */ WidgetDrawCallback drawCallback;
+    /* 0x1C */ WidgetUpdateCallback updateCallback;
+    /* 0x20 */ WidgetInputCallback inputCallback;
+    /* 0x24 */ WidgetSetStateCallback setStateCallback;
+    /* 0x28 */ u16 flags;
+    /* 0x2A */ u16 state;
 } WidgetNode; // size = 0x2C
 
 typedef struct WidgetDelayedNode {
-    /* 0x00 */ WidgetNode unk_00;
-    /* 0x2C */ s32 unk_2C;
+    /* 0x00 */ WidgetNode node;
+    /* 0x2C */ s32 delayCounter;
 } WidgetDelayedNode; // size = 0x30
 
 typedef struct WidgetAnimatedPanelVariantB {
-    /* 0x00 */ WidgetNode unk_00;
-    /* 0x2C */ Color_RGBA8 unk_2C;
-    /* 0x30 */ s32 unk_30;
-    /* 0x34 */ s32 unk_34;
+    /* 0x00 */ WidgetNode node;
+    /* 0x2C */ Color_RGBA8 color;
+    /* 0x30 */ s32 animFrame;
+    /* 0x34 */ s32 animState;
     /* 0x38 */ char unk38[0x4];
 } WidgetAnimatedPanelVariantB; // size = 0x3C
 
 typedef struct WidgetAnimatedPanel {
-    /* 0x00 */ WidgetNode unk_00;
-    /* 0x2C */ s32 unk_2C;
-    /* 0x30 */ s32 unk_30;
+    /* 0x00 */ WidgetNode node;
+    /* 0x2C */ s32 animFrame;
+    /* 0x30 */ s32 animState;
 } WidgetAnimatedPanel; // size = 0x34
 
 typedef struct WidgetTextList {
-    /* 0x00 */ WidgetNode unk_00;
-    /* 0x2C */ WidgetAnimatedPanel* unk_2C;
-    /* 0x30 */ s32 unk_30;
-    /* 0x34 */ u8 unk_34;
-    /* 0x35 */ s8 unk_35;
-    /* 0x36 */ u8 unk_36;
-    /* 0x38 */ Color_RGBA8 unk_38;
-    /* 0x3C */ FontContext* unk_3C;
-    /* 0x40 */ s32 unk_40;
+    /* 0x00 */ WidgetNode node;
+    /* 0x2C */ WidgetAnimatedPanel* text; // actually a raw u8* text buffer; mistyped in the original decoded header
+    /* 0x30 */ s32 charCount;
+    /* 0x34 */ u8 fontId;
+    /* 0x35 */ s8 charSpacing;
+    /* 0x36 */ u8 lineHeight;
+    /* 0x38 */ Color_RGBA8 color;
+    /* 0x3C */ FontContext* font;
+    /* 0x40 */ s32 revealedCharCount;
 } WidgetTextList; // size = 0x44
 
 typedef struct WidgetGridMenuItem {
@@ -93,9 +93,9 @@ typedef struct WidgetGridMenuItem {
 } WidgetGridMenuItem; // size = 0x2C
 
 typedef struct WidgetAnimatedFrame {
-    /* 0x00 */ WidgetNode unk_00;
-    /* 0x2C */ Color_RGBA8 unk_2C;
-    /* 0x30 */ s32 unk_30;
+    /* 0x00 */ WidgetNode node;
+    /* 0x2C */ Color_RGBA8 color;
+    /* 0x30 */ s32 pulseFrame;
 } WidgetAnimatedFrame; // size = 0x34
 
 typedef s32 (*WidgetGridMenuInputCallback)(struct WidgetGridMenu*, Controller*);
@@ -103,35 +103,35 @@ typedef void (*WidgetGridMenuSetStateCallback)(struct WidgetGridMenu*, s32);
 
 typedef struct WidgetGridMenu {
     /* 0x00 */ char unk00[0xC];
-    /* 0x00 */ WidgetGridMenuItem* unk_0C;
-    /* 0x10 */ WidgetGridMenuInputCallback unk_10;
-    /* 0x14 */ WidgetGridMenuSetStateCallback unk_14;
-    /* 0x18 */ WidgetNode** unk_18;
-    /* 0x1C */ WidgetAnimatedFrame* unk_1C;
-    /* 0x20 */ s32 unk_20;
-    /* 0x24 */ s32 unk_24;
-    /* 0x28 */ s32 unk_28;
-    /* 0x2C */ s32 unk_2C;
-    /* 0x30 */ s32 unk_30;
-    /* 0x34 */ s16 unk_34;
-    /* 0x36 */ s16 unk_36;
-    /* 0x38 */ s16 unk_38;
-    /* 0x3A */ s16 unk_3A;
-    /* 0x3C */ s16 unk_3C;
-    /* 0x3E */ s16 unk_3E;
+    /* 0x00 */ WidgetGridMenuItem* unk_0C; // never assigned or read in the checked-in source
+    /* 0x10 */ WidgetGridMenuInputCallback inputCallback;
+    /* 0x14 */ WidgetGridMenuSetStateCallback setStateCallback;
+    /* 0x18 */ WidgetNode** items;
+    /* 0x1C */ WidgetAnimatedFrame* cursor;
+    /* 0x20 */ s32 itemState;
+    /* 0x24 */ s32 selectedIndex;
+    /* 0x28 */ s32 wrapFlags;
+    /* 0x2C */ s32 columnCount;
+    /* 0x30 */ s32 rowCount;
+    /* 0x34 */ s16 selectedColumn;
+    /* 0x36 */ s16 selectedRow;
+    /* 0x38 */ s16 cursorOffsetX;
+    /* 0x3A */ s16 cursorOffsetY;
+    /* 0x3C */ s16 cursorSizeOffsetX;
+    /* 0x3E */ s16 cursorSizeOffsetY;
 } WidgetGridMenu; // size = 0x40
 
 typedef struct WidgetMainMenu {
-    /* 0x00 */ WidgetNode unk_00;
-    /* 0x2C */ WidgetDelayedNode* unk_2C;
-    /* 0x30 */ WidgetAnimatedPanelVariantB* unk_30;
-    /* 0x34 */ WidgetTextList* unk_34;
-    /* 0x38 */ WidgetAnimatedPanel* unk_38;
-    /* 0x3C */ WidgetGridMenu* unk_3C;
-    /* 0x40 */ s32 unk_40;
+    /* 0x00 */ WidgetNode node;
+    /* 0x2C */ WidgetDelayedNode* delayedPanel;
+    /* 0x30 */ WidgetAnimatedPanelVariantB* infoPanel;
+    /* 0x34 */ WidgetTextList* descriptionText;
+    /* 0x38 */ WidgetAnimatedPanel* notificationPanel;
+    /* 0x3C */ WidgetGridMenu* menu;
+    /* 0x40 */ s32 savePort;
     /* 0x44 */ char unk44[0xC];
-    /* 0x50 */ s32 unk_50;
-    /* 0x54 */ s32 unk_54;
+    /* 0x50 */ s32 decksReady;
+    /* 0x54 */ s32 entryMode;
 } WidgetMainMenu; // size = 0x58
 
 typedef struct unk_func_88500E34 {
@@ -864,7 +864,7 @@ void WidgetTree_BindPagedGridPage(unk_func_88200FA0_030_030*, unk_func_88200FA0_
 void WidgetTree_BindPagedGridStridedData(unk_func_88200FA0_030_030*, unk_func_88201DA0_038*);
 void WidgetTree_BindPagedGridStridedPage(unk_func_88200FA0_030_030*, unk_func_8820BE14_06C*, MemoryPool*);
 s32 WidgetTree_DrawPagedGrid(unk_func_88200FA0_030_030*, s32, s32);
-s32 func_885065E0(unk_func_88200FA0_030_030*, Controller*);
+s32 WidgetTree_PagedGridHandleInput(unk_func_88200FA0_030_030*, Controller*);
 void WidgetTree_SetPagedGridSelection(unk_func_88200FA0_030_030*, s32);
 s32 WidgetTree_FindSelectableGridEntry(unk_func_88200FA0_030_030*);
 void WidgetTree_InitScrollableGrid(unk_func_8821421C_038_034*, s32, s32, unk_func_88200FA0_030_030_040, s32, s32, s32, MemoryPool*);
@@ -875,7 +875,7 @@ void WidgetTree_BindScrollableGridStridedPage(unk_func_8821421C_038_034*, unk_fu
 void WidgetTree_ClampScrollableGridTop(unk_func_8820BE14_02C_038*);
 void WidgetTree_ClampScrollableGridBottom(unk_func_8820BE14_02C_038*);
 s32 WidgetTree_UpdateScrollableGridScroll(unk_func_8821421C_038_034*);
-s32 func_8850734C(unk_func_8821421C_038_034*, s32, s32);
+s32 WidgetTree_DrawScrollableGrid(unk_func_8821421C_038_034*, s32, s32);
 s32 WidgetTree_HandleScrollableGridInput(unk_func_8821421C_038_034*, Controller*);
 void WidgetTree_SetScrollableGridIndex(unk_func_8820BE14_02C_038*, s32);
 void WidgetTree_SetScrollableGridIndexPreserveScroll(unk_func_8820BE14_02C_038*, s32);
@@ -903,7 +903,7 @@ s32 WidgetTree_DrawBorderFrame(WidgetNode*, s32, s32);
 void WidgetTree_InitInsetBorderFrame(WidgetNode*, s32, s32, s32, s32);
 s32 WidgetTree_DrawInsetBorderFrame(WidgetNode*, s32, s32);
 void WidgetTree_InitDashedBorderFrame(unk_func_8850B254*, s32, s32, s32, s32, Color_RGBA8, Color_RGBA8);
-s32 func_8850B2D4(unk_func_8850B254*, s32, s32);
+s32 WidgetTree_DrawDashedBorderFrame(unk_func_8850B254*, s32, s32);
 void Ui_PlayInputActionSound(s32);
 void WidgetTree_InitScrollableGridInputProxy(unk_func_8850BD40*, unk_func_8821421C_038_034*);
 s32 WidgetTree_HandleScrollableGridInputProxy(unk_func_8850BD40* arg0, Controller* arg1);

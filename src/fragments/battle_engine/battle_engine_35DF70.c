@@ -3,7 +3,7 @@
 
 typedef void (*func_D_8438AE50)(void);
 
-static const char D_8438DC80[] = "は" "\n" "こんらんした";
+static const char D_8438DC80[] = "は\nこんらんした";
 static const char D_8438DC90[] = "SP %d\n";
 static const char D_8438DC98[] = "index %d  step %d\n";
 static const char D_8438DCAC[] = "index %d  step %d\n";
@@ -59,40 +59,40 @@ void Battle_Effect_Sleep(void) {
     s32 sp24;
     s32 var_v1;
 
-    gBattleScene.unk_00->unk_48 = 0x16;
-    sp24 = gBattleTarget->unk_4D & 0x20;
-    gBattleTarget->unk_4D &= ~0x20;
+    gBattleScene.scene->unk_48 = 0x16;
+    sp24 = gBattleTarget->volatileStatusFlags & 0x20;
+    gBattleTarget->volatileStatusFlags &= ~0x20;
 
     if (sp24 == 0) {
-        if (gBattleTarget->unk_15 & 7) {
+        if (gBattleTarget->status & 7) {
             D_843C4E44 = 0;
-            Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.unk_00->unk_2C]));
+            Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.scene->activeBattlerIndex]));
             Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x80);
             return;
         }
 
-        if (gBattleTarget->unk_15 == 0) {
-            func_843708CC();
+        if (gBattleTarget->status == 0) {
+            Battle_CheckMoveFailureConditions();
             if ((gBattleMoveFailed == 0) &&
-                ((Battle_HasUsableMajorStatusTarget(D_84390010[!gBattleScene.unk_00->unk_2C]) == 0) || (D_8438AC60[0] == 2))) {
+                ((Battle_HasUsableMajorStatusTarget(D_84390010[!gBattleScene.scene->activeBattlerIndex]) == 0) || (D_8438AC60[0] == 2))) {
                 goto block_9;
             }
         }
         gBattleDamage = 0;
         gBattleMoveFailed = 1;
         D_843C4E44 = 0;
-        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.unk_00->unk_2C]));
+        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.scene->activeBattlerIndex]));
         Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x7F);
         return;
     }
 
 block_9:
-    if ((Battle_HasUsableMajorStatusTarget(D_84390010[!gBattleScene.unk_00->unk_2C]) != 0) && (D_8438AC60[0] != 2)) {
+    if ((Battle_HasUsableMajorStatusTarget(D_84390010[!gBattleScene.scene->activeBattlerIndex]) != 0) && (D_8438AC60[0] != 2)) {
         D_843C4E44 = 0;
-        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.unk_00->unk_2C]));
+        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.scene->activeBattlerIndex]));
         Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x7F);
         if ((sp24 != 0) && (D_8438AC60[0] == 1)) {
-            gBattleTarget->unk_4D |= 0x20;
+            gBattleTarget->volatileStatusFlags |= 0x20;
         }
     } else {
         do {
@@ -103,8 +103,8 @@ block_9:
             }
         } while (var_v1 == 0);
         gBattleMoveFailed = 0;
-        gBattleTarget->unk_15 = var_v1;
-        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.unk_00->unk_2C]));
+        gBattleTarget->status = var_v1;
+        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.scene->activeBattlerIndex]));
         Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x7E);
     }
 }
@@ -112,12 +112,12 @@ block_9:
 void Battle_Effect_Poison(void) {
     char* sp1C = gBattleMessageQueues->unk_088;
 
-    if (!(gBattleTarget->unk_4D & 0x10) && (gBattleTarget->unk_15 == 0) && (gBattleTarget->unk_16[6] != 3) &&
+    if (!(gBattleTarget->volatileStatusFlags & 0x10) && (gBattleTarget->status == 0) && (gBattleTarget->unk_16[6] != 3) &&
         (gBattleTarget->unk_16[7] != 3)) {
-        switch (gBattleUser->unk_44.unk_01) {
+        switch (gBattleUser->cachedMove.effectId) {
             case 2:
-                if (gBattleScene.unk_00->unk_48 != 0x18) {
-                    gBattleScene.unk_00->unk_48 = 0;
+                if (gBattleScene.scene->unk_48 != 0x18) {
+                    gBattleScene.scene->unk_48 = 0;
                     sp1C = gBattleMessageQueues->unk_208;
                 } else {
                     sp1C = gBattleMessageQueues->unk_308;
@@ -129,7 +129,7 @@ void Battle_Effect_Poison(void) {
                 break;
 
             case 33:
-                gBattleScene.unk_00->unk_48 = 0;
+                gBattleScene.scene->unk_48 = 0;
                 sp1C = gBattleMessageQueues->unk_208;
                 if (Battle_Random() >= 0x67) {
                     return;
@@ -137,34 +137,34 @@ void Battle_Effect_Poison(void) {
                 break;
 
             default:
-                gBattleScene.unk_00->unk_48 = 0x16;
+                gBattleScene.scene->unk_48 = 0x16;
                 D_843C4DEC = 0xA;
-                func_843708CC();
+                Battle_CheckMoveFailureConditions();
                 if (gBattleMoveFailed != 0) {
-                    Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.unk_00->unk_2C]));
+                    Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.scene->activeBattlerIndex]));
                     Battle_QueueMessage(sp1C, -0x7D);
                     return;
                 }
                 break;
         }
 
-        gBattleTarget->unk_15 |= 8;
-        if (gBattleUser->unk_44.unk_00 == 0x5C) {
-            gBattleTarget->unk_4E |= 1;
-            gBattleTarget->unk_51 = 0;
-            Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.unk_00->unk_2C]));
+        gBattleTarget->status |= 8;
+        if (gBattleUser->cachedMove.moveId == 0x5C) {
+            gBattleTarget->auxStatusFlags |= 1;
+            gBattleTarget->toxicCounter = 0;
+            Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.scene->activeBattlerIndex]));
             Battle_QueueMessage(sp1C, -0x7C);
         } else {
-            Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.unk_00->unk_2C]));
+            Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.scene->activeBattlerIndex]));
             Battle_QueueMessage(sp1C, -0x7B);
         }
-    } else if (gBattleUser->unk_44.unk_01 == 0x42) {
-        if (gBattleScene.unk_00->unk_48 != 0x18) {
+    } else if (gBattleUser->cachedMove.effectId == 0x42) {
+        if (gBattleScene.scene->unk_48 != 0x18) {
             gBattleMoveFailed = 1;
-            gBattleScene.unk_00->unk_48 = 0x16;
+            gBattleScene.scene->unk_48 = 0x16;
             D_843C4E44 = 0;
         }
-        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.unk_00->unk_2C]));
+        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.scene->activeBattlerIndex]));
         Battle_QueueMessage(sp1C, -0x7A);
     }
 }
@@ -175,55 +175,55 @@ void Battle_Effect_DrainHP(void) {
         gBattleDamage = 1;
     }
 
-    if (gBattleUser->unk_28 < gBattleUser->unk_0C + gBattleDamage) {
-        gBattleUser->unk_0C = gBattleUser->unk_28;
+    if (gBattleUser->maxHP < gBattleUser->currentHP + gBattleDamage) {
+        gBattleUser->currentHP = gBattleUser->maxHP;
     } else {
-        gBattleUser->unk_0C += gBattleDamage;
+        gBattleUser->currentHP += gBattleDamage;
     }
 
-    if (gBattleUser->unk_44.unk_01 == 8) {
-        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.unk_00->unk_2C]));
+    if (gBattleUser->cachedMove.effectId == 8) {
+        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.scene->activeBattlerIndex]));
         Battle_QueueMessage(gBattleMessageQueues->unk_208, -0x79);
     } else {
-        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.unk_00->unk_2C]));
+        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.scene->activeBattlerIndex]));
         Battle_QueueMessage(gBattleMessageQueues->unk_208, -0x78);
     }
 }
 
 void Battle_Effect_Explosion(void) {
-    gBattleScene.unk_00->unk_48 = 0x1E;
-    gBattleUser->unk_0C = 0;
-    gBattleUser->unk_15 = 0;
-    gBattleUser->unk_4D &= ~0x80;
+    gBattleScene.scene->unk_48 = 0x1E;
+    gBattleUser->currentHP = 0;
+    gBattleUser->status = 0;
+    gBattleUser->volatileStatusFlags &= ~0x80;
 }
 
 void Battle_Effect_SecondaryStatusChance(void) {
-    BattleMonRuntime* temp_a2 = &D_84390010[!gBattleScene.unk_00->unk_2C]->unk_654.unk_38;
-    BattlerState* temp_a0 = &D_84390010[!gBattleScene.unk_00->unk_2C]->unk_654;
+    BattleMonRuntime* temp_a2 = &D_84390010[!gBattleScene.scene->activeBattlerIndex]->unk_654.monRuntime;
+    BattlerState* temp_a0 = &D_84390010[!gBattleScene.scene->activeBattlerIndex]->unk_654;
 
-    if (gBattleTarget->unk_4D & 0x10) {
+    if (gBattleTarget->volatileStatusFlags & 0x10) {
         return;
     }
 
-    if (gBattleTarget->unk_15 != 0) {
-        if ((gBattleTarget->unk_15 & 0x20) && (gBattleUser->unk_44.unk_03 == 0x14)) {
-            gBattleTarget->unk_15 = 0;
-            if (temp_a0->unk_14 != 4) {
-                temp_a2->unk_5A = temp_a2->unk_1F[temp_a0->unk_0C];
+    if (gBattleTarget->status != 0) {
+        if ((gBattleTarget->status & 0x20) && (gBattleUser->cachedMove.type == 0x14)) {
+            gBattleTarget->status = 0;
+            if (temp_a0->selectedMoveSlot != 4) {
+                temp_a2->currentMoveId = temp_a2->moveIds[temp_a0->committedMoveSlot];
             } else {
-                temp_a0->unk_14 = 0;
-                temp_a0->unk_0C = 0;
-                temp_a2->unk_5A = 0xA5;
+                temp_a0->selectedMoveSlot = 0;
+                temp_a0->committedMoveSlot = 0;
+                temp_a2->currentMoveId = 0xA5;
             }
-            Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.unk_00->unk_2C]));
+            Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.scene->activeBattlerIndex]));
             Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x77);
         }
         return;
     }
 
-    if ((gBattleTarget->unk_16[6] != (*gBattleUser).unk_44.unk_03) &&
-        (gBattleTarget->unk_16[7] != (*gBattleUser).unk_44.unk_03)) {
-        if ((gBattleUser->unk_44.unk_01 < 7) || ((D_8438AC60[0] != 2) && (gBattleUser->unk_44.unk_00 == 0x3B))) {
+    if ((gBattleTarget->unk_16[6] != (*gBattleUser).cachedMove.type) &&
+        (gBattleTarget->unk_16[7] != (*gBattleUser).cachedMove.type)) {
+        if ((gBattleUser->cachedMove.effectId < 7) || ((D_8438AC60[0] != 2) && (gBattleUser->cachedMove.moveId == 0x3B))) {
             if (Battle_Random() >= 0x1A) {
                 return;
             }
@@ -231,30 +231,30 @@ void Battle_Effect_SecondaryStatusChance(void) {
             return;
         }
 
-        switch (gBattleUser->unk_44.unk_01) {
+        switch (gBattleUser->cachedMove.effectId) {
             case 4:
             case 34:
-                gBattleTarget->unk_15 = 0x10;
-                func_84370B44(D_84390010[!gBattleScene.unk_00->unk_2C]);
-                Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.unk_00->unk_2C]));
+                gBattleTarget->status = 0x10;
+                Battle_ApplyBurnAttackPenalty(D_84390010[!gBattleScene.scene->activeBattlerIndex]);
+                Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.scene->activeBattlerIndex]));
                 Battle_QueueMessage(gBattleMessageQueues->unk_208, -0x76);
                 break;
 
             case 5:
             case 35:
-                if (Battle_HasUsableSleepStatusTarget(D_84390010[!gBattleScene.unk_00->unk_2C]) == 0) {
-                    gBattleTarget->unk_4D &= ~0x20;
-                    gBattleTarget->unk_15 = 0x20;
-                    Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.unk_00->unk_2C]));
+                if (Battle_HasUsableSleepStatusTarget(D_84390010[!gBattleScene.scene->activeBattlerIndex]) == 0) {
+                    gBattleTarget->volatileStatusFlags &= ~0x20;
+                    gBattleTarget->status = 0x20;
+                    Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.scene->activeBattlerIndex]));
                     Battle_QueueMessage(gBattleMessageQueues->unk_208, -0x75);
                 }
                 break;
 
             case 6:
             case 36:
-                gBattleTarget->unk_15 = 0x40;
-                func_84370B0C(D_84390010[!gBattleScene.unk_00->unk_2C]);
-                Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.unk_00->unk_2C]));
+                gBattleTarget->status = 0x40;
+                Battle_ApplyParalysisSpeedPenalty(D_84390010[!gBattleScene.scene->activeBattlerIndex]);
+                Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.scene->activeBattlerIndex]));
                 Battle_QueueMessage(gBattleMessageQueues->unk_208, -0x74);
                 break;
         }
@@ -269,20 +269,20 @@ void Battle_ApplyRageStatBoost(void) {
     u16* sp1C;
     u16* sp18;
 
-    gBattleScene.unk_00->unk_4C = 0xA;
+    gBattleScene.scene->unk_4C = 0xA;
 
     var_a3 = 1;
-    sp24 = gBattleUser->unk_44.unk_01 - 0xA;
+    sp24 = gBattleUser->cachedMove.effectId - 0xA;
 
     if (sp24 >= 8) {
         var_a3 = 2;
         sp24 -= 0x28;
     }
 
-    if (gBattleUser->unk_5C[sp24] != 0xD) {
-        gBattleUser->unk_5C[sp24] += var_a3;
-        if (gBattleUser->unk_5C[sp24] >= 0xE) {
-            gBattleUser->unk_5C[var_a3] = 0xD;
+    if (gBattleUser->statStages[sp24] != 0xD) {
+        gBattleUser->statStages[sp24] += var_a3;
+        if (gBattleUser->statStages[sp24] >= 0xE) {
+            gBattleUser->statStages[var_a3] = 0xD;
         }
 
         sp28 = 0;
@@ -291,31 +291,31 @@ void Battle_ApplyRageStatBoost(void) {
         if (sp24 < 4) {
             switch (sp24) {
                 case 0:
-                    sp18 = &gBattleUser->unk_38;
-                    sp1C = &gBattleUser->unk_2A;
+                    sp18 = &gBattleUser->origAttack;
+                    sp1C = &gBattleUser->attack;
                     sp2C = 1;
                     break;
 
                 case 1:
-                    sp18 = &gBattleUser->unk_3A;
-                    sp1C = &gBattleUser->unk_2C;
+                    sp18 = &gBattleUser->origDefense;
+                    sp1C = &gBattleUser->defense;
                     break;
 
                 case 2:
-                    sp18 = &gBattleUser->unk_3C;
-                    sp1C = &gBattleUser->unk_2E;
+                    sp18 = &gBattleUser->origSpeed;
+                    sp1C = &gBattleUser->speed;
                     sp28 = 1;
                     break;
 
                 case 3:
-                    sp18 = &gBattleUser->unk_3E;
-                    sp1C = &gBattleUser->unk_30;
+                    sp18 = &gBattleUser->origSpecial;
+                    sp1C = &gBattleUser->special;
                     break;
             }
 
             if (*sp1C != 0x3E7) {
-                *sp1C = (*sp18 * gStatStageMultipliers[gBattleUser->unk_5C[sp24] - 1].unk_00) /
-                        gStatStageMultipliers[gBattleUser->unk_5C[sp24] - 1].unk_01;
+                *sp1C = (*sp18 * gStatStageMultipliers[gBattleUser->statStages[sp24] - 1].unk_00) /
+                        gStatStageMultipliers[gBattleUser->statStages[sp24] - 1].unk_01;
                 if (*sp1C >= 0x3E8) {
                     *sp1C = 0x3E7;
                 }
@@ -324,24 +324,24 @@ void Battle_ApplyRageStatBoost(void) {
             }
         }
 
-        if (gBattleUser->unk_44.unk_00 == 0x6B) {
-            gBattleUser->unk_56 = 1;
+        if (gBattleUser->cachedMove.moveId == 0x6B) {
+            gBattleUser->statChangeFlag = 1;
         }
 
         if (var_a3 == 2) {
-            Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.unk_00->unk_2C]));
+            Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.scene->activeBattlerIndex]));
             Battle_QueueMessage(gBattleMessageQueues->unk_2C8, sp24 + 0x8D);
         } else {
-            Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.unk_00->unk_2C]));
+            Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.scene->activeBattlerIndex]));
             Battle_QueueMessage(gBattleMessageQueues->unk_2C8, sp24 + 0x93);
         }
 
         if ((sp28 != 0) || (D_8438AC60[0] != 1)) {
-            func_84370B0C(D_84390010[!gBattleScene.unk_00->unk_2C]);
+            Battle_ApplyParalysisSpeedPenalty(D_84390010[!gBattleScene.scene->activeBattlerIndex]);
         }
 
         if ((sp2C != 0) || (D_8438AC60[0] != 1)) {
-            func_84370B44(D_84390010[!gBattleScene.unk_00->unk_2C]);
+            Battle_ApplyBurnAttackPenalty(D_84390010[!gBattleScene.scene->activeBattlerIndex]);
         }
     } else {
     block_29:
@@ -357,23 +357,23 @@ void Battle_Effect_RaiseOwnStat(void) {
     u16* sp1C;
     u16* sp18;
 
-    if (gBattleUser->unk_44.unk_00 == 0x6E) {
-        gBattleScene.unk_00->unk_48 = 0x26;
+    if (gBattleUser->cachedMove.moveId == 0x6E) {
+        gBattleScene.scene->unk_48 = 0x26;
     } else {
-        gBattleScene.unk_00->unk_48 = 7;
+        gBattleScene.scene->unk_48 = 7;
     }
 
     var_a3 = 1;
-    sp24 = gBattleUser->unk_44.unk_01 - 0xA;
+    sp24 = gBattleUser->cachedMove.effectId - 0xA;
     if (sp24 >= 8) {
         var_a3 = 2;
         sp24 -= 0x28;
     }
 
-    if (gBattleUser->unk_5C[sp24] != 0xD) {
-        gBattleUser->unk_5C[sp24] += var_a3;
-        if (gBattleUser->unk_5C[sp24] >= 0xE) {
-            gBattleUser->unk_5C[sp24] = 0xD;
+    if (gBattleUser->statStages[sp24] != 0xD) {
+        gBattleUser->statStages[sp24] += var_a3;
+        if (gBattleUser->statStages[sp24] >= 0xE) {
+            gBattleUser->statStages[sp24] = 0xD;
         }
 
         sp28 = 0;
@@ -382,31 +382,31 @@ void Battle_Effect_RaiseOwnStat(void) {
         if (sp24 < 4) {
             switch (sp24) {
                 case 0:
-                    sp18 = &gBattleUser->unk_38;
-                    sp1C = &gBattleUser->unk_2A;
+                    sp18 = &gBattleUser->origAttack;
+                    sp1C = &gBattleUser->attack;
                     sp2C = 1;
                     break;
 
                 case 1:
-                    sp18 = &gBattleUser->unk_3A;
-                    sp1C = &gBattleUser->unk_2C;
+                    sp18 = &gBattleUser->origDefense;
+                    sp1C = &gBattleUser->defense;
                     break;
 
                 case 2:
-                    sp18 = &gBattleUser->unk_3C;
-                    sp1C = &gBattleUser->unk_2E;
+                    sp18 = &gBattleUser->origSpeed;
+                    sp1C = &gBattleUser->speed;
                     sp28 = 1;
                     break;
 
                 case 3:
-                    sp18 = &gBattleUser->unk_3E;
-                    sp1C = &gBattleUser->unk_30;
+                    sp18 = &gBattleUser->origSpecial;
+                    sp1C = &gBattleUser->special;
                     break;
             }
 
             if (*sp1C != 0x3E7) {
-                *sp1C = (*sp18 * gStatStageMultipliers[gBattleUser->unk_5C[sp24] - 1].unk_00) /
-                        gStatStageMultipliers[gBattleUser->unk_5C[sp24] - 1].unk_01;
+                *sp1C = (*sp18 * gStatStageMultipliers[gBattleUser->statStages[sp24] - 1].unk_00) /
+                        gStatStageMultipliers[gBattleUser->statStages[sp24] - 1].unk_01;
                 if (*sp1C >= 0x3E8) {
                     *sp1C = 0x3E7;
                 }
@@ -415,24 +415,24 @@ void Battle_Effect_RaiseOwnStat(void) {
             }
         }
 
-        if (gBattleUser->unk_44.unk_00 == 0x6B) {
-            gBattleUser->unk_56 = 1;
+        if (gBattleUser->cachedMove.moveId == 0x6B) {
+            gBattleUser->statChangeFlag = 1;
         }
 
         if (var_a3 == 2) {
-            Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.unk_00->unk_2C]));
+            Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.scene->activeBattlerIndex]));
             Battle_QueueMessage(gBattleMessageQueues->unk_088, sp24 + 0x8D);
         } else {
-            Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.unk_00->unk_2C]));
+            Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.scene->activeBattlerIndex]));
             Battle_QueueMessage(gBattleMessageQueues->unk_088, sp24 + 0x93);
         }
 
         if ((sp28 != 0) || (D_8438AC60[0] != 1)) {
-            func_84370B0C(D_84390010[gBattleScene.unk_00->unk_2C]);
+            Battle_ApplyParalysisSpeedPenalty(D_84390010[gBattleScene.scene->activeBattlerIndex]);
         }
 
         if ((sp2C != 0) || (D_8438AC60[0] != 1)) {
-            func_84370B44(D_84390010[gBattleScene.unk_00->unk_2C]);
+            Battle_ApplyBurnAttackPenalty(D_84390010[gBattleScene.scene->activeBattlerIndex]);
         }
     } else {
     block_32:
@@ -449,17 +449,17 @@ void Battle_Effect_LowerStat(void) {
     u16* sp1C;
     u16* sp18;
 
-    if (gBattleUser->unk_44.unk_01 < 0x44) {
-        gBattleScene.unk_00->unk_48 = 0x1A;
+    if (gBattleUser->cachedMove.effectId < 0x44) {
+        gBattleScene.scene->unk_48 = 0x1A;
     } else {
-        gBattleScene.unk_00->unk_1A = 3;
+        gBattleScene.scene->unk_1A = 3;
     }
 
-    if (gBattleTarget->unk_4D & 0x10) {
+    if (gBattleTarget->volatileStatusFlags & 0x10) {
         goto end;
     }
 
-    sp24 = gBattleUser->unk_44.unk_01;
+    sp24 = gBattleUser->cachedMove.effectId;
     sp20 = 1;
 
     if (sp24 >= 0x44) {
@@ -468,13 +468,13 @@ void Battle_Effect_LowerStat(void) {
             goto block_14;
         }
     } else {
-        func_843708CC();
+        Battle_CheckMoveFailureConditions();
 
         if (gBattleMoveFailed != 0) {
             goto end;
         }
 
-        if (gBattleTarget->unk_4C & 0x40) {
+        if (gBattleTarget->lockedEffectFlags & 0x40) {
             goto end;
         }
 
@@ -485,10 +485,10 @@ void Battle_Effect_LowerStat(void) {
         }
 
     block_14:
-        if (gBattleTarget->unk_5C[sp24] != 1) {
-            gBattleTarget->unk_5C[sp24] -= sp20;
-            if (gBattleTarget->unk_5C[sp24] <= 0) {
-                gBattleTarget->unk_5C[sp24] = 1;
+        if (gBattleTarget->statStages[sp24] != 1) {
+            gBattleTarget->statStages[sp24] -= sp20;
+            if (gBattleTarget->statStages[sp24] <= 0) {
+                gBattleTarget->statStages[sp24] = 1;
             }
 
             sp28 = 0;
@@ -498,30 +498,30 @@ void Battle_Effect_LowerStat(void) {
                 switch (sp24) {
                     case 0:
                         sp2C = 1;
-                        sp18 = &gBattleTarget->unk_38;
-                        sp1C = &gBattleTarget->unk_2A;
+                        sp18 = &gBattleTarget->origAttack;
+                        sp1C = &gBattleTarget->attack;
                         break;
 
                     case 1:
-                        sp18 = &gBattleTarget->unk_3A;
-                        sp1C = &gBattleTarget->unk_2C;
+                        sp18 = &gBattleTarget->origDefense;
+                        sp1C = &gBattleTarget->defense;
                         break;
 
                     case 2:
                         sp28 = 1;
-                        sp18 = &gBattleTarget->unk_3C;
-                        sp1C = &gBattleTarget->unk_2E;
+                        sp18 = &gBattleTarget->origSpeed;
+                        sp1C = &gBattleTarget->speed;
                         break;
 
                     case 3:
-                        sp18 = &gBattleTarget->unk_3E;
-                        sp1C = &gBattleTarget->unk_30;
+                        sp18 = &gBattleTarget->origSpecial;
+                        sp1C = &gBattleTarget->special;
                         break;
                 }
 
                 if (*sp1C != 1) {
-                    *sp1C = (*sp18 * gStatStageMultipliers[gBattleTarget->unk_5C[sp24] - 1].unk_00) /
-                            gStatStageMultipliers[gBattleTarget->unk_5C[sp24] - 1].unk_01;
+                    *sp1C = (*sp18 * gStatStageMultipliers[gBattleTarget->statStages[sp24] - 1].unk_00) /
+                            gStatStageMultipliers[gBattleTarget->statStages[sp24] - 1].unk_01;
                     if (*sp1C == 0) {
                         *sp1C = 1;
                     }
@@ -531,26 +531,26 @@ void Battle_Effect_LowerStat(void) {
             }
 
             if (sp20 == 2) {
-                Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.unk_00->unk_2C]));
+                Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.scene->activeBattlerIndex]));
                 Battle_QueueMessage(gBattleMessageQueues->unk_208, sp24 + 0x9A);
             } else {
-                Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.unk_00->unk_2C]));
+                Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.scene->activeBattlerIndex]));
                 Battle_QueueMessage(gBattleMessageQueues->unk_208, sp24 + 0xA0);
             }
 
             if ((sp28 != 0) || (D_8438AC60[0] != 1)) {
-                func_84370B0C(D_84390010[!gBattleScene.unk_00->unk_2C]);
+                Battle_ApplyParalysisSpeedPenalty(D_84390010[!gBattleScene.scene->activeBattlerIndex]);
             }
 
             if ((sp2C != 0) || (D_8438AC60[0] != 1)) {
-                func_84370B44(D_84390010[!gBattleScene.unk_00->unk_2C]);
+                Battle_ApplyBurnAttackPenalty(D_84390010[!gBattleScene.scene->activeBattlerIndex]);
             }
             return;
         }
     }
 
 block_39:
-    if (gBattleUser->unk_44.unk_01 < 0x44) {
+    if (gBattleUser->cachedMove.effectId < 0x44) {
         D_843C4E44 = 0;
         D_843C4E45 = 0;
         Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x5A);
@@ -558,7 +558,7 @@ block_39:
     }
 
 end:
-    if (gBattleUser->unk_44.unk_01 < 0x44) {
+    if (gBattleUser->cachedMove.effectId < 0x44) {
         D_843C4E44 = 0;
         D_843C4E45 = 0;
         if (D_843C4DA9 == 0) {
@@ -570,43 +570,43 @@ end:
 }
 
 void Battle_Effect_Bide(void) {
-    gBattleScene.unk_00->unk_48 = 0x1B;
-    gBattleUser->unk_44.unk_01 = 0;
-    gBattleUser->unk_4C |= 1;
-    gBattleUser->unk_54 = 0;
-    gBattleUser->unk_4F = (Battle_Random() & 1) + 2;
+    gBattleScene.scene->unk_48 = 0x1B;
+    gBattleUser->cachedMove.effectId = 0;
+    gBattleUser->lockedEffectFlags |= 1;
+    gBattleUser->effectAccumulator = 0;
+    gBattleUser->lockedEffectCounter = (Battle_Random() & 1) + 2;
 }
 
 void Battle_Effect_Thrash(void) {
-    gBattleUser->unk_44.unk_01 = 0;
-    gBattleUser->unk_4C |= 2;
-    gBattleUser->unk_4F = (Battle_Random() & 1) + 2;
+    gBattleUser->cachedMove.effectId = 0;
+    gBattleUser->lockedEffectFlags |= 2;
+    gBattleUser->lockedEffectCounter = (Battle_Random() & 1) + 2;
 }
 
 void Battle_Effect_ForceSwitchOrFlee(void) {
-    if (gBattleUser->unk_44.unk_00 == 0x64) {
-        gBattleScene.unk_00->unk_48 = 0x27;
+    if (gBattleUser->cachedMove.moveId == 0x64) {
+        gBattleScene.scene->unk_48 = 0x27;
         Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x53);
         return;
     }
-    gBattleScene.unk_00->unk_48 = 8;
-    Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.unk_00->unk_2C]));
+    gBattleScene.scene->unk_48 = 8;
+    Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.scene->activeBattlerIndex]));
     Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x52);
 }
 
 void Battle_Effect_MultiHit(void) {
     s32 var_v1;
 
-    if (!(gBattleUser->unk_4C & 4)) {
-        gBattleUser->unk_4C |= 4;
+    if (!(gBattleUser->lockedEffectFlags & 4)) {
+        gBattleUser->lockedEffectFlags |= 4;
 
-        switch (gBattleUser->unk_44.unk_01) {
+        switch (gBattleUser->cachedMove.effectId) {
             case 0x4D:
-                gBattleUser->unk_44.unk_01 = 2;
+                gBattleUser->cachedMove.effectId = 2;
 
             case 0x2C:
-                gBattleUser->unk_54 = 2;
-                gBattleUser->unk_4F = gBattleUser->unk_54;
+                gBattleUser->effectAccumulator = 2;
+                gBattleUser->lockedEffectCounter = gBattleUser->effectAccumulator;
                 break;
 
             default:
@@ -614,19 +614,19 @@ void Battle_Effect_MultiHit(void) {
                 if (var_v1 >= 2) {
                     var_v1 = Battle_Random() & 3;
                 }
-                gBattleUser->unk_4F = gBattleUser->unk_54 = var_v1 + 2;
+                gBattleUser->lockedEffectCounter = gBattleUser->effectAccumulator = var_v1 + 2;
                 break;
         }
 
-        D_8439022C = gBattleUser->unk_54 - 1;
-        gBattleScene.unk_00->unk_48 = 0x18;
+        D_8439022C = gBattleUser->effectAccumulator - 1;
+        gBattleScene.scene->unk_48 = 0x18;
     }
 }
 
 void Battle_Effect_Flinch(void) {
-    if (!(gBattleTarget->unk_4D & 0x10)) {
+    if (!(gBattleTarget->volatileStatusFlags & 0x10)) {
         if (D_8438AC60[0] == 1) {
-            if (gBattleUser->unk_44.unk_01 == 0x1F) {
+            if (gBattleUser->cachedMove.effectId == 0x1F) {
                 if (Battle_Random() >= 0x1A) {
                     return;
                 }
@@ -634,8 +634,8 @@ void Battle_Effect_Flinch(void) {
                 return;
             }
         } else {
-            gBattleTarget->unk_4D &= ~0x20;
-            if (gBattleUser->unk_44.unk_01 == 0x1F) {
+            gBattleTarget->volatileStatusFlags &= ~0x20;
+            if (gBattleUser->cachedMove.effectId == 0x1F) {
                 if (Battle_Random() >= 0x1A) {
                     return;
                 }
@@ -643,14 +643,14 @@ void Battle_Effect_Flinch(void) {
                 return;
             }
         }
-        gBattleTarget->unk_4C |= 8;
+        gBattleTarget->lockedEffectFlags |= 8;
     }
 }
 
 void Battle_Effect_OHKO(void) {
     gBattleDamage = 0;
     gBattleCritFlag = 0xFF;
-    if (gBattleUser->unk_2E < gBattleTarget->unk_2E) {
+    if (gBattleUser->speed < gBattleTarget->speed) {
         gBattleMoveFailed = 1;
         return;
     }
@@ -659,23 +659,23 @@ void Battle_Effect_OHKO(void) {
 }
 
 void Battle_Effect_TwoTurnMove(void) {
-    gBattleScene.unk_00->unk_48 = 0xE;
-    gBattleUser->unk_4C |= 0x10;
+    gBattleScene.scene->unk_48 = 0xE;
+    gBattleUser->lockedEffectFlags |= 0x10;
 
-    if ((gBattleUser->unk_44.unk_01 == 0x2B) || (gBattleUser->unk_44.unk_00 == 0x5B)) {
-        gBattleUser->unk_4C |= 0x40;
-        if (gBattleUser->unk_44.unk_00 == 0x5B) {
-            gBattleScene.unk_00->unk_48 = 0xD;
+    if ((gBattleUser->cachedMove.effectId == 0x2B) || (gBattleUser->cachedMove.moveId == 0x5B)) {
+        gBattleUser->lockedEffectFlags |= 0x40;
+        if (gBattleUser->cachedMove.moveId == 0x5B) {
+            gBattleScene.scene->unk_48 = 0xD;
         }
 
-        if (gBattleUser->unk_44.unk_01 == 0x2B) {
-            gBattleScene.unk_00->unk_48 = 0xC;
+        if (gBattleUser->cachedMove.effectId == 0x2B) {
+            gBattleScene.scene->unk_48 = 0xC;
         }
     }
 
-    Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.unk_00->unk_2C]));
+    Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.scene->activeBattlerIndex]));
 
-    switch (gBattleUser->unk_44.unk_00) {
+    switch (gBattleUser->cachedMove.moveId) {
         case 0xD:
             Battle_QueueMessage(gBattleMessageQueues->unk_0C8, -0x51);
             break;
@@ -705,47 +705,47 @@ void Battle_Effect_TwoTurnMove(void) {
 void Battle_Effect_Trap(void) {
     s32 var_v1;
 
-    if (!(gBattleUser->unk_4C & 0x20) && ((D_8438AC60[0] != 1) || (gBattleUser->unk_44.unk_03 != 0) ||
+    if (!(gBattleUser->lockedEffectFlags & 0x20) && ((D_8438AC60[0] != 1) || (gBattleUser->cachedMove.type != 0) ||
                                          ((gBattleTarget->unk_16[6] != 8) && (gBattleTarget->unk_16[7] != 8)))) {
-        gBattleTarget->unk_4D &= 0xFFDF;
-        gBattleUser->unk_4C |= 0x20;
+        gBattleTarget->volatileStatusFlags &= 0xFFDF;
+        gBattleUser->lockedEffectFlags |= 0x20;
         var_v1 = Battle_Random() & 3;
         if (var_v1 >= 2) {
             var_v1 = Battle_Random() & 3;
         }
-        gBattleUser->unk_4F = var_v1 + 1;
+        gBattleUser->lockedEffectCounter = var_v1 + 1;
     }
 }
 
 void Battle_Effect_Mist(void) {
-    if (gBattleUser->unk_4D & 2) {
-        gBattleScene.unk_00->unk_48 = 7;
+    if (gBattleUser->volatileStatusFlags & 2) {
+        gBattleScene.scene->unk_48 = 7;
         Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x4B);
         return;
     }
-    gBattleScene.unk_00->unk_48 = 7;
-    gBattleUser->unk_4D |= 2;
-    Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.unk_00->unk_2C]));
+    gBattleScene.scene->unk_48 = 7;
+    gBattleUser->volatileStatusFlags |= 2;
+    Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.scene->activeBattlerIndex]));
     Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x4A);
 }
 
 void Battle_Effect_FocusEnergy(void) {
-    gBattleScene.unk_00->unk_48 = 7;
-    if (gBattleUser->unk_4D & 4) {
+    gBattleScene.scene->unk_48 = 7;
+    if (gBattleUser->volatileStatusFlags & 4) {
         Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x49);
         return;
     }
-    gBattleUser->unk_4D |= 4;
-    Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.unk_00->unk_2C]));
+    gBattleUser->volatileStatusFlags |= 4;
+    Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.scene->activeBattlerIndex]));
     Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x48);
 }
 
 void Battle_Effect_Recoil(void) {
     s32 var_v1;
 
-    gBattleUser->unk_12 = gBattleUser->unk_0C;
+    gBattleUser->recoilPendingHP = gBattleUser->currentHP;
 
-    if (gBattleUser->unk_44.unk_00 == 0xA5) {
+    if (gBattleUser->cachedMove.moveId == 0xA5) {
         var_v1 = gBattleDamage >> 1;
     } else {
         var_v1 = gBattleDamage >> 2;
@@ -755,40 +755,40 @@ void Battle_Effect_Recoil(void) {
         var_v1 += 1;
     }
 
-    if (gBattleUser->unk_12 < var_v1) {
-        gBattleUser->unk_12 = 0;
+    if (gBattleUser->recoilPendingHP < var_v1) {
+        gBattleUser->recoilPendingHP = 0;
     } else {
-        gBattleUser->unk_12 -= var_v1;
+        gBattleUser->recoilPendingHP -= var_v1;
     }
 
-    gBattleTarget->unk_12 = gBattleTarget->unk_0C;
-    Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.unk_00->unk_2C]));
+    gBattleTarget->recoilPendingHP = gBattleTarget->currentHP;
+    Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.scene->activeBattlerIndex]));
     Battle_QueueMessage(gBattleMessageQueues->unk_408, -0x47);
-    gBattleScene.unk_00->unk_48 = 9;
+    gBattleScene.scene->unk_48 = 9;
 }
 
 void Battle_Effect_ConfuseChance(void) {
-    if (!(gBattleTarget->unk_4D & 0x10) && (Battle_Random() < 0x1A) && !(gBattleTarget->unk_4C & 0x80)) {
-        gBattleScene.unk_00->unk_1A = 3;
+    if (!(gBattleTarget->volatileStatusFlags & 0x10) && (Battle_Random() < 0x1A) && !(gBattleTarget->lockedEffectFlags & 0x80)) {
+        gBattleScene.scene->unk_1A = 3;
         D_843C4E45 = 0;
-        gBattleTarget->unk_4C |= 0x80;
-        gBattleTarget->unk_50 = (Battle_Random() & 3) + 2;
-        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.unk_00->unk_2C]));
+        gBattleTarget->lockedEffectFlags |= 0x80;
+        gBattleTarget->confusionCounter = (Battle_Random() & 3) + 2;
+        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.scene->activeBattlerIndex]));
         Battle_QueueMessage(gBattleMessageQueues->unk_208, -0x46);
     }
 }
 
 void Battle_Effect_Confuse(void) {
-    gBattleScene.unk_00->unk_48 = 0x16;
+    gBattleScene.scene->unk_48 = 0x16;
     D_843C4E44 = 0;
 
-    if (!(gBattleTarget->unk_4D & 0x10)) {
-        func_843708CC();
-        if ((gBattleMoveFailed == 0) && !(gBattleTarget->unk_4C & 0x80)) {
+    if (!(gBattleTarget->volatileStatusFlags & 0x10)) {
+        Battle_CheckMoveFailureConditions();
+        if ((gBattleMoveFailed == 0) && !(gBattleTarget->lockedEffectFlags & 0x80)) {
             D_843C4E44 = 1;
-            gBattleTarget->unk_4C |= 0x80;
-            gBattleTarget->unk_50 = (Battle_Random() & 3) + 2;
-            Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.unk_00->unk_2C]));
+            gBattleTarget->lockedEffectFlags |= 0x80;
+            gBattleTarget->confusionCounter = (Battle_Random() & 3) + 2;
+            Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.scene->activeBattlerIndex]));
             Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x45);
             return;
         }
@@ -800,83 +800,83 @@ void Battle_Effect_Confuse(void) {
 }
 
 void Battle_Effect_Paralyze(void) {
-    gBattleScene.unk_00->unk_48 = 0x16;
-    if (gBattleTarget->unk_15 == 0) {
-        if ((gBattleUser->unk_44.unk_03 != 0x17) || ((gBattleTarget->unk_16[6] != 4) && (gBattleTarget->unk_16[7] != 4))) {
-            func_843708CC();
+    gBattleScene.scene->unk_48 = 0x16;
+    if (gBattleTarget->status == 0) {
+        if ((gBattleUser->cachedMove.type != 0x17) || ((gBattleTarget->unk_16[6] != 4) && (gBattleTarget->unk_16[7] != 4))) {
+            Battle_CheckMoveFailureConditions();
             if (gBattleMoveFailed == 0) {
-                gBattleTarget->unk_15 |= 0x40;
-                func_84370B0C(D_84390010[!gBattleScene.unk_00->unk_2C]);
-                Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.unk_00->unk_2C]));
+                gBattleTarget->status |= 0x40;
+                Battle_ApplyParalysisSpeedPenalty(D_84390010[!gBattleScene.scene->activeBattlerIndex]);
+                Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.scene->activeBattlerIndex]));
                 Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x43);
                 return;
             }
         } else {
-            gBattleScene.unk_00->unk_48 = 8;
+            gBattleScene.scene->unk_48 = 8;
             D_843C4E44 = 0;
             Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x42);
             return;
         }
     }
 
-    gBattleScene.unk_00->unk_48 = 8;
+    gBattleScene.scene->unk_48 = 8;
     D_843C4E44 = 0;
-    Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.unk_00->unk_2C]));
+    Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.scene->activeBattlerIndex]));
     Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x41);
 }
 
 void Battle_Effect_Substitute(void) {
     s32 temp_v1;
 
-    gBattleScene.unk_00->unk_48 = 0x1C;
-    if (gBattleUser->unk_4D & 0x10) {
-        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.unk_00->unk_2C]));
+    gBattleScene.scene->unk_48 = 0x1C;
+    if (gBattleUser->volatileStatusFlags & 0x10) {
+        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.scene->activeBattlerIndex]));
         Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x2A);
         return;
     }
 
-    temp_v1 = gBattleUser->unk_28 >> 2;
-    if (temp_v1 >= gBattleUser->unk_0C) {
+    temp_v1 = gBattleUser->maxHP >> 2;
+    if (temp_v1 >= gBattleUser->currentHP) {
         Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x29);
         return;
     }
 
-    gBattleScene.unk_00->unk_48 = 0x19;
-    gBattleUser->unk_59 = temp_v1;
-    gBattleUser->unk_0C -= temp_v1;
-    gBattleUser->unk_4D |= 0x10;
-    Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.unk_00->unk_2C]));
+    gBattleScene.scene->unk_48 = 0x19;
+    gBattleUser->substituteHP = temp_v1;
+    gBattleUser->currentHP -= temp_v1;
+    gBattleUser->volatileStatusFlags |= 0x10;
+    Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.scene->activeBattlerIndex]));
     Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x28);
 }
 
 void Battle_Effect_Recharge(void) {
-    gBattleUser->unk_4D |= 0x20;
+    gBattleUser->volatileStatusFlags |= 0x20;
 }
 
 void Battle_Effect_Rage(void) {
-    gBattleUser->unk_4D |= 0x40;
+    gBattleUser->volatileStatusFlags |= 0x40;
 }
 
 void Battle_Effect_Mimic(void) {
-    BattlerState* sp24 = &D_84390010[gBattleScene.unk_00->unk_2C]->unk_654;
+    BattlerState* sp24 = &D_84390010[gBattleScene.scene->activeBattlerIndex]->unk_654;
     s32 var_t0;
     u8 temp_v0;
 
-    gBattleScene.unk_00->unk_48 = 7;
-    func_843708CC();
+    gBattleScene.scene->unk_48 = 7;
+    Battle_CheckMoveFailureConditions();
 
-    if ((gBattleMoveFailed == 0) && !(gBattleTarget->unk_4C & 0x40)) {
+    if ((gBattleMoveFailed == 0) && !(gBattleTarget->lockedEffectFlags & 0x40)) {
         D_843C4DAA = 1;
         do {
             var_t0 = BattleAnim_RandomRange(4);
             if (var_t0 >= 4) {
                 var_t0 = 3;
             }
-            temp_v0 = gBattleTarget->unk_1F[var_t0];
+            temp_v0 = gBattleTarget->moveIds[var_t0];
         } while (temp_v0 == 0);
 
-        gBattleUser->unk_1F[sp24->unk_0C] = temp_v0;
-        Text_SetStringToken(0x1E, Text_GetString(NULL, 0, D_843900B8, gBattleTarget->unk_1F[var_t0] - 1));
+        gBattleUser->moveIds[sp24->committedMoveSlot] = temp_v0;
+        Text_SetStringToken(0x1E, Text_GetString(NULL, 0, D_843900B8, gBattleTarget->moveIds[var_t0] - 1));
         Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x40);
         return;
     }
@@ -885,24 +885,24 @@ void Battle_Effect_Mimic(void) {
 }
 
 void Battle_Effect_LeechSeed(void) {
-    func_843708CC();
+    Battle_CheckMoveFailureConditions();
 
     if ((gBattleMoveFailed == 0) && (gBattleTarget->unk_16[6] != 0x16) && (gBattleTarget->unk_16[7] != 0x16)) {
-        if (!(gBattleTarget->unk_4D & 0x80)) {
-            gBattleTarget->unk_4D |= 0x80;
-            Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.unk_00->unk_2C]));
+        if (!(gBattleTarget->volatileStatusFlags & 0x80)) {
+            gBattleTarget->volatileStatusFlags |= 0x80;
+            Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.scene->activeBattlerIndex]));
             Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x3E);
             return;
         }
     }
 
-    gBattleScene.unk_00->unk_48 = 8;
-    Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.unk_00->unk_2C]));
+    gBattleScene.scene->unk_48 = 8;
+    Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.scene->activeBattlerIndex]));
     Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x3D);
 }
 
 void Battle_Effect_Splash(void) {
-    gBattleScene.unk_00->unk_48 = 7;
+    gBattleScene.scene->unk_48 = 7;
     Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x3C);
 }
 
@@ -910,24 +910,24 @@ void Battle_Effect_Disable(void) {
     s32 sp24;
     s32 temp_v1;
 
-    func_843708CC();
+    Battle_CheckMoveFailureConditions();
 
     if (gBattleMoveFailed == 0) {
-        gBattleScene.unk_00->unk_48 = 0x20;
-        if (gBattleTarget->unk_52 == 0) {
+        gBattleScene.scene->unk_48 = 0x20;
+        if (gBattleTarget->disabledSlotAndTurns == 0) {
             do {
                 sp24 = Battle_Random() & 3;
-            } while (gBattleTarget->unk_1F[sp24] == 0);
+            } while (gBattleTarget->moveIds[sp24] == 0);
             temp_v1 = (Battle_Random() & 7) + 1;
-            gBattleTarget->unk_52 = (sp24 * 0x10) + temp_v1;
-            gBattleTarget->unk_57 = gBattleTarget->unk_1F[sp24];
-            Text_SetStringToken(0x1E, Text_GetString(NULL, 0, D_843900B8, gBattleTarget->unk_57 - 1));
+            gBattleTarget->disabledSlotAndTurns = (sp24 * 0x10) + temp_v1;
+            gBattleTarget->disabledMoveId = gBattleTarget->moveIds[sp24];
+            Text_SetStringToken(0x1E, Text_GetString(NULL, 0, D_843900B8, gBattleTarget->disabledMoveId - 1));
             Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x3B);
             return;
         }
     }
 
-    gBattleScene.unk_00->unk_48 = 8;
+    gBattleScene.scene->unk_48 = 8;
     Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x3A);
 }
 
@@ -936,11 +936,11 @@ void Battle_Effect_PayDay(void) {
 }
 
 void Battle_Effect_Conversion(void) {
-    gBattleScene.unk_00->unk_48 = 7;
-    if (!(gBattleTarget->unk_4C & 0x40)) {
+    gBattleScene.scene->unk_48 = 7;
+    if (!(gBattleTarget->lockedEffectFlags & 0x40)) {
         gBattleUser->unk_16[6] = gBattleTarget->unk_16[6];
         gBattleUser->unk_16[7] = gBattleTarget->unk_16[7];
-        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.unk_00->unk_2C]));
+        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.scene->activeBattlerIndex]));
         Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x38);
     } else {
         Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x37);
@@ -949,44 +949,44 @@ void Battle_Effect_Conversion(void) {
 
 void Battle_Effect_Haze(void) {
     s32 i;
-    BattleMonRuntime* temp_t0 = &D_84390010[0]->unk_654.unk_38;
-    BattleMonRuntime* temp_a3 = &D_84390010[1]->unk_654.unk_38;
+    BattleMonRuntime* temp_t0 = &D_84390010[0]->unk_654.monRuntime;
+    BattleMonRuntime* temp_a3 = &D_84390010[1]->unk_654.monRuntime;
 
-    gBattleScene.unk_00->unk_48 = 0x1D;
+    gBattleScene.scene->unk_48 = 0x1D;
 
     for (i = 0; i < 8; i++) {
-        temp_t0->unk_5C[i] = 7;
-        temp_a3->unk_5C[i] = 7;
+        temp_t0->statStages[i] = 7;
+        temp_a3->statStages[i] = 7;
     }
 
-    temp_t0->unk_2A = temp_t0->unk_38;
-    temp_t0->unk_2C = temp_t0->unk_3A;
-    temp_t0->unk_2E = temp_t0->unk_3C;
-    temp_t0->unk_30 = temp_t0->unk_3E;
-    temp_a3->unk_2A = temp_a3->unk_38;
-    temp_a3->unk_2C = temp_a3->unk_3A;
-    temp_a3->unk_2E = temp_a3->unk_3C;
-    temp_a3->unk_30 = temp_a3->unk_3E;
+    temp_t0->attack = temp_t0->origAttack;
+    temp_t0->defense = temp_t0->origDefense;
+    temp_t0->speed = temp_t0->origSpeed;
+    temp_t0->special = temp_t0->origSpecial;
+    temp_a3->attack = temp_a3->origAttack;
+    temp_a3->defense = temp_a3->origDefense;
+    temp_a3->speed = temp_a3->origSpeed;
+    temp_a3->special = temp_a3->origSpecial;
 
-    if ((gBattleTarget->unk_15 & 0x27) && !(gBattleTarget->unk_4C & 0x10)) {
-        gBattleTarget->unk_5A = 0xFE;
+    if ((gBattleTarget->status & 0x27) && !(gBattleTarget->lockedEffectFlags & 0x10)) {
+        gBattleTarget->currentMoveId = 0xFE;
     }
 
-    gBattleTarget->unk_15 = 0;
+    gBattleTarget->status = 0;
     // clang-format off
-    if (D_8438AC60[0] == 1) { gBattleUser->unk_15 = 0; }
+    if (D_8438AC60[0] == 1) { gBattleUser->status = 0; }
     // clang-format on
 
-    temp_t0->unk_52 = temp_a3->unk_52 = 0;
-    temp_t0->unk_57 = temp_a3->unk_57 = 0;
-    temp_t0->unk_4C &= ~0x80;
-    temp_t0->unk_4D &= 0x78;
-    temp_t0->unk_4E &= 8;
-    temp_a3->unk_4C &= ~0x80;
-    temp_a3->unk_4D &= 0x78;
-    temp_a3->unk_4E &= 8;
-    gBattleUser->unk_56 = 0;
-    gBattleTarget->unk_56 = 0;
+    temp_t0->disabledSlotAndTurns = temp_a3->disabledSlotAndTurns = 0;
+    temp_t0->disabledMoveId = temp_a3->disabledMoveId = 0;
+    temp_t0->lockedEffectFlags &= ~0x80;
+    temp_t0->volatileStatusFlags &= 0x78;
+    temp_t0->auxStatusFlags &= 8;
+    temp_a3->lockedEffectFlags &= ~0x80;
+    temp_a3->volatileStatusFlags &= 0x78;
+    temp_a3->auxStatusFlags &= 8;
+    gBattleUser->statChangeFlag = 0;
+    gBattleTarget->statChangeFlag = 0;
 
     Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x36);
 }
@@ -996,44 +996,44 @@ void Battle_Effect_Heal(void) {
     BattlerState* temp_a1;
     BattleMonRuntime* temp_a2;
 
-    temp_a1 = &D_84390010[gBattleScene.unk_00->unk_2C]->unk_654;
-    temp_a2 = &D_84390010[gBattleScene.unk_00->unk_2C]->unk_654.unk_38;
+    temp_a1 = &D_84390010[gBattleScene.scene->activeBattlerIndex]->unk_654;
+    temp_a2 = &D_84390010[gBattleScene.scene->activeBattlerIndex]->unk_654.monRuntime;
 
-    gBattleScene.unk_00->unk_48 = 0x15;
-    if (gBattleUser->unk_0C != gBattleUser->unk_28) {
-        if (gBattleUser->unk_44.unk_00 == 0x9C) {
-            temp_v0 = gBattleUser->unk_15;
+    gBattleScene.scene->unk_48 = 0x15;
+    if (gBattleUser->currentHP != gBattleUser->maxHP) {
+        if (gBattleUser->cachedMove.moveId == 0x9C) {
+            temp_v0 = gBattleUser->status;
 
-            gBattleUser->unk_15 = 2;
-            temp_a2->unk_16[temp_a1->unk_08 + temp_a1->unk_2B * 3] = 2;
+            gBattleUser->status = 2;
+            temp_a2->unk_16[temp_a1->partyIndex + temp_a1->activeSideIndex * 3] = 2;
 
             if (temp_v0 != 0) {
                 if (D_8438AC60[0] == 1) {
-                    gBattleUser->unk_4E &= ~1;
-                    Battle_ApplyStatStageMultiplier(&gBattleUser->unk_2A, gBattleUser->unk_38, gBattleUser->unk_5C[0]);
-                    Battle_ApplyStatStageMultiplier(&gBattleUser->unk_2E, gBattleUser->unk_3C, gBattleUser->unk_5C[2]);
+                    gBattleUser->auxStatusFlags &= ~1;
+                    Battle_ApplyStatStageMultiplier(&gBattleUser->attack, gBattleUser->origAttack, gBattleUser->statStages[0]);
+                    Battle_ApplyStatStageMultiplier(&gBattleUser->speed, gBattleUser->origSpeed, gBattleUser->statStages[2]);
                 }
-                Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.unk_00->unk_2C]));
+                Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.scene->activeBattlerIndex]));
                 Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x35);
             } else {
-                Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.unk_00->unk_2C]));
+                Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.scene->activeBattlerIndex]));
                 Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x34);
             }
-            gBattleUser->unk_0C += gBattleUser->unk_28;
+            gBattleUser->currentHP += gBattleUser->maxHP;
         } else {
-            gBattleUser->unk_0C += gBattleUser->unk_28 / 2;
+            gBattleUser->currentHP += gBattleUser->maxHP / 2;
         }
 
-        if (gBattleUser->unk_28 < gBattleUser->unk_0C) {
-            gBattleUser->unk_0C = gBattleUser->unk_28;
+        if (gBattleUser->maxHP < gBattleUser->currentHP) {
+            gBattleUser->currentHP = gBattleUser->maxHP;
         }
 
-        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.unk_00->unk_2C]));
+        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.scene->activeBattlerIndex]));
         Battle_QueueMessage(gBattleMessageQueues->unk_148, -0x33);
         return;
     }
 
-    gBattleScene.unk_00->unk_48 = 0x1C;
+    gBattleScene.scene->unk_48 = 0x1C;
     gBattleMoveFailed = 1;
     Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x32);
 }
@@ -1044,78 +1044,78 @@ void Battle_Effect_Transform(void) {
     BattlerState* sp1C;
     BattleMonRuntime* ptr;
 
-    sp20 = &D_84390010[gBattleScene.unk_00->unk_2C]->unk_654;
-    sp1C = &D_84390010[!gBattleScene.unk_00->unk_2C]->unk_654;
+    sp20 = &D_84390010[gBattleScene.scene->activeBattlerIndex]->unk_654;
+    sp1C = &D_84390010[!gBattleScene.scene->activeBattlerIndex]->unk_654;
 
-    if ((D_8438AC60[0] == 1) && ((((gBattleTarget->unk_4E & 8) == 0) && (gBattleTarget->unk_0B == 0x84)) ||
-                                 (((gBattleTarget->unk_4E & 8) != 0) && (sp1C->unk_BE == 0x84)))) {
-        gBattleScene.unk_00->unk_48 = 0x1C;
-        Text_SetStringToken(0x1B, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.unk_00->unk_2C]));
+    if ((D_8438AC60[0] == 1) && ((((gBattleTarget->auxStatusFlags & 8) == 0) && (gBattleTarget->speciesId == 0x84)) ||
+                                 (((gBattleTarget->auxStatusFlags & 8) != 0) && (sp1C->unk_BE == 0x84)))) {
+        gBattleScene.scene->unk_48 = 0x1C;
+        Text_SetStringToken(0x1B, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.scene->activeBattlerIndex]));
         Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x2F);
         return;
     }
 
     ptr = gBattleUser;
-    if (!(ptr->unk_4C & 0x40) &&
-        ((D_8438AC60[0] != 1) || (gBattleTarget->unk_1F[0] != 0x90) || (gBattleTarget->unk_1F[1] != 0))) {
-        gBattleScene.unk_00->unk_48 = 0xF;
-        Text_SetStringToken(0x1B, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.unk_00->unk_2C]));
+    if (!(ptr->lockedEffectFlags & 0x40) &&
+        ((D_8438AC60[0] != 1) || (gBattleTarget->moveIds[0] != 0x90) || (gBattleTarget->moveIds[1] != 0))) {
+        gBattleScene.scene->unk_48 = 0xF;
+        Text_SetStringToken(0x1B, Battle_GetActiveMonNickname(D_84390010[!gBattleScene.scene->activeBattlerIndex]));
         Battle_QueueMessage(gBattleMessageQueues->unk_148, -0x31);
-        gBattleUser->unk_4E |= 8;
+        gBattleUser->auxStatusFlags |= 8;
 
-        if (gBattleTarget->unk_4E & 8) {
+        if (gBattleTarget->auxStatusFlags & 8) {
             sp20->unk_BE = sp1C->unk_BE;
         } else {
-            sp20->unk_BE = gBattleTarget->unk_0B;
+            sp20->unk_BE = gBattleTarget->speciesId;
         }
 
         gBattleUser->unk_16[6] = gBattleTarget->unk_16[6];
         gBattleUser->unk_16[7] = gBattleTarget->unk_16[7];
-        gBattleUser->unk_1F[0] = gBattleTarget->unk_1F[0];
-        gBattleUser->unk_1F[1] = gBattleTarget->unk_1F[1];
-        gBattleUser->unk_1F[2] = gBattleTarget->unk_1F[2];
-        gBattleUser->unk_1F[3] = gBattleTarget->unk_1F[3];
-        gBattleUser->unk_24 = gBattleTarget->unk_24;
-        gBattleUser->unk_2A = gBattleTarget->unk_2A;
-        gBattleUser->unk_2C = gBattleTarget->unk_2C;
-        gBattleUser->unk_2E = gBattleTarget->unk_2E;
-        gBattleUser->unk_30 = gBattleTarget->unk_30;
+        gBattleUser->moveIds[0] = gBattleTarget->moveIds[0];
+        gBattleUser->moveIds[1] = gBattleTarget->moveIds[1];
+        gBattleUser->moveIds[2] = gBattleTarget->moveIds[2];
+        gBattleUser->moveIds[3] = gBattleTarget->moveIds[3];
+        gBattleUser->dvs = gBattleTarget->dvs;
+        gBattleUser->attack = gBattleTarget->attack;
+        gBattleUser->defense = gBattleTarget->defense;
+        gBattleUser->speed = gBattleTarget->speed;
+        gBattleUser->special = gBattleTarget->special;
 
         for (i = 0; i < 4; i++) {
-            if (gBattleTarget->unk_1F[i] == 0) {
+            if (gBattleTarget->moveIds[i] == 0) {
                 break;
             }
-            gBattleUser->unk_32[i] = 5;
+            gBattleUser->currentPP[i] = 5;
         }
 
-        gBattleUser->unk_38 = gBattleTarget->unk_38;
-        gBattleUser->unk_3A = gBattleTarget->unk_3A;
-        gBattleUser->unk_3C = gBattleTarget->unk_3C;
-        gBattleUser->unk_3E = gBattleTarget->unk_3E;
+        gBattleUser->origAttack = gBattleTarget->origAttack;
+        gBattleUser->origDefense = gBattleTarget->origDefense;
+        gBattleUser->origSpeed = gBattleTarget->origSpeed;
+        gBattleUser->origSpecial = gBattleTarget->origSpecial;
 
         for (i = 0; i < 8; i++) {
-            gBattleUser->unk_5C[i] = gBattleTarget->unk_5C[i];
+            gBattleUser->statStages[i] = gBattleTarget->statStages[i];
         }
         return;
     }
 
-    gBattleScene.unk_00->unk_48 = 0x1C;
+    gBattleScene.scene->unk_48 = 0x1C;
     Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x30);
 }
 
 void Battle_Effect_ReflectLightScreen(void) {
-    gBattleScene.unk_00->unk_48 = 7;
-    if (gBattleUser->unk_44.unk_01 == 0x40) {
-        if (!(gBattleUser->unk_4E & 2)) {
-            gBattleUser->unk_4E |= 2;
-            Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.unk_00->unk_2C]));
+    gBattleScene.scene->unk_48 = 7;
+    if (gBattleUser->cachedMove.effectId == 0x40) {
+        if (!(gBattleUser->auxStatusFlags & 2)) {
+            gBattleUser->auxStatusFlags |= 2;
+            Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.scene->activeBattlerIndex]));
             Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x2E);
         } else {
             Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x2D);
         }
-    } else if (!(gBattleUser->unk_4E & 4)) {
-        gBattleUser->unk_4E |= 4;
-        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.unk_00->unk_2C]));
+    } else if (!(gBattleUser->auxStatusFlags & 4)) {
+        gBattleUser->auxStatusFlags |= 4;
+        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(D_84390010[gBattleScene.scene->activeBattlerIndex]));
         Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x2C);
     } else {
         Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x2B);
@@ -1123,8 +1123,8 @@ void Battle_Effect_ReflectLightScreen(void) {
 }
 
 void Battle_RunMoveEffect(void) {
-    BattleMonRuntime* ptr = &D_84390010[gBattleScene.unk_00->unk_2C]->unk_654.unk_38;
-    s32 idx = ptr->unk_44.unk_01;
+    BattleMonRuntime* ptr = &D_84390010[gBattleScene.scene->activeBattlerIndex]->unk_654.monRuntime;
+    s32 idx = ptr->cachedMove.effectId;
 
     if (gMoveEffectHandlers[idx - 1] != NULL) {
         gMoveEffectHandlers[idx - 1]();

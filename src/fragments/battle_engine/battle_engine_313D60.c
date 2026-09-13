@@ -17,14 +17,14 @@ void BattleScene_FinalPresentationFrameActiveOwner(unk_D_86002F34_00C* arg0) {
     f32 sp3C;
 
     BattleScene_SetCameraClipPlanes(arg0, 20.0f, 12800.0f);
-    BattleAnim_GetOwnerDefaultAnchorPosition(D_84390010[D_84390284], &gBattleScene.unk_00->unk_D0);
+    BattleAnim_GetOwnerDefaultAnchorPosition(D_84390010[D_84390284], &gBattleScene.scene->unk_D0);
     sp3C = BattleScene_ScaleCameraDistance(D_84390010[D_84390284], 3.5f, 300.0f);
-    BattleScene_SetCameraAtFromAnchor(D_84390010[D_84390284], arg0, gBattleScene.unk_00->unk_D0, 0, BattleScene_GetParticipantFacingAngle(D_84390010[D_84390284]),
+    BattleScene_SetCameraAtFromAnchor(D_84390010[D_84390284], arg0, gBattleScene.scene->unk_D0, 0, BattleScene_GetParticipantFacingAngle(D_84390010[D_84390284]),
                   0.0f, 0.0f);
     BattleScene_SetCameraEyeFromAt(arg0, 0, BattleScene_GetParticipantFacingAngle(D_84390010[D_84390284]), sp3C, 0.0f);
 
     if (D_84390010[0]) {}
-    gBattleScene.unk_00->unk_20 += 1;
+    gBattleScene.scene->scenePhase += 1;
     if (D_84390284) {}
 }
 
@@ -32,21 +32,21 @@ void BattleScene_FinalPresentationFrameOwner0(unk_D_86002F34_00C* arg0) {
     f32 sp3C;
 
     BattleScene_SetCameraClipPlanes(arg0, 20.0f, 12800.0f);
-    BattleAnim_GetOwnerDefaultAnchorPosition(D_84390010[0], &gBattleScene.unk_00->unk_D0);
+    BattleAnim_GetOwnerDefaultAnchorPosition(D_84390010[0], &gBattleScene.scene->unk_D0);
     sp3C = BattleScene_ScaleCameraDistance(D_84390010[0], 3.5f, 300.0f);
-    BattleScene_SetCameraAtFromAnchor(D_84390010[0], arg0, gBattleScene.unk_00->unk_D0, 0, BattleScene_GetParticipantFacingAngle(*D_84390010), 0.0f, 0.0f);
+    BattleScene_SetCameraAtFromAnchor(D_84390010[0], arg0, gBattleScene.scene->unk_D0, 0, BattleScene_GetParticipantFacingAngle(*D_84390010), 0.0f, 0.0f);
     BattleScene_SetCameraEyeFromAt(arg0, 0, BattleScene_GetParticipantFacingAngle(*D_84390010), sp3C, 0.0f);
 
     if (D_84390010[0]) {}
-    gBattleScene.unk_00->unk_20 += 1;
+    gBattleScene.scene->scenePhase += 1;
 }
 
 void BattleScene_RunFinalPresentation(unk_D_86002F34_00C* arg0, UNUSED Battler* arg1, UNUSED Battler* arg2) {
-    gBattleScene.unk_00->unk_40 = 0;
-    gBattleScene.unk_00->unk_60 = 30.0f;
-    gBattleScene.unk_00->unk_6C = 10.0f;
+    gBattleScene.scene->battleOutcome = 0;
+    gBattleScene.scene->cameraFovy = 30.0f;
+    gBattleScene.scene->unk_6C = 10.0f;
 
-    switch (gBattleScene.unk_00->unk_1C) {
+    switch (gBattleScene.scene->unk_1C) {
         case 0:
             BattleScene_FinalPresentationFrameActiveOwner(arg0);
             break;
@@ -68,12 +68,12 @@ void BattleScene_RunFinalPresentation(unk_D_86002F34_00C* arg0, UNUSED Battler* 
             BattleScene_IntroSetupCamera(arg0);
             break;
     }
-    gBattleScene.unk_00->unk_DC = arg0;
+    gBattleScene.scene->unk_DC = arg0;
 }
 
 void BattleScene_Init(void) {
-    gBattleScene.unk_00 = main_pool_alloc(sizeof(BattleScene), 0);
-    bzero(gBattleScene.unk_00, sizeof(BattleScene));
+    gBattleScene.scene = main_pool_alloc(sizeof(BattleScene), 0);
+    bzero(gBattleScene.scene, sizeof(BattleScene));
 }
 
 void func_843297E8(UNUSED unk_D_86002F34_00C* arg0) {
@@ -89,29 +89,29 @@ void BattleScene_AvoidDegenerateCameraLookAt(unk_D_86002F34_00C* arg0) {
 }
 
 void BattleScene_TickCameraSubstateDefault(unk_D_86002F34_00C* arg0) {
-    switch (gBattleScene.unk_00->unk_30) {
+    switch (gBattleScene.scene->unk_30) {
         case 0:
-            gBattleScene.unk_00->unk_18 = 0;
+            gBattleScene.scene->unk_18 = 0;
             break;
 
         case 1:
-            if (gBattleScene.unk_00->unk_44 == 2) {
+            if (gBattleScene.scene->unk_44 == 2) {
                 BattleScene_ClearBothOwnerActiveFlags();
             }
-            gBattleScene.unk_00->unk_30++;
+            gBattleScene.scene->unk_30++;
             break;
 
         case 2:
-            if (D_84390010[0]->unk_728.unk_168->unk_1C == -0x48) {
-                gBattleScene.unk_00->unk_30++;
+            if (D_84390010[0]->presentation.layout->hudX == -0x48) {
+                gBattleScene.scene->unk_30++;
             }
             break;
 
         case 3:
             GeoCamera_SetBackgroundTexture(arg0, 0x12C, 0xA, 2, Util_ConvertAddrToVirtAddr((u32)D_1000000));
             GeoCamera_SetBackground(arg0, 5, 0xA, 0, 0, 0);
-            gBattleScene.unk_00->unk_18 = 0;
-            gBattleScene.unk_00->unk_30 += 1;
+            gBattleScene.scene->unk_18 = 0;
+            gBattleScene.scene->unk_30 += 1;
 
         case 4:
             if (arg0->unk_CC.unk_0A == 0xA) {
@@ -119,36 +119,36 @@ void BattleScene_TickCameraSubstateDefault(unk_D_86002F34_00C* arg0) {
                 BattleScene_ResetBothParticipantsAnimationState();
                 BattleScene_CleanupParticipantEffectMode(D_84390010[0]);
                 BattleScene_CleanupParticipantEffectMode(D_84390010[1]);
-                gBattleScene.unk_00->unk_30 += 1;
-                gBattleScene.unk_00->unk_18 = 1;
+                gBattleScene.scene->unk_30 += 1;
+                gBattleScene.scene->unk_18 = 1;
             }
             break;
 
         case 5:
-            if ((BattleScene_AdvanceBothOwnerAnimations() == 0) && (BattleScene_AdvanceDoublesOwnerAnimation(D_84390010[gBattleScene.unk_00->unk_2A]) == 0)) {
-                if (gBattleScene.unk_00->unk_44 == 1) {
+            if ((BattleScene_AdvanceBothOwnerAnimations() == 0) && (BattleScene_AdvanceDoublesOwnerAnimation(D_84390010[gBattleScene.scene->unk_2A]) == 0)) {
+                if (gBattleScene.scene->unk_44 == 1) {
                     BattleAnim_CleanupEffects(2);
                     BattleScene_QuantizePresentationTimer();
                 }
                 Battle_ResetCryEventIfStruggle(D_84390010[0]);
                 Battle_ResetCryEventIfStruggle(D_84390010[1]);
-                gBattleScene.unk_00->unk_18 = 2;
+                gBattleScene.scene->unk_18 = 2;
                 GeoCamera_SetBackgroundTexture(arg0, 0xA, 0x12C, 2, Util_ConvertAddrToVirtAddr((u32)D_1000000));
                 GeoCamera_SetBackground(arg0, 4, 0xA, 0, 0, 0);
                 arg0->unk_24.fovy = 30.0f;
-                gBattleScene.unk_00->unk_60 = 30.0f;
-                gBattleScene.unk_00->unk_30 += 1;
+                gBattleScene.scene->cameraFovy = 30.0f;
+                gBattleScene.scene->unk_30 += 1;
             }
             break;
 
         case 6:
             BattleScene_ResetAnimationStep();
             arg0->unk_24.fovy = 30.0f;
-            gBattleScene.unk_00->unk_60 = 30.0f;
-            gBattleScene.unk_00->unk_18 = 0;
+            gBattleScene.scene->cameraFovy = 30.0f;
+            gBattleScene.scene->unk_18 = 0;
             if (arg0->unk_CC.unk_0A == 0xA) {
-                gBattleScene.unk_00->unk_30 = 0;
-                if (gBattleScene.unk_00->unk_44 == 1) {
+                gBattleScene.scene->unk_30 = 0;
+                if (gBattleScene.scene->unk_44 == 1) {
                     BattleScene_SetBothOwnerActiveFlags();
                 }
             }
@@ -157,29 +157,29 @@ void BattleScene_TickCameraSubstateDefault(unk_D_86002F34_00C* arg0) {
 }
 
 void BattleScene_TickCameraSubstateStripWipe(unk_D_86002F34_00C* arg0) {
-    switch (gBattleScene.unk_00->unk_30) {
+    switch (gBattleScene.scene->unk_30) {
         case 0:
-            gBattleScene.unk_00->unk_18 = 0;
+            gBattleScene.scene->unk_18 = 0;
             break;
 
         case 1:
-            if (gBattleScene.unk_00->unk_44 == 2) {
+            if (gBattleScene.scene->unk_44 == 2) {
                 BattleScene_ClearBothOwnerActiveFlags();
             }
-            gBattleScene.unk_00->unk_30++;
+            gBattleScene.scene->unk_30++;
             break;
 
         case 2:
-            if (D_84390010[0]->unk_728.unk_168->unk_1C == -0x48) {
-                gBattleScene.unk_00->unk_30++;
+            if (D_84390010[0]->presentation.layout->hudX == -0x48) {
+                gBattleScene.scene->unk_30++;
             }
             break;
 
         case 3:
             BattleScene_SetStripWipeState(3, 0x1E);
             BattleScene_UpdateStripWipe();
-            gBattleScene.unk_00->unk_18 = 0;
-            gBattleScene.unk_00->unk_30 += 1;
+            gBattleScene.scene->unk_18 = 0;
+            gBattleScene.scene->unk_30 += 1;
 
         case 4:
             BattleScene_UpdateStripWipe();
@@ -188,52 +188,52 @@ void BattleScene_TickCameraSubstateStripWipe(unk_D_86002F34_00C* arg0) {
                 BattleScene_ResetBothParticipantsAnimationState();
                 BattleScene_CleanupParticipantEffectMode(D_84390010[0]);
                 BattleScene_CleanupParticipantEffectMode(D_84390010[1]);
-                gBattleScene.unk_00->unk_30 += 1;
-                gBattleScene.unk_00->unk_18 = 1;
+                gBattleScene.scene->unk_30 += 1;
+                gBattleScene.scene->unk_18 = 1;
             }
             break;
 
         case 5:
-            gBattleScene.unk_00->unk_18 = 1;
-            gBattleScene.unk_00->unk_30 += 1;
+            gBattleScene.scene->unk_18 = 1;
+            gBattleScene.scene->unk_30 += 1;
             break;
 
         case 6:
-            gBattleScene.unk_00->unk_18 = 1;
-            gBattleScene.unk_00->unk_30 += 1;
+            gBattleScene.scene->unk_18 = 1;
+            gBattleScene.scene->unk_30 += 1;
             break;
 
         case 7:
-            gBattleScene.unk_00->unk_18 = 1;
-            gBattleScene.unk_00->unk_30 += 1;
+            gBattleScene.scene->unk_18 = 1;
+            gBattleScene.scene->unk_30 += 1;
             break;
 
         case 8:
-            if ((BattleScene_AdvanceBothOwnerAnimations() == 0) && (BattleScene_AdvanceDoublesOwnerAnimation(D_84390010[gBattleScene.unk_00->unk_2A]) == 0)) {
-                if (gBattleScene.unk_00->unk_44 == 1) {
+            if ((BattleScene_AdvanceBothOwnerAnimations() == 0) && (BattleScene_AdvanceDoublesOwnerAnimation(D_84390010[gBattleScene.scene->unk_2A]) == 0)) {
+                if (gBattleScene.scene->unk_44 == 1) {
                     BattleAnim_CleanupEffects(2);
                     BattleScene_QuantizePresentationTimer();
                 }
                 Battle_ResetCryEventIfStruggle(D_84390010[0]);
                 Battle_ResetCryEventIfStruggle(D_84390010[1]);
-                gBattleScene.unk_00->unk_18 = 2;
+                gBattleScene.scene->unk_18 = 2;
                 BattleScene_SetStripWipeState(2, 0x1E);
                 BattleScene_UpdateStripWipe();
                 arg0->unk_24.fovy = 30.0f;
-                gBattleScene.unk_00->unk_60 = 30.0f;
-                gBattleScene.unk_00->unk_30 += 1;
+                gBattleScene.scene->cameraFovy = 30.0f;
+                gBattleScene.scene->unk_30 += 1;
             }
             break;
 
         case 9:
             BattleScene_ResetAnimationStep();
             arg0->unk_24.fovy = 30.0f;
-            gBattleScene.unk_00->unk_60 = 30.0f;
-            gBattleScene.unk_00->unk_18 = 0;
+            gBattleScene.scene->cameraFovy = 30.0f;
+            gBattleScene.scene->unk_18 = 0;
             BattleScene_UpdateStripWipe();
             if (BattleScene_GetStripWipeState() == 0) {
-                gBattleScene.unk_00->unk_30 = 0;
-                if (gBattleScene.unk_00->unk_44 == 1) {
+                gBattleScene.scene->unk_30 = 0;
+                if (gBattleScene.scene->unk_44 == 1) {
                     BattleScene_SetBothOwnerActiveFlags();
                 }
             }
@@ -242,7 +242,7 @@ void BattleScene_TickCameraSubstateStripWipe(unk_D_86002F34_00C* arg0) {
 }
 
 void BattleScene_TickCameraSubstate(unk_D_86002F34_00C* arg0) {
-    if (gBattleScene.unk_00->unk_2E == 0) {
+    if (gBattleScene.scene->unk_2E == 0) {
         BattleScene_TickCameraSubstateDefault(arg0);
     } else {
         BattleScene_TickCameraSubstateStripWipe(arg0);
@@ -278,12 +278,12 @@ u16 BattleScene_IsOwnerInViewWedge(Battler* arg0, unk_D_86002F34_00C* arg1, Batt
 
     arg2 = a2;
 
-    sp6C = ((sp54 - arg2->unk_000.unk_024.z) * (sp5C - arg2->unk_000.unk_024.x)) -
-           ((sp50 - arg2->unk_000.unk_024.z) * (sp60 - arg2->unk_000.unk_024.x));
-    sp68 = ((sp50 - arg2->unk_000.unk_024.z) * (sp38 - arg2->unk_000.unk_024.x)) -
-           ((sp40 - arg2->unk_000.unk_024.z) * (sp5C - arg2->unk_000.unk_024.x));
-    sp64 = ((sp40 - arg2->unk_000.unk_024.z) * (sp60 - arg2->unk_000.unk_024.x)) -
-           ((sp54 - arg2->unk_000.unk_024.z) * (sp38 - arg2->unk_000.unk_024.x));
+    sp6C = ((sp54 - arg2->model.unk_024.z) * (sp5C - arg2->model.unk_024.x)) -
+           ((sp50 - arg2->model.unk_024.z) * (sp60 - arg2->model.unk_024.x));
+    sp68 = ((sp50 - arg2->model.unk_024.z) * (sp38 - arg2->model.unk_024.x)) -
+           ((sp40 - arg2->model.unk_024.z) * (sp5C - arg2->model.unk_024.x));
+    sp64 = ((sp40 - arg2->model.unk_024.z) * (sp60 - arg2->model.unk_024.x)) -
+           ((sp54 - arg2->model.unk_024.z) * (sp38 - arg2->model.unk_024.x));
 
     if (((sp6C >= 0.0f) && (sp68 >= 0.0f) && (sp64 >= 0.0f)) || ((sp6C <= 0.0f) && (sp68 <= 0.0f) && (sp64 <= 0.0f))) {
         sp34 = 1;
@@ -319,20 +319,20 @@ u16 BattleScene_IsOwnerInViewWedgeAlt(Battler* arg0, unk_D_86002F34_00C* arg1, B
 
     arg2 = a2;
 
-    sp94 = ((sp7C - arg2->unk_000.unk_024.z) * (sp84 - arg2->unk_000.unk_024.x)) -
-           ((sp78 - arg2->unk_000.unk_024.z) * (sp88 - arg2->unk_000.unk_024.x));
-    sp90 = ((sp78 - arg2->unk_000.unk_024.z) * (sp60.x - arg2->unk_000.unk_024.x)) -
-           ((sp60.z - arg2->unk_000.unk_024.z) * (sp84 - arg2->unk_000.unk_024.x));
-    sp8C = ((sp60.z - arg2->unk_000.unk_024.z) * (sp88 - arg2->unk_000.unk_024.x)) -
-           ((sp7C - arg2->unk_000.unk_024.z) * (sp60.x - arg2->unk_000.unk_024.x));
+    sp94 = ((sp7C - arg2->model.unk_024.z) * (sp84 - arg2->model.unk_024.x)) -
+           ((sp78 - arg2->model.unk_024.z) * (sp88 - arg2->model.unk_024.x));
+    sp90 = ((sp78 - arg2->model.unk_024.z) * (sp60.x - arg2->model.unk_024.x)) -
+           ((sp60.z - arg2->model.unk_024.z) * (sp84 - arg2->model.unk_024.x));
+    sp8C = ((sp60.z - arg2->model.unk_024.z) * (sp88 - arg2->model.unk_024.x)) -
+           ((sp7C - arg2->model.unk_024.z) * (sp60.x - arg2->model.unk_024.x));
 
     if (((sp94 >= 0.0f) && (sp90 >= 0.0f) && (sp8C >= 0.0f)) || ((sp94 <= 0.0f) && (sp90 <= 0.0f) && (sp8C <= 0.0f))) {
         sp5C = 1;
     }
 
-    sp60.x = a2->unk_000.unk_024.x;
-    sp60.y = a2->unk_000.unk_024.y;
-    sp60.z = a2->unk_000.unk_024.z;
+    sp60.x = a2->model.unk_024.x;
+    sp60.y = a2->model.unk_024.y;
+    sp60.z = a2->model.unk_024.z;
 
     if ((BattleScene_GetParticipantModelRadiusScaled(arg0) * 2.5f) >= BattleAnim_Vec3fDistance(arg1->unk_60.eye, sp60)) {
         sp5C = 0;
@@ -342,25 +342,25 @@ u16 BattleScene_IsOwnerInViewWedgeAlt(Battler* arg0, unk_D_86002F34_00C* arg1, B
 
 void BattleScene_UpdateBothOwnersVisibilityCulling(unk_D_86002F34_00C* arg0) {
     if (BattleScene_IsOwnerInViewWedge(D_84390010[0], arg0, D_84390010[0], 0x2AA8, 2500.0f) != 0) {
-        D_84390010[0]->unk_000.unk_000.unk_01 |= 1;
+        D_84390010[0]->model.unk_000.unk_01 |= 1;
     } else {
-        D_84390010[0]->unk_000.unk_000.unk_01 &= ~1;
+        D_84390010[0]->model.unk_000.unk_01 &= ~1;
     }
 
     if (BattleScene_IsOwnerInViewWedge(D_84390010[1], arg0, D_84390010[1], 0x2AA8, 2500.0f) != 0) {
-        D_84390010[1]->unk_000.unk_000.unk_01 |= 1;
+        D_84390010[1]->model.unk_000.unk_01 |= 1;
     } else {
-        D_84390010[1]->unk_000.unk_000.unk_01 &= ~1;
+        D_84390010[1]->model.unk_000.unk_01 &= ~1;
     }
 }
 
 void BattleScene_UpdateOpponentVisibilityCulling(unk_D_86002F34_00C* arg0) {
-    Battler* sp24 = D_84390010[!gBattleScene.unk_00->unk_2C];
+    Battler* sp24 = D_84390010[!gBattleScene.scene->activeBattlerIndex];
 
     if (BattleScene_IsOwnerInViewWedgeAlt(sp24, arg0, sp24, 0x2AA8, 2500.0f) != 0) {
-        sp24->unk_000.unk_000.unk_01 |= 1;
+        sp24->model.unk_000.unk_01 |= 1;
     } else {
-        sp24->unk_000.unk_000.unk_01 &= 0xFFFE;
+        sp24->model.unk_000.unk_01 &= 0xFFFE;
     }
 }
 
@@ -368,30 +368,30 @@ void func_8432A414(void) {
 }
 
 void BattleScene_ShowBothOwners(void) {
-    D_84390010[0]->unk_000.unk_000.unk_01 |= 1;
-    D_84390010[1]->unk_000.unk_000.unk_01 |= 1;
+    D_84390010[0]->model.unk_000.unk_01 |= 1;
+    D_84390010[1]->model.unk_000.unk_01 |= 1;
 }
 
 void BattleScene_HideOpponentOwner(void) {
-    Battle_ResetModelToIdleAnim(D_84390010[!gBattleScene.unk_00->unk_2C]);
-    D_84390010[!gBattleScene.unk_00->unk_2C]->unk_000.unk_000.unk_01 &= ~1;
+    Battle_ResetModelToIdleAnim(D_84390010[!gBattleScene.scene->activeBattlerIndex]);
+    D_84390010[!gBattleScene.scene->activeBattlerIndex]->model.unk_000.unk_01 &= ~1;
 }
 
 void BattleScene_HideActiveOwner(void) {
-    D_84390010[gBattleScene.unk_00->unk_2C]->unk_000.unk_000.unk_01 &= ~1;
-    Battle_ResetModelToIdleAnim(D_84390010[gBattleScene.unk_00->unk_2C]);
+    D_84390010[gBattleScene.scene->activeBattlerIndex]->model.unk_000.unk_01 &= ~1;
+    Battle_ResetModelToIdleAnim(D_84390010[gBattleScene.scene->activeBattlerIndex]);
 }
 
 void BattleScene_HideFaintedOwners(void) {
     Battler* ptr1 = D_84390010[0];
     Battler* ptr2 = D_84390010[1];
 
-    if ((ptr1->unk_654.unk_2D == 0x10) || ((ptr1 = D_84390010[0])->unk_654.unk_2D == 0x13)) {
-        ptr1->unk_000.unk_000.unk_01 &= ~1;
+    if ((ptr1->unk_654.faintSequenceState == 0x10) || ((ptr1 = D_84390010[0])->unk_654.faintSequenceState == 0x13)) {
+        ptr1->model.unk_000.unk_01 &= ~1;
     }
 
-    if ((ptr2->unk_654.unk_2D == 0x10) || (ptr2->unk_654.unk_2D == 0x13)) {
-        ptr2->unk_000.unk_000.unk_01 &= ~1;
+    if ((ptr2->unk_654.faintSequenceState == 0x10) || (ptr2->unk_654.faintSequenceState == 0x13)) {
+        ptr2->model.unk_000.unk_01 &= ~1;
     }
 }
 
@@ -404,7 +404,7 @@ void BattleScene_UpdateOwnerVisibilitySingle(unk_D_86002F34_00C* arg0) {
     s16 sp32;
     s16 sp30;
 
-    switch (gBattleScene.unk_00->unk_1C) {
+    switch (gBattleScene.scene->unk_1C) {
         case 0:
         case 3:
             break;
@@ -412,7 +412,7 @@ void BattleScene_UpdateOwnerVisibilitySingle(unk_D_86002F34_00C* arg0) {
         case 1:
             BattleScene_ShowBothOwners();
 
-            switch (gBattleScene.unk_00->unk_20) {
+            switch (gBattleScene.scene->scenePhase) {
                 case 12:
                 case 13:
                 case 14:
@@ -425,7 +425,7 @@ void BattleScene_UpdateOwnerVisibilitySingle(unk_D_86002F34_00C* arg0) {
                 case 17:
                 case 18:
                 case 19:
-                    D_84390010[gBattleScene.unk_00->unk_2C]->unk_000.unk_000.unk_01 &= ~1;
+                    D_84390010[gBattleScene.scene->activeBattlerIndex]->model.unk_000.unk_01 &= ~1;
                     break;
 
                 default:
@@ -437,18 +437,18 @@ void BattleScene_UpdateOwnerVisibilitySingle(unk_D_86002F34_00C* arg0) {
         case 2:
             BattleScene_ShowBothOwners();
 
-            switch (gBattleScene.unk_00->unk_38) {
+            switch (gBattleScene.scene->unk_38) {
                 case 2:
                 case 3:
-                    switch (gBattleScene.unk_00->unk_20) {
+                    switch (gBattleScene.scene->scenePhase) {
                         case 0:
-                            if ((sp40->unk_2D == 0xF) && (gBattleScene.unk_00->unk_34 == 1)) {
+                            if ((sp40->faintSequenceState == 0xF) && (gBattleScene.scene->simultaneousActionFlag == 1)) {
                                 BattleScene_HideActiveOwner();
                             } else {
-                                Vec3f_CalculateDistanceAngles(&gBattleScene.unk_00->unk_B8, &gBattleScene.unk_00->unk_C4, &sp34, &sp32,
+                                Vec3f_CalculateDistanceAngles(&gBattleScene.scene->unk_B8, &gBattleScene.scene->unk_C4, &sp34, &sp32,
                                               &sp30);
                                 temp_lo = sp30 / 182;
-                                if (((temp_lo == 0x5A) || (temp_lo == -0x5A)) && (gBattleScene.unk_00->unk_34 == 1)) {
+                                if (((temp_lo == 0x5A) || (temp_lo == -0x5A)) && (gBattleScene.scene->simultaneousActionFlag == 1)) {
                                     BattleScene_HideOpponentOwner();
                                 } else {
                                     BattleScene_UpdateOpponentVisibilityCulling(arg0);
@@ -457,67 +457,67 @@ void BattleScene_UpdateOwnerVisibilitySingle(unk_D_86002F34_00C* arg0) {
                             break;
 
                         case 1:
-                            gBattleScene.unk_00->unk_08 = 0;
-                            if (!(sp40->unk_34 & 0x4400)) {
+                            gBattleScene.scene->unk_08 = 0;
+                            if (!(sp40->battleStateFlags & 0x4400)) {
                                 BattleScene_HideOpponentOwner();
                             }
                             break;
 
                         case 2:
-                            if ((gBattleScene.unk_00->unk_3C == 0) && (gBattleScene.unk_00->unk_24 >= 0) &&
-                                (gBattleScene.unk_00->unk_24 < 2) && (sp38->unk_34 & 0x800)) {
+                            if ((gBattleScene.scene->unk_3C == 0) && (gBattleScene.scene->unk_24 >= 0) &&
+                                (gBattleScene.scene->unk_24 < 2) && (sp38->battleStateFlags & 0x800)) {
                                 BattleScene_HideOpponentOwner();
-                            } else if (((gBattleScene.unk_00->unk_3C == 0) || (gBattleScene.unk_00->unk_3C == 1)) &&
-                                       (gBattleScene.unk_00->unk_48 == 0) && (gBattleScene.unk_00->unk_1A != 1)) {
+                            } else if (((gBattleScene.scene->unk_3C == 0) || (gBattleScene.scene->unk_3C == 1)) &&
+                                       (gBattleScene.scene->unk_48 == 0) && (gBattleScene.scene->unk_1A != 1)) {
                                 Battle_ResetModelToIdleAnim(D_84390204);
-                                D_84390204->unk_000.unk_01D = 0;
+                                D_84390204->model.materialAlpha = 0;
                             } else {
-                                if (sp40->unk_34 & 0x4000) {
-                                    if ((D_84390204->unk_000.unk_01A != 0x32) &&
-                                        (D_84390204->unk_000.unk_01A != 0x33)) {
-                                        D_84390204->unk_000.unk_01D = 0;
+                                if (sp40->battleStateFlags & 0x4000) {
+                                    if ((D_84390204->model.modelId != 0x32) &&
+                                        (D_84390204->model.modelId != 0x33)) {
+                                        D_84390204->model.materialAlpha = 0;
                                     } else {
-                                        D_84390204->unk_000.unk_01D = 0xFF;
+                                        D_84390204->model.materialAlpha = 0xFF;
                                     }
                                 } else {
-                                    D_84390204->unk_000.unk_01D = 0xFF;
+                                    D_84390204->model.materialAlpha = 0xFF;
                                 }
                                 BattleScene_HideActiveOwner();
                             }
-                            gBattleScene.unk_00->unk_08 = 1;
+                            gBattleScene.scene->unk_08 = 1;
                             break;
                     }
                     break;
 
                 case 36:
-                    if (gBattleScene.unk_00->unk_08 == 1) {
+                    if (gBattleScene.scene->unk_08 == 1) {
                         BattleScene_HideOpponentOwner();
-                    } else if (gBattleScene.unk_00->unk_08 == 2) {
-                        D_84390010[!gBattleScene.unk_00->unk_2C]->unk_000.unk_000.unk_01 &= ~1;
-                    } else if (gBattleScene.unk_00->unk_08 == 3) {
-                        D_84390010[gBattleScene.unk_00->unk_2C]->unk_000.unk_000.unk_01 &= ~1;
-                    } else if (gBattleScene.unk_00->unk_08 == 4) {
-                        D_84390010[gBattleScene.unk_00->unk_2C]->unk_000.unk_000.unk_01 &= ~1;
+                    } else if (gBattleScene.scene->unk_08 == 2) {
+                        D_84390010[!gBattleScene.scene->activeBattlerIndex]->model.unk_000.unk_01 &= ~1;
+                    } else if (gBattleScene.scene->unk_08 == 3) {
+                        D_84390010[gBattleScene.scene->activeBattlerIndex]->model.unk_000.unk_01 &= ~1;
+                    } else if (gBattleScene.scene->unk_08 == 4) {
+                        D_84390010[gBattleScene.scene->activeBattlerIndex]->model.unk_000.unk_01 &= ~1;
                     }
                     break;
 
                 case 4:
-                    if (gBattleScene.unk_00->unk_08 == 1) {
+                    if (gBattleScene.scene->unk_08 == 1) {
                         BattleScene_HideActiveOwner();
-                    } else if (gBattleScene.unk_00->unk_08 == 2) {
-                        D_84390010[!gBattleScene.unk_00->unk_2C]->unk_000.unk_000.unk_01 &= ~1;
-                    } else if (gBattleScene.unk_00->unk_08 == 3) {
-                        D_84390010[!gBattleScene.unk_00->unk_2C]->unk_000.unk_000.unk_01 &= ~1;
-                    } else if (gBattleScene.unk_00->unk_08 == 4) {
-                        D_84390010[!gBattleScene.unk_00->unk_2C]->unk_000.unk_000.unk_01 &= ~1;
+                    } else if (gBattleScene.scene->unk_08 == 2) {
+                        D_84390010[!gBattleScene.scene->activeBattlerIndex]->model.unk_000.unk_01 &= ~1;
+                    } else if (gBattleScene.scene->unk_08 == 3) {
+                        D_84390010[!gBattleScene.scene->activeBattlerIndex]->model.unk_000.unk_01 &= ~1;
+                    } else if (gBattleScene.scene->unk_08 == 4) {
+                        D_84390010[!gBattleScene.scene->activeBattlerIndex]->model.unk_000.unk_01 &= ~1;
                     }
                     break;
 
                 case 11:
-                    gBattleScene.unk_00->unk_08 = 4;
-                    if (gBattleScene.unk_00->unk_34 == 1) {
+                    gBattleScene.scene->unk_08 = 4;
+                    if (gBattleScene.scene->simultaneousActionFlag == 1) {
                         BattleScene_HideOpponentOwner();
-                    } else if (gBattleScene.unk_00->unk_20 == 0) {
+                    } else if (gBattleScene.scene->scenePhase == 0) {
                         BattleScene_UpdateBothOwnersVisibilityCulling(arg0);
                     } else {
                         BattleScene_HideOpponentOwner();
@@ -525,8 +525,8 @@ void BattleScene_UpdateOwnerVisibilitySingle(unk_D_86002F34_00C* arg0) {
                     break;
 
                 case 18:
-                    gBattleScene.unk_00->unk_08 = 3;
-                    switch (gBattleScene.unk_00->unk_20) {
+                    gBattleScene.scene->unk_08 = 3;
+                    switch (gBattleScene.scene->scenePhase) {
                         case 0:
                             BattleScene_UpdateBothOwnersVisibilityCulling(arg0);
                             break;
@@ -538,8 +538,8 @@ void BattleScene_UpdateOwnerVisibilitySingle(unk_D_86002F34_00C* arg0) {
                     break;
 
                 case 12:
-                    gBattleScene.unk_00->unk_08 = 0;
-                    switch (gBattleScene.unk_00->unk_20) {
+                    gBattleScene.scene->unk_08 = 0;
+                    switch (gBattleScene.scene->scenePhase) {
                         case 2:
                         case 3:
                         case 4:
@@ -553,7 +553,7 @@ void BattleScene_UpdateOwnerVisibilitySingle(unk_D_86002F34_00C* arg0) {
                     break;
 
                 case 37:
-                    gBattleScene.unk_00->unk_08 = 0;
+                    gBattleScene.scene->unk_08 = 0;
                     BattleScene_HideOpponentOwner();
                     break;
 
@@ -571,31 +571,31 @@ void BattleScene_UpdateOwnerVisibilitySingle(unk_D_86002F34_00C* arg0) {
                 case 29:
                 case 31:
                 case 38:
-                    gBattleScene.unk_00->unk_08 = 3;
+                    gBattleScene.scene->unk_08 = 3;
                     BattleScene_HideOpponentOwner();
                     break;
 
                 case 9:
                 case 35:
-                    gBattleScene.unk_00->unk_08 = 3;
+                    gBattleScene.scene->unk_08 = 3;
                     BattleScene_HideOpponentOwner();
                     break;
 
                 case 6:
-                    gBattleScene.unk_00->unk_08 = 0;
+                    gBattleScene.scene->unk_08 = 0;
                     BattleScene_HideOpponentOwner();
                     break;
 
                 case 8:
                 case 10:
-                    gBattleScene.unk_00->unk_08 = 0;
+                    gBattleScene.scene->unk_08 = 0;
                     BattleScene_HideActiveOwner();
                     break;
 
                 case 30:
-                    gBattleScene.unk_00->unk_08 = 0;
+                    gBattleScene.scene->unk_08 = 0;
 
-                    switch (gBattleScene.unk_00->unk_20) {
+                    switch (gBattleScene.scene->scenePhase) {
                         case 0:
                         case 1:
                         case 2:
@@ -610,11 +610,11 @@ void BattleScene_UpdateOwnerVisibilitySingle(unk_D_86002F34_00C* arg0) {
 
                 case 5:
                 case 34:
-                    gBattleScene.unk_00->unk_08 = 0;
-                    switch (gBattleScene.unk_00->unk_20) {
+                    gBattleScene.scene->unk_08 = 0;
+                    switch (gBattleScene.scene->scenePhase) {
                         case 0:
                         case 1:
-                            D_84390010[gBattleScene.unk_00->unk_2C]->unk_000.unk_000.unk_01 &= ~1;
+                            D_84390010[gBattleScene.scene->activeBattlerIndex]->model.unk_000.unk_01 &= ~1;
                             break;
                     }
                     break;
@@ -625,11 +625,11 @@ void BattleScene_UpdateOwnerVisibilitySingle(unk_D_86002F34_00C* arg0) {
 }
 
 void BattleScene_UpdateOwnerVisibilityDouble(unk_D_86002F34_00C* arg0) {
-    switch (gBattleScene.unk_00->unk_1C) {
+    switch (gBattleScene.scene->unk_1C) {
         case 1:
             BattleScene_ShowBothOwners();
 
-            switch (gBattleScene.unk_00->unk_20) {
+            switch (gBattleScene.scene->scenePhase) {
                 case 12:
                 case 13:
                 case 14:
@@ -642,7 +642,7 @@ void BattleScene_UpdateOwnerVisibilityDouble(unk_D_86002F34_00C* arg0) {
                 case 17:
                 case 18:
                 case 19:
-                    D_84390010[gBattleScene.unk_00->unk_2C]->unk_000.unk_000.unk_01 &= ~1;
+                    D_84390010[gBattleScene.scene->activeBattlerIndex]->model.unk_000.unk_01 &= ~1;
                     break;
 
                 default:
@@ -652,30 +652,30 @@ void BattleScene_UpdateOwnerVisibilityDouble(unk_D_86002F34_00C* arg0) {
             break;
 
         case 2:
-            switch (gBattleScene.unk_00->unk_38) {
+            switch (gBattleScene.scene->unk_38) {
                 case 30:
-                    switch (gBattleScene.unk_00->unk_20) {
+                    switch (gBattleScene.scene->scenePhase) {
                         case 0:
                         case 1:
                         case 2:
                         case 5:
-                            D_84390010[!gBattleScene.unk_00->unk_2C]->unk_000.unk_000.unk_01 &= ~1;
-                            D_84390010[gBattleScene.unk_00->unk_2C]->unk_000.unk_000.unk_01 |= 1;
+                            D_84390010[!gBattleScene.scene->activeBattlerIndex]->model.unk_000.unk_01 &= ~1;
+                            D_84390010[gBattleScene.scene->activeBattlerIndex]->model.unk_000.unk_01 |= 1;
                             break;
 
                         default:
-                            D_84390010[gBattleScene.unk_00->unk_2C]->unk_000.unk_000.unk_01 &= ~1;
-                            D_84390010[!gBattleScene.unk_00->unk_2C]->unk_000.unk_000.unk_01 |= 1;
+                            D_84390010[gBattleScene.scene->activeBattlerIndex]->model.unk_000.unk_01 &= ~1;
+                            D_84390010[!gBattleScene.scene->activeBattlerIndex]->model.unk_000.unk_01 |= 1;
                     }
                     break;
 
                 case 5:
                 case 34:
-                    switch (gBattleScene.unk_00->unk_20) {
+                    switch (gBattleScene.scene->scenePhase) {
                         case 0:
                         case 1:
-                            D_84390010[gBattleScene.unk_00->unk_2C]->unk_000.unk_000.unk_01 &= ~1;
-                            D_84390010[!gBattleScene.unk_00->unk_2C]->unk_000.unk_000.unk_01 |= 1;
+                            D_84390010[gBattleScene.scene->activeBattlerIndex]->model.unk_000.unk_01 &= ~1;
+                            D_84390010[!gBattleScene.scene->activeBattlerIndex]->model.unk_000.unk_01 |= 1;
                             break;
                     }
                     break;
@@ -690,7 +690,7 @@ void BattleScene_Update(unk_D_86002F34_00C* arg0) {
     BattleScene_ApplyCameraPhaseDefaults();
     BattleScene_UpdateOwnerVisibilitySingle(arg0);
 
-    switch (gBattleScene.unk_00->unk_1C) {
+    switch (gBattleScene.scene->unk_1C) {
         case 0:
             func_843297E8(arg0);
             break;
@@ -713,7 +713,7 @@ void BattleScene_Update(unk_D_86002F34_00C* arg0) {
             break;
 
         default:
-            gBattleScene.unk_00->unk_40 = 3;
+            gBattleScene.scene->battleOutcome = 3;
             break;
     }
 
@@ -742,5 +742,5 @@ s32 BattleScene_Dispatch(s32 arg0, unk_D_86002F34_00C* arg1) {
             BattleScene_RunFinalPresentation(arg1, D_84390010[0], D_84390010[1]);
             break;
     }
-    return gBattleScene.unk_00->unk_40;
+    return gBattleScene.scene->battleOutcome;
 }

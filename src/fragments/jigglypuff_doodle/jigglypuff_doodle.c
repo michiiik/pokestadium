@@ -9,7 +9,7 @@
 #include "src/input.h"
 #include "src/ui_graphics.h"
 #include "src/gallery.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/gfx_buffer.h"
 #include "src/gfx_rect.h"
 #include "src/matrix.h"

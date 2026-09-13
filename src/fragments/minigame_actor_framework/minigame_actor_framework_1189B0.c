@@ -4,7 +4,7 @@
 #include "src/model_animation_events.h"
 #include "src/model_renderer.h"
 #include "src/input.h"
-// #include "src/jpeg_stream.h"
+// #include "src/jpeg_decoder.h"
 #include "src/controller.h"
 #include "src/fragments/widget_toolkit/widget_toolkit.h"
 

@@ -6,9 +6,9 @@
 
 typedef struct unk_func_8001C014 {
 	/* 0x00 */ char unk_00[0x2];
-	/* 0x02 */ u16 unk_02;
-	/* 0x04 */ s8 unk_04[0x10];
-	/* 0x14 */ s8 unk_14[0x10];
+	/* 0x02 */ u16 otId; // Model_ComputeSizeVariantFromRecord
+	/* 0x04 */ s8 nickname[0x10];
+	/* 0x14 */ s8 otName[0x10];
 } unk_func_8001C014; // size >= 0x24
 
 typedef struct unk_func_8001C248 {
@@ -16,10 +16,10 @@ typedef struct unk_func_8001C248 {
     /* 0x018 */ s16 unk_018;
     /* 0x01A */ s16 unk_01A;
     /* 0x01C */ u8 unk_01C;
-    /* 0x01D */ u8 unk_01D;
+    /* 0x01D */ u8 flags; // PokeIcon_RequestBackgroundForObject: bit0x40=load in flight, bit0x80=enabled, bit0x20=wait-for-result
     /* 0x01E */ char unk01E[0x2];
-    /* 0x020 */ s32 unk_020;
-    /* 0x024 */ s32* unk_024;
+    /* 0x020 */ s32 backgroundStartAddr; // PokeIcon_RequestBackgroundLoad's arg1
+    /* 0x024 */ s32* backgroundResult; // initially arg2, then reassigned from loadContext's backgroundResult
 } unk_func_8001C248; // size >= 0x28
 
 void ModelRenderer_InitDisplayRoots(void);

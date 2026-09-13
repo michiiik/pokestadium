@@ -3,7 +3,7 @@
 #include "src/pokemon_stats.h"
 #include "src/save_data.h"
 #include "src/session.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/hal_libc.h"
 #include "src/math_util.h"
 #include "src/memory.h"
@@ -13,16 +13,16 @@ u8 D_80075680[3] = { 1, 15, 30 };
 static s16 D_80075684 = 0;
 
 void Team_ClearTrainerSlot(BattleSessionTeams* arg0) {
-    arg0->unk_00 = 0;
-    arg0->unk_01 = 0;
-    arg0->unk_02 = 0;
-    arg0->unk_04 = 0;
-    arg0->unk_14 = 0;
-    arg0->unk_08[0] = 0;
-    arg0->unk_08[1] = 0;
-    arg0->unk_1D = 0;
+    arg0->modelLoadFlags = 0;
+    arg0->playerCount = 0;
+    arg0->iconSpeciesId = 0;
+    arg0->activeMon = 0;
+    arg0->moveEffectListRoot = 0;
+    arg0->teams[0] = 0;
+    arg0->teams[1] = 0;
+    arg0->assetLoadFlags = 0;
     arg0->unk_20 = 0;
-    arg0->unk_1E = 0;
+    arg0->winStreak = 0;
 }
 
 void Session_SetMode(s32 arg0, s32 arg1, s32 arg2) {
@@ -32,22 +32,22 @@ void Session_SetMode(s32 arg0, s32 arg1, s32 arg2) {
     Team_ClearTrainerSlot(&D_800AE540.unk_1194[0]);
     Team_ClearTrainerSlot(&D_800AE540.unk_1194[1]);
 
-    D_800AE540.unk_0000 = arg0;
-    D_800AE540.unk_0001 = arg1;
-    D_800AE540.unk_0002 = arg2;
-    D_800AE540.unk_0003 = 1;
+    D_800AE540.sessionMode = arg0;
+    D_800AE540.modeCategory = arg1;
+    D_800AE540.progressIndex = arg2;
+    D_800AE540.opponentNumber = 1;
 
-    D_800AE540.unk_11ED = 0;
-    D_800AE540.unk_11EE = 0;
-    D_800AE540.unk_11EF = 0;
+    D_800AE540.levelEditable = 0;
+    D_800AE540.levelMin = 0;
+    D_800AE540.levelMax = 0;
     D_800AE540.unk_11F4 = 0;
-    D_800AE540.unk_11F5 = 0;
-    D_800AE540.unk_11F3 = 0;
-    D_800AE540.unk_11F6 = 0;
-    D_800AE540.unk_11EC = 0;
+    D_800AE540.sessionFlowFlags = 0;
+    D_800AE540.badgeCount = 0;
+    D_800AE540.battleFlowFlags = 0;
+    D_800AE540.cpuTrainerId = 0;
 
     for (i = 0; i < 4; i++) {
-        D_800AE540.unk_0004[i].unk_000 = 0;
+        D_800AE540.unk_0004[i].slotState = 0;
     }
 
     for (i = 0; i < 2; i++) {
@@ -69,8 +69,8 @@ void Team_ResetOpponentHistory(void) {
         }
     }
 
-    D_800AE540.unk_0003 = 1;
-    D_800AE540.unk_11F3 = 0;
+    D_800AE540.opponentNumber = 1;
+    D_800AE540.badgeCount = 0;
 }
 
 TeamRoster* Trainer_Create(s32 arg0, s16 arg1, char* arg2, char* arg3) {
@@ -79,7 +79,7 @@ TeamRoster* Trainer_Create(s32 arg0, s16 arg1, char* arg2, char* arg3) {
     TeamRoster* sp1C = NULL;
 
     for (i = 0; i < 4; i++) {
-        if ((D_800AE540.unk_0004 + i)->unk_000 == 0) {
+        if ((D_800AE540.unk_0004 + i)->slotState == 0) {
             sp1C = &D_800AE540.unk_0004[i];
             sp20 = &D_800AE540.unk_0874[i];
             break;
@@ -88,92 +88,92 @@ TeamRoster* Trainer_Create(s32 arg0, s16 arg1, char* arg2, char* arg3) {
 
     if (sp1C != NULL) {
         if (arg0 == -1) {
-            sp1C->unk_000 = 3;
-            sp1C->unk_001 = 1;
+            sp1C->slotState = 3;
+            sp1C->trainerSlotId = 1;
             sp1C->controller = &gControllers[0];
         } else {
-            sp1C->unk_000 = 1;
-            sp1C->unk_001 = arg0;
+            sp1C->slotState = 1;
+            sp1C->trainerSlotId = arg0;
             sp1C->controller = &gControllers[arg0];
         }
 
-        sp1C->unk_018 = 0;
-        sp1C->unk_214 = sp20;
-        sp1C->unk_002 = 0;
+        sp1C->trainerId = 0;
+        sp1C->extendedRoster = sp20;
+        sp1C->partyCount = 0;
 
         sp20->unk_000 = 0;
-        sp20->unk_002 = 0;
-        sp20->unk_003 = 1;
+        sp20->partyCount = 0;
+        sp20->trainerIdHigh = 1;
 
-        HAL_Strcpy(sp1C->unk_008, arg2);
-        HAL_Strcpy(sp20->unk_014, arg2);
-        HAL_Strcpy(sp20->unk_220, arg3);
+        HAL_Strcpy(sp1C->shortName, arg2);
+        HAL_Strcpy(sp20->shortName, arg2);
+        HAL_Strcpy(sp20->longName, arg3);
     }
     return sp1C;
 }
 
 void Team_AddTrainer(s32 arg0, TeamRoster* arg1) {
     BattleSessionTeams* temp_v0 = &D_800AE540.unk_1194[arg0];
-    u8 idx = temp_v0->unk_01;
+    u8 idx = temp_v0->playerCount;
 
     if (idx < 2) {
-        temp_v0->unk_08[idx] = arg1;
-        temp_v0->unk_01++;
+        temp_v0->teams[idx] = arg1;
+        temp_v0->playerCount++;
     }
 }
 
 void Trainer_AddPokemon(TeamRoster* arg0, BattleMon* arg1) {
-    ExtendedRosterInfo* ptr = arg0->unk_214;
-    s32 tmp = arg0->unk_002;
+    ExtendedRosterInfo* ptr = arg0->extendedRoster;
+    s32 tmp = arg0->partyCount;
 
     if (tmp < 6) {
-        arg0->unk_01C[tmp] = *arg1;
-        ptr->unk_028[tmp] = *arg1;
+        arg0->party[tmp] = *arg1;
+        ptr->party[tmp] = *arg1;
 
-        arg0->unk_002 = tmp + 1;
-        ptr->unk_002 = tmp + 1;
+        arg0->partyCount = tmp + 1;
+        ptr->partyCount = tmp + 1;
     }
 }
 
 BattleMon* Pokemon_CreateDefault(BattleMon* arg0, u8 arg1, s16 arg2) {
-    arg0->unk_00.unk_00 = arg1;
-    arg0->unk_04 = 0;
-    arg0->unk_05 = 0;
+    arg0->species.dexId = arg1;
+    arg0->boxLevel = 0;
+    arg0->status = 0;
 
-    arg0->unk_06 = D_80070FA0[arg1 - 1].unk_06;
-    arg0->unk_07 = D_80070FA0[arg1 - 1].unk_07;
+    arg0->type1 = D_80070FA0[arg1 - 1].type1;
+    arg0->type2 = D_80070FA0[arg1 - 1].type2;
 
-    arg0->unk_14 = 0x6400;
-    arg0->unk_16 = 0x6400;
-    arg0->unk_18 = 0x6400;
-    arg0->unk_1A = 0x6400;
-    arg0->unk_1C = 0x6400;
+    arg0->hpStatExp = 0x6400;
+    arg0->attackStatExp = 0x6400;
+    arg0->defenseStatExp = 0x6400;
+    arg0->speedStatExp = 0x6400;
+    arg0->specialStatExp = 0x6400;
 
-    arg0->unk_08 = 0;
+    arg0->catchRate = 0;
 
-    arg0->unk_09[0] = 0;
-    arg0->unk_09[1] = 0;
-    arg0->unk_09[2] = 0;
-    arg0->unk_09[3] = 0;
+    arg0->moves[0] = 0;
+    arg0->moves[1] = 0;
+    arg0->moves[2] = 0;
+    arg0->moves[3] = 0;
 
-    arg0->unk_0E = 0x7CF;
-    arg0->unk_1E = 0xFFFF;
+    arg0->otId = 0x7CF;
+    arg0->dvs = 0xFFFF;
 
-    arg0->unk_20[0] = 5;
-    arg0->unk_20[1] = 5;
-    arg0->unk_20[2] = 5;
-    arg0->unk_20[3] = 5;
+    arg0->pp[0] = 5;
+    arg0->pp[1] = 5;
+    arg0->pp[2] = 5;
+    arg0->pp[3] = 5;
 
-    arg0->unk_52 = 0;
-    arg0->unk_53 = 0;
-    arg0->unk_10 = Pokemon_ExpForLevel(arg1, arg2);
+    arg0->sourceAndFlags = 0;
+    arg0->sourceSlot = 0;
+    arg0->exp = Pokemon_ExpForLevel(arg1, arg2);
 
     Pokemon_RecalcStats(arg0);
 
-    arg0->unk_02 = arg0->unk_26;
+    arg0->currentHP = arg0->maxHP;
 
-    Text_CopySpeciesName(arg0->unk_30, arg1);
-    HAL_Strcpy(arg0->unk_3B, Text_GetPlayerLabel(0));
+    Text_CopySpeciesName(arg0->nickname, arg1);
+    HAL_Strcpy(arg0->otName, Text_GetPlayerLabel(0));
     return arg0;
 }
 
@@ -277,7 +277,7 @@ void Team_BuildDeckOpponents(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 s32 Team_IsOpponentIndexUsed(s32 arg0) {
     s32 i;
 
-    for (i = 0; i < D_800AE540.unk_0003 - 1; i++) {
+    for (i = 0; i < D_800AE540.opponentNumber - 1; i++) {
         if (arg0 == D_800AE540.unk_11E4[0][i]) {
             return 1;
         }
@@ -294,12 +294,12 @@ s32 Team_PickRandomOpponentIndex(s32 arg0) {
 
     var_s0 = -1;
 
-    sp24 = (arg0 - D_800AE540.unk_0003) + 1;
-    if (D_800AE540.unk_0003 == 1) {
+    sp24 = (arg0 - D_800AE540.opponentNumber) + 1;
+    if (D_800AE540.opponentNumber == 1) {
         return 0;
     }
 
-    temp_v1 = D_800AE540.unk_11E4[0][D_800AE540.unk_0003 - 1];
+    temp_v1 = D_800AE540.unk_11E4[0][D_800AE540.opponentNumber - 1];
     if (temp_v1 != 0xFF) {
         return temp_v1;
     }
@@ -327,11 +327,11 @@ s16 Team_GetHighestPartyLevel(void) {
     s16 var_v1 = 0;
     BattleMon* var_v0;
 
-    var_v0 = &D_800AE540.unk_1194[0].unk_08[0]->unk_214->unk_028[0];
+    var_v0 = &D_800AE540.unk_1194[0].teams[0]->extendedRoster->party[0];
 
-    for (i = 0; i < D_800AE540.unk_1194[0].unk_08[0]->unk_214->unk_002; i++, var_v0++) {
-        if (var_v1 < var_v0->unk_24) {
-            var_v1 = var_v0->unk_24;
+    for (i = 0; i < D_800AE540.unk_1194[0].teams[0]->extendedRoster->partyCount; i++, var_v0++) {
+        if (var_v1 < var_v0->level) {
+            var_v1 = var_v0->level;
         }
     }
 
@@ -347,27 +347,25 @@ void Team_ScaleOpponentToLevel(s16 arg0) {
         return;
     }
 
-    var_s0 = D_800AE540.unk_1194[1].unk_08[0]->unk_01C;
-    var_s1 = D_800AE540.unk_1194[1].unk_08[0]->unk_214->unk_028;
+    var_s0 = D_800AE540.unk_1194[1].teams[0]->party;
+    var_s1 = D_800AE540.unk_1194[1].teams[0]->extendedRoster->party;
 
-    for (i = 0; i < D_800AE540.unk_1194[1].unk_08[0]->unk_002; i++, var_s1++, var_s0++) {
-        var_s0->unk_24 = arg0;
-        var_s0->unk_10 = Pokemon_ExpForLevel(var_s0->unk_00.unk_00, arg0);
+    for (i = 0; i < D_800AE540.unk_1194[1].teams[0]->partyCount; i++, var_s1++, var_s0++) {
+        var_s0->level = arg0;
+        var_s0->exp = Pokemon_ExpForLevel(var_s0->species.dexId, arg0);
         Pokemon_RecalcStats(var_s0);
-        var_s0->unk_02 = var_s0->unk_26;
+        var_s0->currentHP = var_s0->maxHP;
 
         *var_s1 = *var_s0;
     }
 }
 
 typedef struct PresetTrainer {
-    /* 0x000 */ char unk_00[0x4];
-    /* 0x004 */ char unk04[0x8];
-    /* 0x00C */ char unk_0C[0x4];
-    /* 0x010 */ char unk10[0x24];
-    /* 0x034 */ u16 unk_34;
-    /* 0x036 */ u16 unk_36;
-    /* 0x038 */ BattleMon unk_38[1];
+    /* 0x000 */ char shortName[0xC];
+    /* 0x00C */ char longName[0x28];
+    /* 0x034 */ u16 trainerId;
+    /* 0x036 */ u16 pokemonCount;
+    /* 0x038 */ BattleMon pokemon[1];
 } PresetTrainer; // size >= 0x8C
 
 typedef struct PresetTrainerSlot {
@@ -386,8 +384,8 @@ void Team_LoadPresetTrainer(s16 arg0, s16 arg1, s16 arg2, s32 arg3) {
     PresetTrainerSlot* ptr;
     PresetTrainerSlot* temp_v1;
 
-    temp_s3 = D_800AE540.unk_1194[arg0].unk_08[0];
-    if (D_800AE540.unk_11F2 != 0) {
+    temp_s3 = D_800AE540.unk_1194[arg0].teams[0];
+    if (D_800AE540.roundSelector != 0) {
         arg1 += 0x1F;
     }
 
@@ -396,20 +394,20 @@ void Team_LoadPresetTrainer(s16 arg0, s16 arg1, s16 arg2, s32 arg3) {
 
     temp_s2 = &ptr->unk_004;
 
-    D_800AE540.unk_11E4[0][D_800AE540.unk_0003 - 1] = arg2;
+    D_800AE540.unk_11E4[0][D_800AE540.opponentNumber - 1] = arg2;
 
-    temp_s3->unk_018 = temp_s2->unk_34;
-    temp_s3->unk_002 = 0;
+    temp_s3->trainerId = temp_s2->trainerId;
+    temp_s3->partyCount = 0;
 
-    for (i = 0; i < temp_s2->unk_36; i++) {
-        Trainer_AddPokemon(temp_s3, &temp_s2->unk_38[i]);
+    for (i = 0; i < temp_s2->pokemonCount; i++) {
+        Trainer_AddPokemon(temp_s3, &temp_s2->pokemon[i]);
     }
 
-    HAL_Strcpy(temp_s3->unk_008, temp_s2->unk_00);
-    HAL_Strcpy(temp_s3->unk_214->unk_014, temp_s2->unk_00);
-    HAL_Strcpy(temp_s3->unk_214->unk_220, temp_s2->unk_0C);
+    HAL_Strcpy(temp_s3->shortName, temp_s2->shortName);
+    HAL_Strcpy(temp_s3->extendedRoster->shortName, temp_s2->shortName);
+    HAL_Strcpy(temp_s3->extendedRoster->longName, temp_s2->longName);
 
-    temp_s3->unk_214->unk_003 = (temp_s2->unk_34 >> 8) & 0xFF;
+    temp_s3->extendedRoster->trainerIdHigh = (temp_s2->trainerId >> 8) & 0xFF;
 
     if (arg3 != 0) {
         Team_ScaleOpponentToLevel(Team_GetHighestPartyLevel());
@@ -417,12 +415,12 @@ void Team_LoadPresetTrainer(s16 arg0, s16 arg1, s16 arg2, s32 arg3) {
 }
 
 void Team_LoadOpponentPreset(void) {
-    s16 var_s0 = D_800AE540.unk_0003 - 1;
-    s16 sp24 = D_800AE540.unk_0002;
+    s16 var_s0 = D_800AE540.opponentNumber - 1;
+    s16 sp24 = D_800AE540.progressIndex;
 
-    if ((D_800AE540.unk_0000 == 2) && (D_800AE540.unk_11F2 != 0)) {
+    if ((D_800AE540.sessionMode == 2) && (D_800AE540.roundSelector != 0)) {
         var_s0 = Team_PickRandomOpponentIndex(8);
-    } else if ((D_800AE540.unk_0000 == 7) && (sp24 == 9)) {
+    } else if ((D_800AE540.sessionMode == 7) && (sp24 == 9)) {
         switch (D_800AE540.gbStarterChoice) {
             case 0x1:
                 var_s0 = 4;
@@ -458,7 +456,7 @@ void Team_LoadOpponentPreset(void) {
 
     D_800AF738 = BinArchive_Open(0x898000, NULL, 1, 0);
 
-    switch (D_800AE540.unk_0000) {
+    switch (D_800AE540.sessionMode) {
         case 1:
             Team_LoadPresetTrainer(1, 6, var_s0, 0);
             break;
@@ -524,20 +522,20 @@ void Team_BuildQuickBattleTeams(s16 arg0) {
 
 void Session_SaveContinueData(void) {
     SessionContinueData sp20;
-    ExtendedRosterInfo* sp1C = D_800AE540.unk_1194[0].unk_08[0]->unk_214;
+    ExtendedRosterInfo* sp1C = D_800AE540.unk_1194[0].teams[0]->extendedRoster;
 
-    sp20.unk_00 = D_800AE540.unk_0000;
-    sp20.unk_01 = D_800AE540.unk_0002;
-    sp20.unk_02 = D_800AE540.unk_0003;
-    sp20.unk_04 = D_800AE540.unk_11F3;
-    sp20.unk_03 = D_800AE540.unk_11F2;
+    sp20.sessionMode = D_800AE540.sessionMode;
+    sp20.progressIndex = D_800AE540.progressIndex;
+    sp20.opponentNumber = D_800AE540.opponentNumber;
+    sp20.badgeCount = D_800AE540.badgeCount;
+    sp20.roundSelector = D_800AE540.roundSelector;
 
-    sp20.unk_0D = D_800AE540.gbStarterChoice;
-    sp20.unk_0E = D_800AE540.unk_1194[0].unk_08[0]->unk_018;
+    sp20.gbStarterChoice = D_800AE540.gbStarterChoice;
+    sp20.trainerId = D_800AE540.unk_1194[0].teams[0]->trainerId;
 
     _bcopy(D_800AE540.unk_11E4[0], &sp20.unk_05, 8);
-    Text_TranscodeNameWrapper(&sp20.unk_10, &D_800AE540.unk_1194[0].unk_08[0]->unk_008);
-    Session_SaveContinueRecord(&sp20, sp1C->unk_028, sp1C->unk_002);
+    Text_TranscodeNameWrapper(&sp20.unk_10, &D_800AE540.unk_1194[0].teams[0]->shortName);
+    Session_SaveContinueRecord(&sp20, sp1C->party, sp1C->partyCount);
     Save_CommitTypedRecord(0x15, 0);
 }
 
@@ -551,24 +549,24 @@ s32 Session_LoadContinueData(void) {
 
     temp_v0 = Session_LoadContinueRecord(&sp250, sp58);
     if (temp_v0 != -1) {
-        Session_SetMode(sp250.unk_00, sp250.unk_00, sp250.unk_01);
+        Session_SetMode(sp250.sessionMode, sp250.sessionMode, sp250.progressIndex);
 
         _bcopy(sp250.unk_05, D_800AE540.unk_11E4[0], 8);
-        D_800AE540.unk_0003 = sp250.unk_02;
-        D_800AE540.unk_11F3 = sp250.unk_04;
-        D_800AE540.unk_11F2 = sp250.unk_03;
-        D_800AE540.gbStarterChoice = sp250.unk_0D;
-        tmp = sp250.unk_0E;
+        D_800AE540.opponentNumber = sp250.opponentNumber;
+        D_800AE540.badgeCount = sp250.badgeCount;
+        D_800AE540.roundSelector = sp250.roundSelector;
+        D_800AE540.gbStarterChoice = sp250.gbStarterChoice;
+        tmp = sp250.trainerId;
 
         Text_UntranscodeNameWrapper(sp44, sp250.unk_10);
         Team_AddTrainer(0, Trainer_Create(0, tmp, sp44, sp44));
         Team_AddTrainer(1, Trainer_Create(-1, tmp, "COM", Text_GetPlayerLabel(3)));
 
         for (i = 0; i < temp_v0; i++) {
-            Trainer_AddPokemon(D_800AE540.unk_1194[0].unk_08[0], &sp58[i]);
+            Trainer_AddPokemon(D_800AE540.unk_1194[0].teams[0], &sp58[i]);
         }
 
-        D_800AE540.unk_11F5 |= 3;
+        D_800AE540.sessionFlowFlags |= 3;
     }
     return (temp_v0 + 1) != 0;
 }

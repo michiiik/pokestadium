@@ -22,12 +22,12 @@ void LabPC_InitTabWidget(unk_func_882149A0* arg0, s32 arg1, s32 arg2, s32 arg3, 
                    Color_RGBA8 arg7, Color_RGBA8 arg8, Color_RGBA8 arg9) {
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(arg0, sizeof(unk_func_882149A0));
 
-    arg0->unk_00.unk_18 = LabPC_DrawTabWidget;
+    arg0->unk_00.drawCallback = LabPC_DrawTabWidget;
 
-    arg0->unk_00.unk_10.unk_00 = arg1;
-    arg0->unk_00.unk_10.unk_02 = arg2;
-    arg0->unk_00.unk_14.unk_00 = arg3;
-    arg0->unk_00.unk_14.unk_02 = arg4;
+    arg0->unk_00.position.x = arg1;
+    arg0->unk_00.position.y = arg2;
+    arg0->unk_00.size.x = arg3;
+    arg0->unk_00.size.y = arg4;
 
     arg0->unk_2C = arg5;
     arg0->unk_30 = arg6;
@@ -50,28 +50,28 @@ s32 LabPC_DrawTabWidget(unk_func_882149A0* arg0, s32 arg1, s32 arg2) {
 
     gDPLoadTextureBlock(gDisplayListHead++, D_4001638, G_IM_FMT_IA, G_IM_SIZ_8b, 8, 8, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-    gSPTextureRectangle(gDisplayListHead++, arg1 << 2, arg2 << 2, ((arg0->unk_00.unk_14.unk_00 + arg1) - 8) << 2,
+    gSPTextureRectangle(gDisplayListHead++, arg1 << 2, arg2 << 2, ((arg0->unk_00.size.x + arg1) - 8) << 2,
                         (arg2 + 8) << 2, G_TX_RENDERTILE, 0, 0, 0x0400, 0x0400);
 
     gDPLoadTextureBlock(gDisplayListHead++, D_4001710, G_IM_FMT_IA, G_IM_SIZ_8b, 8, 8, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-    gSPTextureRectangle(gDisplayListHead++, ((arg0->unk_00.unk_14.unk_00 + arg1) - 8) << 2, arg2 << 2,
-                        (arg0->unk_00.unk_14.unk_00 + arg1) << 2, ((arg2 + arg0->unk_00.unk_14.unk_02) - 8) << 2,
+    gSPTextureRectangle(gDisplayListHead++, ((arg0->unk_00.size.x + arg1) - 8) << 2, arg2 << 2,
+                        (arg0->unk_00.size.x + arg1) << 2, ((arg2 + arg0->unk_00.size.y) - 8) << 2,
                         G_TX_RENDERTILE, 0, 0, 0x0400, 0x0400);
 
     gDPLoadTextureBlock(gDisplayListHead++, D_40016C8, G_IM_FMT_IA, G_IM_SIZ_8b, 8, 8, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-    gSPTextureRectangle(gDisplayListHead++, (arg1 + 8) << 2, ((arg2 + arg0->unk_00.unk_14.unk_02) - 8) << 2,
-                        (arg0->unk_00.unk_14.unk_00 + arg1) << 2, (arg2 + arg0->unk_00.unk_14.unk_02) << 2,
-                        G_TX_RENDERTILE, (arg0->unk_00.unk_14.unk_00 * -0x20) + 0x200, 0, 0x0400, 0x0400);
+    gSPTextureRectangle(gDisplayListHead++, (arg1 + 8) << 2, ((arg2 + arg0->unk_00.size.y) - 8) << 2,
+                        (arg0->unk_00.size.x + arg1) << 2, (arg2 + arg0->unk_00.size.y) << 2,
+                        G_TX_RENDERTILE, (arg0->unk_00.size.x * -0x20) + 0x200, 0, 0x0400, 0x0400);
 
     gDPLoadTextureBlock(gDisplayListHead++, D_4001680, G_IM_FMT_IA, G_IM_SIZ_8b, 8, 8, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     gSPTextureRectangle(gDisplayListHead++, arg1 << 2, (arg2 + 8) << 2, (arg1 + 8) << 2,
-                        (arg2 + arg0->unk_00.unk_14.unk_02) << 2, G_TX_RENDERTILE, 0,
-                        (arg0->unk_00.unk_14.unk_02 * -0x20) + 0x200, 0x0400, 0x0400);
+                        (arg2 + arg0->unk_00.size.y) << 2, G_TX_RENDERTILE, 0,
+                        (arg0->unk_00.size.y * -0x20) + 0x200, 0x0400, 0x0400);
 
-    if (arg0->unk_00.unk_2A & 0x100) {
+    if (arg0->unk_00.state & 0x100) {
         s32 temp_a0;
 
         gDPPipeSync(gDisplayListHead++);
@@ -84,11 +84,11 @@ s32 LabPC_DrawTabWidget(unk_func_882149A0* arg0, s32 arg1, s32 arg2) {
         // clang-format on
 
         gDPSetFillColor(gDisplayListHead++, (temp_a0 << 0x10) | temp_a0);
-        gDPFillRectangle(gDisplayListHead++, arg1 + 1, arg2 + 1, (arg1 + (u32)arg0->unk_00.unk_14.unk_00) - 2,
-                         (arg2 + arg0->unk_00.unk_14.unk_02) - 2);
+        gDPFillRectangle(gDisplayListHead++, arg1 + 1, arg2 + 1, (arg1 + (u32)arg0->unk_00.size.x) - 2,
+                         (arg2 + arg0->unk_00.size.y) - 2);
     }
 
-    sp16C = (arg0->unk_00.unk_2A & 0x101) ? arg0->unk_32 : arg0->unk_36;
+    sp16C = (arg0->unk_00.state & 0x101) ? arg0->unk_32 : arg0->unk_36;
 
     gDPPipeSync(gDisplayListHead++);
 
@@ -102,21 +102,21 @@ s32 LabPC_DrawTabWidget(unk_func_882149A0* arg0, s32 arg1, s32 arg2) {
 
     if (arg0->unk_40 != 0) {
         gDPLoadTextureBlock(gDisplayListHead++, arg0->unk_2C, G_IM_FMT_IA, G_IM_SIZ_16b, arg0->unk_30,
-                            arg0->unk_00.unk_14.unk_02 - 6, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP,
+                            arg0->unk_00.size.y - 6, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP,
                             G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
 
         gSPTextureRectangle(gDisplayListHead++, (arg1 + 3) << 2, (arg2 + 3) << 2,
-                            ((arg1 + (u32)arg0->unk_00.unk_14.unk_00) - 3) << 2,
-                            ((arg2 + arg0->unk_00.unk_14.unk_02) - 3) << 2, G_TX_RENDERTILE,
-                            (arg0->unk_00.unk_14.unk_00 - 7) << 5, 0, 0xFC00, 0x0400);
+                            ((arg1 + (u32)arg0->unk_00.size.x) - 3) << 2,
+                            ((arg2 + arg0->unk_00.size.y) - 3) << 2, G_TX_RENDERTILE,
+                            (arg0->unk_00.size.x - 7) << 5, 0, 0xFC00, 0x0400);
     } else {
         gDPLoadTextureBlock(gDisplayListHead++, arg0->unk_2C, G_IM_FMT_IA, G_IM_SIZ_16b, arg0->unk_30,
-                            arg0->unk_00.unk_14.unk_02 - 6, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP,
+                            arg0->unk_00.size.y - 6, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP,
                             G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
 
         gSPTextureRectangle(gDisplayListHead++, (arg1 + 3) << 2, (arg2 + 3) << 2,
-                            ((arg1 + (u32)arg0->unk_00.unk_14.unk_00) - 3) << 2,
-                            ((arg2 + arg0->unk_00.unk_14.unk_02) - 3) << 2, G_TX_RENDERTILE, 0, 0, 0x0400, 0x0400);
+                            ((arg1 + (u32)arg0->unk_00.size.x) - 3) << 2,
+                            ((arg2 + arg0->unk_00.size.y) - 3) << 2, G_TX_RENDERTILE, 0, 0, 0x0400, 0x0400);
     }
     return 0;
 }
@@ -130,13 +130,13 @@ void LabPC_InitScrollableBoxGrid(unk_func_8820BE14_02C_038* arg0, s32 arg1, s32 
     ((func88506DCC)Memmap_GetFragmentVaddr(WidgetTree_InitScrollableGrid))(arg0, arg1, arg2, arg4, arg5, arg6, arg3, arg7);
 
     arg0->unk_70 = 0;
-    arg0->unk_74 = arg0->unk_00.unk_00.unk_1C;
-    arg0->unk_78 = arg0->unk_00.unk_00.unk_18;
-    arg0->unk_7C = arg0->unk_00.unk_00.unk_20;
+    arg0->unk_74 = arg0->unk_00.unk_00.updateCallback;
+    arg0->unk_78 = arg0->unk_00.unk_00.drawCallback;
+    arg0->unk_7C = arg0->unk_00.unk_00.inputCallback;
 
     LabPC_SetGridBorderActive(&arg0->unk_00, 1);
 
-    arg0->unk_00.unk_44->unk_00.unk_28 |= 0x100;
+    arg0->unk_00.unk_44->node.flags |= 0x100;
 }
 
 void LabPC_SetGridBorderActive(unk_func_88200FA0_030_030* arg0, s32 arg1) {
@@ -147,12 +147,12 @@ void LabPC_SetGridBorderActive(unk_func_88200FA0_030_030* arg0, s32 arg1) {
     } else {
         var_v0 = 1;
     }
-    arg0->unk_44->unk_2C = D_88218230[var_v0];
+    arg0->unk_44->color = D_88218230[var_v0];
 }
 
 void LabPC_BoxGrid_BindMessagePanel(unk_func_8820BE14_02C_038* arg0, unk_func_88507D4C* arg1) {
     arg0->unk_84 = arg1;
-    arg0->unk_80 = arg1->unk_00.unk_18;
+    arg0->unk_80 = arg1->unk_00.drawCallback;
 }
 
 s32 LabPC_ScrollableGrid_UpdateScroll(unk_func_8820BE14_02C_038* arg0) {
@@ -217,7 +217,7 @@ s32 LabPC_ScrollableGrid_UpdateScroll(unk_func_8820BE14_02C_038* arg0) {
             }
         }
     } else if ((arg0->unk_56 & 0x100) && !(arg0->unk_54 & 0x100)) {
-        s32 tmp1 = arg0->unk_00.unk_3E * (arg0->unk_00.unk_2C->unk_08 + 1);
+        s32 tmp1 = arg0->unk_00.unk_3E * (arg0->unk_00.unk_2C->count + 1);
         s32 tmp2 = arg0->unk_00.unk_3E * arg0->unk_00.unk_4A;
 
         if ((arg0->unk_60 - arg0->unk_5C) < arg0->unk_68) {
@@ -253,8 +253,8 @@ s32 LabPC_ScrollableGrid_UpdateScroll(unk_func_8820BE14_02C_038* arg0) {
         var_v1 = (var_v1 - arg0->unk_00.unk_3E) + 1;
     }
 
-    arg0->unk_00.unk_44->unk_00.unk_10.unk_00 = arg0->unk_00.unk_50;
-    arg0->unk_00.unk_44->unk_00.unk_10.unk_02 = arg0->unk_00.unk_52 + var_v1;
+    arg0->unk_00.unk_44->node.position.x = arg0->unk_00.unk_50;
+    arg0->unk_00.unk_44->node.position.y = arg0->unk_00.unk_52 + var_v1;
     return 0;
 }
 
@@ -277,11 +277,11 @@ s32 LabPC_ScrollableGrid_DrawCells(unk_func_8820BE14_02C_038* arg0, s32 arg1, s3
     var_s4 = 0;
 
     if (arg0->unk_00.unk_2C != NULL) {
-        var_s3 = arg0->unk_00.unk_2C->unk_00;
+        var_s3 = arg0->unk_00.unk_2C->data;
         if (arg0->unk_00.unk_30 != 0) {
-            var_s6 = arg0->unk_00.unk_2C->unk_0C;
+            var_s6 = arg0->unk_00.unk_2C->rowStride;
         }
-        var_s4 = arg0->unk_00.unk_2C->unk_08 + 1;
+        var_s4 = arg0->unk_00.unk_2C->count + 1;
     }
 
     gDPPipeSync(gDisplayListHead++);
@@ -328,7 +328,7 @@ s32 LabPC_ScrollableGrid_DrawCells(unk_func_8820BE14_02C_038* arg0, s32 arg1, s3
 }
 
 #ifdef NON_MATCHING
-void func_88216000(unk_func_8820BE14_02C_038* arg0, s32 arg1, s32 arg2) {
+void LabPC_ScrollableGrid_DrawHeaderArrows(unk_func_8820BE14_02C_038* arg0, s32 arg1, s32 arg2) {
     s32 sp12C;
     Gfx* sp104;
     Gfx* sp100;
@@ -345,7 +345,7 @@ void func_88216000(unk_func_8820BE14_02C_038* arg0, s32 arg1, s32 arg2) {
 
     sp12C = ptr->unk_3E * ptr->unk_4A;
 
-    temp_s0 = ((arg0->unk_00.unk_00.unk_14.unk_00 / 2) + arg1) - 9;
+    temp_s0 = ((arg0->unk_00.unk_00.size.x / 2) + arg1) - 9;
 
     gDPPipeSync(gDisplayListHead++);
 
@@ -358,7 +358,7 @@ void func_88216000(unk_func_8820BE14_02C_038* arg0, s32 arg1, s32 arg2) {
     gDPLoadTextureBlock(gDisplayListHead++, D_40022E0, G_IM_FMT_I, G_IM_SIZ_8b, 8, 16, 0, G_TX_NOMIRROR | G_TX_WRAP,
                         G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
 
-    gSPTextureRectangle(gDisplayListHead++, arg1 << 2, arg2 << 2, (arg0->unk_00.unk_00.unk_14.unk_00 + arg1) << 2,
+    gSPTextureRectangle(gDisplayListHead++, arg1 << 2, arg2 << 2, (arg0->unk_00.unk_00.size.x + arg1) << 2,
                         (arg2 + 0x10) << 2, G_TX_RENDERTILE, 0, 0, 0x0400, 0x0400);
 
     gDPPipeSync(gDisplayListHead++);
@@ -405,17 +405,17 @@ void func_88216000(unk_func_8820BE14_02C_038* arg0, s32 arg1, s32 arg2) {
     gDPSetAlphaCompare(gDisplayListHead++, G_AC_NONE);
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc/lab_pc_1BCF10/func_88216000.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/23/fragment23_1BCF10/LabPC_ScrollableGrid_DrawHeaderArrows.s")
 #endif
 
 #ifdef NON_MATCHING
-s32 func_882169D4(unk_func_8820BE14_02C_038* arg0, Controller* arg1) {
+s32 LabPC_ScrollableGrid_SwapModeInput(unk_func_8820BE14_02C_038* arg0, Controller* arg1) {
     s32 sp24 = arg0->unk_00.unk_38;
     s32 temp_t3 = arg0->unk_60;
     s32 var_t2 = 0;
     s32 sp18 = 0;
 
-    if ((arg0->unk_00.unk_2C == NULL) || (arg0->unk_00.unk_2C->unk_08 == 0)) {
+    if ((arg0->unk_00.unk_2C == NULL) || (arg0->unk_00.unk_2C->count == 0)) {
         return 0;
     }
 
@@ -459,7 +459,7 @@ s32 func_882169D4(unk_func_8820BE14_02C_038* arg0, Controller* arg1) {
         }
     } else if ((arg0->unk_54 & 0x400) && ((arg0->unk_56 & ~0x400) == 0)) {
         s32 var_a1;
-        s32 temp_lo_2 = arg0->unk_00.unk_3E * (arg0->unk_00.unk_2C->unk_08 + 1);
+        s32 temp_lo_2 = arg0->unk_00.unk_3E * (arg0->unk_00.unk_2C->count + 1);
         s32 temp_lo_6;
 
         if (arg0->unk_56 == 0) {
@@ -532,7 +532,7 @@ s32 func_882169D4(unk_func_8820BE14_02C_038* arg0, Controller* arg1) {
     } else if (arg0->unk_54 & 0x100) {
         if (!(arg0->unk_56 & ~0x100)) {
             s32 var_a1;
-            s32 temp_lo_2 = arg0->unk_00.unk_3E * (arg0->unk_00.unk_2C->unk_08 + 1);
+            s32 temp_lo_2 = arg0->unk_00.unk_3E * (arg0->unk_00.unk_2C->count + 1);
             s32 temp_lo_6 = arg0->unk_00.unk_3E * arg0->unk_00.unk_4A;
             s32 temp_a3 = (temp_lo_2 - arg0->unk_5C) - arg0->unk_00.unk_3E;
 
@@ -595,33 +595,33 @@ s32 func_882169D4(unk_func_8820BE14_02C_038* arg0, Controller* arg1) {
     return var_t2;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc/lab_pc_1BCF10/func_882169D4.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/23/fragment23_1BCF10/LabPC_ScrollableGrid_SwapModeInput.s")
 #endif
 
 void LabPC_ScrollableGrid_SetSwapMode(unk_func_8820BE14_02C_038* arg0, s32 arg1) {
     if (arg1 == 0) {
         arg0->unk_70 = 1;
-        arg0->unk_00.unk_00.unk_1C = LabPC_ScrollableGrid_UpdateScroll;
-        arg0->unk_00.unk_00.unk_18 = LabPC_ScrollableGrid_DrawCells;
-        arg0->unk_00.unk_00.unk_20 = func_882169D4;
-        arg0->unk_84->unk_00.unk_18 = func_88216000;
-        if (arg0->unk_00.unk_2C->unk_08 > 0) {
+        arg0->unk_00.unk_00.updateCallback = LabPC_ScrollableGrid_UpdateScroll;
+        arg0->unk_00.unk_00.drawCallback = LabPC_ScrollableGrid_DrawCells;
+        arg0->unk_00.unk_00.inputCallback = LabPC_ScrollableGrid_SwapModeInput;
+        arg0->unk_84->unk_00.drawCallback = LabPC_ScrollableGrid_DrawHeaderArrows;
+        if (arg0->unk_00.unk_2C->count > 0) {
             ((func88507AE4)Memmap_GetFragmentVaddr(WidgetTree_SetScrollableGridIndex))(arg0, arg0->unk_00.unk_38 + 1);
         }
     } else {
         arg0->unk_70 = 0;
-        arg0->unk_00.unk_00.unk_1C = arg0->unk_74;
-        arg0->unk_00.unk_00.unk_18 = arg0->unk_78;
-        arg0->unk_00.unk_00.unk_20 = arg0->unk_7C;
-        arg0->unk_84->unk_00.unk_18 = arg0->unk_80;
-        if ((arg1 == 1) && (arg0->unk_00.unk_38 > 0) && (arg0->unk_00.unk_2C->unk_08 > 0)) {
+        arg0->unk_00.unk_00.updateCallback = arg0->unk_74;
+        arg0->unk_00.unk_00.drawCallback = arg0->unk_78;
+        arg0->unk_00.unk_00.inputCallback = arg0->unk_7C;
+        arg0->unk_84->unk_00.drawCallback = arg0->unk_80;
+        if ((arg1 == 1) && (arg0->unk_00.unk_38 > 0) && (arg0->unk_00.unk_2C->count > 0)) {
             ((func88507B80)Memmap_GetFragmentVaddr(WidgetTree_SetScrollableGridIndexPreserveScroll))(arg0, arg0->unk_00.unk_38 - 1);
         }
     }
 }
 
 void LabPC_BindGridDeckData(unk_func_8820BE14_02C_038* arg0, unk_func_8820BE14_06C_000* arg1, u32 arg2) {
-    arg0->unk_88 = &arg1->unk_00;
+    arg0->unk_88 = &arg1->owner;
     arg0->unk_8C = arg2;
     ((func88506EE4)Memmap_GetFragmentVaddr(WidgetTree_BindScrollableGridData))(arg0, &arg1->unk_04);
 }
@@ -635,9 +635,9 @@ void LabPC_BindGridStridedData(unk_func_8820BE14_02C_038* arg0, s32* arg1, s32 a
 void LabPC_InitPageCounterWidget(unk_func_882170A8* arg0, s32 arg1, s32 arg2, unk_func_8820BE14_02C_038* arg3, s32 arg4) {
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(arg0, sizeof(unk_func_882170A8));
 
-    arg0->unk_00.unk_18 = LabPC_PageCounterWidget_Draw;
-    arg0->unk_00.unk_10.unk_00 = arg1;
-    arg0->unk_00.unk_10.unk_02 = arg2;
+    arg0->unk_00.drawCallback = LabPC_PageCounterWidget_Draw;
+    arg0->unk_00.position.x = arg1;
+    arg0->unk_00.position.y = arg2;
     arg0->unk_2C = arg3;
     arg0->unk_30 = arg4;
 }
@@ -667,18 +667,18 @@ s32 LabPC_PageCounterWidget_Draw(unk_func_882170A8* arg0, s32 arg1, s32 arg2) {
         return 0;
     }
 
-    LabPC_DrawPageCounterDigits(arg1, arg2, temp_v0->unk_08, temp_v0->unk_04, arg0->unk_30);
+    LabPC_DrawPageCounterDigits(arg1, arg2, temp_v0->count, temp_v0->capacity, arg0->unk_30);
     return 0;
 }
 
 void LabPC_InitFlyingIconWidget(unk_func_882173EC* arg0, s32 arg1, s32 arg2) {
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(arg0, sizeof(unk_func_882173EC));
 
-    arg0->unk_00.unk_1C = LabPC_FlyingIconWidget_Update;
-    arg0->unk_30.unk_00 = arg1;
-    arg0->unk_30.unk_02 = arg2;
+    arg0->unk_00.updateCallback = LabPC_FlyingIconWidget_Update;
+    arg0->unk_30.x = arg1;
+    arg0->unk_30.y = arg2;
     arg0->unk_2C = 0x10;
-    arg0->unk_00.unk_28 &= ~1;
+    arg0->unk_00.flags &= ~1;
 }
 
 typedef struct unk_func_88217460 {
@@ -701,16 +701,16 @@ s32 LabPC_FlyingIconWidget_Update(unk_func_882173EC* arg0) {
     sp38 = -sp1C / 7.5f;
 
     if (arg0->unk_2C >= 0x10) {
-        arg0->unk_00.unk_28 &= ~1;
+        arg0->unk_00.flags &= ~1;
         return 0;
     }
 
     if (arg0->unk_2C >= 0xF) {
-        arg0->unk_00.unk_28 &= ~0x100;
+        arg0->unk_00.flags &= ~0x100;
     }
 
-    sp30 = arg0->unk_34.unk_00 - arg0->unk_30.unk_00;
-    sp34 = arg0->unk_34.unk_02 - arg0->unk_30.unk_02;
+    sp30 = arg0->unk_34.x - arg0->unk_30.x;
+    sp34 = arg0->unk_34.y - arg0->unk_30.y;
 
     sp28[0] = sp34;
     sp28[1] = -sp30;
@@ -732,8 +732,8 @@ s32 LabPC_FlyingIconWidget_Update(unk_func_882173EC* arg0) {
     sp30 += sp28[0];
     sp34 += sp28[1];
 
-    arg0->unk_00.unk_10.unk_00 = arg0->unk_30.unk_00 + (s16)sp30;
-    arg0->unk_00.unk_10.unk_02 = arg0->unk_30.unk_02 + (s16)sp34;
+    arg0->unk_00.position.x = arg0->unk_30.x + (s16)sp30;
+    arg0->unk_00.position.y = arg0->unk_30.y + (s16)sp34;
 
     arg0->unk_2C++;
     return 0;
@@ -743,30 +743,30 @@ void LabPC_FlyingIconWidget_Start(unk_func_882173EC* arg0, WidgetPoint arg1, Wid
     WidgetPoint tmp = arg1;
 
     arg0->unk_30 = tmp;
-    arg0->unk_00.unk_10 = (0, tmp);
+    arg0->unk_00.position = (0, tmp);
     arg0->unk_34 = arg2;
     arg0->unk_2C = 0;
-    arg0->unk_00.unk_28 |= 0x101;
+    arg0->unk_00.flags |= 0x101;
 }
 
 void LabPC_InitSlideIconWidget(unk_func_8821421C_02C_06C_02C_068* arg0, s32 arg1, s32 arg2) {
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(arg0, sizeof(unk_func_8821421C_02C_06C_02C_068));
 
-    arg0->unk_00.unk_1C = LabPC_SlideIconWidget_Update;
-    arg0->unk_00.unk_10.unk_00 = arg1;
-    arg0->unk_00.unk_10.unk_02 = arg2;
+    arg0->unk_00.updateCallback = LabPC_SlideIconWidget_Update;
+    arg0->unk_00.position.x = arg1;
+    arg0->unk_00.position.y = arg2;
     arg0->unk_2C = 0x10;
-    arg0->unk_00.unk_28 &= ~1;
+    arg0->unk_00.flags &= ~1;
 }
 
 s32 LabPC_SlideIconWidget_Update(unk_func_8821421C_02C_06C_02C_068* arg0) {
     if (arg0->unk_2C >= 0x10) {
-        arg0->unk_00.unk_28 &= ~1;
+        arg0->unk_00.flags &= ~1;
         return 0;
     }
 
     if (arg0->unk_2C >= 0xF) {
-        arg0->unk_00.unk_28 &= ~0x100;
+        arg0->unk_00.flags &= ~0x100;
     }
 
     arg0->unk_2C++;
@@ -774,17 +774,17 @@ s32 LabPC_SlideIconWidget_Update(unk_func_8821421C_02C_06C_02C_068* arg0) {
 }
 
 void LabPC_SlideIconWidget_Start(unk_func_8821421C_02C_06C_02C_068* arg0, WidgetPoint arg1) {
-    arg0->unk_00.unk_10 = arg1;
-    arg0->unk_00.unk_28 |= 0x101;
+    arg0->unk_00.position = arg1;
+    arg0->unk_00.flags |= 0x101;
     arg0->unk_2C = 0;
 }
 
 void LabPC_InitModeToggleIcon(unk_func_88217740* arg0, s32 arg1, s32 arg2) {
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(arg0, sizeof(unk_func_88217740));
 
-    arg0->unk_00.unk_18 = LabPC_ModeToggleIcon_Draw;
-    arg0->unk_00.unk_10.unk_00 = arg1;
-    arg0->unk_00.unk_10.unk_02 = arg2;
+    arg0->unk_00.drawCallback = LabPC_ModeToggleIcon_Draw;
+    arg0->unk_00.position.x = arg1;
+    arg0->unk_00.position.y = arg2;
 
     LabPC_ModeToggleIcon_SetMode(arg0, 1);
 }

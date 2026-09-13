@@ -7,7 +7,7 @@
 #include "src/graphics_textures.h"
 #include "src/ui_graphics.h"
 #include "src/text_system.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/audio_sfx.h"
 #include "src/audio_loop_point.h"
 #include "src/audio_commands_category2.h"

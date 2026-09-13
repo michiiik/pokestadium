@@ -124,7 +124,7 @@ s32 BattlePrepStarBurst_DrawStarIcon(s32 arg0, unk_func_80011B94* arg1) {
 
     if (arg0 == 5) {
         temp_a0 = (unk_D_84B25AC0*)D_8006F09C->unk_000.unk_14;
-        if (temp_a0->unk_5A2 != 0) {
+        if (temp_a0->mode != 0) {
             var_a0 = D_3018800;
         } else {
             var_a0 = D_301C800;
@@ -159,8 +159,8 @@ s32 BattlePrepStarBurst_DrawSparkParticle(s32 arg0, unk_func_80011B94* arg1) {
         temp_a0 = (unk_D_84B25AC0_000*)D_8006F09C->unk_000.unk_14;
 
         gDPPipeSync(gDisplayListHead++);
-        gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a0->unk_0C & 0x1FFFFFFF);
-        gDPSetEnvColor(gDisplayListHead++, temp_a0->unk_08.r, temp_a0->unk_08.g, temp_a0->unk_08.b, 255);
+        gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a0->textureFrame & 0x1FFFFFFF);
+        gDPSetEnvColor(gDisplayListHead++, temp_a0->color.r, temp_a0->color.g, temp_a0->color.b, 255);
         gSPDisplayList(gDisplayListHead++, arg1->unk_00.unk_14);
 
         GeoRender_ApplyMaterialState();
@@ -169,16 +169,16 @@ s32 BattlePrepStarBurst_DrawSparkParticle(s32 arg0, unk_func_80011B94* arg1) {
 }
 
 void BattlePrepStarBurst_InitSparkSlot(unk_D_84B25AC0_000* arg0, unk_D_86002F34* arg1, s16 arg2, s16 arg3, s16 arg4) {
-    arg0->unk_04 = 0;
-    arg0->unk_06 = arg4;
-    arg0->unk_08.r = 0x50;
-    arg0->unk_08.g = 0x64;
-    Model_InitDisplayObject(arg0->unk_00, 0, 0, arg1);
-    Vec3f_SetComponentsDuplicate(&arg0->unk_00->unk_030, 2.0f, 2.0f, 2.0f);
-    arg0->unk_00->unk_000.unk_14 = arg0;
-    arg0->unk_00->unk_024.x = (COSS(arg4) * 52.0f) + arg2;
-    arg0->unk_00->unk_024.y = (SINS(arg4) * 26.0f) + arg3;
-    arg0->unk_00->unk_024.z = -289.0f;
+    arg0->lifeStage = 0;
+    arg0->angle = arg4;
+    arg0->color.r = 0x50;
+    arg0->color.g = 0x64;
+    Model_InitDisplayObject(arg0->displayObject, 0, 0, arg1);
+    Vec3f_SetComponentsDuplicate(&arg0->displayObject->unk_030, 2.0f, 2.0f, 2.0f);
+    arg0->displayObject->unk_000.unk_14 = arg0;
+    arg0->displayObject->unk_024.x = (COSS(arg4) * 52.0f) + arg2;
+    arg0->displayObject->unk_024.y = (SINS(arg4) * 26.0f) + arg3;
+    arg0->displayObject->unk_024.z = -289.0f;
 }
 
 void BattlePrepStarBurst_UpdateSparkSlot(unk_D_84B25AC0_000* arg0) {
@@ -186,15 +186,15 @@ void BattlePrepStarBurst_UpdateSparkSlot(unk_D_84B25AC0_000* arg0) {
     unk_D_86002F58_004_000* temp_v1;
     unk_D_86002F58_004_000* temp_v1_2;
 
-    if (arg0->unk_04 < 0x10) {
-        arg0->unk_0C = Memmap_GetSegmentVaddr(((s32*)Memmap_GetSegmentVaddr(D_2023240))[(arg0->unk_04 / 2)]);
-        arg0->unk_08.b = ((arg0->unk_04 * -0x5A) / 16) + 0x82;
-        arg0->unk_00->unk_024.x += 2.0f * COSS(arg0->unk_06);
-        arg0->unk_00->unk_024.y += 2.0f * SINS(arg0->unk_06);
-        arg0->unk_04++;
-    } else if (arg0->unk_04 == 0x10) {
-        BattlePrep_ResetDisplayObject(arg0->unk_00);
-        arg0->unk_04++;
+    if (arg0->lifeStage < 0x10) {
+        arg0->textureFrame = Memmap_GetSegmentVaddr(((s32*)Memmap_GetSegmentVaddr(D_2023240))[(arg0->lifeStage / 2)]);
+        arg0->color.b = ((arg0->lifeStage * -0x5A) / 16) + 0x82;
+        arg0->displayObject->unk_024.x += 2.0f * COSS(arg0->angle);
+        arg0->displayObject->unk_024.y += 2.0f * SINS(arg0->angle);
+        arg0->lifeStage++;
+    } else if (arg0->lifeStage == 0x10) {
+        BattlePrep_ResetDisplayObject(arg0->displayObject);
+        arg0->lifeStage++;
     }
 }
 
@@ -205,7 +205,7 @@ s32 BattlePrepStarBurst_DrawRainbowParticle(s32 arg0, unk_func_80011B94* arg1) {
         temp_v1 = (unk_D_84B25AC0_0A0*)D_8006F09C->unk_000.unk_14;
 
         gDPPipeSync(gDisplayListHead++);
-        gDPSetEnvColor(gDisplayListHead++, temp_v1->unk_0A.r, temp_v1->unk_0A.g, temp_v1->unk_0A.b, temp_v1->unk_0A.a);
+        gDPSetEnvColor(gDisplayListHead++, temp_v1->color.r, temp_v1->color.g, temp_v1->color.b, temp_v1->color.a);
         gSPDisplayList(gDisplayListHead++, arg1->unk_00.unk_14);
 
         GeoRender_ApplyMaterialState();
@@ -214,49 +214,49 @@ s32 BattlePrepStarBurst_DrawRainbowParticle(s32 arg0, unk_func_80011B94* arg1) {
 }
 
 void BattlePrepStarBurst_InitRainbowParticle(unk_D_84B25AC0_0A0* arg0, unk_D_86002F34* arg1, s16 arg2, s16 arg3, s16 arg4) {
-    arg0->unk_06 = 0;
-    arg0->unk_04 = 0;
-    arg0->unk_08 = arg4;
-    Model_InitDisplayObject(arg0->unk_00, 2, 0, arg1);
-    arg0->unk_00->unk_000.unk_14 = arg0;
-    arg0->unk_00->unk_024.x = (COSS(arg4) * 60.0f) + arg2;
-    arg0->unk_00->unk_024.y = (SINS(arg4) * 30.0f) + arg3;
-    arg0->unk_00->unk_024.z = -289.0f;
+    arg0->lifeStage = 0;
+    arg0->particleType = 0;
+    arg0->angle = arg4;
+    Model_InitDisplayObject(arg0->displayObject, 2, 0, arg1);
+    arg0->displayObject->unk_000.unk_14 = arg0;
+    arg0->displayObject->unk_024.x = (COSS(arg4) * 60.0f) + arg2;
+    arg0->displayObject->unk_024.y = (SINS(arg4) * 30.0f) + arg3;
+    arg0->displayObject->unk_024.z = -289.0f;
 }
 
 void BattlePrepStarBurst_SpawnTrailCopy(unk_D_84B25AC0_0A0* arg0, unk_D_84B25AC0_0A0* arg1) {
-    arg0->unk_06 = 0;
-    arg0->unk_04 = 1;
-    arg0->unk_0A = arg1->unk_0A;
-    Model_InitDisplayObject(arg0->unk_00, 1, 0, &arg1->unk_00->unk_000.unk_0C->unk_00);
-    arg0->unk_00->unk_000.unk_14 = arg0;
-    arg0->unk_00->unk_024 = arg1->unk_00->unk_024;
-    arg0->unk_00->unk_030 = arg1->unk_00->unk_030;
+    arg0->lifeStage = 0;
+    arg0->particleType = 1;
+    arg0->color = arg1->color;
+    Model_InitDisplayObject(arg0->displayObject, 1, 0, &arg1->displayObject->unk_000.unk_0C->unk_00);
+    arg0->displayObject->unk_000.unk_14 = arg0;
+    arg0->displayObject->unk_024 = arg1->displayObject->unk_024;
+    arg0->displayObject->unk_030 = arg1->displayObject->unk_030;
 }
 
 void BattlePrepStarBurst_SpawnFlashCopy(unk_D_84B25AC0_0A0* arg0, unk_D_84B25AC0_0A0* arg1, s16 arg2) {
-    arg0->unk_06 = 0;
-    arg0->unk_04 = 2;
-    arg0->unk_08 = arg1->unk_08 + arg2;
+    arg0->lifeStage = 0;
+    arg0->particleType = 2;
+    arg0->angle = arg1->angle + arg2;
 
-    Color_SetRGBA(&arg0->unk_0A, 0xFF, 0xFF, 0xFF, 0xFF);
-    Model_InitDisplayObject(arg0->unk_00, 1, 0, &arg1->unk_00->unk_000.unk_0C->unk_00);
-    arg0->unk_00->unk_000.unk_14 = arg0;
-    arg0->unk_00->unk_024 = arg1->unk_00->unk_024;
-    Vec3f_SetComponentsDuplicate(&arg0->unk_00->unk_030, 0.5f, 0.5f, 0.5f);
+    Color_SetRGBA(&arg0->color, 0xFF, 0xFF, 0xFF, 0xFF);
+    Model_InitDisplayObject(arg0->displayObject, 1, 0, &arg1->displayObject->unk_000.unk_0C->unk_00);
+    arg0->displayObject->unk_000.unk_14 = arg0;
+    arg0->displayObject->unk_024 = arg1->displayObject->unk_024;
+    Vec3f_SetComponentsDuplicate(&arg0->displayObject->unk_030, 0.5f, 0.5f, 0.5f);
 }
 
 void BattlePrepStarBurst_SpawnScatterParticle(unk_D_84B25AC0_0A0* arg0, unk_D_86002F34* arg1, Vec3f* arg2) {
-    arg0->unk_06 = 0;
-    arg0->unk_04 = 3;
-    Color_SetRGBA(&arg0->unk_0A, 0xFF, 0xFF, 0xC8, 0xFF);
-    arg0->unk_0A.b = (MathUtil_Random16() % 200) + 0x32;
-    Model_InitDisplayObject(arg0->unk_00, 2, 0, arg1);
-    Vec3f_SetComponentsDuplicate(&arg0->unk_00->unk_030, 0.6f, 0.6f, 0.6f);
-    arg0->unk_00->unk_000.unk_14 = arg0;
-    arg0->unk_00->unk_024.x = ((MathUtil_Random_ZeroOne() - 0.5f) * 50.0f) + arg2->x;
-    arg0->unk_00->unk_024.y = ((MathUtil_Random_ZeroOne() - 0.5f) * 40.0f) + arg2->y;
-    arg0->unk_00->unk_024.z = arg2->z;
+    arg0->lifeStage = 0;
+    arg0->particleType = 3;
+    Color_SetRGBA(&arg0->color, 0xFF, 0xFF, 0xC8, 0xFF);
+    arg0->color.b = (MathUtil_Random16() % 200) + 0x32;
+    Model_InitDisplayObject(arg0->displayObject, 2, 0, arg1);
+    Vec3f_SetComponentsDuplicate(&arg0->displayObject->unk_030, 0.6f, 0.6f, 0.6f);
+    arg0->displayObject->unk_000.unk_14 = arg0;
+    arg0->displayObject->unk_024.x = ((MathUtil_Random_ZeroOne() - 0.5f) * 50.0f) + arg2->x;
+    arg0->displayObject->unk_024.y = ((MathUtil_Random_ZeroOne() - 0.5f) * 40.0f) + arg2->y;
+    arg0->displayObject->unk_024.z = arg2->z;
 }
 
 void BattlePrepStarBurst_UpdateRainbowGradientStep(unk_D_84B25AC0_0A0* arg0) {
@@ -264,41 +264,41 @@ void BattlePrepStarBurst_UpdateRainbowGradientStep(unk_D_84B25AC0_0A0* arg0) {
     Color_RGBA8* color1;
     Color_RGBA8* color2;
 
-    if (arg0->unk_06 < 0x10) {
-        temp_fv0 = ((arg0->unk_06 * 0.5f) / 12.0f) + 0.3f;
+    if (arg0->lifeStage < 0x10) {
+        temp_fv0 = ((arg0->lifeStage * 0.5f) / 12.0f) + 0.3f;
 
-        color1 = &D_84B16EEC[arg0->unk_06 / 4];
-        color2 = &D_84B16EEC[arg0->unk_06 / 4 + 1];
+        color1 = &D_84B16EEC[arg0->lifeStage / 4];
+        color2 = &D_84B16EEC[arg0->lifeStage / 4 + 1];
 
-        arg0->unk_0A.r = (((color2->r - color1->r) * (arg0->unk_06 % 4)) / 4) + color1->r;
-        arg0->unk_0A.g = (((color2->g - color1->g) * (arg0->unk_06 % 4)) / 4) + color1->g;
-        arg0->unk_0A.b = (((color2->b - color1->b) * (arg0->unk_06 % 4)) / 4) + color1->b;
-        arg0->unk_0A.a = (((color2->a - color1->a) * (arg0->unk_06 % 4)) / 4) + color1->a;
+        arg0->color.r = (((color2->r - color1->r) * (arg0->lifeStage % 4)) / 4) + color1->r;
+        arg0->color.g = (((color2->g - color1->g) * (arg0->lifeStage % 4)) / 4) + color1->g;
+        arg0->color.b = (((color2->b - color1->b) * (arg0->lifeStage % 4)) / 4) + color1->b;
+        arg0->color.a = (((color2->a - color1->a) * (arg0->lifeStage % 4)) / 4) + color1->a;
 
-        arg0->unk_00->unk_024.x += 3.0f * COSS(arg0->unk_08);
-        arg0->unk_00->unk_024.y += (3.0f * SINS(arg0->unk_08)) - (arg0->unk_06 * 0.0625f);
-        Vec3f_SetComponentsDuplicate(&arg0->unk_00->unk_030, temp_fv0, temp_fv0, temp_fv0);
-        if (!(arg0->unk_06 & 3)) {
-            BattlePrepStarBurst_SpawnTrailCopy(&arg0[arg0->unk_06 / 4 + 1], arg0);
+        arg0->displayObject->unk_024.x += 3.0f * COSS(arg0->angle);
+        arg0->displayObject->unk_024.y += (3.0f * SINS(arg0->angle)) - (arg0->lifeStage * 0.0625f);
+        Vec3f_SetComponentsDuplicate(&arg0->displayObject->unk_030, temp_fv0, temp_fv0, temp_fv0);
+        if (!(arg0->lifeStage & 3)) {
+            BattlePrepStarBurst_SpawnTrailCopy(&arg0[arg0->lifeStage / 4 + 1], arg0);
         }
-        arg0->unk_06++;
-    } else if (arg0->unk_06 == 0x10) {
+        arg0->lifeStage++;
+    } else if (arg0->lifeStage == 0x10) {
         BattlePrepStarBurst_SpawnFlashCopy(&arg0[5], &arg0[0], -0x6500);
         BattlePrepStarBurst_SpawnFlashCopy(&arg0[6], &arg0[0], 0);
         BattlePrepStarBurst_SpawnFlashCopy(&arg0[7], &arg0[0], 0x6500);
-        BattlePrep_ResetDisplayObject(arg0->unk_00);
-        arg0->unk_06 = -1;
+        BattlePrep_ResetDisplayObject(arg0->displayObject);
+        arg0->lifeStage = -1;
     }
 }
 
 void BattlePrepStarBurst_UpdateTrailFadeStep(unk_D_84B25AC0_0A0* arg0) {
-    arg0->unk_06++;
-    if ((arg0->unk_06 >= 8) && (arg0->unk_06 < 0x10)) {
-        Vec3f_SetComponentsDuplicate(&arg0->unk_00->unk_030, arg0->unk_00->unk_030.x * 0.8f, arg0->unk_00->unk_030.x * 0.8f,
-                      arg0->unk_00->unk_030.x * 0.8f);
-    } else if (arg0->unk_06 == 0x10) {
-        BattlePrep_ResetDisplayObject(arg0->unk_00);
-        arg0->unk_06 = -1;
+    arg0->lifeStage++;
+    if ((arg0->lifeStage >= 8) && (arg0->lifeStage < 0x10)) {
+        Vec3f_SetComponentsDuplicate(&arg0->displayObject->unk_030, arg0->displayObject->unk_030.x * 0.8f, arg0->displayObject->unk_030.x * 0.8f,
+                      arg0->displayObject->unk_030.x * 0.8f);
+    } else if (arg0->lifeStage == 0x10) {
+        BattlePrep_ResetDisplayObject(arg0->displayObject);
+        arg0->lifeStage = -1;
     }
 }
 
@@ -306,34 +306,34 @@ void BattlePrepStarBurst_UpdateFlashFadeStep(unk_D_84B25AC0_0A0* arg0) {
     f32 temp_fv0;
     f32 temp_fv1;
 
-    if (arg0->unk_06 < 0x10) {
-        temp_fv0 = arg0->unk_00->unk_030.x * 0.9f;
-        temp_fv1 = (20.0f - arg0->unk_06) / 5.0f;
-        arg0->unk_00->unk_024.x += temp_fv1 * COSS(arg0->unk_08);
-        arg0->unk_00->unk_024.y += temp_fv1 * SINS(arg0->unk_08);
-        Vec3f_SetComponentsDuplicate(&arg0->unk_00->unk_030, temp_fv0, temp_fv0, temp_fv0);
-        arg0->unk_06++;
-    } else if (arg0->unk_06 == 0x10) {
-        BattlePrep_ResetDisplayObject(arg0->unk_00);
-        arg0->unk_06 = -1;
+    if (arg0->lifeStage < 0x10) {
+        temp_fv0 = arg0->displayObject->unk_030.x * 0.9f;
+        temp_fv1 = (20.0f - arg0->lifeStage) / 5.0f;
+        arg0->displayObject->unk_024.x += temp_fv1 * COSS(arg0->angle);
+        arg0->displayObject->unk_024.y += temp_fv1 * SINS(arg0->angle);
+        Vec3f_SetComponentsDuplicate(&arg0->displayObject->unk_030, temp_fv0, temp_fv0, temp_fv0);
+        arg0->lifeStage++;
+    } else if (arg0->lifeStage == 0x10) {
+        BattlePrep_ResetDisplayObject(arg0->displayObject);
+        arg0->lifeStage = -1;
     }
 }
 
 void BattlePrepStarBurst_UpdateScatterFallStep(unk_D_84B25AC0_0A0* arg0) {
-    if (arg0->unk_06 < 0x14) {
-        Vec3f_SetComponentsDuplicate(&arg0->unk_00->unk_030, arg0->unk_00->unk_030.x - 0.025f, arg0->unk_00->unk_030.x - 0.025f,
-                      arg0->unk_00->unk_030.x - 0.025f);
-        arg0->unk_0A.a -= 5;
-        arg0->unk_00->unk_024.y -= 2.0f;
-        arg0->unk_06++;
-    } else if (arg0->unk_06 == 0x14) {
-        BattlePrep_ResetDisplayObject(arg0->unk_00);
-        arg0->unk_06 = -1;
+    if (arg0->lifeStage < 0x14) {
+        Vec3f_SetComponentsDuplicate(&arg0->displayObject->unk_030, arg0->displayObject->unk_030.x - 0.025f, arg0->displayObject->unk_030.x - 0.025f,
+                      arg0->displayObject->unk_030.x - 0.025f);
+        arg0->color.a -= 5;
+        arg0->displayObject->unk_024.y -= 2.0f;
+        arg0->lifeStage++;
+    } else if (arg0->lifeStage == 0x14) {
+        BattlePrep_ResetDisplayObject(arg0->displayObject);
+        arg0->lifeStage = -1;
     }
 }
 
 void BattlePrepStarBurst_UpdateRainbowParticle(unk_D_84B25AC0_0A0* arg0) {
-    switch (arg0->unk_04) {
+    switch (arg0->particleType) {
         case 0:
             BattlePrepStarBurst_UpdateRainbowGradientStep(arg0);
             break;
@@ -356,26 +356,26 @@ void BattlePrepStarBurst_UpdateBurstEffect(unk_D_84B25AC0* arg0) {
     s32 i;
     s32 j;
 
-    arg0->unk_5A1++;
-    if (arg0->unk_5A1 < 0x25) {
-        if (arg0->unk_5A2 != 0) {
+    arg0->animTimer++;
+    if (arg0->animTimer < 0x25) {
+        if (arg0->mode != 0) {
             for (i = 0; i < 10; i++) {
                 for (j = 0; j < 8; j++) {
-                    if (arg0->unk_0A0[i][j].unk_06 >= 0) {
-                        BattlePrepStarBurst_UpdateRainbowParticle(&arg0->unk_0A0[i][j]);
+                    if (arg0->trailParticles[i][j].lifeStage >= 0) {
+                        BattlePrepStarBurst_UpdateRainbowParticle(&arg0->trailParticles[i][j]);
                     }
                 }
             }
         } else {
             for (i = 0; i < 10; i++) {
-                if (arg0->unk_000[i].unk_04 >= 0) {
-                    BattlePrepStarBurst_UpdateSparkSlot(&arg0->unk_000[i]);
+                if (arg0->burstParticles[i].lifeStage >= 0) {
+                    BattlePrepStarBurst_UpdateSparkSlot(&arg0->burstParticles[i]);
                 }
             }
         }
     } else {
-        arg0->unk_5A1 = 0;
-        arg0->unk_5A0 = 0;
+        arg0->animTimer = 0;
+        arg0->state = 0;
     }
 }
 
@@ -383,55 +383,55 @@ void BattlePrepStarBurst_UpdateFlightArc(unk_D_84B25AC0* arg0) {
     s16 i;
     s16 var_s2;
 
-    arg0->unk_5A1++;
-    if (arg0->unk_5A1 > 0) {
-        arg0->unk_5A8->unk_000.unk_01 |= 1;
-        arg0->unk_5A8->unk_024.z -= 8.0f;
-        if (arg0->unk_5A3 != 0) {
-            arg0->unk_5A8->unk_01E.z += 0x400;
-            arg0->unk_5A8->unk_024.x = (COSS(arg0->unk_5A8->unk_01E.z + 0x6000) * 70.71f) + 82.0f;
-            arg0->unk_5A8->unk_024.y = (SINS(arg0->unk_5A8->unk_01E.z + 0x6000) * 70.71f) + -2.0f;
+    arg0->animTimer++;
+    if (arg0->animTimer > 0) {
+        arg0->starModel->unk_000.unk_01 |= 1;
+        arg0->starModel->unk_024.z -= 8.0f;
+        if (arg0->side != 0) {
+            arg0->starModel->unk_01E.z += 0x400;
+            arg0->starModel->unk_024.x = (COSS(arg0->starModel->unk_01E.z + 0x6000) * 70.71f) + 82.0f;
+            arg0->starModel->unk_024.y = (SINS(arg0->starModel->unk_01E.z + 0x6000) * 70.71f) + -2.0f;
         } else {
-            arg0->unk_5A8->unk_01E.z -= 0x400;
-            arg0->unk_5A8->unk_024.x = (COSS(arg0->unk_5A8->unk_01E.z + 0x2000) * 70.71f) + -82.0f;
-            arg0->unk_5A8->unk_024.y = (SINS(arg0->unk_5A8->unk_01E.z + 0x2000) * 70.71f) + -98.0f;
+            arg0->starModel->unk_01E.z -= 0x400;
+            arg0->starModel->unk_024.x = (COSS(arg0->starModel->unk_01E.z + 0x2000) * 70.71f) + -82.0f;
+            arg0->starModel->unk_024.y = (SINS(arg0->starModel->unk_01E.z + 0x2000) * 70.71f) + -98.0f;
         }
 
-        if (arg0->unk_5A1 == 0x10) {
-            if (arg0->unk_5A2 != 0) {
+        if (arg0->animTimer == 0x10) {
+            if (arg0->mode != 0) {
                 var_s2 = 0x2000;
                 for (i = 0; i < 5; i++, var_s2 += 0x3000) {
-                    BattlePrepStarBurst_InitRainbowParticle(&arg0->unk_0A0[i], arg0->unk_5B8, arg0->unk_5A8->unk_024.x, arg0->unk_5A8->unk_024.y,
+                    BattlePrepStarBurst_InitRainbowParticle(&arg0->trailParticles[i], arg0->rainbowModel, arg0->starModel->unk_024.x, arg0->starModel->unk_024.y,
                                   var_s2);
-                    BattlePrepStarBurst_UpdateRainbowParticle(&arg0->unk_0A0[i]);
+                    BattlePrepStarBurst_UpdateRainbowParticle(&arg0->trailParticles[i]);
                 }
 
                 var_s2 = 0x6000;
                 for (i = 5; i < 10; i++, var_s2 -= 0x3000) {
-                    BattlePrepStarBurst_InitRainbowParticle(&arg0->unk_0A0[i], arg0->unk_5B8, arg0->unk_5A8->unk_024.x, arg0->unk_5A8->unk_024.y,
+                    BattlePrepStarBurst_InitRainbowParticle(&arg0->trailParticles[i], arg0->rainbowModel, arg0->starModel->unk_024.x, arg0->starModel->unk_024.y,
                                   var_s2);
-                    BattlePrepStarBurst_UpdateRainbowParticle(&arg0->unk_0A0[i]);
+                    BattlePrepStarBurst_UpdateRainbowParticle(&arg0->trailParticles[i]);
                 }
 
-                arg0->unk_5A1 = 0;
-                arg0->unk_5A0 = 1;
+                arg0->animTimer = 0;
+                arg0->state = 1;
             } else {
                 var_s2 = 0x3000;
                 for (i = 0; i < 5; i++, var_s2 += 0x2800) {
-                    BattlePrepStarBurst_InitSparkSlot(&arg0->unk_000[i], arg0->unk_5B4, arg0->unk_5A8->unk_024.x, arg0->unk_5A8->unk_024.y,
+                    BattlePrepStarBurst_InitSparkSlot(&arg0->burstParticles[i], arg0->sparkModel, arg0->starModel->unk_024.x, arg0->starModel->unk_024.y,
                                   var_s2);
-                    BattlePrepStarBurst_UpdateSparkSlot(&arg0->unk_000[i]);
+                    BattlePrepStarBurst_UpdateSparkSlot(&arg0->burstParticles[i]);
                 }
 
                 var_s2 = 0x5000;
                 for (i = 5; i < 10; i++, var_s2 -= 0x2800) {
-                    BattlePrepStarBurst_InitSparkSlot(&arg0->unk_000[i], arg0->unk_5B4, arg0->unk_5A8->unk_024.x, arg0->unk_5A8->unk_024.y,
+                    BattlePrepStarBurst_InitSparkSlot(&arg0->burstParticles[i], arg0->sparkModel, arg0->starModel->unk_024.x, arg0->starModel->unk_024.y,
                                   var_s2);
-                    BattlePrepStarBurst_UpdateSparkSlot(&arg0->unk_000[i]);
+                    BattlePrepStarBurst_UpdateSparkSlot(&arg0->burstParticles[i]);
                 }
 
-                arg0->unk_5A1 = 0;
-                arg0->unk_5A0 = 1;
+                arg0->animTimer = 0;
+                arg0->state = 1;
             }
         }
     }
@@ -441,87 +441,87 @@ void BattlePrepStarBurst_UpdateRainbowAftermath(unk_D_84B25AC0* arg0) {
     s32 i;
     s32 j;
 
-    arg0->unk_5A1++;
-    if (arg0->unk_5A1 >= 4) {
-        arg0->unk_5A8->unk_024.y += arg0->unk_5A4;
-        arg0->unk_5A4 -= 0.5f;
-        arg0->unk_5A8->unk_024.x -= 20.0f;
-        arg0->unk_5A8->unk_01E.z += 0x400;
+    arg0->animTimer++;
+    if (arg0->animTimer >= 4) {
+        arg0->starModel->unk_024.y += arg0->driftSpeed;
+        arg0->driftSpeed -= 0.5f;
+        arg0->starModel->unk_024.x -= 20.0f;
+        arg0->starModel->unk_01E.z += 0x400;
 
-        if (arg0->unk_5A1 < 0xE) {
+        if (arg0->animTimer < 0xE) {
             for (i = 0; i < 4; i++) {
-                BattlePrepStarBurst_SpawnScatterParticle(&arg0->unk_0A0[arg0->unk_5A1 - 4][0 + i], arg0->unk_5B8, &arg0->unk_5A8->unk_024);
-                BattlePrepStarBurst_SpawnScatterParticle(&arg0->unk_0A0[arg0->unk_5A1 - 4][4 + i], arg0->unk_5B8, &arg0->unk_5A8->unk_024);
+                BattlePrepStarBurst_SpawnScatterParticle(&arg0->trailParticles[arg0->animTimer - 4][0 + i], arg0->rainbowModel, &arg0->starModel->unk_024);
+                BattlePrepStarBurst_SpawnScatterParticle(&arg0->trailParticles[arg0->animTimer - 4][4 + i], arg0->rainbowModel, &arg0->starModel->unk_024);
             }
         }
 
         for (j = 0; j < 10; j++) {
             for (i = 0; i < 8; i++) {
-                if (arg0->unk_0A0[j][i].unk_06 >= 0) {
-                    BattlePrepStarBurst_UpdateRainbowParticle(&arg0->unk_0A0[j][i]);
+                if (arg0->trailParticles[j][i].lifeStage >= 0) {
+                    BattlePrepStarBurst_UpdateRainbowParticle(&arg0->trailParticles[j][i]);
                 }
             }
         }
 
-        if (arg0->unk_5A1 == 0x22) {
-            BattlePrep_ResetDisplayObject(arg0->unk_5A8);
-            arg0->unk_5A0 = 0;
+        if (arg0->animTimer == 0x22) {
+            BattlePrep_ResetDisplayObject(arg0->starModel);
+            arg0->state = 0;
         }
     }
 }
 
 void BattlePrepStarBurst_UpdateSparkAftermath(unk_D_84B25AC0* arg0) {
-    arg0->unk_5A1++;
-    if (arg0->unk_5A1 >= 4) {
-        arg0->unk_5A8->unk_024.y += arg0->unk_5A4;
-        arg0->unk_5A4 -= 1.0f;
-        if (arg0->unk_5A2 != 0) {
-            arg0->unk_5A8->unk_024.x -= 10.0f;
-            arg0->unk_5A8->unk_01E.z += 0x400;
+    arg0->animTimer++;
+    if (arg0->animTimer >= 4) {
+        arg0->starModel->unk_024.y += arg0->driftSpeed;
+        arg0->driftSpeed -= 1.0f;
+        if (arg0->mode != 0) {
+            arg0->starModel->unk_024.x -= 10.0f;
+            arg0->starModel->unk_01E.z += 0x400;
         } else {
-            arg0->unk_5A8->unk_01E.z -= 0x400;
+            arg0->starModel->unk_01E.z -= 0x400;
         }
 
-        if (arg0->unk_5A1 == 0x20) {
-            BattlePrep_ResetDisplayObject(arg0->unk_5A8);
-            arg0->unk_5A0 = 0;
+        if (arg0->animTimer == 0x20) {
+            BattlePrep_ResetDisplayObject(arg0->starModel);
+            arg0->state = 0;
         }
     }
 }
 
 void BattlePrepStarBurst_UpdateExitSlide(unk_D_84B25AC0* arg0) {
-    if ((arg0->unk_5A1 < 0x14) && (arg0->unk_5A3 != 0) && (arg0->unk_5A1 < 7)) {
-        arg0->unk_5A8->unk_024.x += 40.0f;
+    if ((arg0->animTimer < 0x14) && (arg0->side != 0) && (arg0->animTimer < 7)) {
+        arg0->starModel->unk_024.x += 40.0f;
     }
 
-    arg0->unk_5A1++;
-    if (arg0->unk_5A1 == 0x2C) {
-        arg0->unk_5A1 = 0;
-        arg0->unk_5A0 = 0;
+    arg0->animTimer++;
+    if (arg0->animTimer == 0x2C) {
+        arg0->animTimer = 0;
+        arg0->state = 0;
     }
 }
 
 void BattlePrepStarBurst_UpdateFirstClearExit(unk_D_84B25AC0* arg0) {
     s32 tmp;
 
-    if (arg0->unk_5A3 != 0) {
-        if (arg0->unk_5A1 >= 0) {
-            arg0->unk_5A8->unk_024.x += 40.0f;
+    if (arg0->side != 0) {
+        if (arg0->animTimer >= 0) {
+            arg0->starModel->unk_024.x += 40.0f;
         }
-        tmp = arg0->unk_5A1;
+        tmp = arg0->animTimer;
     } else {
-        tmp = arg0->unk_5A1;
+        tmp = arg0->animTimer;
     }
 
-    arg0->unk_5A1++;
-    if (arg0->unk_5A1 == 0xB) {
-        arg0->unk_5A1 = 0;
-        arg0->unk_5A0 = 0;
+    arg0->animTimer++;
+    if (arg0->animTimer == 0xB) {
+        arg0->animTimer = 0;
+        arg0->state = 0;
     }
 }
 
 void BattlePrepStarBurst_Update(unk_D_84B25AC0* arg0) {
-    switch (arg0->unk_5A0) {
+    switch (arg0->state) {
         case 1:
             BattlePrepStarBurst_UpdateBurstEffect(arg0);
             break;
@@ -552,69 +552,69 @@ void BattlePrepStarBurst_Launch(unk_D_84B25AC0* arg0, unk_D_86002F58_004_000* ar
     s32 i;
     s32 j;
 
-    arg0->unk_5A8 = arg1;
-    arg0->unk_5AC = arg2;
-    Model_InitDisplayObject(arg1, 1, 0, arg0->unk_5B0);
-    arg0->unk_5A8->unk_000.unk_14 = arg0;
+    arg0->starModel = arg1;
+    arg0->particlePool = arg2;
+    Model_InitDisplayObject(arg1, 1, 0, arg0->starModelGeo);
+    arg0->starModel->unk_000.unk_14 = arg0;
 
-    if (arg0->unk_5A2 == -1) {
-        arg0->unk_5A1 = 0;
-        arg0->unk_5A0 = 5;
-        if (arg0->unk_5A3 != 0) {
-            Vec3f_SetComponentsDuplicate(&arg0->unk_5A8->unk_024, -280.0f, 0.0f, -289.0f);
+    if (arg0->mode == -1) {
+        arg0->animTimer = 0;
+        arg0->state = 5;
+        if (arg0->side != 0) {
+            Vec3f_SetComponentsDuplicate(&arg0->starModel->unk_024, -280.0f, 0.0f, -289.0f);
         } else {
-            Vec3f_SetComponentsDuplicate(&arg0->unk_5A8->unk_024, -372.0f, 0.0f, -289.0f);
+            Vec3f_SetComponentsDuplicate(&arg0->starModel->unk_024, -372.0f, 0.0f, -289.0f);
         }
         return;
     }
 
-    if (arg0->unk_5A2 != 0) {
-        arg0->unk_5A1 = 0;
+    if (arg0->mode != 0) {
+        arg0->animTimer = 0;
     } else {
-        arg0->unk_5A1 = -6;
+        arg0->animTimer = -6;
     }
 
-    arg0->unk_5A0 = 2;
-    arg0->unk_5A8->unk_000.unk_01 &= ~1;
-    if (arg0->unk_5A3 != 0) {
-        Vec3f_SetComponentsDuplicate(&arg0->unk_5A8->unk_024, 32.0f, 48.0f, -161.0f);
-        arg0->unk_5A8->unk_01E.z = -0x4000;
+    arg0->state = 2;
+    arg0->starModel->unk_000.unk_01 &= ~1;
+    if (arg0->side != 0) {
+        Vec3f_SetComponentsDuplicate(&arg0->starModel->unk_024, 32.0f, 48.0f, -161.0f);
+        arg0->starModel->unk_01E.z = -0x4000;
     } else {
-        Vec3f_SetComponentsDuplicate(&arg0->unk_5A8->unk_024, -32.0f, -48.0f, -161.0f);
-        arg0->unk_5A8->unk_01E.z = 0x4000;
+        Vec3f_SetComponentsDuplicate(&arg0->starModel->unk_024, -32.0f, -48.0f, -161.0f);
+        arg0->starModel->unk_01E.z = 0x4000;
     }
 
     for (i = 0; i < 10; i++) {
-        arg0->unk_000[i].unk_00 = arg2++;
+        arg0->burstParticles[i].displayObject = arg2++;
     }
 
     for (i = 0; i < 10; i++) {
         for (j = 0; j < 8; j++) {
-            arg0->unk_0A0[i][j].unk_00 = arg2++;
-            arg0->unk_0A0[i][j].unk_06 = -1;
+            arg0->trailParticles[i][j].displayObject = arg2++;
+            arg0->trailParticles[i][j].lifeStage = -1;
         }
     }
 }
 
 void BattlePrepStarBurst_StartExit(unk_D_84B25AC0* arg0) {
-    arg0->unk_5A1 = 0;
-    if (arg0->unk_5A2 == -1) {
-        arg0->unk_5A0 = 7;
-    } else if (arg0->unk_5A3 != 0) {
-        if (arg0->unk_5A2 != 0) {
-            arg0->unk_5A4 = 10.0f;
-            arg0->unk_5A0 = 3;
+    arg0->animTimer = 0;
+    if (arg0->mode == -1) {
+        arg0->state = 7;
+    } else if (arg0->side != 0) {
+        if (arg0->mode != 0) {
+            arg0->driftSpeed = 10.0f;
+            arg0->state = 3;
         } else {
-            arg0->unk_5A4 = -10.0f;
-            arg0->unk_5A0 = 4;
+            arg0->driftSpeed = -10.0f;
+            arg0->state = 4;
         }
     } else {
-        if (arg0->unk_5A2 != 0) {
-            arg0->unk_5A4 = 20.0f;
+        if (arg0->mode != 0) {
+            arg0->driftSpeed = 20.0f;
         } else {
-            arg0->unk_5A4 = -10.0f;
+            arg0->driftSpeed = -10.0f;
         }
-        arg0->unk_5A0 = 4;
+        arg0->state = 4;
     }
 }
 
@@ -622,18 +622,18 @@ void BattlePrepStarBurst_Init(unk_D_84B25AC0* arg0, s8 arg1, s8 arg2) {
     GraphNode* var_v0;
     MemoryBlock* temp_v0;
 
-    arg0->unk_5A0 = 0;
-    arg0->unk_5A1 = 0;
-    arg0->unk_5A3 = arg1;
-    arg0->unk_5A2 = arg2;
+    arg0->state = 0;
+    arg0->animTimer = 0;
+    arg0->side = arg1;
+    arg0->mode = arg2;
 
     temp_v0 = MainPool_AllocState(main_pool_get_available(), 0);
     if (arg2 == -1) {
-        arg0->unk_5B0 = process_geo_layout(temp_v0, D_84B16CFC);
+        arg0->starModelGeo = process_geo_layout(temp_v0, D_84B16CFC);
     } else {
-        arg0->unk_5B0 = process_geo_layout(temp_v0, D_84B16CC8);
+        arg0->starModelGeo = process_geo_layout(temp_v0, D_84B16CC8);
     }
-    arg0->unk_5B4 = process_geo_layout(temp_v0, D_84B16DD8);
-    arg0->unk_5B8 = process_geo_layout(temp_v0, D_84B16EB8);
+    arg0->sparkModel = process_geo_layout(temp_v0, D_84B16DD8);
+    arg0->rainbowModel = process_geo_layout(temp_v0, D_84B16EB8);
     MainPool_FinalizeAllocation(temp_v0);
 }

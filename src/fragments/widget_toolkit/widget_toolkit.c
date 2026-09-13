@@ -190,8 +190,11 @@ s16 D_87806338 = -1;
 u32* D_8780633C[] = { D_878067F0, D_87807690, D_87808530, D_878093D0 };
 u32* D_8780634C[] = { D_8780B110, D_8780BFB0, D_8780CE50, D_8780DCF0, D_8780A270 };
 
+#ifdef NON_MATCHING
+// Matches when D_8780FA30, D_8780FA40, D_8780FA68 are static
 void Minigame_InitSharedState(s16 arg0) {
     s32 i;
+
     D_8780FA28 = 0;
     D_87806338 = arg0;
     D_8780FA2A = 0;
@@ -213,13 +216,15 @@ void Minigame_InitSharedState(s16 arg0) {
         D_8780FA40[i] = 0;
     }
 
-    i = 0;
-    do {
+    for (i = 0; i < 4; i++) {
         D_8780FA68[i] = 0;
-        i++;
-    } while (i < 4);
+    }
+
     Widget_Init();
 }
+#else
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/2/fragment2/Minigame_InitSharedState.s")
+#endif
 
 void Widget_FillRect(s16 arg0, s16 arg1, s16 arg2, s16 arg3) {
     gDPPipeSync(gDisplayListHead++);

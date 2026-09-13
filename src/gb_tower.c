@@ -7,14 +7,15 @@
 // gb_tower.c
 // dont forget to pass -signed when compiling
 
-OSPfs D_800A8100[4];
-u8 D_800A82A0[4];
-u8 D_800A82A4;
-u8 D_800A82A5;
-u8 D_800A82A6;
-u8 D_800A82A7;
-s32 D_800A82A8;
-u8 D_800A82AC[4];
+extern OSPfs D_800A8100[];
+extern u8 D_800A82A0[];
+extern u8 D_800A82AC[];
+
+extern u8 D_800A82A4;
+extern u8 D_800A82A5;
+extern u8 D_800A82A6;
+extern u8 D_800A82A7;
+extern s32 D_800A82A8;
 
 // these first 4 funcs might be part of a hal_libc file or something instead of GB Tower.
 

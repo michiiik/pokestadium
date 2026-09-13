@@ -239,8 +239,6 @@ extern OSThread LEOcommandThread;
 extern OSThread LEOinterruptThread;
 extern tgt_param_form LEOtgt_param;
 extern leo_sys_form LEO_sys_data;
-extern u32 asic_cur_status;
-extern u32 unit_atten;
 
 extern vu8 LEOclr_que_flag;
 // needs to not be volatile in some files

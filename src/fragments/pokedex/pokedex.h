@@ -158,8 +158,8 @@ void Pokedex_SetPreviewSpecies(unk_func_888044BC_04C_02C* arg0, s32 arg1);
 s32 Pokedex_DrawPreview(unk_func_888044BC_04C_02C* arg0, s32 arg1, s32 arg2);
 void Pokedex_BuildPreviewPanel(unk_func_888044BC_04C* arg0, s32 arg1, s32 arg2, MemoryPool* arg3);
 void Pokedex_BuildRootWidget(unk_func_888044BC* arg0, s32 arg1, s32 arg2, u8* arg3, MemoryPool* arg4);
-s32 func_88803614(void);
-s32 Pokedex_ShowEntryMenu(void);
+s32 Pokedex_ShowSpeciesList(void);
+u8 Pokedex_ShowEntryMenu(void);
 void Pokedex_LoadIcon(u8* arg0, s32 arg1);
 s32 Pokedex_ShowEntry(void);
 s32 Pokedex_PlayCry(void);
@@ -180,7 +180,7 @@ void Pokedex_BuildMapMarkerDisplayList(void);
 void Pokedex_BuildMapMarkersDisplayList(void);
 void Pokedex_BuildOverviewMarkersDisplayList(void);
 Gfx* Pokedex_DrawMapPinIcon(Gfx* arg0, s16 arg1, s16 arg2);
-Gfx* func_88805AEC(Gfx* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6);
+Gfx* Pokedex_DrawMapLabelBubble(Gfx* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6);
 void Pokedex_BuildMapLabelsDisplayList(void);
 void Pokedex_ResetCameraEase(void);
 void Pokedex_UpdateCameraEaseSpeed(void);
@@ -189,7 +189,7 @@ void Pokedex_UpdateAreaMapFrame(void);
 s32 Pokedex_GetCountTier(s32 arg0);
 s32 Pokedex_DrawAreaMapFrame(UNUSED u8 arg0);
 s32 Pokedex_CheckAreaMapExit(void);
-void func_88807D04(s32 arg0, MainPoolState* arg1, UNUSED s32 arg2, s32 arg3, s32 arg4, char* arg5, char** arg6);
+void Pokedex_ShowAreaMap(s32 arg0, MainPoolState* arg1, UNUSED s32 arg2, s32 arg3, s32 arg4, char* arg5, char** arg6);
 void Pokedex_ExitAreaMapPool(void);
 
 #endif // _FRAGMENT28_H_

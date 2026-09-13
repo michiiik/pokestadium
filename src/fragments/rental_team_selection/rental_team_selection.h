@@ -10,21 +10,21 @@ struct RentalCarouselState;
 struct unk_D_84229EB0;
 
 typedef struct unk_D_8423D3A8 {
-    /* 0x00 */ u8 unk_00;
-    /* 0x01 */ u8 unk_01;
+    /* 0x00 */ u8 state; // 0=closed, 1=compact, 2=opening, 3=closing (TeamSelection_Preview_Update's dispatch)
+    /* 0x01 */ u8 mode; // TeamSelection_Preview_StartFull's arg7
     /* 0x02 */ u8 unk_02;
-    /* 0x03 */ u8 unk_03;
+    /* 0x03 */ u8 timer; // TeamSelection_Preview_StartFull's arg1
     /* 0x04 */ s16 unk_04;
-    /* 0x06 */ s16 unk_06;
-    /* 0x08 */ s16 unk_08;
-    /* 0x0A */ s16 unk_0A;
-    /* 0x0C */ s16 unk_0C;
-    /* 0x0E */ unk_D_800A7440 unk_0E;
-    /* 0x16 */ unk_D_800A7440 unk_16;
-    /* 0x20 */ s32 unk_20;
-    /* 0x24 */ unk_D_86002F58_004_000_010* unk_24;
-    /* 0x28 */ unk_func_8001B1FC* unk_28;
-    /* 0x2C */ unk_D_838067F0_0168_0000* unk_2C;
+    /* 0x06 */ s16 x; // interpolated from fullRect/compactRect during open/close
+    /* 0x08 */ s16 y;
+    /* 0x0A */ s16 width;
+    /* 0x0C */ s16 height;
+    /* 0x0E */ unk_D_800A7440 fullRect;
+    /* 0x16 */ unk_D_800A7440 compactRect;
+    /* 0x20 */ s32 renderResult; // PokeIcon_RenderPreview's return value
+    /* 0x24 */ unk_D_86002F58_004_000_010* framebuffers; // PokeIcon_AllocFramebuffers
+    /* 0x28 */ unk_func_8001B1FC* modelPreview; // PokeIcon_CreateModelPreview
+    /* 0x2C */ unk_D_838067F0_0168_0000* mon; // the mon slot currently shown in the preview
 } unk_D_8423D3A8; // size >= 0x30
 
 typedef struct unk_D_842168A0_13608 {
@@ -32,30 +32,30 @@ typedef struct unk_D_842168A0_13608 {
 } unk_D_842168A0_13608; // size >= 0x4
 
 typedef struct unk_D_84229EB0_00024 {
-    /* 0x0000 */ unk_D_838067F0_0168_0000 unk_0000[6];
-    /* 0x4D10 */ u16 unk_4D10;
-    /* 0x4D12 */ char unk_4D12[2];
+    /* 0x0000 */ unk_D_838067F0_0168_0000 monSlots[6];
+    /* 0x4D10 */ u16 trainerId; // Deck_GetSaveEntryTrainerId
+    /* 0x4D12 */ char playerName[2]; // Deck_GetSaveEntryName; declared size undersells the real string extent
     /* 0x4D14 */ char unk4D14[0xA];
-    /* 0x4D1E */ s16 unk_4D1E;
-    /* 0x4D20 */ s16 unk_4D20;
-    /* 0x4D24 */ struct unk_D_84229EB0_00024* unk_4D24;
-    /* 0x4D28 */ struct unk_D_84229EB0_00024* unk_4D28;
+    /* 0x4D1E */ s16 slotIndex; // TeamSelection_RegisteredTeam_Load's arg1
+    /* 0x4D20 */ s16 monCount;
+    /* 0x4D24 */ struct unk_D_84229EB0_00024* prev; // TeamSelection_RegisteredTeam_GetPrevious
+    /* 0x4D28 */ struct unk_D_84229EB0_00024* next; // TeamSelection_RegisteredTeam_GetNext
     /* 0x4D2C */ char unk4D2C[0x4];
 } unk_D_84229EB0_00024; // size = 0x4D30
 
 typedef struct RentalTeamTray {
-    /* 0x0000 */ u8 unk_0000;
-    /* 0x0001 */ u8 unk_0001;
+    /* 0x0000 */ u8 mode; // Rental_AssignMonToSlot/RemoveMonFromSlot branch on this
+    /* 0x0001 */ u8 state; // must == 3 for Rental_AssignMonToSlot to accept
     /* 0x0002 */ u8 unk_0002;
-    /* 0x0003 */ u8 unk_0003;
-    /* 0x0004 */ u8 unk_0004;
-    /* 0x0006 */ s16 unk_0006;
-    /* 0x0008 */ s16 unk_0008;
+    /* 0x0003 */ u8 subState;
+    /* 0x0004 */ u8 needsRedraw;
+    /* 0x0006 */ s16 filledCount; // number of non-empty monSlots entries
+    /* 0x0008 */ s16 lastFilledCount; // snapshot of filledCount, updated by the remove path
     /* 0x000A */ s16 unk_000A;
     /* 0x000C */ s16 unk_000C;
     /* 0x000E */ s16 unk_000E;
-    /* 0x0010 */ s16 unk_0010;
-    /* 0x0012 */ s16 unk_0012;
+    /* 0x0010 */ s16 column; // 0-2, combined with row to index monSlots
+    /* 0x0012 */ s16 row;
     /* 0x0014 */ s16 unk_0014;
     /* 0x0016 */ s16 unk_0016;
     /* 0x0018 */ s16 unk_0018;
@@ -63,7 +63,7 @@ typedef struct RentalTeamTray {
     /* 0x001C */ u16 unk_001C;
     /* 0x001E */ char unk_001E[2];
     /* 0x0020 */ char unk0020[0x10];
-    /* 0x0030 */ unk_D_838067F0_0168_0000 unk_0030[6];
+    /* 0x0030 */ unk_D_838067F0_0168_0000 monSlots[6];
     /* 0x4D40 */ struct RentalCarouselState* unk_4D40;
     /* 0x4D44 */ unk_D_8423D3A8* unk_4D44;
     /* 0x4D48 */ struct unk_D_84229EB0* unk_4D48;
@@ -75,60 +75,60 @@ typedef struct RentalRoster {
 } RentalRoster; // size >= 0x58
 
 typedef struct RentalCarouselState {
-    /* 0x00000 */ u8 unk_00000;
-    /* 0x00001 */ u8 unk_00001;
-    /* 0x00002 */ u8 unk_00002;
-    /* 0x00003 */ u8 unk_00003;
-    /* 0x00004 */ u8 unk_00004;
-    /* 0x00005 */ u8 unk_00005;
-    /* 0x00006 */ u8 unk_00006;
-    /* 0x00007 */ u8 unk_00007;
-    /* 0x00008 */ u8 unk_00008;
-    /* 0x00009 */ u8 unk_00009;
-    /* 0x0000A */ s16 unk_0000A;
-    /* 0x0000C */ s16 unk_0000C;
-    /* 0x0000E */ s16 unk_0000E;
-    /* 0x00010 */ s16 unk_00010;
-    /* 0x00012 */ s16 unk_00012;
-    /* 0x00014 */ s16 unk_00014;
-    /* 0x00016 */ s16 unk_00016;
-    /* 0x00018 */ s16 unk_00018;
-    /* 0x0001A */ s16 unk_0001A;
-    /* 0x0001C */ unk_D_838067F0_003C unk_0001C[13];
+    /* 0x00000 */ u8 mode; // Rental_PrimeCarousel's arg3
+    /* 0x00001 */ u8 state;
+    /* 0x00002 */ u8 nextState; // deferred state applied once the carousel settles
+    /* 0x00003 */ u8 controllerIndex;
+    /* 0x00004 */ u8 gbPort;
+    /* 0x00005 */ u8 boxIndex; // 0-13, current box tab
+    /* 0x00006 */ u8 pageOffset;
+    /* 0x00007 */ u8 inputLock;
+    /* 0x00008 */ u8 inputLockNext;
+    /* 0x00009 */ u8 flashTimer;
+    /* 0x0000A */ s16 animTimer;
+    /* 0x0000C */ s16 column; // 0-2
+    /* 0x0000E */ s16 row; // 0-3
+    /* 0x00010 */ s16 baseX;
+    /* 0x00012 */ s16 baseY;
+    /* 0x00014 */ s16 screenX;
+    /* 0x00016 */ s16 screenY;
+    /* 0x00018 */ s16 velocityX;
+    /* 0x0001A */ s16 velocityY;
+    /* 0x0001C */ unk_D_838067F0_003C boxTabs[13];
     /* 0x0013A */ char unk0013A[0x2];
-    /* 0x0013C */ RentalRoster* unk_0013C;
-    /* 0x00140 */ unk_D_838067F0_0168* unk_00140;
+    /* 0x0013C */ RentalRoster* roster;
+    /* 0x00140 */ unk_D_838067F0_0168* currentPage; // cursor into pageRing
     /* 0x00144 */ char unk00144[0x4];
-    /* 0x00148 */ unk_D_838067F0_0168 unk_00148[8];
-    /* 0x13608 */ RentalTeamTray* unk_13608;
-    /* 0x1360C */ unk_D_8423D3A8* unk_1360C;
+    /* 0x00148 */ unk_D_838067F0_0168 pageRing[8]; // circular doubly-linked list, next/prev set up by Rental_PrimeCarousel
+    /* 0x13608 */ RentalTeamTray* teamTray;
+    /* 0x1360C */ unk_D_8423D3A8* previewState;
 } RentalCarouselState; // size = 0x13610
 
 typedef struct unk_D_84229EB0 {
-    /* 0x00000 */ u8 unk_00000;
-    /* 0x00001 */ u8 unk_00001;
-    /* 0x00002 */ u8 unk_00002;
-    /* 0x00003 */ u8 unk_00003;
-    /* 0x00004 */ u8 unk_00004;
-    /* 0x00005 */ s8 unk_00005;
-    /* 0x00006 */ s16 unk_00006;
+    /* 0x00000 */ u8 mode; // TeamSelection_RegisteredTeam_HandleListInput's switch (0/1/2)
+    /* 0x00001 */ u8 state; // top-level screen state (list/opening/closing/edit-return/etc.)
+    /* 0x00002 */ u8 subState; // transition sub-type, set to 2 during animated moves
+    /* 0x00003 */ u8 controllerIndex; // indexes gControllers
+    /* 0x00004 */ u8 needsRedraw;
+    /* 0x00005 */ s8 selectedIndex; // -1 = none, TeamSelection_RegisteredTeam_InitializeSelection
+    /* 0x00006 */ s16 animTimer; // frame counter for open/close/return-from-edit transitions
     /* 0x00008 */ s16 unk_00008;
     /* 0x0000A */ s16 unk_0000A;
-    /* 0x0000C */ u8 unk_0000C;
-    /* 0x0000D */ u8 unk_0000D;
-    /* 0x0000E */ s16 unk_0000E;
-    /* 0x00010 */ s16 unk_00010;
-    /* 0x00012 */ s16 unk_00012;
-    /* 0x00014 */ s16 unk_00014;
-    /* 0x00016 */ s16 unk_00016;
-    /* 0x00018 */ s16 unk_00018;
-    /* 0x0001A */ s16 unk_0001A;
+    /* 0x0000C */ u8 scrollTop; // index of the first visible list row
+    /* 0x0000D */ u8 cursorIndex; // selected list row
+    /* 0x0000E */ s16 baseX;
+    /* 0x00010 */ s16 baseY;
+    /* 0x00012 */ s16 screenX; // animated position, interpolated from baseX by animTimer
+    /* 0x00014 */ s16 screenY;
+    /* 0x00016 */ s16 overrideHeight; // special-case panel height set during return-from-edit
+    /* 0x00018 */ s16 velocityX; // scroll-animation delta set by MoveListUp/Down
+    /* 0x0001A */ s16 velocityY;
     /* 0x0001C */ s16 unk_0001C;
-    /* 0x0001E */ u8 unk_0001E;
-    /* 0x0001F */ u8 unk_0001F;
-    /* 0x00020 */ u8 unk_00020;
-    /* 0x00024 */ unk_D_84229EB0_00024* unk_00024;
-    /* 0x00028 */ unk_D_84229EB0_00024 unk_00028[3];
+    /* 0x0001E */ u8 inputLock; // 0 = input allowed; set from inputLockNext each poll
+    /* 0x0001F */ u8 inputLockNext; // armed to 2 (locked) or 8 (idle) for the following frame
+    /* 0x00020 */ u8 exitRequested; // set by the B-button handler before transitioning to the close state
+    /* 0x00024 */ unk_D_84229EB0_00024* currentCard; // cursor into the cardPool doubly-linked list
+    /* 0x00028 */ unk_D_84229EB0_00024 cardPool[3];
     /* 0x0E7B8 */ char unk0E7B8[0x4D30];
     /* 0x134E8 */ RentalTeamTray* unk_134E8;
     /* 0x134EC */ RentalCarouselState* unk_134EC;
@@ -313,7 +313,7 @@ s32 TeamSelection_RulePrompt_Update(void);
 s32 TeamSelection_RulePrompt_Open(s16 arg0, Controller* arg1);
 s32 TeamSelection_RulePrompt_BeginClose(s16 arg0);
 s16 TeamSelection_RulePrompt_TryFinish(s16 arg0);
-s32 func_8420DBA0(unk_D_84229EB0_00024* arg0);
+s32 RegisteredTeam_Save(unk_D_84229EB0_00024* arg0);
 void RegisteredTeam_DeleteAndCompact(unk_D_84229EB0_00024* arg0);
 void TeamSelection_RegisteredTeam_DrawCard(unk_D_84229EB0* arg0, s16 arg1, s16 arg2, unk_D_84229EB0_00024* arg3);
 void TeamSelection_RegisteredTeam_DrawHeader(s16 arg0, s16 arg1);
@@ -346,7 +346,7 @@ void TeamSelection_RegisteredTeam_HandleRulePromptA(unk_D_84229EB0* arg0);
 void TeamSelection_RegisteredTeam_HandleRulePromptB(unk_D_84229EB0* arg0);
 void TeamSelection_RegisteredTeam_HandleSavePrompt(unk_D_84229EB0* arg0);
 void TeamSelection_RegisteredTeam_EditTeam(unk_D_84229EB0* arg0);
-void RegisteredTeam_SaveFromTray(unk_D_84229EB0* arg0);
+void TeamSelection_RegisteredTeam_SaveFromTray(unk_D_84229EB0* arg0);
 void TeamSelection_RegisteredTeam_HandleDiscardPrompt(unk_D_84229EB0* arg0);
 void TeamSelection_RegisteredTeam_LoadVisible(unk_D_84229EB0* arg0);
 s32 TeamSelection_RegisteredTeam_Update(unk_D_84229EB0* arg0);

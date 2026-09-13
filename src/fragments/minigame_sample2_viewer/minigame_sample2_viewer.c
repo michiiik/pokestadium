@@ -4,7 +4,7 @@
 #include "src/model_renderer.h"
 #include "src/graphics_textures.h"
 #include "src/input.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/gfx_buffer.h"
 #include "src/gfx_rect.h"
 #include "src/controller.h"
@@ -25,7 +25,7 @@ static u32 D_828004D0[] = {
     0x05000000, 0x0A000000, &D_800AC840, 0x06000000, 0x06000000, 0x06000000, 0x06000000, 0x01000000,
 };
 
-void func_82900020(void) {
+void Minigame2SampleViewer_PollInput(void) {
     Cont_StartReadInputs();
     Cont_ReadInputs();
     Input_ResetRepeatState();
@@ -70,19 +70,19 @@ void Minigame2SampleViewer_Loop(void) {
     StageFade_StartFromOpaque(0x10);
 
     for (i = 0; i < 16; i++) {
-        func_82900020();
+        Minigame2SampleViewer_PollInput();
         Minigame2SampleViewer_DrawFrame();
     }
 
     do {
-        func_82900020();
+        Minigame2SampleViewer_PollInput();
         Minigame2SampleViewer_DrawFrame();
     } while (!(BTN_IS_PRESSED(gPlayer1Controller, BTN_A)));
 
     StageFade_StartFromTransparent(0x10);
 
     for (i = 0; i < 16; i++) {
-        func_82900020();
+        Minigame2SampleViewer_PollInput();
         Minigame2SampleViewer_DrawFrame();
     }
 
@@ -102,7 +102,7 @@ void Minigame2SampleViewer_Init(void) {
     ModelAnim_SetAnimation(&D_82800538, 0);
 }
 
-s32 func_82900390(UNUSED s32 arg0, UNUSED s32 arg1) {
+s32 Minigame2SampleViewer(UNUSED s32 arg0, UNUSED s32 arg1) {
     unk_func_80007444* sp24;
 
     main_pool_push_state('MTWO');

@@ -7,8 +7,8 @@ unk_D_800A62E0 D_800A62E0;
 
 void Sched_ResetTaskState(UnkStruct80001380* arg0) {
     osWritebackDCacheAll();
-    arg0->unk_1C = 0;
-    arg0->unk_1E = 0;
+    arg0->state = 0;
+    arg0->notifyFlag = 0;
 }
 
 void Sched_WaitForTaskMessage(UnkStruct80001380* arg0) {
@@ -20,12 +20,12 @@ void Sched_WaitForTaskMessage(UnkStruct80001380* arg0) {
 s32 Sched_StartTask(UnkStruct80001380* arg0) {
     s32 var_v1 = 0;
 
-    if (arg0->unk_1C == 2) {
+    if (arg0->state == 2) {
         osSpTaskLoad(&arg0->task);
         osSpTaskStartGo(&arg0->task);
-        arg0->unk_1C = 1;
+        arg0->state = 1;
         var_v1 = 1;
-    } else if (arg0->unk_1C == 0) {
+    } else if (arg0->state == 0) {
         switch (arg0->task.t.type) {
             case M_AUDTASK:
                 profiler_log_vblank_time();
@@ -33,19 +33,19 @@ s32 Sched_StartTask(UnkStruct80001380* arg0) {
 
             case M_GFXTASK:
                 profiler_log_gfx_time(TASKS_QUEUED);
-                arg0->unk_1E = 1;
+                arg0->notifyFlag = 1;
                 osDpSetStatus(0x3C0);
                 break;
 
             case 4:
-                arg0->unk_1E = 2;
+                arg0->notifyFlag = 2;
                 break;
         }
 
         osSpTaskLoad(&arg0->task);
         osSpTaskStartGo(&arg0->task);
 
-        arg0->unk_1C = 1;
+        arg0->state = 1;
         var_v1 = 1;
     }
     return var_v1;
@@ -57,8 +57,8 @@ s32 Sched_RequestTaskYield(UnkStruct80001380* arg0) {
     switch (arg0->task.t.type) {
         case 1:
         case 4:
-            if (arg0->unk_1C == 1) {
-                arg0->unk_1C = 2;
+            if (arg0->state == 1) {
+                arg0->state = 2;
                 osSpTaskYield();
                 var_v1 = 1;
             }
@@ -71,13 +71,13 @@ s32 Sched_RequestTaskYield(UnkStruct80001380* arg0) {
 s32 Sched_HandleRspCompletion(UnkStruct80001380* arg0) {
     s32 sp24 = 0;
 
-    if (arg0->unk_1C == 2) {
+    if (arg0->state == 2) {
         if (osSpTaskYielded(&arg0->task) == 0) {
-            arg0->unk_1C = 3;
+            arg0->state = 3;
             switch (arg0->task.t.type) {
                 case M_GFXTASK:
                     profiler_log_gfx_time(RSP_COMPLETE);
-                    if (arg0->unk_1E == 2) {
+                    if (arg0->notifyFlag == 2) {
                         osSendMesg(&arg0->queue, 'DONE', 0);
                     }
                     break;
@@ -91,7 +91,7 @@ s32 Sched_HandleRspCompletion(UnkStruct80001380* arg0) {
     } else {
         switch (arg0->task.t.type) {
             case M_AUDTASK:
-                if (arg0->unk_1C == 1) {
+                if (arg0->state == 1) {
                     profiler_log_vblank_time();
                     osSendMesg(&arg0->queue, 'DONE', 0);
                 }
@@ -99,7 +99,7 @@ s32 Sched_HandleRspCompletion(UnkStruct80001380* arg0) {
 
             case M_GFXTASK:
                 profiler_log_gfx_time(RSP_COMPLETE);
-                if (arg0->unk_1E == 2) {
+                if (arg0->notifyFlag == 2) {
                     osSendMesg(&arg0->queue, 'DONE', 0);
                 }
                 break;
@@ -108,22 +108,22 @@ s32 Sched_HandleRspCompletion(UnkStruct80001380* arg0) {
                 osSendMesg(&arg0->queue, 'DONE', 0);
                 break;
         }
-        arg0->unk_1C = 3;
+        arg0->state = 3;
     }
     return sp24;
 }
 
 void Sched_HandleRdpCompletion(UnkStruct80001380* arg0) {
     profiler_log_gfx_time(RDP_COMPLETE);
-    if (arg0->unk_1C == 3) {
+    if (arg0->state == 3) {
         osSendMesg(&arg0->queue, 'DONE', 0);
     }
-    arg0->unk_1E = 2;
+    arg0->notifyFlag = 2;
 }
 
 void Sched_InitClientQueue(UnkStruct80083CA0_2* arg0, s32 arg1, s32 arg2) {
-    arg0->unk_1DC = arg1;
-    arg0->unk_1D8 = 0;
+    arg0->eventFilter = arg1;
+    arg0->nextClient = 0;
     osCreateMesgQueue(&arg0->unk_1C0, &arg0->unk_1B0, arg2);
 }
 
@@ -145,14 +145,14 @@ s32 Sched_TryReceiveClientQueue(UnkStruct80083CA0_2* arg0) {
 }
 
 void Sched_PromotePendingTasks(void) {
-    if ((D_800A62E0.unk_A18 == NULL) && (D_800A62E0.unk_A20 != NULL)) {
-        D_800A62E0.unk_A18 = D_800A62E0.unk_A20;
-        D_800A62E0.unk_A20 = NULL;
+    if ((D_800A62E0.audioTaskSlot == NULL) && (D_800A62E0.nextAudioTaskSlot != NULL)) {
+        D_800A62E0.audioTaskSlot = D_800A62E0.nextAudioTaskSlot;
+        D_800A62E0.nextAudioTaskSlot = NULL;
     }
 
-    if ((D_800A62E0.unk_A1C == NULL) && (D_800A62E0.unk_A24 != NULL)) {
-        D_800A62E0.unk_A1C = D_800A62E0.unk_A24;
-        D_800A62E0.unk_A24 = NULL;
+    if ((D_800A62E0.rspTaskSlot == NULL) && (D_800A62E0.nextRspTaskSlot != NULL)) {
+        D_800A62E0.rspTaskSlot = D_800A62E0.nextRspTaskSlot;
+        D_800A62E0.nextRspTaskSlot = NULL;
     }
 }
 
@@ -160,17 +160,17 @@ void func_80004DB4(void) {
 }
 
 void Sched_NotifyClients(u32 arg0) {
-    unk_D_800AA660* var_s0 = D_800A62E0.unk_A10;
+    unk_D_800AA660* var_s0 = D_800A62E0.clientList;
 
     while (var_s0 != NULL) {
-        if (D_800A62E0.unk_A38 == 0) {
-            if (var_s0->unk_01DC != 2) {
+        if (D_800A62E0.shutdownCounter == 0) {
+            if (var_s0->eventFilter != 2) {
                 osSendMesg(&var_s0->queue1, arg0, 0);
             }
-        } else if (var_s0->unk_01DC != 0) {
+        } else if (var_s0->eventFilter != 0) {
             osSendMesg(&var_s0->queue1, arg0, 0);
         }
-        var_s0 = var_s0->unk_01D8;
+        var_s0 = var_s0->nextClient;
     }
 }
 
@@ -184,31 +184,31 @@ UnkStruct80001380* Sched_TryStartTask(UnkStruct80001380* arg0) {
 }
 
 void Sched_StartPendingTask(void) {
-    if (D_800A62E0.unk_A14 == NULL) {
-        D_800A62E0.unk_A14 = Sched_TryStartTask(D_800A62E0.unk_A1C);
+    if (D_800A62E0.activeTask == NULL) {
+        D_800A62E0.activeTask = Sched_TryStartTask(D_800A62E0.rspTaskSlot);
     }
 }
 
 s32 Sched_TryYieldActiveTask(void) {
     s32 ret = 0;
 
-    if (D_800A62E0.unk_A14 != NULL) {
-        ret = Sched_RequestTaskYield(D_800A62E0.unk_A14);
+    if (D_800A62E0.activeTask != NULL) {
+        ret = Sched_RequestTaskYield(D_800A62E0.activeTask);
     }
 
     return ret;
 }
 
 void Sched_HandlePreNMI(void) {
-    unk_D_800AA660* var_s0 = D_800A62E0.unk_A10;
+    unk_D_800AA660* var_s0 = D_800A62E0.clientList;
 
     while (var_s0 != NULL) {
-        if (var_s0->unk_01DC == 0) {
+        if (var_s0->eventFilter == 0) {
             osStopThread(&var_s0->thread);
         }
-        var_s0 = var_s0->unk_01D8;
+        var_s0 = var_s0->nextClient;
     }
-    D_800A62E0.unk_A38 = 1;
+    D_800A62E0.shutdownCounter = 1;
     Audio_FadeOutForShutdown();
     Game_ResetStorageDevice();
 }
@@ -217,11 +217,11 @@ void Sched_HandleRetrace(void) {
     UnkStruct80001380* var_v0;
 
     D_800A62E0.time = osGetTime();
-    D_800A62E0.unk_A34++;
+    D_800A62E0.frameCounter++;
 
-    if ((D_800A62E0.unk_A38 > 0) && (D_800A62E0.unk_A38 < 0x1E)) {
-        D_800A62E0.unk_A38++;
-        if (D_800A62E0.unk_A38 == 0x1A) {
+    if ((D_800A62E0.shutdownCounter > 0) && (D_800A62E0.shutdownCounter < 0x1E)) {
+        D_800A62E0.shutdownCounter++;
+        if (D_800A62E0.shutdownCounter == 0x1A) {
             while (osAfterPreNMI() != 0) {
                 IO_WRITE(SP_STATUS_REG, 0x8000);
             }
@@ -231,57 +231,57 @@ void Sched_HandleRetrace(void) {
     Sched_PromotePendingTasks();
     func_80004DB4();
 
-    if (D_800A62E0.unk_A18 != NULL) {
-        if (D_800A62E0.unk_A14 == NULL) {
-            D_800A62E0.unk_A14 = Sched_TryStartTask(D_800A62E0.unk_A18);
+    if (D_800A62E0.audioTaskSlot != NULL) {
+        if (D_800A62E0.activeTask == NULL) {
+            D_800A62E0.activeTask = Sched_TryStartTask(D_800A62E0.audioTaskSlot);
         } else {
             Sched_TryYieldActiveTask();
         }
-    } else if ((D_800A62E0.unk_A1C != NULL) && (D_800A62E0.unk_A14 == NULL)) {
-        D_800A62E0.unk_A14 = Sched_TryStartTask(D_800A62E0.unk_A1C);
+    } else if ((D_800A62E0.rspTaskSlot != NULL) && (D_800A62E0.activeTask == NULL)) {
+        D_800A62E0.activeTask = Sched_TryStartTask(D_800A62E0.rspTaskSlot);
     }
 
     Sched_NotifyClients('VTRE');
 }
 
 void Sched_HandleRspEvent(void) {
-    UnkStruct80001380* sp24 = D_800A62E0.unk_A14;
-    s32 tmp = Sched_HandleRspCompletion(D_800A62E0.unk_A14);
+    UnkStruct80001380* sp24 = D_800A62E0.activeTask;
+    s32 tmp = Sched_HandleRspCompletion(D_800A62E0.activeTask);
 
-    D_800A62E0.unk_A14 = NULL;
+    D_800A62E0.activeTask = NULL;
 
     if (tmp) {
-        D_800A62E0.unk_A14 = Sched_TryStartTask(D_800A62E0.unk_A18);
+        D_800A62E0.activeTask = Sched_TryStartTask(D_800A62E0.audioTaskSlot);
     }
 
-    if (sp24->unk_1C == 3) {
+    if (sp24->state == 3) {
         switch (sp24->task.t.type) {
             case M_AUDTASK:
-                D_800A62E0.unk_A18 = 0;
-                D_800A62E0.unk_A28 = 0;
-                D_800A62E0.unk_A14 = Sched_TryStartTask(D_800A62E0.unk_A1C);
+                D_800A62E0.audioTaskSlot = 0;
+                D_800A62E0.audioDoneFlag = 0;
+                D_800A62E0.activeTask = Sched_TryStartTask(D_800A62E0.rspTaskSlot);
                 break;
 
             case M_GFXTASK:
-                if (D_800A62E0.unk_A1C->unk_1E == 2) {
-                    D_800A62E0.unk_A1C = NULL;
-                    D_800A62E0.unk_A2C = 0;
+                if (D_800A62E0.rspTaskSlot->notifyFlag == 2) {
+                    D_800A62E0.rspTaskSlot = NULL;
+                    D_800A62E0.gfxDoneFlag = 0;
                 }
                 break;
 
             case 4:
-                D_800A62E0.unk_A1C = NULL;
-                D_800A62E0.unk_A30 = 0;
+                D_800A62E0.rspTaskSlot = NULL;
+                D_800A62E0.type4DoneFlag = 0;
                 break;
         }
     }
 }
 
 void Sched_HandleRdpEvent(void) {
-    Sched_HandleRdpCompletion(D_800A62E0.unk_A1C);
-    if (D_800A62E0.unk_A1C->unk_1C == 3) {
-        D_800A62E0.unk_A1C = NULL;
-        D_800A62E0.unk_A2C = 0;
+    Sched_HandleRdpCompletion(D_800A62E0.rspTaskSlot);
+    if (D_800A62E0.rspTaskSlot->state == 3) {
+        D_800A62E0.rspTaskSlot = NULL;
+        D_800A62E0.gfxDoneFlag = 0;
     }
 }
 
@@ -323,14 +323,14 @@ void Sched_ThreadEntry(void* arg0) {
 }
 
 void Sched_Init(void) {
-    D_800A62E0.unk_A10 = NULL;
-    D_800A62E0.unk_A14 = NULL;
-    D_800A62E0.unk_A18 = 0;
-    D_800A62E0.unk_A1C = NULL;
-    D_800A62E0.unk_A20 = NULL;
-    D_800A62E0.unk_A24 = NULL;
-    D_800A62E0.unk_A28 = 0;
-    D_800A62E0.unk_A2C = 0;
+    D_800A62E0.clientList = NULL;
+    D_800A62E0.activeTask = NULL;
+    D_800A62E0.audioTaskSlot = 0;
+    D_800A62E0.rspTaskSlot = NULL;
+    D_800A62E0.nextAudioTaskSlot = NULL;
+    D_800A62E0.nextRspTaskSlot = NULL;
+    D_800A62E0.audioDoneFlag = 0;
+    D_800A62E0.gfxDoneFlag = 0;
     osCreateThread(&D_800A62E0.thread, 3, Sched_ThreadEntry, NULL, D_800A62E0.stack, 0x64);
     osStartThread(&D_800A62E0.thread);
 }
@@ -339,32 +339,32 @@ void Sched_AddClient(unk_D_800AA660* arg0) {
     unk_D_800AA660* var_v1;
     unk_D_800AA660* var_a1;
 
-    if (D_800A62E0.unk_A10 == NULL) {
-        D_800A62E0.unk_A10 = arg0;
+    if (D_800A62E0.clientList == NULL) {
+        D_800A62E0.clientList = arg0;
     } else {
-        var_v1 = D_800A62E0.unk_A10;
-        var_a1 = var_v1->unk_01D8;
+        var_v1 = D_800A62E0.clientList;
+        var_a1 = var_v1->nextClient;
 
         while (var_a1 != NULL) {
             var_v1 = var_a1;
-            var_a1 = var_a1->unk_01D8;
+            var_a1 = var_a1->nextClient;
         }
-        var_v1->unk_01D8 = arg0;
+        var_v1->nextClient = arg0;
     }
-    arg0->unk_01D8 = NULL;
+    arg0->nextClient = NULL;
 }
 
 void Sched_RemoveClient(unk_D_800AA660* arg0) {
-    unk_D_800AA660** var_v0 = &D_800A62E0.unk_A10;
-    unk_D_800AA660* var_v1 = D_800A62E0.unk_A10;
+    unk_D_800AA660** var_v0 = &D_800A62E0.clientList;
+    unk_D_800AA660* var_v1 = D_800A62E0.clientList;
 
     while (var_v1 != NULL) {
         if (var_v1 == arg0) {
-            *var_v0 = var_v1->unk_01D8;
+            *var_v0 = var_v1->nextClient;
             break;
         }
-        var_v0 = &var_v1->unk_01D8;
-        var_v1 = var_v1->unk_01D8;
+        var_v0 = &var_v1->nextClient;
+        var_v1 = var_v1->nextClient;
     }
 }
 
@@ -374,23 +374,23 @@ void Sched_SubmitTask(UnkStruct80001380* arg0, s32 arg1) {
 
         switch (arg0->task.t.type) {
             case 2:
-                D_800A62E0.unk_A20 = arg0;
+                D_800A62E0.nextAudioTaskSlot = arg0;
                 break;
 
             case 1:
-                if ((arg1 != 0) && (D_800A62E0.unk_A1C == NULL)) {
-                    D_800A62E0.unk_A1C = arg0;
-                    D_800A62E0.unk_A24 = NULL;
+                if ((arg1 != 0) && (D_800A62E0.rspTaskSlot == NULL)) {
+                    D_800A62E0.rspTaskSlot = arg0;
+                    D_800A62E0.nextRspTaskSlot = NULL;
                     osSendMesg(&D_800A62E0.queue, 0x67, 0);
                 } else {
-                    D_800A62E0.unk_A24 = arg0;
+                    D_800A62E0.nextRspTaskSlot = arg0;
                 }
                 break;
 
             case 4:
-                if (D_800A62E0.unk_A1C == NULL) {
-                    D_800A62E0.unk_A1C = arg0;
-                    D_800A62E0.unk_A24 = NULL;
+                if (D_800A62E0.rspTaskSlot == NULL) {
+                    D_800A62E0.rspTaskSlot = arg0;
+                    D_800A62E0.nextRspTaskSlot = NULL;
                     osSendMesg(&D_800A62E0.queue, 0x67, 0);
                 }
                 break;

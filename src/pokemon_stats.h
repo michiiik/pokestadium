@@ -16,19 +16,19 @@ typedef enum {
 } PokemonRomType;
 
 typedef struct GbSavePortSnapshot {
-    /* 0x000 */ u8 unk_000;
-    /* 0x001 */ u8 unk_001;
-    /* 0x002 */ u16 unk_002;
-    /* 0x004 */ char unk_004[11];
-    /* 0x00F */ GbSaveParty unk_00F;
+    /* 0x000 */ u8 cartId;
+    /* 0x001 */ u8 mainDataChecksum;
+    /* 0x002 */ u16 trainerId;
+    /* 0x004 */ char playerName[11];
+    /* 0x00F */ GbSaveParty party;
 } GbSavePortSnapshot; // size >= 0x1A3
 
 typedef struct unk_func_800228F0 {
-    /* 0x00 */ u8 unk_00;
-    /* 0x01 */ u8 unk_01;
-    /* 0x02 */ u16 unk_02;
-    /* 0x04 */ char unk_04[16];
-    /* 0x14 */ char unk_14[16];
+    /* 0x00 */ u8 speciesId; // mirrors unk_D_800AE4E8_004_2_0DC0_002's layout (VictoryPalace deck-19 mon record)
+    /* 0x01 */ u8 level;
+    /* 0x02 */ u16 otId;
+    /* 0x04 */ char nickname[16]; // untranscoded via Text_UntranscodeFixedName
+    /* 0x14 */ char otName[16];
 } unk_func_800228F0; // size >= 0x28
 
 u16 Pokemon_LevelFromExp(s32 arg0, u32 arg1);

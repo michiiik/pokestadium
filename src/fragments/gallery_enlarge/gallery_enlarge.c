@@ -3,7 +3,7 @@
 #include "src/graphics_textures.h"
 #include "src/input.h"
 #include "src/gallery.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/audio_sfx.h"
 #include "src/gfx_buffer.h"
 #include "src/controller.h"
@@ -24,7 +24,7 @@ void Gallery_EnlargeInit(void) {
     D_837004C0 = 0;
     sp28 = PokeIcon_AllocFramebuffers(1);
     Gallery_ResetActiveScene();
-    D_837004B0 = Geo_CreateSceneInstance(0x280, 0x1E0, NULL, D_837004C8->unk_18[0], sp28, D_837004C4, Gallery_GetEnlargeTarget(1));
+    D_837004B0 = Geo_CreateSceneInstance(0x280, 0x1E0, NULL, D_837004C8->framebuffers[0], sp28, D_837004C4, Gallery_GetEnlargeTarget(1));
 }
 
 void func_83700090(void) {
@@ -34,8 +34,8 @@ void Gallery_EnlargeDraw(void) {
     static s16 D_837004B4 = 0;
 
     BgStage_DrawFrame();
-    if (D_837004B0->unk_00 == 2) {
-        Gallery_DrawPhotoThumbnail(D_837004B0->unk_08->img_p, 0, 0, D_837004B0->unk_04, D_837004B0->unk_06, 1, 0);
+    if (D_837004B0->state == 2) {
+        Gallery_DrawPhotoThumbnail(D_837004B0->colorBuffer->img_p, 0, 0, D_837004B0->width, D_837004B0->height, 1, 0);
     }
     BgStage_AdvanceFrame();
     D_837004B4 += 0x1000;
@@ -96,7 +96,7 @@ void Gallery_EnlargeReadInput(void) {
 void Gallery_EnlargeLoop(void) {
     do {
         Gallery_ProcessSceneInstance(D_837004B0);
-    } while (D_837004B0->unk_00 != 2);
+    } while (D_837004B0->state != 2);
 
     StageFade_StartFromOpaque(1);
 

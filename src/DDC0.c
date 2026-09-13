@@ -4,23 +4,22 @@
 #include "profiler.h"
 #include "audio_loop_point.h"
 #include "scheduler.h"
-#include "gb_tower_audio.h"
 #include "audio_commands.h"
 #include "src/audio_category_fade.h"
 #include "src/audio_sound_state.h"
 #include "src/audio_channel.h"
 #include "src/audio_loop_point.h"
 
-typedef struct unk_D_800A8480 {
-  /* 0x0000 */ OSThread thread;
-  /* 0x01B0 */ char unk01B0[0x2030];
-} unk_D_800A8480; // size = 0x21E0
+extern s32 D_800A83A0;
 
-static s32 D_800A83A0;
-static UnkStruct80001380 D_800A83A8[2];
-static s32 D_800A8478;
-static s32 D_800A847C;
-static unk_D_800A8480 D_800A8480;
+extern UnkStruct80001380 D_800A83A8[];
+
+extern s32 D_800A8478;
+extern s32 D_800A847C;
+
+extern OSThread D_800A8480;
+
+extern u8 D_800AA660[];
 
 void func_8000D1C0(void) {
 }
@@ -95,8 +94,8 @@ void Audio_Enable(void) {
 
 void Audio_ThreadMain(void* unused) {
     __osSetFpcCsr(0x01000C01);
-    Sched_InitClientQueue(&D_800A8480.thread, 1, 1);
-    Sched_AddClient(&D_800A8480.thread);
+    Sched_InitClientQueue(&D_800A8480, 1, 1);
+    Sched_AddClient(&D_800A8480);
     D_800A83A0 = 1;
     D_800A847C = -1;
     D_800A8478 = 0;
@@ -110,9 +109,9 @@ void Audio_ThreadMain(void* unused) {
 
     // thread loop
     while (1) {
-        Sched_WaitClientQueue(&D_800A8480.thread);
+        Sched_WaitClientQueue(&D_800A8480);
         profiler_log_thread4_time();
-        if ((D_800A83A0 != 0) && (D_800A62E0.unk_A38 < 0x15)) {
+        if ((D_800A83A0 != 0) && (D_800A62E0.shutdownCounter < 0x15)) {
             Audio_CreateFrameTaskWrapper(&D_800A83A8[D_800A8478].task);
             Sched_SubmitTask(&D_800A83A8[D_800A8478], 0);
         }
@@ -122,6 +121,6 @@ void Audio_ThreadMain(void* unused) {
 }
 
 void Audio_StartThread(void) {
-    osCreateThread(&D_800A8480.thread, 4, Audio_ThreadMain, NULL, &D_800AA660, 0x50);
-    osStartThread(&D_800A8480.thread);
+    osCreateThread(&D_800A8480, 4, Audio_ThreadMain, NULL, D_800AA660, 0x50);
+    osStartThread(&D_800A8480);
 }

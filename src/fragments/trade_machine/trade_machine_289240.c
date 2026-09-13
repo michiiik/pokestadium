@@ -717,7 +717,7 @@ void Trade_DrawPortInfoPanel(s16 arg0, s16 arg1, s16 arg2) {
 }
 
 #ifdef NON_MATCHING
-void func_82F04604(unk_D_82F144D0* arg0) {
+void Trade_DrawPickScreenGrid(unk_D_82F144D0* arg0) {
     static s16 D_82F13C0C[] = { 0x34, 0x148 };
 
     s32 i;
@@ -898,7 +898,7 @@ void func_82F04604(unk_D_82F144D0* arg0) {
 }
 #else
 static s16 D_82F13C0C[] = { 0x34, 0x148 };
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/trade_machine/trade_machine_289240/func_82F04604.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/41/fragment41_289240/Trade_DrawPickScreenGrid.s")
 #endif
 
 void Trade_ResetPickScreens(void) {
@@ -969,7 +969,7 @@ void Trade_DrawPickScreens(void) {
         if (ptr->unk_0000 != 0) {
             var_s3 = 1;
             if (ptr->unk_0002 != 0) {
-                func_82F04604(ptr);
+                Trade_DrawPickScreenGrid(ptr);
             }
         }
     }

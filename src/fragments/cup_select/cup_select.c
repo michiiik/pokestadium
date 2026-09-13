@@ -4,7 +4,7 @@
 #include "src/graphics_textures.h"
 #include "src/input.h"
 #include "src/save_data.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/audio_sfx.h"
 #include "src/matrix.h"
 #include "src/controller.h"
@@ -361,7 +361,7 @@ s32 CupSelect_HandleInput(void) {
 
     if (BTN_IS_PRESSED(gPlayer1Controller, BTN_A)) {
         Audio_PlaySoundEffectById(0x26);
-        D_800AE540.unk_0002 = D_82E023A8;
+        D_800AE540.progressIndex = D_82E023A8;
         var_v1 = 'slct';
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_B)) {
         Audio_PlaySoundEffectById(3);
@@ -441,7 +441,7 @@ s32 CupSelect_Main(UNUSED s32 arg0, UNUSED s32 arg1) {
     s16 var_v1 = -1;
     s32 sp18 = 1;
 
-    switch (D_800AE540.unk_0000) {
+    switch (D_800AE540.sessionMode) {
         case 3:
             var_v1 = 9;
             break;
@@ -456,11 +456,11 @@ s32 CupSelect_Main(UNUSED s32 arg0, UNUSED s32 arg1) {
 
         Font_Init(0x10, 0);
         Save_EnsureBankLoaded(2);
-        Save_GetModeSettings(&D_82E023A0, D_800AE540.unk_11F2);
-        if (D_800AE540.unk_0000 == 3) {
-            D_82E023AA = D_82E023A0.unk_05;
+        Save_GetModeSettings(&D_82E023A0, D_800AE540.roundSelector);
+        if (D_800AE540.sessionMode == 3) {
+            D_82E023AA = D_82E023A0.divisionACount;
         } else {
-            D_82E023AA = D_82E023A0.unk_06;
+            D_82E023AA = D_82E023A0.divisionBCount;
         }
         if (D_82E023AA == 4) {
             D_82E023AA -= 1;

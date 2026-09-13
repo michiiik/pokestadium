@@ -10,7 +10,7 @@
 #include "src/save_data.h"
 #include "src/text_system.h"
 #include "src/battle_hud.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/audio_sfx.h"
 #include "src/audio_loop_point.h"
 #include "src/gfx_buffer.h"
@@ -1706,7 +1706,7 @@ s32 VictoryPalace_IsCurrentSpeciesOwnedByPlayer(void) {
 
     VictoryPalace_LoadSpeciesRecord(&sp20, (D_82607B54 % D_8267E4F0) + 1);
     tmp = Text_GetPlayerLabel(1);
-    if ((sp20.unk_02 == 0) && (VictoryPalace_StringsEqual(&sp20.unk_14, tmp) == 1)) {
+    if ((sp20.otId == 0) && (VictoryPalace_StringsEqual(&sp20.otName, tmp) == 1)) {
         sp44 = 1;
     }
     return sp44;
@@ -1792,7 +1792,7 @@ s32 VictoryPalace_UpdateLeftPillarGlow(s32 arg0, unk_D_86002F34_alt18* arg1) {
         arg1->a = (D_82608550 * 0x28) / 5;
 
         *ptr = (D_82608550 * 0xFF) / 5;
-        D_826083D0.unk_0A6 = *ptr;
+        D_826083D0.poolIndex = *ptr;
     }
     return 0;
 }
@@ -1957,7 +1957,7 @@ void VictoryPalace_DrawOverlay(void) {
 
         gDisplayListHead = VictoryPalace_DrawFrameBorder(gDisplayListHead);
 
-        if (sp158.unk_00 & 0x80) {
+        if (sp158.speciesId & 0x80) {
             s32 temp_v0_2;
 
             gDPPipeSync(gDisplayListHead++);
@@ -1969,7 +1969,7 @@ void VictoryPalace_DrawOverlay(void) {
                                 G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
                                 G_TX_NOLOD, G_TX_NOLOD);
 
-            temp_v0_2 = Font_MeasureTextExtent(4, 0, Text_GetString(NULL, 0, D_8267E75C, (((sp158.unk_00 & 0x7F) - 1) % 7) + 7));
+            temp_v0_2 = Font_MeasureTextExtent(4, 0, Text_GetString(NULL, 0, D_8267E75C, (((sp158.speciesId & 0x7F) - 1) % 7) + 7));
 
             gSPTextureRectangle(gDisplayListHead++, (temp_v0_2 + 0x49) << 2, 0x0264, (temp_v0_2 + 0x59) << 2, 0x02A4,
                                 G_TX_RENDERTILE, 0, 0, 0x0400, 0x0400);
@@ -2042,12 +2042,12 @@ void VictoryPalace_DrawOverlay(void) {
         }
 
         Font_SetActive(8, 0);
-        Font_Printf(0x84, 0x2A, "%s", sp58.unk_04);
+        Font_Printf(0x84, 0x2A, "%s", sp58.nickname);
         Font_SetActive(4, 0);
-        Font_Printf(0x8C, 0x42, "%d", sp58.unk_01);
-        Font_Printf(0x8C, 0x56, "%s", sp58.unk_14);
-        Font_Printf(0x8C, 0x6A, "%05d", sp58.unk_02);
-        Font_Printf(0x46, 0x98, "%s", Text_GetString(NULL, 0, D_8267E75C, (((sp58.unk_00 & 0x7F) - 1) % 7) + 7));
+        Font_Printf(0x8C, 0x42, "%d", sp58.level);
+        Font_Printf(0x8C, 0x56, "%s", sp58.otName);
+        Font_Printf(0x8C, 0x6A, "%05d", sp58.otId);
+        Font_Printf(0x46, 0x98, "%s", Text_GetString(NULL, 0, D_8267E75C, (((sp58.speciesId & 0x7F) - 1) % 7) + 7));
         Font_DisableTwoCycleTexturing();
     }
 
@@ -2102,7 +2102,7 @@ void VictoryPalace_InitCarouselModel(s16 arg0) {
         return;
     }
 
-    temp_s0->unk_008.unk_0A6 = 0xFF;
+    temp_s0->unk_008.poolIndex = 0xFF;
     Model_InitDisplayObject(&temp_s0->unk_008, 0, temp_s0->unk_000, temp_s0->unk_004->unk_08->unk_00[0]);
 
     if (temp_s0->unk_000 == 0x90) {
@@ -2123,7 +2123,7 @@ void VictoryPalace_InitCarouselModel(s16 arg0) {
     temp_s0->unk_008.unk_01E.y = tmp;
     temp_s0->unk_008.unk_040.unk_08 = temp_s1->unk_04 << 0x10;
     temp_s0->unk_008.unk_040.unk_0C = 0;
-    temp_s0->unk_008.unk_01C = D_82608546;
+    temp_s0->unk_008.textureMode = D_82608546;
 }
 
 void VictoryPalace_SpawnCarouselEntry(s16 arg0) {
@@ -2168,7 +2168,7 @@ void VictoryPalace_LoadCurrentCarouselIcon(s16 arg0) {
     D_82607420[D_82607B52].unk_000 = temp_s1;
     PokeIcon_RequestFrameLoadWithVariant(D_8260741C, temp_s1, sp54, D_82607B52);
     PokeIcon_WaitFrameLoad(D_8260741C);
-    D_82607420[D_82607B52].unk_004 = D_8260741C->unk_24;
+    D_82607420[D_82607B52].unk_004 = D_8260741C->lastLoadedFragment;
 }
 
 void VictoryPalace_ScrollCarousel(f32 arg0) {
@@ -2501,7 +2501,7 @@ s32 HallOfFame_WaitFramebuffer(void) {
         VictoryPalace_PollInput();
         VictoryPalace_DrawFrame();
     }
-    D_82607420[D_82607B52].unk_004 = D_8260741C->unk_24;
+    D_82607420[D_82607B52].unk_004 = D_8260741C->lastLoadedFragment;
     return 2;
 }
 
@@ -2573,7 +2573,7 @@ void HallOfFame_SpawnPokeIcon(s32 arg0, f32 arg1) {
     if ((D_82607420[arg0].unk_000 != 151) || (VictoryPalace_SpeciesObtained(151) != 0)) {
         unk_D_86002F58_004_000* temp_s0 = &D_82607B60[arg0];
 
-        temp_s0->unk_0A6 = arg0;
+        temp_s0->poolIndex = arg0;
         Model_InitDisplayObject(temp_s0, 0, 0xB6, D_82608538->unk_08->unk_00[0]);
         temp_s0->unk_000.unk_02 &= ~0x40;
         temp_s0->unk_01E.x = 0;
@@ -2674,7 +2674,7 @@ void HallOfFame_InitGallery(void) {
     for (j = -2; j < 3; j++) {
         VictoryPalace_RequestCarouselIconLoad(j);
         PokeIcon_WaitFrameLoad(D_8260741C);
-        D_82607420[D_82607B52].unk_004 = D_8260741C->unk_24;
+        D_82607420[D_82607B52].unk_004 = D_8260741C->lastLoadedFragment;
     }
 
     for (j = -1; j < 2; j++) {

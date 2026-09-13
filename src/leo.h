@@ -4,18 +4,18 @@
 #include "global.h"
 
 typedef struct unk_D_800AA680 {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ u16 unk_04;
-    /* 0x06 */ u16 unk_06;
-    /* 0x08 */ void* unk_08;
+    /* 0x00 */ s32 magic; // Leo_AcceptPokemonDiskDescriptor: must equal 'POKE'
+    /* 0x04 */ u16 payloadSize; // Storage_QueueDiskTransfer's arg2 (Leo_QueueDiskPayloadRead)
+    /* 0x06 */ u16 payloadTransferCount; // Storage_QueueDiskTransfer's arg3
+    /* 0x08 */ void* payloadAddr; // Storage_QueueDiskTransfer's arg1
     /* 0x0C */ s32 unk_0C;
 } unk_D_800AA680; // size = 0x10
 
 typedef struct unk_D_800AA690 {
-    /* 0x00 */ u16 unk_00;
-    /* 0x02 */ u16 unk_02;
-    /* 0x04 */ u16 unk_04;
-    /* 0x06 */ u16 unk_06;
+    /* 0x00 */ u16 state; // Leo_RunBootStateMachine's dispatch
+    /* 0x02 */ u16 errorCode;
+    /* 0x04 */ u16 lastResult; // most recent osRecvMesg completion code
+    /* 0x06 */ u16 retryCount; // reset-completion retry counter, capped at 0x1F
 } unk_D_800AA690; // size = 0x8
 
 extern unk_D_800AA680 D_800AA680;

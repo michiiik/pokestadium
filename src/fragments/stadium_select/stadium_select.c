@@ -8,7 +8,7 @@
 #include "src/game_state.h"
 #include "src/session.h"
 #include "src/text_system.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/audio_sfx.h"
 #include "src/DDC0.h"
 #include "src/matrix.h"
@@ -522,30 +522,28 @@ static u32 D_841033F8[] = {
     0x00000000, 0x08000000, StadiumSelect_IconGeoPostCallback, 0x00000000, 0x06000000, 0x01000000,
 };
 
-void func_84100020(s16 arg0, s16 arg1, s16 arg2) {
-    s16 sp4;
-    s16 sp8;
-    s16 spC;
-    s16 sp10;
-    s16 sp14;
+#ifdef NON_MATCHING
+void StadiumSelect_DrawSparkle(s16 arg0, s16 arg1, s16 arg2) {
+    s32 spC;
+    s32 sp8;
+    s32 sp4;
 
     if (arg2 < 2) {
         return;
     }
 
-    sp4 = 0x8000 / arg2;
-    sp8 = (arg0 << 2) - (arg2 << 1);
-    spC = (arg1 << 2) - (arg2 << 1);
-    sp10 = sp8 + (arg2 << 2);
-    sp14 = spC + (arg2 << 2);
-
     gSPDisplayList(gDisplayListHead++, D_8006F558);
     gDPSetPrimColor(gDisplayListHead++, 0, 0, 255, 255, 0, 255);
     gDPLoadTextureBlock(gDisplayListHead++, D_302E440, G_IM_FMT_IA, G_IM_SIZ_8b, 32, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-    gSPTextureRectangle(gDisplayListHead++, sp8, spC, sp10, sp14, G_TX_RENDERTILE, 0, 0, sp4, sp4);
+    gSPTextureRectangle(gDisplayListHead++, ((arg0 << 2) - (arg2 << 1)), ((arg1 << 2) - (arg2 << 1)),
+                        (((arg0 << 2) - arg2 << 1)) << 2, (((arg1 << 2) - (arg2 << 1)) + (arg2 << 2)), G_TX_RENDERTILE,
+                        0, 0, 0x8000 / arg2, 0x8000 / arg2);
     gSPDisplayList(gDisplayListHead++, D_8006F630);
 }
+#else
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/59/fragment59/StadiumSelect_DrawSparkle.s")
+#endif
 
 void StadiumSelect_UpdateSparkles(s16 arg0) {
     s32 i;
@@ -565,7 +563,7 @@ void StadiumSelect_UpdateSparkles(s16 arg0) {
                 switch (var_s0->unk_00) {
                     case 1:
                         var_s0->unk_06 = (s32)(COSS(var_s0->unk_08) * 16.0f) + 0x10;
-                        func_84100020(var_s0->unk_02, var_s0->unk_04, var_s0->unk_06);
+                        StadiumSelect_DrawSparkle(var_s0->unk_02, var_s0->unk_04, var_s0->unk_06);
                         var_s0->unk_08 += 0x1000;
                         if ((u16)var_s0->unk_08 == 0x8000) {
                             var_s0->unk_00 = 2;
@@ -587,19 +585,19 @@ void StadiumSelect_UpdateSparkles(s16 arg0) {
 void StadiumSelect_InitSparkleFlags(void) {
     s32 i;
 
-    for (i = 0; i < D_84103CF0.unk_05; i++) {
+    for (i = 0; i < D_84103CF0.divisionACount; i++) {
         D_84102498[i].unk_00 = 1;
     }
 
-    for (i = 0; i < D_84103CF0.unk_06; i++) {
+    for (i = 0; i < D_84103CF0.divisionBCount; i++) {
         D_84102498[i + 6].unk_00 = 1;
     }
 
-    if (D_84103CF0.unk_00 & 0x10) {
+    if (D_84103CF0.flags & 0x10) {
         D_84102510[0] = 1;
     }
 
-    if (D_84103CF0.unk_00 & 0x20) {
+    if (D_84103CF0.flags & 0x20) {
         D_8410251C[0] = 1;
     }
 }
@@ -750,7 +748,7 @@ void StadiumSelect_DrawCupInfoPanel(s16 arg0) {
         Font_Printf(0x48, 0x182, Text_GetString(NULL, 0, D_84103440, D_84103CC8 + 6));
         Font_EndTexturedTextRendering();
 
-        if (D_800AE540.unk_11F2 == 1) {
+        if (D_800AE540.roundSelector == 1) {
             temp_v0 = Font_MeasureTextExtent(0x10, 0, Text_GetString(NULL, 0, D_84103440, D_84103CC8));
 
             gSPDisplayList(gDisplayListHead++, D_8006F518);
@@ -824,9 +822,9 @@ unk_D_80068BB0* StadiumSelect_BuildDivisionCupIcon(u8* arg0, s16 arg1) {
     s32 var_s3;
 
     if (arg1 == 3) {
-        var_s3 = D_84103CF0.unk_05;
+        var_s3 = D_84103CF0.divisionACount;
     } else {
-        var_s3 = D_84103CF0.unk_06;
+        var_s3 = D_84103CF0.divisionBCount;
     }
     StadiumSelect_DrawIconFrame(sp40, 0xA0, 0x7A);
 
@@ -860,7 +858,7 @@ unk_D_80068BB0* StadiumSelect_BuildSimpleCupIcon(u8* arg0, s16 arg1) {
         Gfx_DrawTextureRgba16(4, (i * 0x10) + 4, 0x80, 0x10, (i << 0xC) + arg0, 0x80, 0);
     }
 
-    if (D_84103CF0.unk_00 & (1 << arg1)) {
+    if (D_84103CF0.flags & (1 << arg1)) {
         if (arg1 == 4) {
             var_v0 = 5;
         } else {
@@ -1017,14 +1015,14 @@ s32 StadiumSelect_Main(s32 arg0, s32 arg1) {
     main_pool_push_state('PSSL');
 
     Save_EnsureBankLoaded(2);
-    Save_GetModeSettings(&D_84103CF0, D_800AE540.unk_11F2);
+    Save_GetModeSettings(&D_84103CF0, D_800AE540.roundSelector);
     Font_Init(0x18, 0);
     ASSET_LOAD(D_1000000, common_menu1_ui, 0);
     ASSET_LOAD(D_2000000, common_menu2_ui, 0);
     ASSET_LOAD(D_3000000, stadium_select_ui, 0);
     Text_InitStringTables();
     D_84103440 = Text_GetStringTable(0x13);
-    D_84103450 = func_8001E490();
+    D_84103450 = Gfx_CreateFullscreenQuadGrid();
 
     D_84103444 = ASSET_LOAD2(backgrounds, 1, 1);
 

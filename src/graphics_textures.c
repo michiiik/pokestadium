@@ -1,7 +1,7 @@
 #include "global.h"
 #include "graphics_textures.h"
 #include "include/string.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/gfx_buffer.h"
 #include "src/ui_graphics.h"
 #include "src/gfx_rect.h"
@@ -9,8 +9,6 @@
 #include "src/memory.h"
 #include "stdarg.h"
 #include "lib/ultralib/src/libc/xstdio.h"
-
-FontContext* D_800AC870;
 
 void Gfx_DrawTexturedRectClipped(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, s16 arg6, s16 arg7, s32 arg8) {
     unk_D_800A7440 sp30;
@@ -255,11 +253,12 @@ void Gfx_DrawTiledImageMesh(s16 arg0, s16 arg1, s16 arg2, f32 arg3, Vtx* arg4, u
     }
 }
 
-Vtx* func_8001E490(void) {
-    Vtx* sp54;
-    Vtx* var_s0;
+#ifdef NON_MATCHING
+Vtx* Gfx_CreateFullscreenQuadGrid(void) {
     s16 i;
     s16 j;
+    Vtx* sp54;
+    Vtx* var_s0;
 
     sp54 = main_pool_alloc(0x4B00, 0);
     if (sp54 != NULL) {
@@ -267,16 +266,20 @@ Vtx* func_8001E490(void) {
 
         for (i = -0xF0; i < 0xF0; i += 0x20) {
             for (j = -0x140; j < 0x140; j += 0x20) {
-                Gfx_SetVertexAttributes(var_s0++, j + 0, i + 0, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF);
-                Gfx_SetVertexAttributes(var_s0++, j + 0, i + 0x20, 0, 0, 0x200, 0xFF, 0xFF, 0xFF, 0xFF);
+                Gfx_SetVertexAttributes(var_s0++, j, i, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF);
+                Gfx_SetVertexAttributes(var_s0++, j, i + 0x20, 0, 0, 0x200, 0xFF, 0xFF, 0xFF, 0xFF);
                 Gfx_SetVertexAttributes(var_s0++, j + 0x20, i + 0x20, 0, 0x200, 0x200, 0xFF, 0xFF, 0xFF, 0xFF);
-                Gfx_SetVertexAttributes(var_s0++, j + 0x20, i + 0, 0, 0x200, 0, 0xFF, 0xFF, 0xFF, 0xFF);
+                Gfx_SetVertexAttributes(var_s0++, j + 0x20, i, 0, 0x200, 0, 0xFF, 0xFF, 0xFF, 0xFF);
             }
         }
     }
 
     return sp54;
 }
+#else
+Vtx* Gfx_CreateFullscreenQuadGrid(void);
+#pragma GLOBAL_ASM("asm/us/nonmatchings/1CF30/Gfx_CreateFullscreenQuadGrid.s")
+#endif
 
 void Gfx_SetVertexAttributes(Vtx* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, u8 arg6, u8 arg7, u8 arg8, u8 arg9) {
     arg0->v.ob[0] = arg1;
@@ -362,7 +365,7 @@ void Font_LoadSet(s32 arg0, s32 arg1, s32 arg2) {
         D_800AC870->unk_00[sp1C].unk_00 = arg1;
         D_800AC870->unk_00[sp1C].unk_02 = arg2;
         D_800AC870->unk_00[sp1C].unk_04 = temp_v0_2;
-        D_800AC870->unk_00[sp1C].unk_08 = &temp_v0_2->unk_90;
+        D_800AC870->unk_00[sp1C].unk_08 = &temp_v0_2->glyphTable;
         main_pool_set_func(temp_v0_2, sp1C, &Font_FreeSetAsset);
     }
 }

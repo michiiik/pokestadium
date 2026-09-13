@@ -27,7 +27,7 @@ static Vtx D_84389810[] = {
 };
 
 #ifdef NON_MATCHING
-Gfx* func_84367660(Gfx* arg0, Vec3f* arg1, Vec3f* arg2, Vec3f* arg3, f32 arg4, u8 arg5, u8 arg6, u8 arg7, u8 arg8) {
+Gfx* BattleAnim_BuildBladeStreakDisplayList(Gfx* arg0, Vec3f* arg1, Vec3f* arg2, Vec3f* arg3, f32 arg4, u8 arg5, u8 arg6, u8 arg7, u8 arg8) {
     s32 i;
     Vtx* sp1E8;
     s32 pad[2];
@@ -175,5 +175,5 @@ Gfx* func_84367660(Gfx* arg0, Vec3f* arg1, Vec3f* arg2, Vec3f* arg3, f32 arg4, u
     return arg0;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/battle_engine/battle_engine_351F20/func_84367660.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/62/fragment62_351F20/BattleAnim_BuildBladeStreakDisplayList.s")
 #endif

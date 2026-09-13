@@ -4,9 +4,9 @@
 #include "global.h"
 
 typedef struct unk_D_800AB970 {
-    /* 0x000 */ Vec3f unk_000[1];
+    /* 0x000 */ Vec3f scaleStack[1]; // GeoRender_PushScale/PopScale; declared size undersells - indexed up to scaleStackDepth+1 (0x174/0xC =~ 31 more entries)
     /* 0x00C */ char unk00C[0x174];
-    /* 0x180 */ s32 unk_180;
+    /* 0x180 */ s32 scaleStackDepth;
     /* 0x184 */ char unk184[0xC];
 } unk_D_800AB970; // size = 0x190?
 
@@ -17,31 +17,31 @@ typedef struct unk_D_800ABB00 {
 } unk_D_800ABB00; // size >= 0x10?
 
 typedef struct unk_D_800ABB28 {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ Gfx* unk_04;
-    /* 0x08 */ Gfx* unk_08;
-    /* 0x0C */ MtxF* unk_0C;
-    /* 0x10 */ Color_RGBA8_u32 unk_10;
-    /* 0x14 */ Color_RGBA8_u32 unk_14;
-    /* 0x18 */ unk_D_86002F34_alt11_018* unk_18;
-    /* 0x1C */ struct unk_D_800ABB28* unk_1C;
-    /* 0x20 */ Gfx* unk_20;
-    /* 0x24 */ u8 unk_24;
-    /* 0x24 */ u8 unk_25;
-    /* 0x24 */ u8 unk_26;
-    /* 0x24 */ u8 unk_27;
+    /* 0x00 */ s32 hasStarted; // GeoRender_SubmitDisplayList: 0 until the first display list is submitted this segment
+    /* 0x04 */ Gfx* startDL; // first display list pointer submitted this segment
+    /* 0x08 */ Gfx* currentDL; // most recent display list pointer; gSPBranchList chains from here
+    /* 0x0C */ MtxF* currentMatrix; // GeoRender_SubmitMaterial: cached to skip redundant matrix loads
+    /* 0x10 */ Color_RGBA8_u32 primColor;
+    /* 0x14 */ Color_RGBA8_u32 fogColor;
+    /* 0x18 */ unk_D_86002F34_alt11_018* texture; // cached bound texture (GeoRender_BindTexture)
+    /* 0x1C */ struct unk_D_800ABB28* textureLUT; // cached bound texture LUT
+    /* 0x20 */ Gfx* textureDL; // cached bound texture's display list
+    /* 0x24 */ u8 renderModeIndex; // indexes D_8006F124[bank]
+    /* 0x24 */ u8 combineTableIndex; // indexes D_8006F1B4
+    /* 0x24 */ u8 primColorLevel; // gDPSetPrimColor's level arg
+    /* 0x24 */ u8 textureGenActive;
 } unk_D_800ABB28; // size = 0x28
 
 typedef struct unk_D_800ABB10 {
-    /* 0x00 */ u8 unk_00;
-    /* 0x01 */ u8 unk_01;
+    /* 0x00 */ u8 combineTableIndex; // GeoRender_SetCombineTableEntry
+    /* 0x01 */ u8 primColorLevel; // GeoRender_SetPrimitiveColor's gDPSetPrimColor level arg
     /* 0x02 */ u8 unk_02;
     /* 0x03 */ u8 unk_03;
-    /* 0x04 */ Color_RGBA8_u32 unk_04;
-    /* 0x08 */ Color_RGBA8_u32 unk_08;
-    /* 0x0C */ unk_D_86002F34_alt11_018* unk_0C;
-    /* 0x10 */ unk_D_800ABB28* unk_10;
-    /* 0x14 */ Gfx* unk_14;
+    /* 0x04 */ Color_RGBA8_u32 primColor;
+    /* 0x08 */ Color_RGBA8_u32 fogColor;
+    /* 0x0C */ unk_D_86002F34_alt11_018* texture; // GeoRender_BindTexture's arg0
+    /* 0x10 */ unk_D_800ABB28* textureLUT;
+    /* 0x14 */ Gfx* textureDL;
 } unk_D_800ABB10; // size = 0x18?
 
 extern s32 D_8006F080;
@@ -65,7 +65,7 @@ void GeoRender_ResetTransformStack(void);
 void GeoRender_PushScale(Vec3f* arg0);
 Vtx* GeoOverlay_BuildFadeQuad(unk_D_86002F34_00C_0CC* arg0, unk_D_86002F34_00C_040* arg1);
 void GeoOverlay_DrawFadeQuad(unk_D_86002F34_00C_0CC* arg0, unk_D_86002F34_00C_040* arg1);
-void func_80012870(Vtx* arg0, unk_D_86002F34_00C_0CC* arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, s16 arg6, s16 arg7);
+void GeoOverlay_SetRotatedVertex(Vtx* arg0, unk_D_86002F34_00C_0CC* arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, s16 arg6, s16 arg7);
 Vtx* GeoOverlay_BuildRotatingQuad(unk_D_86002F34_00C_0CC* arg0);
 void GeoOverlay_DrawRotatingQuad(unk_D_86002F34_00C_0CC* arg0, UNUSED unk_D_86002F34_00C_040* arg1);
 void GeoOverlay_Draw(unk_D_86002F34_00C_0CC* arg0, unk_D_86002F34_00C_040* arg1);
@@ -81,7 +81,7 @@ void Geo_NodeBackground(GraphNode* arg0);
 void Geo_NodeClearDepth(UNUSED GraphNode* arg0);
 void Geo_NodeType9Empty(UNUSED GraphNode* arg0);
 void Geo_NodeFog(GraphNode* arg0);
-void func_80013D34(GraphNode* arg0);
+void Geo_NodeLight(GraphNode* arg0);
 void Geo_NodeType12Empty(UNUSED GraphNode* arg0);
 void Geo_NodeAmbientLight(GraphNode* arg0);
 void Geo_NodeShadowContext(GraphNode* arg0);

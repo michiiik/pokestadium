@@ -7,7 +7,7 @@
 #include "src/input.h"
 #include "src/ui_graphics.h"
 #include "src/text_system.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/audio_sound_state.h"
 #include "src/audio_sfx.h"
 #include "src/audio_channel.h"
@@ -127,37 +127,40 @@ void SushiGame_PollInput(void) {
     temp_v0 = *D_86806D68;
     D_86807518.buttonDown |= temp_v0->buttonDown;
     D_86807518.buttonPressed |= temp_v0->buttonPressed;
-    D_86807518.unk_0A |= temp_v0->unk_0A;
+    D_86807518.buttonReleased |= temp_v0->buttonReleased;
 
     temp_v0 = *D_86806D6C;
     D_86807518.buttonDown |= temp_v0->buttonDown;
     D_86807518.buttonPressed |= temp_v0->buttonPressed;
-    D_86807518.unk_0A |= temp_v0->unk_0A;
+    D_86807518.buttonReleased |= temp_v0->buttonReleased;
 
     temp_v0 = *D_86806D70;
     D_86807518.buttonDown |= temp_v0->buttonDown;
     D_86807518.buttonPressed |= temp_v0->buttonPressed;
-    D_86807518.unk_0A |= temp_v0->unk_0A;
+    D_86807518.buttonReleased |= temp_v0->buttonReleased;
 
     temp_v0 = *D_86806D74;
     D_86807518.buttonDown |= temp_v0->buttonDown;
     D_86807518.buttonPressed |= temp_v0->buttonPressed;
-    D_86807518.unk_0A |= temp_v0->unk_0A;
+    D_86807518.buttonReleased |= temp_v0->buttonReleased;
 
     if (1) {}
 }
 
+#ifdef NON_MATCHING
 Gfx* SushiGame_DrawPlateStack(Gfx* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    s32 sp34;
     unk_D_86806E20** var_a3;
+    unk_D_86806E20* ptr;
+    s32 var_s0;
     s32 var_v0;
     s32 var_v1;
-    s32 var_s0;
 
     var_s0 = (arg1 != 0) ? arg2 + 6 : arg2;
     var_v1 = arg3 + 24;
 
     while (arg4 > 0) {
-        s32 sp34 = var_v1;
+        sp34 = var_v1;
 
         if (arg4 < 5) {
             var_a3 = D_86806E20[arg4];
@@ -169,7 +172,7 @@ Gfx* SushiGame_DrawPlateStack(Gfx* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4)
 
         var_v0 = var_s0;
         while (*var_a3 != NULL) {
-            unk_D_86806E20* ptr = *var_a3;
+            ptr = *var_a3;
             sp34 -= (ptr->height * 3) / 4;
 
             gDPLoadTextureBlock(arg0++, ptr->texture, G_IM_FMT_RGBA, G_IM_SIZ_16b, ptr->width, ptr->height, 0,
@@ -190,6 +193,9 @@ Gfx* SushiGame_DrawPlateStack(Gfx* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4)
 
     return arg0;
 }
+#else
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/14/fragment14_144300/SushiGame_DrawPlateStack.s")
+#endif
 
 void SushiGame_DrawAllPlateStacks(void) {
     s32 i;
@@ -259,7 +265,7 @@ void SushiGame_DrawDishIcon(s32 arg0, s16 arg1, s16 arg2, f32 arg3) {
 }
 
 #ifdef NON_MATCHING
-void func_86800B38(void) {
+void SushiGame_DrawTutorialScreen(void) {
     s32 pad1;
     s32 pad2;
     s32 i;
@@ -281,7 +287,7 @@ void func_86800B38(void) {
                 var_v0 = 0x1C;
             }
 
-            if (!(D_86807558[i].unk_002 & 4)) {
+            if (!(D_86807558[i].flags & 4)) {
                 Widget_DrawPlayerIcon(i, D_86806D78[i], D_86806D80[i] + var_v0, 0.75f);
             } else {
                 Widget_DrawPlayerIcon(-1 - i, D_86806D78[i], D_86806D80[i] + var_v0, 0.75f);
@@ -468,7 +474,7 @@ void func_86800B38(void) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/sushi_game/sushi_game_144300/func_86800B38.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/14/fragment14_144300/SushiGame_DrawTutorialScreen.s")
 #endif
 
 void SushiGame_DrawFrame(void) {
@@ -483,7 +489,7 @@ void SushiGame_DrawFrame(void) {
     MiniFx_DrawParticles();
 
     if (D_8780FC98 == 0) {
-        func_86800B38();
+        SushiGame_DrawTutorialScreen();
     }
 
     if (D_8680753E == 0) {
@@ -537,7 +543,8 @@ s32 SushiGame_IsRoundTimeUp(void) {
     return var_v1;
 }
 
-s32 func_86801884(void) {
+#ifdef NON_MATCHING
+s32 SushiGame_Update(void) {
     s32 sp1C;
     s32 sp18;
     unk_D_86807558* ptr;
@@ -546,22 +553,26 @@ s32 func_86801884(void) {
     s32 var_a0;
 
     sp1C = 0;
+
     sp18 = 0;
     if ((D_8680753E != 0) && (gPlayer1Controller->buttonPressed != 0)) {
         if (StageContext_GetFadeMode() == 0) {
             sp18 = 1;
         }
     }
+
     if (((D_8780FC92 != 0) || (sp18 != 0)) && (D_8680750C != 7)) {
         D_8680750C = 7;
         D_86807540 = 0x1E;
         StageFade_StartFromTransparent(D_86807540);
         SushiGame_FadeAudio(D_86807540 / 2);
     }
+
     switch (D_8680750C) {
         case 0:
             SushiGame_UpdateWaitForStart();
             break;
+
         case 1:
             D_86807540 -= 1;
             if (D_86807540 <= 0) {
@@ -569,6 +580,7 @@ s32 func_86801884(void) {
                 Widget_CountdownStart(1);
             }
             break;
+
         case 2:
             temp_v0 = Widget_CountdownGetState();
             if ((temp_v0 >= 0) && (temp_v0 < 4)) {
@@ -579,6 +591,7 @@ s32 func_86801884(void) {
                 SushiGame_SetGamePhase(1);
             }
             break;
+
         case 3:
             if (D_8780FC94 == 0) {
                 D_86807510--;
@@ -588,6 +601,7 @@ s32 func_86801884(void) {
                     }
                 }
             }
+
             if (SushiGame_IsRoundTimeUp() != 0) {
                 if (D_8680753E == 0) {
                     D_8680750C = 4;
@@ -605,29 +619,35 @@ s32 func_86801884(void) {
                 }
             }
             break;
+
         case 4:
             if (SushiGame_AreAllPlayersIdle() != 0) {
                 D_86807540--;
             }
+
             if (D_86807540 <= 0) {
                 D_8680750C = 5;
                 SushiGame_BroadcastPlayerPhase(0xF, 4);
             }
             break;
+
         case 5:
             var_a0 = 1;
             ptr = &D_86807558[0];
+
             for (i = 0; i < 4; i++, ptr++) {
                 if (ptr->unk_018 != ptr->unk_01C) {
                     var_a0 = 0;
                 }
             }
+
             if ((var_a0 != 0) && (D_8780FC94 == 0)) {
                 D_8680750C = 6;
                 SushiGame_BroadcastPlayerPhase(0xF, 5);
                 Widget_PauseMenuTrigger(1);
             }
             break;
+
         case 6:
             if (D_8780FC96 != 0) {
                 D_8680750C = 7;
@@ -636,18 +656,24 @@ s32 func_86801884(void) {
                 SushiGame_FadeAudio(D_86807540 / 2);
             }
             break;
+
         case 7:
             if (D_86807540 > 0) {
                 D_86807540--;
             }
+
             if ((D_86807540 <= 0) && (Audio_GetActivityScore() == 0)) {
                 sp1C = 1;
                 Audio_ResetVolumeTransition();
             }
             break;
     }
+
     return sp1C;
 }
+#else
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/14/fragment14_144300/SushiGame_Update.s")
+#endif
 
 void SushiGame_MainLoop(void) {
     s32 var_s0;
@@ -666,7 +692,7 @@ void SushiGame_MainLoop(void) {
         MiniFx_UpdateParticles();
         SushiGame_DrawFrame();
 
-        if (func_86801884() != 0) {
+        if (SushiGame_Update() != 0) {
             var_s0 = 0;
         }
 

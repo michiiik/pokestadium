@@ -6,7 +6,7 @@
 #include "src/graphics_textures.h"
 #include "src/ui_graphics.h"
 #include "src/text_system.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/audio_sound_state.h"
 #include "src/audio_sfx.h"
 #include "src/audio_channel.h"
@@ -2516,11 +2516,11 @@ void miniGetCloser2Diglett(MiniActor* ekans, s32 nPlayer) {
         }
 
         if (ekans->unk_29E < 6) {
-            s16 tmp = ekans->unk_000.unk_01D - 0x40;
+            s16 tmp = ekans->unk_000.materialAlpha - 0x40;
             if (tmp < 0) {
                 tmp = 0;
             }
-            ekans->unk_000.unk_01D = tmp;
+            ekans->unk_000.materialAlpha = tmp;
         }
 
         ekans->unk_29E--;
@@ -2534,7 +2534,7 @@ void miniGetCloser2Diglett(MiniActor* ekans, s32 nPlayer) {
             }
 
             ekans->unk_000.unk_000.unk_01 &= ~1;
-            ekans->unk_000.unk_01D = 0xFF;
+            ekans->unk_000.materialAlpha = 0xFF;
             ekans->yRot_3 = 0;
             ekans->ySpinSpeed = 0;
             ekans->midAirState = 0;
@@ -2678,7 +2678,7 @@ void initDiglett(MiniActor* diglett, s32 nDiglett) {
     ModelAnim_SetAnimation(&diglett->unk_000, 1);
     MiniActor_SnapAnimToLastFrame(&diglett->unk_000);
 
-    diglett->unk_000.unk_01C = 0;
+    diglett->unk_000.textureMode = 0;
     diglett->unk_000.unk_000.unk_02 &= ~0x40;
 }
 
@@ -2827,7 +2827,7 @@ void EkansGame_RollDiglettGoldChance(MiniActor* diglett) {
     if (sp18 != 0) {
         D_86C12034 += 1;
         diglett->diglettIsGold = true;
-        diglett->unk_000.unk_01C = 1;
+        diglett->unk_000.textureMode = 1;
     }
 }
 
@@ -2939,7 +2939,7 @@ void miniDiglettStateMachine(void) {
                     activeDigletts[i].timer = 1;
                     activeDigletts[i].state = 9;
                     miniDiglettPtr->diglettIsGold = false;
-                    miniDiglettPtr->unk_000.unk_01C = 0;
+                    miniDiglettPtr->unk_000.textureMode = 0;
                 }
                 break;
 
@@ -3312,7 +3312,7 @@ void EkansGame_DrawShadows(void) {
         if (ekans->mainState == 2) {
             gSPDisplayList(gDisplayListHead++, D_8140DD58);
 
-            ParticleGfx_SetPrimColorTextureCombine(playerColors[i].r, playerColors[i].g, playerColors[i].b, (ekans->unk_000.unk_01D / 2) & 0xFF);
+            ParticleGfx_SetPrimColorTextureCombine(playerColors[i].r, playerColors[i].g, playerColors[i].b, (ekans->unk_000.materialAlpha / 2) & 0xFF);
             GeoRender_FindAnchorPosition(&ekans->unk_000, 0xA, &sp7C);
 
             sp7C.y = 5.0f;

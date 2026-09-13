@@ -67,7 +67,7 @@ void DynamoGame_DrawCrankIcon(void) {
     sp1C = Gfx_AllocDisplayList(sizeof(Gfx) * 16);
     sp18 = Gfx_AllocDisplayList(sizeof(Mtx) * 1);
 
-    D_8650AD80->unk_18 = sp1C;
+    D_8650AD80->displayList = sp1C;
     guScale(sp18, 0.1f, 0.1f, 0.1f);
 
     gSPDisplayList(sp1C++, D_86509210);

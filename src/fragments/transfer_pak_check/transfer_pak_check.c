@@ -8,7 +8,7 @@
 #include "src/game_state.h"
 #include "src/session.h"
 #include "src/text_system.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/audio_sfx.h"
 #include "src/gfx_buffer.h"
 #include "src/controller_ram.h"
@@ -1722,34 +1722,34 @@ void PakUi_DrawDataSummaryPanel(s16 arg0, s16 arg1, SessionContinueData* arg2, s
             PakUi_DrawMenuOptionText(0xC5, temp_s0 + 0xC7, 2, arg1, Text_GetString(NULL, 0, D_82D0AB9C, 0x2D));
             Gfx_SetEnvColor(0xFF, 0x64, 0x64, 0xFF);
 
-            if (arg2->unk_00 == 7) {
-                Font_Printf(0xA9, temp_s0 + 0x2D, Text_GetString(NULL, 0, D_82D0AB9C, arg2->unk_00 - 1));
-                Font_Printf(0xA9, temp_s0 + 0x4B, Text_GetString(NULL, 0, D_82D0AB9C, arg2->unk_01 + 0x13));
+            if (arg2->sessionMode == 7) {
+                Font_Printf(0xA9, temp_s0 + 0x2D, Text_GetString(NULL, 0, D_82D0AB9C, arg2->sessionMode - 1));
+                Font_Printf(0xA9, temp_s0 + 0x4B, Text_GetString(NULL, 0, D_82D0AB9C, arg2->progressIndex + 0x13));
 
-                if (arg2->unk_01 < 8) {
-                    if (arg2->unk_02 < 4) {
-                        Text_SetNumberToken(1, arg2->unk_02);
+                if (arg2->progressIndex < 8) {
+                    if (arg2->opponentNumber < 4) {
+                        Text_SetNumberToken(1, arg2->opponentNumber);
                         Font_Printf(0xA9, temp_s0 + 0x69, Text_GetString(sp50, sizeof(sp50), D_82D0AB9C, 0x2E));
                     } else {
                         Font_Printf(0xA9, temp_s0 + 0x69, Text_GetString(NULL, 0, D_82D0AB9C, 0x2F));
                     }
                 } else {
-                    Text_SetNumberToken(1, arg2->unk_02);
+                    Text_SetNumberToken(1, arg2->opponentNumber);
                     Font_Printf(0xA9, temp_s0 + 0x69, Text_GetString(sp50, sizeof(sp50), D_82D0AB9C, 0x30));
                 }
-            } else if ((arg2->unk_00 == 3) || (arg2->unk_00 == 6)) {
-                Font_Printf(0xA9, temp_s0 + 0x2D, Text_GetString(NULL, 0, D_82D0AB9C, arg2->unk_00 - 1));
-                Font_Printf(0xA9, temp_s0 + 0x4B, Text_GetString(NULL, 0, D_82D0AB9C, arg2->unk_01 + 7));
-                Font_Printf(0xA9, temp_s0 + 0x69, Text_GetString(NULL, 0, D_82D0AB9C, arg2->unk_02 + 0xA));
+            } else if ((arg2->sessionMode == 3) || (arg2->sessionMode == 6)) {
+                Font_Printf(0xA9, temp_s0 + 0x2D, Text_GetString(NULL, 0, D_82D0AB9C, arg2->sessionMode - 1));
+                Font_Printf(0xA9, temp_s0 + 0x4B, Text_GetString(NULL, 0, D_82D0AB9C, arg2->progressIndex + 7));
+                Font_Printf(0xA9, temp_s0 + 0x69, Text_GetString(NULL, 0, D_82D0AB9C, arg2->opponentNumber + 0xA));
             } else {
-                Font_Printf(0xA9, temp_s0 + 0x2D, Text_GetString(NULL, 0, D_82D0AB9C, arg2->unk_00 - 1));
-                Font_Printf(0xA9, temp_s0 + 0x4B, Text_GetString(NULL, 0, D_82D0AB9C, arg2->unk_02 + 0xA));
+                Font_Printf(0xA9, temp_s0 + 0x2D, Text_GetString(NULL, 0, D_82D0AB9C, arg2->sessionMode - 1));
+                Font_Printf(0xA9, temp_s0 + 0x4B, Text_GetString(NULL, 0, D_82D0AB9C, arg2->opponentNumber + 0xA));
             }
 
-            if (arg2->unk_00 != 7) {
+            if (arg2->sessionMode != 7) {
                 Font_SetActive(8, 0);
                 Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
-                Text_SetNumberToken(1, arg2->unk_04);
+                Text_SetNumberToken(1, arg2->badgeCount);
                 Font_Printf(0x12D, temp_s0 + 0x85, Text_GetString(&sp50, 0x100, D_82D0AB9C, 0x31));
             }
 
@@ -1759,8 +1759,8 @@ void PakUi_DrawDataSummaryPanel(s16 arg0, s16 arg1, SessionContinueData* arg2, s
             Font_Printf(0xA1, temp_s0 + 0x124, Text_GetString(NULL, 0, D_82D0AB9C, 0x32));
             Font_EndTexturedTextRendering();
 
-            if (arg2->unk_03 == 1) {
-                s32 temp_v0_3 = Font_MeasureTextExtent(0x10, 0, Text_GetString(NULL, 0, D_82D0AB9C, arg2->unk_00 - 1));
+            if (arg2->roundSelector == 1) {
+                s32 temp_v0_3 = Font_MeasureTextExtent(0x10, 0, Text_GetString(NULL, 0, D_82D0AB9C, arg2->sessionMode - 1));
 
                 gSPDisplayList(gDisplayListHead++, D_8006F518);
 
@@ -1906,7 +1906,7 @@ s16 TransferPak_MainMenu(SessionContinueData* arg0) {
 
         StageLoader_RunFrames(2);
 
-        if (D_800AE540.unk_0000 == 7) {
+        if (D_800AE540.sessionMode == 7) {
             sp44 = 0x27;
         } else {
             sp44 = 0x20;
@@ -2028,7 +2028,7 @@ s32 PakUi_RenderMenuIconTexture(s32 arg0, UNUSED unk_func_80011B94* arg1) {
     if (arg0 == 5) {
         var_a3 = D_8006F09C->unk_000.unk_14;
         var_a2 = var_a3;
-        if ((var_a3 == 0) && (D_800AE540.unk_11F2 == 1)) {
+        if ((var_a3 == 0) && (D_800AE540.roundSelector == 1)) {
             var_a2 = 7;
         }
 
@@ -2036,8 +2036,8 @@ s32 PakUi_RenderMenuIconTexture(s32 arg0, UNUSED unk_func_80011B94* arg1) {
 
         gSPSegment(gDisplayListHead++, 0x0F, (u32)D_82D0ABE0[var_a2]->img_p & 0x1FFFFFFF);
 
-        if (D_8006F09C->unk_01D < 0xFF) {
-            gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, D_8006F09C->unk_01D);
+        if (D_8006F09C->materialAlpha < 0xFF) {
+            gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, D_8006F09C->materialAlpha);
             gDPSetCombineLERP(gDisplayListHead++, 0, 0, 0, TEXEL0, TEXEL0, 0, ENVIRONMENT, 0, 0, 0, 0, COMBINED, 0, 0,
                               0, COMBINED);
         } else {
@@ -2170,7 +2170,7 @@ void PakUi_DrawHeaderProgressBar(s32 arg0, s32 arg1) {
         PakUi_DrawThickBoxBorder(0x38, (s16)((0x3C - tmp) / 2) + 0x24, 0x210, tmp, 0x1E, 0x1E, 0x82, 0x96);
         if (arg0 == 10) {
             sp48 = PakUi_ComputeBlinkAlpha();
-            if (D_82D0AB90.unk_00 == 0x1F8) {
+            if (D_82D0AB90.flags == 0x1F8) {
                 gSPDisplayList(gDisplayListHead++, D_8006F518);
                 gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, sp48);
 
@@ -2184,7 +2184,7 @@ void PakUi_DrawHeaderProgressBar(s32 arg0, s32 arg1) {
             tmp = (Font_MeasureTextExtent(0x10, 0, Text_GetString(NULL, 0, D_82D0AB9C, 0x3B)));
             Font_Printf(0x140 - tmp / 2, 0x36, Text_GetString(NULL, 0, D_82D0AB9C, 0x3B));
 
-            if (D_82D0AB90.unk_00 == 0x1F8) {
+            if (D_82D0AB90.flags == 0x1F8) {
                 Font_SetActive(8, 0);
                 Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, sp48);
                 Font_Printf(0x1D6, 0x2D, Text_GetString(NULL, 0, D_82D0AB9C, 0x3C));
@@ -2491,22 +2491,22 @@ void TransferPak_MenuIconsInit(void) {
                 case 0:
                 case 1:
                 case 2:
-                    D_82D09FF8[i].unk_01D = 0x80;
+                    D_82D09FF8[i].materialAlpha = 0x80;
                     break;
 
                 case 6:
                     if (sp1B & 2) {
-                        D_82D09FF8[i].unk_01D = 0xFF;
+                        D_82D09FF8[i].materialAlpha = 0xFF;
                     } else {
-                        D_82D09FF8[i].unk_01D = 0x80;
+                        D_82D09FF8[i].materialAlpha = 0x80;
                     }
                     break;
                 default:
-                    D_82D09FF8[i].unk_01D = 0xFF;
+                    D_82D09FF8[i].materialAlpha = 0xFF;
                     break;
             }
         } else {
-            D_82D09FF8[i].unk_01D = 0xFF;
+            D_82D09FF8[i].materialAlpha = 0xFF;
         }
     }
 
@@ -2534,7 +2534,7 @@ s32 TransferPak_MenuHandleInput(void) {
     sp22 = D_82D06FA0;
     var_a3 = -1;
     if (BTN_IS_PRESSED(gPlayer1Controller, BTN_A)) {
-        if (D_82D09FF8[D_82D06FA0].unk_01D == 0xFF) {
+        if (D_82D09FF8[D_82D06FA0].materialAlpha == 0xFF) {
             var_a3 = D_82D06FA0;
         } else {
             D_82D0ABA4 = 1;
@@ -2551,10 +2551,10 @@ s32 TransferPak_MenuHandleInput(void) {
         sp24 = D_82D09F1C[D_82D06FA0].unk_0A;
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DRIGHT)) {
         sp24 = D_82D09F1C[D_82D06FA0].unk_0B;
-    } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_CRIGHT) && (D_82D0AB90.unk_00 == 0x1F8)) {
+    } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_CRIGHT) && (D_82D0AB90.flags == 0x1F8)) {
         Audio_PlaySoundEffectById(2);
         var_a3 = -1;
-        D_800AE540.unk_11F2 ^= 1;
+        D_800AE540.roundSelector ^= 1;
     }
 
     if ((sp24 != -1) && (sp22 != sp24)) {
@@ -2745,8 +2745,8 @@ void Pak_PollPortStatus(void) {
 
     for (i = 0; i < 4; i++) {
         GbSave_CopyPlayerIdentity(i, &sp48);
-        Text_UntranscodeName(&D_82D0AB38[i].unk_08, &sp48.unk_02);
-        D_82D0AB38[i].unk_06 = sp48.unk_00;
+        Text_UntranscodeName(&D_82D0AB38[i].unk_08, &sp48.playerName);
+        D_82D0AB38[i].unk_06 = sp48.trainerId;
         D_82D0AB38[i].unk_01 = GbSave_GetPortGame(i);
         D_82D0AB38[i].unk_00 = GbSave_GetSaveState(i);
         D_82D0AB38[i].unk_03 = GbSave_SavedAtPokemonCenter(i);
@@ -2800,7 +2800,7 @@ s32 TransferPak_CheckMain(s32 arg0, s32 arg1) {
     Save_GetModeSettings(&D_82D0AB90, 0);
     Save_GetOptionsField02(&D_82D0AB98);
     sp53 = (D_82D0AB98 & 4) != 0;
-    D_800AE540.unk_11F2 = sp53;
+    D_800AE540.roundSelector = sp53;
     Gfx_InitDisplayListBuffers(0x10000, 0);
     sp54 = StageContext_Allocate(1, 0, 2, 0, 2, 1);
     Font_Init(0x1C, 0);
@@ -2836,8 +2836,8 @@ s32 TransferPak_CheckMain(s32 arg0, s32 arg1) {
 
     StageContext_Deactivate();
 
-    if (D_800AE540.unk_11F2 != sp53) {
-        if (D_800AE540.unk_11F2 == 0) {
+    if (D_800AE540.roundSelector != sp53) {
+        if (D_800AE540.roundSelector == 0) {
             D_82D0AB98 &= ~4;
         } else {
             D_82D0AB98 |= 4;

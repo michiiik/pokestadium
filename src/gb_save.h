@@ -6,39 +6,39 @@
 
 typedef struct unk_func_8002EBD8_arg0 {
     /* 0x00 */ char unk00[0x8];
-    /* 0x08 */ u16 unk_08;
+    /* 0x08 */ u16 buttonFlags; // Ui_GetSelectionDirection: 0x4000/0x8000 bits select -1/+1
 } unk_func_8002EBD8_arg0; // size >= 0xA
 
 typedef struct unk_func_8002E128_arg0 {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ s32 unk_04;
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ s32 unk_0C;
+    /* 0x00 */ s32 value; // Ui_AdjustSteppedRangeSelection
+    /* 0x04 */ s32 minValue;
+    /* 0x08 */ s32 maxValue;
+    /* 0x0C */ s32 stepSize;
 } unk_func_8002E128_arg0; // size >= 0x10
 
 typedef struct unk_func_8002DCB8_arg0 {
     /* 0x00 */ s32 unk_00;
-    /* 0x04 */ s32 unk_04;
-    /* 0x08 */ s32 unk_08;
+    /* 0x04 */ s32 selectedIndex; // Ui_AdjustVerticalSelection
+    /* 0x08 */ s32 itemCount;
 } unk_func_8002DCB8_arg0; // size >= 0xC
 
 typedef struct unk_func_8002DD98_arg0 {
     /* 0x00 */ s32 unk_00;
-    /* 0x04 */ s32 unk_04;
-    /* 0x08 */ s32 unk_08;
+    /* 0x04 */ s32 selectedIndex; // Ui_AdjustHorizontalSelection
+    /* 0x08 */ s32 itemCount;
 } unk_func_8002DD98_arg0; // size >= 0xC
 
 typedef struct unk_func_8002DE78_arg0 {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ s32 unk_04;
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ s32 unk_0C;
+    /* 0x00 */ s32 value; // Ui_AdjustSteppedScrollSelection
+    /* 0x04 */ s32 minValue;
+    /* 0x08 */ s32 maxValue;
+    /* 0x0C */ s32 stepSize;
 } unk_func_8002DE78_arg0; // size >= 0x10
 
 typedef struct unk_func_8002D860 {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ s32 unk_04;
-    /* 0x08 */ s32 unk_08;
+    /* 0x00 */ s32 isEmpty; // GbSave_BuildPortSummary: set from GbSave_GetSaveState
+    /* 0x04 */ s32 gameId; // GbSave_GetPortGame
+    /* 0x08 */ s32 trainerId; // GbSave_GetTrainerId; only set when !isEmpty
 } unk_func_8002D860; // size = 0xC
 
 typedef struct ret_func_8002ED08 {
@@ -46,24 +46,24 @@ typedef struct ret_func_8002ED08 {
 } ret_func_8002ED08; // size = 0xC
 
 typedef struct unk_func_8820E99C_030_030 {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ s32 unk_04;
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ s32 unk_0C;
-    /* 0x10 */ s32 unk_10;
+    /* 0x00 */ s32 value; // shares unk_func_8830867C_044_038_030's layout (Ui_AdjustNumericSelection/HandleNumericSelectionInput)
+    /* 0x04 */ s32 minValue;
+    /* 0x08 */ s32 maxValue;
+    /* 0x0C */ s32 maxDigits;
+    /* 0x10 */ s32 digitIndex;
 } unk_func_8820E99C_030_030; // size = 0x14
 
 typedef struct unk_func_8830867C_044_038_030 {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ s32 unk_04;
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ s32 unk_0C;
-    /* 0x10 */ s32 unk_10;
+    /* 0x00 */ s32 value; // Ui_AdjustNumericSelection
+    /* 0x04 */ s32 minValue;
+    /* 0x08 */ s32 maxValue;
+    /* 0x0C */ s32 maxDigits;
+    /* 0x10 */ s32 digitIndex; // decade cursor; var_a2 = 10^digitIndex
 } unk_func_8830867C_044_038_030; // size = 0x14
 
 typedef struct unk_D_8007596C {
-    /* 0x00 */ u16 unk_00;
-    /* 0x02 */ u16 unk_02;
+    /* 0x00 */ u16 height; // Pokedex_FormatHeightString
+    /* 0x02 */ u16 weight; // Pokedex_FormatWeightString
 } unk_D_8007596C; // size = 0x4
 
 extern unk_func_88500020 D_800758E0;

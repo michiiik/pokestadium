@@ -2,7 +2,7 @@
 #include "src/display_object_textures.h"
 #include "src/graphics_textures.h"
 #include "src/gallery.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/gfx_buffer.h"
 #include "src/controller_ram.h"
 #include "src/dp_intro.h"
@@ -71,7 +71,7 @@ s32 Snap_PrintClubPrintSeals(s32 arg0, s32 arg1) {
     s32 i;
     unk_D_86002F58_004_000_010* temp_s0;
     unk_func_80007444* temp_v0;
-    unk_D_83403C60* sp60 = (D_83407AE4 != 0) ? D_83407AC0 : D_83407ABC;
+    GalleryPhotoRecord* sp60 = (D_83407AE4 != 0) ? D_83407AC0 : D_83407ABC;
     u8 sp50[] = {
         0x00, 0x00, 0x01, 0x01, 0x00, 0x00, 0x01, 0x01, 0x02, 0x02, 0x03, 0x03, 0x02, 0x02, 0x03, 0x03,
     };
@@ -104,7 +104,7 @@ s32 Snap_PrintClubPrintSeals(s32 arg0, s32 arg1) {
         D_8FA00A28 = ASSET_LOAD2(stadium_models, 1, 1);
         temp_s0 = PokeIcon_AllocFramebuffers(5);
         Gallery_ClearPhotoRenderTarget();
-        D_8FA00A00 = Geo_CreateSceneInstance(0x280, 0x1E0, D_8FA00A2C->unk_18[0], NULL, temp_s0, D_8FA00A28, sp60);
+        D_8FA00A00 = Geo_CreateSceneInstance(0x280, 0x1E0, D_8FA00A2C->framebuffers[0], NULL, temp_s0, D_8FA00A28, sp60);
     }
 
     StageContext_Activate(temp_v0);
@@ -129,15 +129,15 @@ s32 Snap_PrintClubPrintSeals(s32 arg0, s32 arg1) {
             }
 
             if (sp4E != var_v0) {
-                D_8FA00A00->unk_18 = &sp60[var_v0];
-                D_8FA00A00->unk_00 = 0;
+                D_8FA00A00->photoRecord = &sp60[var_v0];
+                D_8FA00A00->state = 0;
                 sp4E = var_v0;
             }
             main_pool_push_state('DRAW');
 
             do {
                 Gallery_ProcessSceneInstance(D_8FA00A00);
-            } while (D_8FA00A00->unk_00 != 2);
+            } while (D_8FA00A00->state != 2);
 
             Snap_PrintClubDrawSealMargin(i);
             main_pool_pop_state('DRAW');

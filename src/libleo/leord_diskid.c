@@ -1,18 +1,19 @@
 #include "global.h"
 #include "libleo/internal.h"
 
-// extern
-extern u16 LEOrw_flags;
-extern u8 LEO_TempBuffer[0xE8];
+/*
+u8 leo_disk_id_lba[] = {14, 15};    //D_8007DAF0
 
-// .data
-LEOCmdRead read_id_cmd = {
-    {LEO_COMMAND_READ, 0,0,0, 0,0,0,0, NULL},
+LEOCmdRead read_id_cmd = {        //D_80079590
+    {LEO_COMMAND_READ, 0,0,0, 0,0,0,0, 0},
     14, 1, LEO_TempBuffer, 0
 };
+*/
 
-// .rodata
-const u8 leo_disk_id_lba[] = {14, 15};
+extern u16 LEOrw_flags;
+extern u8 LEO_TempBuffer[0xE8];
+extern u8 leo_disk_id_lba[2];
+extern LEOCmdRead read_id_cmd;
 
 void leoReadDiskId(void) {
     LEOCmdRead dummy_cmd;

@@ -3,7 +3,6 @@
 
 #include "global.h"
 
-extern u8 D_800AF770[8];
 extern s16 D_800AF778[4];
 extern s16 D_800AF780[4];
 extern s16 D_800AF788[4];

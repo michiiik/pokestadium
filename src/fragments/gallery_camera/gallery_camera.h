@@ -125,7 +125,7 @@ void Gallery_InitBackgroundScene(void);
 void GalleryCamera_ComputeFrameCornerPos(f32* arg0, f32* arg1, s16* arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, s16 arg7);
 void GalleryCamera_InitIntroSequence(void);
 void GalleryCamera_CopyControllerState(Controller* arg0, Controller* arg1);
-void func_86900A14(void);
+void GalleryCamera_PlayScriptedInput(void);
 void GalleryCamera_AddPolarOffset(f32* arg0, f32* arg1, s16 arg2, s16 arg3);
 void Gallery_CameraReadInput(void);
 void GalleryCamera_UpdatePokemonIdleAnim(void);

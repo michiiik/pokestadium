@@ -1,6 +1,6 @@
 #include "minigame_dispatch.h"
 #include "src/game_state.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/memory.h"
 
 void MiniGame_Dispatch(void) {

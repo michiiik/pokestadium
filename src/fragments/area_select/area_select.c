@@ -4,7 +4,7 @@
 #include "src/game_state.h"
 #include "src/save_data.h"
 #include "src/text_system.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/audio_sfx.h"
 #include "src/cry.h"
 #include "src/gfx_buffer.h"
@@ -16,38 +16,38 @@
 #include "src/math_util.h"
 
 typedef struct AreaSelectEntryConfig {
-    /* 0x00 */ s16 unk_00;
-    /* 0x02 */ s16 unk_02;
-    /* 0x04 */ s16 unk_04;
-    /* 0x06 */ s8 unk_06;
-    /* 0x07 */ s8 unk_07;
-    /* 0x08 */ s8 unk_08;
-    /* 0x09 */ s8 unk_09;
-    /* 0x0A */ Color_RGBA8 unk_0A;
+    /* 0x00 */ s16 x;
+    /* 0x02 */ s16 y;
+    /* 0x04 */ s16 sparkleRadius;
+    /* 0x06 */ s8 upIndex;
+    /* 0x07 */ s8 downIndex;
+    /* 0x08 */ s8 leftIndex;
+    /* 0x09 */ s8 rightIndex;
+    /* 0x0A */ Color_RGBA8 glowColor;
 } AreaSelectEntryConfig; // size = 0xE
 
 typedef struct AreaSelectSparklePoint {
-    /* 0x00 */ s16 unk_00;
-    /* 0x02 */ s16 unk_02;
-    /* 0x04 */ s16 unk_04;
+    /* 0x00 */ s16 x;
+    /* 0x02 */ s16 y;
+    /* 0x04 */ s16 size;
 } AreaSelectSparklePoint; // size = 0x6
 
 typedef struct AreaSelectSparkleTrail {
-    /* 0x00 */ s16 unk_00;
-    /* 0x02 */ s16 unk_02;
-    /* 0x04 */ s16 unk_04;
-    /* 0x06 */ s16 unk_06;
-    /* 0x08 */ s16 unk_08;
-    /* 0x0A */ s16 unk_0A;
-    /* 0x0C */ AreaSelectSparklePoint unk_0C[4];
+    /* 0x00 */ s16 x;
+    /* 0x02 */ s16 y;
+    /* 0x04 */ s16 radius;
+    /* 0x06 */ s16 alpha;
+    /* 0x08 */ s16 angle;
+    /* 0x0A */ s16 textureFrame;
+    /* 0x0C */ AreaSelectSparklePoint points[6];
 } AreaSelectSparkleTrail; // size = 0x24
 
 typedef struct AreaSelectCursorGlow {
-    /* 0x00 */ s16 unk_00;
-    /* 0x02 */ s16 unk_02;
-    /* 0x04 */ s16 unk_04;
-    /* 0x06 */ s16 unk_06;
-    /* 0x08 */ Color_RGBA8 unk_08;
+    /* 0x00 */ s16 x;
+    /* 0x02 */ s16 y;
+    /* 0x04 */ s16 radius;
+    /* 0x06 */ s16 alpha;
+    /* 0x08 */ Color_RGBA8 color;
 } AreaSelectCursorGlow; // size >= 0xC
 
 static s16 gAreaSelectBackgroundFadeAlpha = 0;
@@ -145,13 +145,13 @@ Vtx* AreaSelect_BuildGlowQuadVerts(void) {
     u8 temp_s4;
     u8 temp_s5;
 
-    temp_s6 = gAreaSelectCursorGlow.unk_00;
-    temp_s7 = gAreaSelectCursorGlow.unk_02;
-    temp_s0 = gAreaSelectCursorGlow.unk_04;
-    temp_s2 = gAreaSelectCursorGlow.unk_08.r;
-    temp_s3 = gAreaSelectCursorGlow.unk_08.g;
-    temp_s4 = gAreaSelectCursorGlow.unk_08.b;
-    temp_s5 = gAreaSelectCursorGlow.unk_08.a;
+    temp_s6 = gAreaSelectCursorGlow.x;
+    temp_s7 = gAreaSelectCursorGlow.y;
+    temp_s0 = gAreaSelectCursorGlow.radius;
+    temp_s2 = gAreaSelectCursorGlow.color.r;
+    temp_s3 = gAreaSelectCursorGlow.color.g;
+    temp_s4 = gAreaSelectCursorGlow.color.b;
+    temp_s5 = gAreaSelectCursorGlow.color.a;
 
     temp_v0 = Gfx_AllocDisplayList(sizeof(Vtx) * 8);
 
@@ -176,7 +176,7 @@ Vtx* AreaSelect_BuildGlowQuadVerts(void) {
 void AreaSelect_DrawCursorGlow(void) {
     Vtx* temp_v0;
 
-    if (gAreaSelectCursorGlow.unk_08.a <= 0) {
+    if (gAreaSelectCursorGlow.color.a <= 0) {
         return;
     }
 
@@ -187,7 +187,7 @@ void AreaSelect_DrawCursorGlow(void) {
 
         gDPSetCycleType(gDisplayListHead++, G_CYC_1CYCLE);
         gSPClearGeometryMode(gDisplayListHead++, G_ZBUFFER | G_LIGHTING);
-        gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, gAreaSelectCursorGlow.unk_06);
+        gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, gAreaSelectCursorGlow.alpha);
         gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
         gDPSetCombineLERP(gDisplayListHead++, ENVIRONMENT, SHADE, ENV_ALPHA, SHADE, 0, 0, 0, SHADE, ENVIRONMENT, SHADE,
                           ENV_ALPHA, SHADE, 0, 0, 0, SHADE);
@@ -221,18 +221,18 @@ void AreaSelect_AdvanceSparkleTrail(void) {
     s32 i;
     s32 j;
     s16 temp_fv0;
-    s16 var_v0 = gAreaSelectSparkleTrails[0].unk_08;
+    s16 var_v0 = gAreaSelectSparkleTrails[0].angle;
 
     for (i = 0; i < 3; i++) {
         for (j = 4; j >= 0; j--) {
-            gAreaSelectSparkleTrails[i].unk_0C[j + 1] = gAreaSelectSparkleTrails[i].unk_0C[j];
+            gAreaSelectSparkleTrails[i].points[j + 1] = gAreaSelectSparkleTrails[i].points[j];
         }
 
-        temp_fv0 = (gAreaSelectSparkleTrails[0].unk_06 * gAreaSelectSparkleTrails[0].unk_04) / 100;
+        temp_fv0 = (gAreaSelectSparkleTrails[0].alpha * gAreaSelectSparkleTrails[0].radius) / 100;
 
-        gAreaSelectSparkleTrails[i].unk_0C[0].unk_00 = gAreaSelectSparkleTrails[0].unk_00 + (COSS((var_v0)) * temp_fv0);
-        gAreaSelectSparkleTrails[i].unk_0C[0].unk_02 = gAreaSelectSparkleTrails[0].unk_02 + (SINS((var_v0)) * temp_fv0);
-        gAreaSelectSparkleTrails[i].unk_0C[0].unk_04 = (gAreaSelectSparkleTrails[0].unk_06 * 0x48) / 100;
+        gAreaSelectSparkleTrails[i].points[0].x = gAreaSelectSparkleTrails[0].x + (COSS((var_v0)) * temp_fv0);
+        gAreaSelectSparkleTrails[i].points[0].y = gAreaSelectSparkleTrails[0].y + (SINS((var_v0)) * temp_fv0);
+        gAreaSelectSparkleTrails[i].points[0].size = (gAreaSelectSparkleTrails[0].alpha * 0x48) / 100;
 
         var_v0 -= 0x5555;
     }
@@ -241,16 +241,16 @@ void AreaSelect_AdvanceSparkleTrail(void) {
 void AreaSelect_InitSparkleTrail(s32 arg0) {
     s32 i;
 
-    gAreaSelectSparkleTrails[0].unk_00 = gAreaSelectEntryConfigs[arg0].unk_00;
-    gAreaSelectSparkleTrails[0].unk_02 = gAreaSelectEntryConfigs[arg0].unk_02;
-    gAreaSelectSparkleTrails[0].unk_04 = gAreaSelectEntryConfigs[arg0].unk_04;
-    gAreaSelectSparkleTrails[0].unk_06 = 0x64;
-    gAreaSelectSparkleTrails[0].unk_0A = 0;
-    gAreaSelectSparkleTrails[0].unk_08 = 0;
+    gAreaSelectSparkleTrails[0].x = gAreaSelectEntryConfigs[arg0].x;
+    gAreaSelectSparkleTrails[0].y = gAreaSelectEntryConfigs[arg0].y;
+    gAreaSelectSparkleTrails[0].radius = gAreaSelectEntryConfigs[arg0].sparkleRadius;
+    gAreaSelectSparkleTrails[0].alpha = 0x64;
+    gAreaSelectSparkleTrails[0].textureFrame = 0;
+    gAreaSelectSparkleTrails[0].angle = 0;
 
     for (i = 0; i < 6; i++) {
         AreaSelect_AdvanceSparkleTrail();
-        gAreaSelectSparkleTrails[0].unk_08 -= 0x800;
+        gAreaSelectSparkleTrails[0].angle -= 0x800;
     }
 }
 
@@ -293,9 +293,9 @@ void AreaSelect_DrawSparkleTrail(u8* arg0) {
 
     for (i = 5; i >= 0; i--) {
         for (j = 0; j < 3; j++) {
-            temp_s1 = gAreaSelectSparkleTrails[j].unk_0C[i].unk_04;
-            temp_s3 = gAreaSelectSparkleTrails[j].unk_0C[i].unk_00;
-            temp_s4 = gAreaSelectSparkleTrails[j].unk_0C[i].unk_02;
+            temp_s1 = gAreaSelectSparkleTrails[j].points[i].size;
+            temp_s3 = gAreaSelectSparkleTrails[j].points[i].x;
+            temp_s4 = gAreaSelectSparkleTrails[j].points[i].y;
 
             if (temp_s1 != 0) {
                 if (i == 0) {
@@ -322,13 +322,13 @@ void AreaSelect_UpdateSparkles(void) {
         gDPSetTexturePersp(gDisplayListHead++, G_TP_PERSP);
         gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
 
-        AreaSelect_DrawSparkleTrail(gAreaSelectSparkleTextures[gAreaSelectSparkleTrails->unk_0A / 2]);
+        AreaSelect_DrawSparkleTrail(gAreaSelectSparkleTextures[gAreaSelectSparkleTrails->textureFrame / 2]);
 
         gSPDisplayList(gDisplayListHead++, D_8006F630);
         gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF);
 
-        gAreaSelectSparkleTrails->unk_08 -= 0x800;
-        gAreaSelectSparkleTrails->unk_0A = (gAreaSelectSparkleTrails->unk_0A + 2) % 8;
+        gAreaSelectSparkleTrails->angle -= 0x800;
+        gAreaSelectSparkleTrails->textureFrame = (gAreaSelectSparkleTrails->textureFrame + 2) % 8;
     }
 }
 
@@ -338,7 +338,7 @@ void AreaSelect_DrawNameBanner(s16 arg0, s16 arg1, s16 arg2, s16 arg3) {
 
     if (arg3 != 8) {
         if (arg3 == 7) {
-            arg3 += gAreaSelectGameOptions.unk_00;
+            arg3 += gAreaSelectGameOptions.presentationMode;
         }
         var_s2 = gAreaSelectNameBannerTextures[arg3];
 
@@ -349,7 +349,7 @@ void AreaSelect_DrawNameBanner(s16 arg0, s16 arg1, s16 arg2, s16 arg3) {
             Gfx_DrawTextureRgba16(arg0, arg1 + (i * 4), 0xC4, 4, var_s2 + (i * 0x620), 0xC4, 0);
         }
 
-        if ((D_800AE540.unk_11F2 != 0) && ((arg3 == 0) || (arg3 == 2) || (arg3 == 3))) {
+        if ((D_800AE540.roundSelector != 0) && ((arg3 == 0) || (arg3 == 2) || (arg3 == 3))) {
             Gfx_DrawTextureRgba16(arg0 - 0x20, arg1 + 0xD, 0x24, 0x24, D_20144E0, 0x24, 0);
         }
 
@@ -392,7 +392,7 @@ void AreaSelect_DrawPulsingMarker(s16 arg0, s16 arg1) {
     };
     static s16 areaSelectMarkerFrame = 0;
 
-    if (gAreaSelectModeSettings.unk_07 != 0) {
+    if (gAreaSelectModeSettings.unlocked != 0) {
         gDPPipeSync(gDisplayListHead++);
         gDPSetCycleType(gDisplayListHead++, G_CYC_1CYCLE);
         gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
@@ -400,7 +400,7 @@ void AreaSelect_DrawPulsingMarker(s16 arg0, s16 arg1) {
                           PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0);
         gDPSetEnvColor(gDisplayListHead++, 0, 100, 255, 255);
 
-        if (D_800AE540.unk_11F5 & 4) {
+        if (D_800AE540.sessionFlowFlags & 4) {
             gDPSetPrimColor(gDisplayListHead++, 0, 0xFF, 255, 255, 255, gAreaSelectBackgroundFadeAlpha);
         } else {
             gDPSetPrimColor(gDisplayListHead++, 0, 0xFF, 255, 255, 255, 255);
@@ -417,7 +417,7 @@ void AreaSelect_DrawPulsingMarker(s16 arg0, s16 arg1) {
 }
 
 void AreaSelect_DrawGlowCircle(s16 arg0, s16 arg1, s16 arg2) {
-    if ((gAreaSelectModeSettings.unk_07 == 0) || (arg2 <= 0)) {
+    if ((gAreaSelectModeSettings.unlocked == 0) || (arg2 <= 0)) {
         return;
     }
 
@@ -511,16 +511,16 @@ s32 AreaSelect_HandleInput(void) {
     s8 var_s0 = 8;
     s32 var_t1 = 1;
 
-    gAreaSelectSparkleTrails->unk_00 = gAreaSelectEntryConfigs[gAreaSelectSelectedIndex].unk_00;
-    gAreaSelectSparkleTrails->unk_02 = gAreaSelectEntryConfigs[gAreaSelectSelectedIndex].unk_02;
-    gAreaSelectSparkleTrails->unk_04 = gAreaSelectEntryConfigs[gAreaSelectSelectedIndex].unk_04;
-    gAreaSelectSparkleTrails->unk_06 = 0x64;
+    gAreaSelectSparkleTrails->x = gAreaSelectEntryConfigs[gAreaSelectSelectedIndex].x;
+    gAreaSelectSparkleTrails->y = gAreaSelectEntryConfigs[gAreaSelectSelectedIndex].y;
+    gAreaSelectSparkleTrails->radius = gAreaSelectEntryConfigs[gAreaSelectSelectedIndex].sparkleRadius;
+    gAreaSelectSparkleTrails->alpha = 0x64;
 
-    gAreaSelectCursorGlow.unk_00 = gAreaSelectEntryConfigs[gAreaSelectSelectedIndex].unk_00;
-    gAreaSelectCursorGlow.unk_02 = gAreaSelectEntryConfigs[gAreaSelectSelectedIndex].unk_02;
-    gAreaSelectCursorGlow.unk_08 = gAreaSelectEntryConfigs[gAreaSelectSelectedIndex].unk_0A;
-    gAreaSelectCursorGlow.unk_06 = 0;
-    gAreaSelectCursorGlow.unk_04 = 0x12C;
+    gAreaSelectCursorGlow.x = gAreaSelectEntryConfigs[gAreaSelectSelectedIndex].x;
+    gAreaSelectCursorGlow.y = gAreaSelectEntryConfigs[gAreaSelectSelectedIndex].y;
+    gAreaSelectCursorGlow.color = gAreaSelectEntryConfigs[gAreaSelectSelectedIndex].glowColor;
+    gAreaSelectCursorGlow.alpha = 0;
+    gAreaSelectCursorGlow.radius = 0x12C;
 
     if (gPlayer1Controller->buttonPressed & 0x8000) {
         if (gAreaSelectSelectedIndex == 3) {
@@ -534,13 +534,13 @@ s32 AreaSelect_HandleInput(void) {
         Audio_PlaySoundEffectById(3);
         var_t1 = 4;
     } else if (gPlayer1Controller->buttonPressed & 0x800) {
-        var_s0 = gAreaSelectEntryConfigs[gAreaSelectSelectedIndex].unk_06;
+        var_s0 = gAreaSelectEntryConfigs[gAreaSelectSelectedIndex].upIndex;
     } else if (gPlayer1Controller->buttonPressed & 0x400) {
-        var_s0 = gAreaSelectEntryConfigs[gAreaSelectSelectedIndex].unk_07;
+        var_s0 = gAreaSelectEntryConfigs[gAreaSelectSelectedIndex].downIndex;
     } else if (gPlayer1Controller->buttonPressed & 0x200) {
-        var_s0 = gAreaSelectEntryConfigs[gAreaSelectSelectedIndex].unk_08;
+        var_s0 = gAreaSelectEntryConfigs[gAreaSelectSelectedIndex].leftIndex;
     } else if (gPlayer1Controller->buttonPressed & 0x100) {
-        var_s0 = gAreaSelectEntryConfigs[gAreaSelectSelectedIndex].unk_09;
+        var_s0 = gAreaSelectEntryConfigs[gAreaSelectSelectedIndex].rightIndex;
     }
 
     if (var_s0 != 8) {
@@ -563,20 +563,20 @@ s16 AreaSelect_CursorMoveAnim(void) {
     s32 vA_2;
     s32 vA_4;
 
-    vA_0 = gAreaSelectEntryConfigs[gAreaSelectPreviousIndex].unk_00;
-    vA_2 = gAreaSelectEntryConfigs[gAreaSelectPreviousIndex].unk_02;
-    vA_4 = gAreaSelectEntryConfigs[gAreaSelectPreviousIndex].unk_04;
-    v8_0 = gAreaSelectEntryConfigs[gAreaSelectSelectedIndex].unk_00;
-    v8_2 = gAreaSelectEntryConfigs[gAreaSelectSelectedIndex].unk_02;
-    v8_4 = gAreaSelectEntryConfigs[gAreaSelectSelectedIndex].unk_04;
+    vA_0 = gAreaSelectEntryConfigs[gAreaSelectPreviousIndex].x;
+    vA_2 = gAreaSelectEntryConfigs[gAreaSelectPreviousIndex].y;
+    vA_4 = gAreaSelectEntryConfigs[gAreaSelectPreviousIndex].sparkleRadius;
+    v8_0 = gAreaSelectEntryConfigs[gAreaSelectSelectedIndex].x;
+    v8_2 = gAreaSelectEntryConfigs[gAreaSelectSelectedIndex].y;
+    v8_4 = gAreaSelectEntryConfigs[gAreaSelectSelectedIndex].sparkleRadius;
 
     gAreaSelectTransitionFrame++;
 
-    gAreaSelectSparkleTrails->unk_00 = (((v8_0 - vA_0) * gAreaSelectTransitionFrame) / 6) + vA_0;
-    gAreaSelectSparkleTrails->unk_02 = (((v8_2 - vA_2) * gAreaSelectTransitionFrame) / 6) + vA_2;
-    gAreaSelectSparkleTrails->unk_04 = (((v8_4 - vA_4) * gAreaSelectTransitionFrame) / 6) + vA_4;
-    gAreaSelectSparkleTrails->unk_06 = 0x64;
-    gAreaSelectSparkleTrails->unk_08 += 0x800;
+    gAreaSelectSparkleTrails->x = (((v8_0 - vA_0) * gAreaSelectTransitionFrame) / 6) + vA_0;
+    gAreaSelectSparkleTrails->y = (((v8_2 - vA_2) * gAreaSelectTransitionFrame) / 6) + vA_2;
+    gAreaSelectSparkleTrails->radius = (((v8_4 - vA_4) * gAreaSelectTransitionFrame) / 6) + vA_4;
+    gAreaSelectSparkleTrails->alpha = 0x64;
+    gAreaSelectSparkleTrails->angle += 0x800;
 
     if (gAreaSelectTransitionFrame == 6) {
         var_v1 = 1;
@@ -590,10 +590,10 @@ s16 AreaSelect_CursorMoveAnim(void) {
 s32 AreaSelect_ConfirmSelection(void) {
     s32 var_v1 = 3;
 
-    if (gAreaSelectSparkleTrails->unk_06 >= 0xB) {
-        gAreaSelectSparkleTrails->unk_06 -= 5;
+    if (gAreaSelectSparkleTrails->alpha >= 0xB) {
+        gAreaSelectSparkleTrails->alpha -= 5;
     } else {
-        gAreaSelectSparkleTrails->unk_06 = 0;
+        gAreaSelectSparkleTrails->alpha = 0;
         if (gAreaSelectSelectedIndex == 3) {
             Audio_StopMusic(0x20);
             var_v1 = 6;
@@ -610,13 +610,13 @@ s32 AreaSelect_ConfirmSelection(void) {
 s32 AreaSelect_FadeToBattle(void) {
     s16 var_a1 = 5;
 
-    if (gAreaSelectCursorGlow.unk_08.a < 0xFA) {
-        gAreaSelectCursorGlow.unk_08.a += 0x19;
-    } else if (gAreaSelectCursorGlow.unk_06 < 0xFF) {
-        gAreaSelectCursorGlow.unk_08.a = 0xFF;
-        gAreaSelectCursorGlow.unk_06 += 0x19;
-        if (gAreaSelectCursorGlow.unk_06 >= 0xFF) {
-            gAreaSelectCursorGlow.unk_06 = 0xFF;
+    if (gAreaSelectCursorGlow.color.a < 0xFA) {
+        gAreaSelectCursorGlow.color.a += 0x19;
+    } else if (gAreaSelectCursorGlow.alpha < 0xFF) {
+        gAreaSelectCursorGlow.color.a = 0xFF;
+        gAreaSelectCursorGlow.alpha += 0x19;
+        if (gAreaSelectCursorGlow.alpha >= 0xFF) {
+            gAreaSelectCursorGlow.alpha = 0xFF;
             StageContext_SetClearColor(1);
             StageFade_StartFromTransparent(1);
             var_a1 = 5;
@@ -709,7 +709,7 @@ s32 AreaSelect_FadeInFromBattle(void) {
     if (StageContext_GetFadeMode() == 0) {
         gAreaSelectBackgroundFadeAlpha += 4;
         if (gAreaSelectBackgroundFadeAlpha == 0x100) {
-            D_800AE540.unk_11F5 &= 0xFFFB;
+            D_800AE540.sessionFlowFlags &= 0xFFFB;
             gAreaSelectBackgroundFadeAlpha = 0xFF;
             gAreaSelectPreviousIndex = 8;
             gAreaSelectSelectedIndex = 0;
@@ -734,15 +734,15 @@ void AreaSelect_Loop(void) {
     s16 i;
 
     i = 2;
-    if (D_800AE540.unk_11F5 & 4) {
+    if (D_800AE540.sessionFlowFlags & 4) {
         Cry_Play(0x96, 7);
         i = 8;
     }
 
-    if (gAreaSelectModeSettings.unk_07 == 0) {
-        gAreaSelectEntryConfigs[0].unk_06 = 8;
-        gAreaSelectEntryConfigs[2].unk_09 = 8;
-        gAreaSelectEntryConfigs[7].unk_06 = 8;
+    if (gAreaSelectModeSettings.unlocked == 0) {
+        gAreaSelectEntryConfigs[0].upIndex = 8;
+        gAreaSelectEntryConfigs[2].rightIndex = 8;
+        gAreaSelectEntryConfigs[7].upIndex = 8;
     }
 
     gAreaSelectPreviousIndex = 8;
@@ -787,14 +787,14 @@ void AreaSelect_Loop(void) {
 void AreaSelect_LoadBackgroundArt(void) {
     gAreaSelectBackgroundArchive = ASSET_LOAD2(backgrounds, 1, 1);
 
-    if (gAreaSelectGameOptions.unk_00 == 2) {
-        if (D_800AE540.unk_11F2 == 0) {
+    if (gAreaSelectGameOptions.presentationMode == 2) {
+        if (D_800AE540.roundSelector == 0) {
             gAreaSelectCurrentBackground = BinArchive_GetFile(gAreaSelectBackgroundArchive, 1);
             gAreaSelectNextBackground = BinArchive_GetFile(gAreaSelectBackgroundArchive, 2);
         } else {
             gAreaSelectNextBackground = gAreaSelectCurrentBackground = BinArchive_GetFile(gAreaSelectBackgroundArchive, 2);
         }
-    } else if (gAreaSelectGameOptions.unk_00 == 1) {
+    } else if (gAreaSelectGameOptions.presentationMode == 1) {
         gAreaSelectNextBackground = gAreaSelectCurrentBackground = BinArchive_GetFile(gAreaSelectBackgroundArchive, 0x13);
     } else {
         gAreaSelectNextBackground = gAreaSelectCurrentBackground = BinArchive_GetFile(gAreaSelectBackgroundArchive, 0x12);
@@ -818,11 +818,11 @@ s32 AreaSelect_Main(UNUSED s32 arg0, UNUSED s32 arg1) {
     gAreaSelectStrings = Text_GetStringTable(0x17);
     Save_EnsureBankLoaded(2);
     Save_GetOptions(&gAreaSelectGameOptions);
-    Save_GetModeSettings(&gAreaSelectModeSettings, D_800AE540.unk_11F2);
+    Save_GetModeSettings(&gAreaSelectModeSettings, D_800AE540.roundSelector);
     AreaSelect_LoadBackgroundArt();
     gAreaSelectSelectedIndex = 8;
 
-    if ((gAreaSelectModeSettings.unk_07 != 0) && !(D_800AE540.unk_11F5 & 4) && !(gAreaSelectModeSettings.unk_00 & 0x100)) {
+    if ((gAreaSelectModeSettings.unlocked != 0) && !(D_800AE540.sessionFlowFlags & 4) && !(gAreaSelectModeSettings.flags & 0x100)) {
         gAreaSelectBackgroundFadeAlpha = 0xFF;
     }
 

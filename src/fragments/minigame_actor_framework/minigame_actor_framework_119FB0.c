@@ -14,13 +14,14 @@ void MiniFx_Init(void) {
     gMiniFxEmitterIndex = 0;
 }
 
+#ifdef NON_MATCHING
 s32 MiniFx_AllocEmitter(void) {
     s32 i;
     s32 var_v0 = gMiniFxEmitterIndex;
     ParticleEmitter* var_v1 = &gMiniFxEmitters[var_v0];
 
     for (i = 0; i < 0x80; i++) {
-        if (var_v1->unk_2B == 0) {
+        if (var_v1->active == 0) {
             break;
         }
 
@@ -34,23 +35,27 @@ s32 MiniFx_AllocEmitter(void) {
     }
 
     if (i >= 0x80) {
-        var_v1 = -1;
-    } else {
-        var_v1->unk_2B = 1;
-
-        gMiniFxEmitterIndex = var_v0 + 1;
-        if (gMiniFxEmitterIndex >= 0x80) {
-            gMiniFxEmitterIndex = 0;
-        }
+        return -1;
     }
-    return var_v1;
+
+    var_v1->active = 1;
+
+    gMiniFxEmitterIndex = var_v0 + 1;
+    if (gMiniFxEmitterIndex >= 0x80) {
+        gMiniFxEmitterIndex = 0;
+    }
+
+    return (s32)var_v1;
 }
+#else
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/3/fragment3_119FB0/MiniFx_AllocEmitter.s")
+#endif
 
 void MiniFx_FreeEmitter(ParticleEmitter* arg0) {
-    arg0->unk_28 = 0;
-    arg0->unk_2B = 0;
-    arg0->unk_2A = 0;
-    arg0->unk_26 = arg0->unk_28;
+    arg0->countdown = 0;
+    arg0->active = 0;
+    arg0->repeatCount = 0;
+    arg0->period = arg0->countdown;
 }
 
 s32 MiniFx_ConfigureEmitter(s32 arg0, s32 arg1, s8 arg2, f32 arg3, Vec3f arg4, Vec3s arg7, ParticleUpdateCallback arg9,
@@ -58,25 +63,25 @@ s32 MiniFx_ConfigureEmitter(s32 arg0, s32 arg1, s8 arg2, f32 arg3, Vec3f arg4, V
     ParticleEmitter* temp_v0 = (ParticleEmitter*)MiniFx_AllocEmitter();
 
     if ((s32)temp_v0 != -1) {
-        temp_v0->unk_28 = arg0;
-        temp_v0->unk_26 = arg1;
-        temp_v0->unk_2A = arg2;
+        temp_v0->countdown = arg0;
+        temp_v0->period = arg1;
+        temp_v0->repeatCount = arg2;
         temp_v0->unk_2C = argC;
 
-        temp_v0->unk_00 = arg3;
+        temp_v0->scaleFactor = arg3;
 
-        temp_v0->unk_04.x = arg4.x;
-        temp_v0->unk_04.y = arg4.y;
-        temp_v0->unk_04.z = arg4.z;
+        temp_v0->position.x = arg4.x;
+        temp_v0->position.y = arg4.y;
+        temp_v0->position.z = arg4.z;
 
-        temp_v0->unk_10.x = arg7.x;
-        temp_v0->unk_10.y = arg7.y;
-        temp_v0->unk_10.z = arg7.z;
+        temp_v0->rotation.x = arg7.x;
+        temp_v0->rotation.y = arg7.y;
+        temp_v0->rotation.z = arg7.z;
 
-        temp_v0->unk_18 = arg9;
-        temp_v0->unk_1C = argA;
+        temp_v0->updateCallback = arg9;
+        temp_v0->descriptor = argA;
         temp_v0->unk_20 = argB;
-        temp_v0->unk_24 = argD;
+        temp_v0->particleCount = argD;
         temp_v0->unk_2D = argE;
         temp_v0->unk_2E = argF;
         temp_v0->unk_2F = arg10;
@@ -106,19 +111,19 @@ void MiniFx_ConfigureEmitterWithPeriodAndRepeat(s32 arg0, s32 arg1, s8 arg2, f32
 void MiniFx_ApplyEmitterToParticle(Particle* arg0, ParticleEmitter* arg1, s16 arg2) {
     if ((s32)arg0 != -1) {
         while (arg0 != NULL) {
-            arg0->unk_28 = arg1->unk_00;
+            arg0->scaleFactor = arg1->scaleFactor;
 
-            ParticleMath_CopyVec3f(&arg0->unk_68, &arg1->unk_04);
-            ParticleMath_CopyVec3s(&arg0->unk_94, &arg1->unk_10);
+            ParticleMath_CopyVec3f(&arg0->unk_68, &arg1->position);
+            ParticleMath_CopyVec3s(&arg0->unk_94, &arg1->rotation);
 
             arg0->unk_AC = arg2++;
 
-            arg0->unk_08 = arg1->unk_18;
-            arg0->unk_0C = arg1->unk_1C;
+            arg0->updateCallback = arg1->updateCallback;
+            arg0->descriptor = arg1->descriptor;
 
             arg0->unk_CD = arg1->unk_2F;
             arg0->unk_CE = arg1->unk_2D;
-            arg0->unk_AA = arg1->unk_24;
+            arg0->unk_AA = arg1->particleCount;
             arg0->unk_CF = arg1->unk_2E;
 
             arg0 = arg0->next;
@@ -129,11 +134,11 @@ void MiniFx_ApplyEmitterToParticle(Particle* arg0, ParticleEmitter* arg1, s16 ar
 void MiniFx_EmitParticles(ParticleEmitter* arg0) {
     s16 i;
     s16 sp2C;
-    ParticleDescriptor* temp_v0 = arg0->unk_1C;
-    s16 temp_v1 = arg0->unk_24;
-    ParticleDescriptorChild* unk_04 = temp_v0->unk_04.a;
+    ParticleDescriptor* temp_v0 = arg0->descriptor;
+    s16 temp_v1 = arg0->particleCount;
+    ParticleDescriptorChild* unk_04 = temp_v0->unk_04.child;
 
-    if ((temp_v0->unk_00 == 1) && (unk_04->unk_00 == 1)) {
+    if ((temp_v0->kind == 1) && (unk_04->unk_00 == 1)) {
         MiniFx_ApplyEmitterToParticle(Particle_AllocChain(temp_v1), arg0, 0);
     } else {
         for (i = 0; i < sp2C; i++) {
@@ -153,17 +158,17 @@ void MiniFx_TickEmitters(void) {
     ParticleEmitter* var_s0 = gMiniFxEmitters;
 
     for (i = 0; i < 0x80; i++, var_s0++) {
-        if (var_s0->unk_2B != 0) {
-            var_s0->unk_28--;
-            if (var_s0->unk_28 < 0) {
+        if (var_s0->active != 0) {
+            var_s0->countdown--;
+            if (var_s0->countdown < 0) {
                 MiniFx_TryEmit(var_s0);
-                if (var_s0->unk_2A > 0) {
-                    var_s0->unk_2A--;
-                    if (var_s0->unk_2A == 0) {
+                if (var_s0->repeatCount > 0) {
+                    var_s0->repeatCount--;
+                    if (var_s0->repeatCount == 0) {
                         MiniFx_FreeEmitter(var_s0);
                     }
                 } else {
-                    var_s0->unk_28 = var_s0->unk_26;
+                    var_s0->countdown = var_s0->period;
                 }
             }
         }
@@ -171,9 +176,9 @@ void MiniFx_TickEmitters(void) {
 }
 
 void MiniFx_SetParticleRenderScale(Particle* arg0) {
-    gParticleRenderContext.unk_00.x = arg0->unk_28;
-    gParticleRenderContext.unk_00.y = arg0->unk_28;
-    gParticleRenderContext.unk_00.z = arg0->unk_28;
+    gParticleRenderContext.renderScale.x = arg0->scaleFactor;
+    gParticleRenderContext.renderScale.y = arg0->scaleFactor;
+    gParticleRenderContext.renderScale.z = arg0->scaleFactor;
 }
 
 void MiniFx_RetireParticle(Particle* arg0) {
@@ -193,10 +198,10 @@ void MiniFx_UpdateParticles(void) {
     MiniFx_TickEmitters();
 
     for (i = 0; i < 0x12C; i++, var_s0++) {
-        if (var_s0->unk_D0 != 0) {
+        if (var_s0->active != 0) {
             MiniFx_SetParticleRenderScale(var_s0);
 
-            var_s0->unk_08(var_s0);
+            var_s0->updateCallback(var_s0);
 
             MiniFx_RetireParticle(var_s0);
         }
@@ -332,7 +337,7 @@ void MiniFx_UpdatePalette10SlowRiseFadeParticle(Particle* arg0) {
 
 void MiniFx_InitRandomOffsetPalette10RiseFadeParticle(Particle* arg0) {
     Particle_Field1C_SetScaled_0B938(arg0, 0.5f);
-    func_8140959C(arg0, 3, 0, 3);
+    Particle_SetPositionRandomSignedXYZ(arg0, 3, 0, 3);
     Particle_Field94_AddY_0A594(arg0, ParticleMath_RandomRange(0x10000));
     Particle_Field74_SetScaled_0AD8C(arg0, (MathUtil_Random_ZeroOne() * 3.0f) + 3.0f);
     Particle_Field7C_SetYScaled_0AF24(arg0, (2.0f * MathUtil_Random_ZeroOne()) + 4.0f);
@@ -427,9 +432,9 @@ void MiniFx_InitPalette17DelayedRevealFallParticle(Particle* arg0) {
     Particle_Field1C_SetScaled_0B938(arg0, 0.0f);
     Particle_SetScaleSpeed(arg0, 0.6f);
     Particle_SetScaleTarget(arg0, 0.1f);
-    func_81409404(arg0, 0x14, 0xA);
-    func_8140935C(arg0, 0xF, 0xF);
-    func_81409514(arg0, 0x14, 0xA);
+    Particle_SetPositionRandomSignedXWithSignMatchedOffset(arg0, 0x14, 0xA);
+    Particle_SetPositionRandomSignedYPlusUnscaledOffset(arg0, 0xF, 0xF);
+    Particle_SetPositionRandomSignedZWithSignMatchedOffset(arg0, 0x14, 0xA);
     Particle_FieldA6_SetS16_0BCA8(arg0, sp26);
     Particle_DisableRendering(arg0);
     Particle_AdvanceLifecycle(arg0);
@@ -485,9 +490,9 @@ void MiniFx_InitPalette17SmallDelayedRevealFallParticle(Particle* arg0) {
     Particle_Field1C_SetScaled_0B938(arg0, 0.0f);
     Particle_SetScaleSpeed(arg0, 0.2f);
     Particle_SetScaleTarget(arg0, 0.035f);
-    func_81409404(arg0, 7, 3);
-    func_8140935C(arg0, 0x14, 0xA);
-    func_81409514(arg0, 7, 3);
+    Particle_SetPositionRandomSignedXWithSignMatchedOffset(arg0, 7, 3);
+    Particle_SetPositionRandomSignedYPlusUnscaledOffset(arg0, 0x14, 0xA);
+    Particle_SetPositionRandomSignedZWithSignMatchedOffset(arg0, 7, 3);
     Particle_FieldA6_SetS16_0BCA8(arg0, sp26);
     Particle_DisableRendering(arg0);
     Particle_AdvanceLifecycle(arg0);

@@ -23,21 +23,21 @@ typedef struct unk_D_868084D8_040 {
 } unk_D_868084D8_040; // size >= 0x2
 
 typedef struct unk_D_868084D8 {
-    /* 0x00 */ u16 unk_00;
-    /* 0x02 */ u16 unk_02;
-    /* 0x04 */ s16 unk_04;
-    /* 0x06 */ s16 unk_06;
-    /* 0x08 */ Color_RGBA8_u32 unk_08;
-    /* 0x0C */ s32 unk_0C;
-    /* 0x10 */ s32 unk_10;
+    /* 0x00 */ u16 beltSlot; // SushiGame_InitPlate's arg2
+    /* 0x02 */ u16 flags;
+    /* 0x04 */ s16 fadeTimer; // countdown toward 0 during state 3 (grabbed/consumed), drives scale shrink
+    /* 0x06 */ s16 fadeDuration; // total ticks, denominator for the fadeTimer-based scale interpolation
+    /* 0x08 */ Color_RGBA8_u32 color;
+    /* 0x0C */ s32 sushiType; // index into D_86807180's per-type table
+    /* 0x10 */ s32 state; // 0=free, 1=spawn-bounce, 2=idle, 3=grabbed (SushiGame_SetPlateState)
     /* 0x14 */ Vec3f unk_14;
-    /* 0x20 */ Vec3f unk_20;
-    /* 0x2C */ f32 unk_2C;
-    /* 0x30 */ f32 unk_30;
-    /* 0x34 */ f32 unk_34;
-    /* 0x38 */ unk_D_868084D8_038* unk_38;
-    /* 0x3C */ Gfx* unk_3C;
-    /* 0x40 */ unk_D_86002F34_alt9* unk_40;
+    /* 0x20 */ Vec3f spritePosition; // fed to spriteNode's position field each SushiGame_UpdatePlate call
+    /* 0x2C */ f32 scale; // fed to spriteNode's scale field
+    /* 0x30 */ f32 bouncePosition; // spring-oscillator position for the spawn-bounce animation
+    /* 0x34 */ f32 bounceVelocity;
+    /* 0x38 */ unk_D_868084D8_038* ownerClaim; // the player slot that grabbed this plate, if any
+    /* 0x3C */ Gfx* displayList;
+    /* 0x40 */ unk_D_86002F34_alt9* spriteNode;
 } unk_D_868084D8; // size = 0x44
 
 typedef struct unk_D_86807558_040 {
@@ -58,13 +58,13 @@ typedef struct unk_D_86807558_098 {
 } unk_D_86807558_098; // size = 0x24
 
 typedef struct unk_D_86807558 {
-    /* 0x000 */ s16 unk_000;
-    /* 0x002 */ u16 unk_002;
-    /* 0x004 */ s16 unk_004;
-    /* 0x004 */ s16 unk_006;
+    /* 0x000 */ s16 playerIndex; // SushiGame_InitPlayerSlot's arg1
+    /* 0x002 */ u16 flags;
+    /* 0x004 */ s16 skillLevel; // feeds SushiGame_ClassifyDifficultyTier/ScaleAnimSpeed
+    /* 0x004 */ s16 eatTimer; // countdown feeding SushiGame_ComputeEatFadeEnvelope during the eating-state animation
     /* 0x008 */ s32 unk_008;
-    /* 0x00C */ s16 unk_00C;
-    /* 0x010 */ unk_D_868084D8* unk_010;
+    /* 0x00C */ s16 turnOrder; // assigned from a global counter in SushiGame_InitPlayerSlot; compared across players to pick turn/priority order
+    /* 0x010 */ unk_D_868084D8* currentPlate;
     /* 0x014 */ s16 unk_014;
     /* 0x016 */ u16 unk_016;
     /* 0x018 */ s32 unk_018;
@@ -78,9 +78,9 @@ typedef struct unk_D_86807558 {
     /* 0x040 */ unk_D_86807558_040 unk_040;
     /* 0x05C */ s32 unk_05C;
     /* 0x060 */ s32 unk_060;
-    /* 0x064 */ Controller* unk_064;
-    /* 0x068 */ Vec3f unk_068;
-    /* 0x074 */ Vec3f unk_074;
+    /* 0x064 */ Controller* controller;
+    /* 0x068 */ Vec3f position;
+    /* 0x074 */ Vec3f velocity;
     /* 0x080 */ Vec3f unk_080;
     /* 0x08C */ Vec3f unk_08C;
     /* 0x098 */ unk_D_86807558_098 unk_098;
@@ -155,11 +155,11 @@ Gfx* SushiGame_DrawPlateStack(Gfx* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4)
 void SushiGame_DrawAllPlateStacks(void);
 void SushiGame_InterpolateColorCycle(Color_RGB8* arg0, Color_RGB8* arg1, s32 arg2, s32 arg3, s32 arg4);
 void SushiGame_DrawDishIcon(s32 arg0, s16 arg1, s16 arg2, f32 arg3);
-void func_86800B38(void);
+void SushiGame_DrawTutorialScreen(void);
 void SushiGame_DrawFrame(void);
 void SushiGame_UpdateWaitForStart(void);
 s32 SushiGame_IsRoundTimeUp(void);
-s32 func_86801884(void);
+s32 SushiGame_Update(void);
 void SushiGame_MainLoop(void);
 void SushiGame_LoadAssets(void);
 void SushiGame_Main(s32 arg0, UNUSED s32 arg1);

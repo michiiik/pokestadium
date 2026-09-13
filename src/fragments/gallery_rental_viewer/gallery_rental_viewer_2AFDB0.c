@@ -47,7 +47,7 @@ s32 Gallery_RentalViewerLoadDeckEntries(unk_D_838067F0* arg0, s32 arg1) {
     s32 i;
 
     i = 0;
-    ptr->unk_00 = 0;
+    ptr->count = 0;
 
     if (arg0->unk_0018 < 4) {
         if (arg1 == 0) {
@@ -58,12 +58,12 @@ s32 Gallery_RentalViewerLoadDeckEntries(unk_D_838067F0* arg0, s32 arg1) {
 
         if (var_v0 != NULL) {
             while (Deck_ReadEntries(sp48, 1, var_v0) == 1) {
-                ptr->unk_02[ptr->unk_00++] = i++;
+                ptr->unk_02[ptr->count++] = i++;
             }
             Deck_CloseAndFlush(var_v0);
         }
     }
-    return ptr->unk_00;
+    return ptr->count;
 }
 
 void Gallery_RentalViewerMarkMatchingPikachu(unk_D_838067F0* arg0, BattleMon* arg1) {
@@ -75,12 +75,12 @@ void Gallery_RentalViewerMarkMatchingPikachu(unk_D_838067F0* arg0, BattleMon* ar
 
     unk_func_83802660_sp28 sp28;
 
-    if ((arg0->unk_0018 < 4) && (GbSave_GetPortGame(arg0->unk_0018) == 7) && (arg1->unk_00.unk_00 == 0x19)) {
+    if ((arg0->unk_0018 < 4) && (GbSave_GetPortGame(arg0->unk_0018) == 7) && (arg1->species.dexId == 0x19)) {
         GbSave_CopyPlayerIdentity(arg0->unk_0018, &sp28);
-        _bcopy(arg1->unk_46, sp28.unk_14, sizeof(arg1->unk_46));
-        sp28.unk_12 = arg1->unk_0E;
+        _bcopy(arg1->otNameEncoded, sp28.unk_14, sizeof(arg1->otNameEncoded));
+        sp28.unk_12 = arg1->otId;
         if (GbSave_PlayerIdentityMatches(&sp28.unk_12, &sp28) != 0) {
-            arg1->unk_52 |= 0x80;
+            arg1->sourceAndFlags |= 0x80;
         }
     }
 }
@@ -95,12 +95,12 @@ s32 Gallery_RentalViewerFillPage(unk_D_838067F0* arg0, unk_D_838067F0_0168* arg1
 
     var_s4 = 0;
 
-    arg1->unk_2690 = arg0->unk_0018;
-    arg1->unk_2692 = arg0->unk_001C;
+    arg1->gbPort = arg0->unk_0018;
+    arg1->boxIndex = arg0->unk_001C;
 
     for (i = 0; i < 3; i++) {
-        arg1->unk_0000[i].unk_004.unk_00.unk_00 = 0;
-        *(s32*)&arg1->unk_0000[i].unk_000 = 0;
+        arg1->mons[i].mon.species.dexId = 0;
+        *(s32*)&arg1->mons[i].state = 0;
     }
 
     if (arg0->unk_001C <= 0xC) {
@@ -116,9 +116,9 @@ s32 Gallery_RentalViewerFillPage(unk_D_838067F0* arg0, unk_D_838067F0_0168* arg1
             if (var_v0 != NULL) {
                 i = arg2 * 3;
                 for (j = 0; j < 3; j++) {
-                    if (i < temp_s3->unk_00) {
+                    if (i < temp_s3->count) {
                         if (Deck_SetCursor(var_v0, temp_s3->unk_02[i++]) != 0) {
-                            var_s4 += Deck_ReadEntries(&arg1->unk_0000[j].unk_004, 1, var_v0);
+                            var_s4 += Deck_ReadEntries(&arg1->mons[j].mon, 1, var_v0);
                         }
                     }
                 }
@@ -130,25 +130,25 @@ s32 Gallery_RentalViewerFillPage(unk_D_838067F0* arg0, unk_D_838067F0_0168* arg1
         s32 var_s1_3 = arg2 * 3;
         for (j = 0; j < 3; j++) {
             if (var_s1_3 < arg3->unk_000) {
-                _bcopy(&arg3->unk_004[var_s1_3++], &arg1->unk_0000[var_s4].unk_004,
-                       sizeof(arg1->unk_0000[var_s4].unk_004));
-                Pokemon_SetDisplayNameFromOt(&arg1->unk_0000[var_s4++].unk_004);
+                _bcopy(&arg3->unk_004[var_s1_3++], &arg1->mons[var_s4].mon,
+                       sizeof(arg1->mons[var_s4].mon));
+                Pokemon_SetDisplayNameFromOt(&arg1->mons[var_s4++].mon);
             }
         }
     }
 
     for (i = 0; i < var_s4; i++) {
-        PokeIcon_LoadModelTextureForMon(arg1->unk_0000[i].unk_058, 0, &arg1->unk_0000[i].unk_004);
+        PokeIcon_LoadModelTextureForMon(arg1->mons[i].iconTexture, 0, &arg1->mons[i].mon);
 
-        arg1->unk_0000[i].unk_000 = arg0->unk_0018;
-        arg1->unk_0000[i].unk_001 = arg0->unk_001C;
-        arg1->unk_0000[i].unk_002 = arg2 * 3 + i;
-        arg1->unk_0000[i].unk_003 = arg1->unk_0000[i].unk_004.unk_00.unk_00;
+        arg1->mons[i].state = arg0->unk_0018;
+        arg1->mons[i].deckSlot = arg0->unk_001C;
+        arg1->mons[i].partyIndex = arg2 * 3 + i;
+        arg1->mons[i].speciesId = arg1->mons[i].mon.species.dexId;
 
-        arg1->unk_0000[i].unk_004.unk_53 = arg2 * 3 + i;
-        arg1->unk_0000[i].unk_004.unk_52 = (arg0->unk_0018 * 0x10) | arg0->unk_001C;
+        arg1->mons[i].mon.sourceSlot = arg2 * 3 + i;
+        arg1->mons[i].mon.sourceAndFlags = (arg0->unk_0018 * 0x10) | arg0->unk_001C;
 
-        Gallery_RentalViewerMarkMatchingPikachu(arg0, &arg1->unk_0000[i].unk_004);
+        Gallery_RentalViewerMarkMatchingPikachu(arg0, &arg1->mons[i].mon);
     }
 
     return var_s4;
@@ -196,8 +196,8 @@ s32 Gallery_RentalViewerOpenBoxPicker(s32 arg0, unk_D_83407B18_008* arg1) {
     ptr->unk_0160 = &ptr->unk_0168[0];
 
     for (i = 0; i < 12; i++) {
-        ptr->unk_0168[i].unk_2688 = &ptr->unk_0168[(i + 1) % 12];
-        ptr->unk_0168[i].unk_268C = &ptr->unk_0168[(i + 11) % 12];
+        ptr->unk_0168[i].next = &ptr->unk_0168[(i + 1) % 12];
+        ptr->unk_0168[i].prev = &ptr->unk_0168[(i + 11) % 12];
     }
 
     for (i = 12; i >= 0; i--) {
@@ -209,7 +209,7 @@ s32 Gallery_RentalViewerOpenBoxPicker(s32 arg0, unk_D_83407B18_008* arg1) {
     ptr2 = ptr->unk_0160;
     for (i = 0; i < 6; i++) {
         Gallery_RentalViewerFillPage(&D_838067F0, ptr2, ptr->unk_0020 + i, ptr->unk_015C);
-        ptr2 = ptr2->unk_2688;
+        ptr2 = ptr2->next;
     }
 
     Audio_PlaySoundEffectById(4);
@@ -232,19 +232,19 @@ void Gallery_RentalViewerAdvanceOpenPanel(unk_D_838067F0* arg0) {
 
 unk_D_838067F0_0168* Gallery_RentalViewerGetPage(unk_D_838067F0_0168* arg0, s32 arg1) {
     while (arg1-- > 0) {
-        arg0 = arg0->unk_2688;
+        arg0 = arg0->next;
     }
     return arg0;
 }
 
 void Gallery_RentalViewerConfirmMonSelect(unk_D_838067F0* arg0) {
     unk_D_838067F0_0168* ptr = Gallery_RentalViewerGetPage(arg0->unk_0160, arg0->unk_0028);
-    BattleMon* temp_a1 = &ptr->unk_0000[arg0->unk_0024].unk_004;
+    BattleMon* temp_a1 = &ptr->mons[arg0->unk_0024].mon;
 
-    if (temp_a1->unk_00.unk_00 != 0) {
+    if (temp_a1->species.dexId != 0) {
         arg0->unk_0000 = 7;
         Gallery_CopyPhotoMonFromBattleMon(&D_83407AC8, temp_a1);
-        if ((temp_a1->unk_00.unk_00 == 0x19) && (temp_a1->unk_52 & 0x80)) {
+        if ((temp_a1->species.dexId == 0x19) && (temp_a1->sourceAndFlags & 0x80)) {
             D_83407AC8.unk_02 = 0x99;
         }
         Audio_PlaySoundEffectById(0x20);
@@ -266,7 +266,7 @@ void Gallery_RentalViewerNextBox(unk_D_838067F0* arg0) {
     unk_D_838067F0_0168* var_s1;
 
     var_s0 = (arg0->unk_001C + 1) % 14;
-    while (var_s0 < ARRAY_COUNT(arg0->unk_003C) && (arg0->unk_003C[var_s0].unk_00 == 0)) {
+    while (var_s0 < ARRAY_COUNT(arg0->unk_003C) && (arg0->unk_003C[var_s0].count == 0)) {
         var_s0 = (var_s0 + 1) % 14;
     }
 
@@ -279,7 +279,7 @@ void Gallery_RentalViewerNextBox(unk_D_838067F0* arg0) {
         var_s1 = arg0->unk_0160;
         for (i = 0; i < 6; i++) {
             Gallery_RentalViewerFillPage(arg0, var_s1, arg0->unk_0020 + i, arg0->unk_015C);
-            var_s1 = var_s1->unk_2688;
+            var_s1 = var_s1->next;
         }
 
         arg0->unk_002C = 0;
@@ -294,7 +294,7 @@ void Gallery_RentalViewerPrevBox(unk_D_838067F0* arg0) {
     unk_D_838067F0_0168* var_s1;
 
     var_s0 = (arg0->unk_001C + ARRAY_COUNT(arg0->unk_003C)) % 14;
-    while (var_s0 < ARRAY_COUNT(arg0->unk_003C) && (arg0->unk_003C[var_s0].unk_00 == 0)) {
+    while (var_s0 < ARRAY_COUNT(arg0->unk_003C) && (arg0->unk_003C[var_s0].count == 0)) {
         var_s0 = (var_s0 + ARRAY_COUNT(arg0->unk_003C)) % 14;
     }
 
@@ -307,7 +307,7 @@ void Gallery_RentalViewerPrevBox(unk_D_838067F0* arg0) {
         var_s1 = arg0->unk_0160;
         for (i = 0; i < 6; i++) {
             Gallery_RentalViewerFillPage(arg0, var_s1, arg0->unk_0020 + i, arg0->unk_015C);
-            var_s1 = var_s1->unk_2688;
+            var_s1 = var_s1->next;
         }
 
         arg0->unk_002C = 0;
@@ -353,9 +353,9 @@ void Gallery_RentalViewerBoxPickerMoveUp(unk_D_838067F0* arg0) {
             arg0->unk_0000 = 6;
             Audio_PlaySoundEffectById(1);
         } else if ((arg0->unk_0020 > 0) &&
-                   (Gallery_RentalViewerFillPage(arg0, arg0->unk_0160->unk_268C, arg0->unk_0020 - 1, arg0->unk_015C) != 0)) {
+                   (Gallery_RentalViewerFillPage(arg0, arg0->unk_0160->prev, arg0->unk_0020 - 1, arg0->unk_015C) != 0)) {
             arg0->unk_0020 -= 1;
-            arg0->unk_0160 = arg0->unk_0160->unk_268C;
+            arg0->unk_0160 = arg0->unk_0160->prev;
             arg0->unk_002C = -1;
             arg0->unk_0030 = -4;
             arg0->unk_0000 = 4;
@@ -376,7 +376,7 @@ void Gallery_RentalViewerBoxPickerMoveDown(unk_D_838067F0* arg0) {
             Audio_PlaySoundEffectById(1);
         } else if (Gallery_RentalViewerFillPage(arg0, Gallery_RentalViewerGetPage(arg0->unk_0160, 6), arg0->unk_0020 + 6, arg0->unk_015C) != 0) {
             arg0->unk_0020++;
-            arg0->unk_0160 = arg0->unk_0160->unk_2688;
+            arg0->unk_0160 = arg0->unk_0160->next;
             arg0->unk_002C = 1;
             arg0->unk_0030 = 4;
             arg0->unk_0000 = 4;
@@ -508,19 +508,19 @@ void Gallery_RentalViewerDrawBoxTabBar(unk_D_838067F0* arg0) {
 
     gSPDisplayList(gDisplayListHead++, D_8006F518);
 
-    Gallery_RentalViewerDrawBoxTabIcon(temp_s0 + 8, sp40 + 4, D_2001A20, arg0->unk_003C[0].unk_00);
-    Gallery_RentalViewerDrawBoxTabIcon(temp_s0 + 0x2C, sp40 + 4, D_2002560, arg0->unk_003C[1].unk_00);
-    Gallery_RentalViewerDrawBoxTabIcon(temp_s0 + 0x50, sp40 + 4, D_2002B00, arg0->unk_003C[2].unk_00);
-    Gallery_RentalViewerDrawBoxTabIcon(temp_s0 + 0x74, sp40 + 4, D_20030A0, arg0->unk_003C[3].unk_00);
-    Gallery_RentalViewerDrawBoxTabIcon(temp_s0 + 0x98, sp40 + 4, D_2003640, arg0->unk_003C[4].unk_00);
-    Gallery_RentalViewerDrawBoxTabIcon(temp_s0 + 0xBC, sp40 + 4, D_2003BE0, arg0->unk_003C[5].unk_00);
-    Gallery_RentalViewerDrawBoxTabIcon(temp_s0 + 0xE0, sp40 + 4, D_2004180, arg0->unk_003C[6].unk_00);
-    Gallery_RentalViewerDrawBoxTabIcon(temp_s0 + 0x104, sp40 + 4, D_2004720, arg0->unk_003C[7].unk_00);
-    Gallery_RentalViewerDrawBoxTabIcon(temp_s0 + 0x128, sp40 + 4, D_2004CC0, arg0->unk_003C[8].unk_00);
-    Gallery_RentalViewerDrawBoxTabIcon(temp_s0 + 0x14C, sp40 + 4, D_2005260, arg0->unk_003C[9].unk_00);
-    Gallery_RentalViewerDrawBoxTabIcon(temp_s0 + 0x170, sp40 + 4, D_2005800, arg0->unk_003C[10].unk_00);
-    Gallery_RentalViewerDrawBoxTabIcon(temp_s0 + 0x194, sp40 + 4, D_2005DA0, arg0->unk_003C[11].unk_00);
-    Gallery_RentalViewerDrawBoxTabIcon(temp_s0 + 0x1B8, sp40 + 4, D_2006340, arg0->unk_003C[12].unk_00);
+    Gallery_RentalViewerDrawBoxTabIcon(temp_s0 + 8, sp40 + 4, D_2001A20, arg0->unk_003C[0].count);
+    Gallery_RentalViewerDrawBoxTabIcon(temp_s0 + 0x2C, sp40 + 4, D_2002560, arg0->unk_003C[1].count);
+    Gallery_RentalViewerDrawBoxTabIcon(temp_s0 + 0x50, sp40 + 4, D_2002B00, arg0->unk_003C[2].count);
+    Gallery_RentalViewerDrawBoxTabIcon(temp_s0 + 0x74, sp40 + 4, D_20030A0, arg0->unk_003C[3].count);
+    Gallery_RentalViewerDrawBoxTabIcon(temp_s0 + 0x98, sp40 + 4, D_2003640, arg0->unk_003C[4].count);
+    Gallery_RentalViewerDrawBoxTabIcon(temp_s0 + 0xBC, sp40 + 4, D_2003BE0, arg0->unk_003C[5].count);
+    Gallery_RentalViewerDrawBoxTabIcon(temp_s0 + 0xE0, sp40 + 4, D_2004180, arg0->unk_003C[6].count);
+    Gallery_RentalViewerDrawBoxTabIcon(temp_s0 + 0x104, sp40 + 4, D_2004720, arg0->unk_003C[7].count);
+    Gallery_RentalViewerDrawBoxTabIcon(temp_s0 + 0x128, sp40 + 4, D_2004CC0, arg0->unk_003C[8].count);
+    Gallery_RentalViewerDrawBoxTabIcon(temp_s0 + 0x14C, sp40 + 4, D_2005260, arg0->unk_003C[9].count);
+    Gallery_RentalViewerDrawBoxTabIcon(temp_s0 + 0x170, sp40 + 4, D_2005800, arg0->unk_003C[10].count);
+    Gallery_RentalViewerDrawBoxTabIcon(temp_s0 + 0x194, sp40 + 4, D_2005DA0, arg0->unk_003C[11].count);
+    Gallery_RentalViewerDrawBoxTabIcon(temp_s0 + 0x1B8, sp40 + 4, D_2006340, arg0->unk_003C[12].count);
     Gallery_RentalViewerDrawBoxTabIcon(temp_s0 + 0x1DC, sp40 + 4, D_2001FC0, 0x97);
 
     if (arg0->unk_0000 != 3) {
@@ -538,7 +538,7 @@ void Gallery_RentalViewerDrawScrollbar(s32 arg0, s32 arg1, unk_D_838067F0* arg2)
 
     temp_a3 = arg2->unk_0020 + arg2->unk_0028;
     if (arg2->unk_001C < ARRAY_COUNT(arg2->unk_003C)) {
-        var_v1 = (arg2->unk_003C[arg2->unk_001C].unk_00 + 2) / 3;
+        var_v1 = (arg2->unk_003C[arg2->unk_001C].count + 2) / 3;
     } else {
         var_v1 = (arg2->unk_015C->unk_000 + 2) / 3u;
     }
@@ -587,7 +587,7 @@ s32 Gallery_RentalViewerCountBoxes(unk_D_838067F0* arg0) {
     s32 var_v1 = 1;
 
     for (i = 0; i < 13; i++) {
-        if (arg0->unk_003C[i].unk_00 != 0) {
+        if (arg0->unk_003C[i].count != 0) {
             var_v1++;
         }
     }
@@ -598,7 +598,7 @@ s32 Gallery_RentalViewerCountBoxes(unk_D_838067F0* arg0) {
 s32 Gallery_RentalViewerGetPageFillState(unk_D_838067F0_0168* arg0) {
     s32 ret;
 
-    switch (arg0->unk_2692) {
+    switch (arg0->boxIndex) {
         case 0:
             ret = 0;
             break;
@@ -644,7 +644,7 @@ void Gallery_RentalViewerDrawPageHeader(s32 arg0, s32 arg1, unk_D_838067F0_0168*
     Font_BeginTranslucentTextRendering();
     Font_SetActive(8, 0);
 
-    switch (arg2->unk_2692) {
+    switch (arg2->boxIndex) {
         case 0:
             var_v0 = Gallery_GetUiString(0x42);
             break;
@@ -654,7 +654,7 @@ void Gallery_RentalViewerDrawPageHeader(s32 arg0, s32 arg1, unk_D_838067F0_0168*
             break;
 
         default:
-            Text_SetNumberToken(2, arg2->unk_2692);
+            Text_SetNumberToken(2, arg2->boxIndex);
             var_v0 = Gallery_CopyUiString(&sp60, 0x100, 0x43);
             break;
     }
@@ -668,7 +668,7 @@ void Gallery_RentalViewerDrawMonRow(s32 arg0, s32 arg1, unk_D_838067F0_0168* arg
     s32 i;
 
     for (i = 0; i < 3; i++) {
-        if (arg2->unk_0000[i].unk_004.unk_00.unk_00 != 0) {
+        if (arg2->mons[i].mon.species.dexId != 0) {
             TeamSelection_DrawColoredFrame(arg0 + i * 0x84, arg1, 0x84, 0x2C, 0x64, 0x64, 0xC8, 0xFF);
         } else {
             TeamSelection_DrawColoredFrame(arg0 + i * 0x84, arg1, 0x84, 0x2C, 0x3C, 0x3C, 0xA0, 0xFF);
@@ -678,20 +678,20 @@ void Gallery_RentalViewerDrawMonRow(s32 arg0, s32 arg1, unk_D_838067F0_0168* arg
     gSPDisplayList(gDisplayListHead++, D_8006F518);
 
     for (i = 0; i < 3; i++) {
-        if (arg2->unk_0000[i].unk_004.unk_00.unk_00 != 0) {
-            Gfx_DrawTextureRgba16(arg0 + (i * 0x84) + 2, arg1 + 2, 0x28, 0x28, &arg2->unk_0000[i].unk_058, 0x28, 0);
+        if (arg2->mons[i].mon.species.dexId != 0) {
+            Gfx_DrawTextureRgba16(arg0 + (i * 0x84) + 2, arg1 + 2, 0x28, 0x28, &arg2->mons[i].iconTexture, 0x28, 0);
         }
     }
 
     Font_BeginTranslucentTextRendering();
 
     for (i = 0; i < 3; i++) {
-        if (arg2->unk_0000[i].unk_004.unk_00.unk_00 != 0) {
+        if (arg2->mons[i].mon.species.dexId != 0) {
             Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
             Font_SetActive(4, 0);
-            Font_Printf(arg0 + (i * 0x84) + 0x2C, arg1 + 5, arg2->unk_0000[i].unk_004.unk_30);
+            Font_Printf(arg0 + (i * 0x84) + 0x2C, arg1 + 5, arg2->mons[i].mon.nickname);
             Font_SetActive(4, 0);
-            Font_Printf(arg0 + (i * 0x84) + 0x2C, arg1 + 0x17, "L%d", arg2->unk_0000[i].unk_004.unk_24);
+            Font_Printf(arg0 + (i * 0x84) + 0x2C, arg1 + 0x17, "L%d", arg2->mons[i].mon.level);
         }
     }
 
@@ -699,7 +699,7 @@ void Gallery_RentalViewerDrawMonRow(s32 arg0, s32 arg1, unk_D_838067F0_0168* arg
 }
 
 #ifdef NON_MATCHING
-void func_838043F8(s32 arg0) {
+void Gallery_RentalViewerDrawBoxPicker(s32 arg0) {
     unk_D_838067F0* ptr = &D_838067F0;
     s32 i;
     s32 spC4 = ptr->unk_000C;
@@ -740,7 +740,7 @@ void func_838043F8(s32 arg0) {
         }
 
         Gfx_SetScissorRect(&gDisplayListHead, spC4 + 0x24, spC0 + 4, 0x18C, 0x124);
-        Gallery_RentalViewerDrawPageHeader(temp_s2_2 + 0x24, spC0 + 4, ptr->unk_0160->unk_268C);
+        Gallery_RentalViewerDrawPageHeader(temp_s2_2 + 0x24, spC0 + 4, ptr->unk_0160->prev);
         Gallery_RentalViewerDrawPageHeader((var_s0 + temp_s2_2) + 0x24, spC0 + 4, ptr->unk_0160);
 
         gSPDisplayList(gDisplayListHead++, D_8006F518);
@@ -756,12 +756,12 @@ void func_838043F8(s32 arg0) {
         var_s2 = ptr->unk_0160;
         for (i = 0; i < 6; i++) {
             Gallery_RentalViewerDrawMonRow((var_s0 + temp_s2_2) + 0x24, spC0 + 0x20 + i * 0x2C, var_s2);
-            var_s2 = var_s2->unk_2688;
+            var_s2 = var_s2->next;
         }
 
         for (i = 0; i < 6; i++) {
             Gallery_RentalViewerDrawMonRow(temp_s2_2 + 0x24, spC0 + 0x20 + i * 0x2C, var_s2);
-            var_s2 = var_s2->unk_2688;
+            var_s2 = var_s2->next;
         }
 
         Gfx_SetScissorRect(&gDisplayListHead, 0, 0, 0x280, 0x1E0);
@@ -772,16 +772,16 @@ void func_838043F8(s32 arg0) {
         Gallery_RentalViewerDrawPageHeader(spC4 + 0x24, spC0 + 4, ptr->unk_0160);
         Gfx_SetScissorRect(&gDisplayListHead, spC4 + 0x24, spC0 + 0x20, 0x18C, 0x108);
         if (ptr->unk_0030 > 0) {
-            var_s2 = ptr->unk_0160->unk_268C;
+            var_s2 = ptr->unk_0160->prev;
             for (i = 0; i < 7; i++) {
                 Gallery_RentalViewerDrawMonRow(spC4 + 0x24, sp80 + 0x20 + i * 0x2C, var_s2);
-                var_s2 = var_s2->unk_2688;
+                var_s2 = var_s2->next;
             }
         } else {
             var_s2 = ptr->unk_0160;
             for (i = 0; i < 7; i++) {
                 Gallery_RentalViewerDrawMonRow(spC4 + 0x24, sp80 - 0xC + i * 0x2C, var_s2);
-                var_s2 = var_s2->unk_2688;
+                var_s2 = var_s2->next;
             }
         }
         Gfx_SetScissorRect(&gDisplayListHead, 0, 0, 0x280, 0x1E0);
@@ -790,7 +790,7 @@ void func_838043F8(s32 arg0) {
         var_s2 = ptr->unk_0160;
         for (i = 0; i < 6; i++) {
             Gallery_RentalViewerDrawMonRow(spC4 + 0x24, spC0 + 0x20 + i * 0x2C, var_s2);
-            var_s2 = var_s2->unk_2688;
+            var_s2 = var_s2->next;
         }
     }
 
@@ -822,5 +822,5 @@ void func_838043F8(s32 arg0) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gallery_rental_viewer/gallery_rental_viewer_2AFDB0/func_838043F8.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/47/fragment47_2AFDB0/Gallery_RentalViewerDrawBoxPicker.s")
 #endif

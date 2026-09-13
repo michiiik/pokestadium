@@ -1340,7 +1340,7 @@ void Widget_PauseMenuResetWinStreak(void) {
 }
 
 #ifdef NON_MATCHING
-void func_87802E58(void) {
+void Widget_PauseMenuUpdatePlayTimer(void) {
     static u32 D_8780FE38;
 
     u32 v0 = D_800A6CF4.unk_20;
@@ -1357,7 +1357,7 @@ void func_87802E58(void) {
 }
 #else
 static u32 D_8780FE38;
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/widget_toolkit/widget_toolkit_2/func_87802E58.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/2/fragment2_2/Widget_PauseMenuUpdatePlayTimer.s")
 #endif
 
 void Widget_PauseMenuTrigger(s16 arg0) {
@@ -1614,7 +1614,7 @@ void Widget_PauseMenuDrawIconQuad(s32 arg0, u32* arg1, u8 arg2, u8 arg3, s16 arg
 }
 
 #ifdef NON_MATCHING
-void func_87803EAC(u32* arg0, u16 arg1, UNUSED u16 arg2, u16 arg3, u16 arg4, u8 arg5, u8 arg6) {
+void Widget_PauseMenuDrawPanelMesh(u32* arg0, u16 arg1, UNUSED u16 arg2, u16 arg3, u16 arg4, u8 arg5, u8 arg6) {
     s32 sp68 = arg5 * arg6;
     Vtx* temp_fp = Gfx_AllocDisplayList(sizeof(Vtx) * sp68);
     u8 i;
@@ -1642,7 +1642,7 @@ void func_87803EAC(u32* arg0, u16 arg1, UNUSED u16 arg2, u16 arg3, u16 arg4, u8 
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/widget_toolkit/widget_toolkit_2/func_87803EAC.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/2/fragment2_2/Widget_PauseMenuDrawPanelMesh.s")
 #endif
 
 #ifdef NON_MATCHING
@@ -1653,7 +1653,7 @@ typedef struct Vtx4 {
     /* 0x30 */ Vtx vtx4;
 } Vtx4; // size = 0x40
 
-void func_87804320(u8 arg0, s8 arg1, s8 arg2, s8 arg3, s8 arg4) {
+void Widget_PauseMenuDrawPlayerPanel(u8 arg0, s8 arg1, s8 arg2, s8 arg3, s8 arg4) {
     u8 i;
     Mtx* temp_v0;
     f32 var_fv1;
@@ -1702,12 +1702,12 @@ void func_87804320(u8 arg0, s8 arg1, s8 arg2, s8 arg3, s8 arg4) {
         D_8780FCB8[10 + 1] = 0x1F;
         D_8780FCB8[10 + 2] = 0x3D;
 
-        func_87803EAC(&D_30200C0, 0xE8, 0x5C, 0x74, 0x2E, 9, 3);
+        Widget_PauseMenuDrawPanelMesh(&D_30200C0, 0xE8, 0x5C, 0x74, 0x2E, 9, 3);
 
         D_8780FCB8[10 + 0] = 0x3D;
         D_8780FCB8[10 + 1] = 0x5C;
 
-        func_87803EAC(&D_30200C0, 0xE8, 0x5C, 0x74, 0x2E, 9, 2);
+        Widget_PauseMenuDrawPanelMesh(&D_30200C0, 0xE8, 0x5C, 0x74, 0x2E, 9, 2);
     } else if (temp_s2 == 0) {
         if ((arg0 == 0xA) && (D_87806338 != 2)) {
             Audio_StartMusicTrack(0x1B);
@@ -1724,7 +1724,7 @@ void func_87804320(u8 arg0, s8 arg1, s8 arg2, s8 arg3, s8 arg4) {
         D_8780FCB8[10 + 1] = 0x1A;
         D_8780FCB8[10 + 2] = 0x34;
 
-        func_87803EAC(&D_3016E80, 0xB4, 0x34, 0x5A, 0x1A, 7, 3);
+        Widget_PauseMenuDrawPanelMesh(&D_3016E80, 0xB4, 0x34, 0x5A, 0x1A, 7, 3);
     } else {
         Vtx4* spAC;
         u16 spA4[4];
@@ -1744,7 +1744,7 @@ void func_87804320(u8 arg0, s8 arg1, s8 arg2, s8 arg3, s8 arg4) {
         D_8780FCB8[10 + 1] = 0x1A;
         D_8780FCB8[10 + 2] = 0x34;
 
-        func_87803EAC(&D_3010000, 0x88, 0x34, 0x23, 0x1A, 5, 3);
+        Widget_PauseMenuDrawPanelMesh(&D_3010000, 0x88, 0x34, 0x23, 0x1A, 5, 3);
 
         spAC = Gfx_AllocDisplayList(sizeof(Vtx) * 4 * temp_s2);
 
@@ -1790,7 +1790,7 @@ void func_87804320(u8 arg0, s8 arg1, s8 arg2, s8 arg3, s8 arg4) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/widget_toolkit/widget_toolkit_2/func_87804320.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/2/fragment2_2/Widget_PauseMenuDrawPlayerPanel.s")
 #endif
 
 void Widget_PauseMenuDrawPlayerIcons(s16 arg0) {
@@ -1909,7 +1909,7 @@ s32 Widget_PauseMenuUpdate(void) {
         sp66 = 1;
     }
 
-    func_87802E58();
+    Widget_PauseMenuUpdatePlayTimer();
 
     switch (D_8780FC40) {
         case 0:
@@ -2158,7 +2158,7 @@ s32 Widget_PauseMenuUpdate(void) {
             if (D_8780FCA2 > 0) {
                 D_8780FCA2--;
             }
-            func_87804320(D_8780FCA2, D_8780FC50[0], D_8780FC50[1], D_8780FC50[2], D_8780FC50[3]);
+            Widget_PauseMenuDrawPlayerPanel(D_8780FCA2, D_8780FC50[0], D_8780FC50[1], D_8780FC50[2], D_8780FC50[3]);
         }
 
         if ((D_8780FC40 != 0) && (D_8780FC40 != 1)) {
@@ -2221,7 +2221,7 @@ s32 Widget_PauseMenuUpdate(void) {
                     if (D_8780FCA6 > 0) {
                         D_8780FCA6--;
                     }
-                    func_87804320(D_8780FCA6, -1, -1, -1, -1);
+                    Widget_PauseMenuDrawPlayerPanel(D_8780FCA6, -1, -1, -1, -1);
                     break;
             }
         }
