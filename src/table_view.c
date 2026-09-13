@@ -385,7 +385,7 @@ void Sort_QuickSort(void** base, s32 n, s32 (*cmp)(s32, s32)) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/2D340/Sort_QuickSort.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/table_view/Sort_QuickSort.s")
 #endif
 
 void PointerList_Sort(unk_func_8830867C_02C_0CC* arg0, s32 (*arg1)(s32, s32)) {

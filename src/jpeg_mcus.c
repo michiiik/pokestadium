@@ -89,7 +89,7 @@ s32 Jpeg_DecodeMcus(unk_func_80003680_sp27* arg0, u32 arg1, u32 arg2, u8 arg3, u
     return 0;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/CE80/Jpeg_DecodeMcus.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/jpeg_mcus/Jpeg_DecodeMcus.s")
 #endif
 
 #ifdef NON_MATCHING
@@ -137,7 +137,7 @@ s32 Jpeg_DecodeBlock(JpegHuffmanTable* arg0, JpegHuffmanTable* arg1, s16* arg2, 
     return 0;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/CE80/Jpeg_DecodeBlock.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/jpeg_mcus/Jpeg_DecodeBlock.s")
 #endif
 
 typedef struct sp24_func_8000C644 {
@@ -184,7 +184,7 @@ s32 Jpeg_DecodeHuffmanSymbol(JpegHuffmanTable* arg0, s16* arg1, s8* arg2) {
     return 0;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/CE80/Jpeg_DecodeHuffmanSymbol.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/jpeg_mcus/Jpeg_DecodeHuffmanSymbol.s")
 #endif
 
 #ifdef NON_MATCHING
@@ -222,5 +222,5 @@ u16 Jpeg_ReadBits(u8 arg0) {
     return ret;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/CE80/Jpeg_ReadBits.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/jpeg_mcus/Jpeg_ReadBits.s")
 #endif

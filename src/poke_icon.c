@@ -152,7 +152,7 @@ void PokeIcon_SetSlotFromSpecies(unk_func_8001A024* arg0, s32 arg1, s32 arg2, u1
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/1AB70/PokeIcon_SetSlotFromSpecies.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/poke_icon/PokeIcon_SetSlotFromSpecies.s")
 #endif
 
 #ifdef NON_MATCHING
@@ -187,7 +187,7 @@ void PokeIcon_SetSlotFromMon(unk_func_8001A024* arg0, s32 arg1, BattleMon* arg2,
     arg0->slots[arg1].cameraAngle = -0xE38;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/1AB70/PokeIcon_SetSlotFromMon.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/poke_icon/PokeIcon_SetSlotFromMon.s")
 #endif
 
 void PokeIcon_AdjustImageColors(u16* arg0, s32 a1, arg1_func_80010CA8 arg2) {

@@ -300,7 +300,7 @@ s32 Gallery_ConfigurePhotoCamera(s32 arg0, unk_D_86002F34_00C* arg1) {
     return 0;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/30640/Gallery_ConfigurePhotoCamera.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/gallery/Gallery_ConfigurePhotoCamera.s")
 #endif
 
 #ifdef NON_MATCHING
@@ -312,7 +312,7 @@ s32 Gallery_SetScenePoseCamera(s32 arg0, unk_D_86002F34_00C* arg1) {
     return 0;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/30640/Gallery_SetScenePoseCamera.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/gallery/Gallery_SetScenePoseCamera.s")
 #endif
 
 s32 Gallery_SetCameraAngleOffsets(s32 arg0, unk_func_8003013C_arg1* arg1) {
@@ -585,7 +585,7 @@ s32 func_800303C8(s32 arg0, UNUSED GraphNode* arg1) {
     return 0;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/30640/func_800303C8.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/gallery/func_800303C8.s")
 #endif
 
 void Gallery_CopyPhotoMonFromBattleMon(GalleryPhotoMon* arg0, BattleMon* arg1) {

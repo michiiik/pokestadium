@@ -278,7 +278,7 @@ Vtx* Gfx_CreateFullscreenQuadGrid(void) {
 }
 #else
 Vtx* Gfx_CreateFullscreenQuadGrid(void);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/1CF30/Gfx_CreateFullscreenQuadGrid.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/graphics_textures/Gfx_CreateFullscreenQuadGrid.s")
 #endif
 
 void Gfx_SetVertexAttributes(Vtx* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, u8 arg6, u8 arg7, u8 arg8, u8 arg9) {

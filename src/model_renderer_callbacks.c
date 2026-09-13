@@ -64,7 +64,7 @@ void ModelRenderer_CacheSlotMatrices(u8 arg0) {
 }
 #else
 void ModelRenderer_CacheSlotMatrices(u8);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/334D0/ModelRenderer_CacheSlotMatrices.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/model_renderer_callbacks/ModelRenderer_CacheSlotMatrices.s")
 #endif
 
 #ifdef NON_MATCHING
@@ -78,7 +78,7 @@ void ModelRenderer_ApplySlotScale(u8 index) {
 }
 #else
 void ModelRenderer_ApplySlotScale(u8);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/334D0/ModelRenderer_ApplySlotScale.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/model_renderer_callbacks/ModelRenderer_ApplySlotScale.s")
 #endif
 
 #ifdef NON_MATCHING
@@ -101,7 +101,7 @@ void ModelRenderer_RebuildSlotMatrix(u8 index) {
 }
 #else
 void ModelRenderer_RebuildSlotMatrix(u8);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/334D0/ModelRenderer_RebuildSlotMatrix.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/model_renderer_callbacks/ModelRenderer_RebuildSlotMatrix.s")
 #endif
 
 void ModelRenderer_ClearSlotModels(s32 arg0) {
@@ -139,7 +139,7 @@ Gfx* ModelRenderer_SetupSlotColors(Gfx* gfx) {
 }
 #else
 Gfx* ModelRenderer_SetupSlotColors(Gfx*);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/334D0/ModelRenderer_SetupSlotColors.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/model_renderer_callbacks/ModelRenderer_SetupSlotColors.s")
 #endif
 
 #ifdef NON_MATCHING
@@ -161,7 +161,7 @@ void ModelRenderer_UpdateSlotModel(void) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/334D0/ModelRenderer_UpdateSlotModel.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/model_renderer_callbacks/ModelRenderer_UpdateSlotModel.s")
 #endif
 
 #ifdef NON_MATCHING
@@ -179,7 +179,7 @@ void ModelRenderer_UpdateSlotVertices(void) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/334D0/ModelRenderer_UpdateSlotVertices.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/model_renderer_callbacks/ModelRenderer_UpdateSlotVertices.s")
 #endif
 
 #ifdef NON_MATCHING
@@ -220,7 +220,7 @@ Gfx* ModelRenderer_DrawStaticSegment(Gfx* gfx) {
 }
 #else
 Gfx* ModelRenderer_DrawStaticSegment(Gfx*);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/334D0/ModelRenderer_DrawStaticSegment.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/model_renderer_callbacks/ModelRenderer_DrawStaticSegment.s")
 #endif
 
 #ifdef NON_MATCHING
@@ -284,5 +284,5 @@ Gfx* ModelRenderer_RenderActiveSlot(Gfx* gfx) {
 }
 #else
 Gfx* ModelRenderer_RenderActiveSlot(Gfx*);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/334D0/ModelRenderer_RenderActiveSlot.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/model_renderer_callbacks/ModelRenderer_RenderActiveSlot.s")
 #endif

@@ -58,7 +58,7 @@ void DisplayObject_AdjustTextureColors(unk_D_86002F34* arg0, arg1_func_80010CA8 
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/19840/DisplayObject_AdjustTextureColors.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/display_object_textures/DisplayObject_AdjustTextureColors.s")
 #endif
 
 Fragment* Jpeg_AllocAndDecodeFragment(MemoryBlock* arg0, PRESJPEG* arg1, PRESJPEG* arg2) {

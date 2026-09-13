@@ -1627,7 +1627,7 @@ s32 Audio_PlayerFrameHandler(void* arg0) {
     return D_800FC7D8;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/38BB0/Audio_PlayerFrameHandler.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/audio_io/Audio_PlayerFrameHandler.s")
 #endif
 
 void Audio_DecodeVoiceCommandStream(AudioVoice* arg0) {

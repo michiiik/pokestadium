@@ -327,7 +327,7 @@ u8 GbMusic_CmdSetEnvelope(u32 arg0) {
     return 0;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/435D0/GbMusic_CmdSetEnvelope.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/gb_audio/GbMusic_CmdSetEnvelope.s")
 #endif
 
 u8 GbMusic_CmdPitchSlide(u32 arg0) {
@@ -454,7 +454,7 @@ u8 GbMusic_CmdPlayNoteWithDuty(u32 arg0, u8 arg1) {
     return var_v1;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/435D0/GbMusic_CmdPlayNoteWithDuty.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/gb_audio/GbMusic_CmdPlayNoteWithDuty.s")
 #endif
 
 u8 GbMusic_CmdPlayNote(u32 arg0, u8 arg1) {
@@ -949,7 +949,7 @@ void GbMusic_BindSequenceTracks(u8 arg0) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/435D0/GbMusic_BindSequenceTracks.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/gb_audio/GbMusic_BindSequenceTracks.s")
 #endif
 
 s32 GbMusic_CountActiveHighChannels(void) {
@@ -987,5 +987,5 @@ void GbMusic_RelocateSequenceTable(unk_D_800FC6D4* arg0) {
     arg0->flags = 1;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/435D0/GbMusic_RelocateSequenceTable.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/gb_audio/GbMusic_RelocateSequenceTable.s")
 #endif

@@ -51,7 +51,7 @@ u8 GbAudio_GetRegisterValue(u16 arg0) {
     return D_800FD6A0[arg0 & 0xFF];
 }
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/4A3E0/func_800498A8.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/gb_audio_render/func_800498A8.s")
 
 void GbAudio_ApplyQueuedWrites(u16);
 s16 GbAudio_SampleSquare1(void);
@@ -136,7 +136,7 @@ void GbAudio_RenderSamples(u32 arg0) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/4A3E0/GbAudio_RenderSamples.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/gb_audio_render/GbAudio_RenderSamples.s")
 #endif
 
 void GbAudio_ApplyQueuedWrites(u16 arg0) {
@@ -150,11 +150,11 @@ void GbAudio_ApplyQueuedWrites(u16 arg0) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/4A3E0/GbAudio_SampleSquare1.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/gb_audio_render/GbAudio_SampleSquare1.s")
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/4A3E0/GbAudio_SampleSquare2.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/gb_audio_render/GbAudio_SampleSquare2.s")
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/4A3E0/GbAudio_SampleNoise.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/gb_audio_render/GbAudio_SampleNoise.s")
 
 void GbAudio_ClearInterpolationHistory(void) {
     s32 i;

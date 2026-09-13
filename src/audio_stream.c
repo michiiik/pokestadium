@@ -243,7 +243,7 @@ void AudioStream_Update(void) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/45720/AudioStream_Update.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/audio_stream/AudioStream_Update.s")
 #endif
 
 void AudioStream_DmaReadChunk(u32 arg0, u32 arg1, u32 arg2, OSMesgQueue* arg3) {
