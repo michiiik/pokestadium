@@ -782,7 +782,7 @@ void RattataGame_UpdateHurdleMarkers(RattataRacer* arg0) {
 }
 #else
 void RattataGame_UpdateHurdleMarkers(RattataRacer* arg0);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/8/fragment8/RattataGame_UpdateHurdleMarkers.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/rattata_game/rattata_game/RattataGame_UpdateHurdleMarkers.s")
 #endif
 
 s16 RattataGame_UpdateRacers(void) {
@@ -1188,7 +1188,7 @@ void RattataGame_UpdatePostRaceIdleAnim(void) {
 }
 #else
 void RattataGame_UpdatePostRaceIdleAnim(void);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/8/fragment8/RattataGame_UpdatePostRaceIdleAnim.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/rattata_game/rattata_game/RattataGame_UpdatePostRaceIdleAnim.s")
 #endif
 
 void RattataGame_PlayResultAnimation(void) {

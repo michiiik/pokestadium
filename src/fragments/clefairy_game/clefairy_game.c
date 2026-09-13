@@ -671,7 +671,7 @@ void ClefairyGame_DrawTutorialScreen(s32 arg0) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/7/fragment7/ClefairyGame_DrawTutorialScreen.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/clefairy_game/clefairy_game/ClefairyGame_DrawTutorialScreen.s")
 #endif
 
 void ClefairyGame_DrawPenaltyDots(void) {

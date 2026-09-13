@@ -223,7 +223,7 @@ void Minigame_InitSharedState(s16 arg0) {
     Widget_Init();
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/2/fragment2/Minigame_InitSharedState.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/widget_toolkit/widget_toolkit/Minigame_InitSharedState.s")
 #endif
 
 void Widget_FillRect(s16 arg0, s16 arg1, s16 arg2, s16 arg3) {

@@ -243,7 +243,7 @@ void MiniGfx_DrawBackgroundTiles(s32 arg0) {
     gDisplayListHead = gfx;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/4/fragment4/MiniGfx_DrawBackgroundTiles.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/minigame_shared_graphics/minigame_shared_graphics/MiniGfx_DrawBackgroundTiles.s")
 #endif
 
 typedef void (*ret_func_87A010C8)(void);

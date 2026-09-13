@@ -865,7 +865,7 @@ void TransferPak_DrawBackgroundTiles(u8* arg0) {
     gDisplayListHead = gfx;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/33/fragment33/TransferPak_DrawBackgroundTiles.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/transfer_pak_select/transfer_pak_select/TransferPak_DrawBackgroundTiles.s")
 #endif
 
 #ifdef NON_MATCHING
@@ -954,5 +954,5 @@ void TransferPak_DrawPresentationBackground(void) {
     gDisplayListHead = gfx;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/33/fragment33/TransferPak_DrawPresentationBackground.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/transfer_pak_select/transfer_pak_select/TransferPak_DrawPresentationBackground.s")
 #endif

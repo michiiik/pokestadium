@@ -267,7 +267,7 @@ void WidgetTree_DrawTileGrid(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, 640, 480);
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/26/fragment26/WidgetTree_DrawTileGrid.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/widget_tree/widget_tree/WidgetTree_DrawTileGrid.s")
 #endif
 
 void WidgetTree_InitTiledTextureRegion(unk_func_88500E34* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, u8* arg5) {
@@ -1661,7 +1661,7 @@ s32 WidgetTree_PagedGridHandleInput(unk_func_88200FA0_030_030* arg0, Controller*
     return sp5C;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/26/fragment26/WidgetTree_PagedGridHandleInput.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/widget_tree/widget_tree/WidgetTree_PagedGridHandleInput.s")
 #endif
 
 void WidgetTree_SetPagedGridSelection(unk_func_88200FA0_030_030* arg0, s32 arg1) {
@@ -1904,7 +1904,7 @@ s32 WidgetTree_DrawScrollableGrid(unk_func_8821421C_038_034* arg0, s32 arg1, s32
     return 0;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/26/fragment26/WidgetTree_DrawScrollableGrid.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/widget_tree/widget_tree/WidgetTree_DrawScrollableGrid.s")
 #endif
 
 s32 WidgetTree_HandleScrollableGridInput(unk_func_8821421C_038_034* arg0, Controller* arg1) {
@@ -2718,7 +2718,7 @@ s32 WidgetTree_DrawDashedBorderFrame(unk_func_8850B254* arg0, s32 arg1, s32 arg2
     return 0;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/26/fragment26/WidgetTree_DrawDashedBorderFrame.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/widget_tree/widget_tree/WidgetTree_DrawDashedBorderFrame.s")
 #endif
 
 void Ui_PlayInputActionSound(s32 arg0) {

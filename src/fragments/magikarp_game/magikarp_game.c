@@ -432,7 +432,7 @@ static u8 D_86002B88[] = {
     150,
 };
 void MagikarpGame_DrawTutorialOverlay(s32 arg0);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/6/fragment6/MagikarpGame_DrawTutorialOverlay.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/magikarp_game/magikarp_game/MagikarpGame_DrawTutorialOverlay.s")
 #endif
 
 static Gfx D_86002B90[] = {

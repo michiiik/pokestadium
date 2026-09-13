@@ -340,7 +340,7 @@ void Gallery_AlbumDrawPageCounter(unk_D_83407B38* arg0, s32 arg1, s32 arg2) {
     Font_EndTexturedTextRendering();
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/44/fragment44/Gallery_AlbumDrawPageCounter.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gallery_album/gallery_album/Gallery_AlbumDrawPageCounter.s")
 #endif
 
 void Gallery_AlbumDrawThumbnailFrame(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
@@ -506,7 +506,7 @@ void Gallery_AlbumDrawScaledPhoto(u16* arg0, s32 arg1, s32 arg2, s32 arg3, s32 a
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/44/fragment44/Gallery_AlbumDrawScaledPhoto.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gallery_album/gallery_album/Gallery_AlbumDrawScaledPhoto.s")
 #endif
 
 void Gallery_AlbumDrawThumbnails(s32 arg0, s32 arg1, unk_D_83407B38* arg2) {
