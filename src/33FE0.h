@@ -8,10 +8,6 @@ typedef struct PosBlend {
     /* 0x0C */ Vec3f offset;
 } PosBlend; // size = 0x18
 
-typedef struct Vec3sPad {
-    /* 0x0 */ Vec3s vec;
-    /* 0x6 */ char pad06[0x9];
-} Vec3sPad; // size = 0x10
 
 typedef struct Vec3fCounter {
     /* 0x00 */ Vec3f vec;

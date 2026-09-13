@@ -25,6 +25,14 @@ typedef struct unk_func_88201488_arg2 {
 
 extern s32 D_4006A08;
 
+typedef struct unk_func_88201488_arg2 {
+    /* 0x00 */ u8 unk_00;
+    /* 0x01 */ char pad01[0x23];
+    /* 0x24 */ u8 unk_24;
+} unk_func_88201488_arg2; // size = 0x28
+
+extern s32 D_4006A08;
+
 static char** D_88224FA0;
 static char** D_88224FA4;
 
