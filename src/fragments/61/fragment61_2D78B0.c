@@ -11,7 +11,7 @@
 #include "src/game_state.h"
 #include "src/session.h"
 #include "src/text_system.h"
-#include "src/jpeg_stream.h"
+#include "src/jpeg_decoder.h"
 #include "src/audio_sfx.h"
 #include "src/DDC0.h"
 #include "src/matrix.h"
