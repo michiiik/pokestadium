@@ -1,38 +1,67 @@
 name: Public PR Integration
+
 on:
   workflow_run:
     workflows: [Public PR ROM Gate]
     types: [completed]
-permissions: {contents: read, pull-requests: read}
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: public-pokestadium-integration-${{ github.event.workflow_run.pull_requests[0].number || github.run_id }}
+  cancel-in-progress: false
+
 jobs:
   integrate:
-    if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.pull_requests[0].number
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.pull_requests[0].number
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - id: eligible
+      - name: Confirm the exact eligible PR revision
+        id: eligible
         uses: actions/github-script@v7
         with:
           script: |
-            const p=context.payload.workflow_run.pull_requests[0], {data:pr}=await github.rest.pulls.get({owner:context.repo.owner,repo:context.repo.repo,pull_number:p.number});
-            const same=pr.head.repo?.full_name===`${context.repo.owner}/${context.repo.repo}`;
-            const trusted=['OWNER','MEMBER','COLLABORATOR'].includes(pr.author_association);
-            const coverage=pr.head.ref==='ci/refresh-coverage' && pr.user.login==='pokestadium-public-ci[bot]';
-            core.setOutput('ok',same && (trusted || coverage) && !pr.draft && pr.base.ref==='master' && pr.head.sha===p.head.sha ? 'true':'false'); core.setOutput('number',p.number);
-      - if: steps.eligible.outputs.ok == 'true' && vars.PUBLIC_CI_AUTOMERGE_ENABLED == 'true'
-        uses: actions/create-github-app-token@v3
+            const runPr = context.payload.workflow_run.pull_requests[0];
+            const { owner, repo } = context.repo;
+            const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: runPr.number });
+            const sameRepository = pr.head.repo?.full_name === `${owner}/${repo}`;
+            const verifiedAuthor = ['OWNER', 'MEMBER', 'COLLABORATOR'].includes(pr.author_association);
+            const coverageBot = pr.user?.login === 'pokestadium-public-ci[bot]' && pr.head.ref === 'ci/refresh-coverage';
+            const exactRevision = pr.head.sha === runPr.head.sha && pr.base.sha === runPr.base.sha;
+            const eligible = sameRepository && (verifiedAuthor || coverageBot) && !pr.draft && pr.base.ref === 'master' && exactRevision;
+            core.setOutput('ok', eligible ? 'true' : 'false');
+            core.setOutput('number', String(runPr.number));
+      - name: Create the integration App token
+        if: steps.eligible.outputs.ok == 'true' && vars.PUBLIC_CI_AUTOMERGE_ENABLED == 'true'
         id: token
+        uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ vars.PUBLIC_CI_APP_ID }}
           private-key: ${{ secrets.PUBLIC_CI_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
           repositories: ${{ github.event.repository.name }}
+          permission-contents: write
           permission-pull-requests: write
-      - if: steps.eligible.outputs.ok == 'true' && vars.PUBLIC_CI_AUTOMERGE_ENABLED == 'true'
+      - name: Enable squash auto-merge
+        if: steps.eligible.outputs.ok == 'true' && vars.PUBLIC_CI_AUTOMERGE_ENABLED == 'true'
         uses: actions/github-script@v7
         env:
           PR_NUMBER: ${{ steps.eligible.outputs.number }}
         with:
           github-token: ${{ steps.token.outputs.token }}
           script: |
-            const {data:pr}=await github.rest.pulls.get({owner:context.repo.owner,repo:context.repo.repo,pull_number:Number(process.env.PR_NUMBER)});
-            await github.graphql(`mutation($id:ID!){enablePullRequestAutoMerge(input:{pullRequestId:$id,mergeMethod:SQUASH}){pullRequest{number}}}`,{id:pr.node_id});
+            const { owner, repo } = context.repo;
+            const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: Number(process.env.PR_NUMBER) });
+            try {
+              await github.graphql(`mutation($id:ID!){enablePullRequestAutoMerge(input:{pullRequestId:$id,mergeMethod:SQUASH}){pullRequest{number}}}`, { id: pr.node_id });
+            } catch (error) {
+              if (!String(error.message).includes('Pull request is in clean status')) throw error;
+              const result = await github.rest.pulls.merge({ owner, repo, pull_number: pr.number, sha: pr.head.sha, merge_method: 'squash' });
+              if (!result.data.merged) core.setFailed(result.data.message || 'Immediate squash merge was not completed.');
+            }
