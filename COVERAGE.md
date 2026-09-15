@@ -4,10 +4,11 @@
 
 <!-- AUTO_COVERAGE:START -->
 - Functions with C implementations: **7,343 / 7,437 (98.7%)**
-- Remaining `GLOBAL_ASM` owners: **94** (across 45 source files)
+- Remaining decompilable `GLOBAL_ASM` owners: **94** (across 45 source files)
+- Separately managed `hasm` assembly segments: **8**
 <!-- AUTO_COVERAGE:END -->
 
-Total function count is derived from the retail linker map and retained from the trusted baseline. Regenerate with:
+The function denominator covers C source owners and `GLOBAL_ASM` stubs. `hasm` entries are deliberately managed assembly segments, not unported C-function owners, so they are reported separately and excluded from the decompilation backlog. Total function count is derived from the retail linker map and retained from the trusted baseline. Regenerate with:
 `python3 ci/update_coverage.py`
 
 ## Remaining owners by source file
@@ -59,3 +60,18 @@ Total function count is derived from the retail linker map and retained from the
 | `src/fragments/widget_tree/widget_tree.c` | 4 |
 | `src/gb_audio_render.c` | 4 |
 | `src/geo_render.c` | 2 |
+
+## Separately managed assembly segments
+
+These YAML `hasm` entries are kept as assembly by design and are not counted as `GLOBAL_ASM` decompilation candidates.
+
+| YAML | ROM offset | Segment |
+| --- | ---: | --- |
+| `yamls/us/rom.yaml` | `0x1000` | `entry` |
+| `yamls/us/rom.yaml` | `0xC3F0` | `yay0` |
+| `yamls/us/rom.yaml` | `0xC4A0` | `abs` |
+| `yamls/us/rom.yaml` | `0xC910` | `../../src/libleo/bootstrap` |
+| `yamls/us/rom.yaml` | `0x49190` | `managed assembly` |
+| `yamls/us/rom.yaml` | `0x517A0` | `yay0 audio decoder` |
+| `yamls/us/rom.yaml` | `0x7F980` | `fragments/gb_tower_emulator/gb_tower_emulator_header` |
+| `yamls/us/rom.yaml` | `0x89020` | `fragments/gb_tower_emulator/gb_tower_emulator_code_asm` |
