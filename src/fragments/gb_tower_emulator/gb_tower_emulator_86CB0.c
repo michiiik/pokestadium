@@ -58,15 +58,11 @@ extern s32 D_8120EAC4;
 extern s32 D_8120EA60;
 extern u32 D_8120EA80;
 extern s32 D_8120EAD0;
+extern u16 D_8120EAD4[32];
 extern u8 D_8120EB14[];
+extern u32 D_8120EB48[8];
 extern s32 D_8120EB78;
 extern s32 D_8120EB7C;
-
-// .rodata
-extern f32 D_8122B0A0;
-extern f32 D_8122B0A4;
-extern f32 D_8122B0A8;
-extern f32 D_8122B0AC;
 
 // .bss
 extern s16 D_8122C790;
@@ -100,11 +96,11 @@ void func_81207354(void) {
 void GbApu_SelectRegionClock(s32 arg0) {
     if (arg0 == 0) {
         D_8120EAC4 = 0x4578;
-        D_8120EAC0 = D_8122B0A0;
+        D_8120EAC0 = 1500.0f;
         return;
     }
     D_8120EAC4 = 0x8AF0;
-    D_8120EAC0 = D_8122B0A4;
+    D_8120EAC0 = 1500.0f;
 }
 
 void GbApu_SetNoisePeriodBounds(s32 arg0, s32 arg1) {
@@ -121,7 +117,17 @@ u32 GbApu_FreqToStep(u16 arg0) {
   return temp;
 }
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/func_81207494.s")
+u32 func_81207494(u16 arg0, u16 arg1, u16 arg2) {
+    u32 temp;
+    s32 temp2;
+
+    D_8122EE98 = (arg1 * 16 + arg0) << 14;
+    temp = D_8120EB48[arg2];
+    temp2 = (f32)temp;
+    temp = (temp2 / 48000.0f) * 24000.0f;
+    D_8120EAC8 = D_8120EAD4[arg0 * 2 + arg1];
+    return temp;
+}
 
 u32 GbApu_FreqToStep2x(u16 arg0) {
   u32 temp;
