@@ -1,18 +1,42 @@
 name: Refresh coverage after merge
+
 on:
   push:
     branches: [master]
     paths-ignore: [COVERAGE.md]
-permissions: {contents: read}
-concurrency: {group: public-refresh-pokestadium-coverage, cancel-in-progress: false}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-refresh-pokestadium-coverage
+  cancel-in-progress: false
+
 jobs:
   refresh:
+    name: Regenerate COVERAGE.md
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-        with: {ref: master, persist-credentials: false}
-      - uses: actions/create-github-app-token@v3
+      - name: Checkout master
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          persist-credentials: false
+      - name: Check the integration GitHub App configuration
+        shell: bash
+        env:
+          APP_ID: ${{ vars.PUBLIC_CI_APP_ID }}
+          APP_PRIVATE_KEY: ${{ secrets.PUBLIC_CI_APP_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$APP_ID" || -z "$APP_PRIVATE_KEY" ]]; then
+            echo '::error::Configure PUBLIC_CI_APP_ID and PUBLIC_CI_APP_PRIVATE_KEY before refreshing coverage.'
+            exit 1
+          fi
+      - name: Create the least-privilege coverage App token
         id: token
+        uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ vars.PUBLIC_CI_APP_ID }}
           private-key: ${{ secrets.PUBLIC_CI_APP_PRIVATE_KEY }}
@@ -20,15 +44,27 @@ jobs:
           repositories: ${{ github.event.repository.name }}
           permission-contents: write
           permission-pull-requests: write
-      - env: {GH_TOKEN: ${{ steps.token.outputs.token }}}
+      - name: Regenerate COVERAGE.md and open/update its PR
+        shell: bash
+        env:
+          GH_TOKEN: ${{ steps.token.outputs.token }}
         run: |
           set -euo pipefail
           python3 ci/update_coverage.py --repo-root .
-          git diff --quiet -- COVERAGE.md && exit 0
+          if git diff --quiet -- COVERAGE.md; then
+            echo 'refresh-coverage: COVERAGE.md is already current on master.'
+            exit 0
+          fi
           git config user.name 'pokestadium-public-ci[bot]'
           git config user.email 'pokestadium-public-ci[bot]@users.noreply.github.com'
           git switch -C ci/refresh-coverage
-          git add COVERAGE.md && git commit -m 'ci: refresh COVERAGE.md'
+          git add COVERAGE.md
+          git commit --quiet -m 'ci: refresh COVERAGE.md'
           git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git push --force origin ci/refresh-coverage
-          gh pr create --repo "$GITHUB_REPOSITORY" --base master --head ci/refresh-coverage --title 'ci: refresh COVERAGE.md' --body 'Automated whole-tree coverage refresh.' || true
+          existing="$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --head ci/refresh-coverage --json number --jq '.[0].number // empty')"
+          if [ -z "$existing" ]; then
+            gh pr create --repo "$GITHUB_REPOSITORY" --base master --head ci/refresh-coverage --title 'ci: refresh COVERAGE.md' --body 'Automated whole-tree coverage regeneration. Touches only COVERAGE.md.'
+          else
+            echo "refresh-coverage: updated existing PR #$existing."
+          fi
