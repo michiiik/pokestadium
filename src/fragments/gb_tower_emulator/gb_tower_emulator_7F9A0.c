@@ -114,6 +114,7 @@ extern s32 D_8122C4DC;
 extern u8 gGbPakServiceThreadActive;
 extern u8 gGbEmuPresentationMode;
 extern u8 D_8122C4E3;
+extern u8 D_8122C4E2;
 extern u8 D_8122C4E4;
 extern u8 D_8122C4E5;
 extern s8 D_8122C4E7;
@@ -128,6 +129,8 @@ extern u8 D_8122C520[0x20];
 extern u8* gGbEmuFont1Data;
 extern u8* gGbEmuFont2Data;
 extern unk_D_8122C748* D_8122C748;
+extern u8 D_8122C740[];
+extern u8 D_8122C744[];
 extern s32 D_8122C74C;
 extern s32 D_8122C750;
 extern u8* D_8122C754;
@@ -594,8 +597,6 @@ void func_812020C0(u16* dst, s32 arg1, s32 arg2) {
       }
   }
 }
-
-#endif
 
 #ifdef NON_MATCHING
 void func_81202210(s32 arg0, s32 arg1) {
