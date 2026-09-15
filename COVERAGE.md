@@ -4,7 +4,7 @@
 
 <!-- AUTO_COVERAGE:START -->
 - Functions with C implementations: **7,347 / 7,437 (98.8%)**
-- Remaining `GLOBAL_ASM` owners: **90** (across 45 source files)
+- Remaining decompilable `GLOBAL_ASM` owners: **90** (across 45 source files)
 - Separately managed `hasm` assembly segments: **8**
 <!-- AUTO_COVERAGE:END -->
 
