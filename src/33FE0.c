@@ -762,8 +762,8 @@ void func_80034824(ModelSegment* segment, StadiumTransform* xf, s32 index, Model
                     temp_fa0 = temp_v1->w2;
                     temp_v0_2->disabled = (u16) (temp_v0_2->disabled | (1 << index));
                     temp_v0_2->offset.x = (f32) (((temp_fv0 * (sp16C - sp178)) + sp178 + (temp_fv1 * sp13C) + (temp_fa0 * sp130)) - var_s1->position.base.x);
-                    temp_v0_2->offset.y = (f32) (((temp_fv0 * (sp168 - sp174)) + sp174 + (temp_fv1 * sp138) + (temp_fa0 * sp12C)) - temp_v0_2->position.base.y);
-                    temp_v0_2->offset.z = (f32) (((temp_fv0 * (sp164 - sp170)) + sp170 + (temp_fv1 * sp134) + (temp_fa0 * sp128)) - temp_v0_2->position.base.z);
+                    temp_v0_2->offset.y = (f32) (((temp_fv0 * (sp168 - sp174)) + sp174 + (temp_fv1 * sp138) + (temp_fa0 * sp12C)) - temp_v0_2->base.y);
+                    temp_v0_2->offset.z = (f32) (((temp_fv0 * (sp164 - sp170)) + sp170 + (temp_fv1 * sp134) + (temp_fa0 * sp128)) - temp_v0_2->base.z);
                 }
             }
         }
