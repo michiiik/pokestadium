@@ -3,7 +3,11 @@ set -euo pipefail
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 rom="$root/baseroms/us/baserom.z64"
 temporary=0
-cleanup() { [ "$temporary" -eq 0 ] || rm -f "$rom"; }
+cleanup() {
+  status=$?
+  [ "$temporary" -eq 0 ] || rm -f "$rom"
+  return "$status"
+}
 trap cleanup EXIT
 if [ ! -f "$rom" ]; then
   : "${POKESTADIUM_BASEROM:?Set POKESTADIUM_BASEROM to the retail US ROM path}"
