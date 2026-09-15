@@ -1,0 +1,34 @@
+name: Refresh coverage after merge
+on:
+  push:
+    branches: [master]
+    paths-ignore: [COVERAGE.md]
+permissions: {contents: read}
+concurrency: {group: public-refresh-pokestadium-coverage, cancel-in-progress: false}
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: master, persist-credentials: false}
+      - uses: actions/create-github-app-token@v3
+        id: token
+        with:
+          app-id: ${{ vars.PUBLIC_CI_APP_ID }}
+          private-key: ${{ secrets.PUBLIC_CI_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+          permission-contents: write
+          permission-pull-requests: write
+      - env: {GH_TOKEN: ${{ steps.token.outputs.token }}}
+        run: |
+          set -euo pipefail
+          python3 ci/update_coverage.py --repo-root .
+          git diff --quiet -- COVERAGE.md && exit 0
+          git config user.name 'pokestadium-public-ci[bot]'
+          git config user.email 'pokestadium-public-ci[bot]@users.noreply.github.com'
+          git switch -C ci/refresh-coverage
+          git add COVERAGE.md && git commit -m 'ci: refresh COVERAGE.md'
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git push --force origin ci/refresh-coverage
+          gh pr create --repo "$GITHUB_REPOSITORY" --base master --head ci/refresh-coverage --title 'ci: refresh COVERAGE.md' --body 'Automated whole-tree coverage refresh.' || true

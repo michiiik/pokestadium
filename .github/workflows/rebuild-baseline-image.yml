@@ -1,0 +1,27 @@
+name: Rebuild CI baseline image
+on:
+  push:
+    branches: [master]
+    paths:
+      - yamls/**
+      - include/**
+      - tools/**
+      - ci/Dockerfile
+      - ci/build-baseline.sh
+      - requirements.txt
+      - Makefile
+permissions: {contents: read}
+concurrency: {group: rebuild-pokestadium-ci-baseline, cancel-in-progress: false}
+jobs:
+  rebuild:
+    runs-on: [self-hosted, macOS, ARM64, pokestadium-decomp-public]
+    timeout-minutes: 30
+    steps:
+      - run: echo "::add-mask::${HOME}"; echo "::add-mask::${GITHUB_WORKSPACE}"; echo "::add-mask::${RUNNER_TEMP}"
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false, set-safe-directory: false}
+      - run: bash ci/build-baseline.sh
+      - name: Confirm baseline YAMLs match master
+        run: |
+          image="${POKESTADIUM_DECOMP_AGENT_IMAGE:-pokestadium-decomp-agent:latest}"
+          test "$(docker run --rm --platform linux/amd64 -v "$GITHUB_WORKSPACE/yamls:/current:ro" --entrypoint bash "$image" -c 'diff -qr /work/yamls /current 2>/dev/null | wc -l')" -eq 0
