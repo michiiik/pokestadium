@@ -939,27 +939,26 @@ s32 GbMusic_CountActiveHighChannels(void) {
     return ret;
 }
 
-#ifdef NON_MATCHING
+typedef struct unk_80044A50_008 {
+    u32 unk_00;
+    u32 unk_04;
+} unk_80044A50_008;
+
 void func_80044A50(unk_D_800FC6D4* arg0) {
-    u32 i;
-    u32 end;
-    unk_D_800FC6D4_008* ptr;
-    u32 a0 = arg0;
-
-    if (arg0->flags != 0) {
-        return;
+    s32 i, end;
+    u32 base;
+    u8* temp_v1;
+    unk_80044A50_008* temp_v0;
+    if (arg0->flags != 0) return;
+    end = arg0->unk_04;
+    base = (u32)arg0;
+    temp_v1 = arg0->offset;
+    temp_v1 += base;
+    arg0->offset = (u32)temp_v1;
+    for (i = 0; i != (end * 3); i++) {
+        temp_v0 = (unk_80044A50_008*)((u32)i * 8 + (u32)temp_v1);
+        temp_v0 += 0;
+        temp_v0->unk_00 += base;
     }
-
-    end = arg0->unk_04 * 3;
-    ptr = arg0->offset + a0;
-    arg0->offset = ptr;
-
-    for (i = 0; i < end; i++) {
-        ptr[i].unk_00 += a0;
-    }
-
     arg0->flags = 1;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/gb_audio/func_80044A50.s")
-#endif
