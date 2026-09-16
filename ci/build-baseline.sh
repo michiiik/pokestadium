@@ -100,12 +100,14 @@ else
 fi
 
 # Incremental, not forced: only what actually changed (relative to this
-# same persistent checkout's own last build) gets recompiled. No CC=
-# override -- the Makefile's own target-specific rule already routes
-# still-unmatched GLOBAL_ASM files through asm-processor correctly; see
-# ci/gate-pr.sh's own comment on why overriding CC here is exactly the bug
-# that made the previous in-Docker bake fail.
-( cd "$ci_checkout" && make COMPARE=0 -j"$(sysctl -n hw.ncpu 2>/dev/null || nproc)" rom )
+# same persistent checkout's own last build) gets recompiled. The baseline
+# checkout is built on the ARM64 macOS runner, where Apple Clang cannot model
+# the MIPS 32-bit pointer width used by the repository's optional host syntax
+# checker (-m32 is not a usable target there). The PR gate still performs its
+# authoritative host checks inside the Linux container; this host build only
+# needs to produce the MIPS objects/map that are staged into the image.
+build_jobs="$(sysctl -n hw.ncpu 2>/dev/null || nproc)"
+( cd "$ci_checkout" && make RUN_CC_CHECK=0 COMPARE=0 -j"$build_jobs" rom )
 
 # --- Stage a throwaway Docker build context from the persistent checkout ---
 staging_dir="$(mktemp -d "${TMPDIR:-/tmp}/pokestadium-baseline-build.XXXXXX")"
