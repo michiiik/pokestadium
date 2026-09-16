@@ -135,7 +135,7 @@ if [ -d /src/hand_asm ]; then
 fi
 if sync_tree /src/include /work/include; then headers_changed=1; fi
 if sync_tree /src/tools /work/tools --exclude=__pycache__ --exclude=vtxdis; then tools_changed=1; fi
-if sync_tree /src/linker_scripts /work/linker_scripts --exclude=auto; then linker_changed=1; fi
+if sync_tree /src/linker_scripts /work/linker_scripts --exclude=auto --exclude=pokestadium.ld; then linker_changed=1; fi
 if sync_tree /src/lib /work/lib --exclude=build --exclude=extracted; then library_changed=1; fi
 makefile_changed=0
 if [ ! -f /work/Makefile ] || ! cmp -s /src/Makefile /work/Makefile; then
@@ -163,7 +163,7 @@ if sync_tree /src/yamls /work/yamls; then
     # verified with a real build. Re-sync on top so that already-verified
     # version is what actually gets built, not a second, possibly
     # different regeneration against a stale local tree.
-    sync_tree /src/linker_scripts /work/linker_scripts --exclude=auto || true
+    sync_tree /src/linker_scripts /work/linker_scripts --exclude=auto --exclude=pokestadium.ld || true
 fi
 
 # A library change invalidates the baked lib objects. This remains inside the
