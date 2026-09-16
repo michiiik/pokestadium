@@ -1,0 +1,132 @@
+name: Keep open PRs current
+
+# strict required-status-checks is now OFF (see the repo's branch protection
+# settings -- required_status_checks.strict: false): with it on, ANY open
+# PR needed a fresh "Validate ROM against master" run against the exact
+# current base before GitHub would merge it, even a PR that only replaces
+# one GLOBAL_ASM owner's body in one src/*.c file and cannot plausibly
+# interact with whatever landed elsewhere. That blanket freshness
+# requirement is reimplemented here, narrowed to PRs that actually need it:
+# a "small" PR (every changed file matches src/**/*.c) is trusted to merge
+# on its own already-passing check, however stale its base; anything wider
+# -- include/, linker_scripts/, yamls/, tools/, lib/, Makefile, CI/workflow
+# files, or a PR that touches more than one kind of thing -- still requires
+# its check to have run against the CURRENT master tip before merging, the
+# same guarantee strict used to provide, because this project has a real
+# precedent of two individually-clean changes combining badly (the
+# jump-table/.rodata-subsegment history) once more than a single function
+# body is in play.
+#
+# GitHub's own auto-merge never updates a stale branch on its own, and with
+# strict off it may not even report "behind" for one anymore -- staleness
+# here is judged directly (PR base sha vs. master's live tip), not off
+# GitHub's mergeable_state. fleetctl's own poll loop (attemptMerge's
+# requestBranchUpdate) does the same thing for the PRs it tracks; every one
+# of those is structurally always "small" (container_agent.py's driver
+# loop, and the batch contract's companion_edits, never touch more than one
+# src/*.c file), so it never actually needs this. This workflow exists for
+# every other open, trusted PR -- e.g. one opened by hand for a
+# container-agent match fleetctl never tracked (PRs #49-52), which is what
+# surfaced the gap this and the preceding commit both close.
+on:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: keep-open-prs-current
+  cancel-in-progress: false
+
+jobs:
+  update-behind:
+    name: Update any open, trusted, non-small PR that fell behind
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check the integration GitHub App configuration
+        shell: bash
+        env:
+          APP_CLIENT_ID: ${{ vars.PUBLIC_CI_APP_ID }}
+          APP_PRIVATE_KEY: ${{ secrets.PUBLIC_CI_APP_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$APP_CLIENT_ID" || -z "$APP_PRIVATE_KEY" ]]; then
+            echo '::error::Configure PUBLIC_CI_APP_ID and PUBLIC_CI_APP_PRIVATE_KEY before updating open PR branches.'
+            exit 1
+          fi
+
+      - name: Create the least-privilege branch-update App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.PUBLIC_CI_APP_ID }}
+          private-key: ${{ secrets.PUBLIC_CI_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+          permission-contents: write
+          permission-pull-requests: write
+
+      - name: Update every open, trusted, non-small, stale PR
+        uses: actions/github-script@v7
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            const { owner, repo } = context.repo;
+            const trustedAssociations = ['OWNER', 'MEMBER', 'COLLABORATOR'];
+            // Same narrow allowance pr-rom-gate.yml and pr-integration.yml
+            // already give this one bot on this one fixed branch name --
+            // see refresh-coverage.yml and those workflows' own comments.
+            const trustedBotLogin = 'pokestadium-public-ci[bot]';
+            const trustedBotBranch = 'ci/refresh-coverage';
+            // Keep this pattern identical to pr-integration.yml's own
+            // isSmallChange -- both decide the same question (does this PR
+            // need a fresh-against-master check before it may merge?) and
+            // must agree, or a PR could sit here forever never judged
+            // eligible to skip this update in the first place.
+            const smallChangePattern = /^src\/.*\.c$/;
+
+            const { data: masterRef } = await github.rest.git.getRef({
+              owner, repo, ref: 'heads/master',
+            });
+            const masterSha = masterRef.object.sha;
+
+            const prs = await github.paginate(github.rest.pulls.list, {
+              owner, repo, state: 'open', base: 'master', per_page: 100,
+            });
+
+            for (const pr of prs) {
+              const sameRepository = pr.head.repo?.full_name === `${owner}/${repo}`;
+              const trusted = sameRepository && (
+                trustedAssociations.includes(pr.author_association) ||
+                (pr.user?.login === trustedBotLogin && pr.head.ref === trustedBotBranch)
+              );
+              if (!trusted) {
+                continue; // never touch a fork or untrusted PR's branch
+              }
+
+              if (pr.base.sha === masterSha) {
+                continue; // already current, nothing to do
+              }
+
+              const files = await github.paginate(github.rest.pulls.listFiles, {
+                owner, repo, pull_number: pr.number, per_page: 100,
+              });
+              const isSmall = files.length > 0 && files.every((f) => smallChangePattern.test(f.filename));
+              if (isSmall) {
+                continue; // trusted to merge on its own already-passing check, however stale
+              }
+
+              try {
+                await github.rest.pulls.updateBranch({
+                  owner, repo, pull_number: pr.number,
+                });
+                core.info(`PR #${pr.number}: requested a branch update (non-small PR, base was stale).`);
+              } catch (error) {
+                core.warning(`PR #${pr.number}: update-branch failed: ${error.message}`);
+              }
+            }

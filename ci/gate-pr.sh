@@ -1,29 +1,277 @@
 #!/usr/bin/env bash
-# Run a PR checkout against the isolated retail baseline image.
+# Run the public PR ROM gate against a checkout directory.
+#
+# The caller supplies a checkout that may contain PR-controlled files. The
+# checkout is mounted read-only into a disposable container. The host-side
+# script is deliberately small and the container has no Docker socket,
+# secrets, or network access.
+
 set -euo pipefail
-[ "$#" -ge 1 ] && [ "$#" -le 2 ] || { echo "usage: $0 CHECKOUT [OUT]" >&2; exit 2; }
-src="$(cd "$1" && pwd)"; out="${2:-}"
-for required in Makefile src include linker_scripts yamls tools lib; do [ -e "$src/$required" ] || { echo "missing $required" >&2; exit 1; }; done
+
+usage() {
+    echo "usage: $(basename "$0") <checkout-dir> [coverage-output-dir]" >&2
+    exit 2
+}
+
+[ "$#" -ge 1 ] && [ "$#" -le 2 ] || usage
+
+checkout_dir="$1"
+coverage_output_dir="${2:-}"
+if [ ! -d "$checkout_dir" ]; then
+    echo "gate-pr.sh: checkout does not exist: $checkout_dir" >&2
+    exit 1
+fi
+checkout_dir="$(cd "$checkout_dir" && pwd)"
+
+for required in Makefile src include linker_scripts yamls tools lib; do
+    if [ ! -e "$checkout_dir/$required" ]; then
+        echo "gate-pr.sh: missing public checkout path: $required" >&2
+        exit 1
+    fi
+done
+
 image="${POKESTADIUM_DECOMP_AGENT_IMAGE:-pokestadium-decomp-agent:latest}"
-log="$(mktemp "${TMPDIR:-/tmp}/pokestadium-gate.XXXXXX.log")"; trap 'rm -f "$log"' EXIT
-args=(run --rm --platform linux/amd64 --network none --cap-drop=ALL --security-opt=no-new-privileges --pids-limit=2048 -v "$src:/src:ro")
-if [ -n "$out" ]; then mkdir -p "$out"; args+=(-v "$out:/out:rw"); fi
+log_file="$(mktemp "${TMPDIR:-/tmp}/pokestadium-gate.XXXXXX.log")"
+cleanup() { rm -f "$log_file"; }
+trap cleanup EXIT
+
+docker_args=(
+    run --rm
+    --platform linux/amd64
+    --network none
+    --cap-drop=ALL
+    --security-opt=no-new-privileges
+    --pids-limit=2048
+    -v "$checkout_dir:/src:ro"
+)
+if [ -n "$coverage_output_dir" ]; then
+    mkdir -p "$coverage_output_dir"
+    docker_args+=( -v "$coverage_output_dir:/out:rw" )
+fi
+
 set +e
-docker "${args[@]}" --entrypoint bash "$image" -c '
+docker "${docker_args[@]}" \
+    --entrypoint bash \
+    "$image" \
+    -c '
 set -euo pipefail
-rm -rf /work/src /work/include /work/tools /work/linker_scripts /work/lib
-for path in src include tools lib; do cp -a "/src/$path" "/work/$path"; done
-mkdir -p /work/linker_scripts; cp -a /src/linker_scripts/. /work/linker_scripts/
-cp -a /src/Makefile /work/Makefile
-cmp -s /src/requirements.txt /work/requirements.txt || { echo "requirements changed; rebuild baseline image" >&2; exit 3; }
-if ! diff -qr /src/yamls /work/yamls >/dev/null 2>&1; then rm -rf /work/yamls /work/asm /work/assets; cp -a /src/yamls /work/yamls; make extract; fi
-if [ ! -f /work/build/pokestadium-us.map ]; then make CC=tools/ido/linux/7.1/cc COMPARE=0 -j2 rom || true; fi
-if [ -d /out ]; then python3 /src/ci/update_coverage.py --repo-root /src --output /out/COVERAGE.md; fi
-jobs="${POKESTADIUM_DECOMP_JOBS:-$(nproc)}"; case "$jobs" in ""|*[!0-9]*|0) exit 2;; esac
-make -B COMPARE=0 -j"$jobs" rom
+
+# Overlay all tracked inputs that can affect the public root build. Never
+# overlay baseroms: the baseline image owns the known retail reference.
+library_changed=0
+split_changed=0
+headers_changed=0
+tools_changed=0
+linker_changed=0
+makefile_changed=0
+
+# Keep the baked source/object timestamps for unchanged files. A plain
+# recursive copy makes every checkout file newer than the baked objects,
+# which defeats the image cache and turns every PR into a full build.
+# Use one native diff scan per tree, then overlay only reported changes.
+sync_tree() {
+    local source_dir="$1"
+    local target_dir="$2"
+    shift 2
+    local diff_file
+    local diff_status=0
+    local line
+    local relative
+    local source_parent
+    local source_file
+    local target_file
+    local target_parent
+
+    mkdir -p "$target_dir"
+    diff_file="$(mktemp)"
+    if ! diff -qr "$@" "$source_dir" "$target_dir" >"$diff_file" 2>&1; then
+        diff_status=1
+    fi
+    if [ "${diff_status}" -eq 0 ]; then
+        rm -f "$diff_file"
+        return 1
+    fi
+
+    mkdir -p "$target_dir"
+    while IFS= read -r line || [ -n "$line" ]; do
+        case "$line" in
+        Files\ *\ and\ *\ differ)
+            source_file="${line#Files }"
+            source_file="${source_file% and * differ}"
+            target_file="${line#* and }"
+            target_file="${target_file% differ}"
+            mkdir -p "$(dirname "$target_file")"
+            cp -p "$source_file" "$target_file"
+            ;;
+        "Only in ${source_dir}"*)
+            source_parent="${line#Only in }"
+            source_parent="${source_parent%: *}"
+            source_file="$source_parent/${line##*: }"
+            relative="${source_file#${source_dir}/}"
+            target_file="$target_dir/$relative"
+            if [ -d "$source_file" ]; then
+                mkdir -p "$target_file"
+                cp -pR "$source_file/." "$target_file/"
+            else
+                mkdir -p "$(dirname "$target_file")"
+                cp -p "$source_file" "$target_file"
+            fi
+            ;;
+        "Only in ${target_dir}"*)
+            target_parent="${line#Only in }"
+            target_parent="${target_parent%: *}"
+            target_file="$target_parent/${line##*: }"
+            rm -rf "$target_file"
+            ;;
+        esac
+    done <"$diff_file"
+    rm -f "$diff_file"
+    return 0
+}
+
+if sync_tree /src/src /work/src; then :; fi
+if [ -d /src/hand_asm ]; then
+    if sync_tree /src/hand_asm /work/hand_asm; then :; fi
+fi
+if sync_tree /src/include /work/include; then headers_changed=1; fi
+if sync_tree /src/tools /work/tools --exclude=__pycache__ --exclude=vtxdis; then tools_changed=1; fi
+if sync_tree /src/linker_scripts /work/linker_scripts --exclude=auto; then linker_changed=1; fi
+if sync_tree /src/lib /work/lib --exclude=build --exclude=extracted; then library_changed=1; fi
+makefile_changed=0
+if [ ! -f /work/Makefile ] || ! cmp -s /src/Makefile /work/Makefile; then
+    makefile_changed=1
+fi
+if [ "${makefile_changed}" -eq 1 ]; then
+    cp -p /src/Makefile /work/Makefile
+fi
+
+# The baked venv must match the checked-in requirements. Rebuilding it would
+# require network access, so force a baseline rebuild for dependency changes.
+if ! cmp -s /src/requirements.txt /work/requirements.txt; then
+    echo "gate-pr.sh: requirements.txt changed; rebuild the public baseline image" >&2
+    exit 3
+fi
+
+# A YAML change changes the split. Re-extract before compiling against it.
+if sync_tree /src/yamls /work/yamls; then
+    split_changed=1
+    echo "gate-pr.sh: split inputs changed; re-running extraction" >&2
+    make extract
+    # extract regenerates linker_scripts/us/*.ld from whatever /work/asm the
+    # baked image already had, which can predate this split and disagree
+    # with the linker script already synced from /src above and already
+    # verified with a real build. Re-sync on top so that already-verified
+    # version is what actually gets built, not a second, possibly
+    # different regeneration against a stale local tree.
+    sync_tree /src/linker_scripts /work/linker_scripts --exclude=auto || true
+fi
+
+# A library change invalidates the baked lib objects. This remains inside the
+# disposable container and does not touch the host checkout.
+if [ "${library_changed}" -eq 1 ]; then
+    make libclean
+fi
+
+# Rebuild a direct-IDO seed when extraction or libclean removed the baked map.
+# The coalescing wrapper needs that map to resolve dlabels before it can safely
+# apply an opted-in fold. The final ROM build is always forced after the PR
+# overlay: the image contains a retail seed ROM, and timestamp-based make
+# decisions must never be allowed to accept that seed without compiling the
+# checked-out sources.
+if [ "${split_changed}" -eq 1 ]; then
+    rm -rf /work/build
+elif [ "${linker_changed}" -eq 1 ]; then
+    rm -f /work/build/pokestadium-us.map \
+        /work/build/pokestadium-us.elf \
+        /work/build/pokestadium-us.z64
+fi
+if [ ! -f /work/build/pokestadium-us.map ]; then
+    echo "gate-pr.sh: linked map missing; rebuilding direct-IDO seed" >&2
+    # CC= on the make command line overrides every target-specific CC
+    # assignment in the Makefile, including the one that routes
+    # still-unmatched GLOBAL_ASM files through asm-processor. That turns
+    # those files into empty stubs for this seed build, which can fail to
+    # link if anything (for example an aliases.ld entry) references one of
+    # the now-missing symbols. This seed build only exists to hand the
+    # coalescing wrapper a reference map; it is not the gate verdict, and
+    # the real, correctly-compiled build always runs next regardless of
+    # whether this step produced a map. Tolerate its failure here.
+    make CC=tools/ido/linux/7.1/cc COMPARE=0 -j2 rom || true
+fi
+
+# Produce the proposed coverage snapshot even when the ROM build later
+# fails, so reviewers can inspect the exact PR delta in the artifact.
+if [ -d /out ]; then
+    python3 /src/ci/update_coverage.py \
+        --repo-root /src \
+        --baseline /src/COVERAGE.md \
+        --output /out/COVERAGE.md
+fi
+
+# Force every root object through its recipe. Each C-object recipe performs the
+# host syntax check before invoking IDO, so this forced build covers the whole
+# C tree without running a second serial cc-check pass. libultra is rebuilt
+# with FIXUPS by the root Makefile; disabling the nested archive comparison
+# lets that source build run without a private libultra base archive. Use all
+# available container CPUs by default; the override is useful for diagnosing
+# runner contention without weakening the gate.
+build_jobs="${POKESTADIUM_DECOMP_JOBS:-$(nproc)}"
+case "${build_jobs}" in
+    ""|*[!0-9]*|0)
+        echo "gate-pr.sh: POKESTADIUM_DECOMP_JOBS must be a positive integer" >&2
+        exit 2
+        ;;
+esac
+echo "gate-pr.sh: building with ${build_jobs} parallel job(s); per-object host syntax checks enabled"
+full_build=0
+if [ "${split_changed}" -eq 1 ] || [ "${headers_changed}" -eq 1 ] || [ "${tools_changed}" -eq 1 ] || [ "${makefile_changed}" -eq 1 ]; then
+    full_build=1
+fi
+if [ "${full_build}" -eq 1 ]; then
+    echo "gate-pr.sh: forcing a full rebuild because split, header, tool, or Makefile inputs changed"
+    make -B COMPARE=0 -j"${build_jobs}" rom
+else
+    echo "gate-pr.sh: reusing cached objects and rebuilding changed source inputs"
+    make COMPARE=0 -j"${build_jobs}" rom
+fi
 md5sum -c baseroms/us/checksum.md5
-' >"$log" 2>&1
-status=$?; set -e
-cat "$log"; [ -z "$out" ] || cp "$log" "$out/gate.log"
-if [ "$status" -ne 0 ] || ! grep -q 'build/pokestadium-us\.z64: OK' "$log"; then exit "${status:-1}"; fi
-echo 'gate-pr.sh: PASS -- build/pokestadium-us.z64: OK' >&2
+' >"$log_file" 2>&1
+status=$?
+set -e
+
+# The build emits one "Binning object:"/"Assembling:" line per file --
+# hundreds of them on a full build, never diagnostic on their own. Drop
+# just those from the console; the full, unfiltered log is still saved
+# below when a coverage_output_dir is given, so nothing is actually lost,
+# only what floods a routine run's console view. On failure, still show
+# every remaining (non-per-file) line so the real error surrounding
+# context is visible; on success, only the tail (the checksum result)
+# actually matters.
+quiet_log() {
+    grep -Ev '^(\x1b\[[0-9;]*m)?(Binning object|Assembling):' "$1"
+}
+if [ "$status" -ne 0 ]; then
+    quiet_log "$log_file"
+else
+    quiet_log "$log_file" | tail -15
+fi
+if [ -n "$coverage_output_dir" ]; then
+    cp "$log_file" "$coverage_output_dir/gate.log"
+fi
+echo "gate-pr.sh: container exit status $status" >&2
+
+if [ "$status" -ne 0 ]; then
+    echo "gate-pr.sh: FAIL -- public build/compare failed" >&2
+    exit "$status"
+fi
+
+# Make's colored output can leave an ANSI reset sequence immediately before
+# md5sum's result. The md5sum exit status above is authoritative; this check
+# is only a readable-log sanity check and therefore must not require the line
+# to start at column zero.
+if ! grep -q 'build/pokestadium-us\.z64: OK' "$log_file"; then
+    echo "gate-pr.sh: FAIL -- expected checksum acceptance line was absent" >&2
+    exit 1
+fi
+
+echo "gate-pr.sh: PASS -- build/pokestadium-us.z64: OK" >&2

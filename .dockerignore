@@ -16,6 +16,8 @@ assets/
 *.n64
 *.v64
 *.log
+README.PR-CI.local.md
+
 !baseroms/
 !baseroms/us/
 !baseroms/us/baserom.z64

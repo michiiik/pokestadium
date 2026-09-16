@@ -2,15 +2,17 @@ name: Public PR ROM Gate
 
 on:
   pull_request:
-    branches: [master]
+    branches:
+      - master
     types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
     inputs:
       pr_number:
-        description: Public PR number to validate using its merge ref
+        description: Public PR number to validate using its GitHub merge ref
         required: false
+
       ref:
-        description: Same-repository branch or SHA when no PR is supplied
+        description: Same-repository branch or SHA when no PR number is supplied
         required: false
         default: master
 
@@ -18,11 +20,19 @@ permissions:
   contents: read
 
 concurrency:
-  group: public-pokestadium-rom-gate-${{ github.event.pull_request.number || inputs.pr_number || inputs.ref || github.run_id }}
+  group: public-pr-rom-gate-${{ github.event.pull_request.number || inputs.pr_number || inputs.ref || github.run_id }}
   cancel-in-progress: true
 
 jobs:
   gate:
+    name: Validate ROM against master
+    # Required status checks can never be satisfied by a direct push to
+    # master (see refresh-coverage.yml), so that job opens a PR instead.
+    # Its bot has author_association NONE like any GitHub App, so trust it
+    # narrowly: same-repo only, and only on the one fixed branch name that
+    # workflow ever pushes to. Its content is always deterministically
+    # regenerated from master's own already-trusted source, never from
+    # PR-supplied input.
     if: >-
       github.event_name == 'workflow_dispatch' ||
       contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.pull_request.author_association) ||
@@ -31,6 +41,9 @@ jobs:
         github.event.pull_request.head.repo.full_name == github.repository &&
         github.event.pull_request.head.ref == 'ci/refresh-coverage'
       )
+    # This label is intentionally different from the private repository's
+    # Stadium 1 label. Register it only on a dedicated, credential-free Mac
+    # runner after the public baseline image has been built.
     runs-on: [self-hosted, macOS, ARM64, pokestadium-decomp-public]
     timeout-minutes: 30
     steps:
@@ -40,35 +53,50 @@ jobs:
           echo "::add-mask::${HOME}"
           echo "::add-mask::${GITHUB_WORKSPACE}"
           echo "::add-mask::${RUNNER_TEMP}"
+
       - name: Checkout the PR merge ref or selected branch
         uses: actions/checkout@v4
         with:
           ref: ${{ inputs.pr_number && format('refs/pull/{0}/merge', inputs.pr_number) || inputs.ref }}
           persist-credentials: false
           set-safe-directory: false
+
       - name: Detect a coverage-only diff
         id: coverage-only
+        # refresh-coverage.yml opens/updates a PR (ci/refresh-coverage) whose
+        # entire diff is always exactly COVERAGE.md, regenerated
+        # deterministically from master's own already-trusted source. That
+        # PR still needs a real "Validate ROM against master" status to
+        # satisfy branch protection, but there is nothing in it that could
+        # ever affect the ROM, so compare the PR's whole base...head diff
+        # (not just this push) and skip the build whenever it is exactly
+        # that one file -- for any pull_request action, not just
+        # synchronize, since a freshly opened PR needs this just as much.
+        # The job still runs and reports a real status either way, so a
+        # required-status-check on this workflow is never left pending.
         if: github.event_name == 'pull_request'
         shell: bash
         run: |
           set -euo pipefail
           git fetch --quiet --depth=1 origin "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}"
           changed="$(git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}")"
-          if [ "$changed" = 'COVERAGE.md' ]; then
-            echo 'skip=true' >> "$GITHUB_OUTPUT"
-            echo 'coverage-only refresh: no ROM-affecting source changed.' >&2
+          if [ "$changed" = "COVERAGE.md" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "pr-rom-gate: PR diff touches only COVERAGE.md; skipping the full rebuild" >&2
           else
-            echo 'skip=false' >> "$GITHUB_OUTPUT"
+            echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
+
       - name: Build and compare against the retail checksum
         if: steps.coverage-only.outputs.skip != 'true'
         shell: bash
         run: bash ci/gate-pr.sh "$GITHUB_WORKSPACE" "$RUNNER_TEMP/pokestadium-gate-out"
+
       - name: Upload gate and proposed coverage
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: public-pokestadium-rom-gate-${{ github.event.pull_request.number || inputs.pr_number || github.run_id }}
+          name: public-pr-rom-gate-${{ github.event.pull_request.number || inputs.pr_number || github.run_id }}
           path: ${{ runner.temp }}/pokestadium-gate-out/
           if-no-files-found: warn
           retention-days: 14
