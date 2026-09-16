@@ -9,7 +9,7 @@
     start: 0x0040
     vram: 0xA4000040
     subsegments:
-    - [0x0040, asm, boot]
+    - [0x0040, hasm, boot]
     - [0x0B70, bin, bootcode_font]
   - name: text
     type: code
@@ -42,7 +42,7 @@
     - [0xB130, c, hal_libc]
     - [0xB230, c, gb_tower]
     - [0xC030, c, controller_ram] # extra sprites loader
-    - [0xC3D0, asm, exception_set] # exception functions
+    - [0xC3D0, hasm, exception_set] # exception functions
     - [0xC3F0, hasm, yay0] # Yay0 decoder
     - [0xC4A0, hasm, abs] # abs function
     - [0xC4B0, c, libleo/bootdisk]
@@ -92,13 +92,13 @@
     - [0x435B0, c, libnaudio/n_synsetpriority]
     - [0x435D0, c, gb_audio]  # pkm lab cries code
     - [0x45720, c, audio_stream]  # music code
-    - [0x46680, c, animation_double_buffer]  # speech code
+    - [0x46680, c, gsm_decoder]  # speech code
     - [0x47AF0, c, libnaudio/n_synstopvoice]
     - [0x47B60, c, libnaudio/n_env]  # sound code
     - [0x485C0, c, audio_fade]  # moves code
     - [0x48C60, c, audio_stored_fade]  # move effects code
     - [0x490A0, c, audio_sound_state]  # audio functions to 0x50C00
-    - [0x49190, hasm]
+    - [0x49190, hasm, libgsm] # GSM 06.10 full-rate speech transcoder
     - [0x49790, c, audio_sfx]
     - [0x49BA0, c, libnaudio/n_synallocvoice]
     - [0x49DC0, c, libnaudio/n_synthesizer]
@@ -325,12 +325,11 @@
     - [0x66B10, lib, libultra, spsetpc]
     - [0x66B50, lib, libultra, sethwinterrupt]
 
-    #- [0x66BC0, asm]
-    - [0x66BC0, data]
-    - [0x66C90, data, F3DEX2]
-    - [0x68020, data, unk_F3DEX2_68020]
-    - [0x68C80, data, unk_F3DEX2_68C80]
-    
+    - [0x66BC0, textbin, rsp/rspboot]
+    - [0x66C90, textbin, jpg/dspMain]
+    - [0x68020, textbin, rsp/aspMain]
+    - [0x68C80, textbin, rsp/3DEX2.fifo] # v2.06
+
     # .data
     - [0x69770, .data, dp_intro]
     - [0x69790, .data, util]
@@ -489,8 +488,10 @@
     - [0x7F1E0, lib, libultra, xldtob, .rodata]
     - [0x7F240, lib, libultra, llcvt, .rodata]
 
-    - [0x7F250, rodata, F3DEX2_data] # F3DEX2 data
-    - [0x7F670, rodata, unk_bin_7F670]
+    - { start: 0x7F250, type: databin, name: rsp/3DEX2.fifo, linker_section_order: .rodata }
+    - { start: 0x7F670, type: databin, name: rsp/aspMain,    linker_section_order: .rodata }
+    - { start: 0x7F920, type: databin, name: jpg/dspMain,    linker_section_order: .rodata }
+
     - [0x7F980]
     
     # .bss
@@ -597,7 +598,7 @@
     start: 0x7F980
     vram: 0x81200000
     subsegments:
-    - [0x7F980,  hasm,   fragments/gb_tower_emulator/gb_tower_emulator_header]
+    - [0x7F980,  textbin,   fragments/gb_tower_emulator/gb_tower_emulator_header]
     - [0x7F9A0,  c,      fragments/gb_tower_emulator/gb_tower_emulator_7F9A0]
     - [0x86920,  c,      fragments/gb_tower_emulator/gb_tower_emulator_86920]
     - [0x86C30,  c,      fragments/gb_tower_emulator/gb_tower_emulator_86C30]
@@ -2801,6 +2802,7 @@
     start: 0x15C0000
     vram: 0x91000000
     ld_align_segment_start: 0x15C0000
+    subalign: 4 # archive members are only word-aligned
     subsegments:
       - [0x15C0000, bin, audio_main_archive]
       - [0x16F27E0, bin, audio_archive_1]

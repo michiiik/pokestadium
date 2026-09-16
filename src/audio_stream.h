@@ -2,7 +2,7 @@
 #define _45720_H_
 
 #include "global.h"
-#include "src/animation_double_buffer.h"
+#include "src/gsm_decoder.h"
 
 typedef struct unk_D_800FCF28 {
     /* 0x000 */ s16 unk_000[0x8A0];

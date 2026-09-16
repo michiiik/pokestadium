@@ -1,4 +1,4 @@
-#include "animation_double_buffer.h"
+#include "gsm_decoder.h"
 
 typedef struct unk_arg1_func_80045A80 {
     s16 unk0;
@@ -56,7 +56,7 @@ void Anim_UpdateDoubleBufferedTransform(unk_arg0_func_80045A80* arg0, unk_arg1_f
     temp_v0_2->unkC = (s16) (((s32) ((((arg1->unkC - 4) << 0xA) * 0x7ADE) + 0x0147936C) >> 0xF) * 2);
     temp_v0_2->unkE = (s16) (((s32) ((((arg1->unkE - 4) << 0xA) * 0x740C) + 0x040D6B40) >> 0xF) * 2);
 
-    func_80048904((s32)arg0, arg2, arg3);
+    Gsm_Short_Term_Synthesis_Filter((s32)arg0, arg2, arg3);
     arg0->unk188 ^= 1;
 }
 
@@ -65,8 +65,8 @@ void Anim_BuildTransformCurves(unk_arg0_func_80045A80* arg0, unk_arg1_func_80045
     s16 sp44[40];
     
     for (i = 0; i < 4; i++) {
-        func_80048590(*arg5, *arg4, arg6, sp44);
-        func_80048684(arg0, *arg2, *arg3, sp44);
+        Gsm_RPE_Decoding(*arg5, *arg4, arg6, sp44);
+        Gsm_Long_term_synthesis_filtering(arg0, *arg2, *arg3, sp44);
         arg5++;
         arg3++;
         arg2++;
@@ -119,4 +119,5 @@ s32 Anim_DecodePackedTransform(unk_arg0_func_80045A80* arg0, unk_arg1_func_80045
     return 0;
 }
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/animation_double_buffer/func_80045FF0.s")
+// Gsm_Decode_Stream
+#pragma GLOBAL_ASM("asm/us/nonmatchings/gsm_decoder/func_80045FF0.s")
