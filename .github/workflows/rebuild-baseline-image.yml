@@ -1,27 +1,78 @@
 name: Rebuild CI baseline image
+
+# ci/gate-pr.sh overlays each PR onto whatever this image already has baked
+# in (see its own sync_tree comments), and only forces its expensive `make
+# -B` full rebuild when split_changed (yamls/), headers_changed (include/),
+# tools_changed (tools/), or makefile_changed is set -- see gate-pr.sh's own
+# full_build check. A plain src/** change (the overwhelming majority of
+# merges -- one landed function match at a time) is handled by sync_tree
+# alone: it overlays just the differing files and runs a normal incremental
+# make, regardless of how stale this baked image's own src/ tree is. So
+# rebuilding the whole image after every such merge buys nothing; only the
+# paths below actually change what "stale" costs the next PR gate.
+#
+# ci/build-baseline.sh does this incrementally against a persistent host
+# checkout (see that script's own comments) rather than compiling inside
+# Docker, so a routine yaml-touching merge rebuilds in a couple of minutes,
+# not the ~30 minutes a from-scratch in-Docker compile used to take.
 on:
   push:
-    branches: [master]
+    branches:
+      - master
     paths:
-      - yamls/**
-      - include/**
-      - tools/**
-      - ci/Dockerfile
-      - ci/build-baseline.sh
-      - requirements.txt
-      - Makefile
-permissions: {contents: read}
-concurrency: {group: rebuild-pokestadium-ci-baseline, cancel-in-progress: false}
+      - "yamls/**"
+      - "include/**"
+      - "tools/**"
+      - "ci/Dockerfile"
+      - "ci/build-baseline.sh"
+      - "requirements.txt"
+      - "Makefile"
+
+concurrency:
+  group: rebuild-ci-baseline-image
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
 jobs:
   rebuild:
+    name: Rebuild the baked CI image from current master
+    # Same self-hosted, credential-free runner the gate itself uses -- the
+    # baseline image and its persistent build checkout are both local-only
+    # (never pushed to a registry), so the rebuild has to happen where the
+    # gate will actually use it.
     runs-on: [self-hosted, macOS, ARM64, pokestadium-decomp-public]
     timeout-minutes: 30
     steps:
-      - run: echo "::add-mask::${HOME}"; echo "::add-mask::${GITHUB_WORKSPACE}"; echo "::add-mask::${RUNNER_TEMP}"
-      - uses: actions/checkout@v4
-        with: {persist-credentials: false, set-safe-directory: false}
-      - run: bash ci/build-baseline.sh
-      - name: Confirm baseline YAMLs match master
+      - name: Mask self-hosted runner paths
+        shell: bash
         run: |
+          echo "::add-mask::${HOME}"
+          echo "::add-mask::${GITHUB_WORKSPACE}"
+          echo "::add-mask::${RUNNER_TEMP}"
+
+      - name: Checkout master
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          set-safe-directory: false
+
+      - name: Rebuild the baseline image
+        shell: bash
+        run: bash ci/build-baseline.sh
+
+      - name: Confirm the image's yamls/ now match this commit
+        shell: bash
+        run: |
+          set -euo pipefail
           image="${POKESTADIUM_DECOMP_AGENT_IMAGE:-pokestadium-decomp-agent:latest}"
-          test "$(docker run --rm --platform linux/amd64 -v "$GITHUB_WORKSPACE/yamls:/current:ro" --entrypoint bash "$image" -c 'diff -qr /work/yamls /current 2>/dev/null | wc -l')" -eq 0
+          drift=$(docker run --rm --platform linux/amd64 \
+            -v "$GITHUB_WORKSPACE/yamls:/current-yamls:ro" \
+            --entrypoint bash "$image" -c \
+            'diff -qr /work/yamls /current-yamls 2>/dev/null | wc -l')
+          if [ "$drift" -ne 0 ]; then
+            echo "::error::Rebuilt image still has yaml drift against $GITHUB_SHA ($drift differing path(s)) -- the rebuild did not actually pick up this commit." >&2
+            exit 1
+          fi
+          echo "gate-pr.sh's own sync_tree will see 0 yaml drift against $GITHUB_SHA until master moves again."

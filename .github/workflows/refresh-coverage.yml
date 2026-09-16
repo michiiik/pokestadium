@@ -1,15 +1,36 @@
 name: Refresh coverage after merge
 
+# COVERAGE.md aggregates GLOBAL_ASM ownership across the whole tree, so its
+# content depends on every merged PR, not just one. The old design computed
+# it per-PR and committed it onto each PR branch before allowing auto-merge;
+# since two PRs open at the same time each proposed a different COVERAGE.md
+# against a common ancestor, whichever merged first made every other open
+# PR's copy conflict with the new master on that file, even when their real
+# source changes touched disjoint fragments (for example
+# https://github.com/michiiik/pokestadium/pull/23). Keeping the refresh out
+# of PR branches entirely removes that whole class of self-inflicted
+# conflict.
+#
+# This still can't push straight to master: master requires the "Validate
+# ROM against master" status check, which only pull_request events ever
+# produce, and branch protection rejects a direct push regardless of who
+# or what makes it (confirmed the hard way -- see the GH006 failures on
+# earlier runs of this workflow). So this opens a PR on a fixed branch
+# instead and lets the normal pipeline take it from there: pr-rom-gate.yml
+# and pr-integration.yml's integrate job both trust this specific bot on
+# this specific branch name (see the comments there) and arm auto-merge
+# exactly as they would for any other eligible PR.
 on:
   push:
     branches: [master]
-    paths-ignore: [COVERAGE.md]
+    paths-ignore:
+      - COVERAGE.md
 
 permissions:
   contents: read
 
 concurrency:
-  group: public-refresh-pokestadium-coverage
+  group: public-refresh-coverage
   cancel-in-progress: false
 
 jobs:
@@ -23,48 +44,58 @@ jobs:
         with:
           ref: master
           persist-credentials: false
+
       - name: Check the integration GitHub App configuration
         shell: bash
         env:
-          APP_ID: ${{ vars.PUBLIC_CI_APP_ID }}
+          APP_CLIENT_ID: ${{ vars.PUBLIC_CI_APP_ID }}
           APP_PRIVATE_KEY: ${{ secrets.PUBLIC_CI_APP_PRIVATE_KEY }}
         run: |
           set -euo pipefail
-          if [[ -z "$APP_ID" || -z "$APP_PRIVATE_KEY" ]]; then
+          if [[ -z "$APP_CLIENT_ID" || -z "$APP_PRIVATE_KEY" ]]; then
             echo '::error::Configure PUBLIC_CI_APP_ID and PUBLIC_CI_APP_PRIVATE_KEY before refreshing coverage.'
             exit 1
           fi
+
       - name: Create the least-privilege coverage App token
-        id: token
+        id: app-token
         uses: actions/create-github-app-token@v3
         with:
-          app-id: ${{ vars.PUBLIC_CI_APP_ID }}
+          client-id: ${{ vars.PUBLIC_CI_APP_ID }}
           private-key: ${{ secrets.PUBLIC_CI_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
           repositories: ${{ github.event.repository.name }}
           permission-contents: write
           permission-pull-requests: write
+
       - name: Regenerate COVERAGE.md and open/update its PR
         shell: bash
         env:
-          GH_TOKEN: ${{ steps.token.outputs.token }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           set -euo pipefail
+
           python3 ci/update_coverage.py --repo-root .
+
           if git diff --quiet -- COVERAGE.md; then
             echo 'refresh-coverage: COVERAGE.md is already current on master.'
             exit 0
           fi
+
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git config user.name 'pokestadium-public-ci[bot]'
           git config user.email 'pokestadium-public-ci[bot]@users.noreply.github.com'
-          git switch -C ci/refresh-coverage
+          git checkout -B ci/refresh-coverage
           git add COVERAGE.md
           git commit --quiet -m 'ci: refresh COVERAGE.md'
-          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git push --force origin ci/refresh-coverage
+
           existing="$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --head ci/refresh-coverage --json number --jq '.[0].number // empty')"
           if [ -z "$existing" ]; then
-            gh pr create --repo "$GITHUB_REPOSITORY" --base master --head ci/refresh-coverage --title 'ci: refresh COVERAGE.md' --body 'Automated whole-tree coverage regeneration. Touches only COVERAGE.md.'
+            gh pr create --repo "$GITHUB_REPOSITORY" --base master --head ci/refresh-coverage \
+              --title 'ci: refresh COVERAGE.md' \
+              --body 'Automated, whole-tree coverage regeneration from ci/update_coverage.py. Touches only COVERAGE.md.'
+            echo 'refresh-coverage: opened a new PR; pr-rom-gate.yml and the integrate job take it from here.'
           else
-            echo "refresh-coverage: updated existing PR #$existing."
+            echo "refresh-coverage: updated the existing PR #$existing; its gate will re-run automatically."
           fi

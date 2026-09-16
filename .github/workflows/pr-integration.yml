@@ -1,5 +1,9 @@
 name: Public PR Integration
 
+# This workflow is deliberately separate from the self-hosted ROM gate. It
+# runs only on GitHub-hosted infrastructure and never executes PR-provided
+# scripts. The checked-out PR tree is treated as data by the trusted coverage
+# generator from the base commit.
 on:
   workflow_run:
     workflows: [Public PR ROM Gate]
@@ -10,11 +14,194 @@ permissions:
   pull-requests: read
 
 concurrency:
-  group: public-pokestadium-integration-${{ github.event.workflow_run.pull_requests[0].number || github.run_id }}
+  group: public-pr-integration-${{ github.event.workflow_run.pull_requests[0].number || github.run_id }}
   cancel-in-progress: false
 
 jobs:
+  report-gate-failure:
+    name: Explain ROM-gate failure
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'failure' &&
+      github.event.workflow_run.pull_requests[0].number
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: read
+      issues: write
+      pull-requests: read
+    steps:
+      - name: Confirm the failed gate still belongs to the current trusted PR
+        id: metadata
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+          EXPECTED_HEAD_SHA: ${{ github.event.workflow_run.pull_requests[0].head.sha }}
+        with:
+          script: |
+            const number = Number(process.env.PR_NUMBER);
+            const expectedHead = process.env.EXPECTED_HEAD_SHA;
+            const { owner, repo } = context.repo;
+            const { data: pr } = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number: number,
+            });
+
+            const sameRepository = pr.head.repo?.full_name === `${owner}/${repo}`;
+            // The coverage-refresh bot (see refresh-coverage.yml) has
+            // author_association NONE like any GitHub App. Trust it
+            // narrowly: same-repo only, and only its one fixed branch name.
+            const trustedBotRefresh =
+              pr.user?.login === 'pokestadium-public-ci[bot]' &&
+              sameRepository &&
+              pr.head.ref === 'ci/refresh-coverage';
+            const trustedAuthor =
+              ['OWNER', 'MEMBER', 'COLLABORATOR'].includes(pr.author_association) ||
+              trustedBotRefresh;
+            const current = pr.state === 'open' && pr.head.sha === expectedHead;
+            core.setOutput('eligible', String(trustedAuthor && sameRepository && current));
+            if (!trustedAuthor || !sameRepository || !current) {
+              core.info('The failed run is stale, external, or untrusted; no PR comment will be written.');
+            }
+
+      - name: Download the failed gate artifact as data
+        if: steps.metadata.outputs.eligible == 'true'
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: public-pr-rom-gate-${{ github.event.workflow_run.pull_requests[0].number }}
+          path: ${{ runner.temp }}/pokestadium-failure-artifact
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Check the integration GitHub App configuration
+        if: steps.metadata.outputs.eligible == 'true'
+        shell: bash
+        env:
+          APP_CLIENT_ID: ${{ vars.PUBLIC_CI_APP_ID }}
+          APP_PRIVATE_KEY: ${{ secrets.PUBLIC_CI_APP_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$APP_CLIENT_ID" || -z "$APP_PRIVATE_KEY" ]]; then
+            echo '::error::Configure PUBLIC_CI_APP_ID and PUBLIC_CI_APP_PRIVATE_KEY before commenting on ROM-gate failures.'
+            exit 1
+          fi
+
+      - name: Create the least-privilege comment App token
+        if: steps.metadata.outputs.eligible == 'true'
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.PUBLIC_CI_APP_ID }}
+          private-key: ${{ secrets.PUBLIC_CI_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+          permission-issues: write
+          permission-pull-requests: read
+
+      - name: Upsert a concise, sanitized failure explanation
+        if: steps.metadata.outputs.eligible == 'true'
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+          EXPECTED_HEAD_SHA: ${{ github.event.workflow_run.pull_requests[0].head.sha }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+          GATE_LOG: ${{ runner.temp }}/pokestadium-failure-artifact/gate.log
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            const fs = require('fs');
+            const marker = '<!-- pokestadium-rom-gate-failure -->';
+            const number = Number(process.env.PR_NUMBER);
+            const expectedHead = process.env.EXPECTED_HEAD_SHA;
+            const { owner, repo } = context.repo;
+            const { data: pr } = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number: number,
+            });
+            if (pr.state !== 'open' || pr.head.sha !== expectedHead) {
+              core.info('The PR changed after its failed gate; refusing to comment on stale diagnostics.');
+              return;
+            }
+
+            const stripAnsi = (line) => line.replace(/\u001B\[[0-?]*[ -/]*[@-~]/g, '');
+            const scrub = (line) => stripAnsi(line)
+              .replace(/\/Users\/[^\s:]+/g, '<runner-path>')
+              .replace(/\/home\/runner\/[^\s:]+/g, '<runner-path>')
+              .trim();
+            const lines = fs.existsSync(process.env.GATE_LOG)
+              ? fs.readFileSync(process.env.GATE_LOG, 'utf8').split(/\r?\n/).map(scrub)
+              : [];
+            const errorIndex = lines.findIndex((line) => /(?:fatal )?error:/.test(line));
+            const linkerIndex = lines.findIndex((line) => /undefined reference to/.test(line));
+            const checksumIndex = lines.findIndex((line) => /\.z64: FAILED|md5sum:.*FAILED/.test(line));
+            const index = errorIndex >= 0 ? errorIndex : (linkerIndex >= 0 ? linkerIndex : checksumIndex);
+
+            let title = 'ROM gate failed before a compiler, linker, or checksum diagnostic was captured.';
+            let details = 'Open the linked run and download the gate artifact for the full log.';
+            if (index >= 0) {
+              const diagnostic = lines[index];
+              title = `ROM gate failed: ${diagnostic}`;
+              const conflict = diagnostic.match(/^([^:]+):(\d+):(\d+):\s*(?:fatal )?error: conflicting types for ['\u2018']?([^'\u2019]+)['\u2019']?/);
+              const implicit = lines.slice(index + 1, index + 16).find((line) => /previous implicit declaration/.test(line));
+              if (conflict && implicit) {
+                const previous = implicit.match(/^([^:]+):(\d+):(\d+):/);
+                details = `\`${conflict[4]}\` is called before its declaration. Move or add its final prototype before the first call (currently ${previous ? `${previous[1]}:${previous[2]}` : 'shown in the compiler note'}), then rerun the gate.`;
+              } else if (/undefined reference to/.test(diagnostic)) {
+                details = 'The linker could not find a required symbol. Check the function definition, symbol name, and linker-script/YAML ownership for the referenced address.';
+              } else if (/\.z64: FAILED|md5sum:.*FAILED/.test(diagnostic)) {
+                details = 'Compilation completed, but the produced ROM differs from the retail checksum. Inspect the changed function and its compiler-sensitive declarations, casts, and control flow.';
+              } else {
+                details = 'Fix the first diagnostic above; later compiler messages may be consequences of it.';
+              }
+            }
+
+            const safeTitle = title.replace(/`/g, '\\`').replace(/[\r\n]/g, ' ');
+            const body = [
+              marker,
+              '## ROM gate failure summary',
+              '',
+              `\`${safeTitle}\``,
+              '',
+              details,
+              '',
+              `Validated head: \`${expectedHead.slice(0, 12)}\``,
+              `Full log and coverage artifact: ${process.env.RUN_URL}`,
+              '',
+              '_This trusted workflow summarizes a failed artifact as data; it does not execute PR code._',
+            ].join('\n');
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number: number,
+              per_page: 100,
+            });
+            const existing = comments.find((comment) =>
+              comment.user?.type === 'Bot' && comment.body?.includes(marker),
+            );
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: number,
+                body,
+              });
+            }
+
   integrate:
+    name: Arm auto-merge
     if: >-
       github.event.workflow_run.event == 'pull_request' &&
       github.event.workflow_run.conclusion == 'success' &&
@@ -22,46 +209,206 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Confirm the exact eligible PR revision
-        id: eligible
+      - name: Confirm the exact gate result is still an eligible PR
+        id: metadata
         uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+          EXPECTED_HEAD_SHA: ${{ github.event.workflow_run.pull_requests[0].head.sha }}
+          EXPECTED_BASE_SHA: ${{ github.event.workflow_run.pull_requests[0].base.sha }}
         with:
           script: |
-            const runPr = context.payload.workflow_run.pull_requests[0];
+            const number = Number(process.env.PR_NUMBER);
+            const expectedHead = process.env.EXPECTED_HEAD_SHA;
+            const expectedBase = process.env.EXPECTED_BASE_SHA;
             const { owner, repo } = context.repo;
-            const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: runPr.number });
+
+            if (!number || !expectedHead || !expectedBase) {
+              core.setFailed('The completed gate did not include a complete pull-request identity.');
+              return;
+            }
+
+            const { data: pr } = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number: number,
+            });
+
             const sameRepository = pr.head.repo?.full_name === `${owner}/${repo}`;
-            const verifiedAuthor = ['OWNER', 'MEMBER', 'COLLABORATOR'].includes(pr.author_association);
-            const coverageBot = pr.user?.login === 'pokestadium-public-ci[bot]' && pr.head.ref === 'ci/refresh-coverage';
-            const exactRevision = pr.head.sha === runPr.head.sha && pr.base.sha === runPr.base.sha;
-            const eligible = sameRepository && (verifiedAuthor || coverageBot) && !pr.draft && pr.base.ref === 'master' && exactRevision;
-            core.setOutput('ok', eligible ? 'true' : 'false');
-            core.setOutput('number', String(runPr.number));
-      - name: Create the integration App token
-        if: steps.eligible.outputs.ok == 'true' && vars.PUBLIC_CI_AUTOMERGE_ENABLED == 'true'
-        id: token
+            // The coverage-refresh bot (see refresh-coverage.yml) has
+            // author_association NONE like any GitHub App. Trust it
+            // narrowly: same-repo only, and only its one fixed branch name.
+            const trustedBotRefresh =
+              pr.user?.login === 'pokestadium-public-ci[bot]' &&
+              sameRepository &&
+              pr.head.ref === 'ci/refresh-coverage';
+            const trustedAuthor =
+              ['OWNER', 'MEMBER', 'COLLABORATOR'].includes(pr.author_association) ||
+              trustedBotRefresh;
+            const exactRevision = pr.head.sha === expectedHead && pr.base.sha === expectedBase;
+
+            if (!exactRevision) {
+              core.info(`PR #${number} changed after the gate; waiting for its newer gate run.`);
+              core.setOutput('eligible', 'false');
+              return;
+            }
+
+            if (pr.state !== 'open' || pr.base.ref !== 'master' || pr.draft) {
+              core.info(`PR #${number} is closed, non-master, or draft; no integration action taken.`);
+              core.setOutput('eligible', 'false');
+              return;
+            }
+
+            if (!sameRepository || !trustedAuthor) {
+              core.info(
+                `PR #${number} is external or not from a verified author; auto-merge remains manual.`,
+              );
+              core.setOutput('eligible', 'false');
+              return;
+            }
+
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner,
+              repo,
+              pull_number: number,
+              per_page: 100,
+            });
+            const changesAutomation = files.some(({ filename }) =>
+              filename === '.dockerignore' ||
+              filename.startsWith('.github/') ||
+              filename.startsWith('ci/'),
+            );
+            if (changesAutomation) {
+              core.info(`PR #${number} changes CI or runner controls; automatic integration remains manual.`);
+              core.setOutput('eligible', 'false');
+              return;
+            }
+
+            if (pr.mergeable_state === 'dirty') {
+              core.setFailed(`PR #${number} has merge conflicts; resolve them before integration.`);
+              return;
+            }
+
+            // required_status_checks.strict is off (see keep-open-prs-current.yml's
+            // own comment for the full reasoning): a "small" PR -- every
+            // changed file is a plain src/*.c body replacement -- may merge
+            // on this already-passing check however stale its base is.
+            // Anything wider still needs this check to have run against the
+            // CURRENT master tip, the guarantee strict used to provide
+            // globally; keep this pattern identical to
+            // keep-open-prs-current.yml's own isSmall check.
+            const smallChangePattern = /^src\/.*\.c$/;
+            const isSmall = files.length > 0 && files.every(({ filename }) => smallChangePattern.test(filename));
+            if (!isSmall) {
+              const { data: masterRef } = await github.rest.git.getRef({ owner, repo, ref: 'heads/master' });
+              if (pr.base.sha !== masterRef.object.sha) {
+                core.info(`PR #${number} is not a small (src/*.c-only) change and its base is stale; waiting for a fresh gate run against current master.`);
+                core.setOutput('eligible', 'false');
+                return;
+              }
+            }
+
+            core.setOutput('eligible', 'true');
+            core.setOutput('head-ref', pr.head.ref);
+            core.info(`PR #${number} is eligible at ${expectedHead}.`);
+
+      - name: Check the integration GitHub App configuration
+        if: >-
+          steps.metadata.outputs.eligible == 'true' &&
+          vars.PUBLIC_CI_AUTOMERGE_ENABLED == 'true'
+        shell: bash
+        env:
+          APP_CLIENT_ID: ${{ vars.PUBLIC_CI_APP_ID }}
+          APP_PRIVATE_KEY: ${{ secrets.PUBLIC_CI_APP_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$APP_CLIENT_ID" || -z "$APP_PRIVATE_KEY" ]]; then
+            echo '::error::Configure PUBLIC_CI_APP_ID and PUBLIC_CI_APP_PRIVATE_KEY before enabling auto-merge.'
+            exit 1
+          fi
+
+      - name: Create the least-privilege integration App token
+        if: >-
+          steps.metadata.outputs.eligible == 'true' &&
+          vars.PUBLIC_CI_AUTOMERGE_ENABLED == 'true'
+        id: app-token
         uses: actions/create-github-app-token@v3
         with:
-          app-id: ${{ vars.PUBLIC_CI_APP_ID }}
+          client-id: ${{ vars.PUBLIC_CI_APP_ID }}
           private-key: ${{ secrets.PUBLIC_CI_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
           repositories: ${{ github.event.repository.name }}
           permission-contents: write
           permission-pull-requests: write
+
+      - name: Leave auto-merge disabled until repository protection is ready
+        if: >-
+          steps.metadata.outputs.eligible == 'true' &&
+          vars.PUBLIC_CI_AUTOMERGE_ENABLED != 'true'
+        shell: bash
+        run: |
+          echo 'Set PUBLIC_CI_AUTOMERGE_ENABLED=true only after branch protection and Allow auto-merge are configured.'
+
       - name: Enable squash auto-merge
-        if: steps.eligible.outputs.ok == 'true' && vars.PUBLIC_CI_AUTOMERGE_ENABLED == 'true'
+        if: >-
+          steps.metadata.outputs.eligible == 'true' &&
+          vars.PUBLIC_CI_AUTOMERGE_ENABLED == 'true'
         uses: actions/github-script@v7
         env:
-          PR_NUMBER: ${{ steps.eligible.outputs.number }}
+          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+          EXPECTED_HEAD_SHA: ${{ github.event.workflow_run.pull_requests[0].head.sha }}
         with:
-          github-token: ${{ steps.token.outputs.token }}
+          github-token: ${{ steps.app-token.outputs.token }}
           script: |
+            const number = Number(process.env.PR_NUMBER);
+            const expectedHead = process.env.EXPECTED_HEAD_SHA;
             const { owner, repo } = context.repo;
-            const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: Number(process.env.PR_NUMBER) });
+            const { data: pr } = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number: number,
+            });
+
+            if (pr.head.sha !== expectedHead || pr.state !== 'open' || pr.base.ref !== 'master') {
+              core.setFailed('The PR changed before auto-merge could be armed.');
+              return;
+            }
+
             try {
-              await github.graphql(`mutation($id:ID!){enablePullRequestAutoMerge(input:{pullRequestId:$id,mergeMethod:SQUASH}){pullRequest{number}}}`, { id: pr.node_id });
+              const result = await github.graphql(
+                `mutation($pullRequestId: ID!, $mergeMethod: PullRequestMergeMethod!) {
+                  enablePullRequestAutoMerge(input: {
+                    pullRequestId: $pullRequestId,
+                    mergeMethod: $mergeMethod
+                  }) {
+                    pullRequest {
+                      number
+                      autoMergeRequest { enabledAt }
+                    }
+                  }
+                }`,
+                {
+                  pullRequestId: pr.node_id,
+                  mergeMethod: 'SQUASH',
+                },
+              );
+              core.info(`Squash auto-merge enabled for PR #${result.enablePullRequestAutoMerge.pullRequest.number}.`);
             } catch (error) {
-              if (!String(error.message).includes('Pull request is in clean status')) throw error;
-              const result = await github.rest.pulls.merge({ owner, repo, pull_number: pr.number, sha: pr.head.sha, merge_method: 'squash' });
-              if (!result.data.merged) core.setFailed(result.data.message || 'Immediate squash merge was not completed.');
+              if (!String(error.message).includes('Pull request is in clean status')) {
+                throw error;
+              }
+
+              core.info('PR is already clean; merging immediately with the same trusted head SHA.');
+              const merged = await github.rest.pulls.merge({
+                owner,
+                repo,
+                pull_number: number,
+                sha: expectedHead,
+                merge_method: 'squash',
+              });
+              if (!merged.data.merged) {
+                core.setFailed(`Immediate squash merge was not completed: ${merged.data.message || 'unknown error'}`);
+                return;
+              }
+              core.info(`PR #${number} merged immediately because it was already clean.`);
             }
