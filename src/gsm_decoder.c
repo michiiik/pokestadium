@@ -1,15 +1,5 @@
 #include "gsm_decoder.h"
-
-typedef struct unk_arg1_func_80045A80 {
-    s16 unk0;
-    s16 unk2;
-    s16 unk4;
-    s16 unk6;
-    s16 unk8;
-    s16 unkA;
-    s16 unkC;
-    s16 unkE;
-} unk_arg1_func_80045A80; // size 0x10
+#include "libgsm/libgsm.h"
 
 typedef struct unk_arg1_func_80045D60 {
     u8 unk0;
@@ -21,80 +11,63 @@ typedef struct unk_arg1_func_80045D60 {
     u8 unk6;
 } unk_arg1_func_80045D60; // size 0x7
 
-typedef struct AnimBlock19 {
-    s16 xRotA;
-    s16 xRotB;
-    s16 flag0;
-    s16 yRotA;
-    s16 yRotB;
-    s16 flag1;
-    s16 zRotA;
-    s16 zRotB;
-    s16 flag2;
-    s16 unkA;
-    s16 unkB;
-    s16 unkC;
-    s16 unkD;
-} AnimBlock19; // size 0x1A
+#define ROUND_Q15 0x4000
 
-typedef struct unk_arg0_func_80045A80 {
-    char pad0[0x168];
-    unk_arg1_func_80045A80 unk168[2];
-    s16 unk188;       // 0x188
-} unk_arg0_func_80045A80;
+#define STEP(x, off, k, scale) \
+    ((s16) ((((s32) (((((x) + (off)) << 10) + (k)) * (scale)) + ROUND_Q15) >> 15) * 2))
 
-void Anim_UpdateDoubleBufferedTransform(unk_arg0_func_80045A80* arg0, unk_arg1_func_80045A80* arg1, s32 arg2, s32 arg3) {
-    unk_arg1_func_80045A80* temp_v0_2;
+void Decoding_of_the_coded_Log_Area_Ratios(gsm_state* state, s16 LARc[8], s16 drp[40], s16 signal[160]) {
+    s16* LARpp;
 
-    temp_v0_2 = &arg0->unk168[arg0->unk188];
-    temp_v0_2->unk0 = (s16) (((s32) ((((arg1->unk0 - 0x20) << 0xA) * 0x3333) + 0x4000) >> 0xF) * 2);
-    temp_v0_2->unk2 = (s16) (((s32) ((((arg1->unk2 - 0x20) << 0xA) * 0x3333) + 0x4000) >> 0xF) * 2);
-    temp_v0_2->unk4 = (s16) (((s32) ((((arg1->unk4 - 0x10) << 0xA) * 0x3333) - 0x0332F000) >> 0xF) * 2);
-    temp_v0_2->unk6 = (s16) (((s32) ((((arg1->unk6 - 0x10) << 0xA) * 0x3333) + 0x04003C00) >> 0xF) * 2);
-    temp_v0_2->unk8 = (s16) (((s32) ((((arg1->unk8 - 8) << 0xA) * 0x4B17) - 0x0036E4E4) >> 0xF) * 2);
-    temp_v0_2->unkA = (s16) (((s32) ((((arg1->unkA - 8) << 0xA) * 0x4444) + 0x03BBF800) >> 0xF) * 2);
-    temp_v0_2->unkC = (s16) (((s32) ((((arg1->unkC - 4) << 0xA) * 0x7ADE) + 0x0147936C) >> 0xF) * 2);
-    temp_v0_2->unkE = (s16) (((s32) ((((arg1->unkE - 4) << 0xA) * 0x740C) + 0x040D6B40) >> 0xF) * 2);
+    LARpp = &state->LARpp[state->frame_index];
+    LARpp[0] = STEP(LARc[0], -32,     0, 13107);
+    LARpp[1] = STEP(LARc[1], -32,     0, 13107);
+    LARpp[2] = STEP(LARc[2], -16, -4096, 13107);
+    LARpp[3] = STEP(LARc[3], -16,  5120, 13107);
+    LARpp[4] = STEP(LARc[4],  -8,  -188, 19223);
+    LARpp[5] = STEP(LARc[5],  -8,  3584, 17476);
+    LARpp[6] = STEP(LARc[6],  -4,   682, 31454);
+    LARpp[7] = STEP(LARc[7],  -4,  2288, 29708);
 
-    Gsm_Short_Term_Synthesis_Filter((s32)arg0, arg2, arg3);
-    arg0->unk188 ^= 1;
+    Gsm_Short_Term_Synthesis_Filter(state, drp, signal);
+    state->frame_index ^= 1;
 }
 
-void Anim_BuildTransformCurves(unk_arg0_func_80045A80* arg0, unk_arg1_func_80045A80* arg1, s16* arg2, s16* arg3, s16* arg4, s16* arg5, AnimBlock19* arg6, s32 arg7) {
+void Gsm_Decoder(gsm_state* state, s16* LARc, s16* Ncr, s16* bcr, s16* Mcr, s16* xmaxcr, xMc* xMcr, s16 signal[160]) {
     s32 i;
-    s16 sp44[40];
+    s16 erp[40];
     
     for (i = 0; i < 4; i++) {
-        Gsm_RPE_Decoding(*arg5, *arg4, arg6, sp44);
-        Gsm_Long_term_synthesis_filtering(arg0, *arg2, *arg3, sp44);
-        arg5++;
-        arg3++;
-        arg2++;
-        arg4++;
-        arg6++;
+        Gsm_RPE_Decoding(*xmaxcr, *Mcr, xMcr, erp);
+        Gsm_Long_term_synthesis_filtering(state, *Ncr, *bcr, erp);
+        xmaxcr++;
+        bcr++;
+        Ncr++;
+        Mcr++;
+        xMcr++;
     }
 
-
-    Anim_UpdateDoubleBufferedTransform(arg0, arg1, arg0, arg7);
+    Decoding_of_the_coded_Log_Area_Ratios(state, LARc, state, signal);
 }
 
-s32 Anim_DecodePackedTransform(unk_arg0_func_80045A80* arg0, unk_arg1_func_80045D60* arg1, s32 arg2) {
-    unk_arg1_func_80045A80 header;
+// Unused
+s32 Gsm_Decode(gsm_state* state, unk_arg1_func_80045D60* arg1, s16 signal[160]) {
+    s16 LARpp[8];
     s16 spC8[4];
     s16 spC0[4];
     s16 spB8[4];
     s16 spB0[4];
-    AnimBlock19 sp48[4];
+    xMc sp48[4];
     s32 i;
 
-    header.unk0 = ((arg1[0].unk0 & 0xF) << 2) | ((arg1[0].unk1 >> 6) & 3);
-    header.unk2 = arg1[0].unk1 & 0x3F;
-    header.unk4 = (arg1[0].unk2 >> 3) & 0x1F;
-    header.unk6 = ((arg1[0].unk2 & 7) << 2) | ((arg1[0].unk3 >> 6) & 3);
-    header.unk8 = (arg1[0].unk3 >> 2) & 0xF;
-    header.unkA = ((arg1[0].unk3 & 3) << 2) | ((arg1[0].unk4 >> 6) & 3);
-    header.unkC = (arg1[0].unk4 >> 3) & 7;
-    header.unkE = arg1[0].unk4 & 7;
+    LARpp[0]= ((arg1[0].unk0 & 0xF) << 2) | ((arg1[0].unk1 >> 6) & 3);
+    LARpp[1] = arg1[0].unk1 & 0x3F;
+    LARpp[2] = (arg1[0].unk2 >> 3) & 0x1F;
+    LARpp[3] = ((arg1[0].unk2 & 7) << 2) | ((arg1[0].unk3 >> 6) & 3);
+    LARpp[4] = (arg1[0].unk3 >> 2) & 0xF;
+    LARpp[5] = ((arg1[0].unk3 & 3) << 2) | ((arg1[0].unk4 >> 6) & 3);
+    LARpp[6] = (arg1[0].unk4 >> 3) & 7;
+    LARpp[7] = arg1[0].unk4 & 7;
     for (i = 0; i < 4; i++)  {
         spC8[i] = (arg1[i].unk5 >> 1) & 0x7F;
         spB8[i] = ((arg1[i].unk5 & 1) << 1) | ((arg1[i].unk6 >> 7) & 1);
@@ -115,7 +88,7 @@ s32 Anim_DecodePackedTransform(unk_arg0_func_80045A80* arg0, unk_arg1_func_80045
         sp48[i].unkC = (arg1[i + 1].unk4 >> 3) & 7;
         sp48[i].unkD = arg1[i + 1].unk4 & 7;
     }
-    Anim_BuildTransformCurves(arg0, &header, spC8, spB8, spC0, spB0, sp48, arg2);
+    Gsm_Decoder(state, &LARpp, spC8, spB8, spC0, spB0, sp48, signal);
     return 0;
 }
 

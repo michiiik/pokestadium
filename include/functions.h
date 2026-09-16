@@ -9,11 +9,6 @@ s32 func_8005A990(OSPiHandle *);
 // 517A0.s
 void func_80050BA0(s32, void*);
 
-// libgsm.s
-void Gsm_Short_Term_Synthesis_Filter(s32, s32, s32);
-void Gsm_RPE_Decoding(s32, s32, void*, s16*);
-void Gsm_Long_term_synthesis_filtering(void*, s16, s32, s16*);
-
 // bcopy.s
 void _bcopy(void* src, void* dst, s32);
 
