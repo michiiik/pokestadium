@@ -22,9 +22,9 @@
 #                               repo's own sibling checkouts -- see below).
 #                               Created and `make setup`/`make venv`'d once
 #                               if it doesn't exist yet; never destroyed.
-#   POKESTADIUM_BASEROM       a legally-obtained retail ROM dump, needed
-#                               only the first time this persistent checkout
-#                               is created.
+#   POKESTADIUM_BASEROM       a legally-obtained retail ROM dump, used when
+#                               the local baseline image cannot seed the
+#                               first-time persistent checkout.
 #   POKESTADIUM_DECOMP_AGENT_IMAGE       image tag to build (default:
 #                               pokestadium-decomp-agent:latest).
 
@@ -33,6 +33,7 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ci_checkout="${POKESTADIUM_CI_CHECKOUT:-$HOME/projects/pokestadium-ci-baseline}"
 target_sha="$(git -C "$repo_root" rev-parse HEAD)"
+image="${POKESTADIUM_DECOMP_AGENT_IMAGE:-pokestadium-decomp-agent:latest}"
 
 echo "build-baseline.sh: target commit $target_sha" >&2
 echo "build-baseline.sh: persistent checkout at $ci_checkout" >&2
@@ -44,22 +45,35 @@ if [ ! -d "$ci_checkout/.git" ]; then
     echo "build-baseline.sh: persistent checkout does not exist yet, cloning" >&2
     mkdir -p "$(dirname "$ci_checkout")"
     git clone --quiet "$(git -C "$repo_root" remote get-url origin)" "$ci_checkout"
-
-    baserom="$ci_checkout/baseroms/us/baserom.z64"
-    source_baserom="${POKESTADIUM_BASEROM:-}"
-    if [ -z "$source_baserom" ] || [ ! -f "$source_baserom" ]; then
-        echo "build-baseline.sh: first-time setup needs POKESTADIUM_BASEROM (a legally obtained baserom.z64) to seed $ci_checkout" >&2
-        exit 1
-    fi
-    mkdir -p "$(dirname "$baserom")"
-    cp "$source_baserom" "$baserom"
-
-    ( cd "$ci_checkout" && make venv && make setup )
 fi
 
-if [ ! -f "$ci_checkout/baseroms/us/baserom.z64" ]; then
-    echo "build-baseline.sh: $ci_checkout is missing baseroms/us/baserom.z64 -- place a legally obtained retail ROM there once, per this repo's own README" >&2
-    exit 1
+baserom="$ci_checkout/baseroms/us/baserom.z64"
+if [ ! -f "$baserom" ]; then
+    source_baserom="${POKESTADIUM_BASEROM:-}"
+    if [ -n "$source_baserom" ] && [ -f "$source_baserom" ]; then
+        echo "build-baseline.sh: seeding the private baseline checkout from POKESTADIUM_BASEROM" >&2
+        mkdir -p "$(dirname "$baserom")"
+        cp "$source_baserom" "$baserom"
+    elif docker image inspect "$image" >/dev/null 2>&1; then
+        echo "build-baseline.sh: seeding the private baseline checkout from the existing local image" >&2
+        mkdir -p "$(dirname "$baserom")"
+        seed_container="$(docker create --platform linux/amd64 "$image")"
+        if ! docker cp "$seed_container:/work/baseroms/us/baserom.z64" "$baserom"; then
+            docker rm "$seed_container" >/dev/null
+            echo "build-baseline.sh: local image does not contain /work/baseroms/us/baserom.z64" >&2
+            exit 1
+        fi
+        docker rm "$seed_container" >/dev/null
+    else
+        echo "build-baseline.sh: first-time setup needs POKESTADIUM_BASEROM or an existing $image containing the private retail ROM" >&2
+        exit 1
+    fi
+fi
+
+if [ ! -f "$ci_checkout/.build-baseline-setup" ]; then
+    echo "build-baseline.sh: initializing the persistent toolchain" >&2
+    ( cd "$ci_checkout" && make venv && make setup )
+    touch "$ci_checkout/.build-baseline-setup"
 fi
 
 # Sync the persistent checkout to the exact commit being built. A plain
@@ -112,7 +126,6 @@ mkdir -p "$(dirname "$baserom")"
 cp "$ci_checkout/baseroms/us/baserom.z64" "$baserom"
 cp "$ci_checkout/baseroms/us/checksum.md5" "$staging_dir/baseroms/us/checksum.md5"
 
-image="${POKESTADIUM_DECOMP_AGENT_IMAGE:-pokestadium-decomp-agent:latest}"
 docker build \
     --platform linux/amd64 \
     --tag "$image" \
