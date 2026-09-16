@@ -2,11 +2,10 @@
 #define _46680_H_
 
 #include "global.h"
+#include "libgsm/libgsm.h"
 
 typedef struct unk_D_800FCED8_0000 {
-    /* 0x000 */ char unk000[0x166];
-    /* 0x166 */ s16 unk_166;
-    /* 0x168 */ char unk168[0x22];
+    /* 0x000 */ gsm_state gsm;
     /* 0x18A */ s16 unk_18A;
     /* 0x18C */ s16 unk_18C;
     /* 0x18E */ s16 unk18E;
@@ -47,6 +46,6 @@ typedef struct unk_D_800FCED8 {
     /* 0x25D3 */ char unk25D3[0x5];
 } unk_D_800FCED8; // size = 0x25D8
 
-s32 func_80045FF0(unk_D_800FCED8*, void*);
+s32 Gsm_Decode_Stream(unk_D_800FCED8*, void*);
 
 #endif // _46680_H_

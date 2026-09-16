@@ -1,10 +1,15 @@
+/*====================================================================
+ * GSM 06.10 full-rate speech transcoder
+ *====================================================================*/
+
 #ifndef _LIBGSM_H_
 #define _LIBGSM_H_
 
 #include "global.h"
 
 typedef struct gsm_state {
-    /* 0x00 */ char pad0[0x168];
+    /* 0x000 */ char pad0[0x166];
+    /* 0x166 */ s16 nrp;
     /* 0x168 */ s16 LARpp[2][8];
     /* 0x188 */ s16 frame_index;
 } gsm_state; // size = 0x18A
