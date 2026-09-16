@@ -2795,15 +2795,28 @@
     subsegments:
     - [0x920000, bin, pokemon_models]
     
-  # sound data?
-  - name: late_assets_6
+  - name: audio
     type: code
     bss_size: 0x0
     start: 0x15C0000
     vram: 0x91000000
     ld_align_segment_start: 0x15C0000
     subsegments:
-    - [0x15C0000, bin]
+      - [0x15C0000, bin, audio_main_archive]
+      - [0x16F27E0, bin, audio_archive_1]
+      - [0x16F2804, bin, audio_archive_1_sub]
+      - [0x16F2814, bin, audio_archive_1_file1]
+      - [0x16F2BD0, bin, audio_archive_1_file2]
+      - [0x1722F74, bin, audio_archive_2]
+      - [0x17C9C24, bin, audio_archive_3]
+      - [0x17DC304, bin, audio_archive_4_seq1]
+      - [0x1850C20, bin, audio_archive_4_seq2]
+      - [0x1978820, bin, audio_archive_5]
+      - [0x197C1E0, bin, audio_archive_6]
+      - [0x197C1FC, bin, audio_archive_6_seq1]
+      - [0x1A2AD20, bin, audio_archive_6_seq2]
+      - [0x1FBA260, bin, audio_archive_7]
+      - [0x1FBB220, bin, audio_archive_8]
   
   - [0x1FEC050, bin] # end of the ROM data, padding until 32MB
   - [0x2000000]
