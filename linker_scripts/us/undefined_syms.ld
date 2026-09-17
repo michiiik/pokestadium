@@ -604,3 +604,41 @@ D_8006873C = 0x8006873C;
 // GB CPU opcode dispatch tables, kept as a rodatabin blob. splat's .incbin stub
 // labels only the first symbol (jtbl_81229500), so the second needs declaring here.
 D_81229580 = 0x81229580;
+
+// Interior aliases into pokemon_stats.c's D_80073230 packed table.
+gDexToInternalIndex = 0x80073267;
+gInternalIndexToDex = 0x800732FF;
+D_800733BF = 0x800733BF;
+D_80073457 = 0x80073457;
+D_800734EF = 0x800734EF;
+D_80073597 = 0x80073597;
+D_80073640 = 0x80073640;
+D_8007364C = 0x8007364C;
+
+// Interior aliases into gb_data.c's gMoveDisplayInfo.
+D_80072AFD = 0x80072AFD;
+D_80072AFE = 0x80072AFE;
+
+// Interior aliases into 3D140.c's music tables.
+D_800780B3 = 0x800780B3;
+D_80078410 = 0x80078410;
+D_80078446 = 0x80078446;
+D_800784EA = 0x800784EA;
+
+// Interior aliases into gb_audio_render.c's loop-point tables.
+D_80078E80 = 0x80078E80;
+D_80078E83 = 0x80078E83;
+D_80078E8B = 0x80078E8B;
+D_80078E93 = 0x80078E93;
+D_80078E9B = 0x80078E9B;
+D_80078EA3 = 0x80078EA3;
+D_80078EAB = 0x80078EAB;
+D_80078EB3 = 0x80078EB3;
+D_80078EBF = 0x80078EBF;
+
+// GB CPU handler tables, kept as a databin blob; the .incbin stub labels only
+// the first symbol (D_81228770).
+D_81228B70 = 0x81228B70;
+D_81229370 = 0x81229370;
+D_812294C0 = 0x812294C0;
+D_812294E0 = 0x812294E0;
