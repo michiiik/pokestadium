@@ -4,6 +4,9 @@
 
 const u8 LEO_ZERO_MESG[] = { 0 };
 
+s32 __leoResetCalled = 0;
+s32 __leoQueuesCreated = 0;
+
 OSMesgQueue LEOpost_que;
 OSMesg LEOpost_que_buf[1];
 leo_sys_form LEO_sys_data;

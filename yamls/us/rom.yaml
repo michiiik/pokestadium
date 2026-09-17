@@ -374,13 +374,13 @@
     - [0x79C70, .data, cry]
     - [0x79F70, .data, libnaudio/n_drvrNew]
     - [0x7A100, .data, libnaudio/n_reverb]
-    - [0x7A110, data, rom_data_7A110]
 
     # libleo
+    - [0x7A110, .data, libleo/leofunc]
+    - [0x7A120, .data, libleo/leocmdex]
     - [0x7A180, .data, libleo/driverominit]
     - [0x7A190, .data, libleo/leord_diskid]
     - [0x7A1B0, .data, libleo/cjcreateleomanager]
-
 
     # libultra
     - [0x7A1C0, lib, libultra, vimodefpallpn1, .data]
