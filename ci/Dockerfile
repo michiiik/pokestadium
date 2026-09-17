@@ -42,6 +42,20 @@ WORKDIR /work
 # generated/derived state (below) never busts this one, and vice versa.
 COPY src ./src
 COPY include ./include
+
+# Makefile's C_FILES list is `git ls-files -- src`, so /work needs an
+# actual git repository over src/ -- otherwise that command fails with
+# "fatal: not a git repository", C_FILES silently comes back empty, and
+# a full rebuild (rm -rf build, forced by any yamls/ change) compiles
+# nothing, leaving the link step unable to find any src/*.o it needs.
+# This was invisible until a PR that touched yamls/ actually forced a
+# full rebuild: PR #46, 2026-09-17. ci/gate-pr.sh keeps this index in
+# sync with whatever a PR overlays onto src/include afterward.
+RUN git init -q \
+    && git add src include \
+    && git -c user.name="pokestadium-decomp-agent image" -c user.email="pokestadium-decomp-agent@localhost" \
+        commit -q -m "baseline: src and include as shipped in the image"
+
 COPY tools ./tools
 COPY linker_scripts ./linker_scripts
 COPY lib ./lib
