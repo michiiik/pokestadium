@@ -592,3 +592,6 @@ D_3007910 = 0x3007910;
 D_3008018 = 0x3008018;
 D_3007BE0 = 0x3007BE0;
 D_3007D48 = 0x3007D48;
+
+/* Bogus branch target inside gspF3DEX2.fifo, produced by the inline table at 0x8004873C */
+D_8006873C = 0x8006873C;

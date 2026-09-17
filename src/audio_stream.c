@@ -283,7 +283,7 @@ void AudioStream_DmaReadChunk(u32 arg0, u32 arg1, u32 arg2, OSMesgQueue* arg3) {
 void AudioStream_OpenChannel(unk_D_800FCED8* arg0, s32 arg1, s32 arg2) {
     bzero(&arg0->unk_0000, sizeof(unk_D_800FCED8_0000));
 
-    arg0->unk_0000.unk_166 = 0x28;
+    arg0->unk_0000.gsm.nrp = 0x28;
     arg0->unk_0190 = arg2;
     arg0->unk_0194 = arg1;
 
@@ -350,7 +350,7 @@ void AudioStream_RefillAndDecode(unk_D_800FCED8* arg0) {
     var_v1 = arg0->unk_25CC - arg0->unk_25C8;
     while ((var_v1 < 0x960) && ((arg0->unk_25D1 == 1) || (arg0->unk_2598 > 0)) &&
            ((arg0->unk_25C4 - arg0->unk_25C0) >= 0x25) && (var_s2 > 0)) {
-        func_80045FF0(arg0, arg0->unk_0198.unk_0000 + (((arg0->unk_25CC % 2560) >> 2) * 8));
+        Gsm_Decode_Stream(arg0, arg0->unk_0198.unk_0000 + (((arg0->unk_25CC % 2560) >> 2) * 8));
         arg0->unk_25C0 = (arg0->unk_25BC >> 3) & ~3;
         arg0->unk_25CC += 0xA0;
         arg0->unk_2598--;

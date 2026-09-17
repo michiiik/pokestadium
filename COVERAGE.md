@@ -17,7 +17,7 @@ The function denominator covers C source owners and `GLOBAL_ASM` stubs. `hasm` e
 | --- | ---: |
 | `src/33FE0.c` | 4 |
 | `src/3D140.c` | 5 |
-| `src/animation_double_buffer.c` | 1 |
+| `src/gsm_decoder.c` | 1 |
 | `src/audio_stream.c` | 1 |
 | `src/fragments/battle_engine/battle_engine_2EC3C0.c` | 2 |
 | `src/fragments/battle_engine/battle_engine_34A420.c` | 1 |
