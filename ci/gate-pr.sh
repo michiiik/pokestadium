@@ -135,7 +135,7 @@ if [ -d /src/hand_asm ]; then
 fi
 if sync_tree /src/include /work/include; then headers_changed=1; fi
 
-# Makefile's C_FILES list is `git ls-files -- src`, resolved against the
+# The Makefile C_FILES list is `git ls-files -- src`, resolved against the
 # git repository baked into the image at build time (see ci/Dockerfile).
 # That baked index only knows the files that existed at bake time, so a
 # PR that adds a new src/*.c (or renames/removes one) needs the index
