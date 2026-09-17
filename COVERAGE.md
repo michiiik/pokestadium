@@ -3,9 +3,9 @@
 # pokestadium decompilation coverage
 
 <!-- AUTO_COVERAGE:START -->
-- Functions with C implementations: **7,347 / 7,437 (98.8%)**
-- Remaining decompilable `GLOBAL_ASM` owners: **90** (across 45 source files)
-- Separately managed `hasm` assembly segments: **8**
+- Functions with C implementations: **7,348 / 7,437 (98.8%)**
+- Remaining decompilable `GLOBAL_ASM` owners: **89** (across 44 source files)
+- Separately managed `hasm` assembly segments: **9**
 <!-- AUTO_COVERAGE:END -->
 
 The function denominator covers C source owners and `GLOBAL_ASM` stubs. `hasm` entries are deliberately managed assembly segments, not unported C-function owners, so they are reported separately and excluded from the decompilation backlog. Total function count is derived from the retail linker map and retained from the trusted baseline. Regenerate with:
@@ -17,7 +17,6 @@ The function denominator covers C source owners and `GLOBAL_ASM` stubs. `hasm` e
 | --- | ---: |
 | `src/33FE0.c` | 4 |
 | `src/3D140.c` | 5 |
-| `src/gsm_decoder.c` | 1 |
 | `src/audio_stream.c` | 1 |
 | `src/fragments/battle_engine/battle_engine_2EC3C0.c` | 2 |
 | `src/fragments/battle_engine/battle_engine_34A420.c` | 1 |
@@ -67,11 +66,12 @@ These YAML `hasm` entries are kept as assembly by design and are not counted as 
 
 | YAML | ROM offset | Segment |
 | --- | ---: | --- |
+| `yamls/us/rom.yaml` | `0x0040` | `boot` |
 | `yamls/us/rom.yaml` | `0x1000` | `entry` |
+| `yamls/us/rom.yaml` | `0xC3D0` | `exception_set` |
 | `yamls/us/rom.yaml` | `0xC3F0` | `yay0` |
 | `yamls/us/rom.yaml` | `0xC4A0` | `abs` |
 | `yamls/us/rom.yaml` | `0xC910` | `../../src/libleo/bootstrap` |
-| `yamls/us/rom.yaml` | `0x49190` | `managed assembly` |
+| `yamls/us/rom.yaml` | `0x49190` | `libgsm` |
 | `yamls/us/rom.yaml` | `0x517A0` | `yay0 audio decoder` |
-| `yamls/us/rom.yaml` | `0x7F980` | `fragments/gb_tower_emulator/gb_tower_emulator_header` |
 | `yamls/us/rom.yaml` | `0x89020` | `fragments/gb_tower_emulator/gb_tower_emulator_code_asm` |
