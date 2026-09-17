@@ -134,6 +134,19 @@ if [ -d /src/hand_asm ]; then
     if sync_tree /src/hand_asm /work/hand_asm; then :; fi
 fi
 if sync_tree /src/include /work/include; then headers_changed=1; fi
+
+# The Makefile C_FILES list is `git ls-files -- src`, resolved against the
+# git repository baked into the image at build time (see ci/Dockerfile).
+# That baked index only knows the files that existed at bake time, so a
+# PR that adds a new src/*.c (or renames/removes one) needs the index
+# refreshed to match what was just overlaid onto disk above, or the new
+# file silently never gets compiled. Guarded on /work/.git existing so
+# this degrades to a no-op -- not a hard failure -- against a baseline
+# image built before this git-init was added.
+if [ -d /work/.git ]; then
+    git -C /work add -A src include
+fi
+
 if sync_tree /src/tools /work/tools --exclude=__pycache__ --exclude=vtxdis; then tools_changed=1; fi
 if sync_tree /src/linker_scripts /work/linker_scripts --exclude=auto --exclude=pokestadium.ld; then linker_changed=1; fi
 if sync_tree /src/lib /work/lib --exclude=build --exclude=extracted; then library_changed=1; fi
