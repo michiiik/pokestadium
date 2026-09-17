@@ -78,6 +78,7 @@
     - [0x2E460, c, gb_save] # pkm lab pokedex code
     - [0x2FEA0, c, minigame_dispatch] # minigames code
     - [0x30640, c, gallery] # gallery code
+    - [0x32510, c, vector_math] # vector/matrix math
     - [0x32D10, c, battle_hud]
     - [0x334D0, c, model_renderer_callbacks]
     - [0x33E30, c]
@@ -347,7 +348,7 @@
     - [0x6FEB0, .data, geo_layout]
     - [0x6FF50, .data, poke_icon]
     - [0x70070, .data, ui_graphics]
-    - [0x703E0, data, rom_data_703E0]
+    - [0x703E0, .data, status_icons]
     - [0x71BA0, data, rom_data_71BA1] #22630
     - [0x74250, .data, save_data]
     - [0x74260, .data, game_state]
@@ -380,10 +381,9 @@
     - [0x7A190, .data, libleo/leord_diskid]
     - [0x7A1B0, .data, libleo/cjcreateleomanager]
 
-    # fragment1?
-    - [0x7A1C0, data, rom_data_7A1C0]
 
     # libultra
+    - [0x7A1C0, lib, libultra, vimodefpallpn1, .data]
     - [0x7A210, lib, libultra, piacs,          .data]
     - [0x7A220, lib, libultra, thread,         .data]
     - [0x7A240, lib, libultra, sl,             .data]
@@ -426,9 +426,7 @@
     - [0x7C000, .rodata, leo]
     - [0x7C180, .rodata, matrix]
     - [0x7C190, .rodata, poke_icon]
-    - [0x7C1C0, rodata, rom_rodata_7C1C0]
-    - [0x7C220, rodata, rom_rodata_7C220]
-    - [0x7C750, rodata, rom_rodata_7C750]
+    - [0x7C1C0, .rodata, status_icons]
     - [0x7CCA0, .rodata, gb_data]
     - [0x7CD10, .rodata, pokemon_stats]
     - [0x7CD40, .rodata, save_data]
@@ -438,7 +436,8 @@
     - [0x7D040, .rodata, gb_save]
     - [0x7D090, .rodata, minigame_dispatch]
     - [0x7D0F0, .rodata, gallery]
-    - [0x7D110, rodata, rom_rodata_7D110]
+    - [0x7D110, .rodata, vector_math]
+    - [0x7D180, .rodata, 33E30]
     - [0x7D1B0, .rodata, 33FE0]
     - [0x7D230, .rodata, audio_commands]
     - [0x7D340, .rodata, libnumus/player]
@@ -450,7 +449,7 @@
     - [0x7DF80, .rodata, audio_stored_fade]
     - [0x7DFD0, .rodata, audio_sfx]
     - [0x7E0C0, .rodata, libnaudio/n_synthesizer]
-    - [0x7E0D0, rodata, rom_rodata_7E0D0]
+    - [0x7E0D0, .rodata, gb_audio_render]
     - [0x7E0E0, .rodata, audio_channel]
     - [0x7E110, .rodata, audio_loop_point]
     - [0x7E2F0, .rodata, audio_commands_category2]
@@ -610,14 +609,10 @@
     - [0x8E3E0,  data,   fragments/gb_tower_emulator/gb_tower_emulator_data_8E3E0]
     - [0xA8020,  data,   fragments/gb_tower_emulator/gb_tower_emulator_data_A8020]
     - [0xA80F0,  data,   fragments/gb_tower_emulator/gb_tower_emulator_data_asm]
-    - [0xA8E80,  rodata, fragments/gb_tower_emulator/gb_tower_emulator_rodata_A8E80]
-    - [0xA8F00,  rodata, fragments/gb_tower_emulator/gb_tower_emulator_rodata_A8F00]
-    - [0xA9140,  rodata, fragments/gb_tower_emulator/gb_tower_emulator_rodata_A9140]
-    - [0xA9BE0,  rodata, fragments/gb_tower_emulator/gb_tower_emulator_rodata_A9BE0]
-    - [0xAA6D0,  rodata, fragments/gb_tower_emulator/gb_tower_emulator_rodata_AA6D0]
-    - [0xAA8F0,  rodata, fragments/gb_tower_emulator/gb_tower_emulator_rodata_AA8F0]
-    - [0xAA900,  rodata, fragments/gb_tower_emulator/gb_tower_emulator_rodata_AA900]
-    - [0xAAA20, .rodata, fragments/gb_tower_emulator/gb_tower_emulator_86CB0]
+    - [0xA8E80,  rodatabin, fragments/gb_tower_emulator/gb_tower_emulator_dispatch_tables]
+    - [0xA9140, .rodata, fragments/gb_tower_emulator/gb_tower_emulator_7F9A0]
+    - [0xAA8F0, .rodata, fragments/gb_tower_emulator/gb_tower_emulator_86920]
+    - [0xAA900, .rodata, fragments/gb_tower_emulator/gb_tower_emulator_86CB0]
 
     - {vram: 0x8122B1E0, type:  bss, name: fragments/gb_tower_emulator/gb_tower_emulator_bss}
 

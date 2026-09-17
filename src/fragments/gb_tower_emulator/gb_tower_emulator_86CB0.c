@@ -1,5 +1,18 @@
 #include "global.h"
 
+// GB APU debug output. Dead data: the osSyncPrintf calls these fed were compiled
+// out, so nothing references them any more.
+const char D_8122AF80[0xC] = "Loop Occer\n";
+const char D_8122AF8C[0x28] = "Sound 0x21 = Gain %x Sign %x Step %x  \n";
+const char D_8122AFB4[0x18] = "Sound 0x22 = %d %d %d \n";
+const char D_8122AFCC[0x24] = "Sound 0x23  Vol %d (Reset Counter)\n";
+const char D_8122AFF0[0x20] = "Dmg Noise pitch :  %x  Vol %d\n";
+const char D_8122B010[0x28] = "AudioReset : Reload Noisetable Finish\n";
+const char D_8122B038[0x1C] = "AudioStart : Noisetable %x\n";
+const char D_8122B054[0x24] = "AudioExit  : Reload Noisetable \n";
+const char D_8122B078[0x14] = "DAC:Lost 1 Frame.\n";
+const char D_8122B08C[0x14] = "Address Error %x\n";
+
 typedef struct GbApuChannelState {
   /* 0x00 */ u8 unk_00;
   /* 0x02 */ char unk02[0x02];

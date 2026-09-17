@@ -514,7 +514,12 @@ _798CD0_TEXT_START = 0x8C200000;
 D_8C200920 = 0x8C200920;
 D_8C201070 = 0x8C201070;
 D_8C2011C4 = 0x8C2011C4;
+// Shifted aliases into status_icons.c's tables, used for 1-based indexing.
+// D_8006FEE8 = &sPokemonNames[150] = (char*)D_8006FF00 - 0x18.
+// gBaseStats/D_80070F8A point into D_8006FF00[151].
+D_8006FEE8 = 0x8006FEE8;
 gBaseStats = 0x80070F84;
+D_80070F8A = 0x80070F8A;
 D_800786FD = 0x800786FD;
 D_3008380 = 0x3008380;
 D_3008400 = 0x3008400;
@@ -595,3 +600,7 @@ D_3007D48 = 0x3007D48;
 
 /* Bogus branch target inside gspF3DEX2.fifo, produced by the inline table at 0x8004873C */
 D_8006873C = 0x8006873C;
+
+// GB CPU opcode dispatch tables, kept as a rodatabin blob. splat's .incbin stub
+// labels only the first symbol (jtbl_81229500), so the second needs declaring here.
+D_81229580 = 0x81229580;
