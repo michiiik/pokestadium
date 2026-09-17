@@ -678,8 +678,125 @@ void func_80034254(StadiumModel* model) {
         var_a2++;
     }
 }
+#ifdef NON_MATCHING
+void func_80034348(ModelSegment* segment, ModelVertex* vertices) {
+    s32 i;
+    f32 spF0;
+    s32 pad1[5];
+    f32 spD8;
+    s32 pad2[6];
+    s16 spBE;
+    s16 spBC;
+    s16 spBA;
+    s32 pad3[12];
+    s16* var_t2;
+    s32 pad4[6];
+    f32 sp60;
+    f32 sp5C;
+    f32 sp58;
+    f32 temp_fa1;
+    f32 temp_fs0;
+    f32 temp_fs1;
+    f32 temp_fs4;
+    f32 temp_fs5;
+    f32 temp_ft4;
+    f32 temp_fv0;
+    f32 temp_fv0_3;
+    f32 temp_fv0_4;
+    f32 temp_fv0_5;
+    f32 temp_fv0_6;
+    f32 temp_fv0_7;
+    f32 temp_fv0_8;
+    f32 temp_fv1;
+    f32 temp_fv1_2;
+    f32 var_fs0;
+    f32 var_fs1;
+    f32 var_fs2;
+    s16* var_s0;
+    s16 triangleCount;
+    s16 vertexCount;
+    ModelVertex* temp_a0_2;
+    ModelVertex* temp_v0;
+    ModelVertex* temp_v1;
+    ModelVertex* vtx;
+    Vec3fCounter* counter;
+
+    triangleCount = segment->triangleCount;
+    vertexCount = segment->vertexCount;
+    var_s0 = Memmap_GetSegmentVaddr(segment->indexSegment);
+    var_t2 = Memmap_GetSegmentVaddr(segment->remapSegment);
+    counter = D_800B2F50;
+    for (i = 0; i < vertexCount; i++) {
+        counter->x = 0.0f;
+        counter->y = 0.0f;
+        counter->z = 0.0f;
+        counter->count = 0;
+        counter++;
+    }
+    for (i = 0; i < triangleCount; i++) {
+        spBE = var_t2[var_s0[0]];
+        temp_v0 = &vertices[spBE];
+        spF0 = temp_v0->position.base.x;
+        spBC = var_t2[var_s0[1]];
+        spBA = var_t2[var_s0[2]];
+        var_s0 += 3;
+        temp_v1 = &vertices[spBC];
+        temp_fs4 = temp_v1->position.base.x;
+        temp_fv0 = temp_v1->position.base.y;
+        temp_fv1 = temp_v1->position.base.z;
+        temp_fs5 = temp_fv0 - temp_v0->position.base.y;
+        temp_fs1 = temp_fv1 - temp_v0->position.base.z;
+        temp_a0_2 = &vertices[spBA];
+        spD8 = temp_a0_2->position.base.x;
+        sp5C = temp_fs1;
+        temp_fs0 = temp_a0_2->position.base.z - temp_fv1;
+        sp58 = temp_a0_2->position.base.y - temp_fv0;
+        sp60 = temp_fs0;
+        temp_fa1 = spD8 - temp_fs4;
+        temp_ft4 = temp_fs4 - spF0;
+        var_fs0 = (sp5C * temp_fa1) - (temp_ft4 * sp60);
+        var_fs2 = (temp_fs5 * sp60) - (temp_fs1 * sp58);
+        var_fs1 = (temp_ft4 * sp58) - (temp_fs5 * temp_fa1);
+        temp_fv0_3 = sqrtf((var_fs2 * var_fs2) + (var_fs0 * var_fs0) + (var_fs1 * var_fs1));
+        if ((s32) temp_fv0_3 > 0) {
+            temp_fv1_2 = 120.0f / temp_fv0_3;
+            var_fs2 *= temp_fv1_2;
+            var_fs0 *= temp_fv1_2;
+            var_fs1 *= temp_fv1_2;
+        }
+        counter = &D_800B2F50[spBE];
+        counter->x += var_fs2;
+        counter->y += var_fs0;
+        counter->z += var_fs1;
+        counter->count++;
+        counter = &D_800B2F50[spBC];
+        counter->x += var_fs2;
+        counter->y += var_fs0;
+        counter->z += var_fs1;
+        counter->count++;
+        counter = &D_800B2F50[spBA];
+        counter->x += var_fs2;
+        counter->y += var_fs0;
+        counter->z += var_fs1;
+        counter->count++;
+    }
+    counter = D_800B2F50;
+    vtx = vertices;
+    for (i = 0; i < vertexCount; i++) {
+        if (counter->count > 0) {
+            temp_fv0_4 = (f32) counter->count;
+            vtx->position.color.r = (f32) (counter->x / temp_fv0_4);
+            vtx->position.color.g = (f32) (counter->y / temp_fv0_4);
+            vtx->position.color.b = (f32) (counter->z / temp_fv0_4);
+        }
+        counter++;
+        vtx++;
+    }
+}
+#else
 void func_80034348(ModelSegment*, ModelVertex*);
 #pragma GLOBAL_ASM("asm/us/nonmatchings/33FE0/func_80034348.s")
+#endif
 
 #ifdef NON_MATCHING
 void func_80034824(ModelSegment* segment, StadiumTransform* xf, s32 index, ModelVertex* vertices) {
@@ -793,8 +910,109 @@ void Model_ApplyVertexTransforms(StadiumModel* model) {
     Model_ApplyTransformCommands(segment, mvtx, model, 1.0f);
 }
 
-void func_80034BD4(StadiumModel*, StadiumTransform*, s32, ModelVertex*);
+#ifdef NON_MATCHING
+void func_80034BD4(u32 modelSegment, StadiumTransform* xf, s32 index, ModelVertex* vertices) {
+    s32 pad0[5];
+    f32 sp180;
+    f32 sp17C;
+    f32 sp178;
+    f32 sp174;
+    f32 sp170;
+    f32 sp16C;
+    f32 sp168;
+    f32 sp164;
+    f32 sp160;
+    f32 sp15C;
+    f32 sp158;
+    f32 sp154;
+    f32 sp150;
+    f32 sp14C;
+    f32 sp148;
+    f32 sp144;
+    f32 sp140;
+    f32 sp13C;
+    f32 sp138;
+    f32 sp134;
+    f32 sp130;
+    s32 pad1[10];
+    f32 sp104;
+    f32 sp100;
+    f32 spFC;
+    f32 one = 1.0f;
+    f32 w0;
+    f32 w1;
+    f32 w2;
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 temp_fv0;
+    s32 pad2[4];
+    s16 spCA;
+    s32 pad3[1];
+    s16* spC0;
+    MtxF* mtx;
+    f32 temp_fs0;
+    f32 temp_fs1;
+    f32 temp_fs2;
+    s16 temp_s1_2;
+    s16* temp_s1;
+    ModelSegment* temp_v0;
+    s32 temp_s1_3;
+    s32 i;
+    s16* var_s3;
+    PosBlend* temp_v0_2;
+
+    temp_v0 = Memmap_GetSegmentVaddr(modelSegment);
+    spCA = temp_v0->vertexCount;
+    temp_s1 = Memmap_GetSegmentVaddr(temp_v0->remapSegment);
+    spC0 = Memmap_GetSegmentVaddr(temp_v0->tableSegment);
+    mtx = xf->mtx;
+    guMtxXFMF(mtx->mf, xf->x0, xf->y0, xf->z0, &sp180, &sp17C, &sp178);
+    guMtxXFMF(mtx->mf, xf->x1, xf->y1, xf->z1, &sp174, &sp170, &sp16C);
+    guMtxXFMF(mtx->mf, xf->x2, xf->y2, xf->z2, &sp168, &sp164, &sp160);
+    guMtxXFMF(mtx->mf, xf->x3, xf->y3, xf->z3, &sp15C, &sp158, &sp154);
+    var_s3 = temp_s1;
+    sp150 = sp174 - sp180;
+    sp14C = sp170 - sp17C;
+    sp148 = sp16C - sp178;
+    sp144 = sp168 - sp180;
+    sp140 = sp164 - sp17C;
+    sp13C = sp160 - sp178;
+    sp138 = sp15C - sp180;
+    sp134 = sp158 - sp17C;
+    sp130 = sp154 - sp178;
+    for (i = 0; i < spCA; i++) {
+        temp_s1_2 = *var_s3;
+        if ((Model_GetVertexClass(spC0, temp_s1_2) != 0) && (temp_s1_2 == i)) {
+            temp_fs0 = vertices->position.base.x;
+            temp_fs1 = vertices->position.base.y;
+            temp_fs2 = vertices->position.base.z;
+            temp_s1_3 = 1 << index;
+            temp_fv0 = func_80033568(temp_fs0, temp_fs1, temp_fs2, sp180, sp17C, sp178, sp174, sp170, sp16C, &sp104, &sp100, &spFC);
+            temp_v0_2 = &vertices->position;
+            if ((temp_fv0 > 0.0f) && (temp_fv0 < xf->maxDist)) {
+                w0 = vertices->cmd.weights[index].w0;
+                w1 = vertices->cmd.weights[index].w1;
+                w2 = vertices->cmd.weights[index].w2;
+                x = (w0 * sp150) + sp180 + (w1 * sp144) + (w2 * sp138);
+                y = (w0 * sp14C) + sp17C + (w1 * sp140) + (w2 * sp134);
+                z = (w0 * sp148) + sp178 + (w1 * sp13C) + (w2 * sp130);
+                temp_v0_2->disabled |= temp_s1_3;
+                temp_v0_2->offset.x = (x - temp_fs0) * one;
+                temp_v0_2->offset.y = (y - temp_fs1) * one;
+                temp_v0_2->offset.z = (z - temp_fs2) * one;
+            } else {
+                temp_v0_2->disabled &= ~temp_s1_3;
+            }
+        }
+        var_s3++;
+        vertices++;
+    }
+}
+#else
+void func_80034BD4(u32, StadiumTransform*, s32, ModelVertex*);
 #pragma GLOBAL_ASM("asm/us/nonmatchings/33FE0/func_80034BD4.s")
+#endif
 
 void Model_TransformPoint(MtxF* mtx, Vec3f* out, s16 (*in)[3]) {
     f32 sp34;
