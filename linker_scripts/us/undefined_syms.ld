@@ -642,3 +642,12 @@ D_81228B70 = 0x81228B70;
 D_81229370 = 0x81229370;
 D_812294C0 = 0x812294C0;
 D_812294E0 = 0x812294E0;
+
+// Interior aliases into gb_tower_emulator_86CB0.c's sGbApuRegs.
+D_8120EA80 = 0x8120EA80;
+D_8120EA86 = 0x8120EA86;
+
+// Interior aliases into gb_tower_emulator_7F9A0.c's D_8120D820.
+D_8120D8FD = 0x8120D8FD;
+D_8120D8FE = 0x8120D8FE;
+D_8120D906 = 0x8120D906;
