@@ -26,13 +26,12 @@ static Vtx D_84389810[] = {
     VTX(0, -20, 0, 1024, 0, 0xFF, 0xFF, 0xFF, 0x00),   VTX(30, -20, 0, 1024, 0, 0xFF, 0xFF, 0xFF, 0x00),
 };
 
-#ifdef NON_MATCHING
 Gfx* func_84367660(Gfx* arg0, Vec3f* arg1, Vec3f* arg2, Vec3f* arg3, f32 arg4, u8 arg5, u8 arg6, u8 arg7, u8 arg8) {
     s32 i;
     Vtx* sp1E8;
     s32 pad[2];
     Mtx* sp1DC;
-    s32 pad2[42];
+    volatile s32 pad2[42];
     f32 sp130;
     f32 sp12C;
     f32 sp128;
@@ -42,7 +41,7 @@ Gfx* func_84367660(Gfx* arg0, Vec3f* arg1, Vec3f* arg2, Vec3f* arg3, f32 arg4, u
     f32 sp80;
     f32 sp7C;
     f32 sp78;
-    s32 pad4[7];
+    volatile s32 pad4[7];
     Vtx* var_a1;
     Vtx* temp_v1;
     f32 a1_x;
@@ -174,6 +173,3 @@ Gfx* func_84367660(Gfx* arg0, Vec3f* arg1, Vec3f* arg2, Vec3f* arg3, f32 arg4, u
 
     return arg0;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/battle_engine/battle_engine_351F20/func_84367660.s")
-#endif
