@@ -247,6 +247,23 @@ else
     echo "gate-pr.sh: reusing cached objects and rebuilding changed source inputs"
     make COMPARE=0 -j"${build_jobs}" rom
 fi
+python3 - <<'PY'
+from pathlib import Path
+
+addr = 0x80012870
+size = 0xF0
+rom_start = 0x1000
+text_vram = 0x80000400
+offset = rom_start + (addr - text_vram)
+base = Path("baseroms/us/baserom.z64").read_bytes()[offset:offset + size]
+built = Path("build/pokestadium-us.z64").read_bytes()[offset:offset + size]
+print("geo retail-vs-built words:")
+for i in range(0, size, 4):
+    expected = int.from_bytes(base[i:i + 4], "big")
+    actual = int.from_bytes(built[i:i + 4], "big")
+    if expected != actual:
+        print(f"  +0x{i:02X}: retail={expected:08X} built={actual:08X}")
+PY
 md5sum -c baseroms/us/checksum.md5
 ' >"$log_file" 2>&1
 status=$?
