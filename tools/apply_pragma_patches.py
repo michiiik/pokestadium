@@ -21,6 +21,11 @@ def main() -> None:
         args.source,
         "utf-8",
     )
+    asm_processor.apply_rewrite_function_cop1_registers(
+        args.objfile,
+        args.source,
+        "utf-8",
+    )
 
 
 if __name__ == "__main__":
