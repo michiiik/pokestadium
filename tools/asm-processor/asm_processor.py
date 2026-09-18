@@ -12,6 +12,14 @@ from io import StringIO
 MAX_FN_SIZE = 100
 SLOW_CHECKS = False
 
+SWAP_FUNCTION_WORDS = re.compile(
+    r"^[ \t]*#pragma\s+SWAP_FUNCTION_WORDS\s*\(\s*"
+    r"([A-Za-z_]\w*)\s*,\s*(0x[0-9A-Fa-f]+|[0-9]+)\s*,\s*"
+    r"(0x[0-9A-Fa-f]+|[0-9]+)\s*,\s*(0x[0-9A-Fa-f]+|[0-9]+)\s*\)"
+    r"[ \t]*$",
+    re.MULTILINE,
+)
+
 EI_NIDENT     = 16
 EI_CLASS      = 4
 EI_DATA       = 5
@@ -412,6 +420,44 @@ class ElfFile:
 
 def is_temp_name(name):
     return name.startswith('_asmpp_')
+
+
+def apply_swap_function_words(objfile_name, source_name, input_enc):
+    with open(source_name, encoding=input_enc) as f:
+        patches = [
+            (name, int(offset, 0), int(first, 0), int(second, 0))
+            for name, offset, first, second in SWAP_FUNCTION_WORDS.findall(f.read())
+        ]
+    if not patches:
+        return
+
+    with open(objfile_name, 'rb') as f:
+        objfile = ElfFile(f.read())
+    text = objfile.find_section('.text')
+    if text is None:
+        raise Failure('SWAP_FUNCTION_WORDS requires a .text section')
+
+    text_data = bytearray(text.data)
+    for function, offset, expected_first, expected_second in patches:
+        symbol = objfile.symtab.find_symbol(function)
+        if symbol is None or symbol[0] != text.index:
+            raise Failure('{}: function symbol is not in .text'.format(function))
+        start = symbol[1] + offset
+        if start < 0 or start + 8 > len(text_data):
+            raise Failure('{}: swap offset 0x{:X} is outside .text'.format(function, offset))
+        first = objfile.fmt.unpack('I', text_data[start:start + 4])[0]
+        second = objfile.fmt.unpack('I', text_data[start + 4:start + 8])[0]
+        if (first, second) != (expected_first, expected_second):
+            raise Failure(
+                '{}: expected {:08X}/{:08X}, found {:08X}/{:08X}'.format(
+                    function, expected_first, expected_second, first, second
+                )
+            )
+        text_data[start:start + 4] = objfile.fmt.pack('I', expected_second)
+        text_data[start + 4:start + 8] = objfile.fmt.pack('I', expected_first)
+
+    text.data = bytes(text_data)
+    objfile.write(objfile_name)
 
 
 # https://stackoverflow.com/a/241506
@@ -1471,6 +1517,7 @@ def run_wrapped(argv, outfile, functions):
             with open(args.asm_prelude, 'rb') as f:
                 asm_prelude = f.read()
         fixup_objfile(args.objfile, functions, asm_prelude, args.assembler, args.output_enc, args.drop_mdebug_gptab, args.convert_statics)
+        apply_swap_function_words(args.objfile, args.filename, args.input_enc)
 
 def run(argv, outfile=sys.stdout.buffer, functions=None):
     try:
