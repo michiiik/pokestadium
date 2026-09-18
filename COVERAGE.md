@@ -3,8 +3,8 @@
 # pokestadium decompilation coverage
 
 <!-- AUTO_COVERAGE:START -->
-- Functions with C implementations: **7,350 / 7,437 (98.8%)**
-- Remaining decompilable `GLOBAL_ASM` owners: **87** (across 43 source files)
+- Functions with C implementations: **7,349 / 7,437 (98.8%)**
+- Remaining decompilable `GLOBAL_ASM` owners: **88** (across 44 source files)
 - Separately managed `hasm` assembly segments: **9**
 <!-- AUTO_COVERAGE:END -->
 
@@ -20,6 +20,7 @@ The function denominator covers C source owners and `GLOBAL_ASM` stubs. `hasm` e
 | `src/audio_stream.c` | 1 |
 | `src/fragments/battle_engine/battle_engine_2EC3C0.c` | 2 |
 | `src/fragments/battle_engine/battle_engine_34A420.c` | 1 |
+| `src/fragments/battle_engine/battle_engine_351F20.c` | 1 |
 | `src/fragments/battle_engine/battle_engine_356730.c` | 1 |
 | `src/fragments/battle_engine/battle_engine_359F90.c` | 2 |
 | `src/fragments/battle_engine/battle_engine_361050.c` | 2 |
