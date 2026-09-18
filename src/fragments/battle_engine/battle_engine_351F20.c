@@ -2,36 +2,6 @@
 #include "src/gallery.h"
 #include "src/gfx_buffer.h"
 
-#pragma REWRITE_FUNCTION_STACK_OFFSET(func_84367660, 0x2CC, 0x80, 0x8C)
-#pragma REWRITE_FUNCTION_STACK_OFFSET(func_84367660, 0x304, 0x7C, 0x88)
-#pragma REWRITE_FUNCTION_STACK_OFFSET(func_84367660, 0x338, 0x78, 0x84)
-#pragma REWRITE_FUNCTION_STACK_OFFSET(func_84367660, 0x36C, 0x74, 0x80)
-#pragma REWRITE_FUNCTION_STACK_OFFSET(func_84367660, 0x3A0, 0x70, 0x7C)
-#pragma REWRITE_FUNCTION_STACK_OFFSET(func_84367660, 0x3D4, 0x6C, 0x78)
-#pragma REWRITE_FUNCTION_STACK_OFFSET(func_84367660, 0x42C, 0x80, 0x8C)
-#pragma REWRITE_FUNCTION_STACK_OFFSET(func_84367660, 0x444, 0x7C, 0x88)
-#pragma REWRITE_FUNCTION_STACK_OFFSET(func_84367660, 0x45C, 0x78, 0x84)
-#pragma REWRITE_FUNCTION_STACK_OFFSET(func_84367660, 0x474, 0x74, 0x80)
-#pragma REWRITE_FUNCTION_STACK_OFFSET(func_84367660, 0x49C, 0x70, 0x7C)
-#pragma REWRITE_FUNCTION_STACK_OFFSET(func_84367660, 0x4B4, 0x6C, 0x78)
-#pragma REWRITE_FUNCTION_COP1_REGISTER(func_84367660, 0x144, ft, 18, 16)
-#pragma REWRITE_FUNCTION_COP1_REGISTER(func_84367660, 0x174, ft, 18, 16)
-#pragma REWRITE_FUNCTION_COP1_REGISTER(func_84367660, 0x174, fs, 18, 16)
-#pragma REWRITE_FUNCTION_COP1_REGISTER(func_84367660, 0x21C, ft, 18, 16)
-#pragma REWRITE_FUNCTION_COP1_REGISTER(func_84367660, 0x234, ft, 18, 16)
-#pragma REWRITE_FUNCTION_COP1_REGISTER(func_84367660, 0x234, fd, 16, 12)
-#pragma REWRITE_FUNCTION_COP1_REGISTER(func_84367660, 0x23C, fd, 12, 16)
-#pragma REWRITE_FUNCTION_COP1_REGISTER(func_84367660, 0x244, fs, 12, 16)
-#pragma REWRITE_FUNCTION_COP1_REGISTER(func_84367660, 0x248, ft, 16, 12)
-#pragma REWRITE_FUNCTION_COP1_REGISTER(func_84367660, 0x248, fs, 16, 12)
-#pragma REWRITE_FUNCTION_COP1_REGISTER(func_84367660, 0x278, fs, 12, 16)
-#pragma REWRITE_FUNCTION_COP1_REGISTER(func_84367660, 0x334, fs, 16, 12)
-#pragma REWRITE_FUNCTION_COP1_REGISTER(func_84367660, 0x3D8, fs, 16, 12)
-#pragma REWRITE_FUNCTION_COP1_REGISTER(func_84367660, 0x460, ft, 16, 12)
-#pragma REWRITE_FUNCTION_COP1_REGISTER(func_84367660, 0x4B8, ft, 16, 12)
-#pragma REWRITE_FUNCTION_COP1_REGISTER(func_84367660, 0x4C8, ft, 12, 16)
-#pragma REWRITE_FUNCTION_COP1_REGISTER(func_84367660, 0x4F8, ft, 12, 16)
-
 static Gfx D_84389780[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_1CYCLE),
@@ -56,12 +26,13 @@ static Vtx D_84389810[] = {
     VTX(0, -20, 0, 1024, 0, 0xFF, 0xFF, 0xFF, 0x00),   VTX(30, -20, 0, 1024, 0, 0xFF, 0xFF, 0xFF, 0x00),
 };
 
+#ifdef NON_MATCHING
 Gfx* func_84367660(Gfx* arg0, Vec3f* arg1, Vec3f* arg2, Vec3f* arg3, f32 arg4, u8 arg5, u8 arg6, u8 arg7, u8 arg8) {
     s32 i;
     Vtx* sp1E8;
     s32 pad[2];
     Mtx* sp1DC;
-    volatile s32 pad2[42];
+    s32 pad2[42];
     f32 sp130;
     f32 sp12C;
     f32 sp128;
@@ -71,7 +42,7 @@ Gfx* func_84367660(Gfx* arg0, Vec3f* arg1, Vec3f* arg2, Vec3f* arg3, f32 arg4, u
     f32 sp80;
     f32 sp7C;
     f32 sp78;
-    volatile s32 pad4[7];
+    s32 pad4[7];
     Vtx* var_a1;
     Vtx* temp_v1;
     f32 a1_x;
@@ -203,3 +174,6 @@ Gfx* func_84367660(Gfx* arg0, Vec3f* arg1, Vec3f* arg2, Vec3f* arg3, f32 arg4, u
 
     return arg0;
 }
+#else
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/battle_engine/battle_engine_351F20/func_84367660.s")
+#endif
