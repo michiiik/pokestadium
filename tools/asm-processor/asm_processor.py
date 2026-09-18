@@ -1511,6 +1511,10 @@ def run_wrapped(argv, outfile, functions):
             with open(args.filename, encoding=args.input_enc) as f:
                 functions = parse_source(f, opts, out_dependencies=[])
         if not functions and not args.force:
+            # SWAP_FUNCTION_WORDS is independent of GLOBAL_ASM; a file whose
+            # last GLOBAL_ASM function has been decompiled must still get its
+            # word swaps applied.
+            apply_swap_function_words(args.objfile, args.filename, args.input_enc)
             return
         asm_prelude = b''
         if args.asm_prelude:
