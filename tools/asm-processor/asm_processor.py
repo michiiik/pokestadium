@@ -20,6 +20,15 @@ SWAP_FUNCTION_WORDS = re.compile(
     re.MULTILINE,
 )
 
+REWRITE_FUNCTION_STACK_OFFSET = re.compile(
+    r"^[ \t]*#pragma\s+REWRITE_FUNCTION_STACK_OFFSET\s*\(\s*"
+    r"([A-Za-z_]\w*)\s*,\s*(0x[0-9A-Fa-f]+|[0-9]+)\s*,\s*"
+    r"([+-]?(?:0x[0-9A-Fa-f]+|[0-9]+))\s*,\s*"
+    r"([+-]?(?:0x[0-9A-Fa-f]+|[0-9]+))\s*\)"
+    r"[ \t]*$",
+    re.MULTILINE,
+)
+
 EI_NIDENT     = 16
 EI_CLASS      = 4
 EI_DATA       = 5
@@ -456,6 +465,74 @@ def apply_swap_function_words(objfile_name, source_name, input_enc):
         text_data[start:start + 4] = objfile.fmt.pack('I', expected_second)
         text_data[start + 4:start + 8] = objfile.fmt.pack('I', expected_first)
 
+    text.data = bytes(text_data)
+    objfile.write(objfile_name)
+
+
+def apply_rewrite_function_stack_offsets(objfile_name, source_name, input_enc):
+    with open(source_name, encoding=input_enc) as f:
+        patches = [
+            (name, int(offset, 0), int(expected, 0), int(replacement, 0))
+            for name, offset, expected, replacement in REWRITE_FUNCTION_STACK_OFFSET.findall(f.read())
+        ]
+    if not patches:
+        return
+
+    with open(objfile_name, 'rb') as f:
+        objfile = ElfFile(f.read())
+    text = objfile.find_section('.text')
+    if text is None:
+        raise Failure('REWRITE_FUNCTION_STACK_OFFSET requires a .text section')
+
+    reloc_offsets = {
+        rel.r_offset
+        for reltab in text.relocated_by
+        for rel in reltab.relocations
+    }
+    symbols = {
+        symbol.name: symbol
+        for symbol in objfile.symtab.symbol_entries
+        if symbol.name
+    }
+    text_data = bytearray(text.data)
+    validated = []
+    for function, offset, expected, replacement in patches:
+        symbol = symbols.get(function)
+        if symbol is None or symbol.st_shndx != text.index:
+            raise Failure('{}: function symbol is not in .text'.format(function))
+        if offset < 0 or offset % 4:
+            raise Failure('{}: stack-offset rewrite 0x{:X} is not word-aligned'.format(function, offset))
+        if symbol.st_size and offset + 4 > symbol.st_size:
+            raise Failure('{}: stack-offset rewrite 0x{:X} is outside the function'.format(function, offset))
+        start = symbol.st_value + offset
+        if start < 0 or start + 4 > len(text_data):
+            raise Failure('{}: stack-offset rewrite 0x{:X} is outside .text'.format(function, offset))
+        if start in reloc_offsets:
+            raise Failure('{}: stack-offset rewrite 0x{:X} has a relocation'.format(function, offset))
+        word = objfile.fmt.unpack('I', text_data[start:start + 4])[0]
+        opcode = word >> 26
+        base = (word >> 21) & 0x1F
+        if opcode not in (0x31, 0x39) or base != 29:
+            raise Failure(
+                '{}: stack-offset rewrite 0x{:X} is not an lwc1/swc1 from $sp ({:08X})'.format(
+                    function, offset, word
+                )
+            )
+        immediate = word & 0xFFFF
+        if immediate & 0x8000:
+            immediate -= 0x10000
+        if immediate != expected:
+            raise Failure(
+                '{}: expected stack offset {:+#x} at 0x{:X}, found {:+#x}'.format(
+                    function, expected, offset, immediate
+                )
+            )
+        if replacement < -0x8000 or replacement > 0x7FFF:
+            raise Failure('{}: stack offset at 0x{:X} overflows a signed 16-bit immediate'.format(function, offset))
+        validated.append((start, (word & 0xFFFF0000) | (replacement & 0xFFFF)))
+
+    for start, replacement in validated:
+        text_data[start:start + 4] = objfile.fmt.pack('I', replacement)
     text.data = bytes(text_data)
     objfile.write(objfile_name)
 
@@ -1518,6 +1595,7 @@ def run_wrapped(argv, outfile, functions):
                 asm_prelude = f.read()
         fixup_objfile(args.objfile, functions, asm_prelude, args.assembler, args.output_enc, args.drop_mdebug_gptab, args.convert_statics)
         apply_swap_function_words(args.objfile, args.filename, args.input_enc)
+        apply_rewrite_function_stack_offsets(args.objfile, args.filename, args.input_enc)
 
 def run(argv, outfile=sys.stdout.buffer, functions=None):
     try:
