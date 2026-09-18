@@ -250,6 +250,7 @@ void GeoOverlay_DrawFadeQuad(unk_D_86002F34_00C_0CC* arg0, unk_D_86002F34_00C_04
     }
 }
 
+#pragma SWAP_FUNCTION_WORDS(func_80012870, 0xD0, 0xAFB80024, 0x00063403)
 void func_80012870(Vtx* arg0, unk_D_86002F34_00C_0CC* arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, s16 arg6,
                    s16 arg7) {
     f32 temp_fa0;
