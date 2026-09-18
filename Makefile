@@ -157,7 +157,7 @@ $(error Unable to find $(MIPS_BINUTILS_PREFIX)ld. Please install or build MIPS b
 endif
 
 
-CC              := tools/ido/$(DETECTED_OS)/7.1/cc
+CC              := tools/cc_wrapper.py
 CC_OLD          := tools/ido/$(DETECTED_OS)/5.3/cc
 
 AS              := $(MIPS_BINUTILS_PREFIX)as
