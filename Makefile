@@ -469,6 +469,7 @@ $(BUILD_DIR)/%.o: %.c
 	$(call print,Compiling:,$<,$@)
 	$(V)$(CC_CHECK) $(CC_CHECK_FLAGS) $(IINC) -I $(dir $*) $(CHECK_WARNINGS) $(BUILD_DEFINES) $(COMMON_DEFINES) $(RELEASE_DEFINES) $(GBI_DEFINES) $(LIBULTRA_DEFINES) $(C_DEFINES) $(MIPS_BUILTIN_DEFS) -o $@ $<
 	$(V)$(PREPROCESS) $(CC) -c $(CFLAGS) $(BUILD_DEFINES) $(IINC) $(WARNINGS) $(MIPS_VERSION) $(ENDIAN) $(COMMON_DEFINES) $(RELEASE_DEFINES) $(GBI_DEFINES) $(LIBULTRA_DEFINES) $(C_DEFINES) $(OPTFLAGS) -o $@ $<
+	$(V)if ! grep -q 'GLOBAL_ASM' "$<"; then $(PYTHON) tools/apply_pragma_patches.py "$@" "$<"; fi
 	$(V)$(OBJDUMP_CMD)
 	$(V)$(RM_MDEBUG)
 
