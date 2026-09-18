@@ -560,52 +560,42 @@ void Geo_NodeFog(GraphNode* arg0) {
     gDPSetColor(gDisplayListHead++, G_SETFOGCOLOR, arg->unk_1C);
 }
 
-#ifdef NON_MATCHING
 void func_80013D34(GraphNode* arg0) {
     unk_D_86002F34_alt4* arg = (unk_D_86002F34_alt4*)arg0;
-    Lights7* lights;
-    unk_D_86002F34_alt1* new_var;
     Light* light;
     Ambient* temp_a4;
 
     if (D_8006F090->unk_1C >= 7) {
-        // light = &lights->l[D_8006F090->unk_1C];
         return;
     }
 
-    new_var = D_8006F090;
-    lights = new_var->lights;
-    temp_a4 = &lights->a;
-
-    light = &lights->l[D_8006F090->unk_1C];
+    light = &D_8006F090->lights->l[D_8006F090->unk_1C];
+    temp_a4 = &D_8006F090->lights->a;
 
     *(u32*)light->l.col = arg->unk_18.rgba;
     *(u32*)light->l.colc = arg->unk_18.rgba;
 
-    light->l.dir[0] = (120.0f * COSS(arg->unk_1C)) * SINS(arg->unk_1E);
-    light->l.dir[1] = (120.0f) * SINS(arg->unk_1C);
-    light->l.dir[2] = (120.0f * COSS(arg->unk_1C)) * COSS(arg->unk_1E);
+    light->l.dir[0] = 120.0f * COSS(arg->unk_1C) * SINS(arg->unk_1E);
+    light->l.dir[1] = 120.0f * SINS(arg->unk_1C);
+    light->l.dir[2] = 120.0f * COSS(arg->unk_1C) * COSS(arg->unk_1E);
 
-    temp_a4->l.col[0] += ((arg->unk_18.r * arg->unk_18.a) / 100);
+    temp_a4->l.col[0] += (arg->unk_18.r * arg->unk_18.a) / 100;
     if (temp_a4->l.col[0] > 0xFF) {
         temp_a4->l.col[0] = 0xFF;
     }
 
-    temp_a4->l.col[1] += ((arg->unk_18.g * arg->unk_18.a) / 100);
+    temp_a4->l.col[1] += (arg->unk_18.g * arg->unk_18.a) / 100;
     if (temp_a4->l.col[1] > 0xFF) {
         temp_a4->l.col[1] = 0xFF;
     }
 
-    temp_a4->l.col[2] += ((arg->unk_18.b * arg->unk_18.a) / 100);
+    temp_a4->l.col[2] += (arg->unk_18.b * arg->unk_18.a) / 100;
     if (temp_a4->l.col[2] > 0xFF) {
         temp_a4->l.col[2] = 0xFF;
     }
 
     D_8006F090->unk_1C++;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/geo_render/func_80013D34.s")
-#endif
 
 void Geo_NodeType12Empty(UNUSED GraphNode* arg0) {
 }

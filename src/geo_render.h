@@ -3,6 +3,42 @@
 
 #include "global.h"
 
+typedef struct {
+    unsigned char col[3];
+    char pad1;
+    unsigned char colc[3];
+    char pad2;
+    signed char dir[3];
+    char pad3;
+} Light_t;
+
+typedef struct {
+    unsigned char col[3];
+    unsigned char kc;
+    unsigned char colc[3];
+    unsigned char kl;
+    short pos[3];
+    unsigned char kq;
+} PointLight_t;
+
+typedef struct {
+    unsigned char col[3];
+    char pad1;
+    unsigned char colc[3];
+    char pad2;
+} Ambient_t;
+
+typedef union {
+    Light_t l;
+    PointLight_t p;
+    long long int force_structure_alignment[2];
+} Light;
+
+typedef union {
+    Ambient_t l;
+    long long int force_structure_alignment[1];
+} Ambient;
+
 typedef struct unk_D_800AB970 {
     /* 0x000 */ Vec3f unk_000[1];
     /* 0x00C */ char unk00C[0x174];

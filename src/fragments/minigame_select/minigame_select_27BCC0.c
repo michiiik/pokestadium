@@ -1388,15 +1388,14 @@ void MiniGameSelect_ChainWidget(unk_D_8250A228* arg0, unk_D_8250A228* arg1) {
     }
 }
 
-#ifdef NON_MATCHING
-void func_82501B18(unk_D_8250A228* arg0, s16 arg1) {
-    unk_D_8250A228* tmp;
+void func_82501B18(unk_D_8250A228* arg0, s16 arg1) { while (1) {
+    // unk_D_8250A228* tmp;
+    s32 pad;
     s32 var_v0;
     s32 tt[1];
     s32 i;
-
-    while (true) {
-        arg0->unk_02 = arg1;
+    // pad = arg1;
+        arg0->unk_02 = (s32)arg1;
 
         if ((arg0 == NULL) || (arg0->unk_00 == 0)) {
             break;
@@ -1468,9 +1467,6 @@ void func_82501B18(unk_D_8250A228* arg0, s16 arg1) {
         arg0 = tt[0];
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/minigame_select/minigame_select_27BCC0/func_82501B18.s")
-#endif
 
 void MiniGameSelect_SetWidgetTargetState(unk_D_8250A228* arg0, s16 arg1, s32 arg2) {
     if (arg2 != 0) {
