@@ -2869,4 +2869,3 @@ s32 Battle_MapCategoryIdToCompactIndex(u8 arg0) {
 void Audio_QueueSequenceIdWrapper(u32 arg0) {
     Audio_QueueSequenceId(arg0);
 }
- */
