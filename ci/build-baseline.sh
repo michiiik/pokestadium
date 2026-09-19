@@ -109,6 +109,38 @@ fi
 build_jobs="$(sysctl -n hw.ncpu 2>/dev/null || nproc)"
 ( cd "$ci_checkout" && make RUN_CC_CHECK=0 COMPARE=0 -j"$build_jobs" rom )
 
+# The staged objects, map and libultra archive are only useful to the PR gate
+# if relinking them actually reproduces retail. COMPARE=0 above keeps make from
+# treating a mismatch as a build failure, so verify it here instead -- without
+# this check a persistent checkout that has quietly accumulated a bad
+# incremental artifact bakes straight into the image, and then every PR that
+# touches only src/*.c fails the gate on the incremental relink path while a
+# forced full rebuild of the very same tree still passes. (That is exactly how
+# a parallel-build race that left build/lib/libultra.a missing one freshly
+# compiled member -- vimodefpallpn1.o, 0x50 bytes of .data -- went unnoticed:
+# the image also ships a retail seed ROM at build/pokestadium-us.z64, so the
+# baked tree looks healthy until something forces a relink.)
+verify_baseline_rom() {
+    ( cd "$ci_checkout" \
+        && tr -d '\r' < baseroms/us/checksum.md5 | md5sum -c - >/dev/null 2>&1 )
+}
+
+if ! verify_baseline_rom; then
+    echo "build-baseline.sh: baseline ROM does not match retail; the persistent" >&2
+    echo "build-baseline.sh: checkout has a stale incremental artifact. Rebuilding" >&2
+    echo "build-baseline.sh: libultra and relinking before staging." >&2
+    ( cd "$ci_checkout" && make libclean )
+    ( cd "$ci_checkout" && make RUN_CC_CHECK=0 COMPARE=0 -j"$build_jobs" rom )
+    if ! verify_baseline_rom; then
+        echo "build-baseline.sh: baseline ROM still does not match retail after a" >&2
+        echo "build-baseline.sh: libultra rebuild. Refusing to bake a baseline image" >&2
+        echo "build-baseline.sh: the PR gate cannot trust. Investigate, or recover" >&2
+        echo "build-baseline.sh: with: make -C $ci_checkout clean libclean" >&2
+        exit 1
+    fi
+fi
+echo "build-baseline.sh: baseline ROM matches retail" >&2
+
 # --- Stage a throwaway Docker build context from the persistent checkout ---
 staging_dir="$(mktemp -d "${TMPDIR:-/tmp}/pokestadium-baseline-build.XXXXXX")"
 cleanup() { rm -rf "$staging_dir"; }
