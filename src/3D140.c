@@ -2838,8 +2838,16 @@ void Audio_UpdateBattleAudioFrame(void) {
  * `&= 0` / `-= x` / `^= x` (folded too early), and one- or two-trip loops.
  * `volatile` does force a register, but IDO then allocates $t6 and schedules
  * the `addiu` after the two D_8007839C stores, which is not the target.
+ * Also ruled out (2026-09-19): assignment chains
+ * (`D_800FCCA0 = D_800FCCA1 = 0;` etc. materialise $a0 correctly but keep
+ * the semantic reload `lb` of the stored byte), duplicate/dead stores (IDO
+ * never eliminates the redundant global store, and the grown function
+ * overflows an `R_MIPS_PC16` in libgsm), `x - x`, `x ^ x`, `x -= x`,
+ * `*(&x) = 0`, `(x, 0)`, `x && 0`, constant ternaries, and `x >> 8`/
+ * `x >>= 8` (all keep a real load or fold early). The `*=` form below is
+ * therefore landed deliberately: it is the only source family that reaches
+ * the target's register-materialised store.
  */
-#ifdef NON_MATCHING
 void func_80041A98(void) {
     s32 i;
     s32 j;
@@ -2852,7 +2860,7 @@ void func_80041A98(void) {
     }
     D_8007839C[0] = 0;
     D_8007839C[1] = 0;
-    D_800FCCA1 = 0;
+    D_800FCCA1 *= 0;
     D_800FCCA0 = 0;
     D_800FCCA2 = 0;
     D_800FCCA4 = 0;
@@ -2889,9 +2897,6 @@ void func_80041A98(void) {
         D_800FCCD6[i] = 0;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/3D140/func_80041A98.s")
-#endif
 
 void Audio_QueueSequenceId(u32 arg0) {
     OSIntMask mask;
