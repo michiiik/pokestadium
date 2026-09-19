@@ -3,8 +3,8 @@
 # pokestadium decompilation coverage
 
 <!-- AUTO_COVERAGE:START -->
-- Functions with C implementations: **7,349 / 7,437 (98.8%)**
-- Remaining decompilable `GLOBAL_ASM` owners: **88** (across 44 source files)
+- Functions with C implementations: **7,351 / 7,437 (98.8%)**
+- Remaining decompilable `GLOBAL_ASM` owners: **86** (across 43 source files)
 - Separately managed `hasm` assembly segments: **9**
 <!-- AUTO_COVERAGE:END -->
 
@@ -42,7 +42,7 @@ The function denominator covers C source owners and `GLOBAL_ASM` stubs. `hasm` e
 | `src/fragments/lab_pc_list/lab_pc_list_1CEA00.c` | 2 |
 | `src/fragments/lab_pc_list/lab_pc_list_1D7B40.c` | 1 |
 | `src/fragments/magikarp_game/magikarp_game.c` | 1 |
-| `src/fragments/minigame_select/minigame_select_27BCC0.c` | 2 |
+| `src/fragments/minigame_select/minigame_select_27BCC0.c` | 1 |
 | `src/fragments/particle_data_library/particle_data_library_2558B0.c` | 1 |
 | `src/fragments/particle_data_library/particle_data_library_2577F0.c` | 1 |
 | `src/fragments/particle_data_library/particle_data_library_257AF0.c` | 1 |
@@ -58,7 +58,6 @@ The function denominator covers C source owners and `GLOBAL_ASM` stubs. `hasm` e
 | `src/fragments/widget_toolkit/widget_toolkit_2.c` | 3 |
 | `src/fragments/widget_tree/widget_tree.c` | 4 |
 | `src/gb_audio_render.c` | 4 |
-| `src/geo_render.c` | 1 |
 
 ## Separately managed assembly segments
 
