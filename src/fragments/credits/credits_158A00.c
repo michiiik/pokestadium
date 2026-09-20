@@ -1569,14 +1569,13 @@ void func_86A013C8(u8 arg0, u8 arg1, unk_D_86A03014* arg2) {
 #endif
 
 /**
- * Same bss-allocation problem as func_86A013C8, plus one register-allocation difference:
- * the target moves temp_v0 through an extra register (addiu t5, v0, 0; subu t9, t5, v1).
- * Note that making D_86A0621C a block-scope static here *does* land it at 0x86A0621C, so
- * long as D_86A06218 stays at file scope.
+ * The wrap-around arm widens the counter to 64 bits before subtracting, which is what makes
+ * IDO stage the value through the low half of a register pair (addiu t5, v0, 0) and only then
+ * do the 32-bit subtract (subu t9, t5, v1). The two chained 0x100000000 subtractions cancel
+ * out of the low word (the result is truncated to 8 bits anyway), but they are what puts the
+ * pair at t4:t5 instead of t2:t3.
  */
-#ifdef NON_MATCHING
 void func_86A01490(void) {
-    static u32 D_86A0621C;
     s32 temp_v0 = D_800A62E0.unk_A34;
 
     if (D_86A06212 == 0) {
@@ -1584,15 +1583,10 @@ void func_86A01490(void) {
     } else if ((u32) D_86A0621C < (u32) temp_v0) {
         D_86A06210 = temp_v0 - D_86A0621C;
     } else {
-        temp_v0++;
-        temp_v0--;
-        D_86A06210 = temp_v0 - D_86A0621C;
+        D_86A06210 = ((u64) (u32) temp_v0 - 0x100000000ULL - 0x100000000ULL) - D_86A0621C;
     }
     D_86A0621C = temp_v0;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/credits/credits_158A00/func_86A01490.s")
-#endif
 
 void Credits_DrawRoleList(void) {
     u8 var_a1;
