@@ -303,14 +303,11 @@ void Gallery_AlbumDrawCornerMarkers(s32 arg0, s32 arg1, s32 arg2) {
     Gfx_DrawTexturedRectClipped((arg0 + arg2) - 0x10, arg1, 0x10, 0x10, 0, 0, 0x400, 0x400, 0);
 }
 
-#ifdef NON_MATCHING
 void func_83500FE8(unk_D_83407B38* arg0, s32 arg1, s32 arg2) {
-    s32 temp_s1;
-    s32 temp_v1;
     char* temp_v0;
-    s32 pad;
-    s32 tmp;
-    char sp30[4];
+    s32 temp_v1;
+    s32 temp_s1;
+    char sp30[12];
 
     Font_BeginTranslucentTextRendering();
     Font_EnableTwoCycleTexturing();
@@ -320,10 +317,8 @@ void func_83500FE8(unk_D_83407B38* arg0, s32 arg1, s32 arg2) {
 
     temp_v0 = Gallery_GetUiString(0x3A);
 
-    tmp = Font_MeasureTextExtent(0, 0, temp_v0);
-    temp_v1 = ((-Font_MeasureTextExtent(0, 0, "99/99") - tmp) + 0xDF) / 2;
+    temp_v1 = (0xDF - (Font_MeasureTextExtent(0, 0, temp_v0) + Font_MeasureTextExtent(0, 0, "99/99"))) / 2;
     temp_s1 = temp_v1 + 0x133;
-
     Font_Printf((arg1 + temp_v1) + 0x133, arg2 + 0x108, temp_v0);
     temp_s1 += Font_MeasureTextExtent(0, 0, temp_v0) + Font_MeasureTextExtent(0, 0, "99/99");
     temp_s1 += 0x14;
@@ -339,9 +334,6 @@ void func_83500FE8(unk_D_83407B38* arg0, s32 arg1, s32 arg2) {
     Font_DisableTwoCycleTexturing();
     Font_EndTexturedTextRendering();
 }
-#else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gallery_album/gallery_album/func_83500FE8.s")
-#endif
 
 void Gallery_AlbumDrawThumbnailFrame(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     UNUSED s32 pad[2];
