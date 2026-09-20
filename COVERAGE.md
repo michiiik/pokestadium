@@ -3,8 +3,8 @@
 # pokestadium decompilation coverage
 
 <!-- AUTO_COVERAGE:START -->
-- Functions with C implementations: **7,354 / 7,437 (98.9%)**
-- Remaining decompilable `GLOBAL_ASM` owners: **83** (across 43 source files)
+- Functions with C implementations: **7,357 / 7,437 (98.9%)**
+- Remaining decompilable `GLOBAL_ASM` owners: **80** (across 42 source files)
 - Separately managed `hasm` assembly segments: **9**
 <!-- AUTO_COVERAGE:END -->
 
@@ -25,7 +25,7 @@ The function denominator covers C source owners and `GLOBAL_ASM` stubs. `hasm` e
 | `src/fragments/battle_engine/battle_engine_359F90.c` | 2 |
 | `src/fragments/battle_engine/battle_engine_361050.c` | 2 |
 | `src/fragments/clefairy_game/clefairy_game.c` | 1 |
-| `src/fragments/credits/credits_158A00.c` | 2 |
+| `src/fragments/credits/credits_158A00.c` | 1 |
 | `src/fragments/credits/credits_15A2B0.c` | 1 |
 | `src/fragments/demo_scenes/demo_scenes_169510.c` | 1 |
 | `src/fragments/gallery_album/gallery_album.c` | 2 |
@@ -37,7 +37,6 @@ The function denominator covers C source owners and `GLOBAL_ASM` stubs. `hasm` e
 | `src/fragments/gb_tower_emulator/gb_tower_emulator_86CB0.c` | 4 |
 | `src/fragments/lab_pc/lab_pc_1A9780.c` | 3 |
 | `src/fragments/lab_pc/lab_pc_1AE680.c` | 3 |
-| `src/fragments/lab_pc/lab_pc_1B4EA0.c` | 1 |
 | `src/fragments/lab_pc/lab_pc_1BCF10.c` | 2 |
 | `src/fragments/lab_pc_list/lab_pc_list_1CEA00.c` | 2 |
 | `src/fragments/lab_pc_list/lab_pc_list_1D7B40.c` | 1 |
@@ -55,7 +54,7 @@ The function denominator covers C source owners and `GLOBAL_ASM` stubs. `hasm` e
 | `src/fragments/trade_machine/trade_machine_291D60.c` | 1 |
 | `src/fragments/trade_machine/trade_machine_2942C0.c` | 1 |
 | `src/fragments/transfer_pak_select/transfer_pak_select.c` | 1 |
-| `src/fragments/widget_toolkit/widget_toolkit_2.c` | 3 |
+| `src/fragments/widget_toolkit/widget_toolkit_2.c` | 2 |
 | `src/fragments/widget_tree/widget_tree.c` | 4 |
 | `src/gb_audio_render.c` | 4 |
 
