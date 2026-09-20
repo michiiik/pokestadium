@@ -1572,18 +1572,15 @@ void GbAudio_SetAlternateRendererEnabled(s32);
 void func_812033F4(s32, s32, OSId, s32, OSMesgQueue*, u16 (*arg5)[6][0x640]);
 #pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/func_812033F4.s")
 
-#ifdef NON_MATCHING
 void func_81203C58(unk_D_8122B2C0* arg0) {
-    s32 i;
     u16* var_s4;
     u32 var_s5;
-    s32 sp44;
     s32 sp5C;
     s32 sp58;
     s32 var_s2;
-    s32 var_s3;
     u8* var_v0;
     u8* var_v1;
+    s32 i;
 
     if (arg0->unk_5D70[2] != NULL) {
         var_s4 = (u16*)arg0->unk_5D70[2];
@@ -1592,17 +1589,15 @@ void func_81203C58(unk_D_8122B2C0* arg0) {
             sp58 = *var_s4 & 0xFF;
             sp5C = *var_s4 / 0x100;
             Dma_WriteChunks((u32)((u8*)arg0->unk_53BC + 0xEC000), var_s5, var_s4[1] + var_s5, 0);
-            sp44 = sp58 << 14;
             var_s5 += var_s4[1];
             var_s4 += 2;
-            Yay0_Decompress((u8*)arg0->unk_53BC + 0xEC000, (u8*)arg0->unk_53BC + sp44);
+            Yay0_Decompress((u8*)arg0->unk_53BC + 0xEC000, (u8*)arg0->unk_53BC + (sp58 << 14));
             for (var_s2 = 0; var_s2 < sp5C; var_s2++) {
-                var_s3 = var_s2 + 1;
-                if (var_s3 >= arg0->unk_5DC6) {
+                if ((var_s2 + 1) >= arg0->unk_5DC6) {
                     Dma_WriteChunks((u32)((u8*)arg0->unk_53BC + 0xF0000), var_s5, var_s4[0] + var_s5, 0);
                     Yay0_Decompress((u8*)arg0->unk_53BC + 0xF0000, (u8*)arg0->unk_53BC + 0xEC000);
                     var_v1 = (u8*)arg0->unk_53BC + 0xEC000;
-                    var_v0 = (u8*)arg0->unk_53BC + sp44;
+                    var_v0 = (u8*)arg0->unk_53BC + (sp58 << 14);
                     for (i = 0; i != 0x1000; i++) {
                         var_v0[i] = var_v1[i] ^ var_v0[i];
                     }
@@ -1614,10 +1609,6 @@ void func_81203C58(unk_D_8122B2C0* arg0) {
         } while (*var_s4);
     }
 }
-#else
-void func_81203C58(unk_D_8122B2C0*);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/func_81203C58.s")
-#endif
 
 void GbEmu_ApplyButtonMapping(void) {
   if ((gGbEmuButtonBindingSelections.unk_01 == gGbEmuButtonBindingSelections.unk_00) || (gGbEmuButtonBindingSelections.unk_00 >= 5) || (gGbEmuButtonBindingSelections.unk_01 >= 5)) {
