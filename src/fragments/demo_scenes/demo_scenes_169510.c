@@ -41,28 +41,44 @@ void MtxF_ScaleUpperRows(MtxF* arg0, f32 arg1) {
     arg0->mf[2][2] *= arg1;
 }
 
-#ifdef NON_MATCHING
-void func_86B09F64(MtxF* arg0, f32 arg1, f32 arg2, f32 arg3, u16 arg4, u16 arg5) {
-    arg0->mf[0][0] = (COSS(arg4) * COSS(arg5)) + (SINS(arg4) * SINS(arg4) * SINS(arg5));
-    arg0->mf[1][0] = (-COSS(arg4) * SINS(arg5)) + (SINS(arg4) * SINS(arg4) * COSS(arg5));
-    arg0->mf[2][0] = COSS(arg4) * SINS(arg4);
-    arg0->mf[3][0] = arg1;
+void func_86B09F64(MtxF* arg0, Vec3f arg1, Vec3s arg2) {
+    UNUSED s32 pad[2];
+    f32 temp_fa0;
+    f32 temp_fa1;
+    f32 temp_ft4;
+    f32 temp_ft5;
+    f32 temp_fv0;
+    f32 temp_fv1;
+    f32 sp0;
 
-    arg0->mf[0][1] = COSS(arg4) * SINS(arg5);
-    arg0->mf[2][1] = -SINS(arg4);
-    arg0->mf[1][1] = COSS(arg4) * COSS(arg5);
-    arg0->mf[3][1] = arg2;
+    temp_fv0 = SINS(arg2.x);
+    temp_fv1 = COSS(arg2.x);
 
-    arg0->mf[0][2] = (SINS(arg4) * COSS(arg4) * SINS(arg5)) + (-SINS(arg4) * COSS(arg5));
-    arg0->mf[1][2] = (SINS(arg4) * COSS(arg4) * COSS(arg5)) + (SINS(arg4) * SINS(arg5));
-    arg0->mf[2][2] = COSS(arg4) * COSS(arg4);
-    arg0->mf[3][2] = arg3;
+    temp_fa0 = SINS(arg2.y);
+    temp_fa1 = COSS(arg2.y);
+
+    temp_ft4 = SINS(arg2.z);
+    temp_ft5 = COSS(arg2.z);
+
+    sp0 = temp_fv0 * temp_fa0;
+    arg0->mf[0][0] = (temp_fa1 * temp_ft5) + (sp0 * temp_ft4);
+    arg0->mf[1][0] = (-temp_fa1 * temp_ft4) + (sp0 * temp_ft5);
+    arg0->mf[2][0] = temp_fv1 * temp_fa0;
+    arg0->mf[3][0] = arg1.x;
+
+    arg0->mf[0][1] = temp_fv1 * temp_ft4;
+    arg0->mf[1][1] = temp_fv1 * temp_ft5;
+    arg0->mf[2][1] = -temp_fv0;
+    arg0->mf[3][1] = arg1.y;
+
+    sp0 = temp_fv0 * temp_fa1;
+    arg0->mf[0][2] = (-temp_fa0 * temp_ft5) + (sp0 * temp_ft4);
+    arg0->mf[1][2] = (temp_fa0 * temp_ft4) + (sp0 * temp_ft5);
+    arg0->mf[2][2] = temp_fv1 * temp_fa1;
+    arg0->mf[3][2] = arg1.z;
 
     arg0->mf[0][3] = 0.0f;
     arg0->mf[1][3] = 0.0f;
     arg0->mf[2][3] = 0.0f;
     arg0->mf[3][3] = 1.0f;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/demo_scenes/demo_scenes_169510/func_86B09F64.s")
-#endif
