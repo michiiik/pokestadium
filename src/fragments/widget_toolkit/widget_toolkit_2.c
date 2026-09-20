@@ -11,6 +11,7 @@
 #include "src/ui_graphics.h"
 #include "src/gfx_rect.h"
 #include "src/gfx_buffer.h"
+#include "src/scheduler.h"
 
 u32 D_878064F0[] = {
     0x00010001, 0x00010001, 0x00010001, 0x00010001, 0x000100DD, 0x00DD00DD, 0x00DD00DD, 0x00DD00DD,
@@ -1339,26 +1340,26 @@ void Widget_PauseMenuResetWinStreak(void) {
     }
 }
 
-#ifdef NON_MATCHING
+/**
+ * Same shape as func_86A01490 in credits_158A00.c: the wrap-around arm widens the counter to
+ * 64 bits before subtracting, which makes IDO stage the value through the low half of a
+ * register pair (addiu t5, v0, 0) before the 32-bit subtract (subu t9, t5, v1).
+ */
 void func_87802E58(void) {
     static u32 D_8780FE38;
 
-    u32 v0 = D_800A6CF4.unk_20;
+    s32 v0 = D_800A62E0.unk_A34;
 
     if (D_8780FCA1 == 0) {
         D_8780FCA1 = 1;
-    } else if (D_8780FE38 < v0) {
+    } else if ((u32) D_8780FE38 < (u32) v0) {
         D_8780FCA0 = v0 - D_8780FE38;
     } else {
-        D_8780FCA0 = v0 - D_8780FE38;
+        D_8780FCA0 = ((u64) (u32) v0 - 0x100000000ULL - 0x100000000ULL) - D_8780FE38;
     }
 
     D_8780FE38 = v0;
 }
-#else
-static u32 D_8780FE38;
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/widget_toolkit/widget_toolkit_2/func_87802E58.s")
-#endif
 
 void Widget_PauseMenuTrigger(s16 arg0) {
     switch (arg0) {
