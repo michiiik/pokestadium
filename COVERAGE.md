@@ -3,9 +3,9 @@
 # pokestadium decompilation coverage
 
 <!-- AUTO_COVERAGE:START -->
-- Functions with C implementations: **7,347 / 7,437 (98.8%)**
-- Remaining decompilable `GLOBAL_ASM` owners: **90** (across 45 source files)
-- Separately managed `hasm` assembly segments: **8**
+- Functions with C implementations: **7,354 / 7,437 (98.9%)**
+- Remaining decompilable `GLOBAL_ASM` owners: **83** (across 43 source files)
+- Separately managed `hasm` assembly segments: **9**
 <!-- AUTO_COVERAGE:END -->
 
 The function denominator covers C source owners and `GLOBAL_ASM` stubs. `hasm` entries are deliberately managed assembly segments, not unported C-function owners, so they are reported separately and excluded from the decompilation backlog. Total function count is derived from the retail linker map and retained from the trusted baseline. Regenerate with:
@@ -16,8 +16,7 @@ The function denominator covers C source owners and `GLOBAL_ASM` stubs. `hasm` e
 | File | Remaining owners |
 | --- | ---: |
 | `src/33FE0.c` | 4 |
-| `src/3D140.c` | 5 |
-| `src/animation_double_buffer.c` | 1 |
+| `src/3D140_2.c` | 3 |
 | `src/audio_stream.c` | 1 |
 | `src/fragments/battle_engine/battle_engine_2EC3C0.c` | 2 |
 | `src/fragments/battle_engine/battle_engine_34A420.c` | 1 |
@@ -35,7 +34,7 @@ The function denominator covers C source owners and `GLOBAL_ASM` stubs. `hasm` e
 | `src/fragments/gallery_snap/gallery_snap.c` | 1 |
 | `src/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0.c` | 13 |
 | `src/fragments/gb_tower_emulator/gb_tower_emulator_86920.c` | 1 |
-| `src/fragments/gb_tower_emulator/gb_tower_emulator_86CB0.c` | 5 |
+| `src/fragments/gb_tower_emulator/gb_tower_emulator_86CB0.c` | 4 |
 | `src/fragments/lab_pc/lab_pc_1A9780.c` | 3 |
 | `src/fragments/lab_pc/lab_pc_1AE680.c` | 3 |
 | `src/fragments/lab_pc/lab_pc_1B4EA0.c` | 1 |
@@ -43,7 +42,7 @@ The function denominator covers C source owners and `GLOBAL_ASM` stubs. `hasm` e
 | `src/fragments/lab_pc_list/lab_pc_list_1CEA00.c` | 2 |
 | `src/fragments/lab_pc_list/lab_pc_list_1D7B40.c` | 1 |
 | `src/fragments/magikarp_game/magikarp_game.c` | 1 |
-| `src/fragments/minigame_select/minigame_select_27BCC0.c` | 2 |
+| `src/fragments/minigame_select/minigame_select_27BCC0.c` | 1 |
 | `src/fragments/particle_data_library/particle_data_library_2558B0.c` | 1 |
 | `src/fragments/particle_data_library/particle_data_library_2577F0.c` | 1 |
 | `src/fragments/particle_data_library/particle_data_library_257AF0.c` | 1 |
@@ -59,7 +58,6 @@ The function denominator covers C source owners and `GLOBAL_ASM` stubs. `hasm` e
 | `src/fragments/widget_toolkit/widget_toolkit_2.c` | 3 |
 | `src/fragments/widget_tree/widget_tree.c` | 4 |
 | `src/gb_audio_render.c` | 4 |
-| `src/geo_render.c` | 2 |
 
 ## Separately managed assembly segments
 
@@ -67,11 +65,12 @@ These YAML `hasm` entries are kept as assembly by design and are not counted as 
 
 | YAML | ROM offset | Segment |
 | --- | ---: | --- |
+| `yamls/us/rom.yaml` | `0x0040` | `boot` |
 | `yamls/us/rom.yaml` | `0x1000` | `entry` |
+| `yamls/us/rom.yaml` | `0xC3D0` | `exception_set` |
 | `yamls/us/rom.yaml` | `0xC3F0` | `yay0` |
 | `yamls/us/rom.yaml` | `0xC4A0` | `abs` |
 | `yamls/us/rom.yaml` | `0xC910` | `../../src/libleo/bootstrap` |
-| `yamls/us/rom.yaml` | `0x49190` | `managed assembly` |
+| `yamls/us/rom.yaml` | `0x49190` | `libgsm` |
 | `yamls/us/rom.yaml` | `0x517A0` | `yay0 audio decoder` |
-| `yamls/us/rom.yaml` | `0x7F980` | `fragments/gb_tower_emulator/gb_tower_emulator_header` |
 | `yamls/us/rom.yaml` | `0x89020` | `fragments/gb_tower_emulator/gb_tower_emulator_code_asm` |

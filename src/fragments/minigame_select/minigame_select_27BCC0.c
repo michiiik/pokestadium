@@ -1388,89 +1388,78 @@ void MiniGameSelect_ChainWidget(unk_D_8250A228* arg0, unk_D_8250A228* arg1) {
     }
 }
 
-#ifdef NON_MATCHING
 void func_82501B18(unk_D_8250A228* arg0, s16 arg1) {
-    unk_D_8250A228* tmp;
     s32 var_v0;
-    s32 tt[1];
     s32 i;
 
-    while (true) {
-        arg0->unk_02 = arg1;
+    arg0->unk_02 = arg1;
+    if ((arg0 == NULL) || (arg0->unk_00 == 0)) {
+        return;
+    }
 
-        if ((arg0 == NULL) || (arg0->unk_00 == 0)) {
+    var_v0 = 0;
+
+    switch (arg0->unk_02) {
+        case 1:
+            arg0->unk_06 |= 1;
+            arg0->unk_08 = 0xA;
+            arg0->unk_3C.unk_01 |= 1;
+
+            arg0->unk_0E[0] = 0xFF;
+            arg0->unk_0E[1] = 0xFF;
+            arg0->unk_0E[2] = 0xFF;
+            arg0->unk_0E[3] = 0xFF;
+
+            if (arg0->unk_34 != NULL) {
+                var_v0 = 1;
+            }
+
+            if ((arg0->unk_00 == 4) && (D_8780FA48 == -1)) {
+                arg0->unk_06 |= 2;
+            }
             break;
-        }
 
-        var_v0 = 0;
-
-        switch (arg0->unk_02) {
-            case 1:
-                arg0->unk_06 |= 1;
-                arg0->unk_08 = 0xA;
-                arg0->unk_3C.unk_01 |= 1;
-
-                // clang-format off
-                for (i = 0; i < 4; i++) {                    arg0->unk_0E[i] = 0xFF;                }
-                // clang-format on
-
-                if (arg0->unk_34 != NULL) {
-                    var_v0 = 1;
-                }
-
-                if ((arg0->unk_00 == 4) && (D_8780FA48 == -1)) {
-                    arg0->unk_06 |= 2;
-                }
-                break;
-
-            case 3:
-                arg0->unk_08 = 0xA;
-                if (arg0->unk_34 != NULL) {
-                    var_v0 = 1;
-                }
-                break;
-
-            case 5:
-                arg0->unk_08 = 0xA;
-                arg0->unk_0C = D_8250A288.unk_06;
-
-                for (i = 0; i < 4; i++) {
-                    arg0->unk_0E[i] = 0xFF;
-                }
-
-                if (arg0->unk_34 != NULL) {
-                    var_v0 = 1;
-                }
-                break;
-
-            case 8:
-                arg0->unk_08 = 0xA;
-                if (arg0->unk_34 != NULL) {
-                    var_v0 = 1;
-                }
-                break;
-
-            case 7:
-                arg0->unk_08 = 0xA;
-                if (arg0->unk_34 != NULL) {
-                    var_v0 = 1;
-                }
-                arg0->unk_3C.unk_01 |= 1;
-                break;
-        }
-
-        if (var_v0 == 0) {
+        case 3:
+            arg0->unk_08 = 0xA;
+            if (arg0->unk_34 != NULL) {
+                var_v0 = 1;
+            }
             break;
-        }
 
-        tt[0] = arg0->unk_34;
-        arg1 = arg0->unk_02;
-        arg0 = tt[0];
+        case 5:
+            arg0->unk_08 = 0xA;
+            arg0->unk_0C = D_8250A288.unk_06;
+
+            for (i = 0; i < 4; i++) {
+                arg0->unk_0E[i] = 0xFF;
+            }
+
+            if (arg0->unk_34 != NULL) {
+                var_v0 = 1;
+            }
+            break;
+
+        case 8:
+            arg0->unk_08 = 0xA;
+            if (arg0->unk_34 != NULL) {
+                var_v0 = 1;
+            }
+            break;
+
+        case 7:
+            arg0->unk_08 = 0xA;
+            if (arg0->unk_34 != NULL) {
+                var_v0 = 1;
+            }
+            arg0->unk_3C.unk_01 |= 1;
+            break;
+    }
+
+    if (var_v0 != 0) {
+        func_82501B18(arg0->unk_34, arg0->unk_02);
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/minigame_select/minigame_select_27BCC0/func_82501B18.s")
-#endif
+
 
 void MiniGameSelect_SetWidgetTargetState(unk_D_8250A228* arg0, s16 arg1, s32 arg2) {
     if (arg2 != 0) {

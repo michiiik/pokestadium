@@ -325,6 +325,7 @@ vimodempalhan1.o
 vimodempalhaf1.o
 vimodempalhpn2.o
 vimodempalhpf2.o
+vimodefpallpn1.o
 pi.o
 pigettype.o
 pigetstat.o

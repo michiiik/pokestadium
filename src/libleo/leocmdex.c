@@ -3,9 +3,22 @@
 #include "libleo/internal.h"
 #include "PR/leo.h"
 
-extern void (*D_80079520[5])(void);
+// Command dispatch table, indexed by LEOCmdHeader.command. Slot 0 is unused.
+void (*D_80079520[16])(void) = {
+    NULL,          leoClr_queue,  leoInquiry,    leoTest_unit_rdy,
+    leoRezero,     leoRead,       leoWrite,      leoSeek,
+    leoStart_stop, leoRd_capacity, leoTranslate, leoMode_sel,
+    leoReadDiskId, leoReadTimer,  leoSetTimer,   leoClr_reset,
+};
 
-extern LEOCmdRead leo_sys_read_cmd;
+// Premade READ of the system area: LBA 12, one block.
+LEOCmdRead leo_sys_read_cmd = {
+    { 5, 0, 0, 0, 0, 0, 0, 0, NULL }, // header
+    12,                               // lba
+    1,                                // xfer_blks
+    NULL,                             // buff_ptr
+    0,                                // rw_bytes
+};
 
 // D_8007DA40
 const u8 leo_sys_form_lbas[] = { 0, 1, 8, 9, 0, 0, 0, 0 }; // EXTRA 0 IS A HACK

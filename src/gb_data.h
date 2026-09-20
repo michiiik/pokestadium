@@ -55,7 +55,7 @@ extern unk_D_80070F84 D_80070FA0[]; //TODO: is this typed correctly?
 
 typedef struct unk_D_80071D88 {
     /* 0x00 */ char* type_name;
-    /* 0x04 */ Color_RGB8 color;
+    /* 0x04 */ Color_RGBA8 color;
 } unk_D_80071D88; // size = 0x8
 extern unk_D_80071D88 D_80071D88[];
 

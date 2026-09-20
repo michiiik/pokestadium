@@ -250,7 +250,7 @@ void GeoOverlay_DrawFadeQuad(unk_D_86002F34_00C_0CC* arg0, unk_D_86002F34_00C_04
     }
 }
 
-#ifdef NON_MATCHING
+#pragma SWAP_FUNCTION_WORDS(func_80012870, 0xD0, 0xAFB80024, 0x00063403)
 void func_80012870(Vtx* arg0, unk_D_86002F34_00C_0CC* arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, s16 arg6,
                    s16 arg7) {
     f32 temp_fa0;
@@ -272,10 +272,6 @@ void func_80012870(Vtx* arg0, unk_D_86002F34_00C_0CC* arg1, s16 arg2, s16 arg3, 
     Gfx_SetVertexAttributes(arg0, tmp1 + arg2, tmp2 + arg3, -1, arg6 * 32, arg7 * 32, arg1->color.r, arg1->color.g, arg1->color.b,
                   0xFF);
 }
-#else
-void func_80012870(Vtx* arg0, unk_D_86002F34_00C_0CC* arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, s16 arg6, s16 arg7);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/geo_render/func_80012870.s")
-#endif
 
 Vtx* GeoOverlay_BuildRotatingQuad(unk_D_86002F34_00C_0CC* arg0) {
     Vtx* temp_v0 = Gfx_AllocDisplayList(sizeof(Vtx) * 8);
@@ -564,24 +560,17 @@ void Geo_NodeFog(GraphNode* arg0) {
     gDPSetColor(gDisplayListHead++, G_SETFOGCOLOR, arg->unk_1C);
 }
 
-#ifdef NON_MATCHING
 void func_80013D34(GraphNode* arg0) {
     unk_D_86002F34_alt4* arg = (unk_D_86002F34_alt4*)arg0;
-    Lights7* lights;
-    unk_D_86002F34_alt1* new_var;
     Light* light;
-    Ambient* temp_a4;
+    Ambient* ambient;
 
     if (D_8006F090->unk_1C >= 7) {
-        // light = &lights->l[D_8006F090->unk_1C];
         return;
     }
 
-    new_var = D_8006F090;
-    lights = new_var->lights;
-    temp_a4 = &lights->a;
-
-    light = &lights->l[D_8006F090->unk_1C];
+    light = &D_8006F090->lights->l[D_8006F090->unk_1C];
+    ambient = &D_8006F090->lights->a;
 
     *(u32*)light->l.col = arg->unk_18.rgba;
     *(u32*)light->l.colc = arg->unk_18.rgba;
@@ -590,26 +579,24 @@ void func_80013D34(GraphNode* arg0) {
     light->l.dir[1] = (120.0f) * SINS(arg->unk_1C);
     light->l.dir[2] = (120.0f * COSS(arg->unk_1C)) * COSS(arg->unk_1E);
 
-    temp_a4->l.col[0] += ((arg->unk_18.r * arg->unk_18.a) / 100);
-    if (temp_a4->l.col[0] > 0xFF) {
-        temp_a4->l.col[0] = 0xFF;
+    ambient->l.col[0] += ((arg->unk_18.r * arg->unk_18.a) / 100);
+    if (ambient->l.col[0] > 0xFF) {
+        ambient->l.col[0] = 0xFF;
     }
 
-    temp_a4->l.col[1] += ((arg->unk_18.g * arg->unk_18.a) / 100);
-    if (temp_a4->l.col[1] > 0xFF) {
-        temp_a4->l.col[1] = 0xFF;
+    ambient->l.col[1] += ((arg->unk_18.g * arg->unk_18.a) / 100);
+    if (ambient->l.col[1] > 0xFF) {
+        ambient->l.col[1] = 0xFF;
     }
 
-    temp_a4->l.col[2] += ((arg->unk_18.b * arg->unk_18.a) / 100);
-    if (temp_a4->l.col[2] > 0xFF) {
-        temp_a4->l.col[2] = 0xFF;
+    ambient->l.col[2] += ((arg->unk_18.b * arg->unk_18.a) / 100);
+    if (ambient->l.col[2] > 0xFF) {
+        ambient->l.col[2] = 0xFF;
     }
 
     D_8006F090->unk_1C++;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/geo_render/func_80013D34.s")
-#endif
+
 
 void Geo_NodeType12Empty(UNUSED GraphNode* arg0) {
 }

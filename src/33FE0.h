@@ -96,6 +96,9 @@ typedef struct StadiumModel {
     /* 0x170 */ ModelVertex mvtx;
 } StadiumModel; // size = 0x204
 
+extern ModelSegment D_800777A8;
+extern ModelSegment D_80077950;
+
 void func_80033D1C(StadiumModel* model, MtxF* mtx);
 void Model_InitializeVertexPositions(ModelSegment*, MtxF*, ModelVertex*);
 void func_800357F4(StadiumModel* model);

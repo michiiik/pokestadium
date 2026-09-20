@@ -514,7 +514,12 @@ _798CD0_TEXT_START = 0x8C200000;
 D_8C200920 = 0x8C200920;
 D_8C201070 = 0x8C201070;
 D_8C2011C4 = 0x8C2011C4;
+// Shifted aliases into status_icons.c's tables, used for 1-based indexing.
+// D_8006FEE8 = &sPokemonNames[150] = (char*)D_8006FF00 - 0x18.
+// gBaseStats/D_80070F8A point into D_8006FF00[151].
+D_8006FEE8 = 0x8006FEE8;
 gBaseStats = 0x80070F84;
+D_80070F8A = 0x80070F8A;
 D_800786FD = 0x800786FD;
 D_3008380 = 0x3008380;
 D_3008400 = 0x3008400;
@@ -592,3 +597,57 @@ D_3007910 = 0x3007910;
 D_3008018 = 0x3008018;
 D_3007BE0 = 0x3007BE0;
 D_3007D48 = 0x3007D48;
+
+/* Bogus branch target inside gspF3DEX2.fifo, produced by the inline table at 0x8004873C */
+D_8006873C = 0x8006873C;
+
+// GB CPU opcode dispatch tables, kept as a rodatabin blob. splat's .incbin stub
+// labels only the first symbol (jtbl_81229500), so the second needs declaring here.
+D_81229580 = 0x81229580;
+
+// Interior aliases into pokemon_stats.c's D_80073230 packed table.
+gDexToInternalIndex = 0x80073267;
+gInternalIndexToDex = 0x800732FF;
+D_800733BF = 0x800733BF;
+D_80073457 = 0x80073457;
+D_800734EF = 0x800734EF;
+D_80073597 = 0x80073597;
+D_80073640 = 0x80073640;
+D_8007364C = 0x8007364C;
+
+// Interior aliases into gb_data.c's gMoveDisplayInfo.
+D_80072AFD = 0x80072AFD;
+D_80072AFE = 0x80072AFE;
+
+// Interior aliases into 3D140.c's music tables.
+D_800780B3 = 0x800780B3;
+D_80078410 = 0x80078410;
+D_80078446 = 0x80078446;
+D_800784EA = 0x800784EA;
+
+// Interior aliases into gb_audio_render.c's loop-point tables.
+D_80078E80 = 0x80078E80;
+D_80078E83 = 0x80078E83;
+D_80078E8B = 0x80078E8B;
+D_80078E93 = 0x80078E93;
+D_80078E9B = 0x80078E9B;
+D_80078EA3 = 0x80078EA3;
+D_80078EAB = 0x80078EAB;
+D_80078EB3 = 0x80078EB3;
+D_80078EBF = 0x80078EBF;
+
+// GB CPU handler tables, kept as a databin blob; the .incbin stub labels only
+// the first symbol (D_81228770).
+D_81228B70 = 0x81228B70;
+D_81229370 = 0x81229370;
+D_812294C0 = 0x812294C0;
+D_812294E0 = 0x812294E0;
+
+// Interior aliases into gb_tower_emulator_86CB0.c's sGbApuRegs.
+D_8120EA80 = 0x8120EA80;
+D_8120EA86 = 0x8120EA86;
+
+// Interior aliases into gb_tower_emulator_7F9A0.c's D_8120D820.
+D_8120D8FD = 0x8120D8FD;
+D_8120D8FE = 0x8120D8FE;
+D_8120D906 = 0x8120D906;

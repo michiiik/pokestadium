@@ -192,6 +192,79 @@ f32 D_800775D4[16] = {
     0.009688899f, 0.006782229f, 0.0047475602f, 0.0033232921f,
 };
 
+// Three zero words before the model tables at 0x80077620.
+u32 D_80077614[3] = { 0, 0, 0 };
+
+u32 D_80077620[40] = {
+    0xFFCE00AA, 0x00000000, 0x00000000, 0xFFFF00FF, 0xFFCE0078, 0x00000000,
+    0x00000200, 0xFFFF00FF, 0x00320078, 0x00000000, 0x04000200, 0xFFFF00FF,
+    0x003200AA, 0x00000000, 0x04000000, 0xFFFF00FF, 0xFFCE0046, 0x00000000,
+    0x00000400, 0xFFFF00FF, 0x00320046, 0x00000000, 0x04000400, 0xFFFF00FF,
+    0xFFCE0014, 0x00000000, 0x00000600, 0xFFFFC0FF, 0x00320014, 0x00000000,
+    0x04000600, 0xFFFFC0FF, 0xFFCEFFE2, 0x00000000, 0x00000800, 0xFFFF80FF,
+    0x0032FFE2, 0x00000000, 0x04000800, 0xFFFF80FF,
+};
+u32 D_800776C0[6] = {
+    0x00000001, 0x00020003, 0x00040005, 0x00060007, 0x00080009, 0x00000000,
+};
+u32 D_800776D8[12] = {
+    0x0100A014, 0x0E000000, 0x06000204, 0x00000406, 0x0602080A, 0x00020A04,
+    0x06080C0E, 0x00080E0A, 0x060C1012, 0x000C120E, 0xDF000000, 0x00000000,
+};
+u32 D_80077708[12] = {
+    0x00000001, 0x00020000, 0x00020003, 0x00010004, 0x00050001, 0x00050002,
+    0x00040006, 0x00070004, 0x00070005, 0x00060008, 0x00090006, 0x00090007,
+};
+u32 D_80077738[22] = {
+    0x00010002, 0x0003FFFF, 0x00000002, 0x00040005, 0xFFFF0000, 0x00010003,
+    0x0005FFFF, 0x00000002, 0xFFFF0001, 0x00050006, 0x0007FFFF, 0x00010004,
+    0x00020007, 0xFFFF0004, 0x00070008, 0x0009FFFF, 0x00040006, 0x00050009,
+    0xFFFF0006, 0x0009FFFF, 0x00060008, 0x0007FFFF,
+};
+u32 D_80077790[6] = {
+    0x00CE00CB, 0x00CA00CD, 0x00980097, 0x00950094, 0x00920091, 0x00000000,
+};
+ModelSegment D_800777A8 = {
+    0x000A, 0x0000, 0x000A, 0x0008,
+    (u32) D_80077708, (u32) D_80077738, (u32) D_80077790,
+    (u32) D_800776C0, (u32) D_80077620, (Gfx*) D_800776D8,
+};
+
+u32 D_800777C8[40] = {
+    0xFFCE00C8, 0x00000000, 0x00000000, 0xFFFF00FF, 0xFFCE0096, 0x00000000,
+    0x00000200, 0xFFFF00FF, 0x00320096, 0x00000000, 0x04000200, 0xFFFF00FF,
+    0x003200C8, 0x00000000, 0x04000000, 0xFFFF00FF, 0xFFCE0064, 0x00000000,
+    0x00000400, 0xFFFF00FF, 0x00320064, 0x00000000, 0x04000400, 0xFFFF00FF,
+    0xFFCE0032, 0x00000000, 0x00000600, 0xFFFFC0FF, 0x00320032, 0x00000000,
+    0x04000600, 0xFFFFC0FF, 0xFFCE0000, 0x00000000, 0x00000800, 0xFFFF80FF,
+    0x00320000, 0x00000000, 0x04000800, 0xFFFF80FF,
+};
+u32 D_80077868[6] = {
+    0x00000001, 0x00020003, 0x00040005, 0x00060007, 0x00080009, 0x00000000,
+};
+u32 D_80077880[12] = {
+    0x0100A014, 0x0E000000, 0x06000204, 0x00000406, 0x0602080A, 0x00020A04,
+    0x06080C0E, 0x00080E0A, 0x060C1012, 0x000C120E, 0xDF000000, 0x00000000,
+};
+u32 D_800778B0[12] = {
+    0x00000001, 0x00020000, 0x00020003, 0x00010004, 0x00050001, 0x00050002,
+    0x00040006, 0x00070004, 0x00070005, 0x00060008, 0x00090006, 0x00090007,
+};
+u32 D_800778E0[22] = {
+    0x00010002, 0x0003FFFF, 0x00000002, 0x00040005, 0xFFFF0000, 0x00010003,
+    0x0005FFFF, 0x00000002, 0xFFFF0001, 0x00050006, 0x0007FFFF, 0x00010004,
+    0x00020007, 0xFFFF0004, 0x00070008, 0x0009FFFF, 0x00040006, 0x00050009,
+    0xFFFF0006, 0x0009FFFF, 0x00060008, 0x0007FFFF,
+};
+u32 D_80077938[6] = {
+    0x00CE00CB, 0x00CA00CD, 0x00980097, 0x00950094, 0x00920091, 0x00000000,
+};
+ModelSegment D_80077950 = {
+    0x000B, 0x0000, 0x000A, 0x0008,
+    (u32) D_800778B0, (u32) D_800778E0, (u32) D_80077938,
+    (u32) D_80077868, (u32) D_800777C8, (Gfx*) D_80077880,
+};
+
 // .bss
 Vec3fCounter* D_800B2F50;
 PosBlend D_800B2F58[0x10];
@@ -678,8 +751,125 @@ void func_80034254(StadiumModel* model) {
         var_a2++;
     }
 }
+#ifdef NON_MATCHING
+void func_80034348(ModelSegment* segment, ModelVertex* vertices) {
+    s32 i;
+    f32 spF0;
+    s32 pad1[5];
+    f32 spD8;
+    s32 pad2[6];
+    s16 spBE;
+    s16 spBC;
+    s16 spBA;
+    s32 pad3[12];
+    s16* var_t2;
+    s32 pad4[6];
+    f32 sp60;
+    f32 sp5C;
+    f32 sp58;
+    f32 temp_fa1;
+    f32 temp_fs0;
+    f32 temp_fs1;
+    f32 temp_fs4;
+    f32 temp_fs5;
+    f32 temp_ft4;
+    f32 temp_fv0;
+    f32 temp_fv0_3;
+    f32 temp_fv0_4;
+    f32 temp_fv0_5;
+    f32 temp_fv0_6;
+    f32 temp_fv0_7;
+    f32 temp_fv0_8;
+    f32 temp_fv1;
+    f32 temp_fv1_2;
+    f32 var_fs0;
+    f32 var_fs1;
+    f32 var_fs2;
+    s16* var_s0;
+    s16 triangleCount;
+    s16 vertexCount;
+    ModelVertex* temp_a0_2;
+    ModelVertex* temp_v0;
+    ModelVertex* temp_v1;
+    ModelVertex* vtx;
+    Vec3fCounter* counter;
+
+    triangleCount = segment->triangleCount;
+    vertexCount = segment->vertexCount;
+    var_s0 = Memmap_GetSegmentVaddr(segment->indexSegment);
+    var_t2 = Memmap_GetSegmentVaddr(segment->remapSegment);
+    counter = D_800B2F50;
+    for (i = 0; i < vertexCount; i++) {
+        counter->x = 0.0f;
+        counter->y = 0.0f;
+        counter->z = 0.0f;
+        counter->count = 0;
+        counter++;
+    }
+    for (i = 0; i < triangleCount; i++) {
+        spBE = var_t2[var_s0[0]];
+        temp_v0 = &vertices[spBE];
+        spF0 = temp_v0->position.base.x;
+        spBC = var_t2[var_s0[1]];
+        spBA = var_t2[var_s0[2]];
+        var_s0 += 3;
+        temp_v1 = &vertices[spBC];
+        temp_fs4 = temp_v1->position.base.x;
+        temp_fv0 = temp_v1->position.base.y;
+        temp_fv1 = temp_v1->position.base.z;
+        temp_fs5 = temp_fv0 - temp_v0->position.base.y;
+        temp_fs1 = temp_fv1 - temp_v0->position.base.z;
+        temp_a0_2 = &vertices[spBA];
+        spD8 = temp_a0_2->position.base.x;
+        sp5C = temp_fs1;
+        temp_fs0 = temp_a0_2->position.base.z - temp_fv1;
+        sp58 = temp_a0_2->position.base.y - temp_fv0;
+        sp60 = temp_fs0;
+        temp_fa1 = spD8 - temp_fs4;
+        temp_ft4 = temp_fs4 - spF0;
+        var_fs0 = (sp5C * temp_fa1) - (temp_ft4 * sp60);
+        var_fs2 = (temp_fs5 * sp60) - (temp_fs1 * sp58);
+        var_fs1 = (temp_ft4 * sp58) - (temp_fs5 * temp_fa1);
+        temp_fv0_3 = sqrtf((var_fs2 * var_fs2) + (var_fs0 * var_fs0) + (var_fs1 * var_fs1));
+        if ((s32) temp_fv0_3 > 0) {
+            temp_fv1_2 = 120.0f / temp_fv0_3;
+            var_fs2 *= temp_fv1_2;
+            var_fs0 *= temp_fv1_2;
+            var_fs1 *= temp_fv1_2;
+        }
+        counter = &D_800B2F50[spBE];
+        counter->x += var_fs2;
+        counter->y += var_fs0;
+        counter->z += var_fs1;
+        counter->count++;
+        counter = &D_800B2F50[spBC];
+        counter->x += var_fs2;
+        counter->y += var_fs0;
+        counter->z += var_fs1;
+        counter->count++;
+        counter = &D_800B2F50[spBA];
+        counter->x += var_fs2;
+        counter->y += var_fs0;
+        counter->z += var_fs1;
+        counter->count++;
+    }
+    counter = D_800B2F50;
+    vtx = vertices;
+    for (i = 0; i < vertexCount; i++) {
+        if (counter->count > 0) {
+            temp_fv0_4 = (f32) counter->count;
+            vtx->position.color.r = (f32) (counter->x / temp_fv0_4);
+            vtx->position.color.g = (f32) (counter->y / temp_fv0_4);
+            vtx->position.color.b = (f32) (counter->z / temp_fv0_4);
+        }
+        counter++;
+        vtx++;
+    }
+}
+#else
 void func_80034348(ModelSegment*, ModelVertex*);
 #pragma GLOBAL_ASM("asm/us/nonmatchings/33FE0/func_80034348.s")
+#endif
 
 #ifdef NON_MATCHING
 void func_80034824(ModelSegment* segment, StadiumTransform* xf, s32 index, ModelVertex* vertices) {
@@ -793,8 +983,109 @@ void Model_ApplyVertexTransforms(StadiumModel* model) {
     Model_ApplyTransformCommands(segment, mvtx, model, 1.0f);
 }
 
-void func_80034BD4(StadiumModel*, StadiumTransform*, s32, ModelVertex*);
+#ifdef NON_MATCHING
+void func_80034BD4(u32 modelSegment, StadiumTransform* xf, s32 index, ModelVertex* vertices) {
+    s32 pad0[5];
+    f32 sp180;
+    f32 sp17C;
+    f32 sp178;
+    f32 sp174;
+    f32 sp170;
+    f32 sp16C;
+    f32 sp168;
+    f32 sp164;
+    f32 sp160;
+    f32 sp15C;
+    f32 sp158;
+    f32 sp154;
+    f32 sp150;
+    f32 sp14C;
+    f32 sp148;
+    f32 sp144;
+    f32 sp140;
+    f32 sp13C;
+    f32 sp138;
+    f32 sp134;
+    f32 sp130;
+    s32 pad1[10];
+    f32 sp104;
+    f32 sp100;
+    f32 spFC;
+    f32 one = 1.0f;
+    f32 w0;
+    f32 w1;
+    f32 w2;
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 temp_fv0;
+    s32 pad2[4];
+    s16 spCA;
+    s32 pad3[1];
+    s16* spC0;
+    MtxF* mtx;
+    f32 temp_fs0;
+    f32 temp_fs1;
+    f32 temp_fs2;
+    s16 temp_s1_2;
+    s16* temp_s1;
+    ModelSegment* temp_v0;
+    s32 temp_s1_3;
+    s32 i;
+    s16* var_s3;
+    PosBlend* temp_v0_2;
+
+    temp_v0 = Memmap_GetSegmentVaddr(modelSegment);
+    spCA = temp_v0->vertexCount;
+    temp_s1 = Memmap_GetSegmentVaddr(temp_v0->remapSegment);
+    spC0 = Memmap_GetSegmentVaddr(temp_v0->tableSegment);
+    mtx = xf->mtx;
+    guMtxXFMF(mtx->mf, xf->x0, xf->y0, xf->z0, &sp180, &sp17C, &sp178);
+    guMtxXFMF(mtx->mf, xf->x1, xf->y1, xf->z1, &sp174, &sp170, &sp16C);
+    guMtxXFMF(mtx->mf, xf->x2, xf->y2, xf->z2, &sp168, &sp164, &sp160);
+    guMtxXFMF(mtx->mf, xf->x3, xf->y3, xf->z3, &sp15C, &sp158, &sp154);
+    var_s3 = temp_s1;
+    sp150 = sp174 - sp180;
+    sp14C = sp170 - sp17C;
+    sp148 = sp16C - sp178;
+    sp144 = sp168 - sp180;
+    sp140 = sp164 - sp17C;
+    sp13C = sp160 - sp178;
+    sp138 = sp15C - sp180;
+    sp134 = sp158 - sp17C;
+    sp130 = sp154 - sp178;
+    for (i = 0; i < spCA; i++) {
+        temp_s1_2 = *var_s3;
+        if ((Model_GetVertexClass(spC0, temp_s1_2) != 0) && (temp_s1_2 == i)) {
+            temp_fs0 = vertices->position.base.x;
+            temp_fs1 = vertices->position.base.y;
+            temp_fs2 = vertices->position.base.z;
+            temp_s1_3 = 1 << index;
+            temp_fv0 = func_80033568(temp_fs0, temp_fs1, temp_fs2, sp180, sp17C, sp178, sp174, sp170, sp16C, &sp104, &sp100, &spFC);
+            temp_v0_2 = &vertices->position;
+            if ((temp_fv0 > 0.0f) && (temp_fv0 < xf->maxDist)) {
+                w0 = vertices->cmd.weights[index].w0;
+                w1 = vertices->cmd.weights[index].w1;
+                w2 = vertices->cmd.weights[index].w2;
+                x = (w0 * sp150) + sp180 + (w1 * sp144) + (w2 * sp138);
+                y = (w0 * sp14C) + sp17C + (w1 * sp140) + (w2 * sp134);
+                z = (w0 * sp148) + sp178 + (w1 * sp13C) + (w2 * sp130);
+                temp_v0_2->disabled |= temp_s1_3;
+                temp_v0_2->offset.x = (x - temp_fs0) * one;
+                temp_v0_2->offset.y = (y - temp_fs1) * one;
+                temp_v0_2->offset.z = (z - temp_fs2) * one;
+            } else {
+                temp_v0_2->disabled &= ~temp_s1_3;
+            }
+        }
+        var_s3++;
+        vertices++;
+    }
+}
+#else
+void func_80034BD4(u32, StadiumTransform*, s32, ModelVertex*);
 #pragma GLOBAL_ASM("asm/us/nonmatchings/33FE0/func_80034BD4.s")
+#endif
 
 void Model_TransformPoint(MtxF* mtx, Vec3f* out, s16 (*in)[3]) {
     f32 sp34;

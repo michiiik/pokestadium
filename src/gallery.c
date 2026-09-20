@@ -1,5 +1,4 @@
 #include "gallery.h"
-#include "include/math.h"
 #include "src/fragments/gallery_camera/gallery_camera.h"
 #include "src/fragments/particle_data_library/particle_data_library.h"
 #include "src/fragments/particle_math/particle_math.h"
@@ -15,8 +14,6 @@
 #include "src/jpeg_stream.h"
 #include "src/audio_sfx_wrapper.h"
 #include "src/audio_loop_point.h"
-#include "src/matrix.h"
-#include "src/math_util.h"
 #include "src/memory.h"
 #include "src/util.h"
 
@@ -30,7 +27,7 @@ typedef struct {
     /* 0x0A */ s16 unk_0A;
     /* 0x0C */ s16 unk_0C;
     /* 0x0E */ s16 unk_0E;
-} unk_D_800761B0; /* size = 0x40 */
+} unk_D_800761B0; /* size = 0x10 */
 
 typedef struct unk_func_8003013C_arg1 {
     /* 0x00 */ u8 pad00[0x1C];
@@ -43,24 +40,54 @@ typedef struct unk_func_80031660_sp24 {
     /* 0x18 */ s32 unk_18;
 } unk_func_80031660_sp24; // size = 0x1C
 
-extern unk_func_80031270* D_80075F80;
-extern unk_func_80031270* D_80075F84;
-extern u32* D_80075F88;
-extern unk_D_80068BB0* D_80075F90;
-extern s32 D_80075F94;
-extern s32 D_80075F98;
-extern s32 D_80075F9C;
-extern u32 D_80075FA0[];
-extern u32 D_8007616C[];
-extern unk_D_800761B0 D_800761B0[12];
-extern f64 D_8007C538;
-extern f64 D_8007C540;
-extern f64 D_8007C548;
-extern f64 D_8007C550;
-extern f64 D_8007C558;
-extern f64 D_8007C560;
-extern f64 D_8007C568;
-extern f64 D_8007C570;
+unk_func_80031270* D_80075F80 = NULL;
+unk_func_80031270* D_80075F84 = NULL;
+f32 D_80075F88[2] = { 40.0f, 25.0f };
+unk_D_80068BB0* D_80075F90 = NULL;
+s32 D_80075F94 = 0xC8;
+s32 D_80075F98 = 0x2B;
+s32 D_80075F9C = 0;
+u32 D_80075FA0[115] = {
+    0x0C00FFFF, 0x05000000, 0x0B00001E, 0x00000000, 0x014000F0, 0x0000000F,
+    0x00000000, 0x00000000, 0x08000000, 0x80030010, 0x00000000, 0x05000000,
+    0x0D000000, 0x05000000, 0x13FFFFFF, 0x03C003E8, 0x08000000, 0x80030228,
+    0x00000000, 0x14000000, 0x002D0019, 0xFFFFFF28, 0x08000000, 0x8003013C,
+    0x00000000, 0x14000000, 0x002D0019, 0x80808028, 0x08000000, 0x800301A4,
+    0x00000000, 0x16646464, 0x0F000002, 0x05000000, 0x1F00FFFF, 0x00000000,
+    0x00000000, 0x00000000, 0x00640064, 0x00640000, 0x05000000, 0x09000000,
+    0x08000000, 0x80030240, 0x00000000, 0x06000000, 0x06000000, 0x0F000003,
+    0x05000000, 0x1F00FFFF, 0x00000000, 0x00000000, 0x00000000, 0x00640064,
+    0x00640000, 0x05000000, 0x09000000, 0x08000000, 0x80030240, 0x00000001,
+    0x06000000, 0x06000000, 0x0F000002, 0x05000000, 0x1F00FFFF, 0x00000000,
+    0x00000000, 0x00000000, 0x00640064, 0x00640000, 0x05000000, 0x09000000,
+    0x08000000, 0x80030240, 0x00000002, 0x06000000, 0x06000000, 0x0F000003,
+    0x05000000, 0x1F000000, 0x00000000, 0x00000000, 0xFF060000, 0x00640064,
+    0x00640000, 0x08000000, 0x80030210, 0x00000000, 0x06000000, 0x06000000,
+    0x06000000, 0x0B00002D, 0x00000000, 0x014000F0, 0x00000000, 0xFDBD0000,
+    0x00000243, 0x08000000, 0x800300CC, 0x00000000, 0x05000000, 0x0D000000,
+    0x05000000, 0x0F000002, 0x05000000, 0x22010000, 0x00000000, 0x08000000,
+    0x800303C8, 0x00000000, 0x06000000, 0x06000000, 0x06000000, 0x06000000,
+    0x01000000,
+};
+u32 D_8007616C[17] = {
+    0x00000000, 0x00000001, 0x00000003, 0x00000004, 0x00000005, 0x00000006,
+    0x00000007, 0x00000008, 0x00000009, 0x0000000A, 0x0000000B, 0x0000000C,
+    0x0000000D, 0x0000000E, 0x0000000F, 0x00000011, 0x00000000,
+};
+unk_D_800761B0 D_800761B0[12] = {
+    { 0, 0, -579, 0, 0, 0, 127, -256, },
+    { 0, 0, -579, 0, 0, 0, 127, -256, },
+    { 0, 0, -579, 0, 0, 0, 127, -256, },
+    { 0, 0, -579, 0, 0, 0, 127, -256, },
+    { 0, 0, -579, 0, 0, 0, 127, -256, },
+    { 0, 0, -579, 0, 0, 0, 127, -256, },
+    { 0, 0, -579, 0, 0, 0, 127, -256, },
+    { 0, 0, -579, 0, 0, 0, 127, -256, },
+    { 0, 0, -579, 0, 0, 0, 127, -256, },
+    { 0, 0, -579, 0, 0, 0, 127, -256, },
+    { 0, 0, -579, 0, 0, 0, 127, -256, },
+    { 0, 0, -579, 0, 0, 0, 127, -256, },
+};
 
 void Gallery_ClearActiveScene(void);
 void func_8340051C(void);
@@ -786,209 +813,4 @@ s32 Gallery_IsPhotoSpeciesValid(unk_D_83403C60* arg0) {
 
 void func_800318F0(void) {
     func_80036790();
-}
-
-void Mtx_BuildDirectionRotation(Mtx* mtx, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6) {
-    f32 sp144;
-    f32 sp140;
-    f32 temp_fa0;
-    f32 temp_fa1;
-    UNUSED s32 pad[1];
-    Mtx spF0;
-    Mtx spB0;
-    Mtx sp70;
-    UNUSED s32 pad2[16];
-
-    temp_fa1 = arg4 - arg1;
-    temp_fa0 = arg6 - arg3;
-    sp140 = (f32) (((f64) (f32) MathUtil_Atan2s(temp_fa0, temp_fa1) * D_8007C538) / D_8007C540);
-    sp144 = (f32) (((f64) (f32) MathUtil_Atan2s(arg5 - arg2, sqrtf((temp_fa1 * temp_fa1) + (temp_fa0 * temp_fa0))) * D_8007C548) / D_8007C550);
-    guRotate(&spB0, sp140, 0.0f, 1.0f, 0.0f);
-    guRotate(&sp70, sp144, 0.0f, 0.0f, 1.0f);
-    guMtxCatL(&spB0, &sp70, &spF0);
-    *mtx = spF0;
-}
-
-f32 Math_AbsF32(f32 arg0) {
-    if (arg0 < 0.0) {
-        arg0 = -arg0;
-    }
-    return arg0;
-}
-
-void Vec3f_CrossProductComponents(f32 arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32* arg6, f32* arg7, f32* arg8) {
-    *arg6 = (arg1 * arg5) - (arg2 * arg4);
-    *arg7 = (arg2 * arg3) - (arg0 * arg5);
-    *arg8 = (arg0 * arg4) - (arg1 * arg3);
-}
-
-void Vec3f_NormalizeComponents(f32* arg0, f32* arg1, f32* arg2) {
-    f32 temp_fv1;
-    f32 temp_fa1;
-    f32 temp_ft4;
-    f32 temp_fv0;
-
-    temp_fv1 = *arg0;
-    temp_fa1 = *arg1;
-    temp_ft4 = *arg2;
-    temp_fv0 = sqrtf((temp_fv1 * temp_fv1) + (temp_fa1 * temp_fa1) + (temp_ft4 * temp_ft4));
-    if (temp_fv0 > 0.0f) {
-        temp_fv1 /= temp_fv0;
-        temp_fa1 /= temp_fv0;
-        temp_ft4 /= temp_fv0;
-    }
-    *arg0 = temp_fv1;
-    *arg1 = temp_fa1;
-    *arg2 = temp_ft4;
-}
-
-void Vec3f_CrossProductArrays(const f32* a, const f32* b, f32* out) {
-    f32 ax = a[0];
-    f32 ay = a[1];
-    f32 az = a[2];
-
-    f32 bx = b[0];
-    f32 by = b[1];
-    f32 bz = b[2];
-
-    out[0] = (ay * bz) - (az * by);
-    out[1] = (az * bx) - (ax * bz);
-    out[2] = (ax * by) - (ay * bx);
-}
-
-void Vec3f_NormalizeSafe(Vec3f* vec) {
-    f32 x;
-    f32 y;
-    f32 z;
-    f32 len;
-
-    x = vec->x;
-    y = vec->y;
-    z = vec->z;
-
-    len = sqrtf((x * x) + (y * y) + (z * z));
-
-    if (len > 0.0f) {
-        x = x / len;
-        y = y / len;
-        z = z / len;
-    }
-
-    vec->x = x;
-    vec->y = y;
-    vec->z = z;
-}
-
-void Mtx_BuildTranslatedDirectionRotation(Mtx* mtx, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6) {
-    f32 sp10C;
-    f32 sp108;
-    UNUSED s32 pad;
-    UNUSED s32 pad2;
-    f32 temp_fa1;
-    f32 temp_fv0;
-    Mtx spB8;
-    Mtx sp78;
-    Mtx sp38;
-
-    temp_fa1 = arg4 - arg1;
-    temp_fv0 = arg6 - arg3;
-    sp108 = (f32) (((f64) (f32) MathUtil_Atan2s(-temp_fv0, temp_fa1) * D_8007C558) / D_8007C560);
-    sp10C = (f32) (((f64) (f32) MathUtil_Atan2s(-(arg5 - arg2), sqrtf((temp_fa1 * temp_fa1) + (temp_fv0 * temp_fv0))) * D_8007C568) / D_8007C570);
-    guTranslate(&spB8, arg1, arg2, arg3);
-    guRotate(&sp78, sp108, 0.0f, -1.0f, 0.0f);
-    guMtxCatL(&sp78, &spB8, &spB8);
-    guRotate(&sp38, sp10C, 1.0f, 0.0f, 0.0f);
-    guMtxCatL(&sp38, &spB8, &spB8);
-    *mtx = spB8;
-}
-
-void Math_ProjectPointOntoLine(
-    f32 px, f32 py, f32 pz,
-    f32 ax, f32 ay, f32 az,
-    f32 bx, f32 by, f32 bz,
-    f32* outX, f32* outY, f32* outZ
-) {
-    f32 dx;
-    f32 dy;
-    f32 dz;
-    f32 t;
-    f32 lenSq = SQ(bx - ax) + SQ(by - ay) + SQ(bz - az);
-    f32 dx2;
-    f32 dy2;
-    f32 dz2;
-
-    if (lenSq == 0.0) {
-        *outX = ax;
-        *outY = ay;
-        *outZ = az;
-        return;
-    }
-
-    
-    dx = bx - ax;
-    dy = by - ay;
-    dz = bz - az;
-    dx2 = px - ax;
-    dy2 = py - ay;
-    dz2 = pz - az;
-
-    t = ((dx * dx2) + (dy * dy2) + (dz * dz2)) / lenSq;
-
-    *outX = ax + (t * dx);
-    *outY = ay + (t * dy);
-    *outZ = az + (t * dz);
-}
-
-void MtxF_ExtractScale(MtxF* arg0, MtxF* arg1) {
-    f32 sp24 = sqrtf(SQ(arg1->mf[0][0]) + SQ(arg1->mf[0][1]) + SQ(arg1->mf[0][2]));
-    f32 sp20 = sqrtf(SQ(arg1->mf[1][0]) + SQ(arg1->mf[1][1]) + SQ(arg1->mf[1][2]));
-    f32 sp1C = sqrtf(SQ(arg1->mf[2][0]) + SQ(arg1->mf[2][1]) + SQ(arg1->mf[2][2]));
-
-    arg0->mf[0][0] = arg1->mf[0][0] * sp24;
-    arg0->mf[0][1] = arg1->mf[1][0] * sp24;
-    arg0->mf[0][2] = arg1->mf[2][0] * sp24;
-    arg0->mf[0][3] = 0.0f;
-
-    arg0->mf[1][0] = arg1->mf[0][1] * sp20;
-    arg0->mf[1][1] = arg1->mf[1][1] * sp20;
-    arg0->mf[1][2] = arg1->mf[2][1] * sp20;
-    arg0->mf[1][3] = 0.0f;
-
-    arg0->mf[2][0] = arg1->mf[0][2] * sp1C;
-    arg0->mf[2][1] = arg1->mf[1][2] * sp1C;
-    arg0->mf[2][2] = arg1->mf[2][2] * sp1C;
-    arg0->mf[2][3] = 0.0f;
-
-    arg0->mf[3][0] = 0.0f;
-    arg0->mf[3][1] = 0.0f;
-    arg0->mf[3][2] = 0.0f;
-    arg0->mf[3][3] = 1.0f;
-}
-
-void MtxF_GetScaleVector(MtxF* arg0, Vec3f* arg1) {
-    f32 temp_fa1;
-    f32 temp_fv0;
-    f32 temp_fv1;
-    f32 sp30;
-    f32 sp2C;
-    f32 sp28;
-    f32 sp24;
-    f32 sp20;
-    f32 sp1C;
-
-    temp_fv0 = arg0->mf[0][0];
-    temp_fv1 = arg0->mf[0][1];
-    temp_fa1 = arg0->mf[0][2];
-
-    sp30 = arg0->mf[1][0];
-    sp2C = arg0->mf[1][1];
-    sp28 = arg0->mf[1][2];
-
-    sp24 = arg0->mf[2][0];
-    sp20 = arg0->mf[2][1];
-    sp1C = arg0->mf[2][2];
-
-    arg1->x = sqrtf(SQ(temp_fv0) + SQ(temp_fv1) + SQ(temp_fa1));
-    arg1->y = sqrtf(SQ(sp30) + SQ(sp2C) + SQ(sp28));
-    arg1->z = sqrtf(SQ(sp24) + SQ(sp20) + SQ(sp1C));
 }

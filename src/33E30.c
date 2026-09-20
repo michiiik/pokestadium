@@ -32,6 +32,18 @@ static Gfx D_80076330[] = {
     gsSPEndDisplayList(),
 };
 
+// Format strings for the debug matrix dumps that func_80033230 and func_80033264
+// once printed; the calls were optimized out, leaving the literals behind.
+const char D_8007C580[0x8] = "0x%08x ";
+const char D_8007C588[0x4] = "\n";
+const char D_8007C58C[0x4] = "\n";
+const char D_8007C590[0xC] = "%10.4f  ";
+const char D_8007C59C[0x4] = "\n";
+const char D_8007C5A0[0x4] = "\n";
+const char D_8007C5A4[0x4] = "";
+const char D_8007C5A8[0x4] = "";
+const char D_8007C5AC[0x4] = "";
+
 void func_80033230(s32 arg0) {
     s32 i;
     s32 j;
