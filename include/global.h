@@ -593,7 +593,8 @@ typedef struct unk_D_8122B2C0 {
     /* 0x05DA4 */ char unk05DA4[0x20];
     /* 0x05DC4 */ u8 unk_5DC4;
     /* 0x05DC5 */ u8 unk_5DC5;
-    /* 0x05DC6 */ char unk05DC6[0x2];
+    /* 0x05DC6 */ u8 unk_5DC6;
+    /* 0x05DC7 */ char unk05DC7[0x1];
     /* 0x05DC8 */ volatile u8 unk_5DC8;
     /* 0x05DC9 */ u8 unk_5DC9;
     /* 0x05DCA */ u8 unk_5DCA;
