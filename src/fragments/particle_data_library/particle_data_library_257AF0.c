@@ -21,16 +21,34 @@ typedef struct TextureState {
     /* 0x18 */ Gfx* gfx;
 } TextureState; // size = 0x1C
 
+/**
+ * Instruction-exact except for one positional diff: target keeps the arg1
+ * pointer live in two separate register webs (its home register $a1, plus
+ * an entry-block copy into $a2) so the first arg1->unk_00 read uses $a1
+ * directly, while this reconstruction collapses to a single web on $a2 for
+ * both reads. No source-level construct found so far (plain copies, casts,
+ * unions, volatile, non-zero-offset dead reads, ~90 variants tried) avoids
+ * IDO copy-propagating a second arg1-derived pointer back onto the same
+ * register without also promoting arg1 to a full local, which breaks a
+ * different part of the match. See target:
+ *   asm/us/nonmatchings/fragments/particle_data_library/particle_data_library_257AF0/func_81002830.s
+ */
 #ifdef NON_MATCHING
 void func_81002830(Gfx* gfx, unk_arg1_func_81002830* arg1) {
     s16 temp_v0;
+    int new_var;
     s32 var_a3;
-    if (D_8006F09C->unk_01C == 0) {
+    var_a3 = G_TX_NOMIRROR | G_TX_CLAMP;
+    new_var = var_a3;
+    if ((*D_8006F09C).unk_01C == 0) {
+        temp_v0 = arg1->unk_00;
         var_a3 = D_800AF7AE;
-        temp_v0 = 0x4000 - (arg1->unk_00 * var_a3);
         if (1) {}
+        temp_v0 = 0x4000;
+        temp_v0 = temp_v0 - (arg1->unk_00 * var_a3);
+        var_a3 = D_800AF7AE;
         gDPLoadTextureBlock(gfx++, arg1->unk_04[var_a3 & 0x7], G_IM_FMT_RGBA, G_IM_SIZ_16b, 64, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
-                    G_TX_NOMIRROR | G_TX_CLAMP, 6, 5, G_TX_NOLOD, G_TX_NOLOD);
+                    new_var, 6, 5, G_TX_NOLOD, G_TX_NOLOD);
         gDPSetTileSize(gfx++, 0, temp_v0, 0, ((temp_v0 + 63) << 2), 124);
     }
     gSPEndDisplayList(gfx++);
