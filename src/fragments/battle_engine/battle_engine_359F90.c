@@ -1450,44 +1450,45 @@ s32 Battle_CheckMonCanAct(void) {
     return 2;
 }
 
-#ifdef NON_MATCHING
+#define PRINTF(x) ((void)(x))
+
 void func_84372670(void) {
-    char sp2C[8];
+    s8 sp2C[12];
 
     if (gBattleUser->unk_5A != 0xFF) {
         gBattleMoveFailed = 0;
         D_843C4DB5 = 0;
         D_843C4DA9 = 0;
         D_843C4DB3 = 0xA;
-
+    
         switch (Battle_CheckMonCanAct()) {
             case 2:
                 func_84370E80();
                 if (gBattleUser->unk_4C & 0x10) {
-                    gBattleUser->unk_4C &= ~0x50;
+                    gBattleUser->unk_4C &= ~(0x40 | 0x10);
                     Battle_SetRuntimeFlags(D_84390010[gBattleScene.unk_00->unk_2C], 8);
                 } else {
-                block_5:
+            block_5:
                     switch (gBattleUser->unk_44.unk_01) {
                         case 0x27:
                         case 0x2B:
                             if (D_8438AC60[0] == 1) {
                                 gBattleDamage = 0;
                             }
+                
                             Battle_ExecuteMoveEffect();
                             gBattleUser->unk_58 = gBattleUser->unk_5A;
                             return;
                     }
                 }
-
             case 3:
                 Battle_QueueMoveCategoryUsedMessage();
                 Battle_DecrementPP(gBattleScene.unk_00->unk_2C);
-
                 if (func_8436FD54(gBattleUser->unk_44.unk_01, D_8438ADEC, 0x10) != 0) {
                     if (D_8438AC60[0] == 1) {
                         gBattleDamage = 0;
                     }
+
                     Battle_ExecuteMoveEffect();
                     return;
                 }
@@ -1495,120 +1496,111 @@ void func_84372670(void) {
                 if (func_8436FD54(gBattleUser->unk_44.unk_01, D_8438ADFC, 1) != 0) {
                     Battle_ExecuteMoveEffect();
                 }
-
             case 4:
                 if (func_8436FD54(gBattleUser->unk_44.unk_01, D_8438AE00, 2) == 0) {
                     Battle_CheckCriticalHit();
-                    if (Battle_Effect_Counter() == 0) {
-                        goto case_5;
+                    if (Battle_Effect_Counter() != 0) {
+                        func_843700F0();
+                        if (Battle_CalcDamage() == 0) {
+                            goto block_29;
+                        }
+                        Battle_ApplyTypeEffectAndSTAB();
+                        Battle_ApplyDamageRandomFactor();
+                    } else {
+                        goto block_24;
                     }
-
-                    func_843700F0();
-                    if (Battle_CalcDamage() == 0) {
-                        goto case_6;
-                    }
-
-                    Battle_ApplyTypeEffectAndSTAB();
-                    Battle_ApplyDamageRandomFactor();
                 }
-
                 if (D_8438AC60[0] == 1) {
                     gBattleUser->unk_44.unk_04 = gMoveData[gBattleUser->unk_5A - 1].unk_04;
                 }
-                func_843708CC();
 
+                func_843708CC();
             case 5:
-            case_5:
+            block_24:
                 if (gBattleMoveFailed != 0) {
                     switch (gBattleUser->unk_44.unk_01) {
                         case 7:
-                            break;
+                            goto block_28;
+                        default:
+                            goto block_28;
                     }
-                    goto case_6;
                 }
-
             case 6:
-            case_6:
+            block_28:
+            block_29:
                 switch (gBattleUser->unk_44.unk_01) {
                     case 9:
                         if (Battle_TryLoadFollowupMoveFromTarget() == 0) {
-                            goto end;
+                            break;
                         }
                         D_843C4DB5 = 0;
                         goto block_5;
-
                     case 0x53:
                         Battle_Effect_Metronome();
                         goto block_5;
-                }
-
-                if (func_8436FD54(gBattleUser->unk_44.unk_01, D_8438AE04, 0x1B) != 0) {
-                    Battle_ExecuteMoveEffect();
-                    return;
-                }
-
-                if (gBattleMoveFailed != 0) {
-                    Battle_QueueMoveFailureAndApplyRecoil();
-
-                    if (gBattleUser->unk_44.unk_01 != 7) {
-                        goto end;
-                    }
-                } else {
-                    func_8437114C();
-                    func_84371080();
-                    func_84371010();
-                    D_843C4DA9 = 1;
-                }
-
-                if (func_8436FD54(gBattleUser->unk_44.unk_01, D_8438AE20, 0xA) != 0) {
-                    Battle_ExecuteMoveEffect();
-                }
-
-                if (gBattleTarget->unk_0C == 0) {
-                    if (D_8438AC60[0] == 1) {
-                        switch (gBattleUser->unk_44.unk_01) {
-                            case 0x50:
-                                gBattleDamage = 0;
-                                return;
+                    default:
+                        if (func_8436FD54(gBattleUser->unk_44.unk_01, D_8438AE04, 0x1B) != 0) {
+                            Battle_ExecuteMoveEffect();
+                            return;
                         }
-                    }
-                    return;
+        
+                        if (gBattleMoveFailed != 0) {
+                            Battle_QueueMoveFailureAndApplyRecoil();
+            
+                            if (gBattleUser->unk_44.unk_01 != 7) {
+                                break;
+                            }
+                        } else {
+                            func_8437114C();
+                            func_84371080();
+                            func_84371010();
+                            D_843C4DA9 = 1;
+                        }
+                        if (func_8436FD54(gBattleUser->unk_44.unk_01, D_8438AE20, 0xA) != 0) {
+                            Battle_ExecuteMoveEffect();
+                        }
+                        if (gBattleTarget->unk_0C == 0) {
+                            if (D_8438AC60[0] != 1) {
+                                return;
+                            }
+                            if (gBattleUser->unk_44.unk_01 != 0x50) {
+                                return;
+                            }
+                            gBattleDamage = 0;
+                            return;
+                        }
+                        Battle_ApplyRageContinuation();
+                        if (gBattleUser->unk_4C & 4) {
+                            gBattleUser->unk_4F--;
+                            if (gBattleUser->unk_4F != 0) {
+                                goto block_28;
+                            }
+                            gBattleUser->unk_4C &= ~4;
+                            sprintf(sp2C, "%d", gBattleUser->unk_54);
+                            // separate stubbed print
+                            PRINTF(" SpAttackTbl6\n");
+                            Text_SetNumberToken(2, gBattleUser->unk_54);
+                            Battle_QueueMessage(gBattleMessageQueues->unk_3C8, 4);
+                            gBattleScene.unk_00->unk_1A = 1;
+                            gBattleUser->unk_54 = 0;
+                            gBattleDamage = D_843C4DA0;
+                        }
+                        if (gBattleUser->unk_44.unk_01 == 0) {
+                            break;
+                        }
+                        if (func_8436FD54(gBattleUser->unk_44.unk_01, D_8438AE2C, 0xF) != 0) {
+                            break;
+                        }
+                        Battle_ExecuteMoveEffect();
+                        break;
                 }
-
-                Battle_ApplyRageContinuation();
-
-                if (gBattleUser->unk_4C & 4) {
-                    gBattleUser->unk_4F -= 1;
-                    if (gBattleUser->unk_4F != 0) {
-                        goto case_6;
-                    }
-                    gBattleUser->unk_4C &= ~4;
-                    sprintf(sp2C, "%d", gBattleUser->unk_54);
-                    Text_SetNumberToken(2, gBattleUser->unk_54);
-                    Battle_QueueMessage(gBattleMessageQueues->unk_3C8, 4);
-                    gBattleScene.unk_00->unk_1A = 1;
-                    gBattleUser->unk_54 = 0;
-                    gBattleDamage = D_843C4DA0;
-                }
-
-                if (gBattleUser->unk_44.unk_01 == 0) {
-                    goto end;
-                }
-
-                if (func_8436FD54(gBattleUser->unk_44.unk_01, D_8438AE2C, 0xF) != 0) {
-                    goto end;
-                }
-
-                Battle_ExecuteMoveEffect();
-                goto end;
+                break;
+            default:
+                break;
         }
     }
-end:
     D_843C4DB7 = 0;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/battle_engine/battle_engine_359F90/func_84372670.s")
-#endif
 
 void Battle_HandleFaint(Battler* arg0) {
     s32 sp1C = BattleScene_GetParticipantSideIndex(arg0);
