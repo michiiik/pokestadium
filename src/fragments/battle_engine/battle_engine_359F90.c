@@ -712,7 +712,6 @@ void func_84370B44(Battler* arg0) {
     }
 }
 
-#ifdef NON_MATCHING
 void func_84370B7C(Battler* arg0) {
     BattlerState* sp28;
     BattleMonRuntime* sp24;
@@ -762,8 +761,8 @@ void func_84370B7C(Battler* arg0) {
     for (i = 0; i < 4; i++) {
         if (sp34->unk_09[i] == 0) {
             for (j = i; j < 4; j++) {
-                sp34->unk_09[j] = sp24->unk_32[j] = 0;
-                sp24->unk_1F[j] = 0;
+                sp24->unk_32[j] = 0;
+                sp24->unk_1F[j] = sp34->unk_09[j] = 0;
             }
             break;
         }
@@ -789,9 +788,6 @@ void func_84370B7C(Battler* arg0) {
     for (i = 0; i < 8; i++) { sp24->unk_5C[i] = 7; }
     // clang-format on
 }
-#else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/battle_engine/battle_engine_359F90/func_84370B7C.s")
-#endif
 
 s32 Battle_IsPartyMemberAlive(Battler* arg0) {
     if (arg0->unk_724->unk_01C[arg0->unk_654.unk_18 - 1].unk_02 != 0) {
