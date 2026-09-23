@@ -3,8 +3,8 @@
 # pokestadium decompilation coverage
 
 <!-- AUTO_COVERAGE:START -->
-- Functions with C implementations: **7,361 / 7,437 (99.0%)**
-- Remaining decompilable `GLOBAL_ASM` owners: **76** (across 41 source files)
+- Functions with C implementations: **7,364 / 7,437 (99.0%)**
+- Remaining decompilable `GLOBAL_ASM` owners: **73** (across 39 source files)
 - Separately managed `hasm` assembly segments: **9**
 <!-- AUTO_COVERAGE:END -->
 
@@ -22,7 +22,6 @@ The function denominator covers C source owners and `GLOBAL_ASM` stubs. `hasm` e
 | `src/fragments/battle_engine/battle_engine_34A420.c` | 1 |
 | `src/fragments/battle_engine/battle_engine_351F20.c` | 1 |
 | `src/fragments/battle_engine/battle_engine_356730.c` | 1 |
-| `src/fragments/battle_engine/battle_engine_359F90.c` | 1 |
 | `src/fragments/battle_engine/battle_engine_361050.c` | 2 |
 | `src/fragments/clefairy_game/clefairy_game.c` | 1 |
 | `src/fragments/credits/credits_158A00.c` | 1 |
@@ -30,7 +29,6 @@ The function denominator covers C source owners and `GLOBAL_ASM` stubs. `hasm` e
 | `src/fragments/gallery_album/gallery_album.c` | 1 |
 | `src/fragments/gallery_camera/gallery_camera_150AC0.c` | 1 |
 | `src/fragments/gallery_rental_viewer/gallery_rental_viewer_2AFDB0.c` | 1 |
-| `src/fragments/gallery_snap/gallery_snap.c` | 1 |
 | `src/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0.c` | 12 |
 | `src/fragments/gb_tower_emulator/gb_tower_emulator_86920.c` | 1 |
 | `src/fragments/gb_tower_emulator/gb_tower_emulator_86CB0.c` | 4 |
@@ -54,7 +52,7 @@ The function denominator covers C source owners and `GLOBAL_ASM` stubs. `hasm` e
 | `src/fragments/trade_machine/trade_machine_2942C0.c` | 1 |
 | `src/fragments/transfer_pak_select/transfer_pak_select.c` | 1 |
 | `src/fragments/widget_toolkit/widget_toolkit_2.c` | 2 |
-| `src/fragments/widget_tree/widget_tree.c` | 4 |
+| `src/fragments/widget_tree/widget_tree.c` | 3 |
 | `src/gb_audio_render.c` | 4 |
 
 ## Separately managed assembly segments
