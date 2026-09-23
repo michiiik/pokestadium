@@ -1844,7 +1844,6 @@ s32 WidgetTree_UpdateScrollableGridScroll(unk_func_8821421C_038_034* arg0) {
     return 0;
 }
 
-#ifdef NON_MATCHING
 s32 func_8850734C(unk_func_8821421C_038_034* arg0, s32 arg1, s32 arg2) {
     s16 temp_v0_2;
     s32 temp_a0;
@@ -1873,10 +1872,10 @@ s32 func_8850734C(unk_func_8821421C_038_034* arg0, s32 arg1, s32 arg2) {
     }
 
     gDPPipeSync(gDisplayListHead++);
-    gDPSetScissorFrac(gDisplayListHead++, G_SC_NON_INTERLACE, 0, (arg2 + temp_lo) * 4.0f, 0x0A00, arg2 * 4.0f);
+    gDPSetScissorFrac(gDisplayListHead++, G_SC_NON_INTERLACE, 0, arg2 * 4.0f, 0x0A00, (arg2 + temp_lo) * 4.0f);
 
-    var_s0 = arg0->unk_58 / arg0->unk_00.unk_3E;
     var_s2 = arg2 - (arg0->unk_58 % arg0->unk_00.unk_3E);
+    var_s0 = arg0->unk_58 / arg0->unk_00.unk_3E;
     temp_s5 = (((arg0->unk_58 + temp_lo) - 1) / arg0->unk_00.unk_3E) + 1;
 
     while (var_s0 < temp_s5) {
@@ -1903,9 +1902,6 @@ s32 func_8850734C(unk_func_8821421C_038_034* arg0, s32 arg1, s32 arg2) {
     gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, 640, 480);
     return 0;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/widget_tree/widget_tree/func_8850734C.s")
-#endif
 
 s32 WidgetTree_HandleScrollableGridInput(unk_func_8821421C_038_034* arg0, Controller* arg1) {
     s32 temp_t0;
