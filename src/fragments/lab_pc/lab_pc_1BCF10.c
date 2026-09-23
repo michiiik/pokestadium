@@ -408,12 +408,12 @@ void func_88216000(unk_func_8820BE14_02C_038* arg0, s32 arg1, s32 arg2) {
 #pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc/lab_pc_1BCF10/func_88216000.s")
 #endif
 
-#ifdef NON_MATCHING
 s32 func_882169D4(unk_func_8820BE14_02C_038* arg0, Controller* arg1) {
     s32 sp24 = arg0->unk_00.unk_38;
     s32 temp_t3 = arg0->unk_60;
     s32 var_t2 = 0;
     s32 sp18 = 0;
+    s32 var_a1;
 
     if ((arg0->unk_00.unk_2C == NULL) || (arg0->unk_00.unk_2C->unk_08 == 0)) {
         return 0;
@@ -436,8 +436,6 @@ s32 func_882169D4(unk_func_8820BE14_02C_038* arg0, Controller* arg1) {
     // clang-format on
 
     if ((arg0->unk_54 & 0x800) && ((arg0->unk_56 & ~0x800) == 0)) {
-        s32 var_a1;
-
         if ((arg0->unk_56 == 0) && (arg0->unk_5C == 0)) {
             sp18 = 1;
         }
@@ -458,7 +456,6 @@ s32 func_882169D4(unk_func_8820BE14_02C_038* arg0, Controller* arg1) {
             var_t2 = 0x80000000;
         }
     } else if ((arg0->unk_54 & 0x400) && ((arg0->unk_56 & ~0x400) == 0)) {
-        s32 var_a1;
         s32 temp_lo_2 = arg0->unk_00.unk_3E * (arg0->unk_00.unk_2C->unk_08 + 1);
         s32 temp_lo_6;
 
@@ -487,7 +484,6 @@ s32 func_882169D4(unk_func_8820BE14_02C_038* arg0, Controller* arg1) {
             var_t2 = 0x80000000;
         }
     } else if ((arg0->unk_54 & 0x200) && ((arg0->unk_56 & ~0x200) == 0)) {
-        s32 var_a1;
         s32 temp_a3 = arg0->unk_00.unk_3E * arg0->unk_00.unk_4A;
 
         if (arg0->unk_56 == 0) {
@@ -531,7 +527,6 @@ s32 func_882169D4(unk_func_8820BE14_02C_038* arg0, Controller* arg1) {
         }
     } else if (arg0->unk_54 & 0x100) {
         if (!(arg0->unk_56 & ~0x100)) {
-            s32 var_a1;
             s32 temp_lo_2 = arg0->unk_00.unk_3E * (arg0->unk_00.unk_2C->unk_08 + 1);
             s32 temp_lo_6 = arg0->unk_00.unk_3E * arg0->unk_00.unk_4A;
             s32 temp_a3 = (temp_lo_2 - arg0->unk_5C) - arg0->unk_00.unk_3E;
@@ -594,9 +589,6 @@ s32 func_882169D4(unk_func_8820BE14_02C_038* arg0, Controller* arg1) {
     }
     return var_t2;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc/lab_pc_1BCF10/func_882169D4.s")
-#endif
 
 void LabPC_ScrollableGrid_SetSwapMode(unk_func_8820BE14_02C_038* arg0, s32 arg1) {
     if (arg1 == 0) {
