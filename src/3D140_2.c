@@ -68,7 +68,7 @@ typedef struct unk_D_800FCB48 {
     /* 0x70 */ s32 unk_70;
     /* 0x74 */ s32 unk_74;
     /* 0x78 */ u32 unk_78;
-    /* 0x7C */ s32 unk_7C;
+    /* 0x7C */ u32 unk_7C;
     /* 0x80 */ s32 unk_80;
 } unk_D_800FCB48; // size = 0x84
 
@@ -158,7 +158,7 @@ extern u8 D_800FCCBC[2];
 extern u8 D_800FCCBE[2];
 extern u8 D_800FCCC0[2];
 extern u8 D_800FCCC2[2];
-extern s8 D_800FCCC4[2];
+extern u8 D_800FCCC4[2];
 extern u8 D_800FCCC6[2];
 extern u8 D_800FCCC8[2];
 extern u8 D_800FCCCA[2];
@@ -1422,7 +1422,6 @@ void Audio_QueuePendingSoundId(u32 arg0) {
     }
 }
 
-#ifdef NON_MATCHING
 void func_8003F660(s32 arg0) {
     u32 mask;
     u32 sp40;
@@ -1610,12 +1609,12 @@ void func_8003F660(s32 arg0) {
             Audio_PlayCommand(0x16, D_80078400, 0);
             return;
         case 0x12:
-            if (((unk_D_800FCB48*)&D_800FCCCA[temp_s0])->unk_00[0] == 0) {
+            if (D_800FCCCA[temp_s0] == 0) {
                 Audio_QueueSequenceId(0x18C);
             } else {
                 Audio_QueueSequenceId(0x18E);
             }
-            ((unk_D_800FCB48*)&D_800FCCCA[temp_s0])->unk_00[0] ^= 1;
+            D_800FCCCA[temp_s0] ^= 1;
             D_80078544 = 0;
             Audio_PlayCommand(0x16, D_80078400, 0);
             return;
@@ -1983,9 +1982,6 @@ void func_8003F660(s32 arg0) {
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/3D140_2/func_8003F660.s")
-#endif
 
 void func_80040A70(BattleMonRuntime* arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 i;
