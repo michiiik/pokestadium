@@ -1859,7 +1859,6 @@ void LabPCList_RunPartySelectionModal(unk_func_8830867C_02C* arg0, Controller* a
     arg0->unk_02C->unk_2C = 0xB;
 }
 
-#ifdef NON_MATCHING
 void func_88305F28(unk_func_8830867C_02C* arg0) {
     unk_func_8830867C_04C_030_02C_000_000* spDC;
     unk_func_8830867C_02C_0CC_000* spD8;
@@ -1882,18 +1881,21 @@ void func_88305F28(unk_func_8830867C_02C* arg0) {
     unk_func_8830867C_02C_0CC_000_008* sp34;
 
     spDC = arg0->unk_0AC->unk_30->unk_2C->unk_00->unk_00[arg0->unk_0AC->unk_30->unk_38];
+    spD8 = arg0->unk_034->unk_00.unk_2C->unk_00[arg0->unk_034->unk_00.unk_38];
     spD0 = arg0->unk_034->unk_00.unk_38;
-    spD8 = arg0->unk_034->unk_00.unk_2C->unk_00[spD0];
-    spCC = spD0 - (arg0->unk_034->unk_58 / arg0->unk_034->unk_00.unk_3E);
+    spCC = arg0->unk_034->unk_00.unk_38 - (arg0->unk_034->unk_58 / arg0->unk_034->unk_00.unk_3E);
 
     if (spDC->unk_08 >= 0x64) {
-        spC0 = BattleMon_CountMoves(&spD8->unk_08);
+        sp34 = &spD8->unk_08;
+        spC0 = BattleMon_CountMoves(sp34);
         if (spC0 < 4) {
-            LabPCList_ClearMovesFrom(&spD8->unk_08, spC0);
+            LabPCList_ClearMovesFrom(sp34, spC0);
             spBC = -1;
             sp34 = (u8*)spD8 + spC0;
         } else {
-            spC0 = arg0->unk_0AC->unk_78->unk_30->unk_38;
+            do {
+                spC0 = arg0->unk_0AC->unk_78->unk_30->unk_38;
+            } while (0);
             sp34 = (u8*)spD8 + spC0;
             spBC = sp34->unk_11;
         }
@@ -1925,7 +1927,6 @@ void func_88305F28(unk_func_8830867C_02C* arg0) {
         }
     } else if (spDC->unk_08 >= 0x32) {
         spB4 = arg0->unk_0AC->unk_78->unk_30->unk_38;
-        if ((!arg0) && (!arg0)) {}
         LabPCList_ApplyPpUpItem(spD8, spDC, spB4, &spB0, &spAC);
 
         temp_v0_4 = ((func88500A6C)Memmap_GetFragmentVaddr(WidgetTree_SelectPage));
@@ -1972,9 +1973,6 @@ void func_88305F28(unk_func_8830867C_02C* arg0) {
     }
     LabPCList_BuildTmHmList(&arg0->unk_C48, arg0->unk_1A8, arg0->unk_154, 3, 0xAA);
 }
-#else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/lab_pc_list/lab_pc_list_1CEA00/func_88305F28.s")
-#endif
 
 s32 LabPCList_OpenListMenu(unk_func_8830867C_02C* arg0, Controller* arg1) {
     char* sp28[6];
