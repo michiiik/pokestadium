@@ -236,12 +236,29 @@ case "${build_jobs}" in
         ;;
 esac
 echo "gate-pr.sh: building with ${build_jobs} parallel job(s); per-object host syntax checks enabled"
+# linker_changed alone (above) only forces a fresh LINK of the existing
+# cached objects -- correct when the only thing that moved is where
+# already-correct objects land, but not when the checked-out
+# linker_scripts/symbol table content itself differs from what this
+# baked image was built against. symbol_addrs_code.txt declares symbols
+# for many unrelated functions in one shared file; a still-unmatched
+# owners own .c/.s content can be byte-identical to what the image
+# already has cached (so sync_tree correctly leaves its .o alone) while
+# the symbol IT depends on was renamed or removed elsewhere by other,
+# unrelated merges that landed on master since this image was last
+# rebuilt -- that stale cached .o then fails to link against the fresh
+# table with an "undefined reference," in files this PR never touched.
+# Confirmed live, 2026-09-26 (PR #94): a clean symbol rename failed this
+# gate with undefined references in 8 unrelated still-GLOBAL_ASM files,
+# not a checksum mismatch -- the build never even reached the checksum
+# comparison. Treat any linker_scripts diff as tree-wide, the same as
+# split/header/tool/Makefile changes already are.
 full_build=0
-if [ "${split_changed}" -eq 1 ] || [ "${headers_changed}" -eq 1 ] || [ "${tools_changed}" -eq 1 ] || [ "${makefile_changed}" -eq 1 ]; then
+if [ "${split_changed}" -eq 1 ] || [ "${headers_changed}" -eq 1 ] || [ "${tools_changed}" -eq 1 ] || [ "${makefile_changed}" -eq 1 ] || [ "${linker_changed}" -eq 1 ]; then
     full_build=1
 fi
 if [ "${full_build}" -eq 1 ]; then
-    echo "gate-pr.sh: forcing a full rebuild because split, header, tool, or Makefile inputs changed"
+    echo "gate-pr.sh: forcing a full rebuild because split, header, tool, linker-script, or Makefile inputs changed"
     make -B COMPARE=0 -j"${build_jobs}" rom
 else
     echo "gate-pr.sh: reusing cached objects and rebuilding changed source inputs"
