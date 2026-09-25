@@ -1166,26 +1166,20 @@ void GbEmu_BlitWithPixelOp(u16* dst, u16* src, s32 mode, s32 width, s32 height) 
 
 #pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/func_812016DC.s")
 
-#ifdef NON_MATCHING
-void func_812018C0(u16* arg0, s32 arg1, u16* arg2, s32 arg3, s32 arg4) {
-    s32 r = arg1 & 0xF800;
-    s32 g = arg1 & 0x7C0;
-    s32 b = arg1 & 0x3E;
+void func_812018C0(u16* dst, u16* src, s32 color, s32 width, s32 height) {
     s32 x;
     s32 y;
+    s32 intensity;
 
-    for (y = 0; y < arg4; y++) {
-        u16* dst = &arg0[y * 160];
-        u16* src = &arg2[y * arg3];
-        for (x = 0; x < arg3; x++) {
-            s32 intensity = (s32) (src[x] & 0x3E) >> 1;
-            dst[x] = (((r * intensity) / 31) & 0xF800) | (((g * intensity) / 31) & 0x7C0) | (((b * intensity) / 31) & 0x3E);
+    for (y = 0; y < height; y++) {
+        for (x = 0; x < width; x++) {
+            intensity = (src[y * width + x] & 0x3E) >> 1;
+            dst[y * 320 + x] = ((((color & 0xF800) * intensity) / 31) & 0xF800) |
+                               ((((color & 0x7C0) * intensity) / 31) & 0x7C0) |
+                               ((((color & 0x3E) * intensity) / 31) & 0x3E);
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/func_812018C0.s")
-#endif
 
 void func_81201DDC(u16* dst, u8* alpha_map, s32 color, s32 width, s32 height, u32 alpha_stride) {
   u16* dst_row;
