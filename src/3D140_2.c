@@ -174,7 +174,7 @@ extern u8 D_800FCD18[0x28];
 
 // function prototypes
 void Audio_QueueSoundWithFallbackList(u16, u16*, u8*);
-u32 func_80042158(u32, BattleMonRuntime*, BattleMonRuntime*);
+u32 Battle_EstimateMoveDamage(u32, BattleMonRuntime*, BattleMonRuntime*);
 s32 Battle_MapCategoryIdToCompactIndex(u8);
 ALDMAproc __amDmaNew(AMDMAState** state);
 
@@ -2102,7 +2102,7 @@ void func_80040A70(BattleMonRuntime* arg0, s32 arg1, s32 arg2, s32 arg3) {
 
             D_800FCCA2 = 0;
             if (D_800FCCB7 == 0) {
-                tmp = func_80042158(arg1, D_800FCB18[sp40], D_800FCB18[sp40 ^ 1]);
+                tmp = Battle_EstimateMoveDamage(arg1, D_800FCB18[sp40], D_800FCB18[sp40 ^ 1]);
 
                 if (tmp == -1) {
                     if (BitArray_IsBitSet(D_800FCCD8, arg1 - 1) == 0) {
@@ -2183,7 +2183,7 @@ void func_80040A70(BattleMonRuntime* arg0, s32 arg1, s32 arg2, s32 arg3) {
             if (D_800FCCB7 == 0) {
                 D_800FCCB7 = 1;
                 D_800FCCA2 = 0;
-                tmp = func_80042158(arg1, D_800FCB18[sp40], D_800FCB18[sp40 ^ 1]);
+                tmp = Battle_EstimateMoveDamage(arg1, D_800FCB18[sp40], D_800FCB18[sp40 ^ 1]);
                 if ((tmp >> 0x10) == 0) {
                     tmp = tmp << 1;
 
@@ -2568,179 +2568,215 @@ void func_800420F0_empty() {
     
 }
 
-#ifdef NON_MATCHING
-u32 func_80042158(u32 arg0, BattleMonRuntime* arg1, BattleMonRuntime* arg2) {
-    s32 side;
-    u8* entry;
-    u8 type;
+// Estimates the damage `moveId` would do from `attacker` to `defender`, for picking
+// commentary lines. Returns a small negative code for moves that are classified rather
+// than scored (see the effect switch below), otherwise a damage estimate capped at 0x7FFF.
+u32 Battle_EstimateMoveDamage(u32 moveId, BattleMonRuntime* attacker, BattleMonRuntime* defender) {
+    f32 var_f0;  // defense stat, then the STAB multiplier, then the defender's status multiplier
+    f32 var_f2;  // attack stat, then the attacker's hp reference
+    f32 var_f12; // multiplier for the defender's first type, then the attacker's boost
+    f32 baseDamage;
+    f32 scaledDamage;
+    f32 pad58;
+    f32 defenderHp;
+    u8* moveEntry;
+    u8* pad4C;
+    f32 attackerHp;
+    f32 defType1Mult;
+    s32 pad44[2];
+    u8 defType0Idx;
+    u8 defType1Idx;
+    u8 moveTypeIdx;
     u8 power;
-    u8 conv0;
-    u8 conv1;
-    f32 f0;
-    f32 f2;
-    f32 f12;
-    f32 f14;
-    f32 sp50;
+    u8 effect;
+    u8 effectiveness;
+    f32 defenderHpBase;
+    f32 defenderBoost;
+    u32 result;
+    s32 side;
 
-    if ((arg0 == 0) || (arg0 >= 0xA6)) {
-        arg0 = 1;
+    if ((moveId == 0) || (moveId >= 0xA6)) {
+        moveId = 1;
     }
 
-    if (arg1 == D_800FCB18[0]) {
+    if (attacker == D_800FCB18[0]) {
         side = 0;
-    } else if (arg1 == D_800FCB18[1]) {
+    } else if (attacker == D_800FCB18[1]) {
         side = 1;
     } else {
         return 0;
     }
+    moveEntry = &D_800780B4[(moveId * 3) - 3];
 
-    entry = &D_800780B4[(arg0 * 3) - 3];
-    conv0 = Battle_MapCategoryIdToCompactIndex(entry[2]);
+    moveTypeIdx = Battle_MapCategoryIdToCompactIndex(moveEntry[2]);
+    effect = moveEntry[0];
+    power = moveEntry[1];
 
-    type = entry[0];
-    power = entry[1];
+    switch (effect) {
+        case 0x26:
+            return -1;
 
-    switch (type) {
-        case 7:
-            return (u32)-1;
+        case 0x28:
+            return defender->unk_28 / 2;
 
-        case 8:
-            return arg2->unk_28 / 2;
-
-        case 0xD:
-            switch (arg0) {
+        case 0x29:
+            switch (moveId) {
                 case 0x31:
                     return 0x14;
                 case 0x45:
-                    return arg1->unk_26;
+                    return attacker->unk_26;
                 case 0x52:
                     return 0x28;
                 case 0x65:
-                    return arg1->unk_26;
+                    return attacker->unk_26;
                 case 0x95:
-                    return (u32)((f32)arg1->unk_26 * 1.5f);
+                    return ((f32)attacker->unk_26 * 1.5f);
                 default:
                     return 0;
             }
-
-        case 0x22:
-            if (entry == D_800781E0) {
-                return (u32)-5;
+        case 0x7:
+            return -3;
+        case 0x9:
+        case 0xA:
+        case 0xB:
+        case 0xD:
+        case 0xF:
+        case 0x18:
+        case 0x19:
+        case 0x1A:
+        case 0x2E:
+        case 0x2F:
+        case 0x32:
+        case 0x33:
+        case 0x34:
+        case 0x35:
+        case 0x38:
+        case 0x39:
+        case 0x40:
+        case 0x41:
+        case 0x4F:
+        case 0x52:
+        case 0x53:
+        case 0x55:
+            return -5;
+        case 0x12:
+        case 0x13:
+        case 0x14:
+        case 0x16:
+        case 0x20:
+        case 0x31:
+        case 0x3B:
+        case 0x42:
+        case 0x43:
+        case 0x54:
+        case 0x56:
+            return -4;
+        case 0x1C:
+            if (moveId == 100) {
+                return -5;
             }
-            return (u32)-4;
+            return -4;
+        default:
+            break;
     }
 
-    if (entry == D_80078180) {
-        return (u32)-2;
+    if (moveId == 68) {
+        return -2;
     }
 
-    if (arg1->unk_2A != 0) {
-        f2 = arg1->unk_2A;
+    if (attacker->unk_2A != 0) {
+        var_f2 = attacker->unk_2A;
     } else {
-        f2 = 1.0f;
+        var_f2 = 1.0f;
     }
 
-    if (arg2->unk_2C != 0) {
-        f0 = arg2->unk_2C;
+    if (defender->unk_2C != 0) {
+        var_f0 = defender->unk_2C;
     } else {
-        f0 = 1.0f;
+        var_f0 = 1.0f;
     }
 
-    sp50 = ((((f32)(((arg1->unk_26 * 2) / 5) + 2) * (f32)power) * f2) / f0);
+    baseDamage = ((((f32)(((attacker->unk_26 * 2) / 5) + 2) * (f32)power) * var_f2) / var_f0) / 50.0f;
 
-    conv1 = Battle_MapCategoryIdToCompactIndex(arg2->unk_16[6]);
-    {
-        u8 conv2;
-        u8 mode;
+    defType0Idx = Battle_MapCategoryIdToCompactIndex(defender->unk_16[6]);
+    defType1Idx = Battle_MapCategoryIdToCompactIndex(defender->unk_16[7]);
 
-        conv2 = Battle_MapCategoryIdToCompactIndex(arg2->unk_16[7]);
-
-        mode = D_800782A4[(conv1 * 0xF) + conv2];
-        if (mode == 1) {
-            f12 = 0.0f;
-        } else if (mode == 2) {
-            f12 = 0.5f;
-        } else if (mode == 3) {
-            f12 = 2.0f;
-        } else {
-            f12 = 1.0f;
-        }
-
-        mode = D_800782A4[(conv1 * 0xF) + conv0];
-        if (mode == 1) {
-            f2 = 0.0f;
-        } else if (mode == 2) {
-            f2 = 0.5f;
-        } else if (mode == 3) {
-            f2 = 2.0f;
-        } else {
-            f2 = 1.0f;
-        }
+    effectiveness = D_800782A4[(moveTypeIdx * 0xF) + defType0Idx];
+    switch (effectiveness) {
+        case 1:
+            var_f12 = 0.0f;
+            break;
+        case 2:
+            var_f12 = 0.5f;
+            break;
+        case 3:
+            var_f12 = 2.0f;
+            break;
+        default:
+            var_f12 = 1.0f;
     }
 
-    if ((arg1->unk_16[6] == entry[2]) || (arg1->unk_16[7] == entry[2])) {
-        f0 = 1.5f;
+    effectiveness = D_800782A4[(moveTypeIdx * 0xF) + defType1Idx];
+    switch (effectiveness) {
+        case 1:
+            defType1Mult = 0.0f;
+            break;
+        case 2:
+            defType1Mult = 0.5f;
+            break;
+        case 3:
+            defType1Mult = 2.0f;
+            break;
+        default:
+            defType1Mult = 1.0f;
+    }
+
+    if ((attacker->unk_16[6] == moveEntry[2]) || (attacker->unk_16[7] == moveEntry[2])) {
+        var_f0 = 1.5f;
     } else {
-        f0 = 1.0f;
+        var_f0 = 1.0f;
     }
 
-    {
-        unk_D_800FCB48* hist;
-        f32 prev;
-        f32 cur;
-        f32 mulA;
-        f32 mulB;
-        u8 flags;
-        u32 ret;
+    scaledDamage = baseDamage * var_f12 * defType1Mult * var_f0;
 
-        hist = &D_800FCB48[side ^ 1];
-        prev = hist->unk_00[hist->unk_24 & 0xF];
-        if (prev == 0.0f) {
-            prev = 1.0f;
-        }
-        cur = arg2->unk_28;
-
-        if (D_80078390[side] == 1) {
-            mulA = D_8007CB80;
-        } else {
-            mulA = 1.0f;
-        }
-
-        hist = &D_800FCB48[side];
-        f14 = hist->unk_00[hist->unk_24 & 0xF];
-        if (f14 == 0.0f) {
-            f14 = 1.0f;
-        }
-        f12 = arg1->unk_28;
-
-        if (D_80078390[side ^ 1] == 1) {
-            mulB = D_8007CB84;
-        } else {
-            mulB = 1.0f;
-        }
-
-        flags = arg2->unk_15;
-        if (flags & 0x20) {
-            f14 = D_8007CB88;
-        } else if (flags & 7) {
-            f14 = D_8007CB8C;
-        } else {
-            f14 = 1.0f;
-        }
-
-        ret = (u32)(((((cur / prev) * D_8007CB90) + 1.0f) * sp50 * f2 * f0) *
-                    ((((f12 / hist->unk_00[D_800FCB48[side].unk_24 & 0xF]) * D_8007CB90) + 1.0f)) *
-                    mulA * mulB * f14);
-
-        if (ret >= 0x8000) {
-            return 0x7FFF;
-        }
-        return ret;
+    defenderHpBase = D_800FCB48[side ^ 1].unk_00[D_800FCB48[side ^ 1].unk_24 & 0xF];
+    if (defenderHpBase == 0.f) {
+        defenderHpBase = 1.f;
     }
+    defenderHp = defender->unk_28;
+
+    if (D_80078390[side ^ 1] == 1) {
+        defenderBoost = 1.1f;
+    } else {
+        defenderBoost = 1.0f;
+    }
+
+    var_f2 = D_800FCB48[side].unk_00[D_800FCB48[side].unk_24 & 0xF];
+    if (var_f2 == 0.0f) {
+        var_f2 = 1.f;
+    }
+
+    attackerHp = attacker->unk_28;
+    if (D_80078390[side] == 1) {
+        var_f12 = 1.1f;
+    } else {
+        var_f12 = 1.0f;
+    }
+
+    if (defender->unk_15 & 0x20) {
+        var_f0 = 1.2f;
+    } else if (defender->unk_15 & 7) {
+        var_f0 = 1.10f;
+    } else {
+        var_f0 = 1.0f;
+    }
+
+    result = ((((defenderHp / defenderHpBase) * 0.01f) + 1.f) * scaledDamage * (1.f + ((attackerHp / var_f2) * 0.01f)) * defenderBoost * var_f12 * var_f0);
+
+    result = (result >= 0x8000) ? 0x7FFF : result;
+
+    return result;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/3D140_2/func_80042158.s")
-#endif
 
 s32 Battle_MapCategoryIdToCompactIndex(u8 arg0) {
     switch (arg0) {
