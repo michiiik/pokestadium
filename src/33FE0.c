@@ -868,7 +868,124 @@ void func_80034348(ModelSegment* segment, ModelVertex* vertices) {
 }
 #else
 void func_80034348(ModelSegment*, ModelVertex*);
+extern Vec3fCounter* D_800B2F50;
+#ifdef NON_MATCHING
+void func_80034348(ModelSegment* segment, ModelVertex* vertices) {
+    s32 i;
+    f32 spF0;
+    s32 pad1[5];
+    f32 spD8;
+    s32 pad2[6];
+    s16 spBE;
+    s16 spBC;
+    s16 spBA;
+    s32 pad3[12];
+    s16* var_t2;
+    s32 pad4[6];
+    f32 sp60;
+    f32 sp5C;
+    f32 sp58;
+    f32 temp_fa1;
+    f32 temp_fs0;
+    f32 temp_fs1;
+    f32 temp_fs4;
+    f32 temp_fs5;
+    f32 temp_ft4;
+    f32 temp_fv0;
+    f32 temp_fv0_3;
+    f32 temp_fv0_4;
+    f32 temp_fv0_5;
+    f32 temp_fv0_6;
+    f32 temp_fv0_7;
+    f32 temp_fv0_8;
+    f32 temp_fv1;
+    f32 temp_fv1_2;
+    f32 var_fs0;
+    f32 var_fs1;
+    f32 var_fs2;
+    s16* var_s0;
+    s16 triangleCount;
+    s16 vertexCount;
+    ModelVertex* temp_a0_2;
+    ModelVertex* temp_v0;
+    ModelVertex* temp_v1;
+    ModelVertex* vtx;
+    Vec3fCounter* counter;
+
+    triangleCount = segment->triangleCount;
+    vertexCount = segment->vertexCount;
+    var_s0 = Memmap_GetSegmentVaddr(segment->indexSegment);
+    var_t2 = Memmap_GetSegmentVaddr(segment->remapSegment);
+    counter = D_800B2F50;
+    for (i = 0; i < vertexCount; i++) {
+        counter->x = 0.0f;
+        counter->y = 0.0f;
+        counter->z = 0.0f;
+        counter->count = 0;
+        counter++;
+    }
+    for (i = 0; i < triangleCount; i++) {
+        spBE = var_t2[*var_s0++];
+        temp_v0 = &vertices[spBE];
+        spF0 = temp_v0->position.base.x;
+        spBC = var_t2[*var_s0++];
+        spBA = var_t2[*var_s0++];
+        temp_v1 = &vertices[spBC];
+        temp_fs4 = temp_v1->position.base.x;
+        temp_fv0 = temp_v1->position.base.y;
+        temp_fv1 = temp_v1->position.base.z;
+        temp_fs5 = temp_fv0 - temp_v0->position.base.y;
+        temp_fs1 = temp_fv1 - temp_v0->position.base.z;
+        temp_a0_2 = &vertices[spBA];
+        spD8 = temp_a0_2->position.base.x;
+        sp5C = temp_fs1;
+        temp_fs0 = temp_a0_2->position.base.z - temp_fv1;
+        sp58 = temp_a0_2->position.base.y - temp_fv0;
+        sp60 = temp_fs0;
+        temp_fa1 = spD8 - temp_fs4;
+        temp_ft4 = temp_fs4 - spF0;
+        var_fs0 = (sp5C * temp_fa1) - (temp_ft4 * sp60);
+        var_fs2 = (temp_fs5 * sp60) - (temp_fs1 * sp58);
+        var_fs1 = (temp_ft4 * sp58) - (temp_fs5 * temp_fa1);
+        temp_fv0_3 = sqrtf((var_fs2 * var_fs2) + (var_fs0 * var_fs0) + (var_fs1 * var_fs1));
+        if ((s32) temp_fv0_3 > 0) {
+            temp_fv1_2 = 120.0f / temp_fv0_3;
+            var_fs2 *= temp_fv1_2;
+            var_fs0 *= temp_fv1_2;
+            var_fs1 *= temp_fv1_2;
+        }
+        counter = &D_800B2F50[spBE];
+        counter->x += var_fs2;
+        counter->y += var_fs0;
+        counter->z += var_fs1;
+        counter->count++;
+        counter = &D_800B2F50[spBC];
+        counter->x += var_fs2;
+        counter->y += var_fs0;
+        counter->z += var_fs1;
+        counter->count++;
+        counter = &D_800B2F50[spBA];
+        counter->x += var_fs2;
+        counter->y += var_fs0;
+        counter->z += var_fs1;
+        counter->count++;
+    }
+    counter = D_800B2F50;
+    vtx = vertices;
+    for (i = 0; i < vertexCount; i++) {
+        if (counter->count > 0) {
+            temp_fv0_4 = (f32) counter->count;
+            vtx->position.color.r = (f32) (counter->x / temp_fv0_4);
+            vtx->position.color.g = (f32) (counter->y / temp_fv0_4);
+            vtx->position.color.b = (f32) (counter->z / temp_fv0_4);
+        }
+        counter++;
+        vtx++;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/nonmatchings/33FE0/func_80034348.s")
+#endif
 #endif
 
 #ifdef NON_MATCHING
