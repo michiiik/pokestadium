@@ -174,7 +174,7 @@ u8 D_800FCD18[0x28];
 
 // function prototypes
 void Audio_QueueSoundWithFallbackList(u16, u16*, u8*);
-u32 func_80042158(u32, BattleMonRuntime*, BattleMonRuntime*);
+u32 Battle_EstimateMoveDamage(u32, BattleMonRuntime*, BattleMonRuntime*);
 s32 Battle_MapCategoryIdToCompactIndex(u8);
 ALDMAproc __amDmaNew(AMDMAState** state);
 
