@@ -1201,7 +1201,50 @@ void func_80034BD4(u32 modelSegment, StadiumTransform* xf, s32 index, ModelVerte
 }
 #else
 void func_80034BD4(u32, StadiumTransform*, s32, ModelVertex*);
+extern s16 Model_GetVertexClass(s16* table, s32 index);
+extern f32 func_80033568(f32 px, f32 py, f32 pz, f32 ax, f32 ay, f32 az, f32 bx, f32 by, f32 bz, f32* outX, f32* outY, f32* outZ);
+#ifdef NON_MATCHING
+void func_80034BD4(u32 modelSegment, StadiumTransform* xf, s32 index, ModelVertex* vertices) {
+    s32 pad0[5];
+    f32 sp180; f32 sp17C; f32 sp178; f32 sp174; f32 sp170; f32 sp16C; f32 sp168; f32 sp164; f32 sp160; f32 sp15C; f32 sp158; f32 sp154; f32 sp150; f32 sp14C; f32 sp148; f32 sp144; f32 sp140; f32 sp13C; f32 sp138; f32 sp134; f32 sp130;
+    s32 pad1[10];
+    f32 sp104; f32 sp100; f32 spFC; f32 one = 1.0f; f32 w0; f32 w1; f32 w2; f32 x; f32 y; f32 z; f32 temp_fv0;
+    s32 pad2[4]; s16 spCA; s32 pad3[1]; s16* spC0; MtxF* mtx; f32 temp_fs0; f32 temp_fs1; f32 temp_fs2; s16 temp_s1_2; s16* temp_s1; ModelSegment* temp_v0; s32 temp_s1_3; s32 i; s16* var_s3; PosBlend* temp_v0_2;
+    temp_v0 = Memmap_GetSegmentVaddr(modelSegment);
+    spCA = temp_v0->vertexCount;
+    temp_s1 = Memmap_GetSegmentVaddr(temp_v0->remapSegment);
+    spC0 = Memmap_GetSegmentVaddr(temp_v0->tableSegment);
+    mtx = xf->mtx;
+    guMtxXFMF(mtx->mf, xf->x0, xf->y0, xf->z0, &sp180, &sp17C, &sp178);
+    guMtxXFMF(mtx->mf, xf->x1, xf->y1, xf->z1, &sp174, &sp170, &sp16C);
+    guMtxXFMF(mtx->mf, xf->x2, xf->y2, xf->z2, &sp168, &sp164, &sp160);
+    guMtxXFMF(mtx->mf, xf->x3, xf->y3, xf->z3, &sp15C, &sp158, &sp154);
+    var_s3 = temp_s1;
+    sp150 = sp174 - sp180; sp14C = sp170 - sp17C; sp148 = sp16C - sp178;
+    sp144 = sp168 - sp180; sp140 = sp164 - sp17C; sp13C = sp160 - sp178;
+    sp138 = sp15C - sp180; sp134 = sp158 - sp17C; sp130 = sp154 - sp178;
+    for (i = 0; i < spCA; i++) {
+        temp_s1_2 = *var_s3;
+        if ((Model_GetVertexClass(spC0, temp_s1_2) != 0) && (temp_s1_2 == i)) {
+            temp_fs0 = vertices->position.base.x; temp_fs1 = vertices->position.base.y; temp_fs2 = vertices->position.base.z;
+            temp_s1_3 = 1 << index;
+            temp_fv0 = func_80033568(temp_fs0, temp_fs1, temp_fs2, sp180, sp17C, sp178, sp174, sp170, sp16C, &sp104, &sp100, &spFC);
+            temp_v0_2 = &vertices->position;
+            if ((temp_fv0 > 0.0f) && (temp_fv0 < xf->maxDist)) {
+                w0 = vertices->cmd.weights[index].w0; w1 = vertices->cmd.weights[index].w1; w2 = vertices->cmd.weights[index].w2;
+                x = (w0 * sp150) + sp180 + (w1 * sp144) + (w2 * sp138);
+                y = (w0 * sp14C) + sp17C + (w1 * sp140) + (w2 * sp134);
+                z = (w0 * sp148) + sp178 + (w1 * sp13C) + (w2 * sp130);
+                temp_v0_2->disabled |= temp_s1_3;
+                temp_v0_2->offset.x = (x - temp_fs0) * one; temp_v0_2->offset.y = (y - temp_fs1) * one; temp_v0_2->offset.z = (z - temp_fs2) * one;
+            } else { temp_v0_2->disabled &= ~temp_s1_3; }
+        }
+        var_s3++; vertices++;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/us/nonmatchings/33FE0/func_80034BD4.s")
+#endif
 #endif
 
 void Model_TransformPoint(MtxF* mtx, Vec3f* out, s16 (*in)[3]) {
