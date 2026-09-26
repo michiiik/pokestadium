@@ -13,47 +13,47 @@ The function denominator covers C source owners and `GLOBAL_ASM` stubs. `hasm` e
 
 ## Remaining owners by source file
 
-| File | Remaining owners |
-| --- | ---: |
-| `src/33FE0.c` | 4 |
-| `src/3D140_2.c` | 1 |
-| `src/audio_stream.c` | 1 |
-| `src/fragments/battle_engine/battle_engine_2EC3C0.c` | 2 |
-| `src/fragments/battle_engine/battle_engine_34A420.c` | 1 |
-| `src/fragments/battle_engine/battle_engine_351F20.c` | 1 |
-| `src/fragments/battle_engine/battle_engine_356730.c` | 1 |
-| `src/fragments/battle_engine/battle_engine_361050.c` | 2 |
-| `src/fragments/clefairy_game/clefairy_game.c` | 1 |
-| `src/fragments/credits/credits_158A00.c` | 1 |
-| `src/fragments/credits/credits_15A2B0.c` | 1 |
-| `src/fragments/gallery_album/gallery_album.c` | 1 |
-| `src/fragments/gallery_camera/gallery_camera_150AC0.c` | 1 |
-| `src/fragments/gallery_rental_viewer/gallery_rental_viewer_2AFDB0.c` | 1 |
-| `src/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0.c` | 12 |
-| `src/fragments/gb_tower_emulator/gb_tower_emulator_86920.c` | 1 |
-| `src/fragments/gb_tower_emulator/gb_tower_emulator_86CB0.c` | 4 |
-| `src/fragments/lab_pc/lab_pc_1A9780.c` | 3 |
-| `src/fragments/lab_pc/lab_pc_1AE680.c` | 3 |
-| `src/fragments/lab_pc/lab_pc_1BCF10.c` | 1 |
-| `src/fragments/lab_pc_list/lab_pc_list_1CEA00.c` | 1 |
-| `src/fragments/lab_pc_list/lab_pc_list_1D7B40.c` | 1 |
-| `src/fragments/magikarp_game/magikarp_game.c` | 1 |
-| `src/fragments/minigame_select/minigame_select_27BCC0.c` | 1 |
-| `src/fragments/particle_data_library/particle_data_library_2558B0.c` | 1 |
-| `src/fragments/particle_data_library/particle_data_library_2577F0.c` | 1 |
-| `src/fragments/particle_data_library/particle_data_library_257AF0.c` | 1 |
-| `src/fragments/particle_data_library/particle_data_library_258080.c` | 1 |
-| `src/fragments/pokedex/pokedex_214920.c` | 1 |
-| `src/fragments/pokedex/pokedex_2190D0.c` | 2 |
-| `src/fragments/sushi_game/sushi_game_144300.c` | 1 |
-| `src/fragments/sushi_game/sushi_game_1462A0.c` | 1 |
-| `src/fragments/trade_machine/trade_machine_289240.c` | 1 |
-| `src/fragments/trade_machine/trade_machine_291D60.c` | 1 |
-| `src/fragments/trade_machine/trade_machine_2942C0.c` | 1 |
-| `src/fragments/transfer_pak_select/transfer_pak_select.c` | 1 |
-| `src/fragments/widget_toolkit/widget_toolkit_2.c` | 2 |
-| `src/fragments/widget_tree/widget_tree.c` | 3 |
-| `src/gb_audio_render.c` | 4 |
+| File | Remaining owners | Functions |
+| --- | ---: | --- |
+| `src/33FE0.c` | 4 | `func_80033D44`, `func_80034348`, `func_80034824`, `func_80034BD4` |
+| `src/3D140_2.c` | 1 | `func_8003DB84` |
+| `src/audio_stream.c` | 1 | `func_80044EA4` |
+| `src/fragments/battle_engine/battle_engine_2EC3C0.c` | 2 | `func_84302658`, `func_8430506C` |
+| `src/fragments/battle_engine/battle_engine_34A420.c` | 1 | `func_84362084` |
+| `src/fragments/battle_engine/battle_engine_351F20.c` | 1 | `func_84367660` |
+| `src/fragments/battle_engine/battle_engine_356730.c` | 1 | `func_8436C6A4` |
+| `src/fragments/battle_engine/battle_engine_361050.c` | 2 | `func_8437B0CC`, `func_8437FD74` |
+| `src/fragments/clefairy_game/clefairy_game.c` | 1 | `func_86100C30` |
+| `src/fragments/credits/credits_158A00.c` | 1 | `func_86A013C8` |
+| `src/fragments/credits/credits_15A2B0.c` | 1 | `func_86A01CF0` |
+| `src/fragments/gallery_album/gallery_album.c` | 1 | `func_83501718` |
+| `src/fragments/gallery_camera/gallery_camera_150AC0.c` | 1 | `func_86905734` |
+| `src/fragments/gallery_rental_viewer/gallery_rental_viewer_2AFDB0.c` | 1 | `func_838043F8` |
+| `src/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0.c` | 12 | `func_81200AA8`, `func_812011D0`, `func_812016DC`, `func_812018C0`, `func_81202210`, `func_8120241C`, `func_81202758`, `func_812029B0`, `func_812033F4`, `func_81203F3C`, `func_81204A84`, `func_8120572C` |
+| `src/fragments/gb_tower_emulator/gb_tower_emulator_86920.c` | 1 | `func_812070A0` |
+| `src/fragments/gb_tower_emulator/gb_tower_emulator_86CB0.c` | 4 | `func_8120806C`, `func_81208828`, `func_81209078`, `func_81209374` |
+| `src/fragments/lab_pc/lab_pc_1A9780.c` | 3 | `func_88201488`, `func_88203ED8`, `func_882052F4` |
+| `src/fragments/lab_pc/lab_pc_1AE680.c` | 3 | `func_88206110`, `func_88209B54`, `func_8820BE14` |
+| `src/fragments/lab_pc/lab_pc_1BCF10.c` | 1 | `func_88216000` |
+| `src/fragments/lab_pc_list/lab_pc_list_1CEA00.c` | 1 | `func_88304850` |
+| `src/fragments/lab_pc_list/lab_pc_list_1D7B40.c` | 1 | `func_88310854` |
+| `src/fragments/magikarp_game/magikarp_game.c` | 1 | `func_860005B8` |
+| `src/fragments/minigame_select/minigame_select_27BCC0.c` | 1 | `func_8250281C` |
+| `src/fragments/particle_data_library/particle_data_library_2558B0.c` | 1 | `func_810010BC` |
+| `src/fragments/particle_data_library/particle_data_library_2577F0.c` | 1 | `func_81002530` |
+| `src/fragments/particle_data_library/particle_data_library_257AF0.c` | 1 | `func_81002830` |
+| `src/fragments/particle_data_library/particle_data_library_258080.c` | 1 | `func_81003A54` |
+| `src/fragments/pokedex/pokedex_214920.c` | 1 | `func_88803614` |
+| `src/fragments/pokedex/pokedex_2190D0.c` | 2 | `func_88805AEC`, `func_88807D04` |
+| `src/fragments/sushi_game/sushi_game_144300.c` | 1 | `func_86800B38` |
+| `src/fragments/sushi_game/sushi_game_1462A0.c` | 1 | `func_86803C6C` |
+| `src/fragments/trade_machine/trade_machine_289240.c` | 1 | `func_82F04604` |
+| `src/fragments/trade_machine/trade_machine_291D60.c` | 1 | `func_82F0BEF8` |
+| `src/fragments/trade_machine/trade_machine_2942C0.c` | 1 | `func_82F10BB4` |
+| `src/fragments/transfer_pak_select/transfer_pak_select.c` | 1 | `func_8130337C` |
+| `src/fragments/widget_toolkit/widget_toolkit_2.c` | 2 | `func_87803EAC`, `func_87804320` |
+| `src/fragments/widget_tree/widget_tree.c` | 3 | `func_88500A74`, `func_885065E0`, `func_8850B2D4` |
+| `src/gb_audio_render.c` | 4 | `func_80049A60`, `func_80049DF0`, `func_8004A474`, `func_8004A89C` |
 
 ## Separately managed assembly segments
 
