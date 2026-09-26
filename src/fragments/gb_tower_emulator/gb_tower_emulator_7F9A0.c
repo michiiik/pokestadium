@@ -37,25 +37,6 @@ typedef struct unk_func_812009D0 {
   /* 0x4A */ u8 unk_4A;
 } unk_func_812009D0; // size = 0x4B
 
-typedef struct unk_D_8122C748 {
-  /* 0x0000 */ u8 unk0000[0x9790];
-  /* 0x9790 */ s32 unk_9790;
-  /* 0x9794 */ u8 unk9794[0xFC];
-  /* 0x9890 */ s32 unk_9890;
-  /* 0x9894 */ u8 unk9894[0xFC];
-  /* 0x9990 */ s32 unk_9990;
-  /* 0x9994 */ u8 unk9994[0xFC];
-  /* 0x9A90 */ u16 unk_9A90[0x42];
-  /* 0x9B14 */ u8 unk9B14[0x82];
-  /* 0x9B96 */ u16 unk_9B96[0x42];
-} unk_D_8122C748; // size = 0x9C1A
-
-typedef struct unk_D_8120E480 {
-  /* 0x00 */ s32 value;
-  /* 0x04 */ u8 unk04[0x3F];
-  /* 0x43 */ u8 unk_43;
-} unk_D_8120E480; // size = 0x44
-
 typedef struct unk_D_8120D7F3 {
     u8 pad[0x116];
     u8 unk116;
@@ -82,7 +63,7 @@ extern s16 D_8120E400[];
 extern s16 D_8120E420[];
 extern s16 D_8120E440[];
 extern s16 D_8120E460[];
-extern unk_D_8120E480 D_8120E480[];
+extern u8 D_8120E480[0x100];
 extern u8 D_8120E580[256];
 extern u16 D_8120E680[4];
 
@@ -374,9 +355,7 @@ extern u8 D_8122C500[0x1F];
 extern u8 D_8122C520[0x20];
 extern u8* gGbEmuFont1Data;
 extern u8* gGbEmuFont2Data;
-extern unk_D_8122C748* D_8122C748;
-extern u8 D_8122C740[];
-extern u8 D_8122C744[];
+extern u8* D_8122C748;
 extern s32 D_8122C74C;
 extern s32 D_8122C750;
 extern u8* D_8122C754;
@@ -633,43 +612,23 @@ s16 D_8120E460[16] = {
     0, 4228, 8390, 12618, 16846, 21008, 25236, 29398,
     -29862, -25634, -21472, -17244, -13082, -8854, -4626, -464,
 };
-unk_D_8120E480 D_8120E480[3] = {
-    {
-        67110663,
-        {
-            0x07, 0x07, 0x07, 0x07, 0x07, 0x00, 0x07, 0x00, 0x00, 0x07, 0x07, 0x00, 0x07, 0x07, 0x07, 0x07,
-            0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07,
-            0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07,
-            0x05, 0x07, 0x07, 0x05, 0x07, 0x07, 0x05, 0x07, 0x04, 0x07, 0x05, 0x07, 0x07, 0x07, 0x05,
-        },
-        0x07,
-    },
-    {
-        117901063,
-        {
-            0x07, 0x07, 0x07, 0x07, 0x07, 0x03, 0x07, 0x07, 0x03, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07,
-            0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07,
-            0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07,
-            0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        },
-        0x00,
-    },
-    {
-        0,
-        {
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x34, 0x35, 0x00, 0x00, 0x06, 0x0D, 0x37, 0x03, 0x04, 0x38, 0x39,
-            0x3A, 0x3B, 0x3C, 0x3D, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x3E, 0x42,
-            0x00, 0x3E, 0x00, 0x40, 0x76, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0x22, 0x23,
-        },
-        0x24,
-    },
-};
-u8 D_8120E4CC[0x34] = {
-    0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30, 0x31, 0x32, 0x33, 0x07,
-    0x00, 0x08, 0x00, 0x00, 0x00, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F,
-    0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x00,
-    0x50, 0x00, 0x0E, 0x00,
+u8 D_8120E480[0x100] = {
+    0x04, 0x00, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x00, 0x07, 0x00, 0x00, 0x07, 0x07, 0x00,
+    0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07,
+    0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07,
+    0x07, 0x07, 0x07, 0x07, 0x05, 0x07, 0x07, 0x05, 0x07, 0x07, 0x05, 0x07, 0x04, 0x07, 0x05, 0x07,
+    0x07, 0x07, 0x05, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x03, 0x07, 0x07,
+    0x03, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07,
+    0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07,
+    0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x34, 0x35, 0x00, 0x00, 0x06, 0x0D, 0x37, 0x03, 0x04, 0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D,
+    0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x3E, 0x42, 0x00, 0x3E, 0x00, 0x40,
+    0x76, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28,
+    0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30, 0x31, 0x32, 0x33, 0x07, 0x00, 0x08, 0x00, 0x00,
+    0x00, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F, 0x50, 0x51, 0x52, 0x53,
+    0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x00, 0x50, 0x00, 0x0E, 0x00,
 };
 u8 D_8120E580[0x100] = {
     0x04, 0x00, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x00, 0x07, 0x00, 0x00, 0x07, 0x07, 0x00,
@@ -1124,8 +1083,126 @@ s32 GbPak_DetectSupportedCartridgeVariant(unk_func_812009D0* arg0) {
 void func_81200AA8(void *);
 #pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/func_81200AA8.s")
 
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/func_812011D0.s")
+#ifdef NON_MATCHING
+void func_812011D0(u16* fb, u8* cmd) {
+    u8* ptr;
+    u8* map;
+    u8* data;
+    u8* src;
+    u16* dst;
+    u16* pal;
+    u8 flags;
+    u8 y;
+    u8 tile;
+    s32 width;
+    s32 x;
+    s32 dir;
+    s32 trans;
+    s32 tileSize;
+    s32 count;
+    s32 row;
+    s32 col;
 
+    flags = *cmd;
+    ptr = cmd;
+    while (flags != 0) {
+        trans = flags;
+        x = ptr[1] + ((flags & 1) << 8);
+        y = ptr[2];
+        if (flags & 0x40) {
+            dir = -1;
+        } else {
+            dir = 0;
+        }
+        dst = fb + (y * 0x140 + x);
+        trans &= 0x20;
+
+        switch (ptr[3]) {
+            default:
+                map = D_8120E480;
+                data = gGbEmuFont1Data;
+                tileSize = 0xA;
+                break;
+            case 0xC:
+                tileSize = 0xC;
+                map = D_8120E580;
+                data = gGbEmuFont2Data;
+                break;
+            case 0xA:
+                data = gGbEmuFont1Data;
+                map = D_8120E480;
+                tileSize = 0xA;
+                break;
+        }
+
+        switch (ptr[4]) {
+            case 1:
+                pal = (u16*)&D_8120E320;
+                break;
+            case 2:
+                pal = (u16*)&D_8120E340;
+                break;
+            case 3:
+                pal = (u16*)&D_8120E360;
+                break;
+            case 4:
+                pal = (u16*)&D_8120E380;
+                break;
+            case 5:
+                pal = (u16*)&D_8120E3A0;
+                break;
+            case 6:
+                pal = (u16*)&D_8120E3C0;
+                break;
+            case 7:
+                pal = (u16*)&D_8120E3E0;
+                break;
+            case 8:
+                pal = (u16*)&D_8120E400;
+                break;
+            case 9:
+                pal = (u16*)&D_8120E420;
+                break;
+            case 10:
+                pal = (u16*)&D_8120E440;
+                break;
+            case 11:
+                pal = (u16*)&D_8120E460;
+                break;
+            case 0:
+            default:
+                pal = (u16*)&D_8120E300;
+                break;
+        }
+
+        count = ptr[5];
+        while (count != 0) {
+            count--;
+            tile = map[ptr[6] + 0x80];
+            width = map[tile];
+            src = data + tile * tileSize * 0x10;
+
+            for (row = 0; row != tileSize; row++) {
+                for (col = 0; col != width; col++) {
+                    if (trans || (pal[*src & 0xF] != 0)) {
+                        *dst = pal[*src & 0xF];
+                    }
+                    dst++;
+                    src++;
+                }
+                dst = dst - width + 0x140;
+                src = src - width + 0x10;
+            }
+            ptr++;
+            dst -= tileSize * 0x140 - width - dir;
+        }
+        flags = ptr[6];
+        ptr += 6;
+    }
+}
+#else
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/func_812011D0.s")
+#endif
 s32 GbEmu_PixelOpDitherA(s32 arg0, s32 arg1) {
   return (arg1 & 1) ? arg1 : arg0;
 }
@@ -1211,10 +1288,10 @@ void GbEmu_DrawStretchedBorderRow(s32 arg0, s32 arg1, s32 arg2) {
   s32 i;
 
   for (i = 8; i < arg2 - 8; i += 8) {
-      func_812018C0(arg0 + i * 2, &D_8122C748->unk_9890, arg1, 8, 0x10);
+      func_812018C0(arg0 + i * 2, (u16*)(D_8122C748 + 0x9890), arg1, 8, 0x10);
   }
-  func_812018C0(arg0, &D_8122C748->unk_9790, arg1, 8, 0x10);
-  func_812018C0(arg0 + (arg2 - 8) * 2, &D_8122C748->unk_9990, arg1, 8, 0x10);
+  func_812018C0(arg0, (u16*)(D_8122C748 + 0x9790), arg1, 8, 0x10);
+  func_812018C0(arg0 + (arg2 - 8) * 2, (u16*)(D_8122C748 + 0x9990), arg1, 8, 0x10);
 }
 
 void func_812020C0(u16* dst, s32 arg1, s32 arg2) {
@@ -1226,10 +1303,10 @@ void func_812020C0(u16* dst, s32 arg1, s32 arg2) {
 
   off = arg2 * 132;
   if (arg1 != 0) {
-      src = (u16*) (off * 2 + (u8*) D_8122C748 + 0x9A90);
+      src = (u16*)(off * 2 + D_8122C748 + 0x9A90);
       arg1 = 1;
   } else {
-      src = (u16*) (off * 2 + (u8*) D_8122C748 + 0x9B96);
+      src = (u16*)(off * 2 + D_8122C748 + 0x9B96);
       arg1 = -1;
   }
 
@@ -1244,51 +1321,50 @@ void func_812020C0(u16* dst, s32 arg1, s32 arg2) {
   }
 }
 
-#ifdef NON_MATCHING
 void func_81202210(s32 arg0, s32 arg1) {
+    u8* fb;
+    s32 x;
     s32 i;
-    s32 var_s1;
-    unk_D_80068BB0* temp_a0;
-    s32 var_v0;
-    u8 temp_t8;
-    u8 var_s2;
-    u8 var_s2_3;
-    u8* var_s0;
-    u8* temp_s7;
+    s32 count;
+    s32 off;
 
-    temp_a0 = D_8122B2D8[arg0];
-    bzero(temp_a0, 0x2800);
-    temp_s7 = (u8*)temp_a0 + 0xAA;
-    var_s2 = D_8122B2C0->unk_5DC5;
-    if (var_s2 != 0) {
-        var_s2 -= 1;
+    fb = (u8*)D_8122B2D8[arg0];
+    bzero(D_8122B2D8[arg0], 0x2800);
+    fb += 0xAA;
+
+    i = D_8122B2C0->unk_5DC5;
+    if (i != 0) {
+        i--;
     }
-    func_81201FBC(temp_s7, D_8120E680[var_s2], 0x70);
-    var_v0 = 9;
-    var_s1 = 0;
+    GbEmu_DrawStretchedBorderRow(fb, D_8120E680[i], 0x70);
+
     if (arg1 != 0) {
-        var_v0 = 8;
+        count = 8;
         arg1 = 0xA;
+    } else {
+        count = 9;
     }
-    var_s0 = &D_8122AD50[arg1 + var_v0];
-    for (i = 0; i <= var_v0; i++) {
-        func_81201DDC((u16*)((var_s1 * 2) + temp_s7 + 0x788), &D_8122C740[(D_8120E480[*var_s0 - i].unk_43 * 0xA0)], 0xFFFE, 0xC, 0xA, 0x10);
-        temp_t8 = D_8120E480[*var_s0 - i].unk_43;
-        var_s0 -= 1;
-        var_s1 += D_8120E480[temp_t8].value;
+    x = 0;
+
+    for (i = 0; i <= count; i++) {
+        func_81201DDC((u16*)((x * 2) + fb + 0x788),
+                      &gGbEmuFont1Data[D_8120E480[D_8122AD50[arg1 + count - i] - i + 0x43] * 0xA0],
+                      0xFFFE, 0xC, 0xA, 0x10);
+        x += D_8120E480[D_8120E480[D_8122AD50[arg1 + count - i] - i + 0x43]];
     }
-    func_812015EC((u16*)(temp_s7 + 0x7FE), (u16*)(D_8122C748 + 0xAD18), 0, 0x10, 0xA);
-    var_s2_3 = D_8122B2C0->unk_5DC5;
-    if (var_s2_3 != 0) {
-        var_s2_3 -= 1;
+
+    GbEmu_BlitWithPixelOp((u16*)(fb + 0x7FE), (u16*)((u8*)D_8122C748 + 0xAD18), 0, 0x10, 0xA);
+
+    i = D_8122B2C0->unk_5DC5;
+    if (i != 0) {
+        i--;
     }
-    func_812015EC((u16*)(temp_s7 + 0x5C2), (u16*)((var_s2_3 * 0x90 * 2) + D_8122C748 + 0xAE58), 0, 0xC, 0xC);
-    func_812020C0(temp_s7 - 0x10, arg1, 0);
+    off = i * 0x90;
+    GbEmu_BlitWithPixelOp((u16*)(fb + 0x5C2), (u16*)((off * 2) + (u8*)D_8122C748 + 0xAE58), 0, 0xC, 0xC);
+
+    func_812020C0(fb - 0x10, arg1, 0);
     D_8122C4E7 = 0;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/func_81202210.s")
-#endif
 
 #ifdef NON_MATCHING
 void func_8120241C(void) {
@@ -1311,19 +1387,19 @@ void func_8120241C(void) {
     switch (D_8122C4E2) { 
     case 1:
         func_81201FBC(temp_s0 + 0xA4, temp_v1_2, 0x8C);
-        func_812015EC(temp_s0 + 0x5AA, (u8*)D_8122C748 + 0xA778, 0, 0x18, 0xD);
-        func_812015EC(temp_s0 + 0x1762, (u8*)D_8122C748 + 0xA6D8, 0, 0x10, 5);
-        func_812015EC(temp_s0 + 0x5DE, (u8*)D_8122C748 + 0xAC58, 0, 8, 6);
-        func_812015EC(temp_s0 + 0x5EE, (u8*)D_8122C748 + 0xACB8, 0, 8, 6);
+        func_812015EC(temp_s0 + 0x5AA, D_8122C748 + 0xA778, 0, 0x18, 0xD);
+        func_812015EC(temp_s0 + 0x1762, D_8122C748 + 0xA6D8, 0, 0x10, 5);
+        func_812015EC(temp_s0 + 0x5DE, D_8122C748 + 0xAC58, 0, 8, 6);
+        func_812015EC(temp_s0 + 0x5EE, D_8122C748 + 0xACB8, 0, 8, 6);
         var_s4 = temp_s0 + 0x600;
         break;
     case 2:
         func_81201FBC(temp_s0 + 0x9C, temp_v1_2, 0x94);
-        func_812015EC(temp_s0 + 0x5A4, (u8*)D_8122C748 + 0xA9E8, 0, 0x18, 0xD);
-        func_812015EC(temp_s0 + 0x175C, (u8*)D_8122C748 + 0xA5E8, 0, 0x18, 5);
-        func_812015EC(temp_s0 + 0x5D8,(u8*)D_8122C748 + 0xAC58, 0, 8, 6);
-        func_812015EC(temp_s0 + 0x5E8, (u8*)D_8122C748 + 0xACB8, 0, 8, 6);
-        func_812015EC(temp_s0 + 0x5F8,(u8*) D_8122C748 + 0xACB8, 0, 8, 6);
+        func_812015EC(temp_s0 + 0x5A4, D_8122C748 + 0xA9E8, 0, 0x18, 0xD);
+        func_812015EC(temp_s0 + 0x175C, D_8122C748 + 0xA5E8, 0, 0x18, 5);
+        func_812015EC(temp_s0 + 0x5D8, D_8122C748 + 0xAC58, 0, 8, 6);
+        func_812015EC(temp_s0 + 0x5E8, D_8122C748 + 0xACB8, 0, 8, 6);
+        func_812015EC(temp_s0 + 0x5F8, D_8122C748 + 0xACB8, 0, 8, 6);
         var_s4 = temp_s0 + 0x608;
         break;
     default:
@@ -1332,12 +1408,12 @@ void func_8120241C(void) {
         var_s4 = temp_s0 + 0x5D6;
         break;
     }
-    func_812015EC(var_s4, (u8*)D_8122C748 + 0xC1D8, 0, 0xC, 0xC);
+    func_812015EC(var_s4, D_8122C748 + 0xC1D8, 0, 0xC, 0xC);
     var_s0 = 0;
     var_s2 = &D_8120D7F3;
     var_s1 = 0x37;
     do {
-        func_81201DDC((var_s0 * 2) + (var_s4 - 0x266), (((unk_func_8120241C_80*)((u8*)D_8120E580 + var_s2->unk116 + -var_s1))->unk80 * 0xC0) + D_8122C744, 0xFFFE, 0xC, 0xC, 0x10);
+        func_81201DDC((var_s0 * 2) + (var_s4 - 0x266), (((unk_func_8120241C_80*)((u8*)D_8120E580 + var_s2->unk116 + -var_s1))->unk80 * 0xC0) + gGbEmuFont2Data, 0xFFFE, 0xC, 0xC, 0x10);
         var_s0 += D_8120E580[((unk_func_8120241C_80*)((u8*)D_8120E580 + var_s2->unk116 + -var_s1))->unk80];
         if (var_s1 == 0x3C) {
             var_s0 -= 1;
@@ -1370,20 +1446,20 @@ void func_81202758(s32 arg0, s32 arg1) {
     temp_s4 = arg1 * 0x28 * 2;
     var_s0 = 0;
     do {
-        func_812015EC(var_s1, temp_s4 + (u8*)D_8122C748 + 0x8910, 0, 8, 5);
+        func_812015EC(var_s1, temp_s4 + D_8122C748 + 0x8910, 0, 8, 5);
         var_s0 += 1;
         var_s1 += 0x10;
     } while (var_s0 < 6);
     temp_s6 = arg1 << 7;
-    func_812015EC(var_s1, temp_s6 + (u8*)D_8122C748 + 0x8F90, 0, 8, 8);
+    func_812015EC(var_s1, temp_s6 + D_8122C748 + 0x8F90, 0, 8, 8);
     var_s1_2 = var_s1 + 0x1406;
     var_s0_2 = 0;
     do {
-        func_812015EC(var_s1_2, temp_s6 + (u8*)D_8122C748 + 0x8090, 0, 8, 8);
+        func_812015EC(var_s1_2, temp_s6 + D_8122C748 + 0x8090, 0, 8, 8);
         var_s0_2 += 1;
         var_s1_2 += 0x1400;
     } while (var_s0_2 < 5);
-    func_812015EC(var_s1_2, temp_s6 + (u8*)D_8122C748 + 0x8510, 0, 8, 8);
+    func_812015EC(var_s1_2, temp_s6 + D_8122C748 + 0x8510, 0, 8, 8);
     var_s1_3 = var_s1_2 + 0x10;
     switch(D_8122C771) {
         case 1:
@@ -1400,16 +1476,16 @@ void func_81202758(s32 arg0, s32 arg1) {
         break;
     }
     while (var_s0_3 > 0) {
-        func_812015EC(var_s1_3 + 0x780, temp_s4 + (u8*)D_8122C748 + 0x8910, 0, 8, 5);
+        func_812015EC(var_s1_3 + 0x780, temp_s4 + D_8122C748 + 0x8910, 0, 8, 5);
         var_s0_3 -= 1;
         var_s1_3 += 0x10;
     }
-    func_812015EC(var_s1_3, temp_s6 + (u8*)D_8122C748 + 0x8B90, 0, 8, 8);
+    func_812015EC(var_s1_3, temp_s6 + D_8122C748 + 0x8B90, 0, 8, 8);
     temp_s1 = var_s1_3 - 0x13FA;
-    func_812015EC(temp_s1, temp_s6 + (u8*)D_8122C748 + 0x9390, 0, 8, 8);
+    func_812015EC(temp_s1, temp_s6 + D_8122C748 + 0x9390, 0, 8, 8);
     temp_s1_2 = temp_s1 - 0x1400;
-    func_812015EC(temp_s1_2, temp_s6 + (u8*)D_8122C748 + 0x9390, 0, 8, 8);
-    func_812015EC(temp_s1_2 - 0x1400, (u8*)D_8122C748 + 0x8490, 0, 8, 8);
+    func_812015EC(temp_s1_2, temp_s6 + D_8122C748 + 0x9390, 0, 8, 8);
+    func_812015EC(temp_s1_2 - 0x1400, D_8122C748 + 0x8490, 0, 8, 8);
 }
 #else
 void func_81202758(s32, s32);
