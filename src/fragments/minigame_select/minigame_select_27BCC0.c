@@ -3,10 +3,7 @@
 #include "src/model_renderer.h"
 #include "src/graphics_textures.h"
 #include "src/input.h"
-extern Gfx D_8006F518[];
-extern Gfx D_8006F630[];
-void Ui_DrawGradientPanel(s32 arg0, s32 arg1, s32 arg2, s32 arg3, Color_RGB8* arg4, Color_RGB8* arg5);
-extern void Ui_DrawTextureMarker();
+#include "src/ui_graphics.h"
 #include "src/save_data.h"
 #include "src/text_system.h"
 #include "src/jpeg_stream.h"
@@ -1805,41 +1802,44 @@ void MiniGameSelect_InitMenuNodes(s16 arg0, s16 arg1) {
     MiniGameSelect_CreateCursor();
 }
 
+#ifdef NON_MATCHING
 void func_8250281C(void) {
-    s32 sp44;
+    u32 var_a2_2;
     s32 sp40;
-    s32 ptr;
     s32 sp38;
-    s32 tmp;
-    u32 var_a2 = 0;
+    s32 sp18;
+    s32 sp30 = 0;
     s32 sp2C = 0;
-
+    s32 tmp;
 
     switch (D_8250A26C) {
         case 1:
-            var_a2 = 0;
+            sp30 = 0;
             if (MiniGameSelect_IsWidgetInState(D_8250A228[0], 2) != 0) {
-                var_a2 = 1;
+                sp30 = 1;
                 sp40 = 0x8C;
-                sp38 = (D_8250A288.unk_00 * 0x58) + 0xBA;
+                sp38 = D_8250A288.unk_00 * 0x58;
+                sp38 += 0xBA;
                 break;
             }
             break;
 
         case 2:
-            var_a2 = 0;
+            sp30 = 0;
+            D_8780FA48 += 0;
             if (MiniGameSelect_IsWidgetInState(D_8250A230[0], 2) != 0) {
-                var_a2 = 1;
+                sp30 = 1;
                 sp40 = 0x96;
-                sp38 = (D_8250A288.unk_02 * 0x62) + 0xBA;
+                sp38 = D_8250A288.unk_02 * 0x62;
+                sp38 += 0xBA;
                 break;
             }
             break;
 
         case 3:
-            var_a2 = 0;
+            sp30 = 0;
             if (MiniGameSelect_IsWidgetInState(D_8250A238, 2) != 0) {
-                var_a2 = 1;
+                sp30 = 1;
                 sp40 = 0xE4;
                 sp38 = 0xDA;
                 break;
@@ -1848,24 +1848,18 @@ void func_8250281C(void) {
 
         case 4:
             if (D_8250A2A0.unk_00 == 2) {
-                s16 var_v0;
-
-                var_a2 = 1;
+                sp30 = 1;
                 sp40 = 0xDC;
-                if (D_82508AF0 & 1) {
-                    var_v0 = 0x36;
-                } else {
-                    var_v0 = 0x48;
-                }
-                sp38 = var_v0 + (D_8250A288.unk_08 * 0x18) + 0xA4;
+                sp38 = ((D_82508AF0 & 1) ? 0x36 : 0x48) + (D_8250A288.unk_08 * 0x18);
+                sp38 += 0xA4;
                 break;
             }
             break;
 
         case 5:
-            var_a2 = 0;
+            sp30 = 0;
             if ((MiniGameSelect_IsWidgetInState(D_8250A240[0], 2) != 0) && (D_8780FA48 != -1)) {
-                var_a2 = 1;
+                sp30 = 1;
                 sp2C = 1;
                 sp40 = ((D_8250A288.unk_06 % 3) * 0x60) + 0xA5;
                 sp38 = ((D_8250A288.unk_06 / 3) * 0x60) + 0xAA;
@@ -1874,35 +1868,34 @@ void func_8250281C(void) {
             break;
     }
 
-    if (var_a2 != 0) {
+    if (sp30 != 0) {
         tmp = D_82508AF4 & 7;
 
-        var_a2 = (tmp * 6) / 7u;
+        var_a2_2 = (tmp * 6) / 7u;
         if (D_82508AF4 & 8) {
-            var_a2 = 6 - var_a2;
+            var_a2_2 = 6 - var_a2_2;
         }
+        sp18 = sp40 + var_a2_2;
+        Ui_DrawTextureMarker(sp18, sp38);
 
-        Ui_DrawTextureMarker(sp40 + var_a2, sp38, var_a2);
-
-        if (sp2C != 0) {
-            ptr = (s32)&D_8780FA48;
-
-            if (*(s16*)ptr >= 0) {
+        if ((sp2C != 0) && (D_8780FA48 >= 0)) {
             gSPDisplayList(gDisplayListHead++, D_8006F518);
             gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
 
-            sp44 = *(s16*)ptr;
-            if (D_8780FA30[sp44] == 0) {
-                Widget_DrawPlayerIcon(sp44, (sp40 + var_a2) - 0x20, sp38 - 2, 1.0f);
+            sp40 = D_8780FA48;
+            if (D_8780FA30[sp40] == 0) {
+                Widget_DrawPlayerIcon(sp40, sp18 - 0x20, sp38 - 2, 1.0f);
             } else {
-                Widget_DrawPlayerIcon(-1 - sp44, (sp40 + var_a2) - 0x20, sp38 - 2, 1.0f);
+                Widget_DrawPlayerIcon(-1 - sp40, sp18 - 0x20, sp38 - 2, 1.0f);
             }
 
             gSPDisplayList(gDisplayListHead++, D_8006F630);
         }
-        }
     }
 }
+#else
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/minigame_select/minigame_select_27BCC0/func_8250281C.s")
+#endif
 
 void MiniGameSelect_RenderDirtyPanels(void) {
     s32 i;
