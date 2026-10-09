@@ -63,6 +63,7 @@ uopt (`CDX_*`; grammar identical to decomp-workbench `docs/compiler-instrumentat
 | `CDX_PROC=N` | restrict to the N-th globalcolor invocation (0-based, = procedure order in the TU). A name is refused and a `procindex` table is printed |
 | `CDX_DETAIL_WEB=N\|all` | `webdetail` (IR identity, bb, line), every color cost, and (for N) interference neighbours |
 | `CDX_FORCE=p1:w9=c30,p2:w55=s` | force a color / the split path; needs `CDX_PROC`; forbidden colors are declined with a `force_declined` record |
+| `CDX_FORCE=p1:w58#1=s,p1:w58#2=c24` | occurrence-qualified force (cdx71 addition): applies to the Kth decision of that web only. A split piece keeps its parent's web number, so a plain `p1:w58=s` splits every piece again; `#1=s,#2=cK` splits once and colors the piece. Unqualified entries still match every decision |
 | `CDX_LINEAGE_TABLES=688,1004\|all` | live-range creation (`lineage_range`) and members (`lineage_member`) for these ICHAIN tables |
 | `CDX_SYMTAB=1` | itable dump (`symtab`) once per procedure — what `sym=` indexes; the frame layout reader `trace-frame` consumes it |
 | `CDX_TEMPS=1` | every `f_gettemp` result (`temp`) and the temp list at globalcolor entry (`templist`) — spill/stack temps with frame offsets |

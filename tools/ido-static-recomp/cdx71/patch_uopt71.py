@@ -77,7 +77,54 @@ def header71() -> str:
     # 3/5/5/5/5/5 for the microcase). Read the creation-time line instead.
     assert text.count("(int)MEM_U32(graphnode + 308)") == 2
     text = text.replace("(int)MEM_U32(graphnode + 308)", "dkwb_cdx_node_line(graphnode)")
+    # Occurrence-qualified forces (p1:w58#2=c24). A split piece keeps its
+    # parent's web number, so a plain p1:w58=s also splits every piece; the
+    # qualifier applies a force to the Nth decision of that web only.
+    old = "    int color = dkwb_cdx_lookup(ordinal, phase, web);\n"
+    assert text.count(old) == 1
+    text = text.replace(old, "    int color = dkwb_cdx_lookup_occ(ordinal, phase, site, web);\n")
+    anchor = "static int dkwb_cdx_color_forbidden("
+    assert text.count(anchor) == 1
+    text = text.replace(anchor, FORCE_OCCURRENCE + anchor)
+    old = (
+        "    if (!dkwb_cdx_digits(&cursor)) return 0;\n"
+        "    if (*cursor++ != '=') return 0;\n"
+    )
+    assert text.count(old) == 1
+    text = text.replace(old, (
+        "    if (!dkwb_cdx_digits(&cursor)) return 0;\n"
+        "    if (*cursor == '#') { cursor++; if (!dkwb_cdx_digits(&cursor)) return 0; }\n"
+        "    if (*cursor++ != '=') return 0;\n"
+    ))
     return text
+
+
+FORCE_OCCURRENCE = r"""/* p1:wN#K=... matches only the Kth phase-qualified decision of web N (the
+ * "dec" site counts; the "color" site that follows reuses the count). An
+ * unqualified p1:wN=... still matches every decision. */
+#define DKWB_CDX_OCC_WEBS 16384
+static int dkwb_cdx_occ[2][DKWB_CDX_OCC_WEBS];
+static int dkwb_cdx_lookup_occ(int ordinal, const char *phase, const char *site, int web) {
+    char key[48];
+    const char *cursor;
+    int key_length, occ, slot = phase[1] == '2';
+    if (!dkwb_cdx_force[0] || !dkwb_cdx_active(ordinal)) return -2;
+    if (web < 0 || web >= DKWB_CDX_OCC_WEBS) return dkwb_cdx_lookup(ordinal, phase, web);
+    if (site[0] == 'd') dkwb_cdx_occ[slot][web]++;
+    occ = dkwb_cdx_occ[slot][web];
+    key_length = snprintf(key, sizeof(key), "%s:w%d#%d=", phase, web, occ);
+    cursor = dkwb_cdx_force;
+    while ((cursor = strstr(cursor, key)) != NULL) {
+        if (cursor == dkwb_cdx_force || cursor[-1] == ',') {
+            const char *value = cursor + key_length;
+            if (*value == 's') return -1;
+            if (*value == 'c') return atoi(value + 1);
+        }
+        cursor += key_length;
+    }
+    return dkwb_cdx_lookup(ordinal, phase, web);
+}
+"""
 
 
 NODE_LINE_MAP = r"""
