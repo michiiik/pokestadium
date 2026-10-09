@@ -851,8 +851,8 @@ typedef struct unk_D_800A7440 {
 } unk_D_800A7440; // size >= 0x8
 extern unk_D_800A7440 D_800A7440;
 
-extern struct unk_D_86002F58_004_000_000 D_800AC840;
-extern struct unk_D_86002F58_004_000_000 D_800AC858;
+extern struct DisplayNodeHeader D_800AC840;
+extern struct DisplayNodeHeader D_800AC858;
 
 typedef struct unk_D_8006FF00 {
 	/* 0x00 */ u8 unk_00;

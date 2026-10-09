@@ -5,7 +5,7 @@
 #include "src/memory.h"
 
 typedef struct unk_func_80011B94 {
-    /* 0x00 */ unk_D_86002F58_004_000_000 unk_00;
+    /* 0x00 */ DisplayNodeHeader unk_00;
     /* 0x18 */ Gfx* unk_18;
 } unk_func_80011B94; // size = 0x1C
 
@@ -16,7 +16,7 @@ typedef struct unk_D_8690A610_018 {
 } unk_D_8690A610_018; // size = 0x8
 
 typedef struct unk_D_8690A610 {
-    /* 0x00 */ unk_D_86002F58_004_000_000 unk_00;
+    /* 0x00 */ DisplayNodeHeader unk_00;
     /* 0x18 */ unk_D_8690A610_018 unk_18;
 } unk_D_8690A610; // size = 0x20
 
@@ -44,7 +44,7 @@ unk_D_86002F34_alt5* GeoNode_CreateTranslateRotate(MainPoolState* arg0, unk_D_86
 unk_D_86002F34_alt22* GeoNode_CreateTranslate(MainPoolState* arg0, unk_D_86002F34_alt22* arg1, Vec3f* arg2);
 unk_D_86002F34_alt6* GeoNode_CreateAnimatedPart(MainPoolState* arg0, unk_D_86002F34_alt6* arg1, s16 arg2, s16 arg3, s16 arg4, Vec3s* arg5, Vec3s* arg6, Vec3f* arg7);
 unk_D_86002F34_alt7* GeoNode_CreateDisplayListPart(MainPoolState* arg0, unk_D_86002F34_alt7* arg1, s32 arg2, Gfx* arg3, s16 arg4);
-unk_D_86002F58_004_000* GeoNode_CreateModelPart(MainPoolState* arg0, unk_D_86002F58_004_000* arg1, s16 arg2, Vec3f* arg3,
+DisplayObject* GeoNode_CreateModelPart(MainPoolState* arg0, DisplayObject* arg1, s16 arg2, Vec3f* arg3,
                                       Vec3s* arg4, Vec3f* arg5);
 unk_D_86002F34_alt8* GeoNode_CreateDisplayListMatrix(MainPoolState* arg0, unk_D_86002F34_alt8* arg1, s32 arg2, Gfx* arg3, MtxF* arg4);
 unk_D_86002F34_alt8* GeoNode_CreateDisplayListMatrixFromTransform(MainPoolState* arg0, unk_D_86002F34_alt8* arg1, s32 arg2, Gfx* arg3, Vec3f* arg4, Vec3s* arg5);
