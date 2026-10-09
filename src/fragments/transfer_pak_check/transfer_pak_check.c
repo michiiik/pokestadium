@@ -21,7 +21,7 @@
 #include "PR/rcp.h"
 
 static GraphNode* D_82D09FF0;
-static DisplayObject D_82D09FF8[8];
+static unk_D_86002F58_004_000 D_82D09FF8[8];
 static Pak_PortStatus D_82D0AB38[4];
 static ModeSettings D_82D0AB90;
 static u16 D_82D0AB98;
@@ -1171,7 +1171,7 @@ void PakUi_DrawRotatingCorners(s16 arg0, s16 arg1, s16 arg2, s16 arg3, u8 arg4, 
 
 s32 PakUi_RenderPartyCardTexture(s32 arg0, unk_func_80011B94* arg1) {
     if (arg0 == 5) {
-        s32 var_a3 = D_8006F09C->node.callbackArg;
+        s32 var_a3 = D_8006F09C->unk_000.unk_14;
 
         gDPPipeSync(gDisplayListHead++);
 
@@ -1500,11 +1500,11 @@ void PakUi_UpdatePartyDisplayFrame(s32 arg0, s16 arg1) {
 
     temp_lo = (arg0 * 0x5000) / 10;
     for (i = 0; i < 4; i++) {
-        D_82D09FF8[i].rotation.y = temp_lo;
+        D_82D09FF8[i].unk_01E.y = temp_lo;
     }
 
     for (i = 4; i < 6; i++) {
-        D_82D09FF8[i].rotation.x = temp_lo;
+        D_82D09FF8[i].unk_01E.x = temp_lo;
     }
 
     BgStage_DrawFrame();
@@ -1529,12 +1529,12 @@ void TransferPak_InitPartyDisplay(void) {
     Model_InitDisplayObject(&D_82D09FF8[4], 0, 0, D_82D0ABB0);
     PakUi_BuildBottomBanner();
     Model_InitDisplayObject(&D_82D09FF8[5], 0, 0, D_82D0ABB4);
-    Vec3f_SetComponentsDuplicate(&D_82D09FF8->position, -204.0f, 104.0f, -579.0f);
-    Vec3f_SetComponentsDuplicate(&D_82D09FF8[1].position, -68.0f, 104.0f, -579.0f);
-    Vec3f_SetComponentsDuplicate(&D_82D09FF8[2].position, 68.0f, 104.0f, -579.0f);
-    Vec3f_SetComponentsDuplicate(&D_82D09FF8[3].position, 204.0f, 104.0f, -579.0f);
-    Vec3f_SetComponentsDuplicate(&D_82D09FF8[4].position, -268.0f, -158.0f, -579.0f);
-    Vec3f_SetComponentsDuplicate(&D_82D09FF8[5].position, 144.0f, 162.0f, -579.0f);
+    Vec3f_SetComponentsDuplicate(&D_82D09FF8->unk_024, -204.0f, 104.0f, -579.0f);
+    Vec3f_SetComponentsDuplicate(&D_82D09FF8[1].unk_024, -68.0f, 104.0f, -579.0f);
+    Vec3f_SetComponentsDuplicate(&D_82D09FF8[2].unk_024, 68.0f, 104.0f, -579.0f);
+    Vec3f_SetComponentsDuplicate(&D_82D09FF8[3].unk_024, 204.0f, 104.0f, -579.0f);
+    Vec3f_SetComponentsDuplicate(&D_82D09FF8[4].unk_024, -268.0f, -158.0f, -579.0f);
+    Vec3f_SetComponentsDuplicate(&D_82D09FF8[5].unk_024, 144.0f, 162.0f, -579.0f);
 }
 
 void PakUi_FreePartyDisplayModels(void) {
@@ -2026,7 +2026,7 @@ s32 PakUi_RenderMenuIconTexture(s32 arg0, UNUSED unk_func_80011B94* arg1) {
     s32 var_a3;
 
     if (arg0 == 5) {
-        var_a3 = D_8006F09C->node.callbackArg;
+        var_a3 = D_8006F09C->unk_000.unk_14;
         var_a2 = var_a3;
         if ((var_a3 == 0) && (D_800AE540.unk_11F2 == 1)) {
             var_a2 = 7;
@@ -2036,8 +2036,8 @@ s32 PakUi_RenderMenuIconTexture(s32 arg0, UNUSED unk_func_80011B94* arg1) {
 
         gSPSegment(gDisplayListHead++, 0x0F, (u32)D_82D0ABE0[var_a2]->img_p & 0x1FFFFFFF);
 
-        if (D_8006F09C->lodFraction < 0xFF) {
-            gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, D_8006F09C->lodFraction);
+        if (D_8006F09C->unk_01D < 0xFF) {
+            gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, D_8006F09C->unk_01D);
             gDPSetCombineLERP(gDisplayListHead++, 0, 0, 0, TEXEL0, TEXEL0, 0, ENVIRONMENT, 0, 0, 0, 0, COMBINED, 0, 0,
                               0, COMBINED);
         } else {
@@ -2239,49 +2239,49 @@ void PakUi_UpdateMenuDisplayFrame(s32 arg0, s32 arg1) {
     if (arg0 < 0xB) {
         var_a0 = ((10 - arg0) * -0x5000) / 10;
         for (i = 0; i < 5; i++) {
-            D_82D09FF8[i].rotation.x = var_a0;
+            D_82D09FF8[i].unk_01E.x = var_a0;
         }
-        D_82D09FF8[4].position.y = 18.0f;
+        D_82D09FF8[4].unk_024.y = 18.0f;
     } else if (arg0 < 0x11) {
-        D_82D09FF8[4].position.y = (((arg0 * 0x34) - 0x208) / 6) + 0x12;
+        D_82D09FF8[4].unk_024.y = (((arg0 * 0x34) - 0x208) / 6) + 0x12;
         for (i = 0; i < 4; i++) {
-            D_82D09FF8[i].rotation.x = 0;
+            D_82D09FF8[i].unk_01E.x = 0;
         }
 
         for (i = 5; i < 7; i++) {
-            D_82D09FF8[i].rotation.x = -0x5000;
+            D_82D09FF8[i].unk_01E.x = -0x5000;
         }
     } else if (arg0 < 0x1B) {
         temp_lo_4 = (arg0 * 0x5000) + 0xFFFB0000;
         var_a0 = temp_lo_4 / 10;
-        D_82D09FF8[4].position.y = 70.0f;
+        D_82D09FF8[4].unk_024.y = 70.0f;
 
         for (i = 0; i < 4; i++) {
-            D_82D09FF8[i].rotation.x = var_a0;
+            D_82D09FF8[i].unk_01E.x = var_a0;
         }
 
         for (i = 5; i < 7; i++) {
-            D_82D09FF8[i].rotation.x = var_a0 - 0x5000;
+            D_82D09FF8[i].unk_01E.x = var_a0 - 0x5000;
         }
     } else {
         temp_lo_4 = (arg0 * 0x5000) + 0xFFF7E000;
         var_a0 = temp_lo_4 / 10;
         for (i = 0; i < 7; i++) {
             if ((D_82D0ABA8 == 0) || (D_82D06FA0 != 0)) {
-                if ((i != D_82D06FA0) && (D_82D09FF8[i].rotation.x >= 0)) {
-                    if (D_82D09FF8[i].rotation.x < var_a0) {
-                        D_82D09FF8[i].rotation.x = var_a0;
+                if ((i != D_82D06FA0) && (D_82D09FF8[i].unk_01E.x >= 0)) {
+                    if (D_82D09FF8[i].unk_01E.x < var_a0) {
+                        D_82D09FF8[i].unk_01E.x = var_a0;
                     }
                 }
-            } else if (D_82D09FF8[i].rotation.x >= 0) {
-                if (D_82D09FF8[i].rotation.x < var_a0) {
-                    D_82D09FF8[i].rotation.x = var_a0;
+            } else if (D_82D09FF8[i].unk_01E.x >= 0) {
+                if (D_82D09FF8[i].unk_01E.x < var_a0) {
+                    D_82D09FF8[i].unk_01E.x = var_a0;
                 }
             }
         }
 
         if (D_82D06FA0 >= 5) {
-            D_82D09FF8[4].rotation.x = 0;
+            D_82D09FF8[4].unk_01E.x = 0;
         }
     }
 
@@ -2469,21 +2469,21 @@ void TransferPak_MenuIconsInit(void) {
     Model_InitDisplayObject(&D_82D09FF8[4], 0, 0, D_82D0AC04);
     Model_InitDisplayObject(&D_82D09FF8[5], 0, 0, D_82D0AC08);
     Model_InitDisplayObject(&D_82D09FF8[6], 0, 0, D_82D0AC08);
-    Vec3f_SetComponentsDuplicate(&D_82D09FF8[0].position, -84.0f, 48.0f, -579.0f);
-    Vec3f_SetComponentsDuplicate(&D_82D09FF8[1].position, 100.0f, 18.0f, -579.0f);
-    Vec3f_SetComponentsDuplicate(&D_82D09FF8[3].position, -84.0f, -64.0f, -579.0f);
-    Vec3f_SetComponentsDuplicate(&D_82D09FF8[2].position, 100.0f, -64.0f, -579.0f);
-    Vec3f_SetComponentsDuplicate(&D_82D09FF8[4].position, -268.0f, 18.0f, -579.0f);
-    Vec3f_SetComponentsDuplicate(&D_82D09FF8[5].position, -268.0f, -4.0f, -579.0f);
-    Vec3f_SetComponentsDuplicate(&D_82D09FF8[6].position, -268.0f, -56.0f, -579.0f);
+    Vec3f_SetComponentsDuplicate(&D_82D09FF8[0].unk_024, -84.0f, 48.0f, -579.0f);
+    Vec3f_SetComponentsDuplicate(&D_82D09FF8[1].unk_024, 100.0f, 18.0f, -579.0f);
+    Vec3f_SetComponentsDuplicate(&D_82D09FF8[3].unk_024, -84.0f, -64.0f, -579.0f);
+    Vec3f_SetComponentsDuplicate(&D_82D09FF8[2].unk_024, 100.0f, -64.0f, -579.0f);
+    Vec3f_SetComponentsDuplicate(&D_82D09FF8[4].unk_024, -268.0f, 18.0f, -579.0f);
+    Vec3f_SetComponentsDuplicate(&D_82D09FF8[5].unk_024, -268.0f, -4.0f, -579.0f);
+    Vec3f_SetComponentsDuplicate(&D_82D09FF8[6].unk_024, -268.0f, -56.0f, -579.0f);
 
     for (i = 0; i < 6; i++) {
-        D_82D09FF8[i].rotation.x = 0;
-        D_82D09FF8[i].rotation.y = 0;
+        D_82D09FF8[i].unk_01E.x = 0;
+        D_82D09FF8[i].unk_01E.y = 0;
     }
 
-    D_82D09FF8[5].rotation.x = -0x5000;
-    D_82D09FF8[6].rotation.x = -0x5000;
+    D_82D09FF8[5].unk_01E.x = -0x5000;
+    D_82D09FF8[6].unk_01E.x = -0x5000;
 
     for (i = 0; i < 7; i++) {
         if (D_82D0ABA0 != 0) {
@@ -2491,22 +2491,22 @@ void TransferPak_MenuIconsInit(void) {
                 case 0:
                 case 1:
                 case 2:
-                    D_82D09FF8[i].lodFraction = 0x80;
+                    D_82D09FF8[i].unk_01D = 0x80;
                     break;
 
                 case 6:
                     if (sp1B & 2) {
-                        D_82D09FF8[i].lodFraction = 0xFF;
+                        D_82D09FF8[i].unk_01D = 0xFF;
                     } else {
-                        D_82D09FF8[i].lodFraction = 0x80;
+                        D_82D09FF8[i].unk_01D = 0x80;
                     }
                     break;
                 default:
-                    D_82D09FF8[i].lodFraction = 0xFF;
+                    D_82D09FF8[i].unk_01D = 0xFF;
                     break;
             }
         } else {
-            D_82D09FF8[i].lodFraction = 0xFF;
+            D_82D09FF8[i].unk_01D = 0xFF;
         }
     }
 
@@ -2534,7 +2534,7 @@ s32 TransferPak_MenuHandleInput(void) {
     sp22 = D_82D06FA0;
     var_a3 = -1;
     if (BTN_IS_PRESSED(gPlayer1Controller, BTN_A)) {
-        if (D_82D09FF8[D_82D06FA0].lodFraction == 0xFF) {
+        if (D_82D09FF8[D_82D06FA0].unk_01D == 0xFF) {
             var_a3 = D_82D06FA0;
         } else {
             D_82D0ABA4 = 1;
@@ -2758,7 +2758,7 @@ void Pak_PollPortStatus(void) {
 void TransferPak_InitMenuGraphics(void) {
     s32 i;
     MemoryBlock* temp_v0 = MainPool_AllocState(main_pool_get_available(), 0);
-    DisplayObject* var_s1;
+    unk_D_86002F58_004_000* var_s1;
 
     D_82D09FF0 = process_geo_layout(temp_v0, &D_82D06FA4);
     D_82D0ABAC = process_geo_layout(temp_v0, &D_82D07710);
@@ -2774,7 +2774,7 @@ void TransferPak_InitMenuGraphics(void) {
 
     for (i = 0, var_s1 = &D_82D09FF8[0]; i < 8; var_s1++, i++) {
         ModelRenderer_AttachDisplayObject(var_s1);
-        D_82D09FF8[i].node.callbackArg = i;
+        D_82D09FF8[i].unk_000.unk_14 = i;
     }
 
     Pak_PollPortStatus();

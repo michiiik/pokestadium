@@ -1158,10 +1158,10 @@ void DynamoGame_DrawSparkEffects(s32 arg0) {
                     (s32)ROUND_MAX((D_8650AB28->unk_010 * 100.0f) / D_8650AB28->unk_012) / 250.0f;
 
                 if (D_8650AB28->unk_004 == 0) {
-                    D_8650AB28->unk_17C->unk_1C = D_8650AB28->unk_014.anchors[4].position;
+                    D_8650AB28->unk_17C->unk_1C = D_8650AB28->unk_014.unk_0EC;
                 } else if (D_8650AB28->unk_004 == 1) {
                     D_8650AB28->unk_17C->unk_28 *= 1.2f;
-                    D_8650AB28->unk_17C->unk_1C = D_8650AB28->unk_014.anchors[3].position;
+                    D_8650AB28->unk_17C->unk_1C = D_8650AB28->unk_014.unk_0DC;
                 }
             } else {
                 if (D_8650AB28->unk_004 == 0) {
@@ -1175,7 +1175,7 @@ void DynamoGame_DrawSparkEffects(s32 arg0) {
                         }
                     }
 
-                    D_8650AB28->unk_17C->unk_1C = D_8650AB28->unk_014.anchors[4].position;
+                    D_8650AB28->unk_17C->unk_1C = D_8650AB28->unk_014.unk_0EC;
                 } else if (D_8650AB28->unk_004 == 1) {
                     if (D_8780FC94 == 0) {
                         if (D_8650AB28->unk_17C->unk_28 > 0.0f) {
@@ -1187,7 +1187,7 @@ void DynamoGame_DrawSparkEffects(s32 arg0) {
                         }
                     }
 
-                    D_8650AB28->unk_17C->unk_1C = D_8650AB28->unk_014.anchors[3].position;
+                    D_8650AB28->unk_17C->unk_1C = D_8650AB28->unk_014.unk_0DC;
                 }
             }
 

@@ -24,9 +24,9 @@ typedef struct unk_D_83806778 {
 } unk_D_83806778; // size = 0x14
 
 static GraphNode* D_83805670;
-static ModelNodeView* D_83805678[6];
-static ModelNodeView* D_83805690;
-static DisplayObject D_83805698[2][6];
+static unk_D_86002F58_004_000_004* D_83805678[6];
+static unk_D_86002F58_004_000_004* D_83805690;
+static unk_D_86002F58_004_000 D_83805698[2][6];
 static unk_D_83806778 D_83806778[4];
 static u8* D_838067C8[4];
 static s32 D_838067D8;
@@ -226,7 +226,7 @@ s32 Gallery_RentalViewerNodePostCallback(s32 arg0, GraphNode* arg1) {
     u8* var_a3;
 
     if (arg0 == 5) {
-        switch (D_8006F09C->node.callbackArg) {
+        switch (D_8006F09C->unk_000.unk_14) {
             case 0:
                 // clang-format off
                 var_a0 = D_838067C8[0]; var_a3 = D_201D820;
@@ -262,7 +262,7 @@ s32 Gallery_RentalViewerNodePostCallback(s32 arg0, GraphNode* arg1) {
         }
 
         gDPPipeSync(gDisplayListHead++);
-        gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, D_8006F09C->lodFraction);
+        gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, D_8006F09C->unk_01D);
         gSPSegment(gDisplayListHead++, 0x0F, Memmap_GetSegmentVaddr(var_a0));
         gSPSegment(gDisplayListHead++, 0x0E, Memmap_GetSegmentVaddr(var_a3));
         gSPDisplayList(gDisplayListHead++, arg1->unk_14);
@@ -284,11 +284,11 @@ void Gallery_RentalViewerAnimateSlotScale(s32 arg0, f32 arg1) {
         var_a2 = 0x2000;
     }
 
-    D_83805698[0][arg0].scale.x = ((SINS(D_8380548C[arg0].unk_0A) * var_fa0) + 1.0f) * arg1;
-    D_83805698[0][arg0].scale.y = ((COSS(D_8380548C[arg0].unk_0A) * var_fa0) + 1.0f) * arg1;
+    D_83805698[0][arg0].unk_030.x = ((SINS(D_8380548C[arg0].unk_0A) * var_fa0) + 1.0f) * arg1;
+    D_83805698[0][arg0].unk_030.y = ((COSS(D_8380548C[arg0].unk_0A) * var_fa0) + 1.0f) * arg1;
 
-    D_83805698[1][arg0].scale.x = D_83805698[0][arg0].scale.x;
-    D_83805698[1][arg0].scale.y = D_83805698[0][arg0].scale.y;
+    D_83805698[1][arg0].unk_030.x = D_83805698[0][arg0].unk_030.x;
+    D_83805698[1][arg0].unk_030.y = D_83805698[0][arg0].unk_030.y;
 
     D_8380548C[arg0].unk_0A += var_a2 + ((MathUtil_Random16() & 0xF) * 0x10);
 }
@@ -305,8 +305,8 @@ void Gallery_RentalViewerAnimateSlotBob(s32 arg0, f32 arg1) {
         var_v0 = D_8380548C[arg0].unk_0C;
     }
 
-    D_83805698[0][arg0].rotation.z = SINS(D_8380548C[arg0].unk_08) * (1536.0f * var_fv0);
-    D_83805698[1][arg0].position.x = D_83805698[0][arg0].position.x =
+    D_83805698[0][arg0].unk_01E.z = SINS(D_8380548C[arg0].unk_08) * (1536.0f * var_fv0);
+    D_83805698[1][arg0].unk_024.x = D_83805698[0][arg0].unk_024.x =
         (D_8380548C[arg0].unk_02 - 320.0f) - (SINS(D_8380548C[arg0].unk_08) * (6.0f * var_fv0));
 
     D_8380548C[arg0].unk_08 += var_v0;
@@ -369,8 +369,8 @@ void Gallery_RentalViewerUpdatePortIcons(void) {
 void Gallery_RentalViewerInitScene(void) {
     MemoryBlock* temp_s1;
     s32 i;
-    ModelNodeView* temp_v0_2;
-    DisplayObject* ptr;
+    unk_D_86002F58_004_000_004* temp_v0_2;
+    unk_D_86002F58_004_000* ptr;
 
     temp_s1 = MainPool_AllocState(main_pool_get_available(), 0);
     D_838067D8 = 0;
@@ -388,7 +388,7 @@ void Gallery_RentalViewerInitScene(void) {
 
     for (i = 0, ptr = &D_83805698[0][0]; i < 12; ptr++, i++) {
         ModelRenderer_AttachDisplayObject(ptr);
-        D_83805698[0][i].node.callbackArg = i;
+        D_83805698[0][i].unk_000.unk_14 = i;
     }
 
     Gallery_RentalViewerRefreshPortStatus();
@@ -402,11 +402,11 @@ void Gallery_RentalViewerInitSlotModels(void) {
         if (D_8380548C[i].unk_00 != 0) {
             Model_InitDisplayObject(D_83805698[0] + i, 0, 0, D_83805678[i]);
             Model_InitDisplayObject(D_83805698[1] + i, 0, 0, D_83805690);
-            Vec3f_SetComponentsDuplicate(&D_83805698[0][i].position, D_8380548C[i].unk_02 - 0x140, 0xF0 - D_8380548C[i].unk_04,
+            Vec3f_SetComponentsDuplicate(&D_83805698[0][i].unk_024, D_8380548C[i].unk_02 - 0x140, 0xF0 - D_8380548C[i].unk_04,
                           -579.0f);
-            Vec3f_SetComponentsDuplicate(&D_83805698[1][i].position, D_8380548C[i].unk_02 - 0x140, 0xE4 - D_8380548C[i].unk_04,
+            Vec3f_SetComponentsDuplicate(&D_83805698[1][i].unk_024, D_8380548C[i].unk_02 - 0x140, 0xE4 - D_8380548C[i].unk_04,
                           -579.0f);
-            D_83805698[1][i].lodFraction = 0xB4;
+            D_83805698[1][i].unk_01D = 0xB4;
         }
     }
 }
@@ -434,8 +434,8 @@ void Gallery_RentalViewerUpdateZoomIntro(void) {
     s32 i;
 
     for (i = 0; i < 12; i++) {
-        D_83805698[0][i].scale.x = D_838054E0[D_838067DC] / 100.0f;
-        D_83805698[0][i].scale.y = D_838054F8[D_838067DC] / 100.0f;
+        D_83805698[0][i].unk_030.x = D_838054E0[D_838067DC] / 100.0f;
+        D_83805698[0][i].unk_030.y = D_838054F8[D_838067DC] / 100.0f;
     }
 
     D_838067E4 = ((((D_838067DC * 0x32) + 0x32) / 12) + 6) & (u16)~0x1;
@@ -591,13 +591,13 @@ void Gallery_RentalViewerFinishConfirmZoom(void) {
     }
 
     if (D_838067DC < 0xC) {
-        D_83805698[0][D_838067E0].scale.x = D_83805510[var_a1] / 100.0f;
-        D_83805698[0][D_838067E0].scale.y = D_83805528[var_a1] / 100.0f;
+        D_83805698[0][D_838067E0].unk_030.x = D_83805510[var_a1] / 100.0f;
+        D_83805698[0][D_838067E0].unk_030.y = D_83805528[var_a1] / 100.0f;
 
-        D_83805698[1][D_838067E0].scale.x = D_83805510[var_a1] / 100.0f;
-        D_83805698[1][D_838067E0].scale.y = D_83805528[var_a1] / 100.0f;
+        D_83805698[1][D_838067E0].unk_030.x = D_83805510[var_a1] / 100.0f;
+        D_83805698[1][D_838067E0].unk_030.y = D_83805528[var_a1] / 100.0f;
 
-        D_83805698[0][D_838067E0].rotation.z = 0;
+        D_83805698[0][D_838067E0].unk_01E.z = 0;
     } else if (D_838067DC == 0xC) {
         ModelRenderer_ClearDisplayObject(&D_83805698[0][D_838067E0]);
         ModelRenderer_ClearDisplayObject(&D_83805698[1][D_838067E0]);

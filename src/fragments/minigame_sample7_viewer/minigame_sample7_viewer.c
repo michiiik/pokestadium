@@ -27,7 +27,7 @@ static u32 D_86600850[] = {
 static unk_D_86002F30* D_86600940;
 static GraphNode* D_86600944;
 static unk_D_86002F34_00C* D_86600948;
-static DisplayObject D_86600950;
+static unk_D_86002F58_004_000 D_86600950;
 static s16 D_86600AB8;
 static s16 D_86600ABA;
 static s16 D_86600ABC;

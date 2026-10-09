@@ -1662,7 +1662,7 @@ void miniSandshewReangleAll(void) {
 
 void miniSandshewChangeAnim(MiniActor* actor, s32 animID) {
     ModelAnim_SetAnimation(&actor->unk_000, animID);
-    ModelAnim_BindTransformCurve(&actor->unk_000, 0, actor->unk_000.transformAnim.data, 0x10000);
+    ModelAnim_BindTransformCurve(&actor->unk_000, 0, actor->unk_000.unk_040.unk_04, 0x10000);
     ModelAnim_SetFrame(&actor->unk_000, 0);
     ModelAnim_SetSpeed(&actor->unk_000, 0x10000);
 }
@@ -1842,7 +1842,7 @@ void SandshrewGame_DigStateMachine(MiniActor* sandshrew) {
             } else {
                 sandshrew->diggingSpeed = 0.0f;
                 ModelAnim_SetAnimation(&sandshrew->unk_000, 3);
-                ModelAnim_BindTransformCurve(&sandshrew->unk_000, 0, sandshrew->unk_000.transformAnim.data, 0x10000);
+                ModelAnim_BindTransformCurve(&sandshrew->unk_000, 0, sandshrew->unk_000.unk_040.unk_04, 0x10000);
                 ModelAnim_SetFrame(&sandshrew->unk_000, 0);
                 ModelAnim_SetSpeed(&sandshrew->unk_000, 0x10000);
                 SandshrewGame_PlaySoundEventGuarded(4, sandshrew - miniSandshrews);
@@ -1859,7 +1859,7 @@ void SandshrewGame_DigStateMachine(MiniActor* sandshrew) {
 
         case 0x64: //	win start animation
             ModelAnim_SetAnimation(&sandshrew->unk_000, 4);
-            ModelAnim_BindTransformCurve(&sandshrew->unk_000, 0, sandshrew->unk_000.transformAnim.data, 0x10000);
+            ModelAnim_BindTransformCurve(&sandshrew->unk_000, 0, sandshrew->unk_000.unk_040.unk_04, 0x10000);
             ModelAnim_SetFrame(&sandshrew->unk_000, 0);
             ModelAnim_SetSpeed(&sandshrew->unk_000, 0x10000);
             sandshrew->mainState++;
@@ -1932,7 +1932,7 @@ void initSandshrewHole(MiniActor* a0, s32 arg1) {
     sandshrewHole->mainState = 0;
     sandshrewHole->unk_24A = 0;
 
-    sandshrewHole->unk_000.node.flags &= ~1;
+    sandshrewHole->unk_000.unk_000.unk_01 &= ~1;
 }
 
 void initSandshrewHoles(void) {
@@ -1950,7 +1950,7 @@ void SandshrewGame_UpdateHole(MiniActor* sandshrewHole, MiniActor* sandshrewPlay
 
     if ((sandshrewPlayer->diggingSpeed > 300.0f) && (sandshrewHole->mainState == 0)) {
         miniSandshewChangeAnim(sandshrewHole, 0);
-        sandshrewHole->unk_000.node.flags |= 1;
+        sandshrewHole->unk_000.unk_000.unk_01 |= 1;
         sandshrewHole->mainState = 1;
     }
 
@@ -2006,7 +2006,7 @@ void initSandshrewWaterGeiser(MiniActor* arg0, s32 arg1) {
     geiser->mainState = 0;
     geiser->unk_24A = 0;
 
-    geiser->unk_000.node.flags &= ~1;
+    geiser->unk_000.unk_000.unk_01 &= ~1;
 }
 
 void initSandshrewGeisers(void) {
@@ -2024,7 +2024,7 @@ void SandshrewGame_UpdateGeiser(MiniActor* geiser) {
     switch (geiser->mainState) {
         case 1:
             miniSandshewChangeAnim(geiser, 0);
-            geiser->unk_000.node.flags |= 1;
+            geiser->unk_000.unk_000.unk_01 |= 1;
             geiser->mainState++;
             break;
         case 2:

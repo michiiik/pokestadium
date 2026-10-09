@@ -18,8 +18,8 @@ static void* D_82E019B4;
 static GraphNode* D_82E019B8;
 static GraphNode* D_82E019BC;
 static GraphNode* D_82E019C0;
-static DisplayObject D_82E019C8[4];
-static DisplayObject D_82E01F68[3];
+static unk_D_86002F58_004_000 D_82E019C8[4];
+static unk_D_86002F58_004_000 D_82E01F68[3];
 static ModeSettings D_82E023A0;
 static s16 D_82E023A8;
 static s16 D_82E023AA;
@@ -221,7 +221,7 @@ s32 CupSelect_IconGeoPostCallback(s32 arg0, unk_func_80011B94* arg1) {
     s32 var_t0;
 
     if (arg0 == 5) {
-        temp_a3 = D_8006F09C->node.callbackArg;
+        temp_a3 = D_8006F09C->unk_000.unk_14;
         if (D_82E023AA >= temp_a3) {
             var_t0 = 0xFF;
         } else {
@@ -242,7 +242,7 @@ s32 CupSelect_DividerGeoPostCallback(s32 arg0, unk_func_80011B94* arg1) {
     s32 var_a3;
 
     if (arg0 == 5) {
-        s32 tmp = D_8006F09C->node.callbackArg;
+        s32 tmp = D_8006F09C->unk_000.unk_14;
 
         if (tmp < D_82E023AA) {
             var_a3 = 0xFF;
@@ -267,61 +267,61 @@ void CupSelect_RenderFrame(s32 arg0, s32 arg1) {
 
     if (arg0 == 0) {
         if ((arg1 >= 0) && (arg1 < 0xB)) {
-            D_82E019C8[0].rotation.y = ((0xA - arg1) * -0x5000) / 10;
+            D_82E019C8[0].unk_01E.y = ((0xA - arg1) * -0x5000) / 10;
         }
 
         if ((arg1 >= 2) && (arg1 < 0xD)) {
-            D_82E01F68[0].rotation.y = ((0xC - arg1) * -0x5000) / 10;
+            D_82E01F68[0].unk_01E.y = ((0xC - arg1) * -0x5000) / 10;
         }
 
         if ((arg1 >= 4) && (arg1 < 0xF)) {
-            D_82E019C8[1].rotation.y = ((0xE - arg1) * -0x5000) / 10;
+            D_82E019C8[1].unk_01E.y = ((0xE - arg1) * -0x5000) / 10;
         }
 
         if ((arg1 >= 6) && (arg1 < 0x11)) {
-            D_82E01F68[1].rotation.y = ((0x10 - arg1) * -0x5000) / 10;
+            D_82E01F68[1].unk_01E.y = ((0x10 - arg1) * -0x5000) / 10;
         }
 
         if ((arg1 >= 8) && (arg1 < 0x13)) {
-            D_82E019C8[2].rotation.y = ((0x12 - arg1) * -0x5000) / 10;
+            D_82E019C8[2].unk_01E.y = ((0x12 - arg1) * -0x5000) / 10;
         }
 
         if ((arg1 >= 0xA) && (arg1 < 0x15)) {
-            D_82E01F68[2].rotation.y = ((0x14 - arg1) * -0x5000) / 10;
+            D_82E01F68[2].unk_01E.y = ((0x14 - arg1) * -0x5000) / 10;
         }
 
         if ((arg1 >= 0xC) && (arg1 < 0x17)) {
-            D_82E019C8[3].rotation.y = ((0x16 - arg1) * -0x5000) / 10;
+            D_82E019C8[3].unk_01E.y = ((0x16 - arg1) * -0x5000) / 10;
         }
     }
 
     if (arg0 == 2) {
         if ((arg1 >= 0) && (arg1 < 0xB)) {
-            D_82E019C8[0].rotation.y = ((arg1 - 0) * 0x5000) / 10;
+            D_82E019C8[0].unk_01E.y = ((arg1 - 0) * 0x5000) / 10;
         }
 
         if ((arg1 >= 2) && (arg1 < 0xD)) {
-            D_82E01F68[0].rotation.y = (((arg1 - 0x2) * 0x5000)) / 10;
+            D_82E01F68[0].unk_01E.y = (((arg1 - 0x2) * 0x5000)) / 10;
         }
 
         if ((arg1 >= 4) && (arg1 < 0xF)) {
-            D_82E019C8[1].rotation.y = (((arg1 - 0x4) * 0x5000)) / 10;
+            D_82E019C8[1].unk_01E.y = (((arg1 - 0x4) * 0x5000)) / 10;
         }
 
         if ((arg1 >= 6) && (arg1 < 0x11)) {
-            D_82E01F68[1].rotation.y = (((arg1 - 0x6) * 0x5000)) / 10;
+            D_82E01F68[1].unk_01E.y = (((arg1 - 0x6) * 0x5000)) / 10;
         }
 
         if ((arg1 >= 8) && (arg1 < 0x13)) {
-            D_82E019C8[2].rotation.y = (((arg1 - 0x8) * 0x5000)) / 10;
+            D_82E019C8[2].unk_01E.y = (((arg1 - 0x8) * 0x5000)) / 10;
         }
 
         if ((arg1 >= 0xA) && (arg1 < 0x15)) {
-            D_82E01F68[2].rotation.y = (((arg1 - 0xA) * 0x5000)) / 10;
+            D_82E01F68[2].unk_01E.y = (((arg1 - 0xA) * 0x5000)) / 10;
         }
 
         if ((arg1 >= 0xC) && (arg1 < 0x17)) {
-            D_82E019C8[3].rotation.y = (((arg1 - 0xC) * 0x5000)) / 10;
+            D_82E019C8[3].unk_01E.y = (((arg1 - 0xC) * 0x5000)) / 10;
         }
     }
 
@@ -333,27 +333,27 @@ void CupSelect_RenderFrame(s32 arg0, s32 arg1) {
 
 void CupSelect_BuildDivisionList(void) {
     s32 i;
-    DisplayObject* var_s1;
-    DisplayObject* var_s2;
+    unk_D_86002F58_004_000* var_s1;
+    unk_D_86002F58_004_000* var_s2;
 
     for (var_s1 = &D_82E019C8[0], i = 0; i < 4; i++, var_s1++) {
         Model_InitDisplayObject(var_s1, 0, 0, D_82E019BC);
-        D_82E019C8[i].rotation.y = -0x5000;
+        D_82E019C8[i].unk_01E.y = -0x5000;
     }
 
-    Vec3f_SetComponentsDuplicate(&D_82E019C8[0].position, 0.0f, 162.0f, -579.0f);
-    Vec3f_SetComponentsDuplicate(&D_82E019C8[1].position, 0.0f, 54.0f, -579.0f);
-    Vec3f_SetComponentsDuplicate(&D_82E019C8[2].position, 0.0f, -54.0f, -579.0f);
-    Vec3f_SetComponentsDuplicate(&D_82E019C8[3].position, 0.0f, -162.0f, -579.0f);
+    Vec3f_SetComponentsDuplicate(&D_82E019C8[0].unk_024, 0.0f, 162.0f, -579.0f);
+    Vec3f_SetComponentsDuplicate(&D_82E019C8[1].unk_024, 0.0f, 54.0f, -579.0f);
+    Vec3f_SetComponentsDuplicate(&D_82E019C8[2].unk_024, 0.0f, -54.0f, -579.0f);
+    Vec3f_SetComponentsDuplicate(&D_82E019C8[3].unk_024, 0.0f, -162.0f, -579.0f);
 
     for (var_s2 = &D_82E01F68[0], i = 0; i < 3; i++, var_s2++) {
         Model_InitDisplayObject(var_s2, 0, 0, D_82E019C0);
-        D_82E01F68[i].rotation.y = -0x5000;
+        D_82E01F68[i].unk_01E.y = -0x5000;
     }
 
-    Vec3f_SetComponentsDuplicate(&D_82E01F68[0].position, 0.0f, 108.0f, -579.0f);
-    Vec3f_SetComponentsDuplicate(&D_82E01F68[1].position, 0.0f, 0, -579.0f);
-    Vec3f_SetComponentsDuplicate(&D_82E01F68[2].position, 0.0f, -108.0f, -579.0f);
+    Vec3f_SetComponentsDuplicate(&D_82E01F68[0].unk_024, 0.0f, 108.0f, -579.0f);
+    Vec3f_SetComponentsDuplicate(&D_82E01F68[1].unk_024, 0.0f, 0, -579.0f);
+    Vec3f_SetComponentsDuplicate(&D_82E01F68[2].unk_024, 0.0f, -108.0f, -579.0f);
 }
 
 s32 CupSelect_HandleInput(void) {
@@ -418,7 +418,7 @@ s32 CupSelect_Loop(void) {
 void CupSelect_InitGeoLayouts(void) {
     MemoryBlock* temp_v0 = MainPool_AllocState(main_pool_get_available(), 0);
     s32 i;
-    DisplayObject* var_s2;
+    unk_D_86002F58_004_000* var_s2;
 
     D_82E019B8 = process_geo_layout(temp_v0, &D_82E01110);
     D_82E019BC = process_geo_layout(temp_v0, &D_82E01800);
@@ -428,12 +428,12 @@ void CupSelect_InitGeoLayouts(void) {
 
     for (var_s2 = &D_82E019C8[0], i = 0; i < 4; var_s2++, i++) {
         ModelRenderer_AttachDisplayObject(var_s2);
-        D_82E019C8[i].node.callbackArg = i;
+        D_82E019C8[i].unk_000.unk_14 = i;
     }
 
     for (var_s2 = &D_82E01F68[0], i = 0; i < 3; var_s2++, i++) {
         ModelRenderer_AttachDisplayObject(var_s2);
-        D_82E01F68[i].node.callbackArg = i;
+        D_82E01F68[i].unk_000.unk_14 = i;
     }
 }
 

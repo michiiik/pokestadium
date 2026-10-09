@@ -686,7 +686,7 @@ void Gallery_SnapDrawHintBox(unk_D_83407B38* arg0, s32 arg1, s32 arg2) {
 
 void Gallery_SnapInit(s32 arg0, s32 arg1) {
     unk_D_83407B38* temp_v0_2;
-    ModelLoadContext* sp30;
+    unk_D_86002F58_004_000_010* sp30;
 
     switch (arg0) {
         case 1:

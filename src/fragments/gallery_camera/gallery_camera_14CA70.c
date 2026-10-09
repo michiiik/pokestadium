@@ -26,8 +26,8 @@
 #include "src/util.h"
 
 typedef struct unk_D_8690A69C {
-    /* 0x000 */ ModelLoadResult* unk_000;
-    /* 0x004 */ DisplayObject unk_004;
+    /* 0x000 */ unk_D_86002F58_004_000_010_024* unk_000;
+    /* 0x004 */ unk_D_86002F58_004_000 unk_004;
     /* 0x16C */ s32 unk_16C;
 } unk_D_8690A69C; // size = 0x170
 
@@ -293,9 +293,9 @@ static unk_D_869091B8 D_869091B8[] = {
 };
 
 static unk_D_8690A610 D_8690A610;
-static DisplayNodeHeader D_8690A630;
-static DisplayNodeHeader D_8690A648;
-static DisplayNodeHeader D_8690A660;
+static unk_D_86002F58_004_000_000 D_8690A630;
+static unk_D_86002F58_004_000_000 D_8690A648;
+static unk_D_86002F58_004_000_000 D_8690A660;
 char** gCameraHelpText;
 static s32 D_8690A67C;
 static s32 D_8690A680;
@@ -368,10 +368,10 @@ s32 GalleryCamera_BgAngleCallbackB(s32 arg0, GraphNode* arg1) {
 }
 
 s32 GalleryCamera_FogColorCallback(s32 arg0, GraphNode* arg1) {
-    DisplayObject* ptr = (DisplayObject*)arg1;
+    unk_D_86002F58_004_000* ptr = (unk_D_86002F58_004_000*)arg1;
 
     if (arg0 == 2) {
-        ptr->textureTint.rgba = D_8690A68C.rgba;
+        ptr->unk_03C.rgba = D_8690A68C.rgba;
     }
     return 0;
 }
@@ -384,11 +384,11 @@ void Gallery_SetBackgroundTint(u8 arg0, u8 arg1, u8 arg2) {
     D_8690A68C.b = arg2;
 
     if (v == 0xFF) {
-        if (D_8690A610.unk_00.callbackArg == 1) {
-            D_8690A610.unk_00.flags |= 1;
+        if (D_8690A610.unk_00.unk_14 == 1) {
+            D_8690A610.unk_00.unk_01 |= 1;
         }
     } else {
-        D_8690A610.unk_00.flags &= ~1;
+        D_8690A610.unk_00.unk_01 &= ~1;
     }
 }
 
@@ -408,9 +408,9 @@ void Gallery_LoadPhotoTextures(void) {
     Dma_WriteChunks(&D_8690B2F8, sp20, sp1C, 0);
 }
 
-ModelLoadResult* Gallery_LoadSurfingPikachuIcon(BattleMon* arg0) {
+unk_D_86002F58_004_000_010_024* Gallery_LoadSurfingPikachuIcon(BattleMon* arg0) {
     arg1_func_80010CA8 sp1C;
-    ModelLoadContext* sp18;
+    unk_D_86002F58_004_000_010* sp18;
 
     arg0->unk_00.unk_00 = 25;
     sp18 = PokeIcon_AllocFramebuffers(1);
@@ -418,7 +418,7 @@ ModelLoadResult* Gallery_LoadSurfingPikachuIcon(BattleMon* arg0) {
     PokeIcon_RequestFrameLoad(sp18, arg0->unk_00.unk_00 = 153, sp1C);
     PokeIcon_WaitFrameLoad(sp18);
 
-    return sp18->loadedModel;
+    return sp18->unk_24;
 }
 
 void Gallery_SetupPhotoModel(void) {
@@ -438,12 +438,12 @@ void Gallery_SetupPhotoModel(void) {
         D_8690A69C->unk_000 = Model_LoadForPokemon(&D_8690A6A0);
     }
 
-    Model_InitDisplayObject(&D_8690A69C->unk_004, 0, D_8690A69C->unk_16C, D_8690A69C->unk_000->modelRoot->unk_00[0]);
+    Model_InitDisplayObject(&D_8690A69C->unk_004, 0, D_8690A69C->unk_16C, D_8690A69C->unk_000->unk_08->unk_00[0]);
     Gallery_LoadPhotoTextures();
     ModelAnim_SetAnimation(&D_8690A69C->unk_004, D_8690A718[D_8690A700].unk_00);
 
-    D_8690A69C->unk_004.position.y += D_8690B2F8.unk_08;
-    D_8690A69C->unk_004.effectSlot = 0;
+    D_8690A69C->unk_004.unk_024.y += D_8690B2F8.unk_08;
+    D_8690A69C->unk_004.unk_0A6 = 0;
 }
 
 void Gallery_FinalizeBackgroundLoad(void) {
@@ -487,13 +487,13 @@ void Gallery_LoadBackgroundSet(s32 arg0) {
 
     temp_v1 = sp18(4, 0);
     if (temp_v1 == NULL) {
-        D_8690A610.unk_00.callbackArg = 0;
-        D_8690A610.unk_00.flags &= ~1;
+        D_8690A610.unk_00.unk_14 = 0;
+        D_8690A610.unk_00.unk_01 &= ~1;
     } else {
         D_8690A610.unk_18.unk_00 = temp_v1->unk_00;
         D_8690A610.unk_18.unk_02 = temp_v1->unk_02;
         D_8690A610.unk_18.unk_04.rgba = temp_v1->unk_04.rgba;
-        D_8690A610.unk_00.callbackArg = 1;
+        D_8690A610.unk_00.unk_14 = 1;
     }
 
     Gallery_SetBackgroundTint(0xFF, 0xFF, 0xFF);
@@ -637,7 +637,7 @@ void GalleryCamera_UpdatePokemonEventLoop(void) {
 }
 
 void GalleryCamera_ClearFinishedEventTrack(void) {
-    if ((D_8690A69C->unk_004.eventTrack.trackId != -1) && (ModelAnim_IsEventTrackNearEnd(&D_8690A69C->unk_004) == 1)) {
+    if ((D_8690A69C->unk_004.unk_054.unk_00 != -1) && (ModelAnim_IsEventTrackNearEnd(&D_8690A69C->unk_004) == 1)) {
         ModelAnim_SetEventFrame(&D_8690A69C->unk_004, 0);
         ModelAnim_SetEventTrack(&D_8690A69C->unk_004, -1);
     }
@@ -662,12 +662,12 @@ void Gallery_CapturePhoto(void) {
             D_83402EE0[D_8690B344].unk_6C |= D_8690A710->unk_00C * 0x10;
             D_83402EE0[D_8690B344].unk_68 = gParticleFrameCounter;
 
-            D_83402EE0[D_8690B344].unk_00 = D_8690A69C->unk_004.position.y;
+            D_83402EE0[D_8690B344].unk_00 = D_8690A69C->unk_004.unk_024.y;
             D_83402EE0[D_8690B344].unk_04 = D_8690A69C->unk_16C;
-            D_83402EE0[D_8690B344].unk_06 = D_8690A69C->unk_004.transformAnim.frameFixed >> 0x10;
-            D_83402EE0[D_8690B344].unk_05 = D_8690A69C->unk_004.transformAnim.animationId;
-            D_83402EE0[D_8690B344].unk_08 = D_8690A69C->unk_004.eventTrack.trackId;
-            D_83402EE0[D_8690B344].unk_09 = D_8690A69C->unk_004.eventTrack.frame;
+            D_83402EE0[D_8690B344].unk_06 = D_8690A69C->unk_004.unk_040.unk_08 >> 0x10;
+            D_83402EE0[D_8690B344].unk_05 = D_8690A69C->unk_004.unk_040.unk_00;
+            D_83402EE0[D_8690B344].unk_08 = D_8690A69C->unk_004.unk_054.unk_00;
+            D_83402EE0[D_8690B344].unk_09 = D_8690A69C->unk_004.unk_054.unk_08;
 
             Particle31_PackSlotData(D_83402EE0[D_8690B344].unk_0A);
             Gallery_CopyPhotoMonFromBattleMon(&D_83402EE0[D_8690B344].unk_70, &D_8690A6A0);

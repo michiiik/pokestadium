@@ -355,7 +355,7 @@ void geo_layout_cmd_create_model_part(void) {
     Vec3s sp40;
     Vec3f sp34;
     Vec3f sp28;
-    DisplayObject* tmp;
+    unk_D_86002F58_004_000* tmp;
     unk_D_800ABE00_cmd1F* cmd = (unk_D_800ABE00_cmd1F*)gGeoLayoutCommand;
 
     Vec3f_FromVec3s(&sp34, &cmd->unk_0A);

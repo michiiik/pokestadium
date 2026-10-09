@@ -236,7 +236,7 @@ void func_81003A54(Gfx* gfx) {
     u16 temp_v1;
     u8 sp4D;
     s32 pad[3];
-    u8 var_v0 = D_8006F09C->effectSlot % 5;
+    u8 var_v0 = D_8006F09C->unk_0A6 % 5;
     u32 temp_t0;
     char* sp34;
     Mtx* sp30;

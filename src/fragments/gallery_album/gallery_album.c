@@ -200,7 +200,7 @@ s32 Gallery_AlbumHandleGridInput(unk_D_83407B38* arg0) {
 void Gallery_AlbumInit(s32 arg0, s32 arg1) {
     s32 i;
     s32 j;
-    ModelLoadContext* tmp;
+    unk_D_86002F58_004_000_010* tmp;
 
     D_83503FC0 = 0;
     D_8350407C = arg0;

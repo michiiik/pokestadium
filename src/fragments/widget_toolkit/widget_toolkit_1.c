@@ -31,7 +31,7 @@ static s16 D_8780FAC0;
 static s16 D_8780FAC2;
 static s16 D_8780FAC4;
 static s16 D_8780FAC6;
-static DisplayObject D_8780FAC8;
+static unk_D_86002F58_004_000 D_8780FAC8;
 static unk_func_80011B94* D_8780FC30;
 
 void Widget_CountdownComputeScale(s16 arg0, s16 arg1, f32* arg2, f32* arg3) {
@@ -99,9 +99,9 @@ void Widget_CountdownInit(void) {
     ModelRenderer_AttachSecondaryDisplayObject(&D_8780FAC8);
     sp1C = MainPool_AllocState(main_pool_get_available(), 0);
     D_8780FC30 = GeoNode_CreateDisplayList(sp1C, NULL, 4, D_87806390);
-    D_8780FAC8.node.renderFlags |= 8;
+    D_8780FAC8.unk_000.unk_02 |= 8;
 
-    GraphNode_AppendChild(&D_8780FAC8.node, &D_8780FC30->unk_00);
+    GraphNode_AppendChild(&D_8780FAC8.unk_000, &D_8780FC30->unk_00);
     MainPool_FinalizeAllocation(sp1C);
 }
 
@@ -119,9 +119,9 @@ void Widget_CountdownUpdate(void) {
                 D_8780FAC6 = 0;
                 D_8780FAC4 = 1;
                 var_s2 = 1;
-                D_8780FAC8.node.flags |= 1;
-                D_8780FAC8.scale.x = 0.5f;
-                D_8780FAC8.scale.y = 0.5f;
+                D_8780FAC8.unk_000.unk_01 |= 1;
+                D_8780FAC8.unk_030.x = 0.5f;
+                D_8780FAC8.unk_030.y = 0.5f;
             }
             break;
 
@@ -134,7 +134,7 @@ void Widget_CountdownUpdate(void) {
 
             if ((D_8780FAC0 >= 0) && (D_8780FAC0 < 4)) {
                 var_s2 = 1;
-                Widget_CountdownComputeScale(D_8780FAC0, D_8780FAC2, &D_8780FAC8.scale.x, &D_8780FAC8.scale.y);
+                Widget_CountdownComputeScale(D_8780FAC0, D_8780FAC2, &D_8780FAC8.unk_030.x, &D_8780FAC8.unk_030.y);
             } else {
                 D_8780FC30->unk_18 = D_87806390;
             }
@@ -142,7 +142,7 @@ void Widget_CountdownUpdate(void) {
             if (D_8780FAC0 < 0) {
                 D_8780FAC4 = 2;
                 D_8780FAC2 = 0x1B;
-                D_8780FAC8.node.flags &= ~1;
+                D_8780FAC8.unk_000.unk_01 &= ~1;
             }
             break;
 

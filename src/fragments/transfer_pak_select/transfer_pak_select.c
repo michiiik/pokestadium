@@ -101,7 +101,7 @@ s32 TransferPak_RenderPortNodeCallback(s32 arg0, GraphNode* arg1) {
     s32 idx;
 
     if (arg0 == 5) {
-        idx = D_8006F09C->node.callbackArg;
+        idx = D_8006F09C->unk_000.unk_14;
 
         gDPPipeSync(gDisplayListHead++);
 
@@ -111,7 +111,7 @@ s32 TransferPak_RenderPortNodeCallback(s32 arg0, GraphNode* arg1) {
             gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, 639, 202);
         }
 
-        gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, D_8006F09C->lodFraction);
+        gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, D_8006F09C->unk_01D);
 
         if (D_81304008[idx].unk_01C != NULL) {
             gSPSegment(gDisplayListHead++, 0x0F, Memmap_GetSegmentVaddr(D_81304008[idx].unk_01C));
@@ -134,7 +134,7 @@ s32 TransferPak_GetPresentationMode(void) {
 void TransferPak_LaunchSelectedPortAnim(void) {
     if (D_81304000 >= 0) {
         D_81304008[D_81304000].unk_000 = 1;
-        D_81304008[D_81304000].unk_020 = -D_81304008[D_81304000].unk_028.position.x / 20.0f;
+        D_81304008[D_81304000].unk_020 = -D_81304008[D_81304000].unk_028.unk_024.x / 20.0f;
         D_81304008[D_81304000].unk_024 = 36.0f;
         D_81304650 = 0;
     }
@@ -617,7 +617,7 @@ void TransferPak_AnimatePortModels(void) {
     s16 var_a1;
     s32 var_s1;
     unk_D_81304008* var_s0;
-    DisplayObject* var_v0;
+    unk_D_86002F58_004_000* var_v0;
     s32 i;
 
     for (i = 0, var_s0 = &D_81304008[0]; i < 4; i++, var_s0++) {
@@ -644,31 +644,31 @@ void TransferPak_AnimatePortModels(void) {
                 var_s0->unk_00A += var_a1;
                 var_s0->unk_00C += var_s1 + ((MathUtil_Random16() & 0xF) * 0x10);
 
-                var_s0->unk_028.position.z = -579.0f;
-                var_s0->unk_028.rotation.z = var_s0->unk_010;
-                var_s0->unk_028.scale.x = var_s0->unk_014;
-                var_s0->unk_028.scale.y = var_s0->unk_018;
+                var_s0->unk_028.unk_024.z = -579.0f;
+                var_s0->unk_028.unk_01E.z = var_s0->unk_010;
+                var_s0->unk_028.unk_030.x = var_s0->unk_014;
+                var_s0->unk_028.unk_030.y = var_s0->unk_018;
                 break;
 
             case 1:
                 var_v0 = &var_s0->unk_028;
 
-                var_v0->position.x += var_s0->unk_020;
+                var_v0->unk_024.x += var_s0->unk_020;
                 if (var_s0->unk_020 < 0.0f) {
-                    if (var_v0->position.x < 0.0f) {
-                        var_v0->position.x = 0.0f;
+                    if (var_v0->unk_024.x < 0.0f) {
+                        var_v0->unk_024.x = 0.0f;
                     }
-                } else if ((var_s0->unk_020 > 0.0f) && (var_v0->position.x > 0.0f)) {
-                    var_v0->position.x = 0.0f;
+                } else if ((var_s0->unk_020 > 0.0f) && (var_v0->unk_024.x > 0.0f)) {
+                    var_v0->unk_024.x = 0.0f;
                 }
 
-                var_v0->position.y += var_s0->unk_024 * 0.5f;
-                var_v0->position.z = -569.0f;
+                var_v0->unk_024.y += var_s0->unk_024 * 0.5f;
+                var_v0->unk_024.z = -569.0f;
                 var_s0->unk_024 -= 4.0f;
 
-                var_v0->rotation.z = 0;
-                var_v0->scale.x = 1.0f;
-                var_v0->scale.y = 1.0f;
+                var_v0->unk_01E.z = 0;
+                var_v0->unk_030.x = 1.0f;
+                var_v0->unk_030.y = 1.0f;
                 break;
         }
     }
@@ -737,7 +737,7 @@ s32 TransferPak_PortSelectLoop(s32 arg0) {
 void TransferPak_InitPortModels(void) {
     static s16 D_81303F48[] = { 1, 2, 0, 3 };
 
-    DisplayObject* ptr;
+    unk_D_86002F58_004_000* ptr;
     s32 temp_s1;
     s32 i;
 
@@ -748,7 +748,7 @@ void TransferPak_InitPortModels(void) {
         ptr = &D_81304008[temp_s1].unk_028;
 
         ModelRenderer_AttachDisplayObject(ptr);
-        Vec3f_SetComponentsDuplicate(&ptr->position, ((temp_s1 * 0x84) + 0x7A) - 320.0f, 64.0f, -579.0f);
+        Vec3f_SetComponentsDuplicate(&ptr->unk_024, ((temp_s1 * 0x84) + 0x7A) - 320.0f, 64.0f, -579.0f);
         D_81304008[temp_s1].unk_002 = temp_s1;
         D_81304008[temp_s1].unk_000 = 0;
 
@@ -778,7 +778,7 @@ void TransferPak_InitPortModels(void) {
         }
 
         Model_InitDisplayObject(ptr, 0, 0, D_81304648);
-        ptr->node.callbackArg = temp_s1;
+        ptr->unk_000.unk_14 = temp_s1;
     }
 }
 

@@ -60,8 +60,8 @@ typedef struct unk_D_86B0EBD8 {
 typedef struct unk_D_86B0EBDC {
     /* 0x000 */ unk_D_86002F30* unk_000;
     /* 0x004 */ unk_D_86002F30* unk_004;
-    /* 0x008 */ DisplayObject unk_008;
-    /* 0x170 */ DisplayObject unk_170;
+    /* 0x008 */ unk_D_86002F58_004_000 unk_008;
+    /* 0x170 */ unk_D_86002F58_004_000 unk_170;
     /* 0x2D8 */ s32 unk_2D8;
     /* 0x2DC */ s32 unk_2DC;
     /* 0x2E0 */ char unk2E0[0x4];
@@ -822,7 +822,7 @@ void Completion_LoadModels(void) {
     PokeIcon_OpenModelArchives();
 
     D_86B0EBDC->unk_000 = Model_LoadByArchiveIndex(0xD3);
-    D_86B0EBDC->unk_008.effectSlot = 0xFF;
+    D_86B0EBDC->unk_008.unk_0A6 = 0xFF;
 
     Model_InitDisplayObject(&D_86B0EBDC->unk_008, 0, 0xD3, D_86B0EBDC->unk_000->unk_08->unk_00[0]);
     ModelAnim_SetAnimation(&D_86B0EBDC->unk_008, 0);
@@ -830,20 +830,20 @@ void Completion_LoadModels(void) {
     PokeIcon_OpenModelArchives();
 
     D_86B0EBDC->unk_004 = Model_LoadByArchiveIndex(D_86B0EBDC->unk_2EC);
-    D_86B0EBDC->unk_170.effectSlot = 0;
+    D_86B0EBDC->unk_170.unk_0A6 = 0;
     Model_InitDisplayObject(&D_86B0EBDC->unk_170, 0, D_86B0EBDC->unk_2EC, D_86B0EBDC->unk_004->unk_08->unk_00[0]);
     ModelAnim_SetAnimation(&D_86B0EBDC->unk_170, 0);
-    D_86B0EBDC->unk_170.node.renderFlags &= ~0x40;
+    D_86B0EBDC->unk_170.unk_000.unk_02 &= ~0x40;
 
-    D_86B0EBDC->unk_170.scale.x = D_86B0EBDC->unk_2F4 = D_86B0DBCC[D_86B0F9C8].unk_00 / 1000.0f;
-    D_86B0EBDC->unk_170.scale.y = D_86B0EBDC->unk_2F4 = D_86B0DBCC[D_86B0F9C8].unk_00 / 1000.0f;
-    D_86B0EBDC->unk_170.scale.z = D_86B0EBDC->unk_2F4 = D_86B0DBCC[D_86B0F9C8].unk_00 / 1000.0f;
+    D_86B0EBDC->unk_170.unk_030.x = D_86B0EBDC->unk_2F4 = D_86B0DBCC[D_86B0F9C8].unk_00 / 1000.0f;
+    D_86B0EBDC->unk_170.unk_030.y = D_86B0EBDC->unk_2F4 = D_86B0DBCC[D_86B0F9C8].unk_00 / 1000.0f;
+    D_86B0EBDC->unk_170.unk_030.z = D_86B0EBDC->unk_2F4 = D_86B0DBCC[D_86B0F9C8].unk_00 / 1000.0f;
 
     D_86B0EBDC->unk_2FC = D_86B0DBCC[D_86B0F9C8].unk_08;
     D_86B0EBDC->unk_300 = D_86B0DBCC[D_86B0F9C8].unk_0C;
-    D_86B0EBDC->unk_170.position.y = -100.0f;
-    D_86B0EBDC->unk_008.node.renderFlags &= ~0x20;
-    D_86B0EBDC->unk_170.node.flags &= ~1;
+    D_86B0EBDC->unk_170.unk_024.y = -100.0f;
+    D_86B0EBDC->unk_008.unk_000.unk_02 &= ~0x20;
+    D_86B0EBDC->unk_170.unk_000.unk_01 &= ~1;
 
     temp_a1 = _70D3A0_ROM_START + (D_80075BD0[D_86B0EBDC->unk_2EC - 1] & 0xFFFFFF);
     Dma_WriteChunks(D_86B0EBE8, temp_a1, temp_a1 + 0xBC0, 0);
@@ -864,9 +864,9 @@ void Completion_PositionBonusModel(void) {
     Vec3f sp1C;
 
     if (GeoRender_FindAnchorPosition(&D_86B0EBDC->unk_008, 1, &sp1C) != NULL) {
-        D_86B0EBDC->unk_170.position.x = sp1C.x;
-        D_86B0EBDC->unk_170.position.y = D_86B0EBDC->unk_2FC + sp1C.y;
-        D_86B0EBDC->unk_170.position.z = D_86B0EBDC->unk_300 + sp1C.z;
+        D_86B0EBDC->unk_170.unk_024.x = sp1C.x;
+        D_86B0EBDC->unk_170.unk_024.y = D_86B0EBDC->unk_2FC + sp1C.y;
+        D_86B0EBDC->unk_170.unk_024.z = D_86B0EBDC->unk_300 + sp1C.z;
     }
 }
 
@@ -1339,8 +1339,8 @@ s32 Completion_MoveCameraToFront(void) {
     D_86B0EBC4->unk_60.eye.z = Math_StepToF(D_86B0EBC4->unk_60.eye.z, 190.0f, tmp.z / 60.0f, tmp.z / 60.0f);
 
     if (D_86B0EBC4->unk_60.eye.z >= 85.0f) {
-        D_86B0EBDC->unk_008.node.renderFlags |= 0x20;
-        D_86B0EBDC->unk_170.node.flags |= 1;
+        D_86B0EBDC->unk_008.unk_000.unk_02 |= 0x20;
+        D_86B0EBDC->unk_170.unk_000.unk_01 |= 1;
         Completion_PositionBonusModel();
     }
 
@@ -1428,9 +1428,9 @@ void Completion_LoopBonusModelIdleAnim(void) {
 }
 
 void Completion_ClampAnimTimer(void) {
-    if (((s32)D_86B0EBDC->unk_008.transformAnim.speedFixed >> 0x10) == -1) {
-        if ((D_86B0EBDC->unk_008.transformAnim.frameFixed >> 0x10) > 0) {
-            D_86B0EBDC->unk_008.transformAnim.frameFixed += 0xFFFF0000;
+    if (((s32)D_86B0EBDC->unk_008.unk_040.unk_0C >> 0x10) == -1) {
+        if ((D_86B0EBDC->unk_008.unk_040.unk_08 >> 0x10) > 0) {
+            D_86B0EBDC->unk_008.unk_040.unk_08 += 0xFFFF0000;
         }
     }
 }

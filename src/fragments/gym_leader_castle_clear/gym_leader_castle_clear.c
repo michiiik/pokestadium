@@ -118,7 +118,7 @@ static unk_D_83101E6C D_83101E6C[] = {
     { -1, 2.0f, 0xC8, 0xC8, 0x1E, 0, 0, 0 },
 };
 
-void Glc_UpdateSweepObject(DisplayObject* arg0) {
+void Glc_UpdateSweepObject(unk_D_86002F58_004_000* arg0) {
     unk_D_83101F00* ptr = (unk_D_83101F00*)arg0;
     f32 temp_fv0;
     s32 sp1C;
@@ -149,7 +149,7 @@ void Glc_UpdateSweepObject(DisplayObject* arg0) {
                 var_fv0 = 320.0f;
             }
 
-            ptr->unk_000.position.x = var_fv0 - 320.0f;
+            ptr->unk_000.unk_024.x = var_fv0 - 320.0f;
             D_83101EEE = (s16)var_fv0 + 0xC8;
             D_83101EF0 = 0xAC;
             break;
@@ -225,7 +225,7 @@ void Glc_UpdateColorKeyframe(unk_D_83101F00* arg0) {
                 }
             }
 
-            Vec3f_SetComponentsDuplicate(&arg0->unk_000.scale, var_fv1, var_fv1, var_fv1);
+            Vec3f_SetComponentsDuplicate(&arg0->unk_000.unk_030, var_fv1, var_fv1, var_fv1);
             break;
 
         case 0:
@@ -475,7 +475,7 @@ void Glc_InitObjectAnimation(unk_D_83101F00* arg0, s16 arg1) {
                 arg0->unk_17A = ptr->unk_10;
                 arg0->unk_17C = ptr->unk_12;
 
-                Vec3f_SetComponentsDuplicate(&arg0->unk_000.scale, ptr->unk_04, ptr->unk_04, ptr->unk_04);
+                Vec3f_SetComponentsDuplicate(&arg0->unk_000.unk_030, ptr->unk_04, ptr->unk_04, ptr->unk_04);
                 break;
         }
     }
@@ -616,16 +616,16 @@ void Glc_ClearInitGraphics(void) {
 
         switch (i) {
             case 0:
-                Vec3f_SetComponentsDuplicate(&ptr->unk_000.position, -520.0f, 44.0f, -579.0f);
-                Vec3f_SetComponentsDuplicate(&ptr->unk_000.scale, 2.0f, 2.0f, 2.0f);
+                Vec3f_SetComponentsDuplicate(&ptr->unk_000.unk_024, -520.0f, 44.0f, -579.0f);
+                Vec3f_SetComponentsDuplicate(&ptr->unk_000.unk_030, 2.0f, 2.0f, 2.0f);
                 Model_InitDisplayObject(&ptr->unk_000, 0, 0, D_83101EF8);
                 ptr->unk_168 = 1;
                 D_83102210 = ptr;
                 break;
 
             case 1:
-                Vec3f_SetComponentsDuplicate(&ptr->unk_000.position, 0.0, -24.0f, -579.0f);
-                Vec3f_SetComponentsDuplicate(&ptr->unk_000.scale, 0.0f, 0.0f, 0.0f);
+                Vec3f_SetComponentsDuplicate(&ptr->unk_000.unk_024, 0.0, -24.0f, -579.0f);
+                Vec3f_SetComponentsDuplicate(&ptr->unk_000.unk_030, 0.0f, 0.0f, 0.0f);
                 Model_InitDisplayObject(&ptr->unk_000, 0, 0, D_83101EFC);
                 ptr->unk_168 = 2;
                 D_83102214 = ptr;

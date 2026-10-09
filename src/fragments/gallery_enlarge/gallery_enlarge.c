@@ -19,7 +19,7 @@ static unk_func_80031270* D_837004B0 = NULL;
 
 void Gallery_EnlargeInit(void) {
     UNUSED s32 pad;
-    ModelLoadContext* sp28;
+    unk_D_86002F58_004_000_010* sp28;
 
     D_837004C0 = 0;
     sp28 = PokeIcon_AllocFramebuffers(1);

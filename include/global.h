@@ -16,7 +16,7 @@ typedef unsigned int uintptr_t;
 #include "string.h"
 #include "math.h"
 
-struct ModelAssetNode;
+struct unk_D_86002F58_004_000_00C;
 
 typedef union arg1_func_80010CA8 {
     struct {
@@ -27,135 +27,139 @@ typedef union arg1_func_80010CA8 {
     u32 raw;
 } arg1_func_80010CA8; // size = 0x4
 
-typedef struct ModelAnimationBank {
+typedef struct unk_D_86002F58_004_000_00C_028 {
     /* 0x00 */ char pad0[4];
-    /* 0x04 */ u8 transformCount;
-    /* 0x05 */ u8 eventTrackCount;
+    /* 0x04 */ u8 unk_04;
+    /* 0x05 */ u8 unk_05;
     /* 0x06 */ char pad6[6];
-    /* 0x0C */ s32* transformTracks;
-    /* 0x10 */ s32* eventTracks;
-} ModelAnimationBank; // size >= 0x14
+    /* 0x0C */ s32* unk_0C;
+    /* 0x10 */ s32* unk_10;
+} unk_D_86002F58_004_000_00C_028; // size >= 0x14
 
-typedef ModelAnimationBank* (*ModelBankCallback)(s32, s32);
+typedef unk_D_86002F58_004_000_00C_028* (*unk_D_86002F58_004_000_00C_028_func)(s32, s32);
 
-typedef struct ModelLoadResult {
-    /* 0x00 */ u16 modelId;
+typedef struct unk_D_86002F58_004_000_010_024 {
+    /* 0x00 */ u16 unk_00;
     /* 0x02 */ char unk02[0x6];
-    /* 0x08 */ struct ModelNodeView* modelRoot;
-} ModelLoadResult; // size >= 0xC
+    /* 0x08 */ struct unk_D_86002F58_004_000_004* unk_08;
+} unk_D_86002F58_004_000_010_024; // size >= 0xC
 
-typedef struct ModelLoadContext {
-    /* 0x00 */ u8 flags;
-    /* 0x01 */ u8 pendingLoads;
-    /* 0x02 */ u8 bufferIndex;
-    /* 0x04 */ s32 modelBuffers[5];
-    /* 0x18 */ s32 backgroundBuffer;
-    /* 0x1C */ s32 modelSize;
-    /* 0x20 */ s32 backgroundSize;
-    /* 0x24 */ ModelLoadResult* loadedModel;
-    /* 0x28 */ s32 loadedBackground;
-    /* 0x2C */ arg1_func_80010CA8 colorVariant;
-    /* 0x30 */ OSMesgQueue modelQueue;
-    /* 0x48 */ OSMesg modelMessage;
-    /* 0x4C */ char pad4C[0x4];
-    /* 0x50 */ OSMesgQueue backgroundQueue;
-    /* 0x68 */ OSMesg backgroundMessage;
-    /* 0x6C */ char pad6C[0x4];
-} ModelLoadContext; // size = 0x70
-
-typedef struct ModelNodeView {
-    // Legacy graph-header view: preserve pointer declarations for matching.
-    // The four-slot overlay is also indexed by asset callers; its full role is unresolved.
-    /* 0x00 */ struct ModelNodeView* unk_00[4];
-    /* 0x10 */ struct ModelAssetNode* callback;
-    /* 0x14 */ ModelLoadContext* callbackArg;
-} ModelNodeView; // size >= 0x18
-
-typedef struct ModelAssetNode {
-    /* 0x00 */ ModelNodeView node;
-    /* 0x18 */ char unk_18[0x10];
-    /* 0x28 */ ModelBankCallback getAnimationBank;
-} ModelAssetNode; // size >= 0x2C
-
-typedef struct DisplayNodeHeader {
-    // Layout-compatible with GraphNode; retain this view's legacy member types.
-    /* 0x00 */ u8 type;
-    /* 0x01 */ u8 flags;
-    /* 0x02 */ u8 renderFlags;
-    /* 0x03 */ u8 renderLayer;
-    /* 0x04 */ struct DisplayNodeHeader* prevSibling;
-    /* 0x08 */ struct DisplayNodeHeader* nextSibling;
-    /* 0x0C */ ModelAssetNode* children;
-    /* 0x10 */ ModelLoadContext* callback;
-    /* 0x14 */ s32 callbackArg;
-} DisplayNodeHeader; // size = 0x18
-
-typedef struct TransformAnimData {
-    /* 0x00 */ s16 flags; // bit 0x2 clamps at the boundary; otherwise playback wraps
-    /* 0x02 */ char unk02[0x2];
-    /* 0x04 */ s16 startFrame;
-    /* 0x06 */ s16 loopStart;
-    /* 0x08 */ u16 channelCount;
-    /* 0x0A */ u16 endFrame;
-    /* 0x0C */ u32 channelTable;
-    /* 0x10 */ u32 translationData;
-    /* 0x14 */ u32 rotationData;
-    /* 0x18 */ u32 scaleData;
-} TransformAnimData; // size >= 0x1C
-
-typedef struct TransformAnimState {
-    /* 0x00 */ s16 animationId;
-    /* 0x04 */ TransformAnimData* data;
-    /* 0x08 */ s32 frameFixed; // signed 16.16 playback position
-    /* 0x0C */ u32 speedFixed; // 16.16 step; preserve the legacy unsigned declaration
-    /* 0x10 */ char unk10[0x2];
-    /* 0x12 */ u16 lastRenderFrame;
-} TransformAnimState; // size >= 0x14
-
-typedef struct EventTrackData {
-    /* 0x00 */ s16 flags; // bit 0x2 clamps at the boundary; otherwise playback wraps
-    /* 0x02 */ char unk_02[0x2];
-    /* 0x04 */ s16 startFrame;
-    /* 0x06 */ s16 loopStart;
-    /* 0x08 */ u16 trackCount;
-    /* 0x0A */ u16 endFrame;
-    /* 0x0C */ void* trackTable;
-    /* 0x10 */ void* frameValues;
-} EventTrackData; // size >= 0x14
-
-typedef struct EventTrackState {
-    /* 0x00 */ s16 trackId;
-    /* 0x04 */ EventTrackData* data;
-    /* 0x08 */ s16 frame;
-    /* 0x0A */ u16 lastRenderFrame;
-} EventTrackState; // size = 0xC
-
-typedef struct ModelAnchor {
-    /* 0x00 */ u16 id;
+typedef struct unk_D_86002F58_004_000_010 {
+    /* 0x00 */ u8 unk_00;
+    /* 0x01 */ u8 unk_01;
     /* 0x02 */ u8 unk_02;
-    /* 0x04 */ Vec3f position;
-} ModelAnchor; // size = 0x10
+    /* 0x04 */ s32 unk_04[1];
+    /* 0x08 */ char pad8[0x10];
+    /* 0x18 */ s32 unk_18;
+    /* 0x1C */ s32 unk_1C;
+    /* 0x20 */ s32 unk_20;
+    /* 0x24 */ unk_D_86002F58_004_000_010_024* unk_24;
+    /* 0x28 */ s32 unk_28;
+    /* 0x2C */ arg1_func_80010CA8 unk_2C;
+    /* 0x30 */ OSMesgQueue unk_30;
+    /* 0x48 */ OSMesg unk_48;
+    /* 0x4C */ char pad4C[0x4];
+    /* 0x50 */ OSMesgQueue unk_50;
+    /* 0x68 */ OSMesg unk_68;
+    /* 0x6C */ char pad6C[0x4];
+} unk_D_86002F58_004_000_010; // size = 0x70
 
-// Animated model instance processed by Geo_NodeModelPart (node type 0x16).
-typedef struct DisplayObject {
-    /* 0x000 */ DisplayNodeHeader node;
-    /* 0x018 */ s16 rootId;
-    /* 0x01A */ s16 objectType;
-    /* 0x01C */ u8 textureMode;
-    /* 0x01D */ u8 lodFraction; // gDPSetPrimColor's primitive LOD-fraction argument
-    /* 0x01E */ Vec3s rotation;
-    /* 0x024 */ Vec3f position;
-    /* 0x030 */ Vec3f scale;
-    /* 0x03C */ Color_RGBA8_u32 textureTint;
-    /* 0x040 */ TransformAnimState transformAnim;
-    /* 0x054 */ EventTrackState eventTrack;
-    /* 0x060 */ MtxF matrix;
-    /* 0x0A0 */ Color_RGBA8_u32 fogColor; // submitted through GeoRender_SetFogColor
+typedef struct unk_D_86002F58_004_000_004 {
+    /* 0x00 */ struct unk_D_86002F58_004_000_004* unk_00[4];
+    /* 0x10 */ struct unk_D_86002F58_004_000_00C* unk_10;
+    /* 0x14 */ unk_D_86002F58_004_000_010* unk_14;
+} unk_D_86002F58_004_000_004; // size >= 0x18
+
+typedef struct unk_D_86002F58_004_000_00C {
+    /* 0x00 */ unk_D_86002F58_004_000_004 unk_00;
+    /* 0x18 */ char unk_18[0x10];
+    /* 0x28 */ unk_D_86002F58_004_000_00C_028_func unk_28;
+} unk_D_86002F58_004_000_00C; // size >= 0x2C
+
+typedef struct unk_D_86002F58_004_000_000 {
+    /* 0x00 */ u8 unk_00;
+    /* 0x01 */ u8 unk_01;
+    /* 0x02 */ u8 unk_02;
+    /* 0x03 */ u8 unk_03;
+    /* 0x04 */ struct unk_D_86002F58_004_000_000* unk_04;
+    /* 0x08 */ struct unk_D_86002F58_004_000_000* unk_08;
+    /* 0x0C */ unk_D_86002F58_004_000_00C* unk_0C;
+    /* 0x10 */ unk_D_86002F58_004_000_010* unk_10;
+    /* 0x14 */ s32 unk_14;
+} unk_D_86002F58_004_000_000; // size = 0x18
+
+typedef struct unk_D_86002F58_004_000_040_004 {
+    /* 0x00 */ s16 unk_00;
+    /* 0x02 */ char unk02[0x2];
+    /* 0x04 */ s16 unk_04;
+    /* 0x06 */ s16 unk_06;
+    /* 0x08 */ u16 unk_08;
+    /* 0x0A */ u16 unk_0A;
+    /* 0x0C */ u32 unk_0C;
+    /* 0x10 */ u32 unk_10;
+    /* 0x14 */ u32 unk_14;
+    /* 0x18 */ u32 unk_18;
+} unk_D_86002F58_004_000_040_004; // size >= 0x1C
+
+typedef struct unk_D_86002F58_004_000_040 {
+    /* 0x00 */ s16 unk_00;
+    /* 0x04 */ unk_D_86002F58_004_000_040_004* unk_04;
+    /* 0x08 */ s32 unk_08;
+    /* 0x0C */ u32 unk_0C;
+    /* 0x10 */ char unk10[0x2];
+    /* 0x12 */ u16 unk_12;
+} unk_D_86002F58_004_000_040; // size >= 0x14
+
+typedef struct unk_D_86002F58_004_000_054_004 {
+    /* 0x00 */ s16 unk_00;
+    /* 0x02 */ char unk_02[0x2];
+    /* 0x04 */ s16 unk_04;
+    /* 0x06 */ s16 unk_06;
+    /* 0x08 */ u16 unk_08;
+    /* 0x0A */ u16 unk_0A;
+    /* 0x0C */ void* unk_0C;
+    /* 0x10 */ void* unk_10;
+} unk_D_86002F58_004_000_054_004; // size >= 0x14
+
+typedef struct unk_D_86002F58_004_000_054 {
+    /* 0x00 */ s16 unk_00;
+    /* 0x04 */ unk_D_86002F58_004_000_054_004* unk_04;
+    /* 0x08 */ s16 unk_08;
+    /* 0x0A */ u16 unk_0A;
+} unk_D_86002F58_004_000_054; // size = 0xC
+
+typedef struct unk_D_86002F58_004_000_0A8 {
+    /* 0x00 */ u16 unk_00;
+    /* 0x02 */ u8 unk_02;
+    /* 0x04 */ Vec3f unk_04;
+} unk_D_86002F58_004_000_0A8; // size = 0x10
+
+typedef struct unk_D_86002F58_004_000 {
+    /* 0x000 */ unk_D_86002F58_004_000_000 unk_000;
+    /* 0x018 */ s16 unk_018;
+    /* 0x01A */ s16 unk_01A;
+    /* 0x01C */ u8 unk_01C;
+    /* 0x01D */ u8 unk_01D;
+    /* 0x01E */ Vec3s unk_01E;			//	total Rotation
+    /* 0x024 */ Vec3f unk_024;			//	global Position
+    /* 0x030 */ Vec3f unk_030;			//	scale
+    /* 0x03C */ Color_RGBA8_u32 unk_03C;
+    /* 0x040 */ unk_D_86002F58_004_000_040 unk_040;
+    /* 0x054 */ unk_D_86002F58_004_000_054 unk_054;
+    /* 0x060 */ MtxF unk_060;
+    /* 0x0A0 */ Color_RGBA8_u32 unk_0A0;    //  vertex color ?
     /* 0x0A4 */ char unk0A4[2];
-    /* 0x0A6 */ u8 effectSlot; // 0/1 select effect state; 0xFF disables slot-specific work
-    /* 0x0A7 */ u8 anchorCount;
-    /* 0x0A8 */ ModelAnchor anchors[12];
-} DisplayObject; // size = 0x168
+    /* 0x0A6 */ u8 unk_0A6;
+    /* 0x0A7 */ u8 unk_0A7;
+    /* 0x0A8 */ unk_D_86002F58_004_000_0A8 unk_0A8[1];
+    /* 0x0B8 */ char unk0B8[0x24];
+    /* 0x0DC */ Vec3f unk_0DC;
+    /* 0x0E0 */ char unk0E0[0x4];
+    /* 0x0EC */ Vec3f unk_0EC;
+    /* 0x0F8 */ char unk0F8[0x4];
+    /* 0x0FC */ Vec3f unk_0FC;
+    /* 0x108 */ char unk108[0x60];
+} unk_D_86002F58_004_000; // size = 0x168
 
 typedef struct unk_D_86002F34_000_014_004 {
     /* 0x00 */ u8 unk_00[5];
@@ -454,7 +458,7 @@ typedef struct unk_D_86002F34 {
 // Are unk_D_86002F30 and unk_D_800AC840 the same?
 typedef struct unk_D_86002F30 {
     /* 0x00 */ char unk00[0x8];
-    /* 0x08 */ ModelNodeView* unk_08;
+    /* 0x08 */ unk_D_86002F58_004_000_004* unk_08;
 } unk_D_86002F30; // size = 0x18 ??
 
 typedef struct UnkInputStruct8000D738 {

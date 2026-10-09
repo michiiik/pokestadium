@@ -5,7 +5,7 @@
 #include "src/geo_layout.h"
 
 typedef struct unk_D_83101F00 {
-    /* 0x000 */ DisplayObject unk_000;
+    /* 0x000 */ unk_D_86002F58_004_000 unk_000;
     /* 0x168 */ s16 unk_168;
     /* 0x16A */ s16 unk_16A;
     /* 0x16C */ s16 unk_16C;
@@ -21,7 +21,7 @@ typedef struct unk_D_83101F00 {
     /* 0x184 */ f32 unk_184;
 } unk_D_83101F00; // size = 0x188
 
-void Glc_UpdateSweepObject(DisplayObject* arg0);
+void Glc_UpdateSweepObject(unk_D_86002F58_004_000* arg0);
 s32 Glc_GeoBannerCallback(s32 arg0, UNUSED GraphNode* arg1);
 void Glc_UpdateColorKeyframe(unk_D_83101F00* arg0);
 s32 Glc_GeoSpriteCallback(s32 arg0, GraphNode* arg1);
