@@ -6131,10 +6131,10 @@ s32 Pokedex_ShowEntry(void) {
         Input_ResetRepeatState();
         if ((gPlayer1Controller->buttonPressed & 0x4000) && (Cry_IsPlaying() == 0)) {
             var_s1 = 2;
-            Audio_PlaySoundEffectById(3);
+            Audio_PlaySoundEffectById(SFX_MENU_BACK);
         } else if ((gPlayer1Controller->buttonPressed & 0x8000) && (Cry_IsPlaying() == 0)) {
             var_s1 = 1;
-            Audio_PlaySoundEffectById(2);
+            Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
         }
         GeoRender_AdvanceFrameCounter();
         BgStage_DrawFrame();
@@ -6213,7 +6213,7 @@ s32 Pokedex_ShowAreaMapScreen(void) {
         BgStage_AdvanceFrame();
     }
 
-    Audio_PlaySoundEffectById(3);
+    Audio_PlaySoundEffectById(SFX_MENU_BACK);
     Pokedex_ExitAreaMapScreen();
     return var_s0;
 }

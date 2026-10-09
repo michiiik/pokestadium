@@ -645,7 +645,7 @@ void GalleryCamera_ClearFinishedEventTrack(void) {
 
 void Gallery_CapturePhoto(void) {
     if ((D_8690B390.buttonPressed & 0x8000) && (D_8690B344 < 0x18)) {
-        Audio_PlaySoundEffectById(0x2C);
+        Audio_PlaySoundEffectById(SFX_PHOTO_CAPTURE);
         D_8690B340 = 0xA;
         if (D_8690A70C != 1) {
             Vec3f_SetComponentsDuplicate(&D_83402EE0[D_8690B344].unk_50, D_87906054->unk_60.eye.x, D_87906054->unk_60.eye.y,
@@ -697,13 +697,13 @@ s32 Gallery_HandleBackgroundSwitchInput(void) {
 
     if ((D_8690B390.buttonPressed & 0x8020) && (D_8690B380 == 1)) {
         D_8690B380 = ~D_8690B380 + 2;
-        Audio_PlaySoundEffectById(3);
+        Audio_PlaySoundEffectById(SFX_MENU_BACK);
         return 1;
     }
 
     if (D_8690B390.buttonPressed & 0x20) {
         D_8690B380 = ~D_8690B380 + 2;
-        Audio_PlaySoundEffectById(2);
+        Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
     }
 
     if (D_8690B380 == 0) {
@@ -718,7 +718,7 @@ s32 Gallery_HandleBackgroundSwitchInput(void) {
     sp1E = D_8690B390.buttonDown;
     D_8690A680++;
     if ((D_8690A680 >= 8) || (D_8690A680 == 0)) {
-        Audio_PlaySoundEffectById(1);
+        Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
         if (D_8690A680 != 0) {
             D_8690A680 = 6;
         }
@@ -823,7 +823,7 @@ void Gallery_CameraUpdateTutorialText(void) {
                 if (D_8690B4D0[D_8690B3C0.unk_04] != 0) {
                     D_8690B3D0[D_8690B3C0.unk_04] = D_8690B4D0[D_8690B3C0.unk_04];
                     D_8690B3C0.unk_04++;
-                    Audio_PlaySoundEffectById(0x3C);
+                    Audio_PlaySoundEffectById(SFX_CAMERA_TEXT);
                 }
                 break;
 
@@ -854,7 +854,7 @@ s32 Gallery_CameraExitState_Active(void) {
         D_8690B350.unk_04 = 0;
         D_8690B348 = 1;
         D_8690B344--;
-        Audio_PlaySoundEffectById(0x2D);
+        Audio_PlaySoundEffectById(SFX_CAMERA_FULL);
         return 0;
     }
 
@@ -867,13 +867,13 @@ s32 Gallery_CameraExitState_Active(void) {
     }
 
     if (gPlayer1Controller->buttonPressed & 0x4000) {
-        Audio_PlaySoundEffectById(3);
+        Audio_PlaySoundEffectById(SFX_MENU_BACK);
         D_8690A67C = 1;
         return D_8690A67C;
     }
 
     if (D_8690B390.buttonPressed & 0x1000) {
-        Audio_PlaySoundEffectById(0x2E);
+        Audio_PlaySoundEffectById(SFX_CAMERA_EXIT);
         D_8690A67C = 2;
         return D_8690A67C;
     }
@@ -885,9 +885,9 @@ s32 Gallery_CameraExitState_Active(void) {
         }
 
         if (D_8690A710->unk_014 == 0) {
-            Audio_PlaySoundEffectById(3);
+            Audio_PlaySoundEffectById(SFX_MENU_BACK);
         } else {
-            Audio_PlaySoundEffectById(2);
+            Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
         }
     }
 
@@ -907,7 +907,7 @@ s32 Gallery_CameraExitState_CountDown(void) {
             D_8690B360.unk_00 = 0x14;
         } else {
             D_8690B348 = 2;
-            Audio_PlaySoundEffectById(0x2E);
+            Audio_PlaySoundEffectById(SFX_CAMERA_EXIT);
             D_8690B360.unk_08 = 0xE38;
         }
     }

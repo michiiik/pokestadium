@@ -464,7 +464,7 @@ void Gallery_RentalViewerMoveCursorUp(void) {
         for (i = 0; i < 4; i++) {
             if (D_8380548C[var_v1].unk_00 != 0) {
                 D_838067E0 = var_v1;
-                Audio_PlaySoundEffectById(1);
+                Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
                 break;
             }
             var_v1 = (var_v1 + var_a0) & 3;
@@ -482,7 +482,7 @@ void Gallery_RentalViewerMoveCursorDown(void) {
         for (i = 0; i < 2; i++) {
             if (D_8380548C[var_v0].unk_00 != 0) {
                 D_838067E0 = var_v0;
-                Audio_PlaySoundEffectById(1);
+                Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
                 break;
             }
             var_v0 ^= 1;
@@ -497,13 +497,13 @@ void Gallery_RentalViewerMoveCursorLeft(void) {
         for (i = D_838067E0 - 1; i >= 0; i--) {
             if (D_8380548C[i].unk_00 != 0) {
                 D_838067E0 = i;
-                Audio_PlaySoundEffectById(1);
+                Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
                 break;
             }
         }
     } else if (D_838067E0 == 5) {
         D_838067E0 = 4;
-        Audio_PlaySoundEffectById(1);
+        Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
     }
 }
 
@@ -514,13 +514,13 @@ void Gallery_RentalViewerMoveCursorRight(void) {
         for (i = D_838067E0 + 1; i < 4; i++) {
             if (D_8380548C[i].unk_00 != 0) {
                 D_838067E0 = i;
-                Audio_PlaySoundEffectById(1);
+                Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
                 break;
             }
         }
     } else if (D_838067E0 == 4) {
         D_838067E0 = 5;
-        Audio_PlaySoundEffectById(1);
+        Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
     }
 }
 
@@ -532,12 +532,12 @@ void Gallery_RentalViewerUpdateSlotSelect(void) {
             Audio_PlaySoundEffectById(0x01100012);
             D_838067D8 = 4;
         } else {
-            Audio_PlaySoundEffectById(8);
+            Audio_PlaySoundEffectById(SFX_MENU_ERROR);
             D_838067D8 = 6;
         }
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_B)) {
         D_838067D8 = 5;
-        Audio_PlaySoundEffectById(3);
+        Audio_PlaySoundEffectById(SFX_MENU_BACK);
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DUP)) {
         Gallery_RentalViewerMoveCursorUp();
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DDOWN)) {

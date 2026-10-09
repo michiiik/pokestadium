@@ -558,10 +558,10 @@ s32 Glc_SelectRoom(void) {
                             changed = 3;
                         }
                     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_A)) {
-                        Audio_PlaySoundEffectById(2);
+                        Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
                         changed = 3;
                     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_B)) {
-                        Audio_PlaySoundEffectById(3);
+                        Audio_PlaySoundEffectById(SFX_MENU_BACK);
                         if (node->index >= 0xA) {
                             selected_map_node = 9;
                             cursor_move_timer = 3;
@@ -579,7 +579,7 @@ s32 Glc_SelectRoom(void) {
                     }
 
                     if ((node_to_move_to >= 0) && (castle_map_nodes[node_to_move_to].node_state != 0)) {
-                        Audio_PlaySoundEffectById(1);
+                        Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
                         selected_map_node = node_to_move_to;
                         cursor_move_timer = 3;
                     }
@@ -708,7 +708,7 @@ s32 Glc_ShowIntro(void) {
         Glc_ClearTrainerPanels();
         Glc_Draw();
     } else {
-        Audio_PlaySoundEffectById(3);
+        Audio_PlaySoundEffectById(SFX_MENU_BACK);
         in_elite_four_challenge = 2;
         Audio_StopMusic(0x12);
         if (selected_map_node == CHAMPION) {

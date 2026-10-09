@@ -1375,11 +1375,11 @@ void Completion_HandleAcceptDeclineInput(void) {
         }
 
         if ((gPlayer1Controller->buttonPressed & 0x200) || (gPlayer1Controller->buttonPressed & 0x100)) {
-            Audio_PlaySoundEffectById(1);
+            Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
         }
 
         if ((gPlayer1Controller->buttonPressed & 0x8000) && (D_86B0EBDC->unk_2F0 == 1)) {
-            Audio_PlaySoundEffectById(2);
+            Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
             D_86B0EBE0->unk_00 = 6;
             Completion_ResetDialogText();
             Text_SetStringToken(0x20, Text_GetString(NULL, 0, D_86B0EBD4, D_86B0EBDC->unk_2E8 - 1));
@@ -1390,7 +1390,7 @@ void Completion_HandleAcceptDeclineInput(void) {
         }
 
         if ((gPlayer1Controller->buttonPressed & 0x8000) && (D_86B0EBDC->unk_2F0 == 0)) {
-            Audio_PlaySoundEffectById(3);
+            Audio_PlaySoundEffectById(SFX_MENU_BACK);
             D_86B0EBE0->unk_00 = 7;
             Completion_ResetDialogText();
             Text_SetStringToken(0x1F, Text_GetString(NULL, 0, D_86B0EBD4, D_86B0EBDC->unk_2EC - 1));
@@ -1403,7 +1403,7 @@ void Completion_HandleAcceptDeclineInput(void) {
 void Completion_HandleContinuePrompt(void) {
     if ((D_86B0EBE0->unk_18 == 1) && (gPlayer1Controller->buttonPressed & 0x8000)) {
         D_86B0EBE0->unk_18 = 0;
-        Audio_PlaySoundEffectById(1);
+        Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
     }
 }
 

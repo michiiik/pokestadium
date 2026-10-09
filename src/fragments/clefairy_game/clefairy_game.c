@@ -828,7 +828,7 @@ s32 ClefairyGame_WaitForStart(void) {
         }
 
         if ((D_8780FA2A == 0) && (temp_v1 & 0x4000) && (D_861054BA == 1)) {
-            Audio_PlaySoundEffectById(3);
+            Audio_PlaySoundEffectById(SFX_MENU_BACK);
             Widget_PauseMenuTrigger(2);
             return -1;
         }

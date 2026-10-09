@@ -16,6 +16,42 @@
 #define POOL_END_4MB 0x80400000
 #define POOL_END_6MB 0x80600000
 
+/*
+ * Audio_PlaySoundEffectById IDs. Names describe source-backed uses, not
+ * recovered original names or verified sample contents. Unknown IDs are
+ * intentionally omitted. Category 12 IDs retain their complete command value.
+ */
+#define SFX_MENU_SCROLL       0x01
+#define SFX_MENU_CONFIRM      0x02
+#define SFX_MENU_BACK         0x03
+#define SFX_PANEL_OPEN        0x04
+#define SFX_MENU_ERROR        0x08
+#define SFX_N64_LOGO          0x0A
+#define SFX_TITLE_START       0x0F
+#define SFX_MOVE_SWAP         0x18 // PC Pokemon, item, box and move reordering.
+#define SFX_ZOOM_IN           0x19 // Gallery enlargement and Pokedex area detail.
+#define SFX_ZOOM_OUT          0x1A
+#define SFX_PAUSE             0x23
+#define SFX_RESUME            0x24
+#define SFX_PAK_CURSOR        0x25 // Transfer Pak and trade-machine port selection.
+#define SFX_PAGE_CHANGE       0x27 // Gallery pages and Pokemon boxes.
+#define SFX_TROPHY_APPEAR     0x28
+#define SFX_PAK_LAB_SELECT    0x2A
+#define SFX_PAK_TOWER_SELECT  0x2B
+#define SFX_PHOTO_CAPTURE     0x2C
+#define SFX_CAMERA_FULL       0x2D // Automatic exit begins after the 24th photo.
+#define SFX_CAMERA_EXIT       0x2E
+#define SFX_AREA_CURSOR       0x32
+#define SFX_CAMERA_TEXT       0x3C // Tutorial character reveal; detuned ID 5.
+
+#define SFX_TRADE_TEXT        0x01200001
+#define SFX_TRADE_BEGIN       0x01200002
+#define SFX_TRADE_END         0x01200003
+#define SFX_TRADE_LIGHT_ON    0x01200004
+#define SFX_TRADE_BALL_APPEAR 0x01200005
+#define SFX_TRADE_BALL_READY  0x01200006
+#define SFX_EVOLUTION_START  0x01200007
+
 // game states
 typedef enum {
     STATE_N64_LOGO_INTRO      = 0x01, // N64 Logo + Intro

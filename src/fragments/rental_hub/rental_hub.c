@@ -134,17 +134,17 @@ s32 RentalHub_HandleInput(void) {
         Audio_PlaySoundEffectById(0x1C);
         action = 'btnA';
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_B)) {
-        Audio_PlaySoundEffectById(3);
+        Audio_PlaySoundEffectById(SFX_MENU_BACK);
         action = 'btnB';
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DLEFT)) {
-        Audio_PlaySoundEffectById(1);
+        Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
         action = 'exec';
         hovered_menu_item -= 1;
         if (hovered_menu_item < 0) {
             hovered_menu_item = 2;
         }
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DRIGHT)) {
-        Audio_PlaySoundEffectById(1);
+        Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
         action = 'exec';
         hovered_menu_item++;
         if (hovered_menu_item >= 3) {
@@ -198,7 +198,7 @@ s16 RentalHub_MenuLoop(void) {
 
     hovered_menu_item = 0;
     RentalHub_FadeInWait();
-    Audio_PlaySoundEffectById(4);
+    Audio_PlaySoundEffectById(SFX_PANEL_OPEN);
 
     for (i = 1; i < 8; i++) {
         Controller_PollInputs();

@@ -500,7 +500,7 @@ void TransferPak_MovePortCursor(void) {
 
     if (D_81304000 != D_81304A62) {
         D_81303CB0 = 0;
-        Audio_PlaySoundEffectById(0x25);
+        Audio_PlaySoundEffectById(SFX_PAK_CURSOR);
     }
 }
 
@@ -516,17 +516,17 @@ void TransferPak_HandlePortSelectInput(void) {
 
             if ((var_v0 == 0) && (TransferPak_GetPortMessageIndex(D_81304000) != 1)) {
                 if (gCurrentGameState == 0x25) {
-                    Audio_PlaySoundEffectById(0x2A);
+                    Audio_PlaySoundEffectById(SFX_PAK_LAB_SELECT);
                 } else {
-                    Audio_PlaySoundEffectById(0x2B);
+                    Audio_PlaySoundEffectById(SFX_PAK_TOWER_SELECT);
                 }
                 D_81304A64 = 1;
                 TransferPak_LaunchSelectedPortAnim();
             } else {
-                Audio_PlaySoundEffectById(8);
+                Audio_PlaySoundEffectById(SFX_MENU_ERROR);
             }
         } else if ((gPlayer1Controller->buttonPressed & 0x4000) && (D_81304A64 != 2)) {
-            Audio_PlaySoundEffectById(3);
+            Audio_PlaySoundEffectById(SFX_MENU_BACK);
             D_81304A64 = 2;
         } else if (D_81304000 >= 0) {
             TransferPak_MovePortCursor();

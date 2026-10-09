@@ -4045,10 +4045,10 @@ s32 Pokedex_CheckAreaMapExit(void) {
             D_88826A4C = (D_88826A4C + 1) & 1;
             switch (D_88826A4C) {
                 case 0:
-                    Audio_PlaySoundEffectByIdWrapper(3);
+                    Audio_PlaySoundEffectByIdWrapper(SFX_MENU_BACK);
                     break;
                 case 1:
-                    Audio_PlaySoundEffectByIdWrapper(2);
+                    Audio_PlaySoundEffectByIdWrapper(SFX_MENU_CONFIRM);
                     break;
             }
         }
@@ -4057,7 +4057,7 @@ s32 Pokedex_CheckAreaMapExit(void) {
             D_88826A50 = D_88826A4E;
             D_88826A4E = Pokedex_FindNextMapArea(D_88826A4E);
             if (D_88826A50 != D_88826A4E) {
-                Audio_PlaySoundEffectByIdWrapper(1);
+                Audio_PlaySoundEffectByIdWrapper(SFX_MENU_SCROLL);
                 Pokedex_ResetCameraEase();
             }
         }
@@ -4066,7 +4066,7 @@ s32 Pokedex_CheckAreaMapExit(void) {
             D_88826A50 = D_88826A4E;
             D_88826A4E = Pokedex_FindPrevMapArea(D_88826A4E);
             if (D_88826A50 != D_88826A4E) {
-                Audio_PlaySoundEffectByIdWrapper(1);
+                Audio_PlaySoundEffectByIdWrapper(SFX_MENU_SCROLL);
                 Pokedex_ResetCameraEase();
             }
         }
@@ -4079,7 +4079,7 @@ s32 Pokedex_CheckAreaMapExit(void) {
                         D_88826A4C = 0;
                     }
                     D_88826A50 = D_88826A4E;
-                    Audio_PlaySoundEffectByIdWrapper(0x19);
+                    Audio_PlaySoundEffectByIdWrapper(SFX_ZOOM_IN);
                     Pokedex_ResetCameraEase();
                 }
                 break;
@@ -4089,7 +4089,7 @@ s32 Pokedex_CheckAreaMapExit(void) {
                     D_88826A52 = 0;
                     D_88826A80 = 1;
                     D_88826A50 = D_88826A4E;
-                    Audio_PlaySoundEffectByIdWrapper(0x1A);
+                    Audio_PlaySoundEffectByIdWrapper(SFX_ZOOM_OUT);
                     Pokedex_ResetCameraEase();
                 }
                 break;

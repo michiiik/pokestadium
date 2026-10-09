@@ -1979,7 +1979,7 @@ s32 Widget_PauseMenuUpdate(void) {
             if ((D_8780FE44 <= 0) && (D_8780FC9C->buttonPressed & 0x8000)) {
                 D_8780FC98 = 1;
                 if (D_8780FA2A == 0) {
-                    Audio_PlaySoundEffectById(4);
+                    Audio_PlaySoundEffectById(SFX_PANEL_OPEN);
                     D_8780FC40 = 3;
                     D_8780FC70 = 1;
                     D_8780FC5D = 3;
@@ -2027,7 +2027,7 @@ s32 Widget_PauseMenuUpdate(void) {
                     if (i == 4) {
                         if (D_8780FC6C == 0) {
                             if (D_8780FC9C->buttonPressed & 0x8000) {
-                                Audio_PlaySoundEffectById(4);
+                                Audio_PlaySoundEffectById(SFX_PANEL_OPEN);
                                 if (Widget_PauseMenuCheckHyperUnlock() != 0) {
                                     Audio_StartMusicTrack(0x13);
                                     D_8780FC6C = 1;
@@ -2041,7 +2041,7 @@ s32 Widget_PauseMenuUpdate(void) {
                             D_8780FE44 -= D_8780FCA0;
                             if (D_8780FE44 <= 0) {
                                 if (D_8780FC9C->buttonPressed & 0x8000) {
-                                    Audio_PlaySoundEffectById(4);
+                                    Audio_PlaySoundEffectById(SFX_PANEL_OPEN);
                                     D_8780FC40 = 3;
                                     D_8780FC70 = 1;
                                     D_8780FC6C = 0;
@@ -2061,19 +2061,19 @@ s32 Widget_PauseMenuUpdate(void) {
 
         case 3:
             if ((D_8780FC9C->buttonPressed & 0x800) || ((sp67 == 1) && (D_8780FC9A == 0))) {
-                Audio_PlaySoundEffectById(1);
+                Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
                 D_8780FC5C--;
                 if (D_8780FC5C < 0) {
                     D_8780FC5C = D_8780FC5D - 1;
                 }
             } else if ((D_8780FC9C->buttonPressed & 0x400) || ((sp66 == 1) && (D_8780FC9B == 0))) {
-                Audio_PlaySoundEffectById(1);
+                Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
                 D_8780FC5C++;
                 if (D_8780FC5C >= D_8780FC5D) {
                     D_8780FC5C = 0;
                 }
             } else if (D_8780FC9C->buttonPressed & 0x8000) {
-                Audio_PlaySoundEffectById(2);
+                Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
                 if (D_8780FA2A == 0) {
                     D_8780FC40 = 6;
                 } else if (D_8780FC4C != 0) {
@@ -2105,7 +2105,7 @@ s32 Widget_PauseMenuUpdate(void) {
 
             if (!(D_8780FC48 & D_8780FE40)) {
                 D_8780FC90++;
-                Audio_PlaySoundEffectById(1);
+                Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
                 if (D_8780FC90 >= D_8780FC78) {
                     D_8780FC90 = 0;
                 }

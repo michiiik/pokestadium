@@ -442,7 +442,7 @@ void TeamSelection_TrainerSlots_MoveFromSpecialUp(void) {
         for (i = 0; i < 4; i++) {
             if (D_84210DA0[var_v1].unk_00 != 0) {
                 D_8423E568 = var_v1;
-                Audio_PlaySoundEffectById(1);
+                Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
                 break;
             }
             var_v1 = (var_v1 + var_a0) & 3;
@@ -459,7 +459,7 @@ void TeamSelection_TrainerSlots_MoveFromTrainerToSpecial(void) {
         for (i = 0; i < 2; i++) {
             if (D_84210DA0[var_v0].unk_00 != 0) {
                 D_8423E568 = var_v0;
-                Audio_PlaySoundEffectById(1);
+                Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
                 break;
             }
             var_v0 ^= 1;
@@ -474,13 +474,13 @@ void TeamSelection_TrainerSlots_MovePrevious(void) {
         for (i = D_8423E568 - 1; i >= 0; i--) {
             if (D_84210DA0[i].unk_00 != 0) {
                 D_8423E568 = i;
-                Audio_PlaySoundEffectById(1);
+                Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
                 break;
             }
         }
     } else if ((D_8423E568 == 5) && (D_84210DA0[4].unk_00 != 0)) {
         D_8423E568 = 4;
-        Audio_PlaySoundEffectById(1);
+        Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
     }
 }
 
@@ -491,13 +491,13 @@ void TeamSelection_TrainerSlots_MoveNext(void) {
         for (i = D_8423E568 + 1; i < 4; i++) {
             if (D_84210DA0[i].unk_00 != 0) {
                 D_8423E568 = i;
-                Audio_PlaySoundEffectById(1);
+                Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
                 break;
             }
         }
     } else if (D_8423E568 == 4) {
         D_8423E568 = 5;
-        Audio_PlaySoundEffectById(1);
+        Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
     }
 }
 
@@ -509,12 +509,12 @@ void TeamSelection_TrainerSlots_HandleInput(void) {
             Audio_PlaySoundEffectById(0x01100012);
             D_8423E56C = 4;
         } else {
-            Audio_PlaySoundEffectById(8);
+            Audio_PlaySoundEffectById(SFX_MENU_ERROR);
             D_8423E56C = 6;
         }
     } else if ((D_8423E57C != 0) && (BTN_IS_PRESSED(D_8423E570, BTN_B))) {
         D_8423E56C = 5;
-        Audio_PlaySoundEffectById(3);
+        Audio_PlaySoundEffectById(SFX_MENU_BACK);
     } else if (BTN_IS_PRESSED(D_8423E570, BTN_DUP)) {
         TeamSelection_TrainerSlots_MoveFromSpecialUp();
     } else if (BTN_IS_PRESSED(D_8423E570, BTN_DDOWN)) {
