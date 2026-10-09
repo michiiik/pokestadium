@@ -136,7 +136,7 @@ void Trade_InitSaveSequence(s32 arg0) {
     if (arg0 != 0) {
         Audio_PlaySoundEffectById(0x1E);
     } else {
-        Audio_PlaySoundEffectById(4);
+        Audio_PlaySoundEffectById(SFX_PANEL_OPEN);
     }
 }
 
@@ -204,7 +204,7 @@ void Trade_UpdateSaveSeqMenuInput(unk_D_82F210E0* arg0) {
 
     if (D_82F21128 != tmp) {
         var_t0 = 0;
-        Audio_PlaySoundEffectById(1);
+        Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
     }
 
     if (BTN_IS_PRESSED(gPlayer1Controller, BTN_A)) {
@@ -236,7 +236,7 @@ void Trade_UpdateSaveSeqMenuInput(unk_D_82F210E0* arg0) {
                     arg0->unk_02 = 0xA;
                     arg0->unk_04 &= ~4;
                     D_82F21130 = 0;
-                    Audio_PlaySoundEffectById(3);
+                    Audio_PlaySoundEffectById(SFX_MENU_BACK);
                     break;
             }
         } else {
@@ -245,10 +245,10 @@ void Trade_UpdateSaveSeqMenuInput(unk_D_82F210E0* arg0) {
             arg0->unk_04 &= ~6;
             if (D_82F21128 == 0) {
                 D_82F2112C = 1;
-                Audio_PlaySoundEffectById(2);
+                Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
             } else {
                 D_82F2112C = 0;
-                Audio_PlaySoundEffectById(3);
+                Audio_PlaySoundEffectById(SFX_MENU_BACK);
             }
         }
         arg0->unk_12 = -1;

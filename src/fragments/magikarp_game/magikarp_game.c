@@ -591,7 +591,7 @@ s32 MagikarpGame_WaitForStart(void) {
             }
 
             if ((D_8780FA2A == 0) && (gPlayer1Controller->buttonPressed & 0x4000)) {
-                Audio_PlaySoundEffectById(3);
+                Audio_PlaySoundEffectById(SFX_MENU_BACK);
                 Widget_PauseMenuTrigger(2);
                 return -1;
             }

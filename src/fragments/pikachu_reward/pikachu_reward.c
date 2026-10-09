@@ -296,7 +296,7 @@ void PikachuReward_ShowTextWaitForA(char* arg0, s32 arg1) {
         BgStage_AdvanceFrame();
     } while (!BTN_IS_PRESSED(gPlayer1Controller, BTN_A));
 
-    Audio_PlaySoundEffectById(1);
+    Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
     D_83201F58 = arg0;
 }
 
@@ -338,7 +338,7 @@ s32 PikachuReward_ConfirmYesNoPrompt(char* arg0) {
     while (var_s2 != 0) {
         Controller_PollInputs();
         if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DUP | BTN_DDOWN)) {
-            Audio_PlaySoundEffectById(1);
+            Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
             var_s1 ^= 1;
         } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_A)) {
             var_s2 = 0;
@@ -379,9 +379,9 @@ s32 PikachuReward_ConfirmYesNoPrompt(char* arg0) {
     }
 
     if (temp_s3 != 0) {
-        Audio_PlaySoundEffectById(2);
+        Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
     } else {
-        Audio_PlaySoundEffectById(3);
+        Audio_PlaySoundEffectById(SFX_MENU_BACK);
     }
     return temp_s3;
 }
@@ -398,7 +398,7 @@ s32 PikachuReward_SelectMoveToForget(char* arg0) {
         Controller_PollInputs();
 
         if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DUP)) {
-            Audio_PlaySoundEffectById(1);
+            Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
             var_s0--;
             if (var_s0 < 0) {
                 var_s0 = 3;
@@ -406,7 +406,7 @@ s32 PikachuReward_SelectMoveToForget(char* arg0) {
         }
 
         if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DDOWN)) {
-            Audio_PlaySoundEffectById(1);
+            Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
             var_s0++;
             if (var_s0 >= 4) {
                 var_s0 = 0;
@@ -414,15 +414,15 @@ s32 PikachuReward_SelectMoveToForget(char* arg0) {
         } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_A)) {
             if ((D_832027C8.unk_04.unk_09[var_s0] == 0xF) || (D_832027C8.unk_04.unk_09[var_s0] == 0x13) ||
                 (D_832027C8.unk_04.unk_09[var_s0] == 0x46) || (D_832027C8.unk_04.unk_09[var_s0] == 0x94)) {
-                Audio_PlaySoundEffectById(8);
+                Audio_PlaySoundEffectById(SFX_MENU_ERROR);
             } else {
                 var_s4 = 0;
-                Audio_PlaySoundEffectById(2);
+                Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
             }
         } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_B)) {
             var_s4 = 0;
             var_s0 = -1;
-            Audio_PlaySoundEffectById(3);
+            Audio_PlaySoundEffectById(SFX_MENU_BACK);
         }
 
         PikachuReward_RenderFrame(0);

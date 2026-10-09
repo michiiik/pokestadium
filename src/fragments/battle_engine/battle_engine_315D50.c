@@ -4184,19 +4184,19 @@ static u8* gMoveAnimEffectScripts[][5] = {
 };
 
 void BattleAnim_PlaySoundEffect1(void) {
-    Audio_PlaySoundEffectById(1);
+    Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
 }
 
 void BattleAnim_PlaySoundEffect2(void) {
-    Audio_PlaySoundEffectById(2);
+    Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
 }
 
 void BattleAnim_PlaySoundEffect3(void) {
-    Audio_PlaySoundEffectById(3);
+    Audio_PlaySoundEffectById(SFX_MENU_BACK);
 }
 
 void BattleAnim_PlaySoundEffect8(void) {
-    Audio_PlaySoundEffectById(8);
+    Audio_PlaySoundEffectById(SFX_MENU_ERROR);
 }
 
 void BattleAnim_PlayOwnerCry(Battler* arg0, s16 arg1) {

@@ -357,7 +357,7 @@ void TeamSelection_DrawCategoryScreen(s16 arg0, s16 arg1, s16 arg2) {
 }
 
 void TeamSelection_WaitForConfirm(void) {
-    Audio_PlaySoundEffectById(8);
+    Audio_PlaySoundEffectById(SFX_MENU_ERROR);
     TeamSelection_RulePrompt_Open(0x10, gPlayer1Controller);
 
     while (TeamSelection_RulePrompt_TryFinish(0x10) == -1) {
@@ -377,22 +377,22 @@ s32 TeamSelection_HandleConfirmInput(void) {
             if (D_8423D3F8 < 3) {
                 Audio_PlaySoundEffectById(0x1C);
             } else {
-                Audio_PlaySoundEffectById(3);
+                Audio_PlaySoundEffectById(SFX_MENU_BACK);
             }
             sp1C = 'btnA';
         }
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_B)) {
-        Audio_PlaySoundEffectById(3);
+        Audio_PlaySoundEffectById(SFX_MENU_BACK);
         D_8423D3F8 = 3;
         sp1C = 'btnB';
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DUP)) {
-        Audio_PlaySoundEffectById(1);
+        Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
         D_8423D3F8--;
         if (D_8423D3F8 < 0) {
             D_8423D3F8 = 3;
         }
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DDOWN)) {
-        Audio_PlaySoundEffectById(1);
+        Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
         D_8423D3F8++;
         if (D_8423D3F8 >= 4) {
             D_8423D3F8 = 0;
@@ -406,7 +406,7 @@ s16 TeamSelection_RunCategorySelection(void) {
     s32 temp_s0;
 
     D_8423D3F8 = 0;
-    Audio_PlaySoundEffectById(4);
+    Audio_PlaySoundEffectById(SFX_PANEL_OPEN);
 
     for (i = 0; i < 9; i++) {
         Controller_PollInputs();
@@ -567,7 +567,7 @@ void TeamSelection_Update(UNUSED s16 arg0, UNUSED s32 arg1) {
 }
 
 void TeamSelection_Open(s16 arg0, s32 arg1, s16 arg2) {
-    Audio_PlaySoundEffectById(4);
+    Audio_PlaySoundEffectById(SFX_PANEL_OPEN);
     if (arg0 == 4) {
         RegistrationManager_Begin(&D_84229EB0);
     } else {

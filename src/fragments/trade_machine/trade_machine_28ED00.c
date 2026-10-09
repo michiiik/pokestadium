@@ -538,7 +538,7 @@ void Trade_UpdateBoxMachineFlowSelect(unk_D_82F20A40* arg0) {
     }
 
     if (D_82F210D2 != tmp) {
-        Audio_PlaySoundEffectById(0x25);
+        Audio_PlaySoundEffectById(SFX_PAK_CURSOR);
     }
 
     if (BTN_IS_PRESSED(gPlayer1Controller, BTN_A) && (D_82F210D2 != -1)) {
@@ -555,7 +555,7 @@ void Trade_UpdateBoxMachineFlowSelect(unk_D_82F20A40* arg0) {
                     }
                 }
             }
-            Audio_PlaySoundEffectById(2);
+            Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
         } else {
             arg0->unk_00 = 3;
             arg0->unk_02 = 0xA;
@@ -596,7 +596,7 @@ void Trade_UpdateBoxMachineFlowSelect(unk_D_82F20A40* arg0) {
             Trade_SetBoxSlotAnimState(&D_82F20A88[i], 0);
         }
 
-        Audio_PlaySoundEffectById(3);
+        Audio_PlaySoundEffectById(SFX_MENU_BACK);
     }
 }
 
@@ -702,7 +702,7 @@ void Trade_UpdateBoxMachineFlowConfirmInput(unk_D_82F20A40* arg0) {
     }
 
     if (D_82F210D4 != tmp) {
-        Audio_PlaySoundEffectById(1);
+        Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
     }
 
     if (BTN_IS_PRESSED(gPlayer1Controller, BTN_A)) {
@@ -723,7 +723,7 @@ void Trade_UpdateBoxMachineFlowConfirmInput(unk_D_82F20A40* arg0) {
             arg0->unk_00 = 9;
             arg0->unk_02 = 0xA;
             Trade_SetBoxSlotAnimState(&D_82F20A88[D_82F210D2 + 1], 5);
-            Audio_PlaySoundEffectById(3);
+            Audio_PlaySoundEffectById(SFX_MENU_BACK);
         }
     }
 }

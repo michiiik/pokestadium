@@ -2212,14 +2212,14 @@ void VictoryPalace_UpdateCarouselModelRotation(void) {
 }
 
 void VictoryPalace_ShowSpeciesInfo(void) {
-    Audio_PlaySoundEffectById(2);
+    Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
     D_82608542 = 1;
 }
 
 void VictoryPalace_ShowSpeciesGrid(void) {
     s32 i;
 
-    Audio_PlaySoundEffectById(2);
+    Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
     D_82608544 = 1;
     D_8267E4F4 = 0;
 
@@ -2229,12 +2229,12 @@ void VictoryPalace_ShowSpeciesGrid(void) {
 }
 
 void VictoryPalace_HideSpeciesGrid(void) {
-    Audio_PlaySoundEffectById(3);
+    Audio_PlaySoundEffectById(SFX_MENU_BACK);
     D_82608544 = 0;
 }
 
 void VictoryPalace_HideOverlays(void) {
-    Audio_PlaySoundEffectById(3);
+    Audio_PlaySoundEffectById(SFX_MENU_BACK);
     D_82608542 = 0;
     D_82608544 = 0;
 }
@@ -2243,7 +2243,7 @@ void VictoryPalace_ResetPillarGlow(s32 arg0) {
     if ((D_82608542 != 0) || (D_82608544 != 0)) {
         VictoryPalace_HideOverlays();
     } else {
-        Audio_PlaySoundEffectById(1);
+        Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
     }
     D_8260854C = 0;
     D_8260854E = 5;
@@ -2305,7 +2305,7 @@ s32 VictoryPalace_HandleInput(s16* arg0) {
         if (D_82608542 == 0) {
             if (D_82608544 == 0) {
                 *arg0 = 0;
-                Audio_PlaySoundEffectById(3);
+                Audio_PlaySoundEffectById(SFX_MENU_BACK);
                 return 1;
             }
         }

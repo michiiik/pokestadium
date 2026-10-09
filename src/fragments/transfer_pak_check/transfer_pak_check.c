@@ -1589,7 +1589,7 @@ s32 TransferPak_ShowRulesPrompt(void) {
             PakUi_UpdatePartyDisplayFrame(i, j);
         }
     } else {
-        Audio_PlaySoundEffectById(3);
+        Audio_PlaySoundEffectById(SFX_MENU_BACK);
         Audio_StopMusic(0x10);
         StageContext_SetClearColor(0xFFFF);
         StageFade_StartFromTransparent(8);
@@ -1793,7 +1793,7 @@ s32 TransferPak_ConfirmPrompt(SessionContinueData* arg0) {
     while (var_s2 != 0) {
         Controller_PollInputs();
         if (gPlayer1Controller->buttonPressed & 0xC00) {
-            Audio_PlaySoundEffectById(1);
+            Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
             var_s1 ^= 1;
         } else if (gPlayer1Controller->buttonPressed & 0x8000) {
             var_s2 = 0;
@@ -1807,7 +1807,7 @@ s32 TransferPak_ConfirmPrompt(SessionContinueData* arg0) {
     if (var_s1 == 0) {
         Audio_PlaySoundEffectById(0x1F);
     } else {
-        Audio_PlaySoundEffectById(3);
+        Audio_PlaySoundEffectById(SFX_MENU_BACK);
     }
 
     for (i = 7; i > 0; i--) {
@@ -1829,7 +1829,7 @@ s16 TransferPak_MainMenu(SessionContinueData* arg0) {
     var_s6 = 1;
     var_s0 = 0;
     sp44 = 4;
-    Audio_PlaySoundEffectById(4);
+    Audio_PlaySoundEffectById(SFX_PANEL_OPEN);
 
     for (i = 1; i < 8; i++) {
         Controller_PollInputs();
@@ -1846,13 +1846,13 @@ s16 TransferPak_MainMenu(SessionContinueData* arg0) {
             } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_B)) {
                 var_s1 = 3;
             } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DUP)) {
-                Audio_PlaySoundEffectById(1);
+                Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
                 var_s0 -= 1;
                 if (var_s0 < 0) {
                     var_s0 = 2;
                 }
             } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DDOWN)) {
-                Audio_PlaySoundEffectById(1);
+                Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
                 var_s0 += 1;
                 if (var_s0 >= 3) {
                     var_s0 = 0;
@@ -1869,11 +1869,11 @@ s16 TransferPak_MainMenu(SessionContinueData* arg0) {
 
             case 1:
                 var_s6 = 0;
-                Audio_PlaySoundEffectById(3);
+                Audio_PlaySoundEffectById(SFX_MENU_BACK);
                 break;
 
             case 2:
-                Audio_PlaySoundEffectById(2);
+                Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
                 if (TransferPak_ConfirmPrompt(arg0) != 0) {
                     var_s6 = 0;
                 }
@@ -1881,7 +1881,7 @@ s16 TransferPak_MainMenu(SessionContinueData* arg0) {
 
             case 3:
                 var_s6 = 0;
-                Audio_PlaySoundEffectById(3);
+                Audio_PlaySoundEffectById(SFX_MENU_BACK);
                 break;
         }
     }
@@ -1981,7 +1981,7 @@ s32 PakUi_UpdateStatusPopup(PakUi_StatusPopup* arg0) {
     switch (arg0->unk_00) {
         case 1:
             if (BTN_IS_PRESSED(gPlayer1Controller, BTN_A | BTN_B)) {
-                Audio_PlaySoundEffectById(3);
+                Audio_PlaySoundEffectById(SFX_MENU_BACK);
                 arg0->unk_00 = 3;
             }
             break;
@@ -2538,7 +2538,7 @@ s32 TransferPak_MenuHandleInput(void) {
             var_a3 = D_82D06FA0;
         } else {
             D_82D0ABA4 = 1;
-            Audio_PlaySoundEffectById(8);
+            Audio_PlaySoundEffectById(SFX_MENU_ERROR);
             var_a3 = -1;
         }
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_B)) {
@@ -2552,7 +2552,7 @@ s32 TransferPak_MenuHandleInput(void) {
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DRIGHT)) {
         sp24 = D_82D09F1C[D_82D06FA0].unk_0B;
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_CRIGHT) && (D_82D0AB90.unk_00 == 0x1F8)) {
-        Audio_PlaySoundEffectById(2);
+        Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
         var_a3 = -1;
         D_800AE540.unk_11F2 ^= 1;
     }
@@ -2583,26 +2583,26 @@ s32 TransferPak_MenuHandleInput(void) {
         }
 
         if ((var_a1 != 0) || (var_a2 != 0)) {
-            Audio_PlaySoundEffectById(8);
+            Audio_PlaySoundEffectById(SFX_MENU_ERROR);
             PakUi_OpenStatusPopup(&D_82D0ABD0, var_a1, var_a2);
             var_a3 = -2;
         }
     }
 
     if ((var_a3 == 6) && (D_82D0AB38[1].unk_04 == 0)) {
-        Audio_PlaySoundEffectById(8);
+        Audio_PlaySoundEffectById(SFX_MENU_ERROR);
         PakUi_OpenStatusPopup(&D_82D0ABD0, 0, 4);
         var_a3 = -2;
     }
 
     if (var_a3 == 7) {
-        Audio_PlaySoundEffectById(3);
+        Audio_PlaySoundEffectById(SFX_MENU_BACK);
     } else if (var_a3 >= 0) {
         Audio_PlaySoundEffectById(0x1C);
     }
 
     if (sp24 != -1) {
-        Audio_PlaySoundEffectById(1);
+        Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
         D_82D06FA0 = sp24;
     }
     return var_a3;

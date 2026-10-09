@@ -901,7 +901,7 @@ s16 StadiumSelect_HandleInput(void) {
         var_v1 = -1;
         var_a1 = D_84103CC8;
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_B)) {
-        Audio_PlaySoundEffectById(3);
+        Audio_PlaySoundEffectById(SFX_MENU_BACK);
         var_v1 = -1;
         var_a1 = 6;
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DUP)) {
@@ -915,7 +915,7 @@ s16 StadiumSelect_HandleInput(void) {
     }
 
     if (var_v1 != -1) {
-        Audio_PlaySoundEffectById(1);
+        Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
         D_84103CC8 = var_v1;
     }
     return var_a1;

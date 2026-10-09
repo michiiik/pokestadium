@@ -693,7 +693,7 @@ void DrowzeeGame_WaitForStart(void) {
             if (gPlayer1Controller->buttonPressed & 0x1000) {
                 var_s2 = 0;
             } else if ((D_8780FA2A == 0) && (gPlayer1Controller->buttonPressed & 0x4000)) {
-                Audio_PlaySoundEffectById(3);
+                Audio_PlaySoundEffectById(SFX_MENU_BACK);
                 Widget_PauseMenuTrigger(2);
                 D_87B000D0 = 1;
                 return;

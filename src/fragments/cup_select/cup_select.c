@@ -369,15 +369,15 @@ s32 CupSelect_HandleInput(void) {
         D_800AE540.unk_0002 = hovered_division;
         action = 'slct';
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_B)) {
-        Audio_PlaySoundEffectById(3);
+        Audio_PlaySoundEffectById(SFX_MENU_BACK);
         action = 'quit';
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DUP)) {
         if (hovered_division > 0) {
-            Audio_PlaySoundEffectById(1);
+            Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
             hovered_division--;
         }
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DDOWN) && (hovered_division < latest_unlocked_division)) {
-        Audio_PlaySoundEffectById(1);
+        Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
         hovered_division++;
     }
     return action;

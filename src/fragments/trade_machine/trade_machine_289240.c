@@ -142,7 +142,7 @@ void Trade_InitPickScreen(s32 arg0, s16 arg1) {
         }
     }
 
-    Audio_PlaySoundEffectById(4);
+    Audio_PlaySoundEffectById(SFX_PANEL_OPEN);
 }
 
 s32 Trade_IsPickScreenActive(void) {
@@ -222,7 +222,7 @@ void Trade_UpdatePickScreenInput(unk_D_82F144D0* arg0) {
 
     if ((arg0->unk_0018 != arg0->unk_001C) || (arg0->unk_001A != arg0->unk_001E)) {
         arg0->unk_000C = 4;
-        Audio_PlaySoundEffectById(1);
+        Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
         return;
     }
 
@@ -242,7 +242,7 @@ void Trade_UpdatePickScreenInput(unk_D_82F144D0* arg0) {
             arg0->unk_0002 = 0xA;
             Trade_OpenInfoBox(arg0, temp_a1, arg0->unk_0004 + (arg0->unk_0018 * 0x58) + 0x2C,
                           arg0->unk_0006 + (arg0->unk_001A * 0x3C) + 0x3A);
-            Audio_PlaySoundEffectById(2);
+            Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
         } else {
             goto block_25;
         }
@@ -251,7 +251,7 @@ void Trade_UpdatePickScreenInput(unk_D_82F144D0* arg0) {
         if (BTN_IS_PRESSED(controller, BTN_B)) {
             arg0->unk_0000 = 5;
             arg0->unk_000C = 0xA;
-            Audio_PlaySoundEffectById(3);
+            Audio_PlaySoundEffectById(SFX_MENU_BACK);
         } else if (BTN_IS_PRESSED(controller, BTN_R) && (temp_a2->unk_008 != NULL)) {
             arg0->unk_0000 = 3;
             arg0->unk_000C = 0xA;
@@ -299,7 +299,7 @@ void Trade_UpdatePickScreenInput(unk_D_82F144D0* arg0) {
     }
 
     if (arg0->unk_0000 == 3) {
-        Audio_PlaySoundEffectById(0x27);
+        Audio_PlaySoundEffectById(SFX_PAGE_CHANGE);
     }
 }
 

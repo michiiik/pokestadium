@@ -1687,7 +1687,7 @@ void EkansGame_PlaySoundEvent(s16 arg0, s16 arg1) {
             break;
 
         case 17:
-            Audio_PlaySoundEffectById(3);
+            Audio_PlaySoundEffectById(SFX_MENU_BACK);
             break;
 
         case 18:

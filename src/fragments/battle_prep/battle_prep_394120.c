@@ -603,7 +603,7 @@ void BattlePrep_RunFinalRoundIntro(void) {
             BattlePrep_UpdateRoundIntroScene();
         }
         BattlePrep_StartTrophyModelGrow(&D_84B26640.unk_10, &D_84B1A598.unk_0008[0x1B]);
-        Audio_PlaySoundEffectById(0x28);
+        Audio_PlaySoundEffectById(SFX_TROPHY_APPEAR);
     }
 
     while ((D_84B259E8.unk_00 != 0) || (D_84B26080.unk_5A0 != 0)) {
