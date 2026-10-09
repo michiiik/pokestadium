@@ -1,0 +1,27 @@
+# cdx71 gate, 2026-10-08T17:50:49Z, recomp d5aec599, pokestadium 5f838c8a, host Linux x86_64, gcc 15
+# bash cdx71/gate.sh <pokestadium> cdx71/controls/micro.c src/fragments/lab_pc/lab_pc_1AE680.c src/fragments/lab_pc/lab_pc_1A9780.c src/fragments/lab_pc/lab_pc_1B4EA0.c
+dc8490f9c323bc2c2323cc2e33f359354f79d181c2fd6f249bf95e1d07b032bc  build/7.1-traced/out/uopt
+c75598bad65f726cedd77043a9fb9c4f468db3d8830ef45c4293bb42464015e4  build/7.1-traced/out/uopt.bak_nodes
+acb748e3c27ae2d85e96da2e0d516e35f56e3639d79b9149e435c7a20e749acf  build/7.1-traced/out/ugen
+0d090c01b8105a0e416ab1f6deca48331a60dc2b4285ab48bbee0cc3d8292a17  build/7.1/out/uopt
+0d8ddd1e7110fd1f572eabd976170df9affc6d6409d1bedd87cdabb791d2a220  build/7.1/out/ugen
+micro stock-vs-off: IDENTICAL
+micro stock-vs-baknodes: IDENTICAL
+micro stock-vs-on: IDENTICAL
+micro stock-vs-cm: IDENTICAL
+  .text bfadb4032ce78b8a  cdx.log 406 lines  ugen.log 3572 lines  cm.txt 190 lines
+lab_pc_1AE680 stock-vs-off: IDENTICAL
+lab_pc_1AE680 stock-vs-baknodes: IDENTICAL
+lab_pc_1AE680 stock-vs-on: IDENTICAL
+lab_pc_1AE680 stock-vs-cm: IDENTICAL
+  .text b542544fa7f07bc3  cdx.log 54414 lines  ugen.log 509710 lines  cm.txt 23033 lines
+lab_pc_1A9780 stock-vs-off: IDENTICAL
+lab_pc_1A9780 stock-vs-baknodes: IDENTICAL
+lab_pc_1A9780 stock-vs-on: IDENTICAL
+lab_pc_1A9780 stock-vs-cm: IDENTICAL
+  .text 484e8ba3cd922ea3  cdx.log 55922 lines  ugen.log 505841 lines  cm.txt 22591 lines
+lab_pc_1B4EA0 stock-vs-off: IDENTICAL
+lab_pc_1B4EA0 stock-vs-baknodes: IDENTICAL
+lab_pc_1B4EA0 stock-vs-on: IDENTICAL
+lab_pc_1B4EA0 stock-vs-cm: IDENTICAL
+  .text 4996a11616f28c9f  cdx.log 89664 lines  ugen.log 796175 lines  cm.txt 37190 lines
