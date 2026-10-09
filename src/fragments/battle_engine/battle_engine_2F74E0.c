@@ -1122,17 +1122,17 @@ s32 BattleScene_HandlePlayerForcedActionState(Battler* arg0, Battler* arg1) {
 }
 
 void BattleScene_ShowParticipantOwnerAndSecondaryModels(void) {
-    D_84390010[0]->unk_728.unk_168->unk_00.unk_01 |= 1;
-    D_84390010[0]->unk_728.unk_000.unk_000.unk_01 |= 1;
-    D_84390010[1]->unk_728.unk_168->unk_00.unk_01 |= 1;
-    D_84390010[1]->unk_728.unk_000.unk_000.unk_01 |= 1;
+    D_84390010[0]->unk_728.unk_168->unk_00.flags |= 1;
+    D_84390010[0]->unk_728.unk_000.node.flags |= 1;
+    D_84390010[1]->unk_728.unk_168->unk_00.flags |= 1;
+    D_84390010[1]->unk_728.unk_000.node.flags |= 1;
 }
 
 void BattleScene_HideParticipantOwnerAndSecondaryModels(void) {
-    D_84390010[0]->unk_728.unk_168->unk_00.unk_01 &= ~1;
-    D_84390010[0]->unk_728.unk_000.unk_000.unk_01 &= ~1;
-    D_84390010[1]->unk_728.unk_168->unk_00.unk_01 &= ~1;
-    D_84390010[1]->unk_728.unk_000.unk_000.unk_01 &= ~1;
+    D_84390010[0]->unk_728.unk_168->unk_00.flags &= ~1;
+    D_84390010[0]->unk_728.unk_000.node.flags &= ~1;
+    D_84390010[1]->unk_728.unk_168->unk_00.flags &= ~1;
+    D_84390010[1]->unk_728.unk_000.node.flags &= ~1;
 }
 
 void BattleScene_AdvanceAttractInputScript(void) {

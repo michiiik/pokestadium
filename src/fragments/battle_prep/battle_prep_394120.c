@@ -144,11 +144,11 @@ s32 BattlePrep_StarfieldGeoCallback(s32 arg0, unk_D_86002F34_alt8* arg1) {
     }
 }
 
-void BattlePrep_ResetDisplayObject(unk_D_86002F58_004_000* arg0) {
+void BattlePrep_ResetDisplayObject(DisplayObject* arg0) {
     ModelRenderer_ClearDisplayObject(arg0);
-    Vec3f_SetComponentsDuplicate(&arg0->unk_024, 0.0f, 0.0f, 0.0f);
-    Vec3f_SetComponentsDuplicate(&arg0->unk_030, 1.0f, 1.0f, 1.0f);
-    Vec3s_SetComponents(&arg0->unk_01E, 0, 0, 0);
+    Vec3f_SetComponentsDuplicate(&arg0->position, 0.0f, 0.0f, 0.0f);
+    Vec3f_SetComponentsDuplicate(&arg0->scale, 1.0f, 1.0f, 1.0f);
+    Vec3s_SetComponents(&arg0->rotation, 0, 0, 0);
 }
 
 void BattlePrep_ResetAllDisplayObjects(void) {
@@ -281,23 +281,23 @@ void BattlePrep_AnimateBallBurstEffect(s16 arg0) {
 
     if (arg0 < 0x10) {
         for (i = 0; i < 4; i++) {
-            D_84B1A598.unk_0008[i + 0].unk_024.y += 2.0f * arg0 * 0.5f;
-            D_84B1A598.unk_0008[i + 0].unk_01E.x += 0x300;
-            D_84B1A598.unk_0008[i + 8].unk_024.y += 2.0f * arg0 * 0.5f;
-            D_84B1A598.unk_0008[i + 8].unk_01E.x += 0x300;
-            D_84B1A598.unk_0008[i + 4].unk_01E.x -= 0x300;
+            D_84B1A598.unk_0008[i + 0].position.y += 2.0f * arg0 * 0.5f;
+            D_84B1A598.unk_0008[i + 0].rotation.x += 0x300;
+            D_84B1A598.unk_0008[i + 8].position.y += 2.0f * arg0 * 0.5f;
+            D_84B1A598.unk_0008[i + 8].rotation.x += 0x300;
+            D_84B1A598.unk_0008[i + 4].rotation.x -= 0x300;
             // clang-format off
-            D_84B1A598.unk_0008[i + 4].unk_024.y -= 2.0f * arg0 * 0.5f; D_84B1A598.unk_0008[i + 12].unk_01E.x -= 0x300;
+            D_84B1A598.unk_0008[i + 4].position.y -= 2.0f * arg0 * 0.5f; D_84B1A598.unk_0008[i + 12].rotation.x -= 0x300;
             // clang-format on
-            D_84B1A598.unk_0008[i + 12].unk_024.y -= 2.0f * arg0 * 0.5f;
+            D_84B1A598.unk_0008[i + 12].position.y -= 2.0f * arg0 * 0.5f;
         }
 
         for (i = 0; i < 8; i++) {
-            D_84B1A598.unk_0008[i + 0].unk_01E.z += D_84B0FC0C[i];
-            D_84B1A598.unk_0008[i + 8].unk_01E.z += D_84B0FC0C[i];
+            D_84B1A598.unk_0008[i + 0].rotation.z += D_84B0FC0C[i];
+            D_84B1A598.unk_0008[i + 8].rotation.z += D_84B0FC0C[i];
 
-            D_84B1A598.unk_0008[i + 0].unk_024.x += arg0 * D_84B0FC1C[i] * 0.5f;
-            D_84B1A598.unk_0008[i + 8].unk_024.x += arg0 * D_84B0FC1C[i] * 0.5f;
+            D_84B1A598.unk_0008[i + 0].position.x += arg0 * D_84B0FC1C[i] * 0.5f;
+            D_84B1A598.unk_0008[i + 8].position.x += arg0 * D_84B0FC1C[i] * 0.5f;
         }
     }
 }
@@ -307,11 +307,11 @@ void BattlePrep_FadeInBallBurstObjects(s16 arg0) {
 
     if (arg0 < 0x10) {
         for (i = 0; i < 16; i++) {
-            D_84B1A598.unk_0008[i].unk_01D = (-arg0 * 0x10) + 0xF0;
+            D_84B1A598.unk_0008[i].lodFraction = (-arg0 * 0x10) + 0xF0;
         }
 
         for (i = 28; i < 32; i++) {
-            D_84B1A598.unk_0008[i].unk_01D = (-arg0 * 0x10) + 0xF0;
+            D_84B1A598.unk_0008[i].lodFraction = (-arg0 * 0x10) + 0xF0;
         }
     }
 }
@@ -1180,7 +1180,7 @@ s32 BattlePrep_ShowCastleClearOutro(void) {
 void BattlePrep_InitScene(void) {
     MemoryBlock* temp_v0;
     unk_D_86002F34_00C* ptr;
-    unk_D_86002F58_004_000* ptr2;
+    DisplayObject* ptr2;
     s32 i;
 
     D_84B1A598.unk_0001 = 0;
@@ -1195,7 +1195,7 @@ void BattlePrep_InitScene(void) {
 
     for (i = 0, ptr2 = &D_84B1A598.unk_0008[0]; i < 128; ptr2++, i++) {
         ModelRenderer_AttachDisplayObject(ptr2);
-        D_84B1A598.unk_0008[i].unk_0A6 = i;
+        D_84B1A598.unk_0008[i].effectSlot = i;
     }
 
     temp_v0 = MainPool_AllocState(main_pool_get_available(), 0);
