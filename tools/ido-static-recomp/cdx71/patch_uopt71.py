@@ -663,6 +663,302 @@ def stage_cp_ca_spill(src: str) -> str:
     return src
 
 
+# ----------------------------------------------------------------- stage 6 ---
+# CDX_WEBREPORT records for `decomp-workbench trace web-report` / `sweep levers`
+# (grammar: decomp_workbench.web_report.RECORD_GRAMMAR), the workbench's shipped
+# split-growth records ported from the 5.3 profile, and CDX_BIAS.
+# 7.1 facts used here (all read from the generated source at this commit):
+#   graph node: bb number u16 +8, next +12, loop weight u32 +44,
+#               per-class pinned masks at +44 + 8*class (+0/+4), class 1 = int, 2 = float
+#   liverange:  +0 ichain, +8 liveblock list, +0xc pass-through bitvector,
+#               +0x14 member bitvector, +28 nocs, +33 regsleft, +36 numintf,
+#               +40/+44 forbidden, +48 save
+#   liveblock:  +0 graph node, +4 next, +16 uses u16, +18 defs u8, +21/+22/+23 flags
+#   itable rec: +0 kind, +1 dtype, +2 index; var: +16 offset, +22 low 3 bits mtype,
+#               +24 size; const: +16 value; op: +16 opcode, +20/+24 operands
+#   compute_save load/store charge constant: 0x1001c3dc; split strict flag 0x1001c470;
+#   seed-candidate class baselines 0x1001c838 + 8*class.
+WEBREPORT = r"""
+/* ---- stage 6: CDX_WEBREPORT / split growth / CDX_BIAS ---- */
+static int dkwb_wr_on(void) {
+    static int ready = 0, on = 0;
+    if (!ready) { on = dkwb_s5_flag("CDX_WEBREPORT"); ready = 1; }
+    if (!on) return 0;
+    dkwb_cdx_init();
+    return dkwb_cdx_active(dkwb_cdx_globalcolor_ordinal);
+}
+static int dkwb_gr_on(void) {
+    dkwb_cdx_init();
+    return dkwb_cdx_log && dkwb_cdx_active(dkwb_cdx_globalcolor_ordinal);
+}
+static int dkwb_wr_print_bv(uint8_t *mem, uint32_t vector) {
+    uint32_t chunks, data, chunk, word, bit;
+    int count = 0;
+    if (!dkwb_cdx_emulated_pointer(vector)) { fputs("-", dkwb_cdx_output); return 0; }
+    chunks = MEM_U32(vector + 0);
+    data = MEM_U32(vector + 4);
+    if (!dkwb_cdx_emulated_pointer(data) || chunks > 4096
+            || !dkwb_cdx_emulated_pointer(data + chunks * 16)) { fputs("-", dkwb_cdx_output); return 0; }
+    for (chunk = 0; chunk < chunks; chunk++)
+        for (word = 0; word < 4; word++) {
+            uint32_t bits = MEM_U32(data + chunk * 16 + word * 4);
+            if (bits == 0) continue;
+            for (bit = 0; bit < 32; bit++)
+                if ((bits >> (31 - bit)) & 1u) {
+                    fprintf(dkwb_cdx_output, "%s%u", count ? "," : "", (unsigned)(chunk * 128 + word * 32 + bit));
+                    count++;
+                }
+        }
+    if (!count) fputs("-", dkwb_cdx_output);
+    return count;
+}
+/* webexpr grammar: op<N>(a[,b]) var:<off>:<mtype>:<size> const:<n> k1:0x<addr> */
+static void dkwb_wr_expr(uint8_t *mem, uint32_t rec, int depth) {
+    int kind;
+    if (!dkwb_cdx_emulated_pointer(rec) || !dkwb_cdx_emulated_pointer(rec + 31) || depth > 8) {
+        fputs("?", dkwb_cdx_output); return;
+    }
+    kind = (int)MEM_U8(rec + 0);
+    switch (kind) {
+    case 3: case 6:
+        fprintf(dkwb_cdx_output, "%svar:%d:%d:%d", kind == 6 ? "s" : "", (int)MEM_U32(rec + 16),
+            (int)(MEM_U8(rec + 22) & 7), (int)MEM_U8(rec + 24));
+        return;
+    case 2: case 8:
+        if (MEM_U8(rec + 1) == 13 || MEM_U8(rec + 1) == 12)
+            fprintf(dkwb_cdx_output, "fconst:0x%08x", (unsigned)MEM_U32(rec + 16));
+        else
+            fprintf(dkwb_cdx_output, "const:%d", (int)MEM_U32(rec + 16));
+        return;
+    case 1: case 5:
+        fprintf(dkwb_cdx_output, "k%d:0x%x", kind, (unsigned)MEM_U32(rec + 16));
+        return;
+    case 4: {
+        uint32_t l = MEM_U32(rec + 20), r = MEM_U32(rec + 24);
+        fprintf(dkwb_cdx_output, "op%d(", (int)MEM_U8(rec + 16));
+        dkwb_wr_expr(mem, l, depth + 1);
+        if (dkwb_cdx_emulated_pointer(r) && dkwb_cdx_emulated_pointer(r + 31)
+                && MEM_U8(r + 0) >= 1 && MEM_U8(r + 0) <= 8) {
+            fputs(",", dkwb_cdx_output);
+            dkwb_wr_expr(mem, r, depth + 1);
+        }
+        fputs(")", dkwb_cdx_output);
+        return;
+    }
+    default:
+        fprintf(dkwb_cdx_output, "kind%d:%d", kind, (int)MEM_U16(rec + 2));
+    }
+}
+/* At a p1/p2 decision: webexpr (CDX_WEBREPORT) and webblocks (CDX_LOG). */
+static void dkwb_wr_decision(uint8_t *mem, int ordinal, const char *phase, int web, uint32_t lr) {
+    uint32_t ichain;
+    if (!dkwb_cdx_emulated_pointer(lr)) return;
+    ichain = MEM_U32(lr + 0);
+    if (dkwb_wr_on()) {
+        fprintf(dkwb_cdx_output, "[CDX] webexpr proc=%d phase=%s web=%d lr=0x%08x kind=%d expr=",
+            ordinal, phase, web, (unsigned)lr,
+            dkwb_cdx_emulated_pointer(ichain) ? (int)MEM_U8(ichain + 0) : -1);
+        dkwb_wr_expr(mem, ichain, 0);
+        fputs(" role=target\n", dkwb_cdx_output);
+    }
+    if (dkwb_gr_on()) {
+        fprintf(dkwb_cdx_output, "[CDX] webblocks phase=%s proc=%d role=target web=%d sym=%d lr=0x%08x bbs=",
+            phase, ordinal, web, dkwb_cdx_emulated_pointer(ichain) ? (int)MEM_U16(ichain + 2) : -1, (unsigned)lr);
+        dkwb_wr_print_bv(mem, lr + 0x14);
+        fputs(" aux=", dkwb_cdx_output);
+        dkwb_wr_print_bv(mem, lr + 0xc);
+        fputs("\n", dkwb_cdx_output);
+    }
+}
+/* bbline for every graph node, at globalcolor entry. `lines` spans from the
+ * node's entry line up to the line before the next node's entry (nodes are
+ * created in read order); the masks are the block's pinned colours for the
+ * integer (mask1) and float (mask2) classes, word 0, with word 1 in m1hi/m2hi. */
+static void dkwb_wr_bblines(uint8_t *mem, int ordinal) {
+    uint32_t node, next;
+    int n = 0;
+    if (!dkwb_wr_on()) return;
+    for (node = MEM_U32(GRAPH_HEAD); dkwb_cdx_emulated_pointer(node) && n < 100000; node = next, n++) {
+        int entry = dkwb_cdx_node_line(node), stop, line;
+        next = MEM_U32(node + 12);
+        stop = dkwb_cdx_emulated_pointer(next) ? dkwb_cdx_node_line(next) : entry + 1;
+        fprintf(dkwb_cdx_output, "[CDX] bbline proc=%d bb=%d weight=%d entry=%d lines=",
+            ordinal, (int)MEM_U16(node + 8), (int)MEM_U32(node + 44), entry);
+        if (entry <= 0) fputs("-", dkwb_cdx_output);
+        else {
+            if (stop <= entry || stop > entry + 64) stop = entry + 1;
+            for (line = entry; line < stop; line++)
+                fprintf(dkwb_cdx_output, "%s%d", line == entry ? "" : ",", line);
+        }
+        fprintf(dkwb_cdx_output, " mask1=0x%08x mask2=0x%08x m1hi=0x%08x m2hi=0x%08x\n",
+            (unsigned)MEM_U32(node + 52), (unsigned)MEM_U32(node + 60),
+            (unsigned)MEM_U32(node + 56), (unsigned)MEM_U32(node + 64));
+    }
+}
+/* compute_save: one saveocc per liveblock, then savedetail. */
+static float dkwb_wr_term, dkwb_wr_ca, dkwb_wr_cb, dkwb_wr_gross, dkwb_wr_suma, dkwb_wr_sumb;
+static void dkwb_wr_save_begin(void) { dkwb_wr_gross = dkwb_wr_suma = dkwb_wr_sumb = 0; }
+static void dkwb_wr_occ_begin(void) { dkwb_wr_term = dkwb_wr_ca = dkwb_wr_cb = 0; }
+static void dkwb_wr_occ(uint8_t *mem, uint32_t lr, uint32_t lb, float net) {
+    uint32_t bb;
+    dkwb_wr_gross += dkwb_wr_term; dkwb_wr_suma += dkwb_wr_ca; dkwb_wr_sumb += dkwb_wr_cb;
+    if (!dkwb_wr_on() || !dkwb_cdx_emulated_pointer(lb)) return;
+    bb = MEM_U32(lb + 0);
+    if (!dkwb_cdx_emulated_pointer(bb)) return;
+    fprintf(dkwb_cdx_output,
+        "[CDX] saveocc proc=%d lr=0x%08x bb=%d weight=%d uses=%d defs=%d term=%g chargeA=%g chargeB=%g net=%g o21=%d o22=%d o23=%d\n",
+        dkwb_cdx_globalcolor_ordinal, (unsigned)lr, (int)MEM_U16(bb + 8), (int)MEM_U32(bb + 44),
+        (int)MEM_U16(lb + 16), (int)MEM_U8(lb + 18), (double)dkwb_wr_term, (double)dkwb_wr_ca,
+        (double)dkwb_wr_cb, (double)net, (int)MEM_U8(lb + 21), (int)MEM_U8(lb + 22), (int)MEM_U8(lb + 23));
+}
+static void dkwb_wr_save_end(uint8_t *mem, uint32_t lr, float net) {
+    union { uint32_t w; float f; } save;
+    if (!dkwb_wr_on() || !dkwb_cdx_emulated_pointer(lr)) return;
+    save.w = MEM_U32(lr + 48);
+    fprintf(dkwb_cdx_output,
+        "[CDX] savedetail proc=%d lr=0x%08x gross=%g chargeA=%g chargeB=%g net=%g nocs=%d save=%g\n",
+        dkwb_cdx_globalcolor_ordinal, (unsigned)lr, (double)dkwb_wr_gross, (double)dkwb_wr_suma,
+        (double)dkwb_wr_sumb, (double)net, (int)MEM_U32(lr + 28), (double)save.f);
+}
+/* globalcolor's initial forbidden-set build: the bits one block adds. */
+static void dkwb_wr_forbid(uint8_t *mem, uint32_t lr, uint32_t bb, uint32_t b0, uint32_t b1, const char *via) {
+    uint32_t m0, m1;
+    if (!dkwb_wr_on() || !dkwb_cdx_emulated_pointer(lr) || !dkwb_cdx_emulated_pointer(bb)) return;
+    m0 = MEM_U32(lr + 40) & ~b0;
+    m1 = MEM_U32(lr + 44) & ~b1;
+    fprintf(dkwb_cdx_output, "[CDX] forbidseed proc=%d lr=0x%08x bb=%d mask0=0x%08x mask1=0x%08x via=%s\n",
+        dkwb_cdx_globalcolor_ordinal, (unsigned)lr, (int)MEM_U16(bb + 8), (unsigned)m0, (unsigned)m1, via);
+}
+/* ---- split growth (shipped records, ported from the 5.3 profile) ---- */
+static void dkwb_gr_seed(uint8_t *mem, uint32_t piece, uint32_t bb) {
+    if (!dkwb_gr_on() || !dkwb_cdx_emulated_pointer(piece) || !dkwb_cdx_emulated_pointer(bb)) return;
+    fprintf(dkwb_cdx_output, "[CDX] seed proc=%d lr=0x%08x bb=%d\n",
+        dkwb_cdx_globalcolor_ordinal, (unsigned)piece, (int)MEM_U16(bb + 8));
+}
+static void dkwb_gr_seedcand(uint8_t *mem, uint32_t piece, uint32_t lb, uint32_t rclass, int pass) {
+    uint32_t bb, base;
+    if (!dkwb_gr_on() || !dkwb_cdx_emulated_pointer(piece) || !dkwb_cdx_emulated_pointer(lb)) return;
+    bb = MEM_U32(lb + 0);
+    if (!dkwb_cdx_emulated_pointer(bb)) return;
+    base = 0x1001c838u + rclass * 8u;
+    fprintf(dkwb_cdx_output,
+        "[CDX] seedcand proc=%d lr=0x%08x pass=%d bb=%d f16=%d f18=%d f19=%d f20=%d maskdiff=%d\n",
+        dkwb_cdx_globalcolor_ordinal, (unsigned)piece, pass, (int)MEM_U16(bb + 8),
+        (int)MEM_U16(lb + 16), (int)MEM_U8(lb + 18), (int)MEM_U8(lb + 19), (int)MEM_U8(lb + 20),
+        (MEM_U32(bb + rclass * 8u + 44) != MEM_U32(base)) || (MEM_U32(bb + rclass * 8u + 48) != MEM_U32(base + 4)));
+}
+static void dkwb_gr_livbb(uint8_t *mem, const char *op, uint32_t range, uint32_t lb) {
+    uint32_t bb;
+    if (!dkwb_gr_on() || !dkwb_cdx_emulated_pointer(lb)) return;
+    bb = MEM_U32(lb + 0);
+    if (!dkwb_cdx_emulated_pointer(bb)) return;
+    fprintf(dkwb_cdx_output, "[CDX] livbb proc=%d op=%s lr=0x%08x bb=%d refs=%d\n",
+        dkwb_cdx_globalcolor_ordinal, op, (unsigned)range, (int)MEM_U16(bb + 8), (int)MEM_U16(lb + 16));
+}
+static void dkwb_gr_grow(uint8_t *mem, uint32_t piece, uint32_t bb, int shared, int left_before) {
+    if (!dkwb_gr_on() || !dkwb_cdx_emulated_pointer(piece) || !dkwb_cdx_emulated_pointer(bb)) return;
+    fprintf(dkwb_cdx_output,
+        "[CDX] grow proc=%d lr=0x%08x bb=%d new=%d left_before=%d left_after=%d numintf=%d strict=%d\n",
+        dkwb_cdx_globalcolor_ordinal, (unsigned)piece, (int)MEM_U16(bb + 8), shared, left_before,
+        (int)MEM_U8(piece + 33), (int)MEM_U32(piece + 36), (int)MEM_U8(0x1001c470));
+}
+static void dkwb_gr_growv(uint8_t *mem, uint32_t piece, uint32_t bb, int accepted) {
+    if (!dkwb_gr_on() || !dkwb_cdx_emulated_pointer(piece) || !dkwb_cdx_emulated_pointer(bb)) return;
+    fprintf(dkwb_cdx_output, "[CDX] growv proc=%d lr=0x%08x bb=%d accepted=%d\n",
+        dkwb_cdx_globalcolor_ordinal, (unsigned)piece, (int)MEM_U16(bb + 8), accepted);
+}
+/* ---- CDX_BIAS='N=DELTA,...': add DELTA to phase-one web N's save for candidate
+ * selection only (records still print the true save). Needs CDX_PROC, like CDX_FORCE. */
+static float dkwb_cdx_bias(int ordinal, int web) {
+    static int ready = 0;
+    static const char *spec = NULL;
+    const char *c;
+    if (!ready) { spec = getenv("CDX_BIAS"); ready = 1;
+        if (spec && *spec && dkwb_cdx_proc < 0) { fprintf(stderr, "DKWB: CDX_BIAS ignored without CDX_PROC\n"); spec = NULL; } }
+    if (spec == NULL || *spec == '\0' || !dkwb_cdx_active(ordinal)) return 0.0f;
+    for (c = spec; c && *c; ) {
+        char *end;
+        long w = strtol(c, &end, 10);
+        if (end != c && *end == '=' && w == web) {
+            float d = (float)strtod(end + 1, NULL);
+            DKWB_CDX_LOG(ordinal, "[CDX] p1bias phase=p1 proc=%d web=%d delta=%g\n", ordinal, web, (double)d);
+            return d;
+        }
+        c = strchr(c, ',');
+        if (c) c++;
+    }
+    return 0.0f;
+}
+"""
+
+FWD6 = """static int dkwb_cdx_log;
+static int dkwb_cdx_proc;
+static int dkwb_cdx_node_line(uint32_t node);
+static void dkwb_wr_decision(uint8_t *mem, int ordinal, const char *phase, int web, uint32_t lr);
+static void dkwb_wr_bblines(uint8_t *mem, int ordinal);
+static void dkwb_wr_save_begin(void);
+static void dkwb_wr_occ_begin(void);
+static float dkwb_wr_term, dkwb_wr_ca, dkwb_wr_cb;
+static void dkwb_wr_occ(uint8_t *mem, uint32_t lr, uint32_t lb, float net);
+static void dkwb_wr_save_end(uint8_t *mem, uint32_t lr, float net);
+static void dkwb_wr_forbid(uint8_t *mem, uint32_t lr, uint32_t bb, uint32_t b0, uint32_t b1, const char *via);
+static void dkwb_gr_seed(uint8_t *mem, uint32_t piece, uint32_t bb);
+static void dkwb_gr_seedcand(uint8_t *mem, uint32_t piece, uint32_t lb, uint32_t rclass, int pass);
+static void dkwb_gr_livbb(uint8_t *mem, const char *op, uint32_t range, uint32_t lb);
+static void dkwb_gr_grow(uint8_t *mem, uint32_t piece, uint32_t bb, int shared, int left_before);
+static void dkwb_gr_growv(uint8_t *mem, uint32_t piece, uint32_t bb, int accepted);
+static float dkwb_cdx_bias(int ordinal, int web);
+"""
+
+
+def stage_webreport(src: str) -> str:
+    src = replace_once(src, "static int dkwb_s5_flag(const char *name) {", FWD6 + "static int dkwb_s5_flag(const char *name) {", "stage-6 forward declarations")
+    src = src + WEBREPORT.replace("GRAPH_HEAD", GRAPH_HEAD)
+    # decisions: webexpr / webblocks right after each decision record
+    for ph in ("p1", "p2"):
+        anchor = '    dkwb_cdx_log_interference(mem, dkwb_cdx_ordinal, "%s", dkwb_web, s5);\n' % ph
+        src = replace_once(src, anchor, anchor + '    dkwb_wr_decision(mem, dkwb_cdx_ordinal, "%s", dkwb_web, s5);\n' % ph, ph + " webexpr")
+    # bbline at globalcolor entry
+    src = replace_once(src, "/*DKWB_GC_ENTRY_EXTRA*/\n", "dkwb_wr_bblines(mem, dkwb_cdx_ordinal);\n/*DKWB_GC_ENTRY_EXTRA*/\n", "bbline at entry")
+    # compute_save
+    src = replace_once(src, "s2 = 0x1001c3dc;\nt6 = MEM_U16(s0 + 16);\nL467714:\n",
+                       "s2 = 0x1001c3dc;\nt6 = MEM_U16(s0 + 16);\ndkwb_wr_save_begin();\nL467714:\ndkwb_wr_occ_begin();\n", "save loop head")
+    src = replace_once(src, "L467778:\nt9 = MEM_U8(s0 + 21);\nf20.f[0] = f4.f[0] * f10.f[0];\n",
+                       "L467778:\nt9 = MEM_U8(s0 + 21);\nf20.f[0] = f4.f[0] * f10.f[0];\ndkwb_wr_term = f20.f[0];\n", "save term")
+    src = replace_once(src, "L4677d4:\nf4.f[0] = f6.f[0] * f8.f[0];\nf20.f[0] = f20.f[0] - f4.f[0];\n",
+                       "L4677d4:\nf4.f[0] = f6.f[0] * f8.f[0];\nf20.f[0] = f20.f[0] - f4.f[0];\ndkwb_wr_ca = f4.f[0];\n", "save charge A")
+    src = replace_once(src, "L467840:\nf8.f[0] = f10.f[0] * f18.f[0];\nf20.f[0] = f20.f[0] - f8.f[0];\n",
+                       "L467840:\nf8.f[0] = f10.f[0] * f18.f[0];\nf20.f[0] = f20.f[0] - f8.f[0];\ndkwb_wr_cb = f8.f[0];\n", "save charge B")
+    src = replace_once(src, "L46784c:\nf22.f[0] = f22.f[0] + f20.f[0];\n",
+                       "L46784c:\ndkwb_wr_occ(mem, s1, s0, f20.f[0]);\nf22.f[0] = f22.f[0] + f20.f[0];\n", "save occurrence")
+    src = replace_once(src, "L4678fc:\n", "L4678fc:\ndkwb_wr_save_end(mem, s1, f22.f[0]);\n", "save detail")
+    # forbidden seed (globalcolor initial build)
+    for lab, via in (("L46955c", "liveblock"), ("L4695dc", "passthrough")):
+        old = "f_updateforbidden(mem, sp, a0, a1, a2, a3);\ngoto %s;\n" % lab
+        new = ("{ uint32_t dkwb_b0 = MEM_U32(a2 + 40), dkwb_b1 = MEM_U32(a2 + 44);\n"
+               "f_updateforbidden(mem, sp, a0, a1, a2, a3);\n"
+               'dkwb_wr_forbid(mem, a2, a0, dkwb_b0, dkwb_b1, "%s"); }\ngoto %s;\n' % (via, lab))
+        src = replace_once(src, old, new, "forbidseed " + via)
+    # split growth (5.3 L46faac/L46fb48/L46fcd4/L46e2e0/L46e34c/L46e47c -> 7.1)
+    src = replace_once(src, "L468054:\n", "L468054:\ndkwb_gr_seedcand(mem, MEM_U32(s2 + 0), s0, s4, 1);\n", "seed candidate pass 1")
+    src = replace_once(src, "L4680e4:\n", "L4680e4:\ndkwb_gr_seedcand(mem, MEM_U32(s2 + 0), s0, s4, 2);\n", "seed candidate pass 2")
+    src = replace_once(src, "L468250:\n", "L468250:\ndkwb_gr_seed(mem, MEM_U32(s3 + 0), MEM_U32(s0 + 0));\n", "split seed")
+    src = replace_once(src, "L466ae4:\nat = (int)s6 < (int)s4;\n",
+                       "L466ae4:\ndkwb_gr_grow(mem, s2, MEM_U32(s1 + 0), (int)s6, (int)s4);\nat = (int)s6 < (int)s4;\n", "growth test")
+    src = replace_once(src, "L466b3c:\n", "L466b3c:\ndkwb_gr_growv(mem, s2, MEM_U32(s1 + 0), 1);\n", "growth accept")
+    src = replace_once(src, "L466c4c:\n", "L466c4c:\ndkwb_gr_growv(mem, s2, MEM_U32(s1 + 0), 0);\n", "growth reject")
+    src = replace_once(src, "a0 = s5 + 0x8;\na1 = s0;\n//nop;\nf_dellivbb(mem, sp, a0, a1);",
+                       'dkwb_gr_livbb(mem, "del-grow", s5, s0);\na0 = s5 + 0x8;\na1 = s0;\n//nop;\nf_dellivbb(mem, sp, a0, a1);', "livbb del-grow")
+    src = replace_once(src, "a0 = a3 + 0x8;\na1 = s0;\n//nop;\nf_dellivbb(mem, sp, a0, a1);",
+                       'dkwb_gr_livbb(mem, "del-seed", a3, s0);\na0 = a3 + 0x8;\na1 = s0;\n//nop;\nf_dellivbb(mem, sp, a0, a1);', "livbb del-seed")
+    src = replace_once(src, "MEM_U8(v0 + 21) = (uint8_t)s6;\n", 'MEM_U8(v0 + 21) = (uint8_t)s6;\ndkwb_gr_livbb(mem, "mark-entry", s3, v0);\n', "livbb entry marker")
+    src = replace_once(src, "MEM_U8(v0 + 22) = (uint8_t)s6;\n", 'MEM_U8(v0 + 22) = (uint8_t)s6;\ndkwb_gr_livbb(mem, "mark-exit", s3, v0);\n', "livbb exit marker")
+    # CDX_BIAS in phase-one candidate selection
+    anchor = "(int)MEM_U32(s5 + 28), (double)f20.f[0]);\n"
+    src = replace_once(src, anchor, anchor + "f0.f[0] = f0.f[0] + dkwb_cdx_bias(dkwb_cdx_ordinal, (int)MEM_U32(sp + 272));\n", "bias in candidate selection")
+    return src
+
+
 def main() -> None:
     source_path, out_dir = Path(sys.argv[1]), Path(sys.argv[2])
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -676,7 +972,8 @@ def main() -> None:
         ("uopt.gc.c.bak_nodes", stage_lineage_symtab_temps),
         ("uopt.gc.c.pre_cmdump", stage_nodes_ucode),
         ("uopt.gc.c.pre_cpca", stage_cmdump),
-        ("uopt.gc.c", stage_cp_ca_spill),
+        ("uopt.gc.c.pre_webreport", stage_cp_ca_spill),
+        ("uopt.gc.c", stage_webreport),
     ]
     for name, fn in stages:
         src = fn(src)

@@ -36,7 +36,7 @@ fp() {
   printf "symtab "; ${OD}readelf -sW "$1" | $SHA | cut -c1-16
 }
 mkdir -p "$W/baknodes"; cp -a "$R/7.1/out/." "$W/baknodes/"; cp "$R/7.1-traced/out/uopt.bak_nodes" "$W/baknodes/uopt"
-ALL="CDX_LOG=1 CDX_DETAIL_WEB=all CDX_SYMTAB=1 CDX_TEMPS=1 CDX_NODES=1 CDX_UCODE=1 CDX_LINEAGE_TABLES=all CDX_CP=1 CDX_CA=1 CDX_NEWBIT=1 DKWB_UGEN_TRACE=1 DKWB_UGEN_SCHED=1"
+ALL="CDX_LOG=1 CDX_DETAIL_WEB=all CDX_SYMTAB=1 CDX_TEMPS=1 CDX_NODES=1 CDX_UCODE=1 CDX_LINEAGE_TABLES=all CDX_CP=1 CDX_CA=1 CDX_NEWBIT=1 CDX_WEBREPORT=1 DKWB_UGEN_TRACE=1 DKWB_UGEN_SCHED=1"
 fail=0
 for tu in "$@"; do
   # paths relative to the caller's cwd win; otherwise relative to pokestadium

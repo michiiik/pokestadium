@@ -18,9 +18,11 @@ The instrumented passes are **diagnostic oracles only**. Stadium builds keep usi
 | `build/7.1-traced/uopt.gc.c.bak_nodes` | stage 2 backup: + lineage (ICHAIN tables), symtab, temps |
 | `build/7.1-traced/uopt.gc.c.pre_cmdump` | stage 3 backup: + nodes, u-code |
 | `build/7.1-traced/uopt.gc.c.pre_cpca` | stage 4 backup: + `CDX_CMDUMP` (before stage 5) |
+| `build/7.1-traced/uopt.gc.c.pre_webreport` | stage 5 backup (before stage 6) |
 | `build/7.1-traced/out/` | runnable toolchain: stock passes + traced `ugen` + CDX `uopt`; `out/uopt.bak_nodes` is the stage-2 binary |
 | `cdx71/patch_uopt71.py` | the uopt port (anchors, addresses and how each was derived); stage 5 adds copy-propagation / fold / spill-slot / itable-creation tracing |
 | `cdx71/patch_ugen71.py` | the ugen u-code injection hook (applied by `build-traced.sh` after `instrument-ugen`) |
+| `cdx71/align53.py` | maps a 5.3 `uopt.c` anchor to its 7.1 location (difflib over the enclosing function); used to port workbench 5.3 hooks. Needs `build/5.3/uopt.c` (`gmake VERSION=5.3 build/5.3/uopt.c`) |
 | `cdx71/libc_impl_cdx71.c` | upstream `libc_impl.c` with `ecvt`/`fcvt` implemented (upstream `assert(0)`s, which kills any `-zdbug` listing, stock or not), plus `dkwb_cdx_cur_sbrk()` for the break-aware pointer check. Linked into the traced uopt only. |
 | `cdx71/build-traced.sh` | rebuild `build/7.1-traced/` from a stock 7.1 tree |
 | `cdx71/gate.sh` | section-scoped fidelity gate against stock (runs on Linux and macOS) |
@@ -72,6 +74,9 @@ uopt (`CDX_*`; grammar identical to decomp-workbench `docs/compiler-instrumentat
 | `CDX_TEMPS=1` (stage 5 addition) | also `spilltemp proc= rec= kind= slot= w0..w7` from `f_spilltemps`: each spill item (an itable record, kind 4 = expression web) and the slot it got. Printed under the *previous* globalcolor ordinal. Every PRE-deleted expression web gets a slot, stored or not, so an unused stack slot in a target can be an extra web |
 | `CDX_CP=1` [`CDX_CP_PROC=n`] | `[CP]` records to stderr: `begin`/`end` per `f_copypropagate` call (n counts those calls), every `f_exprdelete`, `f_searchstore` (with result) and `f_istrfold`, each with the first 8 words of its node arguments |
 | `CDX_CA=1` | `[CA]` records to stderr. `[CA] istr`/`[CA] stmt`: every statement `f_constarith` sees while uopt *reads* u-code, with the istr address operand's kind and mtype byte (at -G 0 the fold there is blocked by the flag at `0x1001c4e0`). `[CA] cp-stmt`: an istr that copy propagation rewrote (s3/s6 = new address/value) reaching the istr→str fold at `L417d14`; a folded store leaves the `lda` web of its global |
+| `CDX_WEBREPORT=1` (stage 6) | the records `decomp-workbench trace web-report` and `sweep levers` read: `bbline` (every block: loop weight, entry line, line span, pinned masks), `saveocc`/`savedetail` (each web's priority arithmetic from `f_compute_save`), `forbidseed` (the colours each block folds into a web's forbidden set during globalcolor's initial build), `webexpr` (the value each decision's web holds). `bbpin`/`rangepin` are not ported (the reader then says "no web" for a seed source) |
+| `CDX_LOG=1` (stage 6 additions) | also the workbench's shipped split-growth records, ported from its 5.3 profile: `webblocks` (at each decision), `seed`, `seedcand`, `grow`, `growv`, `livbb` -- what `trace growth` reads |
+| `CDX_BIAS='N=DELTA,...'` (stage 6) | add `DELTA` to phase-one web `N`'s save for candidate selection only (records keep the true save; `p1bias` records each use). Needs `CDX_PROC`, like `CDX_FORCE`. Prices a decision *order* for `sweep levers --bias` |
 | `CDX_NEWBIT=1` | `[CDX] newbit idx= kind= dtype= op= l= r=` for every itable record `f_newbit` creates. Creation order = index order, which decides spill-slot order |
 
 ugen: `DKWB_UGEN_TRACE=1` (`DKWB-CALL`, `DKWB-FREELIST` with `proc=`, `emitted=`, `line=`),
@@ -129,6 +134,45 @@ Findings that the hook made (pokestadium sessions 2026-10-08/09):
 
 Struct offsets inside liverange / ichain / itable records are carried from the 5.3 profile and were
 checked only through the positive controls below.
+
+## Stage 6 (2026-10-09): web report, split growth, bias
+
+`patch_uopt71.py` stage 6 (`stage_webreport`) makes this tree a full source for the workbench's
+`trace web-report`, `trace growth` and `sweep levers` (workbench `1704b16`).
+
+7.1 layout it relies on (read from the generated source; the 5.3 profile's offsets differ):
+
+| Object | Fields |
+|---|---|
+| graph node | bb u16 `+8`, next `+12`, loop weight u32 `+44`, pinned masks at `+44 + 8*class` (`+0`/`+4`), class 1 int, 2 float |
+| live range | ichain `+0`, liveblock list `+8`, pass-through bitvector `+0xc`, member bitvector `+0x14`, nocs `+28`, regsleft `+33`, numintf `+36`, forbidden `+40`/`+44`, save `+48` |
+| liveblock | node `+0`, next `+4`, uses u16 `+16`, defs u8 `+18`, flags `+21`/`+22`/`+23` |
+| itable record | kind `+0`, dtype `+1`, index `+2`; var offset `+16`, mtype = low 3 bits of `+22`, size `+24`; const `+16`; op `+16` with operands `+20`/`+24` |
+
+`f_compute_save` (7.1 `L467714`..`L4678fc`): per liveblock `term = (uses + defs) * weight`, minus a
+load charge on a non-rematerializable entry marker and a store charge on an exit marker
+(`0x1001c3dc * weight` each); `nocs` = liveblocks + pass-through blocks, then `((n - 2) >> 2) + 2`
+when `n >= 3`; `save = net / nocs`, doubled for dtype 12. The forbidden seed comes from globalcolor's
+setup loop (`f_updateforbidden` over each liveblock at `L46955c` and each pass-through block at
+`L4695dc`).
+
+Split-growth sites (5.3 → 7.1, mapped with `align53.py` and read by hand): seed candidates
+`L46faac`→`L468054`, `L46fb48`→`L4680e4` (5.3 `s1`/`a2` are 7.1 `s2`/`s4`); seed `L46fcd4`→`L468250`
+(5.3 `s2` is 7.1 `s3`); growth test `L46e2e0`→`L466ae4`; accept `L46e34c`→`L466b3c` (7.1's strict
+path jumps past `L466b38`); reject `L46e47c`→`L466c4c`; strict flag `0x1001eb10`→`0x1001c470`;
+class baselines `0x1001e638`→`0x1001c838`.
+
+Checks:
+- Gate: 11 TUs × 6 cells (`on` includes `CDX_WEBREPORT`), all IDENTICAL.
+- `trace web-report` reads every record; on the micro control (8 decisions), func_84367660 (61) and
+  func_80033D44 (67) every save breakdown passes the reader's arithmetic checks (0 `CHECK:` lines).
+  On func_84367660 it shows directly why `a3_z` cannot take `$f12`: the seed bits `$f12`/`$f14`
+  come from block 9 (the cross-product call).
+- `trace growth --census` on func_80033D44: 8 of 8 growth tests agree with the split rule.
+- `CDX_BIAS=67=-100` on func_80033D44 drops web 67 out of phase one and reorders what follows.
+- `sweep levers` runs against this tree with `--compile-command` = `build/7.1-traced/out/cc` plus
+  the project flags (byte-identical to stock with tracing off, so `--instrumented-command` can be
+  left at its default); its oracle accepted a 3-web force on func_80033D44.
 
 ## Stage 5 (2026-10-09)
 
