@@ -7,7 +7,7 @@
 void RentalHub_DrawHeaderIcon(s16 x, s16 y);
 void RentalHub_DrawHeaderBar(s16 x, s16 y, s16 clip_width, Color_RGBA8* fill_color, Color_RGBA8* border_color);
 void RentalHub_DrawHeader(void);
-void RentalHub_DrawSelectionCursor(s16 left, s16 bottom, s16 top, s16 right);
+void RentalHub_DrawSelectionCursor(s16 x, s16 y, s16 width, s16 height);
 void RentalHub_DrawMenuItemBorder(s16 x, s16 y, s16 width, s16 height);
 void RentalHub_DrawMenuItemBox(s16 x, s16 y, s16 height, char* text);
 void RentalHub_DrawMenuItems(s16 height);

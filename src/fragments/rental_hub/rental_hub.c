@@ -63,7 +63,7 @@ void RentalHub_DrawHeader(void) {
     Font_EndTexturedTextRendering();
 }
 
-void RentalHub_DrawSelectionCursor(s16 left, s16 bottom, s16 top, s16 right) {
+void RentalHub_DrawSelectionCursor(s16 x, s16 y, s16 width, s16 height) {
     static s16 pulsing_timer = 0;
 
     s16 pulse = SINS(pulsing_timer) * 2;
@@ -72,10 +72,10 @@ void RentalHub_DrawSelectionCursor(s16 left, s16 bottom, s16 top, s16 right) {
     gSPDisplayList(gDisplayListHead++, D_8006F518);
     gDPSetEnvColor(gDisplayListHead++, 240, 212, 104, 255);
 
-    Gfx_DrawTextureIa8(left + pulse, bottom + pulse, 16, 16, BOTTOM_LEFT_SECTION_CORNER, 16, 0);
-    Gfx_DrawTextureIa8(left + pulse, ((bottom + right) - pulse) - 16, 16, 16, BOTTOM_RIGHT_SECTION_CORNER, 16, 0);
-    Gfx_DrawTextureIa8(((left + top) - pulse) - 16, bottom + pulse, 16, 16, TOP_LEFT_SECTION_CORNER, 16, 0);
-    Gfx_DrawTextureIa8(((left + top) - pulse) - 16, ((bottom + right) - pulse) - 16, 16, 16, TOP_RIGHT_SECTION_CORNER, 0x10, 0);
+    Gfx_DrawTextureIa8(x + pulse, y + pulse, 16, 16, BOTTOM_LEFT_SECTION_CORNER, 16, 0);
+    Gfx_DrawTextureIa8(x + pulse, ((y + height) - pulse) - 16, 16, 16, TOP_LEFT_SECTION_CORNER, 16, 0);
+    Gfx_DrawTextureIa8(((x + width) - pulse) - 16, y + pulse, 16, 16, BOTTOM_RIGHT_SECTION_CORNER, 16, 0);
+    Gfx_DrawTextureIa8(((x + width) - pulse) - 16, ((y + height) - pulse) - 16, 16, 16, TOP_RIGHT_SECTION_CORNER, 0x10, 0);
 
     gSPDisplayList(gDisplayListHead++, D_8006F630);
 
