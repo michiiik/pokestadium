@@ -171,18 +171,18 @@ typedef struct unk_D_86002F34_000_014 {
 } unk_D_86002F34_000_014; // size >= 0x8
 
 struct GraphNode;
-typedef s32 (*func_D_86002F34_000_010)(s32, struct GraphNode*);
+typedef s32 (*GraphNodeCallback)(s32 event, struct GraphNode* node);
 
 typedef struct GraphNode {
-    /* 0x00 */ u8 unk_00;
-    /* 0x01 */ u8 unk_01;
-    /* 0x02 */ u8 unk_02;
-    /* 0x03 */ u8 unk_03;
-    /* 0x04 */ struct GraphNode* unk_04;
-    /* 0x08 */ struct GraphNode* unk_08;
-    /* 0x0C */ struct unk_D_86002F34_00C* unk_0C;
-    /* 0x10 */ func_D_86002F34_000_010 unk_10;
-    /* 0x14 */ void* unk_14;
+    /* 0x00 */ u8 type; // Index into the geometry-node renderer dispatch table.
+    /* 0x01 */ u8 flags; // Bit 0 enables rendering; initialized to 0x11.
+    /* 0x02 */ u8 renderFlags; // Type-dependent rendering options, not universal flags.
+    /* 0x03 */ u8 renderLayer; // Material/render-slot selector; may be remapped by material state.
+    /* 0x04 */ struct GraphNode* prevSibling;
+    /* 0x08 */ struct GraphNode* nextSibling;
+    /* 0x0C */ struct unk_D_86002F34_00C* children; // Circular child-list head; retain legacy pointer type.
+    /* 0x10 */ GraphNodeCallback callback; // Events: 0 on installation, 2 on traversal, 5 on DL submission.
+    /* 0x14 */ void* callbackArg; // Callback-owned data or selector, accessed through the node.
 } GraphNode; // size = 0x18
 
 typedef struct unk_D_86002F34_00C_018 {
@@ -241,7 +241,7 @@ typedef struct unk_D_86002F34_00C_0CC {
 } unk_D_86002F34_00C_0CC; // size >= 0x20
 
 typedef struct unk_D_86002F34_00C {
-    /* 0x00 */ GraphNode unk_00;
+    /* 0x00 */ GraphNode node;
     /* 0x18 */ unk_D_86002F34_00C_018 unk_18;	//	viewPort
     /* 0x24 */ unk_D_86002F34_00C_024 unk_24;	//	projection
     /* 0x40 */ unk_D_86002F34_00C_040 unk_40;
@@ -251,7 +251,7 @@ typedef struct unk_D_86002F34_00C {
 } unk_D_86002F34_00C; // size = 0xF0
 
 typedef struct unk_D_86002F34_alt1 {
-    /* 0x00 */ GraphNode unk_00;
+    /* 0x00 */ GraphNode node;
     /* 0x18 */ s16 unk_18;
     /* 0x1A */ u16 unk_1A;
     /* 0x1C */ s8 unk_1C;
@@ -261,32 +261,32 @@ typedef struct unk_D_86002F34_alt1 {
 } unk_D_86002F34_alt1; // size >= 0x28
 
 typedef struct unk_D_86002F34_alt2 {
-    /* 0x00 */ GraphNode unk_00;
+    /* 0x00 */ GraphNode node;
     /* 0x18 */ GraphNode* unk_18;
 } unk_D_86002F34_alt2; // size >= 0x1C
 
 typedef struct unk_D_86002F34_alt3 {
-    /* 0x00 */ GraphNode unk_00;
+    /* 0x00 */ GraphNode node;
     /* 0x18 */ s16 unk_18;
     /* 0x1A */ s16 unk_1A;
     /* 0x1C */ s32 unk_1C;
 } unk_D_86002F34_alt3; // size >= 0x20
 
 typedef struct unk_D_86002F34_alt4 {
-    /* 0x00 */ GraphNode unk_00;
+    /* 0x00 */ GraphNode node;
     /* 0x18 */ Color_RGBA8_u32 unk_18;
     /* 0x1C */ u16 unk_1C;
     /* 0x1E */ u16 unk_1E;
 } unk_D_86002F34_alt4; // size >= 0x20
 
 typedef struct unk_D_86002F34_alt5 {
-    /* 0x00 */ GraphNode unk_00;
+    /* 0x00 */ GraphNode node;
     /* 0x18 */ Vec3f unk_18;
     /* 0x24 */ Vec3s unk_24;
 } unk_D_86002F34_alt5; // size = 0x2C
 
 typedef struct unk_D_86002F34_alt6 {
-    /* 0x00 */ GraphNode unk_00;
+    /* 0x00 */ GraphNode node;
     /* 0x18 */ Vec3s unk_18;
     /* 0x1E */ Vec3s unk_1E;
     /* 0x24 */ Vec3f unk_24;
@@ -296,26 +296,26 @@ typedef struct unk_D_86002F34_alt6 {
 } unk_D_86002F34_alt6; // size = 0x34
 
 typedef struct unk_D_86002F34_alt7 {
-    /* 0x00 */ GraphNode unk_00;
+    /* 0x00 */ GraphNode node;
     /* 0x18 */ Gfx* unk_18;
     /* 0x1C */ s16 unk_1C;
 } unk_D_86002F34_alt7; // size = 0x20
 
 typedef struct unk_D_86002F34_alt8 {
-    /* 0x00 */ GraphNode unk_00;
+    /* 0x00 */ GraphNode node;
     /* 0x18 */ Gfx* unk_18;
     /* 0x1C */ MtxF unk_1C;
 } unk_D_86002F34_alt8; // size = 0x5C
 
 typedef struct unk_D_86002F34_alt9 {
-    /* 0x00 */ GraphNode unk_00;
+    /* 0x00 */ GraphNode node;
     /* 0x18 */ Gfx* unk_18;
     /* 0x1C */ Vec3f unk_1C;
     /* 0x28 */ f32 unk_28;
 } unk_D_86002F34_alt9; // size = 0x2C
 
 typedef struct unk_D_86002F34_alt10 {
-    /* 0x00 */ GraphNode unk_00;
+    /* 0x00 */ GraphNode node;
     /* 0x18 */ Gfx* unk_18;
     /* 0x1C */ s16 unk_1C;
     /* 0x1E */ s16 unk_1E;
@@ -333,13 +333,13 @@ typedef struct unk_D_86002F34_alt11_018 {
 } unk_D_86002F34_alt11_018; // size >= 0xC
 
 typedef struct unk_D_86002F34_alt11 {
-    /* 0x00 */ GraphNode unk_00;
+    /* 0x00 */ GraphNode node;
     /* 0x18 */ unk_D_86002F34_alt11_018* unk_18;
     /* 0x1C */ unk_D_86002F34_alt11_018* unk_1C;
 } unk_D_86002F34_alt11; // size >= 0x20
 
 typedef struct unk_D_86002F34_alt12 {
-    /* 0x00 */ GraphNode unk_00;
+    /* 0x00 */ GraphNode node;
     /* 0x18 */ s16 unk_18;
     /* 0x1A */ s16 unk_1A;
     /* 0x1C */ s16 unk_1C;
@@ -347,29 +347,29 @@ typedef struct unk_D_86002F34_alt12 {
 } unk_D_86002F34_alt12; // size = 0x20
 
 typedef struct unk_D_86002F34_alt13 {
-    /* 0x00 */ GraphNode unk_00;
+    /* 0x00 */ GraphNode node;
     /* 0x18 */ s16 unk_18;
 } unk_D_86002F34_alt13; // size = 0x1C
 
 typedef struct unk_D_86002F34_alt14 {
-    /* 0x00 */ GraphNode unk_00;
+    /* 0x00 */ GraphNode node;
 } unk_D_86002F34_alt14; // size = 0x18
 
 typedef struct unk_D_86002F34_alt15 {
-    /* 0x00 */ GraphNode unk_00;
+    /* 0x00 */ GraphNode node;
 } unk_D_86002F34_alt15; // size = 0x18
 
 typedef struct unk_D_86002F34_alt16 {
-    /* 0x00 */ GraphNode unk_00;
+    /* 0x00 */ GraphNode node;
     /* 0x18 */ u32 unk_18;
 } unk_D_86002F34_alt16; // size = 0x1C
 
 typedef struct unk_D_86002F34_alt17 {
-    /* 0x00 */ GraphNode unk_00;
+    /* 0x00 */ GraphNode node;
 } unk_D_86002F34_alt17; // size = 0x18
 
 typedef struct unk_D_86002F34_alt18 {
-    /* 0x00 */ GraphNode unk_00;
+    /* 0x00 */ GraphNode node;
     /* 0x18 */ u8 r;
     /* 0x19 */ u8 g;
     /* 0x1A */ u8 b;
@@ -379,36 +379,36 @@ typedef struct unk_D_86002F34_alt18 {
 } unk_D_86002F34_alt18; // size = 0x20
 
 typedef struct unk_D_86002F34_alt19 {
-    /* 0x00 */ GraphNode unk_00;
+    /* 0x00 */ GraphNode node;
     /* 0x18 */ u8 r;
     /* 0x19 */ u8 g;
     /* 0x1A */ u8 b;
 } unk_D_86002F34_alt19; // size = 0x1C
 
 typedef struct unk_D_86002F34_alt20 {
-    /* 0x00 */ GraphNode unk_00;
+    /* 0x00 */ GraphNode node;
     /* 0x18 */ s16 unk_18;
     /* 0x1A */ s16 unk_1A;
 } unk_D_86002F34_alt20; // size = 0x1C
 
 typedef struct unk_D_86002F34_alt21 {
-    /* 0x00 */ GraphNode unk_00;
+    /* 0x00 */ GraphNode node;
     /* 0x18 */ s16 unk_18;
     /* 0x1A */ s16 unk_1A;
 } unk_D_86002F34_alt21; // size = 0x1C
 
 typedef struct unk_D_86002F34_alt22 {
-    /* 0x00 */ GraphNode unk_00;
+    /* 0x00 */ GraphNode node;
     /* 0x18 */ Vec3f unk_18;
 } unk_D_86002F34_alt22; // size = 0x24
 
 typedef struct unk_D_86002F34_alt23 {
-    /* 0x00 */ GraphNode unk_00;
+    /* 0x00 */ GraphNode node;
     /* 0x18 */ s16 unk_18;
 } unk_D_86002F34_alt23; // size = 0x1C
 
 typedef struct unk_D_86002F34_alt24 {
-    /* 0x00 */ GraphNode unk_00;
+    /* 0x00 */ GraphNode node;
     /* 0x18 */ s16 unk_18;
     /* 0x1A */ s16 unk_1A;
     /* 0x1C */ s16 unk_1C;
@@ -441,7 +441,7 @@ typedef struct unk_D_86002F34_01C {
 } unk_D_86002F34_01C; // size = 0xC
 
 typedef struct unk_D_86002F34 {
-    /* 0x00 */ GraphNode unk_00;
+    /* 0x00 */ GraphNode node;
     /* 0x18 */ unk_D_86002F34_018* unk_18;
     /* 0x1C */ unk_D_86002F34_01C* unk_1C;
     /* 0x20 */ Vtx* unk_20;

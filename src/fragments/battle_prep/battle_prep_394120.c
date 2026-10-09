@@ -139,7 +139,7 @@ char* BattlePrep_FormatString(char* arg0, s32 arg1, u32 arg2) {
 
 s32 BattlePrep_StarfieldGeoCallback(s32 arg0, unk_D_86002F34_alt8* arg1) {
     if (arg0 == 5) {
-        BattlePrep_DrawStarfield(arg1->unk_00.unk_14);
+        BattlePrep_DrawStarfield(arg1->node.callbackArg);
         GeoRender_ApplyMaterialState();
     }
 }
@@ -337,7 +337,7 @@ s32 BattlePrep_ShowSingleBattleIntro(void) {
     s32 var_s1 = 0;
 
     Team_LoadOpponentPreset();
-    BattlePrepRoster_Init(&D_84B25A28, D_84B1A598.unk_0004->unk_0C);
+    BattlePrepRoster_Init(&D_84B25A28, D_84B1A598.unk_0004->children);
     BattlePrepRoster_Load(&D_84B25A28, D_84B1A598.unk_B40C);
     Audio_PlayMusicIfChanged(0x31);
 
@@ -390,7 +390,7 @@ void BattlePrep_UpdateRoundIntroFrame(void) {
 void BattlePrep_InitRoundIntroScene(void) {
     BattlePrep_InitBannerScene(&D_84B259A8);
     BattlePrep_InitBadgeCarouselScene(&D_84B259E8, D_84B1A598.unk_B408, D_84B1A598.unk_B40C);
-    BattlePrepRoster_Init(&D_84B25A28, D_84B1A598.unk_0004->unk_0C);
+    BattlePrepRoster_Init(&D_84B25A28, D_84B1A598.unk_0004->children);
 }
 
 s32 BattlePrep_ShowRoundIntro(void) {
@@ -1202,7 +1202,7 @@ void BattlePrep_InitScene(void) {
     D_84B1A598.unk_0004 = process_geo_layout(temp_v0, &D_84B0FB20);
     MainPool_FinalizeAllocation(temp_v0);
 
-    ptr = D_84B1A598.unk_0004->unk_0C;
+    ptr = D_84B1A598.unk_0004->children;
     ptr->unk_24.near = 10.0f;
     ptr->unk_24.far = 6000.0f;
 

@@ -712,7 +712,7 @@ void DynamoGame_ShowResultText(void) {
 }
 
 void DynamoGame_InitCamera(void) {
-    D_87B000EC = D_87B000E8->unk_00.unk_0C;
+    D_87B000EC = D_87B000E8->node.children;
 
     D_87B000F0 = -0x200;
     D_87B000F2 = 0;

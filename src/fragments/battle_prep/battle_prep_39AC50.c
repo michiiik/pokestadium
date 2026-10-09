@@ -90,10 +90,10 @@ s32 BattlePrepRoster_DrawIconVariantA(s32 arg0, unk_func_80011B94* arg1) {
 
         temp_v1 = D_8006F09C->effectSlot - temp_a3->unk_04->effectSlot;
         if (temp_v1 < 5) {
-            var_a1 = ((arg1->unk_00.callbackArg * 3) + temp_v1) - 2;
+            var_a1 = ((arg1->node.callbackArg * 3) + temp_v1) - 2;
             sp30 = D_300C000;
         } else {
-            var_a1 = (arg1->unk_00.callbackArg * 3) + temp_v1 + 1;
+            var_a1 = (arg1->node.callbackArg * 3) + temp_v1 + 1;
             sp30 = D_300D800;
         }
 
@@ -116,10 +116,10 @@ s32 BattlePrepRoster_DrawIconVariantB(s32 arg0, unk_func_80011B94* arg1) {
 
         temp_v1 = D_8006F09C->effectSlot - temp_a3->unk_04->effectSlot;
         if (temp_v1 < 5) {
-            var_a1 = (arg1->unk_00.callbackArg * 2) + (((temp_v1 - 1) / 2) * 6) + ((temp_v1 - 1) % 2);
+            var_a1 = (arg1->node.callbackArg * 2) + (((temp_v1 - 1) / 2) * 6) + ((temp_v1 - 1) % 2);
             sp30 = D_300F000;
         } else {
-            var_a1 = (arg1->unk_00.callbackArg * 2) + (((temp_v1 - 5) / 2) * 6) + ((temp_v1 - 5) % 2) + 0xC;
+            var_a1 = (arg1->node.callbackArg * 2) + (((temp_v1 - 5) / 2) * 6) + ((temp_v1 - 5) % 2) + 0xC;
             sp30 = D_300FC00;
         }
 
@@ -145,7 +145,7 @@ s32 BattlePrepRoster_DrawTrainerBadge(s32 arg0, unk_func_80011B94* arg1) {
 
         gDPPipeSync(gDisplayListHead++);
         gSPSegment(gDisplayListHead++, 0x0F, (u32)var_a3 & 0x1FFFFFFF);
-        gSPDisplayList(gDisplayListHead++, arg1->unk_00.callbackArg);
+        gSPDisplayList(gDisplayListHead++, arg1->node.callbackArg);
 
         GeoRender_ApplyMaterialState();
     }

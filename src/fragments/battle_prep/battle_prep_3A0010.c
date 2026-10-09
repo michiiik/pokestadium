@@ -132,7 +132,7 @@ s32 BattlePrepStarBurst_DrawStarIcon(s32 arg0, unk_func_80011B94* arg1) {
 
         gDPPipeSync(gDisplayListHead++);
         gSPSegment(gDisplayListHead++, 0x0F, (u32)Memmap_GetSegmentVaddr(var_a0) & 0x1FFFFFFF);
-        gSPDisplayList(gDisplayListHead++, arg1->unk_00.callbackArg);
+        gSPDisplayList(gDisplayListHead++, arg1->node.callbackArg);
 
         GeoRender_ApplyMaterialState();
     }
@@ -145,7 +145,7 @@ s32 BattlePrepStarBurst_DrawTrailIcon(s32 arg0, unk_func_80011B94* arg1) {
     if (arg0 == 5) {
         gDPPipeSync(gDisplayListHead++);
         gSPSegment(gDisplayListHead++, 0x0F, (u32)Memmap_GetSegmentVaddr(D_3020800) & 0x1FFFFFFF);
-        gSPDisplayList(gDisplayListHead++, arg1->unk_00.callbackArg);
+        gSPDisplayList(gDisplayListHead++, arg1->node.callbackArg);
 
         GeoRender_ApplyMaterialState();
     }
@@ -161,7 +161,7 @@ s32 BattlePrepStarBurst_DrawSparkParticle(s32 arg0, unk_func_80011B94* arg1) {
         gDPPipeSync(gDisplayListHead++);
         gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a0->unk_0C & 0x1FFFFFFF);
         gDPSetEnvColor(gDisplayListHead++, temp_a0->unk_08.r, temp_a0->unk_08.g, temp_a0->unk_08.b, 255);
-        gSPDisplayList(gDisplayListHead++, arg1->unk_00.callbackArg);
+        gSPDisplayList(gDisplayListHead++, arg1->node.callbackArg);
 
         GeoRender_ApplyMaterialState();
     }
@@ -206,7 +206,7 @@ s32 BattlePrepStarBurst_DrawRainbowParticle(s32 arg0, unk_func_80011B94* arg1) {
 
         gDPPipeSync(gDisplayListHead++);
         gDPSetEnvColor(gDisplayListHead++, temp_v1->unk_0A.r, temp_v1->unk_0A.g, temp_v1->unk_0A.b, temp_v1->unk_0A.a);
-        gSPDisplayList(gDisplayListHead++, arg1->unk_00.callbackArg);
+        gSPDisplayList(gDisplayListHead++, arg1->node.callbackArg);
 
         GeoRender_ApplyMaterialState();
     }

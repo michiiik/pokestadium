@@ -107,7 +107,7 @@ void JigglypuffGame_ReadInputs(void) {
 }
 
 void JigglypuffGame_InitCamera(void) {
-    D_86301718 = D_86301714->unk_00.unk_0C;
+    D_86301718 = D_86301714->node.children;
 
     D_8630171C = 0x600;
     D_8630171E = 0;

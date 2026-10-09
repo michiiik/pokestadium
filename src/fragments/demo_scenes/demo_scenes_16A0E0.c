@@ -61,7 +61,7 @@ static unk_D_86B10BD0 D_86B10BD0;
 static unk_D_86B10BE0 D_86B10BE0;
 
 void FirstClearBonus_InitCamera(void) {
-    D_86B109B8 = D_86B10848->unk_0C;
+    D_86B109B8 = D_86B10848->children;
 
     D_86B10BC8 = 0;
     D_86B10BCA = 0;

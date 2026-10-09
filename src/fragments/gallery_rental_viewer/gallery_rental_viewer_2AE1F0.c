@@ -265,7 +265,7 @@ s32 Gallery_RentalViewerNodePostCallback(s32 arg0, GraphNode* arg1) {
         gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, D_8006F09C->lodFraction);
         gSPSegment(gDisplayListHead++, 0x0F, Memmap_GetSegmentVaddr(var_a0));
         gSPSegment(gDisplayListHead++, 0x0E, Memmap_GetSegmentVaddr(var_a3));
-        gSPDisplayList(gDisplayListHead++, arg1->unk_14);
+        gSPDisplayList(gDisplayListHead++, arg1->callbackArg);
 
         GeoRender_ApplyMaterialState();
     }

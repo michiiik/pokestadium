@@ -269,7 +269,7 @@ void RattataGame_PollInput(void) {
 
 void RattataGame_InitCamera(void) {
     D_8620829C = 0;
-    D_86203E3C = D_86203E38->unk_00.unk_0C;
+    D_86203E3C = D_86203E38->node.children;
 
     MiniCam_SetActive(D_86203E3C);
     D_86203E40 = 0x1300;

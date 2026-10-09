@@ -1746,7 +1746,7 @@ void SushiGame_UpdateCameraBasis(unk_D_86808498* arg0) {
 }
 
 void SushiGame_InitCamera(void) {
-    D_87906054 = D_86808490 = D_86807500->unk_00.unk_0C;
+    D_87906054 = D_86808490 = D_86807500->node.children;
 
     D_86808498.unk_00.x = 0.0f;
     D_86808498.unk_00.y = 0.0f;

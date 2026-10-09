@@ -84,6 +84,6 @@ void DynamoGame_InitCrankIconDisplay(void) {
 
     sp1C = MainPool_AllocState(main_pool_get_available(), 0);
     D_8650AD80 = GeoNode_CreateDisplayList(sp1C, NULL, 1, NULL);
-    GraphNode_AppendChild(&D_800AC840, &D_8650AD80->unk_00);
+    GraphNode_AppendChild(&D_800AC840, &D_8650AD80->node);
     MainPool_FinalizeAllocation(sp1C);
 }

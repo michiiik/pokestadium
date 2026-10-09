@@ -378,7 +378,7 @@ s32 Gallery_SetSceneGraphNode(s32 arg0, GraphNode* arg1) {
     s32 temp_v0;
 
     if (arg0 == 0) {
-        temp_v0 = arg1->unk_14;
+        temp_v0 = arg1->callbackArg;
         switch (temp_v0) {                          /* irregular */
         case 0:
             D_80075F80->unk_28 = arg1;
@@ -390,7 +390,7 @@ s32 Gallery_SetSceneGraphNode(s32 arg0, GraphNode* arg1) {
             D_80075F80->unk_30 = arg1;
             break;
         }
-        arg1->unk_14 = 0;
+        arg1->callbackArg = 0;
     }
     return 0;
 }

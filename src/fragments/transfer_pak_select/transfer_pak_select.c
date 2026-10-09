@@ -116,7 +116,7 @@ s32 TransferPak_RenderPortNodeCallback(s32 arg0, GraphNode* arg1) {
         if (D_81304008[idx].unk_01C != NULL) {
             gSPSegment(gDisplayListHead++, 0x0F, Memmap_GetSegmentVaddr(D_81304008[idx].unk_01C));
             gSPSegment(gDisplayListHead++, 0x0E, Memmap_GetSegmentVaddr(D_81303EF4[D_81304008[idx].unk_002]));
-            gSPDisplayList(gDisplayListHead++, arg1->unk_14);
+            gSPDisplayList(gDisplayListHead++, arg1->callbackArg);
         }
         GeoRender_ApplyMaterialState();
     }

@@ -253,7 +253,7 @@ s32 TeamSelection_TrainerSlots_GraphCallback(s32 arg0, unk_func_80011B94* arg1) 
         gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, D_8006F09C->lodFraction);
         gSPSegment(gDisplayListHead++, 0x0F, Memmap_GetSegmentVaddr(var_a0));
         gSPSegment(gDisplayListHead++, 0x0E, Memmap_GetSegmentVaddr(var_a3));
-        gSPDisplayList(gDisplayListHead++, arg1->unk_00.callbackArg);
+        gSPDisplayList(gDisplayListHead++, arg1->node.callbackArg);
 
         GeoRender_ApplyMaterialState();
     }

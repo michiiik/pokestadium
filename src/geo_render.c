@@ -377,19 +377,19 @@ void GeoOverlay_Draw(unk_D_86002F34_00C_0CC* arg0, unk_D_86002F34_00C_040* arg1)
 }
 
 void Geo_ProcessNodeChildren(GraphNode* arg0) {
-    GraphNode* temp_s2 = arg0->unk_0C;
+    GraphNode* temp_s2 = arg0->children;
     GraphNode* var_s0 = temp_s2;
 
     if (temp_s2 != NULL) {
         do {
-            if (var_s0->unk_01 & 1) {
+            if (var_s0->flags & 1) {
                 D_800AA6C0 = 0;
-                if (var_s0->unk_10 != NULL) {
-                    D_800AA6C0 = var_s0->unk_10(2, var_s0);
+                if (var_s0->callback != NULL) {
+                    D_800AA6C0 = var_s0->callback(2, var_s0);
                 }
-                D_8006F0A4[var_s0->unk_00](var_s0);
+                D_8006F0A4[var_s0->type](var_s0);
             }
-            var_s0 = var_s0->unk_08;
+            var_s0 = var_s0->nextSibling;
         } while (var_s0 != temp_s2);
     }
 }
@@ -398,12 +398,12 @@ void Geo_NodeReference(GraphNode* arg0) {
     UNUSED s32 pad;
     GraphNode* temp_a1 = ((unk_D_86002F34*)arg0)->unk_18;
 
-    if ((temp_a1 != NULL) && (temp_a1->unk_01 & 1)) {
+    if ((temp_a1 != NULL) && (temp_a1->flags & 1)) {
         D_800AA6C0 = 0;
-        if (temp_a1->unk_10 != NULL) {
-            D_800AA6C0 = temp_a1->unk_10(2, temp_a1);
+        if (temp_a1->callback != NULL) {
+            D_800AA6C0 = temp_a1->callback(2, temp_a1);
         }
-        D_8006F0A4[temp_a1->unk_00](temp_a1);
+        D_8006F0A4[temp_a1->type](temp_a1);
     }
 
     Geo_ProcessNodeChildren(arg0);
@@ -442,8 +442,8 @@ void Geo_NodeCamera(GraphNode* arg0) {
     MtxF_ToFixed(temp_s1->p_mtxf, &temp_s1->mtxf);
 
     D_8006F088 = arg;
-    if ((arg->unk_CC.unk_00 != 1) && (arg->unk_00.unk_0C != NULL)) {
-        Geo_ProcessNodeChildren(&arg->unk_00);
+    if ((arg->unk_CC.unk_00 != 1) && (arg->node.children != NULL)) {
+        Geo_ProcessNodeChildren(&arg->node);
     }
     GeoOverlay_Draw(&arg->unk_CC, temp_s2);
     Gfx_ApplyScissorRect(&gDisplayListHead);
@@ -459,7 +459,7 @@ void Geo_NodeType3Pass(GraphNode* arg0) {
 void Geo_NodeModelRoot(GraphNode* arg0) {
     unk_D_86002F34_alt1* arg = (unk_D_86002F34_alt1*)arg0;
 
-    if (arg->unk_00.unk_0C != NULL) {
+    if (arg->node.children != NULL) {
         arg->unk_1D = 0;
         arg->unk_20 = -1;
         arg->lights = Gfx_AllocDisplayList(sizeof(Lights7));
@@ -493,9 +493,9 @@ void Geo_NodeModelRoot(GraphNode* arg0) {
 void Geo_NodeModelPartRoot(GraphNode* arg0) {
     unk_D_86002F34_00C* arg = (unk_D_86002F34_00C*)arg0;
 
-    if ((D_8006F094 == NULL) && (arg->unk_00.unk_0C != NULL)) {
+    if ((D_8006F094 == NULL) && (arg->node.children != NULL)) {
         D_8006F094 = arg;
-        GeoRender_InitMaterialState(arg->unk_00.unk_02 & 3, D_8006F080);
+        GeoRender_InitMaterialState(arg->node.renderFlags & 3, D_8006F080);
         Geo_ProcessNodeChildren(arg0);
         GeoRender_FlushMaterialSlots();
         D_8006F094 = NULL;
@@ -503,7 +503,7 @@ void Geo_NodeModelPartRoot(GraphNode* arg0) {
 }
 
 void Geo_NodeOrtho(GraphNode* arg0) {
-    if ((D_8006F094 == NULL) && (arg0->unk_0C != NULL)) {
+    if ((D_8006F094 == NULL) && (arg0->children != NULL)) {
         gSPPerspNormalize(gDisplayListHead++, 0xFFFF);
         gSPMatrix(gDisplayListHead++, (u32)D_8006F088->unk_40.mtx & 0x1FFFFFFF,
                   G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
@@ -513,7 +513,7 @@ void Geo_NodeOrtho(GraphNode* arg0) {
 }
 
 void Geo_NodePerspective(GraphNode* arg0) {
-    if ((D_8006F094 == NULL) && (arg0->unk_0C != NULL)) {
+    if ((D_8006F094 == NULL) && (arg0->children != NULL)) {
         gSPLookAt(gDisplayListHead++, (u32)&D_8006F088->unk_60.lookat->l & 0x1FFFFFFF);
 
         gSPPerspNormalize(gDisplayListHead++, D_8006F088->unk_24.perspNorm);
@@ -668,16 +668,16 @@ void Geo_NodeCullDistance(GraphNode* arg0) {
 void Geo_NodeSwitchCase(GraphNode* arg0) {
     unk_D_86002F34_alt3* arg = (unk_D_86002F34_alt3*)arg0;
     s32 i;
-    GraphNode* var_a1 = arg->unk_00.unk_0C;
+    GraphNode* var_a1 = arg->node.children;
 
     if (var_a1 != NULL) {
         for (i = 0; i < arg->unk_1A; i++) {
-            var_a1 = var_a1->unk_08;
+            var_a1 = var_a1->nextSibling;
         }
     }
 
-    if (var_a1->unk_01 & 1) {
-        D_8006F0A4[var_a1->unk_00](var_a1);
+    if (var_a1->flags & 1) {
+        D_8006F0A4[var_a1->type](var_a1);
     }
 }
 
@@ -757,8 +757,8 @@ void Geo_NodeDisplayListPart(GraphNode* arg0) {
     unk_D_86002F34_alt7* arg = (unk_D_86002F34_alt7*)arg0;
 
     if (arg->unk_18 != NULL) {
-        GeoRender_SubmitMaterial(arg->unk_00.unk_03, D_800AA6C8[arg->unk_1C]);
-        GeoRender_SubmitDisplayList(arg->unk_18, (arg->unk_00.unk_02 & 4) != 0);
+        GeoRender_SubmitMaterial(arg->node.renderLayer, D_800AA6C8[arg->unk_1C]);
+        GeoRender_SubmitDisplayList(arg->unk_18, (arg->node.renderFlags & 4) != 0);
     }
 
     Geo_ProcessNodeChildren(arg0);
@@ -821,12 +821,12 @@ void Geo_NodeDisplayListMatrix(GraphNode* arg0) {
 
     GeoRender_PushMultipliedMatrix(&arg->unk_1C);
 
-    if ((arg->unk_18 != NULL) || (arg->unk_00.unk_10 != NULL)) {
-        GeoRender_SubmitMaterial(arg->unk_00.unk_03, D_800AA8C8.unk_1000[D_800AA8C8.unk_10A0]);
-        if (arg->unk_00.unk_10 != NULL) {
-            arg->unk_00.unk_10(5, arg0);
+    if ((arg->unk_18 != NULL) || (arg->node.callback != NULL)) {
+        GeoRender_SubmitMaterial(arg->node.renderLayer, D_800AA8C8.unk_1000[D_800AA8C8.unk_10A0]);
+        if (arg->node.callback != NULL) {
+            arg->node.callback(5, arg0);
         }
-        GeoRender_SubmitDisplayList(arg->unk_18, (arg->unk_00.unk_02 & 4) != 0);
+        GeoRender_SubmitDisplayList(arg->unk_18, (arg->node.renderFlags & 4) != 0);
     }
     Geo_ProcessNodeChildren(arg0);
     D_800AA8C8.unk_10A0--;
@@ -841,12 +841,12 @@ void Geo_NodeScale(GraphNode* arg0) {
     D_800AA8C8.unk_10A0++;
     GeoRender_SetMatrix(&sp30);
 
-    if ((arg->unk_18 != NULL) || (arg->unk_00.unk_10 != NULL)) {
-        GeoRender_SubmitMaterial(arg->unk_00.unk_03, D_800AA8C8.unk_1000[D_800AA8C8.unk_10A0]);
-        if (arg->unk_00.unk_10 != NULL) {
-            arg->unk_00.unk_10(5, arg0);
+    if ((arg->unk_18 != NULL) || (arg->node.callback != NULL)) {
+        GeoRender_SubmitMaterial(arg->node.renderLayer, D_800AA8C8.unk_1000[D_800AA8C8.unk_10A0]);
+        if (arg->node.callback != NULL) {
+            arg->node.callback(5, arg0);
         }
-        GeoRender_SubmitDisplayList(arg->unk_18, (arg->unk_00.unk_02 & 4) != 0);
+        GeoRender_SubmitDisplayList(arg->unk_18, (arg->node.renderFlags & 4) != 0);
     }
 
     Geo_ProcessNodeChildren(arg0);
@@ -856,12 +856,12 @@ void Geo_NodeScale(GraphNode* arg0) {
 void Geo_NodeDisplayList(GraphNode* arg0) {
     unk_D_86002F34_alt9* arg = (unk_D_86002F34_alt9*)arg0;
 
-    if ((arg->unk_18 != NULL) || (arg->unk_00.unk_10 != NULL)) {
-        GeoRender_SubmitMaterial(arg->unk_00.unk_03, D_800AA8C8.unk_1000[D_800AA8C8.unk_10A0]);
-        if (arg->unk_00.unk_10 != NULL) {
-            arg->unk_00.unk_10(5, arg0);
+    if ((arg->unk_18 != NULL) || (arg->node.callback != NULL)) {
+        GeoRender_SubmitMaterial(arg->node.renderLayer, D_800AA8C8.unk_1000[D_800AA8C8.unk_10A0]);
+        if (arg->node.callback != NULL) {
+            arg->node.callback(5, arg0);
         }
-        GeoRender_SubmitDisplayList(arg->unk_18, (arg->unk_00.unk_02 & 4) != 0);
+        GeoRender_SubmitDisplayList(arg->unk_18, (arg->node.renderFlags & 4) != 0);
     }
     Geo_ProcessNodeChildren(arg0);
 }
@@ -997,7 +997,7 @@ void Geo_NodeShadow(GraphNode* arg0) {
 void Geo_RenderRootNode(GraphNode* arg0) {
     unk_D_86002F34_alt1* arg = (unk_D_86002F34_alt1*)arg0;
 
-    if (arg0->unk_01 & 1) {
+    if (arg0->flags & 1) {
         gDPPipeSync(gDisplayListHead++);
 
         gDPSetTextureLOD(gDisplayListHead++, G_TL_TILE);
@@ -1024,12 +1024,12 @@ void Geo_ProcessCallbacks(GraphNode* arg0, s32 arg1) {
     GraphNode** var_s0;
 
     do {
-        if (var_s1->unk_10 != NULL) {
-            var_s1->unk_10(arg1, var_s1);
+        if (var_s1->callback != NULL) {
+            var_s1->callback(arg1, var_s1);
         }
 
-        if (var_s1->unk_0C != NULL) {
-            switch (var_s1->unk_00) {
+        if (var_s1->children != NULL) {
+            switch (var_s1->type) {
                 default:
                     var_s0 = NULL;
                     break;
@@ -1055,14 +1055,14 @@ void Geo_ProcessCallbacks(GraphNode* arg0, s32 arg1) {
                 *var_s0 = var_s1;
             }
 
-            Geo_ProcessCallbacks(var_s1->unk_0C, arg1);
+            Geo_ProcessCallbacks(var_s1->children, arg1);
 
             if (var_s0 != NULL) {
                 *var_s0 = NULL;
             }
         }
 
-        var_s1 = var_s1->unk_08;
+        var_s1 = var_s1->nextSibling;
     } while (var_s1 != arg0);
 }
 

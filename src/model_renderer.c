@@ -204,37 +204,37 @@ void Trainer_RequestPokeIcon(BattleSessionTeams* arg0) {
 }
 
 void PokeIcon_PollFrameLoadForObject(unk_func_8001C248* arg0) {
-    if (PokeIcon_PollFrameLoad(arg0->unk_000.callback)) {
-        arg0->unk_000.callbackArg = arg0->unk_000.callback->loadedModel;
-        arg0->unk_000.type &= ~0xE0;
-        arg0->unk_000.type |= 0x10;
+    if (PokeIcon_PollFrameLoad(arg0->node.callback)) {
+        arg0->node.callbackArg = arg0->node.callback->loadedModel;
+        arg0->node.type &= ~0xE0;
+        arg0->node.type |= 0x10;
     }
 }
 
 void PokeIcon_WaitFrameLoadForObject(unk_func_8001C248* arg0) {
-    if (arg0->unk_000.type & 0x40 && PokeIcon_WaitFrameLoad(arg0->unk_000.callback) != 0) {
-        arg0->unk_000.callbackArg = arg0->unk_000.callback->loadedModel;
-        arg0->unk_000.type &= ~0xE0;
-        arg0->unk_000.type |= 0x10;
+    if (arg0->node.type & 0x40 && PokeIcon_WaitFrameLoad(arg0->node.callback) != 0) {
+        arg0->node.callbackArg = arg0->node.callback->loadedModel;
+        arg0->node.type &= ~0xE0;
+        arg0->node.type |= 0x10;
     }
 }
 
 void PokeIcon_RequestBackgroundForObject(unk_func_8001C248* arg0) {
     if (!(arg0->unk_01D & 0x40) && (arg0->unk_01D & 0x80)) {
-        PokeIcon_RequestBackgroundLoad(arg0->unk_000.callback, arg0->unk_020, arg0->unk_024);
+        PokeIcon_RequestBackgroundLoad(arg0->node.callback, arg0->unk_020, arg0->unk_024);
         arg0->unk_01D |= 0x40;
         arg0->unk_01D &= ~0x10;
         if (arg0->unk_01D & 0x20) {
-            PokeIcon_WaitBackgroundLoad(arg0->unk_000.callback);
-            arg0->unk_024 = arg0->unk_000.callback->loadedBackground;
+            PokeIcon_WaitBackgroundLoad(arg0->node.callback);
+            arg0->unk_024 = arg0->node.callback->loadedBackground;
             arg0->unk_01D &= ~0xE0;
         }
     }
 }
 
 void PokeIcon_PollBackgroundForObject(unk_func_8001C248* arg0) {
-    if (PokeIcon_PollBackgroundLoad(arg0->unk_000.callback) != 0) {
-        arg0->unk_024 = arg0->unk_000.callback->loadedBackground;
+    if (PokeIcon_PollBackgroundLoad(arg0->node.callback) != 0) {
+        arg0->unk_024 = arg0->node.callback->loadedBackground;
         arg0->unk_01D &= ~0xE0;
         arg0->unk_01D |= 0x10;
     }

@@ -122,7 +122,7 @@ typedef struct MiniActor {
 // Possibly unk_D_86002F34_alt7, unk_D_86002F34_alt8, 
 // unk_D_86002F34_alt9 or unk_D_86002F34_alt2
 typedef struct arg1_func_87902F80 {
-    /* 0x00 */ struct GraphNode unk_00;
+    /* 0x00 */ struct GraphNode node;
     /* 0x18 */ Gfx* unk_18;
 } arg1_func_87902F80; // size >= 0x1C
 

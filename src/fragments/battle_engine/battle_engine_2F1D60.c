@@ -29,7 +29,7 @@ void BattleScene_SetBothOwnerActiveFlags(void) {
 }
 
 void BattleScene_SetOwnerPoseFlag(PresentationLayout* arg0) {
-    arg0->unk_00.flags |= 0x10;
+    arg0->node.flags |= 0x10;
 }
 
 void BattleScene_LoadOwnerCameraFramingConstants(Battler* arg0) {
@@ -109,7 +109,7 @@ void BattleScene_TickOwnerSlideIn(Battler* arg0, s32 arg1) {
     s16 var_a0;
     PresentationLayout* temp_v0;
 
-    arg0->unk_728.unk_168->unk_00.flags |= 1;
+    arg0->unk_728.unk_168->node.flags |= 1;
     arg0->unk_728.unk_000.node.flags |= 1;
 
     if (arg0->unk_728.unk_178 == 1) {
@@ -141,14 +141,14 @@ void BattleScene_TickOwnerSlideOut(Battler* arg0, s32 arg1) {
         arg0->unk_728.unk_18C = 0;
         arg0->unk_728.unk_168->unk_1C = Math_StepToS32(arg0->unk_728.unk_168->unk_1C, -0x48, arg1, arg1);
         if (arg0->unk_728.unk_168->unk_1C == -0x48) {
-            arg0->unk_728.unk_168->unk_00.flags &= ~1;
+            arg0->unk_728.unk_168->node.flags &= ~1;
             arg0->unk_728.unk_000.node.flags &= ~1;
         }
     } else {
         arg0->unk_728.unk_18C = 0;
         arg0->unk_728.unk_168->unk_1C = Math_StepToS32(arg0->unk_728.unk_168->unk_1C, 0x15F, arg1, arg1);
         if (arg0->unk_728.unk_168->unk_1C == 0x15F) {
-            arg0->unk_728.unk_168->unk_00.flags &= ~1;
+            arg0->unk_728.unk_168->node.flags &= ~1;
             arg0->unk_728.unk_000.node.flags &= ~1;
         }
     }

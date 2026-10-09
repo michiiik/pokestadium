@@ -384,11 +384,11 @@ void Gallery_SetBackgroundTint(u8 arg0, u8 arg1, u8 arg2) {
     D_8690A68C.b = arg2;
 
     if (v == 0xFF) {
-        if (D_8690A610.unk_00.callbackArg == 1) {
-            D_8690A610.unk_00.flags |= 1;
+        if (D_8690A610.node.callbackArg == 1) {
+            D_8690A610.node.flags |= 1;
         }
     } else {
-        D_8690A610.unk_00.flags &= ~1;
+        D_8690A610.node.flags &= ~1;
     }
 }
 
@@ -487,13 +487,13 @@ void Gallery_LoadBackgroundSet(s32 arg0) {
 
     temp_v1 = sp18(4, 0);
     if (temp_v1 == NULL) {
-        D_8690A610.unk_00.callbackArg = 0;
-        D_8690A610.unk_00.flags &= ~1;
+        D_8690A610.node.callbackArg = 0;
+        D_8690A610.node.flags &= ~1;
     } else {
         D_8690A610.unk_18.unk_00 = temp_v1->unk_00;
         D_8690A610.unk_18.unk_02 = temp_v1->unk_02;
         D_8690A610.unk_18.unk_04.rgba = temp_v1->unk_04.rgba;
-        D_8690A610.unk_00.callbackArg = 1;
+        D_8690A610.node.callbackArg = 1;
     }
 
     Gallery_SetBackgroundTint(0xFF, 0xFF, 0xFF);

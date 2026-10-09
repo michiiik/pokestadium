@@ -507,7 +507,7 @@ void PikachuReward_ShowSuccessEnding(void) {
 
 void PikachuReward_PlayIntroCamera(void) {
     s32 i;
-    unk_D_86002F34_00C* temp_s1 = D_83202010->unk_0C;
+    unk_D_86002F34_00C* temp_s1 = D_83202010->children;
 
     D_83202028->rotation.y = 0x1000;
 

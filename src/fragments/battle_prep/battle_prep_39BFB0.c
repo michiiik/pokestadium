@@ -379,7 +379,7 @@ s32 BattlePrepTeamIcons_DrawActiveTeamBadge(s32 arg0, unk_func_80011B94* arg1) {
 
         gDPPipeSync(gDisplayListHead++);
         gSPSegment(gDisplayListHead++, 0x0F, (u32)var_a3 & 0x1FFFFFFF);
-        gSPDisplayList(gDisplayListHead++, arg1->unk_00.callbackArg);
+        gSPDisplayList(gDisplayListHead++, arg1->node.callbackArg);
 
         GeoRender_ApplyMaterialState();
     }
@@ -403,14 +403,14 @@ s32 BattlePrepTeamIcons_DrawIconSingle(s32 arg0, unk_func_80011B94* arg1) {
         gDPPipeSync(gDisplayListHead++);
         gSPSegment(gDisplayListHead++, 0x0F, (u32)PokeIcon_GetImage(temp_t1->unk_1C, temp_t2 - 1) & 0x1FFFFFFF);
         gSPSegment(gDisplayListHead++, 0x0E, (u32)Memmap_GetSegmentVaddr(var_a3) & 0x1FFFFFFF);
-        gSPDisplayList(gDisplayListHead++, arg1->unk_00.callbackArg);
+        gSPDisplayList(gDisplayListHead++, arg1->node.callbackArg);
 
         GeoRender_ApplyMaterialState();
 
         if (temp_t1->unk_2C[temp_t2 - 1] != 0) {
-            arg1->unk_00.nextSibling->flags |= 1;
+            arg1->node.nextSibling->flags |= 1;
         } else {
-            arg1->unk_00.nextSibling->flags &= ~1;
+            arg1->node.nextSibling->flags &= ~1;
         }
     }
     return 0;
@@ -433,7 +433,7 @@ s32 BattlePrepTeamIcons_DrawIconDouble(s32 arg0, unk_func_80011B94* arg1) {
         gDPPipeSync(gDisplayListHead++);
         gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a3->unk_20[temp_t0 - 1] & 0x1FFFFFFF);
         gSPSegment(gDisplayListHead++, 0x0E, (u32)Memmap_GetSegmentVaddr(var_a0) & 0x1FFFFFFF);
-        gSPDisplayList(gDisplayListHead++, arg1->unk_00.callbackArg);
+        gSPDisplayList(gDisplayListHead++, arg1->node.callbackArg);
 
         GeoRender_ApplyMaterialState();
     }
@@ -464,14 +464,14 @@ s32 BattlePrepTeamIcons_DrawBadgeIconSingle(s32 arg0, unk_func_80011B94* arg1) {
         gDPPipeSync(gDisplayListHead++);
         gSPSegment(gDisplayListHead++, 0x0F, (u32)PokeIcon_GetImage(temp_t1->unk_1C, temp_a1) & 0x1FFFFFFF);
         gSPSegment(gDisplayListHead++, 0x0E, (u32)Memmap_GetSegmentVaddr(var_a3) & 0x1FFFFFFF);
-        gSPDisplayList(gDisplayListHead++, arg1->unk_00.callbackArg);
+        gSPDisplayList(gDisplayListHead++, arg1->node.callbackArg);
 
         GeoRender_ApplyMaterialState();
 
         if (temp_t1->unk_2C[temp_a1] != 0) {
-            arg1->unk_00.nextSibling->flags |= 1;
+            arg1->node.nextSibling->flags |= 1;
         } else {
-            arg1->unk_00.nextSibling->flags &= ~1;
+            arg1->node.nextSibling->flags &= ~1;
         }
     }
     return 0;
@@ -501,7 +501,7 @@ s32 BattlePrepTeamIcons_DrawBadgeIconDouble(s32 arg0, unk_func_80011B94* arg1) {
         gDPPipeSync(gDisplayListHead++);
         gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_t1->unk_20[temp_a3] & 0x1FFFFFFF);
         gSPSegment(gDisplayListHead++, 0x0E, (u32)Memmap_GetSegmentVaddr(var_a0) & 0x1FFFFFFF);
-        gSPDisplayList(gDisplayListHead++, arg1->unk_00.callbackArg);
+        gSPDisplayList(gDisplayListHead++, arg1->node.callbackArg);
 
         GeoRender_ApplyMaterialState();
     }

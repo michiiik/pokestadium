@@ -5,7 +5,7 @@
 #include "src/memory.h"
 
 typedef struct unk_func_80011B94 {
-    /* 0x00 */ DisplayNodeHeader unk_00;
+    /* 0x00 */ DisplayNodeHeader node;
     /* 0x18 */ Gfx* unk_18;
 } unk_func_80011B94; // size = 0x1C
 
@@ -16,12 +16,12 @@ typedef struct unk_D_8690A610_018 {
 } unk_D_8690A610_018; // size = 0x8
 
 typedef struct unk_D_8690A610 {
-    /* 0x00 */ DisplayNodeHeader unk_00;
+    /* 0x00 */ DisplayNodeHeader node;
     /* 0x18 */ unk_D_8690A610_018 unk_18;
 } unk_D_8690A610; // size = 0x20
 
 void GeoNode_Init(GraphNode* arg0, u8 arg1);
-void GeoNode_SetCallback(GraphNode* arg0, func_D_86002F34_000_010 arg1, void* arg2);
+void GeoNode_SetCallback(GraphNode* arg0, GraphNodeCallback arg1, void* arg2);
 GraphNode* GeoNode_CreateContainer(MainPoolState* arg0, GraphNode* arg1);
 unk_D_86002F34_alt2* GeoNode_CreateWithReference(MainPoolState* arg0, unk_D_86002F34_alt2* arg1, GraphNode* arg2);
 unk_D_86002F34_00C* GeoNode_CreateCamera(MemoryBlock* arg0, unk_D_86002F34_00C* arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5);

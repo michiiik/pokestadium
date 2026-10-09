@@ -188,7 +188,7 @@ s32 Fragment_ProcessGeoLayout(MemoryBlock* arg0, Fragment* arg1, arg1_func_80010
     for (i = 0; i < temp_v0->unk_03; i++) {
         temp_v0_2 = process_geo_layout(arg0, temp_v0->unk_08[i]);
 
-        if (temp_v0_2->unk_00.unk_00 == 0xE) {
+        if (temp_v0_2->node.type == 0xE) {
             temp_v0_2->unk_28 = arg1;
             if (arg2.raw != 0) {
                 func_80018C40(temp_v0_2, arg2);

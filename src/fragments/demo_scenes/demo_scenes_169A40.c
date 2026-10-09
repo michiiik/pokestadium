@@ -35,7 +35,7 @@ void MewtwoIntro_DrawOverlay(void) {
 }
 
 void MewtwoIntro_InitCamera(void) {
-    D_86B10820 = D_86B106B4->unk_0C;
+    D_86B10820 = D_86B106B4->children;
     Vec3f_SetComponentsDuplicate(&D_86B10820->unk_60.at, 0.0f, 0.0f, 0.0f);
     Vec3f_SetComponentsDuplicate(&D_86B10820->unk_60.eye, 0.0f, 0.0f, 200.0f);
     D_86B10820->unk_24.near = 16.0f;

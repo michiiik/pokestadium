@@ -892,7 +892,7 @@ void Completion_InitDialogBoxParams(void) {
 }
 
 void Completion_InitCamera(void) {
-    D_86B0EBC4 = D_86B0EBC0->unk_0C;
+    D_86B0EBC4 = D_86B0EBC0->children;
     D_86B0EBC8 = 0;
     D_86B0EBCA = 0;
     D_86B0EBCC = 120.0f;

@@ -145,7 +145,7 @@ s32 BattlePrepBadgeAward_DrawBadgeIcon(s32 arg0, unk_func_80011B94* arg1) {
         gDPPipeSync(gDisplayListHead++);
         gSPSegment(gDisplayListHead++, 0x0F,
                    (u32)Memmap_GetSegmentVaddr(*(s32*)(temp_v0->unk_1C + tmp * 4)) & 0x1FFFFFFF);
-        gSPDisplayList(gDisplayListHead++, arg1->unk_00.callbackArg);
+        gSPDisplayList(gDisplayListHead++, arg1->node.callbackArg);
 
         GeoRender_ApplyMaterialState();
     }
@@ -163,7 +163,7 @@ s32 BattlePrepBadgeAward_DrawBadgeIconAlt(s32 arg0, unk_func_80011B94* arg1) {
         gDPPipeSync(gDisplayListHead++);
         gSPSegment(gDisplayListHead++, 0x0F,
                    (u32)Memmap_GetSegmentVaddr(*(s32*)(temp_v0->unk_20 + tmp * 4)) & 0x1FFFFFFF);
-        gSPDisplayList(gDisplayListHead++, arg1->unk_00.callbackArg);
+        gSPDisplayList(gDisplayListHead++, arg1->node.callbackArg);
 
         GeoRender_ApplyMaterialState();
     }
@@ -182,7 +182,7 @@ s32 BattlePrepBadgeAward_DrawSparkle(s32 arg0, unk_func_80011B94* arg1) {
             gDPPipeSync(gDisplayListHead++);
             gSPSegment(gDisplayListHead++, 0x0F,
                        (u32)Memmap_GetSegmentVaddr(temp_a3->unk_24[temp_a3->unk_28[tmp]]) & 0x1FFFFFFF);
-            gSPDisplayList(gDisplayListHead++, arg1->unk_00.callbackArg);
+            gSPDisplayList(gDisplayListHead++, arg1->node.callbackArg);
 
             GeoRender_ApplyMaterialState();
 
@@ -209,7 +209,7 @@ s32 BattlePrepBadgeAward_DrawGlowFade(s32 arg0, unk_func_80011B94* arg1) {
 
             gDPPipeSync(gDisplayListHead++);
             gDPSetEnvColor(gDisplayListHead++, 0, 0, 255, sp1E);
-            gSPDisplayList(gDisplayListHead++, arg1->unk_00.callbackArg);
+            gSPDisplayList(gDisplayListHead++, arg1->node.callbackArg);
 
             GeoRender_ApplyMaterialState();
         }

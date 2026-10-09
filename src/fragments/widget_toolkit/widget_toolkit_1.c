@@ -101,7 +101,7 @@ void Widget_CountdownInit(void) {
     D_8780FC30 = GeoNode_CreateDisplayList(sp1C, NULL, 4, D_87806390);
     D_8780FAC8.node.renderFlags |= 8;
 
-    GraphNode_AppendChild(&D_8780FAC8.node, &D_8780FC30->unk_00);
+    GraphNode_AppendChild(&D_8780FAC8.node, &D_8780FC30->node);
     MainPool_FinalizeAllocation(sp1C);
 }
 

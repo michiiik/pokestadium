@@ -90,7 +90,7 @@ void BattleScene_IntroRevealFirstMon(unk_D_86002F34_00C* arg0) {
     BattlerState* sp2C = &D_84390010[0]->unk_654;
     TeamRoster* sp28 = D_84390010[0]->unk_720->unk_08[sp2C->unk_2C];
 
-    D_84390010[0]->unk_728.unk_168->unk_00.flags |= 1;
+    D_84390010[0]->unk_728.unk_168->node.flags |= 1;
     D_84390010[0]->unk_728.unk_000.node.flags |= 1;
     BattleScene_TriggerOwnerModelAnimation(D_84390010[0]);
     D_84390010[0]->unk_000.node.flags &= ~1;
@@ -114,7 +114,7 @@ void BattleScene_IntroFirstMonSettle(unk_D_86002F34_00C* arg0) {
         BattleScene_SelectCameraFollowPreset(D_84390010[0], arg0, 3);
     }
 
-    D_84390010[0]->unk_728.unk_168->unk_00.flags &= ~1;
+    D_84390010[0]->unk_728.unk_168->node.flags &= ~1;
     D_84390010[0]->unk_728.unk_000.node.flags &= ~1;
     D_84390010[1]->unk_000.node.flags &= ~1;
     BattleScene_ReframeAndRecomputeDistanceForSwitch(arg0, D_84390010[0]);
@@ -128,7 +128,7 @@ void BattleScene_IntroRevealSecondMon(unk_D_86002F34_00C* arg0) {
     BattlerState* sp2C = &D_84390010[1]->unk_654;
     TeamRoster* sp28 = D_84390010[1]->unk_720->unk_08[sp2C->unk_2C];
 
-    D_84390010[1]->unk_728.unk_168->unk_00.flags |= 1;
+    D_84390010[1]->unk_728.unk_168->node.flags |= 1;
     D_84390010[1]->unk_728.unk_000.node.flags |= 1;
     BattleScene_TriggerOwnerModelAnimation(D_84390010[1]);
     Audio_PlayCommand(2, 0, 0);
@@ -152,7 +152,7 @@ void BattleScene_IntroSecondMonSettle(unk_D_86002F34_00C* arg0) {
     if (gBattleScene.unk_00->unk_10++ == 1) {
         BattleScene_SelectCameraFollowPreset(D_84390010[1], arg0, 3);
     }
-    D_84390010[1]->unk_728.unk_168->unk_00.flags &= ~1;
+    D_84390010[1]->unk_728.unk_168->node.flags &= ~1;
     D_84390010[1]->unk_728.unk_000.node.flags &= ~1;
     D_84390010[0]->unk_000.node.flags &= ~1;
     BattleScene_ReframeAndRecomputeDistanceForSwitch(arg0, D_84390010[1]);

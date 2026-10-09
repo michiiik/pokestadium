@@ -3408,7 +3408,7 @@ void Pokedex_BuildMapMarkersDisplayList(void) {
     Gfx* temp_v0;
     s32 j;
 
-    temp_s2 = D_88826A44->unk_0C;
+    temp_s2 = D_88826A44->children;
     ptr = &temp_s2->unk_60;
 
     temp_v0 = Gfx_AllocDisplayList(sizeof(Gfx) * 36 * 25);
@@ -3815,7 +3815,7 @@ void Pokedex_EaseVec3Toward(Vec3f* arg0, Vec3f* arg1) {
 
 void Pokedex_UpdateAreaMapFrame(void) {
     UNUSED s32 pad;
-    unk_D_86002F34_00C* node = D_88826A44->unk_0C;
+    unk_D_86002F34_00C* node = D_88826A44->children;
     Vec3f* vec;
     Vec3f sp28;
 
@@ -4185,7 +4185,7 @@ void func_88807D04(s32 arg0, MainPoolState* arg1, UNUSED s32 arg2, s32 arg3, s32
     GeoNode_CreateDisplayList(NULL, &D_88826A00, 5, NULL);
     GeoNode_CreateDisplayList(NULL, &D_888269E0, 4, NULL);
     D_88826A44 = process_geo_layout(sp4C, D_888265DC);
-    ptr = D_88826A44->unk_0C;
+    ptr = D_88826A44->children;
     ptr->unk_60.at = D_8882627C;
     ptr->unk_60.eye = D_88826288;
 }

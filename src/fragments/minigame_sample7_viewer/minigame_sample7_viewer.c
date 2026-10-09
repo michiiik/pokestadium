@@ -39,7 +39,7 @@ void Minigame_Sample7Viewer_PollInput(void) {
 }
 
 void Minigame_Sample7Viewer_InitCamera(void) {
-    D_86600948 = D_86600944->unk_0C;
+    D_86600948 = D_86600944->children;
 
     D_86600AB8 = 0x100;
     D_86600ABA = 0;

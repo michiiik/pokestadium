@@ -2486,7 +2486,7 @@ void BattleScene_Phase15(unk_D_86002F34_00C* arg0) {
 
         case 3:
             BattleScene_RecenterCameraOnOwner(arg0, D_84390204);
-            D_84390204->unk_728.unk_168->unk_00.flags |= 1;
+            D_84390204->unk_728.unk_168->node.flags |= 1;
             D_84390204->unk_728.unk_000.node.flags |= 1;
             BattleScene_TriggerOwnerModelAnimation(D_84390204);
             if (BattleScene_IsRowWaitComplete(D_84390204, 0x32) != 0) {

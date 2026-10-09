@@ -343,7 +343,7 @@ void Diorama_InitSceneState(void) {
     D_86B0E5D8 = main_pool_alloc(sizeof(unk_D_86B0E5D8), 0);
     bzero(D_86B0E5D8, sizeof(unk_D_86B0E5D8));
 
-    D_86B0E5D4->unk_00 = D_86B0E5D0->unk_0C;
+    D_86B0E5D4->unk_00 = D_86B0E5D0->children;
 
     D_86B0E5D4->unk_00->unk_24.near = 50.0f;
     D_86B0E5D4->unk_00->unk_24.far = 8400.0f;

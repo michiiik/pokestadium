@@ -214,11 +214,11 @@ void Intro_SetBackgroundTint(u8 arg0, u8 arg1, u8 arg2) {
     D_86B0FA3C.b = arg2;
 
     if (v == 0xFF) {
-        if (D_86B0F9D0.unk_00.callbackArg == 1) {
-            D_86B0F9D0.unk_00.flags |= 1;
+        if (D_86B0F9D0.node.callbackArg == 1) {
+            D_86B0F9D0.node.flags |= 1;
         }
     } else {
-        D_86B0F9D0.unk_00.flags &= ~1;
+        D_86B0F9D0.node.flags &= ~1;
     }
 }
 
@@ -497,7 +497,7 @@ void Intro_StartFirstShowcase(void) {
 }
 
 void Intro_BeginOrbitCamera(void) {
-    D_86B0FA7C->unk_00 = D_87906050->unk_00.unk_0C;
+    D_86B0FA7C->unk_00 = D_87906050->node.children;
     D_87906054 = D_86B0FA7C->unk_00;
     Intro_SetupOrbitCamera();
 }
@@ -513,7 +513,7 @@ void Intro_StartFinalStageModel(void) {
 }
 
 void Intro_BeginStaticCamera(void) {
-    D_86B0FA7C->unk_00 = D_87906050->unk_00.unk_0C;
+    D_86B0FA7C->unk_00 = D_87906050->node.children;
     D_87906054 = D_86B0FA7C->unk_00;
     Intro_SetupStaticCamera();
 }
@@ -827,7 +827,7 @@ void Intro_RenderFrame(void) {
     }
 
     GeoRender_AdvanceFrameCounter();
-    Geo_RenderRootNode(&D_87906050->unk_00);
+    Geo_RenderRootNode(&D_87906050->node);
     Intro_DrawTextPanels();
     MiniFx_DrawParticles();
     BgStage_AdvanceFrame();
@@ -837,7 +837,7 @@ void Intro_RenderBlackFrame(void) {
     BgStage_DrawFrame();
     GfxImage_FillCurrent(&gDisplayListHead, 1);
     GeoRender_AdvanceFrameCounter();
-    Geo_RenderRootNode(&D_87906050->unk_00);
+    Geo_RenderRootNode(&D_87906050->node);
     Gfx_FillRectWithDisplayState(0, 0, 0x140, 0xF0, 0, 0, 0, 0xFF);
     BgStage_AdvanceFrame();
 }
@@ -1006,13 +1006,13 @@ void Stage_LoadModels(void) {
 
     temp_v0_6 = sp2C(4, 0);
     if (temp_v0_6 == NULL) {
-        D_86B0F9D0.unk_00.callbackArg = 0;
-        D_86B0F9D0.unk_00.flags &= ~1;
+        D_86B0F9D0.node.callbackArg = 0;
+        D_86B0F9D0.node.flags &= ~1;
     } else {
         D_86B0F9D0.unk_18.unk_00 = temp_v0_6->unk_00;
         D_86B0F9D0.unk_18.unk_02 = temp_v0_6->unk_02;
         D_86B0F9D0.unk_18.unk_04.rgba = temp_v0_6->unk_04.rgba;
-        D_86B0F9D0.unk_00.callbackArg = 1;
+        D_86B0F9D0.node.callbackArg = 1;
     }
 
     ModelRenderer_InitDisplayRoots();

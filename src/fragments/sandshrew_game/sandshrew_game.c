@@ -2055,7 +2055,7 @@ void SandshrewGame_UpdateGeisers(void) {
 }
 
 void SandshrewGame_InitCamera(void) {
-    D_87906054 = D_87906050->unk_00.unk_0C;
+    D_87906054 = D_87906050->node.children;
 
     miniCameraXRot = 0x1600;
     miniCameraYRot = 0;
@@ -2350,7 +2350,7 @@ void SandshrewGame_DrawFrame(s32 arg0) {
         GeoRender_AdvanceFrameCounter();
     }
 
-    Geo_RenderRootNode(&D_87906050->unk_00);
+    Geo_RenderRootNode(&D_87906050->node);
     MiniFx_DrawParticles();
 
     if (miniDebugMode == 0) {

@@ -1251,7 +1251,7 @@ void DynamoGame_InitSparkEffects(void) {
         D_8650AB28 = &D_8650A528[i];
 
         D_8650AB28->unk_17C = GeoNode_CreateScale(temp_s5, NULL, 4, NULL, &D_8006F050, 1.0f);
-        GraphNode_AppendChild(&D_800AC840, &D_8650AB28->unk_17C->unk_00);
+        GraphNode_AppendChild(&D_800AC840, &D_8650AB28->unk_17C->node);
     }
 
     MainPool_FinalizeAllocation(temp_s5);

@@ -621,7 +621,7 @@ s32 BattlePrep_BindCarouselSegment0(s32 arg0, unk_func_80011B94* arg1) {
 
         gDPPipeSync(gDisplayListHead++);
         gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a0->unk_0C & 0x1FFFFFFF);
-        gSPDisplayList(gDisplayListHead++, arg1->unk_00.callbackArg);
+        gSPDisplayList(gDisplayListHead++, arg1->node.callbackArg);
 
         GeoRender_ApplyMaterialState();
     }
@@ -636,7 +636,7 @@ s32 BattlePrep_BindCarouselSegment1(s32 arg0, unk_func_80011B94* arg1) {
 
         gDPPipeSync(gDisplayListHead++);
         gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a0->unk_10[0] & 0x1FFFFFFF);
-        gSPDisplayList(gDisplayListHead++, arg1->unk_00.callbackArg);
+        gSPDisplayList(gDisplayListHead++, arg1->node.callbackArg);
 
         GeoRender_ApplyMaterialState();
     }
@@ -652,7 +652,7 @@ s32 BattlePrep_BindCarouselSegment3(s32 arg0, unk_func_80011B94* arg1) {
         gDPPipeSync(gDisplayListHead++);
         gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a0->unk_10[2] & 0x1FFFFFFF);
         gSPSegment(gDisplayListHead++, 0x0E, (u32)temp_a0->unk_10[3] & 0x1FFFFFFF);
-        gSPDisplayList(gDisplayListHead++, arg1->unk_00.callbackArg);
+        gSPDisplayList(gDisplayListHead++, arg1->node.callbackArg);
 
         GeoRender_ApplyMaterialState();
     }
@@ -667,7 +667,7 @@ s32 BattlePrep_BindCarouselSegment2(s32 arg0, unk_func_80011B94* arg1) {
 
         gDPPipeSync(gDisplayListHead++);
         gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a0->unk_10[1] & 0x1FFFFFFF);
-        gSPDisplayList(gDisplayListHead++, arg1->unk_00.callbackArg);
+        gSPDisplayList(gDisplayListHead++, arg1->node.callbackArg);
 
         GeoRender_ApplyMaterialState();
     }
@@ -1270,7 +1270,7 @@ s32 BattlePrep_BadgeCarouselGeoCallback(s32 arg0, unk_func_80011B94* arg1) {
     if (arg0 == 5) {
         temp_a0 = (unk_D_84B259E8*)D_8006F09C->node.callbackArg;
         tmp = ((D_8006F09C->effectSlot - temp_a0->unk_08->effectSlot) % 8) - 4;
-        tmp2 = (arg1->unk_00.callbackArg * 4) + tmp;
+        tmp2 = (arg1->node.callbackArg * 4) + tmp;
 
         gDPPipeSync(gDisplayListHead++);
         gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a0->unk_10[tmp2] & 0x1FFFFFFF);
@@ -1292,7 +1292,7 @@ s32 BattlePrep_BadgeCarouselGlowCallback(s32 arg0, unk_func_80011B94* arg1) {
     if (arg0 == 5) {
         temp_v0 = (unk_D_84B259E8*)D_8006F09C->node.callbackArg;
         tmp = ((D_8006F09C->effectSlot - temp_v0->unk_08->effectSlot) % 8) - 4;
-        tmp2 = tmp + arg1->unk_00.callbackArg * 4;
+        tmp2 = tmp + arg1->node.callbackArg * 4;
 
         if ((temp_v0->unk_02 != 0) && ((tmp2 + 1) == D_800AE540.unk_0003)) {
             // clang-format off
@@ -1325,7 +1325,7 @@ s32 BattlePrep_BadgeCarouselTextureCallback(s32 arg0, unk_func_80011B94* arg1) {
         gDPPipeSync(gDisplayListHead++);
 
         gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a0->unk_30[tmp]->img_p & 0x1FFFFFFF);
-        gSPDisplayList(gDisplayListHead++, arg1->unk_00.callbackArg);
+        gSPDisplayList(gDisplayListHead++, arg1->node.callbackArg);
 
         GeoRender_ApplyMaterialState();
     }
@@ -1355,7 +1355,7 @@ s32 BattlePrep_BadgeCarouselGlowCallback2(s32 arg0, unk_func_80011B94* arg1) {
 
             gDPSetPrimColor(gDisplayListHead++, 0, D_8006F09C->lodFraction, 200, 200, 30, var_t1);
             gDPSetEnvColor(gDisplayListHead++, 200, 30, 30, var_t1);
-            gSPDisplayList(gDisplayListHead++, arg1->unk_00.callbackArg);
+            gSPDisplayList(gDisplayListHead++, arg1->node.callbackArg);
 
             GeoRender_ApplyMaterialState();
             D_84B11C1C += 0x800;

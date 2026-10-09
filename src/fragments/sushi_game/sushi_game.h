@@ -112,7 +112,7 @@ typedef struct unk_D_86808498 {
 } unk_D_86808498; // size >= 0x38
 
 typedef struct unk_D_86808808_018 {
-    /* 0x000 */ DisplayNodeHeader unk_000;
+    /* 0x000 */ DisplayNodeHeader node;
     /* 0x018 */ char unk018[0xC];
     /* 0x024 */ Vec3f unk_024;
     /* 0x030 */ Vec3f unk_030;

@@ -522,7 +522,7 @@ void ClefairyGame_PollInputs(void) {
 }
 
 void ClefairyGame_InitCamera(void) {
-    D_86105488 = D_86105484->unk_00.unk_0C;
+    D_86105488 = D_86105484->node.children;
     MiniCam_SetActive(D_86105488);
 
     D_86105490 = 0x600;

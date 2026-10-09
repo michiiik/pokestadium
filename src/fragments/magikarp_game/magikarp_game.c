@@ -285,7 +285,7 @@ s32 MagikarpGame_ReadInputs(void) {
 }
 
 void MagikarpGame_InitCamera(void) {
-    D_86002F38 = D_86002F34->unk_00.unk_0C;
+    D_86002F38 = D_86002F34->node.children;
     MiniCam_SetActive(D_86002F38);
     D_86002F3C = 0x600;
     D_86002F3E = 0;

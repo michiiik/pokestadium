@@ -124,7 +124,7 @@ s32 Trade_DrawBox3DModel(s32 arg0, GraphNode* arg1) {
         if (D_82F20A88[idx].unk_024 != NULL) {
             gSPSegment(gDisplayListHead++, 0x0F, Memmap_GetSegmentVaddr(D_82F20A88[idx].unk_024));
             gSPSegment(gDisplayListHead++, 0x0E, Memmap_GetSegmentVaddr(D_82F13F2C[D_82F20A88[idx].unk_002]));
-            gSPDisplayList(gDisplayListHead++, arg1->unk_14);
+            gSPDisplayList(gDisplayListHead++, arg1->callbackArg);
         }
         GeoRender_ApplyMaterialState();
     }

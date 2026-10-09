@@ -12,7 +12,7 @@ typedef struct unk_func_8001C014 {
 } unk_func_8001C014; // size >= 0x24
 
 typedef struct unk_func_8001C248 {
-    /* 0x000 */ DisplayNodeHeader unk_000;
+    /* 0x000 */ DisplayNodeHeader node;
     /* 0x018 */ s16 unk_018;
     /* 0x01A */ s16 unk_01A;
     /* 0x01C */ u8 unk_01C;

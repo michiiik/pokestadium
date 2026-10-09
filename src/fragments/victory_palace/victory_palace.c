@@ -1824,7 +1824,7 @@ void func_82600C08(void) {
 }
 
 void VictoryPalace_InitCamera(void) {
-    D_82608558 = D_82607418->unk_0C;
+    D_82608558 = D_82607418->children;
     D_8260853C = 0x450;
     D_8260853E = 0;
     D_82608540 = 0x578;

@@ -62,7 +62,7 @@ typedef struct BattlerState {
 } BattlerState; // size = 0xCC
 
 typedef struct PresentationLayout {
-    /* 0x00 */ DisplayNodeHeader unk_00;
+    /* 0x00 */ DisplayNodeHeader node;
     /* 0x18 */ char unk18[0x4];
     /* 0x1C */ s16 unk_1C;
     /* 0x1E */ s16 unk_1E;

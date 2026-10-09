@@ -39,7 +39,7 @@ void PokeIcon_InitRenderScene(unk_func_8001A024* arg0, s16 arg1, s16 arg2) {
     arg0->unk_0C = process_geo_layout(sp20, D_8006F350);
     arg0->unk_10 = D_800ABE10.unk_A04.unk_0C;
     MainPool_FinalizeAllocation(sp20);
-    sp24 = arg0->unk_0C->unk_0C;
+    sp24 = arg0->unk_0C->children;
     GeoCamera_SetViewport(sp24, 0, 0, arg1, arg2);
     GeoCamera_SetPerspective(sp24, 30.0f, 100.0f, 12800.0f);
 }
@@ -207,7 +207,7 @@ void PokeIcon_RenderSlot(unk_func_8001A024* arg0, s32 arg1) {
     unk_func_8001A024_008* temp_s1;
     ModelNodeView* sp2C;
 
-    sp34 = arg0->unk_0C->unk_0C;
+    sp34 = arg0->unk_0C->children;
     temp_s1 = &arg0->unk_08[arg1];
     sp2C = arg0->unk_04->loadedModel->modelRoot->unk_00[0];
 
@@ -481,8 +481,8 @@ void PokeIcon_InitPreviewScene(unk_func_8001B1FC* arg0, s16 arg1, s16 arg2, s16 
     arg0->unk_20 = process_geo_layout(sp24, D_8006F3E0);
     arg0->unk_24 = D_800AC830;
     MainPool_FinalizeAllocation(sp24);
-    GeoCamera_SetViewport(arg0->unk_20->unk_0C, arg1, arg2, arg3, arg4);
-    GeoCamera_SetPerspective(arg0->unk_20->unk_0C, 30.0f, 100.0f, 12800.0f);
+    GeoCamera_SetViewport(arg0->unk_20->children, arg1, arg2, arg3, arg4);
+    GeoCamera_SetPerspective(arg0->unk_20->children, 30.0f, 100.0f, 12800.0f);
 }
 
 unk_func_8001B1FC* PokeIcon_CreateModelPreview(ModelLoadContext* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5,

@@ -813,7 +813,7 @@ void DrowzeeGame_ShowResultText(void) {
 }
 
 void DrowzeeGame_InitCamera(void) {
-    D_87B000EC = D_87B000E8->unk_00.unk_0C;
+    D_87B000EC = D_87B000E8->node.children;
 
     D_87B000F0 = 0x900;
     D_87B000F2 = 0;
@@ -835,7 +835,7 @@ void DrowzeeGame_InitPlayerOverlays(void) {
     for (i = 0; i < 4; i++) {
         D_864052C8 = &D_86404778[i];
         D_864052C8->unk_190 = GeoNode_CreateScale(temp_s5, NULL, 4, NULL, &D_8006F050, 0.0f);
-        GraphNode_AppendChild(&D_800AC840, &D_864052C8->unk_190->unk_00);
+        GraphNode_AppendChild(&D_800AC840, &D_864052C8->unk_190->node);
     }
 
     MainPool_FinalizeAllocation(temp_s5);
