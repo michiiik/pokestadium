@@ -527,7 +527,7 @@ typedef struct TrainerData {
     /* 0x000 */ char unk00[0x4];
     /* 0x004 */ char name1[12];
     /* 0x010 */ char name2[40];
-    /* 0x038 */ u16 gfx_file_idx; // high byte battle_portraits, low byte ukn
+    /* 0x038 */ u16 gfx_file_index; // high byte battle_portraits, low byte ukn
     /* 0x03A */ char unk3A[0x1F6];
 } TrainerData; // size = 0x230
 

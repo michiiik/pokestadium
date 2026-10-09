@@ -843,7 +843,7 @@ extern u8 D_86C00000;
 extern u8 D_87A00000;
 extern u8 D_87000000[];
 
-typedef struct unk_D_800A7440 {
+typedef struct Rectangle {
 	/* 0x00 */ s16 x1;
 	/* 0x02 */ s16 y1;
 	/* 0x04 */ s16 x2;
@@ -883,8 +883,8 @@ typedef struct FontContext {
     /* 0x4C */ s32 unk_4C;
     /* 0x50 */ u8 unk_50;
     /* 0x51 */ s8 unk_51;
-    /* 0x52 */ u8 unk_52;
-    /* 0x53 */ u8 unk_53;
+    /* 0x52 */ u8 line_height;
+    /* 0x53 */ u8 line_break_flag;
 } FontContext; // size = 0x54
 
 extern Gfx D_8006F498[];

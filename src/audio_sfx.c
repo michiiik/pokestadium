@@ -7,8 +7,8 @@
 
 static s32 D_80078A30 = 0;
 static s32 D_80078A34 = 0;
-static s32 D_80078A38 = 0;
-static s32 D_80078A3C = 0;
+static s32 back_sfx = 0;
+static s32 confirm_sfx = 0;
 static s32 D_80078A40 = 0;
 static s32 D_80078A44 = 0;
 static s32 D_80078A48 = 0;
@@ -101,11 +101,11 @@ s32 Audio_PlaySoundEffectById(u32 arg0) {
             break;
 
         case 0x2:
-            Audio_QueueFadeSoundCommand(D_80078A3C, 1);
+            Audio_QueueFadeSoundCommand(confirm_sfx, 1);
             break;
 
         case 0x3:
-            Audio_QueueFadeSoundCommand(D_80078A38, 1);
+            Audio_QueueFadeSoundCommand(back_sfx, 1);
             break;
 
         case 0x4:
@@ -170,11 +170,11 @@ s32 Audio_PlaySoundEffectById(u32 arg0) {
             break;
 
         case 2:
-            D_80078A3C = D_80078A30;
+            confirm_sfx = D_80078A30;
             break;
 
         case 3:
-            D_80078A38 = D_80078A30;
+            back_sfx = D_80078A30;
             break;
 
         case 4:

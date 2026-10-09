@@ -6,7 +6,7 @@
 
 typedef struct unk_D_800A7450 {
     /* 0x00 */ u8 unk_00;
-    /* 0x01 */ u8 unk_01;
+    /* 0x01 */ u8 zoom;
     /* 0x02 */ u8 unk_02;
     /* 0x03 */ u8 unk_03;
     /* 0x04 */ Gfx* unk_04;
@@ -22,12 +22,12 @@ typedef struct unk_func_80007444 {
     /* 0x06 */ s16 unk_06;
     /* 0x08 */ s16 unk_08;
     /* 0x0A */ s16 unk_0A;
-    /* 0x0C */ s8 unk_0C;
+    /* 0x0C */ s8 zoom;
     /* 0x0D */ s8 unk_0D;
     /* 0x0E */ s8 unk_0E;
     /* 0x0F */ s8 unk_0F;
     /* 0x10 */ s8 unk_10;
-    /* 0x11 */ u8 unk_11;
+    /* 0x11 */ u8 fade_mode;
     /* 0x12 */ u8 unk_12;
     /* 0x13 */ u8 unk_13;
     /* 0x14 */ u16 unk_14;

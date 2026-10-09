@@ -2047,7 +2047,7 @@ void BattleScene_InitializeParticipantAuxiliaryModel(Battler* arg0) {
     }
 }
 
-void BattleScene_InitializePresentation(BattleSessionTeams* arg0) {
+void BattleScene_InitializePresentation(UNUSED BattleSessionTeams* arg0) {
     D_84390174 = 0;
     D_84390178.unk_00 = 0;
 
@@ -2096,7 +2096,7 @@ void BattleScene_InitializePresentation(BattleSessionTeams* arg0) {
     BattleScene_ConfigureAudioChannelGroupsByTeam();
 }
 
-void BattleScene_ResetParticipantAuxTransform(Battler* arg0, Battler* arg1, s32 arg2) {
+void BattleScene_ResetParticipantAuxTransform(UNUSED Battler* arg0, Battler* arg1, s32 arg2) {
     Vec3f_SetComponentsDuplicate(&arg1->unk_448, 0.0f, 0.0f, 0.0f);
     Vec3f_SetComponentsDuplicate(&arg1->unk_448.unk_0C, 0.0f, 0.0f, 0.0f);
     arg1->unk_4B0 = arg2;
