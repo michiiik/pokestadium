@@ -17,17 +17,39 @@ The instrumented passes are **diagnostic oracles only**. Stadium builds keep usi
 | `build/7.1-traced/uopt.gc.c.bak_ichain` | stage 1 backup: globalcolor decisions, costs, forces only |
 | `build/7.1-traced/uopt.gc.c.bak_nodes` | stage 2 backup: + lineage (ICHAIN tables), symtab, temps |
 | `build/7.1-traced/uopt.gc.c.pre_cmdump` | stage 3 backup: + nodes, u-code |
+| `build/7.1-traced/uopt.gc.c.pre_cpca` | stage 4 backup: + `CDX_CMDUMP` (before stage 5) |
 | `build/7.1-traced/out/` | runnable toolchain: stock passes + traced `ugen` + CDX `uopt`; `out/uopt.bak_nodes` is the stage-2 binary |
-| `cdx71/patch_uopt71.py` | the uopt port (anchors, addresses and how each was derived) |
-| `cdx71/libc_impl_cdx71.c` | upstream `libc_impl.c` with `ecvt`/`fcvt` implemented (upstream `assert(0)`s, which kills any `-zdbug` listing, stock or not). Linked into the traced uopt only. |
+| `cdx71/patch_uopt71.py` | the uopt port (anchors, addresses and how each was derived); stage 5 adds copy-propagation / fold / spill-slot / itable-creation tracing |
+| `cdx71/patch_ugen71.py` | the ugen u-code injection hook (applied by `build-traced.sh` after `instrument-ugen`) |
+| `cdx71/libc_impl_cdx71.c` | upstream `libc_impl.c` with `ecvt`/`fcvt` implemented (upstream `assert(0)`s, which kills any `-zdbug` listing, stock or not), plus `dkwb_cdx_cur_sbrk()` for the break-aware pointer check. Linked into the traced uopt only. |
 | `cdx71/build-traced.sh` | rebuild `build/7.1-traced/` from a stock 7.1 tree |
-| `cdx71/gate.sh` | section-scoped fidelity gate against stock |
+| `cdx71/gate.sh` | section-scoped fidelity gate against stock (runs on Linux and macOS) |
 | `cdx71/controls/micro.c` | the positive-control microcase |
 | `cdx71/make-scratch-copy.sh` | copy `out/` to `scratchpad/idot/<name>` for experiments |
 
-The `out/` binaries are Linux x86-64 (built in a Perplexity sandbox). On macOS rebuild with
-`make setup && make VERSION=7.1 RELEASE=1 && bash cdx71/build-traced.sh` (gmake; `sed -i.bak` is used
-so BSD sed works).
+`build/` is not committed; build it locally. On macOS (gmake from Homebrew; `sed -i.bak` keeps BSD
+sed working):
+
+```sh
+cd tools/ido-static-recomp
+gmake setup && gmake -j8 VERSION=7.1 RELEASE=1          # stock build/7.1 (~5 min)
+DKWB_BIN=~/.pyenv/versions/3.10.4/bin/decomp-workbench \
+DKWB_PYTHON=~/.pyenv/versions/3.10.4/bin/python3.10 \
+  bash cdx71/build-traced.sh                            # build/7.1-traced/out
+bash cdx71/gate.sh ../.. cdx71/controls/micro.c src/gb_audio_render.c   # must print IDENTICAL
+```
+
+**macOS case collision.** `ido/7.1/usr/lib/` tracks both `libc.so.1` (IRIX C library, 1.8 MB) and
+`libC.so.1` (C++ runtime, 189 KB). On a case-insensitive filesystem they are one file on disk and
+`libc.so.1` wins, so git reports `libC.so.1` as modified straight after checkout. Only the C++ front end
+(`edgcpfe`/`NCC`) uses `libC.so.1`; the C toolchain and the gate are unaffected. Never commit that
+change (it would replace the C++ runtime on Linux) and never `git checkout` it (that overwrites the C
+library on disk). Hide it locally with
+`git update-index --skip-worktree tools/ido-static-recomp/ido/7.1/usr/lib/libC.so.1`.
+
+`DKWB_BIN` / `DKWB_PYTHON` default to `decomp-workbench` / `python3`; set them when the workbench is
+not on `PATH` or its package is installed for another interpreter. For experiments, copy the tree
+with `bash cdx71/make-scratch-copy.sh <dest>` and run `<dest>/cc` with the project's IDO flags.
 
 ## Switches
 
@@ -44,12 +66,50 @@ uopt (`CDX_*`; grammar identical to decomp-workbench `docs/compiler-instrumentat
 | `CDX_TEMPS=1` | every `f_gettemp` result (`temp`) and the temp list at globalcolor entry (`templist`) — spill/stack temps with frame offsets |
 | `CDX_NODES=1` | basic-block graph nodes (`node`) with creation line |
 | `CDX_UCODE=1` | every u-code record uopt reads (`ucode`, op + 8 raw words); not filtered by `CDX_PROC` |
-| `CDX_CMDUMP=1` | hook in `f_optinit`: sets uopt's `-zdbug` level to 3 and opens the listing, turning on uopt's own dumps incl. `f_printcm` (code motion) |
+| `CDX_CMDUMP=1\|N` | hook in `f_optinit`: sets uopt's `-zdbug` level and opens the listing. `1` means level 3 (`f_printcm`, code motion); any other number is used as the level: 1 `f_printtab` before copy propagation, 7 after, 2 `f_printlinfo`, 4 `f_printscm` (store code motion), 5 `f_printregs`, 25 `f_printprecm` |
 | `CDX_CMFILE=path` | listing file for `CDX_CMDUMP` (default `uoptlist` in the compiler's cwd) |
 | `CDX_OUT=path` | write `[CDX]` records to a file instead of stderr (use an absolute path) |
+| `CDX_TEMPS=1` (stage 5 addition) | also `spilltemp proc= rec= kind= slot= w0..w7` from `f_spilltemps`: each spill item (an itable record, kind 4 = expression web) and the slot it got. Printed under the *previous* globalcolor ordinal. Every PRE-deleted expression web gets a slot, stored or not, so an unused stack slot in a target can be an extra web |
+| `CDX_CP=1` [`CDX_CP_PROC=n`] | `[CP]` records to stderr: `begin`/`end` per `f_copypropagate` call (n counts those calls), every `f_exprdelete`, `f_searchstore` (with result) and `f_istrfold`, each with the first 8 words of its node arguments |
+| `CDX_CA=1` | `[CA]` records to stderr. `[CA] istr`/`[CA] stmt`: every statement `f_constarith` sees while uopt *reads* u-code, with the istr address operand's kind and mtype byte (at -G 0 the fold there is blocked by the flag at `0x1001c4e0`). `[CA] cp-stmt`: an istr that copy propagation rewrote (s3/s6 = new address/value) reaching the istr→str fold at `L417d14`; a folded store leaves the `lda` web of its global |
+| `CDX_NEWBIT=1` | `[CDX] newbit idx= kind= dtype= op= l= r=` for every itable record `f_newbit` creates. Creation order = index order, which decides spill-slot order |
 
 ugen: `DKWB_UGEN_TRACE=1` (`DKWB-CALL`, `DKWB-FREELIST` with `proc=`, `emitted=`, `line=`),
 `DKWB_UGEN_SCHED=1` (`DKWB-EMIT-V1`). Output goes to stderr.
+
+### ugen u-code injection (`cdx71/patch_ugen71.py`)
+
+A wrapper around ugen's `f_readuinstr` edits the u-code stream after uopt and before ugen builds its
+trees, which answers "what u-code would make ugen emit the target?" independently of any C. With no
+`DKWB_U*` variable set it is a pass-through (gate cell `off`); `DKWB_UDUMP` plus an identity
+`DKWB_UREPLACE` is gate cell `uinj`.
+
+| Variable | Effect |
+|---|---|
+| `DKWB_UDUMP=1` | `[U] n=<n> op=<opc> w=<8 words>` for every record ugen reads (tags `SYNTH`, `REPLACED`, `DELETED`, `INSERTED`) |
+| `DKWB_UPATCH='n:i=v,j=v;m:...'` | overwrite word `i` of record `n` |
+| `DKWB_UDELETE='n:;m:'` | drop records |
+| `DKWB_UINSERT='n:w0,w1,...'` | feed one synthetic record before record `n` |
+| `DKWB_UREPLACE='n:k:w0,..[/w0,..]...;m:...'` | replace records `n..n+k-1` with the listed records (`k=0` inserts) |
+
+`n` counts real records in read order over the whole run (synthetic ones do not advance it), so it is
+stable for a given input. Words not given are 0. Find a site with `DKWB_UDUMP=1` and grep for its
+constants. Values in C syntax (`0x…`).
+
+Record layout (32 bytes for every non-string op): byte 0 opcode; byte 1 = mtype (high 3 bits) |
+dtype (low 5); w2 = size (CVT: from-dtype in the high byte, e.g. `0x06000004` = from J);
+w3 = register / frame offset / amount; w4 = constant (LDC). dtypes seen: 6 = J (s32), 8 = L (u32),
+5 and 7 = 64-bit, 0 = address. Opcodes measured on 7.1: 1 add, 4 and, 23 call, 24 CVT, 50 inc
+(w3 = amount), 54 ilod, 63 istr, 71 lda, 73 ldc, 81 Uloc, 82 lod, 92 (call-site marker),
+111 par, 115 shl, 116 shr, 123 str, 136 (frame op), 0 abs.
+
+Findings that the hook made (pokestadium sessions 2026-10-08/09):
+- ugen drops CVTs whose operand is a constant (LDC) or a register LOD; it emits them (and pops temps)
+  only on computed values and memory loads.
+- Of all 154 opcodes in place of an `and`, only a CVT from a 64-bit type emits a lone copy of its
+  operand into a fresh temp (`abs` also copies but adds a branch). 32→32 CVTs and `inc 0` emit nothing.
+- A STR to a register in the middle of an expression asserts in `f_build_tree` ("tne 10").
+- as1 never retargets a load into another register, even through a `move`; it retargets ALU ops.
 
 ## 7.1 derivations (all from the generated C at this commit)
 
@@ -69,6 +129,30 @@ ugen: `DKWB_UGEN_TRACE=1` (`DKWB-CALL`, `DKWB-FREELIST` with `proc=`, `emitted=`
 
 Struct offsets inside liverange / ichain / itable records are carried from the 5.3 profile and were
 checked only through the positive controls below.
+
+## Stage 5 (2026-10-09)
+
+`patch_uopt71.py` stage 5 (`stage_cp_ca_spill`) and `patch_ugen71.py` port the hooks used in the
+pokestadium sessions of 2026-10-07/08 onto this tree:
+
+- `CDX_CP`, `CDX_CA`, `CDX_NEWBIT`, the `spilltemp` record under `CDX_TEMPS`, and numeric
+  `CDX_CMDUMP` levels (switch table above). Anchors: the stock labels `L452fc4` (f_constarith istr
+  check), `L417d14` (f_copypropagate fold path), `L466438` (f_spilltemps slot), and the definitions
+  of `f_copypropagate`, `f_exprdelete`, `f_searchstore`, `f_istrfold`, `f_newbit` (renamed `*_real`
+  and wrapped).
+- **Break-aware pointer check.** `dkwb_cdx_emulated_pointer` used to accept any address in
+  0x10000000–0x20000000. The emulated region is reserved `PROT_NONE` and only mapped up to the current
+  break, and stale fields (e.g. `ichain+8` of a freshly split live range) can point above it.
+  With every switch on, the lineage/webdetail logging then dies with SIGBUS (signal 10) on
+  `battle_engine_2EC3C0.c` and `battle_engine_356730.c`, depending on heap layout (it reproduced
+  inside the gate but not from a shell). The check now also requires `value < dkwb_cdx_cur_sbrk()`,
+  an accessor added to `libc_impl_cdx71.c`. Logging only; code generation is unaffected.
+- The gate covers the new switches: cell `on` adds `CDX_CP CDX_CA CDX_NEWBIT`; new cells `cm7`
+  (`CDX_CMDUMP=7`) and `uinj` (`DKWB_UDUMP` + identity `DKWB_UREPLACE`). It picks
+  `mips-linux-gnu-` or `mips64-elf-` binutils and `sha256sum` or `shasum -a 256`.
+- Results (2026-10-09, macOS arm64): 9 TUs × 6 cells, all IDENTICAL. Behaviour checked
+  against the older working tree the hooks came from: identical `[U]` dumps and identical results
+  for UREPLACE/UDELETE/UINSERT experiments on `func_81003A54` and `func_82F0BEF8`.
 
 ## Gate (2026-10-08, Linux x86-64, gcc -Os, pokestadium `5f838c8a`)
 

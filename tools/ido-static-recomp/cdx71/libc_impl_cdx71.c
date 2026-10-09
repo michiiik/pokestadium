@@ -3313,3 +3313,9 @@ double double_from_memory(uint8_t* mem, uint32_t address) {
     val.ww |= MEM_U32(address + 4);
     return val.d;
 }
+
+/* cdx71: current emulated break, for the instrumented uopt's pointer checks.
+ * The emulated region is reserved PROT_NONE and only mapped up to cur_sbrk, so a
+ * stale pointer that is "in range" (0x10000000-0x20000000) but above the break
+ * faults (SIGBUS) when a trace dereferences it. */
+uint32_t dkwb_cdx_cur_sbrk(void) { return cur_sbrk; }

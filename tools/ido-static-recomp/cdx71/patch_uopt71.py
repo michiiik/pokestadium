@@ -48,6 +48,7 @@ ADDR = {
 GRAPH_HEAD = "0x1001c358"   # f_printcm: s0 = MEM_U32(0x1001c358); s0 = MEM_U32(s0 + 12)
 TEMP_HEAD = "0x1001c320"    # f_gettemp: list head; tail 0x1001c324; 20-byte records
 FRAME_TEMPS = "0x1001c31c"  # f_gettemp: running temp-area size
+ADDR_ITAB_COUNT = "0x1001c390"  # f_printitab: itable record count (newbit idx = count-1)
 UTAB = "0x1001f300"         # f_readuinstr: 19-byte opcode descriptor table
 DBUG_LEVEL = "0x1001c458"   # -zdbug:N value; f_main calls f_printcm iff == 3
 LIST_OPEN = "0x1001c424"    # f_getoption: listing file already opened flag
@@ -481,7 +482,10 @@ static void dkwb_cdx_cmdump_hook(uint8_t *mem, uint32_t sp) {
             (unsigned)MEM_U32(DBUG_LEVEL));
         return;
     }
-    MEM_U32(DBUG_LEVEL) = 3;
+    /* "1" keeps the original meaning (level 3 = f_printcm); any other number is
+     * used as the -zdbug level directly: 1 printtab before copyprop, 7 after,
+     * 2 printlinfo, 5 printregs, 4 printscm, 25 printprecm. */
+    MEM_U32(DBUG_LEVEL) = (strcmp(v, "1") == 0) ? 3u : (uint32_t)atoi(v);
     if (MEM_U8(LIST_OPEN) != 0) return;
     name = getenv("CDX_CMFILE");
     if (name == NULL || *name == '\0') name = "uoptlist";
@@ -510,6 +514,155 @@ def stage_cmdump(src: str) -> str:
     return src
 
 
+# ----------------------------------------------------------------- stage 5 ---
+# Copy-propagation / statement-fold / spill-slot / itable-creation tracing, ported
+# from the 2026-10-07/08 pokestadium sessions (func_8430506C, func_84367660).
+EXTRA_FWD = r"""
+/* ---- stage-5 forward declarations (helpers are defined further down) ---- */
+static FILE *dkwb_cdx_output;
+static int dkwb_cdx_globalcolor_ordinal;
+static void dkwb_cdx_init(void);
+static int dkwb_cdx_active(int ordinal);
+static int dkwb_cdx_emulated_pointer(uint32_t value);
+static int dkwb_s5_flag(const char *name) {
+    const char *v = getenv(name);
+    return v != NULL && *v != '\0' && *v != '0';
+}
+/* CDX_CP=1 [CDX_CP_PROC=n]: copy propagation. n counts f_copypropagate calls
+ * (one per procedure that reaches it; matches the globalcolor ordinal when every
+ * procedure is optimized). */
+static int dkwb_cp_proc = -1;
+static int dkwb_cp_on(void) {
+    static int ready = 0, on = 0, want = -1;
+    if (!ready) {
+        const char *v = getenv("CDX_CP_PROC");
+        on = dkwb_s5_flag("CDX_CP");
+        want = (v != NULL && *v != '\0') ? atoi(v) : -1;
+        ready = 1;
+    }
+    return on && (want < 0 || want == dkwb_cp_proc);
+}
+static void dkwb_cp_node(uint8_t *mem, const char *tag, uint32_t p) {
+    int i;
+    if (!dkwb_cdx_emulated_pointer(p) || !dkwb_cdx_emulated_pointer(p + 31)) return;
+    fprintf(stderr, "[CP]   %s@0x%08x:", tag, (unsigned)p);
+    for (i = 0; i < 8; i++) fprintf(stderr, " %08x", (unsigned)MEM_U32(p + 4 * i));
+    fprintf(stderr, "\n");
+}
+"""
+
+CP_WRAPPERS = r"""
+/* ---- CDX_CP wrappers ---- */
+static void f_copypropagate(uint8_t *mem, uint32_t sp) {
+    dkwb_cp_proc++;
+    if (dkwb_cp_on()) fprintf(stderr, "[CP] begin proc=%d\n", dkwb_cp_proc);
+    f_copypropagate_real(mem, sp);
+    if (dkwb_cp_on()) fprintf(stderr, "[CP] end proc=%d\n", dkwb_cp_proc);
+}
+static void f_exprdelete(uint8_t *mem, uint32_t sp, uint32_t a0, uint32_t a1) {
+    if (dkwb_cp_on()) {
+        fprintf(stderr, "[CP] f_exprdelete a0=0x%08x a1=0x%08x\n", (unsigned)a0, (unsigned)a1);
+        dkwb_cp_node(mem, "a0", a0);
+        dkwb_cp_node(mem, "a1", a1);
+    }
+    f_exprdelete_real(mem, sp, a0, a1);
+}
+static uint32_t f_searchstore(uint8_t *mem, uint32_t sp, uint32_t a0, uint32_t a1, uint32_t a2, uint32_t a3) {
+    uint32_t r = f_searchstore_real(mem, sp, a0, a1, a2, a3);
+    if (dkwb_cp_on()) {
+        fprintf(stderr, "[CP] f_searchstore a0=0x%08x a1=0x%08x a2=0x%08x a3=0x%08x -> 0x%08x\n",
+            (unsigned)a0, (unsigned)a1, (unsigned)a2, (unsigned)a3, (unsigned)r);
+        dkwb_cp_node(mem, "a2", a2);
+        dkwb_cp_node(mem, "a3", a3);
+    }
+    return r;
+}
+static void f_istrfold(uint8_t *mem, uint32_t sp, uint32_t a0) {
+    if (dkwb_cp_on()) {
+        fprintf(stderr, "[CP] f_istrfold a0=0x%08x\n", (unsigned)a0);
+        dkwb_cp_node(mem, "a0", a0);
+    }
+    f_istrfold_real(mem, sp, a0);
+}
+/* ---- CDX_NEWBIT=1: every itable record creation (f_newbit), tagged by caller ---- */
+static uint32_t f_newbit(uint8_t *mem, uint32_t sp, uint32_t a0, uint32_t a1) {
+    uint32_t r = f_newbit_real(mem, sp, a0, a1);
+    if (dkwb_s5_flag("CDX_NEWBIT")) {
+        uint32_t idx = MEM_U32(ITAB_COUNT) - 1, rec = a0;
+        uint32_t l = MEM_U32(rec + 20), rr = MEM_U32(rec + 24);
+        dkwb_cdx_init();
+        fprintf(dkwb_cdx_output,
+            "[CDX] newbit tagproc=%d idx=%u kind=%d dtype=%d op=%d l=%d r=%d a1=%u\n",
+            dkwb_cdx_globalcolor_ordinal, (unsigned)idx, (int)MEM_U8(rec), (int)MEM_U8(rec + 1),
+            (int)MEM_U8(rec + 16),
+            dkwb_cdx_emulated_pointer(l) ? (int)MEM_U16(l + 2) : -1,
+            dkwb_cdx_emulated_pointer(rr) ? (int)MEM_U16(rr + 2) : -1, (unsigned)a1);
+    }
+    return r;
+}
+"""
+
+# f_constarith (called while uopt reads u-code, func_456310): every istr statement
+# reaching the istrfold check, with its address operand's kind / mtype byte.
+CA_CONSTARITH = (
+    'if (dkwb_s5_flag("CDX_CA")) { uint32_t dkwb_ad = MEM_U32(s0 + 4);\n'
+    ' if (v1 == 0x3f) fprintf(stderr, "[CA] istr s0=0x%08x w=%08x %08x %08x %08x %08x | adr kind=%u b50=%u w48=%08x b32=%u | flag4e0=%u\\n",\n'
+    ' (unsigned)s0, (unsigned)MEM_U32(s0), (unsigned)MEM_U32(s0 + 4), (unsigned)MEM_U32(s0 + 8), (unsigned)MEM_U32(s0 + 12), (unsigned)MEM_U32(s0 + 16),\n'
+    ' dkwb_cdx_emulated_pointer(dkwb_ad) ? (unsigned)MEM_U8(dkwb_ad) : 0u, dkwb_cdx_emulated_pointer(dkwb_ad) ? (unsigned)MEM_U8(dkwb_ad + 50) : 0u,\n'
+    ' dkwb_cdx_emulated_pointer(dkwb_ad) ? (unsigned)MEM_U32(dkwb_ad + 48) : 0u, dkwb_cdx_emulated_pointer(dkwb_ad) ? (unsigned)MEM_U8(dkwb_ad + 32) : 0u,\n'
+    ' (unsigned)MEM_U8(0x1001c4e0));\n'
+    ' else fprintf(stderr, "[CA] stmt op=0x%02x s0=0x%08x\\n", (unsigned)v1, (unsigned)s0); }\n'
+)
+# f_copypropagate L417d14: a statement whose operands copyprop rewrote (s3/s6 = new
+# address/value expressions) reaching the istr -> str fold (f_istrfold).
+CA_COPYPROP = (
+    'if (dkwb_s5_flag("CDX_CA")) fprintf(stderr, "[CA] cp-stmt s2=0x%08x w=%08x %08x %08x %08x %08x s3=0x%08x(k%u) s6=0x%08x(k%u)\\n",\n'
+    ' (unsigned)s2, (unsigned)MEM_U32(s2), (unsigned)MEM_U32(s2 + 4), (unsigned)MEM_U32(s2 + 8), (unsigned)MEM_U32(s2 + 12), (unsigned)MEM_U32(s2 + 16),\n'
+    ' (unsigned)s3, s3 ? (unsigned)MEM_U8(s3) : 0u, (unsigned)s6, s6 ? (unsigned)MEM_U8(s6) : 0u);\n'
+)
+# f_spilltemps L466438: each spilled item (a2 = itable record; kind 4 = expression)
+# and the slot s5 it was given. Printed under the *previous* globalcolor ordinal.
+SPILLTEMP = (
+    'if (dkwb_s5_flag("CDX_TEMPS")) { dkwb_cdx_init(); if (dkwb_cdx_active(dkwb_cdx_globalcolor_ordinal))\n'
+    ' fprintf(dkwb_cdx_output, "[CDX] spilltemp proc=%d rec=0x%08x kind=%d slot=%d w0=%08x w1=%08x w2=%08x w3=%08x w4=%08x w5=%08x w6=%08x w7=%08x\\n",\n'
+    ' dkwb_cdx_globalcolor_ordinal, (unsigned)a2, (int)MEM_U8(a2), (int)s5, (unsigned)MEM_U32(a2), (unsigned)MEM_U32(a2 + 4),\n'
+    ' (unsigned)MEM_U32(a2 + 8), (unsigned)MEM_U32(a2 + 12), (unsigned)MEM_U32(a2 + 16), (unsigned)MEM_U32(a2 + 20),\n'
+    ' (unsigned)MEM_U32(a2 + 24), (unsigned)MEM_U32(a2 + 28)); }\n'
+)
+
+
+EMU_OLD = """static int dkwb_cdx_emulated_pointer(uint32_t value) {
+    return value >= 0x10000000U && value < 0x20000000U;
+}"""
+EMU_NEW = """uint32_t dkwb_cdx_cur_sbrk(void);  /* cdx71/libc_impl_cdx71.c */
+static int dkwb_cdx_emulated_pointer(uint32_t value) {
+    /* range check alone is not enough: stale fields (e.g. ichain+8 of a freshly split
+     * live range) point above the current break, where the region is still PROT_NONE
+     * (SIGBUS on battle_engine_356730.c / battle_engine_2EC3C0.c with all logs on). */
+    return value >= 0x10000000U && value < dkwb_cdx_cur_sbrk();
+}"""
+
+
+def stage_cp_ca_spill(src: str) -> str:
+    src = replace_once(src, EMU_OLD, EMU_NEW, "break-aware emulated pointer check")
+    src = replace_once(src, '#include "header.h"\n', '#include "header.h"\n#include <stdio.h>\n#include <stdlib.h>\n' + EXTRA_FWD,
+                       "stage-5 forward declarations")
+    for ret, name, args in [("void", "f_copypropagate", "uint8_t *mem, uint32_t sp"),
+                            ("void", "f_exprdelete", "uint8_t *mem, uint32_t sp, uint32_t a0, uint32_t a1"),
+                            ("uint32_t", "f_searchstore", "uint8_t *mem, uint32_t sp, uint32_t a0, uint32_t a1, uint32_t a2, uint32_t a3"),
+                            ("void", "f_istrfold", "uint8_t *mem, uint32_t sp, uint32_t a0"),
+                            ("uint32_t", "f_newbit", "uint8_t *mem, uint32_t sp, uint32_t a0, uint32_t a1")]:
+        decl = "static %s %s(%s);\n" % (ret, name, args)
+        src = replace_once(src, decl, decl + "static %s %s_real(%s);\n" % (ret, name, args), name + " decl")
+        src = replace_once(src, "static %s %s(%s) {\n" % (ret, name, args),
+                           "static %s %s_real(%s) {\n" % (ret, name, args), name + " def")
+    src = src + CP_WRAPPERS.replace("ITAB_COUNT", ADDR_ITAB_COUNT)
+    src = replace_once(src, "L452fc4:\n", "L452fc4:\n" + CA_CONSTARITH, "constarith istr check")
+    src = replace_once(src, "L417d14:\n", "L417d14:\n" + CA_COPYPROP, "copyprop fold path")
+    src = replace_once(src, "L466438:\n", "L466438:\n" + SPILLTEMP, "spilltemps slot")
+    return src
+
+
 def main() -> None:
     source_path, out_dir = Path(sys.argv[1]), Path(sys.argv[2])
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -522,7 +675,8 @@ def main() -> None:
         ("uopt.gc.c.bak_ichain", stage_globalcolor),
         ("uopt.gc.c.bak_nodes", stage_lineage_symtab_temps),
         ("uopt.gc.c.pre_cmdump", stage_nodes_ucode),
-        ("uopt.gc.c", stage_cmdump),
+        ("uopt.gc.c.pre_cpca", stage_cmdump),
+        ("uopt.gc.c", stage_cp_ca_spill),
     ]
     for name, fn in stages:
         src = fn(src)
