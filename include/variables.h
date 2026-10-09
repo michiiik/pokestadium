@@ -263,7 +263,6 @@ extern u8 D_2000C80[];
 extern u8 D_2000D80[];
 extern u8 D_2000E80[];
 extern u8 D_2000F80[];
-//TODO: capital case these everywhere
 #define bottom_left_sc_tex D_2000C80
 #define bottom_right_sc_tex D_2000D80
 #define top_right_sc_tex D_2000E80
@@ -1009,6 +1008,7 @@ typedef struct unk_D_80072338 {
 extern unk_D_80072338 gMoveDisplayInfo[];
 
 extern char D_8006FEE8[][0x1C];
+#define gSpeciesDataById D_8006FEE8
 
 typedef struct unk_rom_70D3A0_offset_72780 {
     /* 0x00 */ char unk00[0x20];

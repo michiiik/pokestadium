@@ -12,7 +12,7 @@
 #include "variables.h"
 
 static char** menu_string_array;
-static BinArchive* D_82B01144;
+static BinArchive* background_bin_archive;
 static void* D_82B01148;
 static s16 hovered_menu_item;
 
@@ -20,7 +20,7 @@ static u8 D_82B01120[] = {
     0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0F, 0x00, 0x00,
 };
 
-static s8 D_82B0112C[] = {
+static s8 rental_hub_text_offsets[] = {
     0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x02, 0x03,
 };
 
@@ -52,34 +52,34 @@ void RentalHub_DrawHeader(void) {
 
     Color_SetRGB(&banner_fill, 0x64, 0x64, 0xC8);
     Color_SetRGB(&banner_border, 0x28, 0x28, 0x8C);
-    RentalHub_DrawHeaderBar(0x48, 0x28, 0x208, &banner_fill, &banner_border);
-    RentalHub_DrawHeaderIcon(0x30, 0x20);
+    RentalHub_DrawHeaderBar(72, 0x28, 520, &banner_fill, &banner_border);
+    RentalHub_DrawHeaderIcon(48, 32);
     Font_BeginTranslucentTextRendering();
     Font_SetActive(0x10, 0);
     Gfx_SetEnvColor(0, 0, 0, 0xFF);
-    Font_Printf(0x6A, 0x2C, Text_GetString(NULL, 0, menu_string_array, D_82B0112C[D_800AE540.unk_0000]));
+    Font_Printf(106, 44, Text_GetString(NULL, 0, menu_string_array, rental_hub_text_offsets[D_800AE540.unk_0000]));
     Gfx_SetEnvColor(0xFF, 0xFF, 0x77, 0xFF);
-    Font_Printf(0x68, 0x2A, Text_GetString(NULL, 0, menu_string_array, D_82B0112C[D_800AE540.unk_0000]));
+    Font_Printf(104, 42, Text_GetString(NULL, 0, menu_string_array, rental_hub_text_offsets[D_800AE540.unk_0000]));
     Font_EndTexturedTextRendering();
 }
 
-void RentalHub_DrawSelectionCursor(s16 arg0, s16 arg1, s16 arg2, s16 arg3) {
-    static s16 D_82B01138 = 0;
+void RentalHub_DrawSelectionCursor(s16 left, s16 bottom, s16 top, s16 right) {
+    static s16 pulsing_timer = 0;
 
-    s16 sp56 = SINS(D_82B01138) * 2;
+    s16 pulse = SINS(pulsing_timer) * 2;
     UNUSED s32 pad[2];
 
     gSPDisplayList(gDisplayListHead++, D_8006F518);
     gDPSetEnvColor(gDisplayListHead++, 240, 212, 104, 255);
 
-    Gfx_DrawTextureIa8(arg0 + sp56, arg1 + sp56, 0x10, 0x10, D_2000C80, 0x10, 0);
-    Gfx_DrawTextureIa8(arg0 + sp56, ((arg1 + arg3) - sp56) - 0x10, 0x10, 0x10, D_2000F80, 0x10, 0);
-    Gfx_DrawTextureIa8(((arg0 + arg2) - sp56) - 0x10, arg1 + sp56, 0x10, 0x10, D_2000D80, 0x10, 0);
-    Gfx_DrawTextureIa8(((arg0 + arg2) - sp56) - 0x10, ((arg1 + arg3) - sp56) - 0x10, 0x10, 0x10, D_2000E80, 0x10, 0);
+    Gfx_DrawTextureIa8(left + pulse, bottom + pulse, 16, 16, BOTTOM_LEFT_SECTION_CORNER, 16, 0);
+    Gfx_DrawTextureIa8(left + pulse, ((bottom + right) - pulse) - 16, 16, 16, BOTTOM_RIGHT_SECTION_CORNER, 16, 0);
+    Gfx_DrawTextureIa8(((left + top) - pulse) - 16, bottom + pulse, 16, 16, TOP_LEFT_SECTION_CORNER, 16, 0);
+    Gfx_DrawTextureIa8(((left + top) - pulse) - 16, ((bottom + right) - pulse) - 16, 16, 16, TOP_RIGHT_SECTION_CORNER, 0x10, 0);
 
     gSPDisplayList(gDisplayListHead++, D_8006F630);
 
-    D_82B01138 += 0x2000;
+    pulsing_timer += 0x2000;
 }
 
 void RentalHub_DrawMenuItemBorder(s16 x, s16 y, s16 width, s16 height) {
@@ -194,7 +194,7 @@ void RentalHub_FadeOutWait(void) {
 s16 RentalHub_MenuLoop(void) {
     s16 i;
     s16 selected_menu_item;
-    u32 temp_s1 = 'exec';
+    u32 action = 'exec';
 
     hovered_menu_item = 0;
     RentalHub_FadeInWait();
@@ -205,9 +205,9 @@ s16 RentalHub_MenuLoop(void) {
         RentalHub_Draw(i);
     }
 
-    while (temp_s1 == 'exec') {
+    while (action == 'exec') {
         Controller_PollInputs();
-        temp_s1 = RentalHub_HandleInput();
+        action = RentalHub_HandleInput();
         RentalHub_Draw(i);
     }
 
@@ -218,7 +218,7 @@ s16 RentalHub_MenuLoop(void) {
 
     RentalHub_Draw(i);
 
-    if (temp_s1 == 'btnA') {
+    if (action == 'btnA') {
         selected_menu_item = hovered_menu_item + 1;
     } else {
         if (D_800AE540.unk_0000 != 0) {
@@ -230,16 +230,16 @@ s16 RentalHub_MenuLoop(void) {
 }
 
 void RentalHub_LoadBackgroundImage(ModeSettings* arg0) {
-    D_82B01144 = BinArchive_Open(backgrounds_ROM_START, battle_headers_ROM_START, 1, 1);
+    background_bin_archive = BinArchive_Open(backgrounds_ROM_START, battle_headers_ROM_START, 1, 1);
 
     if (D_800AE540.unk_0000 == 7) {
         if (arg0->unk_04 < 8) {
-            D_82B01148 = BinArchive_GetFile(D_82B01144, 0xD);
+            D_82B01148 = BinArchive_GetFile(background_bin_archive, 0xD);
         } else {
-            D_82B01148 = BinArchive_GetFile(D_82B01144, 0x10);
+            D_82B01148 = BinArchive_GetFile(background_bin_archive, 0x10);
         }
     } else {
-        D_82B01148 = BinArchive_GetFile(D_82B01144, D_82B01120[D_800AE540.unk_0000]);
+        D_82B01148 = BinArchive_GetFile(background_bin_archive, D_82B01120[D_800AE540.unk_0000]);
     }
 }
 
