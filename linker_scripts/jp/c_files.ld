@@ -1,0 +1,51 @@
+/* math_util */
+jpc_src_math_util__guRandom = 0x80059DD0;
+/* end math_util */
+/* audio_data */
+jpc_src_audio_data__Audio_CopyDataWithCacheSync = 0x8004D750;
+jpc_src_audio_data__Audio_FadeCategoriesAndStreams = 0x8004C8F0;
+jpc_src_audio_data__Audio_PlayMusicSequence = 0x80036040;
+jpc_src_audio_data__Audio_QueueVoiceVolumeScale = 0x800364EC;
+jpc_src_audio_data__Audio_RelocateSoundBankWrapper = 0x800368AC;
+jpc_src_audio_data__D_80078E70 = 0x8007CAB0;
+jpc_src_audio_data__D_800FC680 = 0x80102C40;
+jpc_src_audio_data__D_800FC6DC = 0x80102C9C;
+jpc_src_audio_data__D_800FC6E4 = 0x80102CA4;
+jpc_src_audio_data__D_800FC820 = 0x80102DE0;
+jpc_src_audio_data__Rom_DmaRead = 0x80047C70;
+SECTIONS { .jpc_src_audio_data__bss 0x80105F80 (NOLOAD) : { build/src/audio_data.o(.jpcbss) build/src/audio_data.o(COMMON) } }
+/* end audio_data */
+/* fragments/lab_pc/lab_pc_1A8590 */
+jpc_src_fragments_lab_pc_lab_pc_1A8590__Asset_LoadToSegment = 0x800041C8;
+jpc_src_fragments_lab_pc_lab_pc_1A8590__D_04000000 = 0x04000000;
+jpc_src_fragments_lab_pc_lab_pc_1A8590__Font_Init = 0x8001E608;
+jpc_src_fragments_lab_pc_lab_pc_1A8590__Fragment_Load = 0x800043C4;
+jpc_src_fragments_lab_pc_lab_pc_1A8590__Fragment_QueueCall = 0x800285A8;
+jpc_src_fragments_lab_pc_lab_pc_1A8590__LabPC_ShowBoxes = 0x88205A44;
+jpc_src_fragments_lab_pc_lab_pc_1A8590__LabPC_ShowItems = 0x88213D70;
+jpc_src_fragments_lab_pc_lab_pc_1A8590__LabPC_ShowMenu = 0x88200E54;
+jpc_src_fragments_lab_pc_lab_pc_1A8590__LabPC_ShowPokemon = 0x8820BD70;
+jpc_src_fragments_lab_pc_lab_pc_1A8590__StageContext_SetClearColor = 0x80007920;
+jpc_src_fragments_lab_pc_lab_pc_1A8590__StageFade_StartFromTransparent = 0x80006C44;
+jpc_src_fragments_lab_pc_lab_pc_1A8590__StageLoader_UpdateSegments = 0x800076E4;
+jpc_src_fragments_lab_pc_lab_pc_1A8590__StageLoader_WaitForRetrace = 0x800076AC;
+jpc_src_fragments_lab_pc_lab_pc_1A8590__fragment22_ROM_START = 0x001AA000;
+jpc_src_fragments_lab_pc_lab_pc_1A8590__fragment22_TEXT_START = 0x88000000;
+jpc_src_fragments_lab_pc_lab_pc_1A8590__fragment22_relocs_ROM_END = 0x001C1230;
+jpc_src_fragments_lab_pc_lab_pc_1A8590__fragment26_ROM_START = 0x00201D70;
+jpc_src_fragments_lab_pc_lab_pc_1A8590__fragment26_TEXT_START = 0x88500000;
+jpc_src_fragments_lab_pc_lab_pc_1A8590__fragment26_relocs_ROM_END = 0x0020EC90;
+jpc_src_fragments_lab_pc_lab_pc_1A8590__fragment29_ROM_START = 0x00251940;
+jpc_src_fragments_lab_pc_lab_pc_1A8590__fragment29_TEXT_START = 0x88900000;
+jpc_src_fragments_lab_pc_lab_pc_1A8590__fragment29_misc_1_ROM_END = 0x00255150;
+jpc_src_fragments_lab_pc_lab_pc_1A8590__fragment29_misc_1_ROM_START = 0x00252AE0;
+jpc_src_fragments_lab_pc_lab_pc_1A8590__fragment29_relocs_ROM_END = 0x00252AE0;
+jpc_src_fragments_lab_pc_lab_pc_1A8590__main_pool_pop_state = 0x800027A8;
+jpc_src_fragments_lab_pc_lab_pc_1A8590__main_pool_push_state = 0x800026F4;
+/* end fragments/lab_pc/lab_pc_1A8590 */
+/* audio_category_fade */
+jpc_src_audio_category_fade__AudioStream_Stop = 0x80041D88;
+jpc_src_audio_category_fade__D_8007840C = 0x8007C05C;
+jpc_src_audio_category_fade__func_8003627C = 0x8003627C;
+jpc_src_audio_category_fade__func_8003DB84 = 0x8003AC94;
+/* end audio_category_fade */
