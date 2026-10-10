@@ -6,81 +6,82 @@
 #include "src/text_system.h"
 #include "src/audio_sfx.h"
 #include "src/gfx_rect.h"
+#include "variables.h"
 
 static u16 D_83003EF0[151][0x640];
 static unk_D_83079E70 D_83079E70;
 
-s32 RentalRules_SpeciesMatchesCategory(s16 arg0, s16 arg1) {
-    s32 var_v1;
-    s16 sp2;
+s32 RentalRules_SpeciesMatchesCategory(s16 species, s16 ruleset) {
+    s32 is_eligible;
+    s16 eligibility_mask;
 
-    if ((arg0 <= 0) || (arg0 >= 0x98)) {
+    if ((species <= 0) || (species >= 152)) {
         return 0;
     }
 
-    var_v1 = 0;
-    switch (arg1) {
+    is_eligible = 0;
+    switch (ruleset) {
         case 0:
-            var_v1 = 1;
+            is_eligible = 1;
             break;
 
         case 1:
-            sp2 = 1;
+            eligibility_mask = 1;
             break;
 
         case 2:
-            sp2 = 2;
+            eligibility_mask = 2;
             break;
 
         case 3:
-            sp2 = 1;
+            eligibility_mask = 1;
             break;
 
         case 4:
-            sp2 = 8;
+            eligibility_mask = 8;
             break;
 
         case 5:
-            sp2 = 0x10;
+            eligibility_mask = 0x10;
             break;
 
         case 6:
-            sp2 = 0x20;
+            eligibility_mask = 0x20;
             break;
 
         case 7:
-            var_v1 = 1;
+            is_eligible = 1;
             break;
 
         case 8:
-            var_v1 = 1;
+            is_eligible = 1;
             break;
     }
 
-    if (var_v1 == 0) {
-        if (D_8006FEE8[arg0][8] & sp2) {
-            var_v1 = 1;
+    if (is_eligible == 0) {
+        if (gSpeciesDataById[species][8] & eligibility_mask) {
+            is_eligible = 1;
         } else {
-            var_v1 = 0;
+            is_eligible = 0;
         }
     }
-    return var_v1;
+    return is_eligible;
 }
 
-s16 RentalRules_CountMatchingSpecies(s16 arg0) {
+s16 RentalRules_CountMatchingSpecies(s16 ruleset) {
     s16 i;
-    s16 var_s1 = 0;
+    s16 number_of_eligible_pokemon = 0;
 
     for (i = 1; i < 152; i++) {
-        if (RentalRules_SpeciesMatchesCategory(i, arg0) != 0) {
-            var_s1++;
+        if (RentalRules_SpeciesMatchesCategory(i, ruleset) != 0) {
+            number_of_eligible_pokemon++;
         }
     }
 
-    return var_s1;
+    return number_of_eligible_pokemon;
 }
 
-s32 RentalRules_BuildSpeciesPage(unk_D_83079E70_000* arg0, s16 arg1, s16 arg2) {
+s32 RentalRules_BuildSpeciesPage(QualifyingPokemonDisplayRow* arg0, s16 arg1, s16 rule_category) {
     s32 i;
     s16 var_a0;
     s32 var_s1;
@@ -102,7 +103,7 @@ s32 RentalRules_BuildSpeciesPage(unk_D_83079E70_000* arg0, s16 arg1, s16 arg2) {
         }
         arg0->unk_00[i].unk_00 = var_a0;
 
-        if (RentalRules_SpeciesMatchesCategory(var_a0, arg2) != 0) {
+        if (RentalRules_SpeciesMatchesCategory(var_a0, rule_category) != 0) {
             arg0->unk_00[i].unk_02 = 1;
         } else {
             arg0->unk_00[i].unk_02 = 0;
@@ -112,7 +113,7 @@ s32 RentalRules_BuildSpeciesPage(unk_D_83079E70_000* arg0, s16 arg1, s16 arg2) {
     return var_s3;
 }
 
-unk_D_83079E70_000* RentalRules_AdvancePageNode(unk_D_83079E70_000* arg0, s32 arg1) {
+QualifyingPokemonDisplayRow* RentalRules_AdvancePageNode(QualifyingPokemonDisplayRow* arg0, s32 arg1) {
     while (arg1-- > 0) {
         arg0 = arg0->unk_18;
     }
@@ -251,7 +252,7 @@ void RentalRules_DrawCloseButtonIcon(s16 arg0, s16 arg1) {
     Gfx_DrawTextureI4(arg0, arg1, 0x20, 0x14, D_4000DD0, 0x20, 0);
 }
 
-void RentalRules_DrawSpeciesPage(s16 arg0, s16 arg1, unk_D_83079E70_000* arg2) {
+void RentalRules_DrawSpeciesPage(s16 arg0, s16 arg1, QualifyingPokemonDisplayRow* arg2) {
     UNUSED s32 pad;
     s32 i;
     Color_RGB8* var_v0;
@@ -357,7 +358,7 @@ void RentalRules_ListDraw(void) {
     if (ptr->unk_04 >= 0x400) {
         UNUSED s32 pad;
         s32 i;
-        unk_D_83079E70_000* var_s0;
+        QualifyingPokemonDisplayRow* var_s0;
 
         RentalRules_DrawFilledPanel(spA6, spA4, 0x210, 0x24, 0x1E, 0x64, 0x64);
         RentalRules_DrawFilledPanel(spA6, spA4 + 0x24, 0x18, 0x12C, 0x1E, 0x1E, 0x64);

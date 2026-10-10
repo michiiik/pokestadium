@@ -515,52 +515,52 @@ void RentalRules_DrawHeaderBanner(void) {
     }
 }
 
-void RentalRules_DrawWindowFrame(s16 arg0, s16 arg1, s16 arg2, s16 arg3) {
+void RentalRules_DrawWindowFrame(s16 left, s16 bottom, s16 arg2, s16 arg3) {
     gSPDisplayList(gDisplayListHead++, D_8006F518);
 
-    Gfx_DrawTextureIa8(arg0 - 7, arg1 - 7, 8, 8, D_2000340, 8, 0);
-    Gfx_DrawTextureIa8((arg0 + arg2) - 1, arg1 - 7, 8, 8, D_2000380, 8, 0);
-    Gfx_DrawTexturedRectClipped(arg0 + 1, arg1 - 7, arg2 - 2, 8, 0, 0, 0, 0x400, 0);
-    Gfx_DrawTextureIa8(arg0 - 7, (arg1 + arg3) - 1, 8, 8, D_20002C0, 8, 0);
-    Gfx_DrawTexturedRectClipped(arg0 - 7, arg1 + 1, 8, arg3 - 2, 0, 0, 0x400, 0, 0);
-    Gfx_DrawTextureIa8((arg0 + arg2) - 1, (arg1 + arg3) - 1, 8, 8, D_2000300, 8, 0);
-    Gfx_DrawTexturedRectClipped(arg0 + 1, (arg1 + arg3) - 1, arg2 - 2, 8, 0, 0, 0, 0x400, 0);
-    Gfx_DrawTexturedRectClipped((arg0 + arg2) - 1, arg1 + 1, 8, arg3 - 2, 0, 0, 0x400, 0, 0);
+    Gfx_DrawTextureIa8(left - 7, bottom - 7, 8, 8, D_2000340, 8, 0);
+    Gfx_DrawTextureIa8((left + arg2) - 1, bottom - 7, 8, 8, D_2000380, 8, 0);
+    Gfx_DrawTexturedRectClipped(left + 1, bottom - 7, arg2 - 2, 8, 0, 0, 0, 0x400, 0);
+    Gfx_DrawTextureIa8(left - 7, (bottom + arg3) - 1, 8, 8, D_20002C0, 8, 0);
+    Gfx_DrawTexturedRectClipped(left - 7, bottom + 1, 8, arg3 - 2, 0, 0, 0x400, 0, 0);
+    Gfx_DrawTextureIa8((left + arg2) - 1, (bottom + arg3) - 1, 8, 8, D_2000300, 8, 0);
+    Gfx_DrawTexturedRectClipped(left + 1, (bottom + arg3) - 1, arg2 - 2, 8, 0, 0, 0, 0x400, 0);
+    Gfx_DrawTexturedRectClipped((left + arg2) - 1, bottom + 1, 8, arg3 - 2, 0, 0, 0x400, 0, 0);
 
     gSPDisplayList(gDisplayListHead++, D_8006F630);
 }
 
-void RentalRules_DrawFilledPanel(s16 arg0, s16 arg1, s16 arg2, s16 arg3, u8 arg4, u8 arg5, u8 arg6) {
+void RentalRules_DrawFilledPanel(s16 x1, s16 y1, s16 width, s16 height, u8 r, u8 g, u8 b) {
     gSPDisplayList(gDisplayListHead++, D_8006F518);
 
     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_OPA_SURF, G_RM_AA_OPA_SURF2);
-    gDPSetEnvColor(gDisplayListHead++, arg4, arg5, arg6, 255);
+    gDPSetEnvColor(gDisplayListHead++, r, g, b, 255);
 
-    Gfx_DrawTextureIa8(arg0, arg1, 8, 8, D_2000B40, 8, 0);
-    Gfx_DrawTextureIa8((arg0 + arg2) - 8, arg1, 8, 8, D_2000B80, 8, 0);
-    Gfx_DrawTexturedRectClipped(arg0 + 8, arg1, arg2 - 0x10, 8, 0, 0, 0, 0x400, 0);
-    Gfx_DrawTextureIa8(arg0, (arg1 + arg3) - 8, 8, 8, D_2000BC0, 8, 0);
-    Gfx_DrawTexturedRectClipped(arg0, arg1 + 8, 8, arg3 - 0x10, 0, 0, 0x400, 0, 0);
-    Gfx_DrawTextureIa8((arg0 + arg2) - 8, (arg1 + arg3) - 8, 8, 8, D_2000C00, 8, 0);
-    Gfx_DrawTexturedRectClipped(arg0 + 8, (arg1 + arg3) - 8, arg2 - 0x10, 8, 0, 0, 0, 0x400, 0);
-    Gfx_DrawTexturedRectClipped((arg0 + arg2) - 8, arg1 + 8, 8, arg3 - 0x10, 0, 0, 0x400, 0, 0);
+    Gfx_DrawTextureIa8(x1, y1, 8, 8, D_2000B40, 8, 0);
+    Gfx_DrawTextureIa8((x1 + width) - 8, y1, 8, 8, D_2000B80, 8, 0);
+    Gfx_DrawTexturedRectClipped(x1 + 8, y1, width - 16, 8, 0, 0, 0, 0x400, 0);
+    Gfx_DrawTextureIa8(x1, (y1 + height) - 8, 8, 8, D_2000BC0, 8, 0);
+    Gfx_DrawTexturedRectClipped(x1, y1 + 8, 8, height - 16, 0, 0, 0x400, 0, 0);
+    Gfx_DrawTextureIa8((x1 + width) - 8, (y1 + height) - 8, 8, 8, D_2000C00, 8, 0);
+    Gfx_DrawTexturedRectClipped(x1 + 8, (y1 + height) - 8, width - 16, 8, 0, 0, 0, 0x400, 0);
+    Gfx_DrawTexturedRectClipped((x1 + width) - 8, y1 + 8, 8, height - 16, 0, 0, 0x400, 0, 0);
 
     gSPDisplayList(gDisplayListHead++, D_8006F498);
 
-    Gfx_FillRectRgba(arg0 + 8, arg1 + 8, arg2 - 0x10, arg3 - 0x10, arg4, arg5, arg6, 0xFF);
+    Gfx_FillRectRgba(x1 + 8, y1 + 8, width - 16, height - 16, r, g, b, 0xFF);
 
     gSPDisplayList(gDisplayListHead++, D_8006F630);
 }
 
-void RentalRules_DrawBulletIcon(s16 arg0, s16 arg1) {
+void RentalRules_DrawBulletIcon(s16 x, s16 y) {
     gDPLoadTextureTile(gDisplayListHead++, D_4000C40, G_IM_FMT_IA, G_IM_SIZ_8b, 20, 0, 0, 0, 19, 19, 0,
                        G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                        G_TX_NOLOD);
 
-    Gfx_DrawTexturedRectClipped(arg0, arg1, 0x14, 0x14, 0, 0, 0x400, 0x400, 0);
+    Gfx_DrawTexturedRectClipped(x, y, 20, 20, 0, 0, 0x400, 0x400, 0);
 }
 
-void RentalRules_DrawRuleListText(s16 arg0, s16 arg1) {
+void RentalRules_DrawRuleListText(s16 x, s16 y) {
     s16 tmp;
     s32 i;
     char sp48[0x40];
@@ -571,13 +571,13 @@ void RentalRules_DrawRuleListText(s16 arg0, s16 arg1) {
     if (D_83003C9C != NULL) {
         if (D_83003C9C != D_83003CBC) {
             Text_SetStringToken(0x27, D_83003C9C);
-            Font_Printf(arg0 + 0x10, arg1 + 4, Text_GetString(sp48, sizeof(sp48), D_830039C0, 1));
+            Font_Printf(x + 16, y + 4, Text_GetString(sp48, sizeof(sp48), D_830039C0, 1));
         } else {
-            Font_Printf(arg0 + 0x10, arg1 + 4, D_83003C9C);
+            Font_Printf(x + 16, y + 4, D_83003C9C);
         }
     }
 
-    Font_Printf(arg0 + 0x30, arg1 + 0x134, Text_GetString(NULL, 0, D_830039C0, 2));
+    Font_Printf(x + 0x30, y + 0x134, Text_GetString(NULL, 0, D_830039C0, 2));
     Font_SetActive(8, 0);
 
     for (i = 0; i < D_83003CA4; i++) {
@@ -587,7 +587,7 @@ void RentalRules_DrawRuleListText(s16 arg0, s16 arg1) {
             Gfx_SetEnvColor(0xFF, 0xFF, 0, 0xFF);
         }
         tmp = D_83003CA0[i];
-        Font_Printf(arg0 + 0x54, arg1 + 0x26 + i * 0x18, D_83003CE0.unk_00[tmp]);
+        Font_Printf(x + 84, y + 38 + i * 24, D_83003CE0.unk_00[tmp]);
     }
 }
 
