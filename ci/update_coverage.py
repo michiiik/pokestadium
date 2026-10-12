@@ -5,6 +5,7 @@ The total function count is the retail-map value recorded in COVERAGE.md; this
 script never executes PR code or requires a ROM.
 """
 import argparse
+import json
 import re
 from pathlib import Path
 
@@ -39,12 +40,14 @@ def other_versions(root: Path):
     disassembly is an open candidate for that version.
     """
     us = c_files(root / "yamls/us/rom.yaml")
+    regions_path = root / "ci/regions.json"
+    regions = json.loads(regions_path.read_text(encoding="utf-8")) if regions_path.exists() else {}
+    versions = {k for k in regions if not k.startswith("_")} | {p.parent.name for p in (root / "yamls").glob("*/rom.yaml")}
     result = {}
-    for yaml_path in sorted((root / "yamls").glob("*/rom.yaml")):
-        version = yaml_path.parent.name
-        if version == "us":
-            continue
-        built = c_files(yaml_path)
+    for version in sorted(versions - {"us"}):
+        yaml_path = root / "yamls" / version / "rom.yaml"
+        started = yaml_path.exists()
+        built = c_files(yaml_path) if started else set()
         open_files = {}
         for name in sorted(us - built):
             src = root / "src" / f"{name}.c"
@@ -53,7 +56,7 @@ def other_versions(root: Path):
             text = src.read_text(encoding="utf-8", errors="replace")
             names = PRAGMA.findall(text) or [f for f in FUNC.findall(text) if f not in KEYWORDS]
             open_files[f"src/{name}.c"] = names
-        result[version] = (len(us & built), len(us), open_files)
+        result[version] = (len(us & built), len(us), open_files, started)
     return result
 
 
@@ -78,8 +81,8 @@ def render(root: Path, baseline: Path) -> str:
         f"- Remaining decompilable `GLOBAL_ASM` owners: **{remaining:,}** (across {len(owners):,} source files)",
         f"- Separately managed `hasm` assembly segments: **{len(managed):,}**",
     ] + [
-        f"- `{v}`: **{built:,} / {shared:,}** shared C files built, **{sum(len(f) for f in files.values()):,}** functions open across {len(files):,} files"
-        for v, (built, shared, files) in others.items()
+        f"- `{v}`{'' if started else ' (not started)'}: **{built:,} / {shared:,}** shared C files built, **{sum(len(f) for f in files.values()):,}** functions open across {len(files):,} files"
+        for v, (built, shared, files, started) in others.items()
     ] + [
         "<!-- AUTO_COVERAGE:END -->", "",
         "The function denominator covers C source owners and `GLOBAL_ASM` stubs. `hasm` entries are deliberately managed assembly segments, not unported C-function owners, so they are reported separately and excluded from the decompilation backlog. Total function count is derived from the retail linker map and retained from the trusted baseline. Regenerate with:",
@@ -90,7 +93,9 @@ def render(root: Path, baseline: Path) -> str:
         f"| `{path}` | {len(functions)} | {', '.join(f'`{name}`' for name in functions)} |"
         for path, functions in owners.items()
     ]
-    for v, (built, shared, files) in others.items():
+    for v, (built, shared, files, started) in others.items():
+        if not started:
+            continue
         total_open = sum(len(fn) for fn in files.values())
         names = total_open < MAX_LISTED_FUNCTIONS
         lines += ["", f"## Open candidates for `{v}`", "",
