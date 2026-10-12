@@ -23,7 +23,7 @@ def managed_assembly(root: Path):
 
 CENTRY = re.compile(r'^\s*-\s*\[0x[0-9A-Fa-f]+,\s*c,\s*([^\],\s]+)', re.MULTILINE)
 FUNC = re.compile(r'^[A-Za-z_][\w \t\*]*?\b([A-Za-z_]\w*)\s*\([^;{}]*\)\s*\{', re.MULTILINE)
-MAX_LISTED_CANDIDATES = 300
+MAX_LISTED_FUNCTIONS = 300
 KEYWORDS = {"if", "while", "for", "switch", "return", "sizeof"}
 
 
@@ -91,13 +91,13 @@ def render(root: Path, baseline: Path) -> str:
         for path, functions in owners.items()
     ]
     for v, (built, shared, files) in others.items():
-        lines += ["", f"## Open candidates for `{v}`", ""]
-        if len(files) > MAX_LISTED_CANDIDATES:
-            lines += [f"{len(files):,} files are still open, which is more than {MAX_LISTED_CANDIDATES}, so they are not listed individually. The list appears once fewer remain."]
-            continue
-        lines += [f"Shared C files the US build compiles that `{v}` still builds from its own disassembly. Function names are read from the source and are approximate.", "",
-                  "| File | Open functions | Functions |", "| --- | ---: | --- |"]
-        lines += [f"| `{p}` | {len(fn)} | {', '.join(f'`{n}`' for n in fn)} |" for p, fn in files.items()]
+        total_open = sum(len(fn) for fn in files.values())
+        names = total_open < MAX_LISTED_FUNCTIONS
+        lines += ["", f"## Open candidates for `{v}`", "",
+                  f"Shared C files the US build compiles that `{v}` still builds from its own disassembly. Function counts are read from the source and are approximate."
+                  + ("" if names else f" Function names are listed once fewer than {MAX_LISTED_FUNCTIONS} remain open."), "",
+                  "| File | Open functions |" + (" Functions |" if names else ""), "| --- | ---: |" + (" --- |" if names else "")]
+        lines += [f"| `{p}` | {len(fn)} |" + (f" {', '.join(f'`{n}`' for n in fn)} |" if names else "") for p, fn in files.items()]
     lines += ["", "## Separately managed assembly segments", "", "These YAML `hasm` entries are kept as assembly by design and are not counted as `GLOBAL_ASM` decompilation candidates.", "", "| YAML | ROM offset | Segment |", "| --- | ---: | --- |"]
     lines += [f"| `{path}` | `{address}` | `{label}` |" for path, address, label in managed]
     return "\n".join(lines) + "\n"
