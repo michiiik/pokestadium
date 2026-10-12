@@ -12,7 +12,9 @@ import pathlib
 import re
 import sys
 
-ASM = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else "asm/jp")
+REGION = __import__("os").environ.get("REGION", "jp")
+
+ASM = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else f"asm/{REGION}")
 
 double = re.compile(r"^(\s*/\* [0-9A-F]+ [0-9A-F]{8} )([0-9A-F]{8})([0-9A-F]{8}) \*/ \.double .*$", re.M)
 word = re.compile(r"^(\s*/\* [0-9A-F]+ [0-9A-F]{8} ([0-9A-F]{8}) \*/\s*)\.word\s.*$", re.M)

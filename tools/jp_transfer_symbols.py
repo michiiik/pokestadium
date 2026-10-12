@@ -15,6 +15,8 @@ import sys
 
 import yaml
 
+REGION = __import__("os").environ.get("REGION", "jp")
+
 ROOT = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else ".")
 
 
@@ -57,7 +59,7 @@ def collect(segments):
 
 
 us_subs = collect(load_yaml("us"))
-jp_subs = collect(load_yaml("jp"))
+jp_subs = collect(load_yaml(REGION))
 
 sym_re = re.compile(r"^(\w+)\s*=\s*0x([0-9A-Fa-f]+);(.*)$")
 auto_re = re.compile(r"(?:func|D|jtbl|B|L|sub|code|data)_([0-9A-Fa-f]{6,8})")
@@ -98,5 +100,5 @@ for fname in ("symbol_addrs_code.txt", "symbol_addrs.txt", "symbol_addrs_ultrali
         seen_vram[jp_vram] = name
         lines.append(f"{name} = 0x{jp_vram:08X};{rest}")
         n_ok += 1
-    (ROOT / "linker_scripts/jp" / fname).write_bytes(("\n".join(lines) + "\n").encode())
+    (ROOT / f"linker_scripts/{REGION}" / fname).write_bytes(("\n".join(lines) + "\n").encode())
     print(f"{fname}: {n_ok} transferred")

@@ -15,6 +15,8 @@ import yaml
 
 from jpmatch import mask_stream, unique_find, selftest
 
+REGION = __import__("os").environ.get("REGION", "jp")
+
 ROOT = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else ".")
 ANCH = 128
 MAX_PER_SEG = 8
@@ -25,7 +27,7 @@ MMAX_PER_SEG = 6
 selftest()
 
 us = (ROOT / "baseroms/us/baserom.z64").read_bytes()
-jp = (ROOT / "baseroms/jp/baserom.z64").read_bytes()
+jp = (ROOT / f"baseroms/{REGION}/baserom.z64").read_bytes()
 jp_masked = mask_stream(jp)
 
 segments = yaml.safe_load((ROOT / "yamls/us/header.yaml").read_text()
@@ -109,7 +111,7 @@ for seg_name, off, size, typ, sub_name in flat:
         verdict="raw" if delta is not None else ("masked" if m_delta is not None else "UNLOCATED"),
     ))
 
-out = ROOT / "yamls/jp/segment_transfer.csv"
+out = ROOT / f"yamls/{REGION}/segment_transfer.csv"
 with out.open("w", newline="") as f:
     w = csv.DictWriter(f, fieldnames=list(rows[0]), lineterminator="\n")
     w.writeheader()

@@ -10,6 +10,8 @@ import sys
 
 import yaml
 
+REGION = __import__("os").environ.get("REGION", "jp")
+
 ROOT = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else ".")
 
 off_re = re.compile(r"(\[\s*0x)([0-9A-Fa-f]+)")
@@ -22,7 +24,7 @@ def snap(m):
 
 
 for name in ("rom.yaml", "header.yaml"):
-    p = ROOT / "yamls/jp" / name
+    p = ROOT / f"yamls/{REGION}" / name
     out_lines, n_changed = [], 0
     for line in p.read_text().splitlines(True):
         new = off_re.sub(snap, line)
@@ -34,7 +36,7 @@ for name in ("rom.yaml", "header.yaml"):
     p.write_text("".join(out_lines))
     print(f"{name}: {n_changed} lines snapped")
 
-txt = (ROOT / "yamls/jp/header.yaml").read_text() + (ROOT / "yamls/jp/rom.yaml").read_text()
+txt = (ROOT / f"yamls/{REGION}/header.yaml").read_text() + (ROOT / f"yamls/{REGION}/rom.yaml").read_text()
 seg = yaml.safe_load(txt)["segments"]
 bad_align = 0
 offs = []
@@ -88,7 +90,7 @@ def fix_group(g, txt):
     return txt
 
 
-p = ROOT / "yamls/jp/rom.yaml"
+p = ROOT / f"yamls/{REGION}/rom.yaml"
 txt = p.read_text()
 for g in seg:
     if isinstance(g, dict) and g.get("subsegments"):

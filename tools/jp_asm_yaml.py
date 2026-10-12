@@ -9,8 +9,10 @@ import pathlib
 import re
 import sys
 
+REGION = __import__("os").environ.get("REGION", "jp")
+
 ROOT = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else ".")
-YAML = ROOT / "yamls/jp/rom.yaml"
+YAML = ROOT / f"yamls/{REGION}/rom.yaml"
 
 TYPES = {"c": "asm", "hasm": "asm", ".data": "data", ".rodata": "rodata", "pad": "bin"}
 CLASS = {"asm": 0, "textbin": 0, "data": 1, "databin": 1, "rodata": 2, "rodatabin": 2}

@@ -131,13 +131,20 @@ LDSCRIPT  := $(ROM:.z64=.ld)
 
 BUILD_DEFINES ?=
 
+# Versions built from their own disassembly (plus the shared C files moved over
+# by tools/jp_match.py) rather than from this tree's C. See ci/regions.json.
+ASM_BUILT_VERSIONS := jp eu eu_rev1 fr de it es us_rev2
+ASM_BUILT          := $(filter $(VERSION),$(ASM_BUILT_VERSIONS))
+
 ifeq ($(VERSION),us)
   BUILD_DEFINES   += -DVERSION_US=1
-else ifeq ($(VERSION),jp)
-  BUILD_DEFINES   += -DVERSION_JP=1
-  ULTRALIB_VERSION := J
+else ifneq ($(filter $(VERSION),$(ASM_BUILT_VERSIONS)),)
+  BUILD_DEFINES   += -DVERSION_$(shell echo $(VERSION) | tr a-z A-Z)=1
+  ifeq ($(VERSION),jp)
+    ULTRALIB_VERSION := J
+  endif
 else
-$(error Invalid VERSION variable detected. Please use 'us' or 'jp')
+$(error Invalid VERSION variable detected. Please use one of: us $(ASM_BUILT_VERSIONS))
 endif
 
 
@@ -150,7 +157,7 @@ MAKE = make
 CPPFLAGS += -fno-dollars-in-identifiers -P
 LDFLAGS  := --no-check-sections --accept-unknown-input-arch --emit-relocs --whole-archive
 
-ifeq ($(VERSION),jp)
+ifneq ($(ASM_BUILT),)
   # overlays sharing a vram get the same auto-named symbols, at the same address
   LDFLAGS += --allow-multiple-definition
 endif
@@ -231,7 +238,7 @@ CFLAGS          += -G 0 -non_shared -Xcpluscomm -nostdinc -Wab,-r4300_mul
 
 WARNINGS         := -fullwarn -verbose -woff 624,649,838,712,516,513,596,564,594
 ASFLAGS          := -march=vr4300 -32 -G0
-ifeq ($(VERSION),jp)
+ifneq ($(ASM_BUILT),)
   ASFLAGS        += --no-pad-sections
 endif
 COMMON_DEFINES   := -D_MIPS_SZLONG=32
@@ -276,7 +283,7 @@ ULTRALIB_DIR  := lib/ultralib
 ULTRALIB_LIB  := $(ULTRALIB_DIR)/build/$(ULTRALIB_VERSION)/$(ULTRALIB_TARGET)/$(ULTRALIB_TARGET).a
 LIBULTRA_DIR  := lib/libultra
 LIBULTRA_LIB  := $(BUILD_DIR)/$(LIBULTRA_DIR).a
-LIBULTRA_LINK := $(if $(filter jp,$(VERSION)),,$(LIBULTRA_LIB))
+LIBULTRA_LINK := $(if $(ASM_BUILT),,$(LIBULTRA_LIB))
 
 SRC_DIRS      := $(shell find src -type d)
 ASM_DIRS      := $(shell find asm/$(VERSION) -type d -not -path "asm/$(VERSION)/nonmatchings/*" -not -path "asm/$(VERSION)/lib/*")
@@ -287,10 +294,10 @@ LIB_DIRS      := $(foreach f, $(LIBULTRA_DIR), $f)
 # copies that may coexist in a developer checkout after extraction.
 C_FILES       := $(shell git ls-files -- src | sed -n '/\.c$$/p')
 # JP is built from its own disassembly, plus the C files tools/jp_match.py applied
-ifeq ($(VERSION),jp)
-  C_FILES     := $(shell sed -nE 's/.*- \[0x[0-9A-Fa-f]+, *c, *([^],[:space:]]+).*/src\/\1.c/p' yamls/jp/rom.yaml)
+ifneq ($(ASM_BUILT),)
+  C_FILES     := $(shell sed -nE 's/.*- \[0x[0-9A-Fa-f]+, *c, *([^],[:space:]]+).*/src\/\1.c/p' yamls/$(VERSION)/rom.yaml)
 endif
-S_FILES       := $(foreach dir,$(ASM_DIRS) $(if $(filter jp,$(VERSION)),,$(SRC_DIRS)),$(wildcard $(dir)/*.s))
+S_FILES       := $(foreach dir,$(ASM_DIRS) $(if $(ASM_BUILT),,$(SRC_DIRS)),$(wildcard $(dir)/*.s))
 BIN_FILES     := $(foreach dir,$(ASSET_DIRS),$(wildcard $(dir)/*.bin))
 O_FILES       := $(foreach f,$(C_FILES:.c=.o),$(BUILD_DIR)/$f) \
                  $(foreach f,$(S_FILES:.s=.o),$(BUILD_DIR)/$f) \
@@ -364,7 +371,7 @@ endif
 # This is unsanitary to do, -but-, because this file is encrypted we cant have splat decrypt it
 # on split. This requires us to include this manually, but it needs to be in the dependency
 # list. So we add it.
-ifneq ($(VERSION),jp)
+ifeq ($(ASM_BUILT),)
 O_FILES += build/src/libleo/bootstrap.s.o
 endif
 
@@ -412,7 +419,7 @@ extract:
 	$(V)$(RM) -r asm/$(VERSION) assets/$(VERSION)
 	$(V)$(CAT) yamls/$(VERSION)/header.yaml yamls/$(VERSION)/rom.yaml > $(SPLAT_YAML)
 	$(V)$(SPLAT) $(SPLAT_FLAGS) $(SPLAT_YAML)
-ifeq ($(VERSION),jp)
+ifneq ($(ASM_BUILT),)
 	$(V)$(PYTHON) tools/jp_fix_asm.py
 else
 	$(V)PYTHON="$(PYTHON)" $(EXTRACT_ASSETS)
@@ -450,21 +457,21 @@ endif
 $(ROM): $(ELF)
 	$(call print,Building ROM:,$<,$@)
 	$(V)$(OBJCOPY) -O binary --gap-fill=0xFF $< $@
-ifneq ($(VERSION),jp)
+ifeq ($(ASM_BUILT),)
 	$(V)$(ENCRYPT_LIBLEO) $@ $(MAP)
 	$(V)NM=$(NM) $(PYTHON) tools/fix_fragment_headers.py $< $@ --all
 	$(V)$(PYTHON) -m ipl3checksum sum --update $@  # IPL3 rejects a stale CRC1/CRC2 at boot
 endif
 
 # TODO: avoid using auto/undefined
-$(ELF): $(O_FILES) $(LIBULTRA_LINK) $(if $(filter jp,$(VERSION)),linker_scripts/jp/c_files.ld) $(LDSCRIPT) $(BUILD_DIR)/linker_scripts/$(VERSION)/hardware_regs.ld $(BUILD_DIR)/linker_scripts/$(VERSION)/undefined_syms.ld $(BUILD_DIR)/linker_scripts/$(VERSION)/unused_syms.ld $(BUILD_DIR)/linker_scripts/common_undef_syms.ld $(BUILD_DIR)/linker_scripts/$(VERSION)/auto/undefined_syms_auto.ld $(BUILD_DIR)/linker_scripts/$(VERSION)/auto/undefined_funcs_auto.ld
+$(ELF): $(O_FILES) $(LIBULTRA_LINK) $(if $(ASM_BUILT),linker_scripts/$(VERSION)/c_files.ld) $(LDSCRIPT) $(BUILD_DIR)/linker_scripts/$(VERSION)/hardware_regs.ld $(BUILD_DIR)/linker_scripts/$(VERSION)/undefined_syms.ld $(BUILD_DIR)/linker_scripts/$(VERSION)/unused_syms.ld $(BUILD_DIR)/linker_scripts/common_undef_syms.ld $(BUILD_DIR)/linker_scripts/$(VERSION)/auto/undefined_syms_auto.ld $(BUILD_DIR)/linker_scripts/$(VERSION)/auto/undefined_funcs_auto.ld
 	@$(PRINT) "$(GREEN)Linking ELF file:  $(BLUE)$@ $(NO_COL)\n"
-	$(V)$(LD) $(LDFLAGS) $(if $(filter jp,$(VERSION)),-T linker_scripts/jp/c_files.ld) -T $(LDSCRIPT) \
+	$(V)$(LD) $(LDFLAGS) $(if $(ASM_BUILT),-T linker_scripts/$(VERSION)/c_files.ld) -T $(LDSCRIPT) \
 		-T $(BUILD_DIR)/linker_scripts/$(VERSION)/hardware_regs.ld -T $(BUILD_DIR)/linker_scripts/$(VERSION)/undefined_syms.ld \
 		-T $(BUILD_DIR)/linker_scripts/$(VERSION)/unused_syms.ld -T $(BUILD_DIR)/linker_scripts/common_undef_syms.ld \
 		-T $(BUILD_DIR)/linker_scripts/$(VERSION)/auto/undefined_syms_auto.ld -T $(BUILD_DIR)/linker_scripts/$(VERSION)/auto/undefined_funcs_auto.ld \
 		-Map $(MAP) $(LIBULTRA_LINK) -o $@
-ifneq ($(VERSION),jp)
+ifeq ($(ASM_BUILT),)
 # Fragment reloc tables are retail bytes; when a fragment's code changes they are regenerated
 # from this ELF (exit 3), which shifts later segments, so relink once.
 	$(V)$(PYTHON) tools/gen_fragment_relocs.py --all $@ || { [ $$? -eq 3 ] && [ -z "$(RELINKED)" ] && $(MAKE) $@ RELINKED=1; }
@@ -487,11 +494,14 @@ $(ULTRALIB_LIB):
 	@$(PRINT) "$(GREEN)Making libultra:  $(BLUE)$@ $(NO_COL)\n"
 	$(V)$(MAKE) -C lib/ultralib VERSION=$(ULTRALIB_VERSION) TARGET=$(ULTRALIB_TARGET) FIXUPS=1 COMPARE=0 CROSS=$(MIPS_BINUTILS_PREFIX) IDO_PREPROCESS=$(if $(filter windows,$(DETECTED_OS)),1,0) CC=../../$(CC_OLD) PYTHON=$(PYTHON) VERBOSE=$(VERBOSE) COLOR=$(COLOR)
 
-# Text is the retail archive plus the tracked edits in text/textdata.json
+# Text is the retail archive plus the tracked edits in text/textdata.json.
+# The edits are for the US text blob, so disassembly-built regions skip them.
+ifeq ($(ASM_BUILT),)
 $(BUILD_DIR)/assets/$(VERSION)/textdata.o: assets/$(VERSION)/textdata.bin text/textdata.json tools/patch_textdata.py
 	$(call print,Patching text:,$<,$@)
 	$(V)$(PYTHON) tools/patch_textdata.py $< text/textdata.json $(@:.o=.bin)
 	$(V)$(OBJCOPY) -I binary -O elf32-big $(@:.o=.bin) $@
+endif
 
 $(BUILD_DIR)/%.o: %.bin
 	$(call print,Binning object:,$<,$@)
@@ -508,7 +518,7 @@ $(BUILD_DIR)/%.o: %.c
 	$(V)$(PREPROCESS) $(CC) -c $(CFLAGS) $(BUILD_DEFINES) $(IINC) $(WARNINGS) $(MIPS_VERSION) $(ENDIAN) $(COMMON_DEFINES) $(RELEASE_DEFINES) $(GBI_DEFINES) $(LIBULTRA_DEFINES) $(C_DEFINES) $(OPTFLAGS) -o $@ $<
 	$(V)$(OBJDUMP_CMD)
 	$(V)$(RM_MDEBUG)
-ifeq ($(VERSION),jp)
+ifneq ($(ASM_BUILT),)
 	$(V)$(OBJCOPY) -R .gptab.bss -R .gptab.data --prefix-symbols=jpc_$(subst /,_,$*)__ --rename-section .bss=.jpcbss $@
 endif
 

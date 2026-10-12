@@ -12,13 +12,15 @@ import sys
 
 from spimdisasm.common.SymbolsSegment import SymbolsSegment
 
+REGION = __import__("os").environ.get("REGION", "jp")
+
 LOG = pathlib.Path(sys.argv[1])
 ROOT = pathlib.Path(sys.argv[2] if len(sys.argv) > 2 else ".")
-OUT = ROOT / "linker_scripts/jp/undefined_syms.ld"
+OUT = ROOT / f"linker_scripts/{REGION}/undefined_syms.ld"
 
 known = {name: addr for addr, name in SymbolsSegment.N64HardwareRegs.items()}
 known.update({v[0]: addr for addr, v in SymbolsSegment.N64LibultraSyms.items()})
-for f in sorted((ROOT / "linker_scripts/jp").glob("symbol_addrs*.txt")):
+for f in sorted((ROOT / f"linker_scripts/{REGION}").glob("symbol_addrs*.txt")):
     for line in f.read_text().splitlines():
         m = re.match(r"^\s*([\w.]+)\s*=\s*0x([0-9A-Fa-f]+)", line)
         if m:

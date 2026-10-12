@@ -12,10 +12,12 @@ import pathlib
 import re
 import sys
 
+REGION = __import__("os").environ.get("REGION", "jp")
+
 ROOT = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else ".")
 ROM_SIZE = 0x2000000
 
-rows = list(csv.DictReader((ROOT / "yamls/jp/segment_transfer.csv").open()))
+rows = list(csv.DictReader((ROOT / f"yamls/{REGION}/segment_transfer.csv").open()))
 
 anchors = []
 for r in rows:
@@ -165,7 +167,7 @@ def check_vram_order(text):
     assert not bad, "vram order violations:\n" + "\n".join(bad[:10])
 
 
-dst = ROOT / "yamls/jp/rom.yaml"
+dst = ROOT / f"yamls/{REGION}/rom.yaml"
 text = "\n".join(out) + "\n"
 dst.write_text(text)
 check_vram_order(text)
