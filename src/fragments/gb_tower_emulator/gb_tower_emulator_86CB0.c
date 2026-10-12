@@ -7239,7 +7239,6 @@ u8 D_81228678[0x24] = {
     0x00, 0x00, 0x28, 0xD0, 0x00, 0x00, 0x1A, 0xE0, 0x00, 0x00, 0x41, 0x90, 0x00, 0x00, 0x32, 0x60,
     0x00, 0x00, 0x1C, 0xE0,
 };
-u32 D_8122869C = 0;
 
 #define GB_AUDIO_STREAM_DATA ((s8**)D_81228654)
 #define GB_AUDIO_STREAM_SIZE ((s32*)D_81228678)
@@ -7711,14 +7710,14 @@ u8 GbMem_ReadIoRegister(u16 arg0) {
   return gGbMemoryMap[arg0 & 0xFFFF];
 }
 
-#ifdef NON_MATCHING
 s32 func_81209078(void) {
     u32 aiLen;
-    s32 pad1;
+    s32 n;
     s32 idx;
-    s32 pad2[2];
+    s32 status;
+    s16* queued;
     s16* buf;
-    s32 pad3[2];
+    s32 pad[2];
     s16* len;
     s16** bufPtr;
 
@@ -7734,12 +7733,17 @@ s32 func_81209078(void) {
         if (*len != 0) {
             bufPtr = &D_812346E0[idx];
             if (osGbSetNextBuffer(*bufPtr, *len * 4) == -1) {
-                do {
-                } while (0);
+                status = 0;
             } else {
-                D_8122C790 = (*bufPtr)[*len * 2 - 2];
-                D_8122C792 = (*bufPtr)[*len * 2 - 1];
+                queued = *bufPtr;
+                n = *len;
+                D_8122C790 = queued[n * 2 - 2];
+                D_8122C792 = queued[n * 2 - 1];
+                status = 2;
             }
+            // Discarded reads; they only steer IDO's register allocation.
+            if (status) {}
+            if (bufPtr) {}
         }
     }
 
@@ -7767,13 +7771,10 @@ s32 func_81209078(void) {
         func_81209374(*len, buf);
     }
     osWritebackDCache(buf, *len * 4);
-    D_812346F4 = osGetCount() * (D_812346C8 + D_812346F4);
-    D_812346F4 += (*bufPtr)[D_812346C8 & 0xFF];
+    D_812346F4 = osGetCount() * (D_812346F4 + D_812346C8);
+    D_812346F4 = D_812346E0[idx][D_812346C8 & 0xFF] + D_812346F4;
     return 0;
 }
-#else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/func_81209078.s")
-#endif
 
 void GbAudio_SetAlternateRendererEnabled(s32 arg0) {
   D_8120EB78 = arg0;
@@ -7783,16 +7784,21 @@ void GbAudio_SetAlternateStreamId(s32 arg0) {
   D_8120EB7C.id = arg0;
 }
 
-#ifdef NON_MATCHING
+typedef struct GbStereoSample {
+    /* 0x0 */ s16 left;
+    /* 0x2 */ s16 right;
+} GbStereoSample; // size = 0x4
+
 void func_81209374(s32 numSamples, s16* out) {
+    static u32 D_8122869C = 0;
+
     s32 i;
     s8* mainData;
     s8* altData;
-    u32 vol;
     s32 a;
+    s32 b;
     s32 mainEnd;
     s32 altEnd;
-    s32 b;
 
     mainData = NULL;
     altData = NULL;
@@ -7803,7 +7809,6 @@ void func_81209374(s32 numSamples, s16* out) {
         D_8120EB7C.id = 0;
         D_8122869C = 0x400;
     }
-    vol = D_8122869C;
     if (D_8120EB84.id != 0) {
         mainData = GB_AUDIO_STREAM_DATA[D_8120EB84.id];
         mainEnd = GB_AUDIO_STREAM_SIZE[D_8120EB84.id];
@@ -7833,20 +7838,15 @@ void func_81209374(s32 numSamples, s16* out) {
                 b = 0;
             } else {
                 b = altData[D_8120EB8C.pos++];
-                b = (s32)(b * vol) / 1024;
+                b = (s32)(b * D_8122869C) / 1024;
             }
         } else {
             b = 0;
         }
-        out[i * 2 + 0] = (a + b) << 6;
-        out[i * 2 + 1] = (a - b) << 6;
+        ((GbStereoSample*)out)[i].left = (a + b) << 6;
+        ((GbStereoSample*)out)[i].right = (a - b) << 6;
     }
-    D_8122869C = vol;
 }
-#else
-void func_81209374(s32, s16*);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_86CB0/func_81209374.s")
-#endif
 
 void func_81209688(UNUSED s32 arg0) {
 }

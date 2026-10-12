@@ -123,7 +123,7 @@ unk_D_83079E70_000* RentalRules_AdvancePageNode(unk_D_83079E70_000* arg0, s32 ar
 s32 RentalRules_ScrollPageUp(unk_D_83079E70* arg0) {
     s32 sp1C = 0;
 
-    if (RentalRules_BuildSpeciesPage(arg0->unk_10->unk_1C, arg0->unk_08 - 1, D_800AE540.unk_0001) > 0) {
+    if (RentalRules_BuildSpeciesPage(arg0->unk_10->unk_1C, arg0->unk_08 - 1, gSessionContext.ruleCategory) > 0) {
         arg0->unk_00 = 3;
         arg0->unk_02 = 4;
         arg0->unk_08--;
@@ -131,7 +131,7 @@ s32 RentalRules_ScrollPageUp(unk_D_83079E70* arg0) {
         arg0->unk_0A = -1;
         arg0->unk_0C = -1;
         sp1C = 1;
-        Audio_PlaySoundEffectById(1);
+        Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
     }
 
     return sp1C;
@@ -140,7 +140,7 @@ s32 RentalRules_ScrollPageUp(unk_D_83079E70* arg0) {
 s32 RentalRules_ScrollPageDown(unk_D_83079E70* arg0) {
     s32 sp1C = 0;
 
-    if (RentalRules_BuildSpeciesPage(RentalRules_AdvancePageNode(arg0->unk_10, 5), arg0->unk_08 + 5, D_800AE540.unk_0001) > 0) {
+    if (RentalRules_BuildSpeciesPage(RentalRules_AdvancePageNode(arg0->unk_10, 5), arg0->unk_08 + 5, gSessionContext.ruleCategory) > 0) {
         arg0->unk_00 = 3;
         arg0->unk_02 = 4;
         arg0->unk_08++;
@@ -148,7 +148,7 @@ s32 RentalRules_ScrollPageDown(unk_D_83079E70* arg0) {
         arg0->unk_0A = 1;
         arg0->unk_0C = -1;
         sp1C = 1;
-        Audio_PlaySoundEffectById(1);
+        Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
     }
 
     return sp1C;
@@ -169,7 +169,7 @@ void RentalRules_ListUpdateShown(unk_D_83079E70* arg0) {
         arg0->unk_00 = 4;
         arg0->unk_02 = 5;
         arg0->unk_0C = -1;
-        Audio_PlaySoundEffectById(3);
+        Audio_PlaySoundEffectById(SFX_MENU_BACK);
     } else if (BTN_IS_DOWN(gPlayer1Controller, BTN_DUP)) {
         RentalRules_ScrollPageUp(arg0);
     } else if (BTN_IS_DOWN(gPlayer1Controller, BTN_DDOWN)) {
@@ -426,11 +426,11 @@ void RentalRules_ListOpen(void) {
     ptr->unk_08 = 0;
     ptr->unk_0A = 0;
     ptr->unk_0C = -1;
-    ptr->unk_06 = RentalRules_CountMatchingSpecies(D_800AE540.unk_0001);
+    ptr->unk_06 = RentalRules_CountMatchingSpecies(gSessionContext.ruleCategory);
     ptr->unk_10 = &ptr->unk_14[0];
 
     for (i = 0; i < 5; i++) {
-        RentalRules_BuildSpeciesPage(&ptr->unk_14[i], i, D_800AE540.unk_0001);
+        RentalRules_BuildSpeciesPage(&ptr->unk_14[i], i, gSessionContext.ruleCategory);
     }
 }
 

@@ -23,7 +23,7 @@ void Rental_DrawTeamTrayFrame(RentalTeamTray* arg0, s16 arg1, s16 arg2) {
     s16 i;
 
     TeamSelection_DrawCornerFrame(arg1, arg2, 0x208, 0x60);
-    if (((D_800AE540.unk_0001 == 0) || (D_800AE540.unk_0001 == 8)) && (arg0->unk_0004 != 0) && (arg0->unk_0006 > 0) &&
+    if (((gSessionContext.ruleCategory == 0) || (gSessionContext.ruleCategory == 8)) && (arg0->unk_0004 != 0) && (arg0->unk_0006 > 0) &&
         (arg0->unk_0006 < 6)) {
         TeamSelection_DrawColoredFrame(arg1 + 4, arg2 + 4, 0x74, 0x58, 0, 0, 0, 0xFF);
 
@@ -97,7 +97,7 @@ void Rental_DrawTeamTray(RentalTeamTray* arg0, s32 arg1) {
 
         Font_BeginTranslucentTextRendering();
 
-        if (((D_800AE540.unk_0001 == 0) || (D_800AE540.unk_0001 == 8)) && (arg0->unk_0004 != 0) &&
+        if (((gSessionContext.ruleCategory == 0) || (gSessionContext.ruleCategory == 8)) && (arg0->unk_0004 != 0) &&
             (arg0->unk_0006 > 0) && (arg0->unk_0006 < 6)) {
             Font_SetActive(8, 0);
             temp_v0_4 = TeamSelection_GetLabelText(arg0->unk_0006 + 0x2A);
@@ -240,7 +240,7 @@ s32 Rental_CheckTeamLevelCap(RentalTeamTray* arg0) {
         }
     }
 
-    switch (D_800AE540.unk_0001) {
+    switch (gSessionContext.ruleCategory) {
         default:
             temp_v1 = 0;
             break;
@@ -362,7 +362,7 @@ void Rental_TeamCursorLeft(RentalTeamTray* arg0) {
         arg0->unk_000C = -1;
         arg0->unk_000E = -4;
         arg0->unk_0001 = 0xC;
-        Audio_PlaySoundEffectById(1);
+        Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
     }
 }
 
@@ -372,7 +372,7 @@ void Rental_TeamCursorRight(RentalTeamTray* arg0) {
         arg0->unk_000C = 1;
         arg0->unk_000E = 4;
         arg0->unk_0001 = 0xC;
-        Audio_PlaySoundEffectById(1);
+        Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
     }
 }
 
@@ -382,7 +382,7 @@ void Rental_TeamCursorUp(RentalTeamTray* arg0) {
         arg0->unk_000C = -1;
         arg0->unk_000E = -4;
         arg0->unk_0001 = 0xD;
-        Audio_PlaySoundEffectById(1);
+        Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
     }
 }
 
@@ -392,7 +392,7 @@ void Rental_TeamCursorDown(RentalTeamTray* arg0) {
         arg0->unk_000C = 1;
         arg0->unk_000E = 4;
         arg0->unk_0001 = 0xD;
-        Audio_PlaySoundEffectById(1);
+        Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
     }
 }
 
@@ -405,11 +405,11 @@ void Rental_TeamGridHandleInput(RentalTeamTray* arg0) {
         s32 temp_v0 = arg0->unk_0010 + (arg0->unk_0012 * 3);
 
         if (arg0->unk_0030[temp_v0].unk_004.unk_00.unk_00 != 0) {
-            Audio_PlaySoundEffectById(2);
+            Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
             arg0->unk_0001 = 0xB;
         }
     } else if (BTN_IS_PRESSED(cont, BTN_B)) {
-        Audio_PlaySoundEffectById(3);
+        Audio_PlaySoundEffectById(SFX_MENU_BACK);
         arg0->unk_0001 = 0x10;
     } else if (BTN_IS_PRESSED(cont, BTN_DUP)) {
         Rental_TeamCursorUp(arg0);
@@ -556,7 +556,7 @@ void Rental_HandleLevelCapWarning(RentalTeamTray* arg0) {
     s32 temp_v0_2;
     Controller* cont = &gControllers[arg0->unk_0002];
 
-    switch (D_800AE540.unk_0001) {
+    switch (gSessionContext.ruleCategory) {
         case 3:
             break;
 
@@ -857,7 +857,7 @@ s32 Rental_ClearCurrentSlotSelection(RentalTeamTray* arg0) {
         return 0;
     }
 
-    if ((D_800AE540.unk_0001 != 0) && (D_800AE540.unk_0000 != 8)) {
+    if ((gSessionContext.ruleCategory != 0) && (gSessionContext.mode != 8)) {
         return 0;
     }
 
@@ -888,7 +888,7 @@ s32 Rental_CanAddMonToTeam(RentalTeamTray* arg0, unk_D_838067F0_0168_0000* arg1)
 
     for (i = 0; i < 6; i++, ptr++) {
         if ((ptr->unk_004.unk_00.unk_00 != 0) && !(ptr->raw & 0x80000000)) {
-            if (D_800AE540.unk_0001 == 0) {
+            if (gSessionContext.ruleCategory == 0) {
                 if (ptr->raw == arg1->raw) {
                     return 0;
                 }

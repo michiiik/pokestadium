@@ -78,9 +78,9 @@ s32 pad_D_843903A8[2];
 static s32 D_843903B0;
 static s32 D_843903B4;
 s32 pad_D_843903B8[6];
-static unk_D_86002F58_004_000 D_843903D0[16];
+static DisplayObject D_843903D0[16];
 static s32 D_84391A50[16];
-static unk_D_86002F58_004_000 D_84391A90[4];
+static DisplayObject D_84391A90[4];
 static s32 D_84392030[4];
 static unk_D_84392040 D_84392040;
 f32 D_84392058[26];
@@ -4184,19 +4184,19 @@ static u8* gMoveAnimEffectScripts[][5] = {
 };
 
 void BattleAnim_PlaySoundEffect1(void) {
-    Audio_PlaySoundEffectById(1);
+    Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
 }
 
 void BattleAnim_PlaySoundEffect2(void) {
-    Audio_PlaySoundEffectById(2);
+    Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
 }
 
 void BattleAnim_PlaySoundEffect3(void) {
-    Audio_PlaySoundEffectById(3);
+    Audio_PlaySoundEffectById(SFX_MENU_BACK);
 }
 
 void BattleAnim_PlaySoundEffect8(void) {
-    Audio_PlaySoundEffectById(8);
+    Audio_PlaySoundEffectById(SFX_MENU_ERROR);
 }
 
 void BattleAnim_PlayOwnerCry(Battler* arg0, s16 arg1) {
@@ -4208,7 +4208,7 @@ void BattleAnim_PlayOwnerCry(Battler* arg0, s16 arg1) {
 }
 
 void BattleAnim_PlaySpeciesSequence33(Battler* arg0) {
-    s16 sp1E = arg0->unk_000.unk_01A;
+    s16 sp1E = arg0->unk_000.objectType;
 
     BattleScene_GetParticipantModelWidth(arg0);
     Audio_PlayCommand(0x33, sp1E, 0);
@@ -4219,8 +4219,8 @@ void Battle_TriggerTrainerPresentationCue(Battler* arg0) {
 }
 
 void BattleAnim_PlaySpeciesReactionSound(Battler* arg0, BattleMonRuntime* arg1, s32 arg2) {
-    func_800479C0(arg1->unk_5A, arg0->unk_000.unk_01A, arg2);
-    func_80040A70(arg1, arg1->unk_5A, arg0->unk_000.unk_01A, arg2);
+    func_800479C0(arg1->unk_5A, arg0->unk_000.objectType, arg2);
+    func_80040A70(arg1, arg1->unk_5A, arg0->unk_000.objectType, arg2);
 }
 
 void BattleScene_ConfigureAudioChannelGroupsByTeam(void) {
@@ -4275,9 +4275,9 @@ void BattleScene_ConfigureAudioChannelGroupCounts(void) {
 }
 
 void BattleScene_SelectBattleMusic(void) {
-    switch (D_800AE540.unk_0000) {
+    switch (gSessionContext.mode) {
         case 0:
-            switch (D_800AE540.unk_0001) {
+            switch (gSessionContext.ruleCategory) {
                 case 0:
                     Audio_SelectModeMusic(0, 0xE);
                     break;
@@ -4317,77 +4317,77 @@ void BattleScene_SelectBattleMusic(void) {
             break;
 
         case 1:
-            Audio_SelectModeMusic(D_800AE540.unk_0003, 0xA);
+            Audio_SelectModeMusic(gSessionContext.roundOrDemoId, 0xA);
             break;
 
         case 2:
-            Audio_SelectModeMusic(D_800AE540.unk_0003, 0xB);
+            Audio_SelectModeMusic(gSessionContext.roundOrDemoId, 0xB);
             break;
 
         case 3:
-            switch (D_800AE540.unk_0002) {
+            switch (gSessionContext.modeSelection) {
                 case 0:
-                    Audio_SelectModeMusic(D_800AE540.unk_0003, 6);
+                    Audio_SelectModeMusic(gSessionContext.roundOrDemoId, 6);
                     break;
 
                 case 1:
-                    Audio_SelectModeMusic(D_800AE540.unk_0003, 7);
+                    Audio_SelectModeMusic(gSessionContext.roundOrDemoId, 7);
                     break;
 
                 case 2:
-                    Audio_SelectModeMusic(D_800AE540.unk_0003, 8);
+                    Audio_SelectModeMusic(gSessionContext.roundOrDemoId, 8);
                     break;
 
                 case 3:
-                    Audio_SelectModeMusic(D_800AE540.unk_0003, 9);
+                    Audio_SelectModeMusic(gSessionContext.roundOrDemoId, 9);
                     break;
             }
             break;
 
         case 4:
-            Audio_SelectModeMusic(D_800AE540.unk_0003, 5);
+            Audio_SelectModeMusic(gSessionContext.roundOrDemoId, 5);
             break;
 
         case 5:
-            Audio_SelectModeMusic(D_800AE540.unk_0003, 4);
+            Audio_SelectModeMusic(gSessionContext.roundOrDemoId, 4);
             break;
 
         case 6:
-            switch (D_800AE540.unk_0002) {
+            switch (gSessionContext.modeSelection) {
                 case 0:
-                    Audio_SelectModeMusic(D_800AE540.unk_0003, 0);
+                    Audio_SelectModeMusic(gSessionContext.roundOrDemoId, 0);
                     break;
 
                 case 1:
-                    Audio_SelectModeMusic(D_800AE540.unk_0003, 1);
+                    Audio_SelectModeMusic(gSessionContext.roundOrDemoId, 1);
                     break;
 
                 case 2:
-                    Audio_SelectModeMusic(D_800AE540.unk_0003, 2);
+                    Audio_SelectModeMusic(gSessionContext.roundOrDemoId, 2);
                     break;
 
                 case 3:
-                    Audio_SelectModeMusic(D_800AE540.unk_0003, 3);
+                    Audio_SelectModeMusic(gSessionContext.roundOrDemoId, 3);
                     break;
             }
             break;
 
         case 7:
-            if (D_800AE540.unk_0002 == 9) {
+            if (gSessionContext.modeSelection == 9) {
                 Audio_SelectModeMusic(5, 0xD);
-            } else if (D_800AE540.unk_0002 == 8) {
-                Audio_SelectModeMusic(D_800AE540.unk_0003, 0xD);
+            } else if (gSessionContext.modeSelection == 8) {
+                Audio_SelectModeMusic(gSessionContext.roundOrDemoId, 0xD);
             } else {
-                Audio_SelectModeMusic((D_800AE540.unk_0002 * 4) + D_800AE540.unk_0003, 0xC);
+                Audio_SelectModeMusic((gSessionContext.modeSelection * 4) + gSessionContext.roundOrDemoId, 0xC);
             }
             break;
 
         case 8:
-            Audio_SelectModeMusic(D_800AE540.unk_0003, 0xF);
+            Audio_SelectModeMusic(gSessionContext.roundOrDemoId, 0xF);
             break;
 
         case 10:
-            switch (D_800AE540.unk_0001) {
+            switch (gSessionContext.ruleCategory) {
                 case 0:
                     Audio_SelectModeMusic(0xFF, 0xE);
                     break;
@@ -4433,13 +4433,13 @@ void BattleScene_SelectBattleMusic(void) {
 }
 
 void BattleScene_StartBattleMusic(void) {
-    switch (D_800AE540.unk_0000) {
+    switch (gSessionContext.mode) {
         case 16:
             Audio_StartMusicTrack(1);
             break;
 
         case 0:
-            switch (D_800AE540.unk_0001) {
+            switch (gSessionContext.ruleCategory) {
                 case 0:
                     Audio_StartTrackForCategory(0, 0xE);
                     break;
@@ -4479,77 +4479,77 @@ void BattleScene_StartBattleMusic(void) {
             break;
 
         case 1:
-            Audio_StartTrackForCategory(D_800AE540.unk_0003, 0xA);
+            Audio_StartTrackForCategory(gSessionContext.roundOrDemoId, 0xA);
             break;
 
         case 2:
-            Audio_StartTrackForCategory(D_800AE540.unk_0003, 0xB);
+            Audio_StartTrackForCategory(gSessionContext.roundOrDemoId, 0xB);
             break;
 
         case 3:
-            switch (D_800AE540.unk_0002) {
+            switch (gSessionContext.modeSelection) {
                 case 0:
-                    Audio_StartTrackForCategory(D_800AE540.unk_0003, 6);
+                    Audio_StartTrackForCategory(gSessionContext.roundOrDemoId, 6);
                     break;
 
                 case 1:
-                    Audio_StartTrackForCategory(D_800AE540.unk_0003, 7);
+                    Audio_StartTrackForCategory(gSessionContext.roundOrDemoId, 7);
                     break;
 
                 case 2:
-                    Audio_StartTrackForCategory(D_800AE540.unk_0003, 8);
+                    Audio_StartTrackForCategory(gSessionContext.roundOrDemoId, 8);
                     break;
 
                 case 3:
-                    Audio_StartTrackForCategory(D_800AE540.unk_0003, 9);
+                    Audio_StartTrackForCategory(gSessionContext.roundOrDemoId, 9);
                     break;
             }
             break;
 
         case 4:
-            Audio_StartTrackForCategory(D_800AE540.unk_0003, 5);
+            Audio_StartTrackForCategory(gSessionContext.roundOrDemoId, 5);
             break;
 
         case 5:
-            Audio_StartTrackForCategory(D_800AE540.unk_0003, 4);
+            Audio_StartTrackForCategory(gSessionContext.roundOrDemoId, 4);
             break;
 
         case 6:
-            switch (D_800AE540.unk_0002) {
+            switch (gSessionContext.modeSelection) {
                 case 0:
-                    Audio_StartTrackForCategory(D_800AE540.unk_0003, 0);
+                    Audio_StartTrackForCategory(gSessionContext.roundOrDemoId, 0);
                     break;
 
                 case 1:
-                    Audio_StartTrackForCategory(D_800AE540.unk_0003, 1);
+                    Audio_StartTrackForCategory(gSessionContext.roundOrDemoId, 1);
                     break;
 
                 case 2:
-                    Audio_StartTrackForCategory(D_800AE540.unk_0003, 2);
+                    Audio_StartTrackForCategory(gSessionContext.roundOrDemoId, 2);
                     break;
 
                 case 3:
-                    Audio_StartTrackForCategory(D_800AE540.unk_0003, 3);
+                    Audio_StartTrackForCategory(gSessionContext.roundOrDemoId, 3);
                     break;
             }
             break;
 
         case 7:
-            if (D_800AE540.unk_0002 == 9) {
+            if (gSessionContext.modeSelection == 9) {
                 Audio_StartTrackForCategory(5, 0xD);
-            } else if (D_800AE540.unk_0002 == 8) {
-                Audio_StartTrackForCategory(D_800AE540.unk_0003, 0xD);
+            } else if (gSessionContext.modeSelection == 8) {
+                Audio_StartTrackForCategory(gSessionContext.roundOrDemoId, 0xD);
             } else {
-                Audio_StartTrackForCategory((D_800AE540.unk_0002 * 4) + D_800AE540.unk_0003, 0xC);
+                Audio_StartTrackForCategory((gSessionContext.modeSelection * 4) + gSessionContext.roundOrDemoId, 0xC);
             }
             break;
 
         case 8:
-            Audio_StartTrackForCategory(D_800AE540.unk_0003, 0xF);
+            Audio_StartTrackForCategory(gSessionContext.roundOrDemoId, 0xF);
             break;
 
         case 10:
-            switch (D_800AE540.unk_0001) {
+            switch (gSessionContext.ruleCategory) {
                 case 0:
                     Audio_StartTrackForCategory(0xFF, 0xE);
                     break;
@@ -4595,7 +4595,7 @@ void BattleScene_StartBattleMusic(void) {
 }
 
 void BattleAnim_PlayBattleSequenceById(Battler* arg0, s32 arg1) {
-    s16 sp1E = arg0->unk_000.unk_01A;
+    s16 sp1E = arg0->unk_000.objectType;
 
     if ((BattleScene_IsPartnerPikachu(arg0) != 0) && (arg1 == 0x32)) {
         Audio_PlayCommand(0x32, 0xC8, 0);
@@ -4924,14 +4924,14 @@ void BattleAnim_ResetDisplayContexts(void) {
     }
 }
 
-Particle* BattleAnim_GetOwnerContextParticle(unk_D_86002F58_004_000* arg0) {
-    return arg0->unk_000.unk_14;
+Particle* BattleAnim_GetOwnerContextParticle(DisplayObject* arg0) {
+    return arg0->node.callbackArg;
 }
 
-unk_D_86002F58_004_000* BattleAnim_AllocOwnerDisplayContext(Particle* arg0) {
+DisplayObject* BattleAnim_AllocOwnerDisplayContext(Particle* arg0) {
     s32 i;
     s32 var_v0 = -1;
-    unk_D_86002F58_004_000* temp_a0;
+    DisplayObject* temp_a0;
 
     for (i = 0; i < 16; i++) {
         if (D_84391A50[i] == 0) {
@@ -4943,14 +4943,14 @@ unk_D_86002F58_004_000* BattleAnim_AllocOwnerDisplayContext(Particle* arg0) {
     if (var_v0 >= 0) {
         temp_a0 = &D_843903D0[var_v0];
         D_84391A50[var_v0] = 1;
-        temp_a0->unk_000.unk_14 = arg0;
+        temp_a0->node.callbackArg = arg0;
     } else {
         temp_a0 = NULL;
     }
     return temp_a0;
 }
 
-void BattleAnim_FreeOwnerDisplayContext(unk_D_86002F58_004_000* arg0) {
+void BattleAnim_FreeOwnerDisplayContext(DisplayObject* arg0) {
     s32 i;
 
     for (i = 0; i < 16; i++) {
@@ -4965,10 +4965,10 @@ void BattleAnim_FreeOwnerDisplayContext(unk_D_86002F58_004_000* arg0) {
     }
 }
 
-unk_D_86002F58_004_000* BattleAnim_AllocParticleDisplayContext(Particle* arg0) {
+DisplayObject* BattleAnim_AllocParticleDisplayContext(Particle* arg0) {
     s32 i;
     s32 var_a2 = -1;
-    unk_D_86002F58_004_000* sp1C;
+    DisplayObject* sp1C;
 
     for (i = 0; i < 4; i++) {
         if (D_84392030[i] == 0) {
@@ -4981,14 +4981,14 @@ unk_D_86002F58_004_000* BattleAnim_AllocParticleDisplayContext(Particle* arg0) {
         sp1C = &D_84391A90[var_a2];
         D_84392030[var_a2] = 1;
         Particle_SetFlags(arg0, 0x400);
-        sp1C->unk_000.unk_14 = arg0;
+        sp1C->node.callbackArg = arg0;
     } else {
         sp1C = NULL;
     }
     return sp1C;
 }
 
-void BattleAnim_FreeParticleDisplayContext(unk_D_86002F58_004_000* arg0) {
+void BattleAnim_FreeParticleDisplayContext(DisplayObject* arg0) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
@@ -5003,32 +5003,32 @@ void BattleAnim_FreeParticleDisplayContext(unk_D_86002F58_004_000* arg0) {
     }
 }
 
-void BattleAnim_InitModelWithAnim(unk_D_86002F58_004_000* arg0, s16 arg1, s16 arg2) {
+void BattleAnim_InitModelWithAnim(DisplayObject* arg0, s16 arg1, s16 arg2) {
     Model_InitDisplayObject(arg0, 0, 0, gBattleAnimAssetPointers[arg1]);
     ModelAnim_BindTransformCurve(arg0, 0, gBattleAnimAssetPointers[arg2], 0x10000);
 }
 
-void BattleAnim_SetModelAnimFrame(unk_D_86002F58_004_000* arg0, s16 arg1) {
+void BattleAnim_SetModelAnimFrame(DisplayObject* arg0, s16 arg1) {
     ModelAnim_SetFrame(arg0, arg1);
 }
 
-void BattleAnim_InitModel(unk_D_86002F58_004_000* arg0, s16 arg1) {
+void BattleAnim_InitModel(DisplayObject* arg0, s16 arg1) {
     Model_InitDisplayObject(arg0, 0, 0, gBattleAnimAssetPointers[arg1]);
 }
 
-void BattleAnim_BindModelAnim(unk_D_86002F58_004_000* arg0, s16 arg1) {
+void BattleAnim_BindModelAnim(DisplayObject* arg0, s16 arg1) {
     ModelAnim_BindTransformCurve(arg0, 0, gBattleAnimAssetPointers[arg1], 0x10000);
 }
 
-void BattleAnim_BindModelAnimReversed(unk_D_86002F58_004_000* arg0, s16 arg1) {
+void BattleAnim_BindModelAnimReversed(DisplayObject* arg0, s16 arg1) {
     ModelAnim_BindTransformCurve(arg0, 0, gBattleAnimAssetPointers[arg1], -0x10000);
-    ModelAnim_SetFrame(arg0, arg0->unk_040.unk_04->unk_0A - 1);
+    ModelAnim_SetFrame(arg0, arg0->transformAnim.data->endFrame - 1);
 }
 
-s32 BattleAnim_IsModelAnimComplete(unk_D_86002F58_004_000* arg0) {
+s32 BattleAnim_IsModelAnimComplete(DisplayObject* arg0) {
     s32 ret = 0;
 
-    if (arg0->unk_040.unk_08 == 0) {
+    if (arg0->transformAnim.frameFixed == 0) {
         ret = 1;
     }
     return ret;

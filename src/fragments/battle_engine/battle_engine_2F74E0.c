@@ -25,9 +25,9 @@ static u8 D_84385750[] = {
 };
 
 void BattleScene_InitializePresentationTimers(void) {
-    D_8439012C = D_800AE540.unk_11EF * 0x1E;
-    D_84390130 = D_800AE540.unk_11EE * 0x708;
-    D_84390128 = D_800AE540.unk_11EE * 0x708;
+    D_8439012C = gSessionContext.moveLimitSeconds * 0x1E;
+    D_84390130 = gSessionContext.battleLimitMinutes * 0x708;
+    D_84390128 = gSessionContext.battleLimitMinutes * 0x708;
 }
 
 void BattleScene_QuantizePresentationTimer(void) {
@@ -46,7 +46,7 @@ s32 BattleScene_TickPresentationTimer(void) {
 }
 
 s32 BattleScene_IsPresentationCountdownComplete(void) {
-    if (D_800AE540.unk_11ED == 0) {
+    if (gSessionContext.timeLimitsEnabled == 0) {
         return 0;
     }
 
@@ -130,7 +130,7 @@ s32 BattleScene_UpdateResultPresentation(void) {
     s32 sp1C = 0;
     s32 var_v0;
 
-    if (D_800AE540.unk_11ED == 0) {
+    if (gSessionContext.timeLimitsEnabled == 0) {
         return 0;
     }
 
@@ -165,7 +165,7 @@ s32 BattleScene_UpdateResultPresentation(void) {
 }
 
 s32 BattleScene_IsActionSelectionTimerExpired(void) {
-    if (D_800AE540.unk_11ED == 0) {
+    if (gSessionContext.timeLimitsEnabled == 0) {
         return 0;
     }
 
@@ -196,7 +196,7 @@ s32 BattleScene_IsActionSelectionTimerExpired(void) {
 }
 
 void BattleScene_ResetActionSelectionTimer(void) {
-    D_84390124 = D_800AE540.unk_11EF * 0x1E;
+    D_84390124 = gSessionContext.moveLimitSeconds * 0x1E;
 }
 
 s32 BattleScene_TickActionSelectionTimers(void) {
@@ -654,24 +654,24 @@ void BattleScene_ForfeitPrompt(Battler* arg0) {
     if ((gBattleScene.unk_00->unk_40 == 0) &&
         (BTN_IS_PRESSED(D_84390148, BTN_DLEFT) || BTN_IS_PRESSED(D_8439014C, BTN_DLEFT))) {
         sp18->unk_2F = 0;
-        Audio_PlaySoundEffectById(1);
+        Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
     }
 
     if ((gBattleScene.unk_00->unk_40 == 0) &&
         (BTN_IS_PRESSED(D_84390148, BTN_DRIGHT) || BTN_IS_PRESSED(D_8439014C, BTN_DRIGHT))) {
         sp18->unk_2F = 1;
-        Audio_PlaySoundEffectById(1);
+        Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
     }
 
     if ((sp18->unk_2F == 1) && (BTN_IS_PRESSED(D_84390148, BTN_A) || BTN_IS_PRESSED(D_8439014C, BTN_A)) &&
         (gBattleScene.unk_00->unk_40 == 0)) {
-        Audio_PlaySoundEffectById(2);
+        Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
         gBattleScene.unk_00->unk_40 = (BattleScene_GetParticipantSideIndex(arg0) == 0) + 1;
         Audio_FadeOutAll(0x14);
     } else if ((sp18->unk_2F == 0) && (BTN_IS_PRESSED(D_84390148, BTN_A) || BTN_IS_PRESSED(D_8439014C, BTN_A))) {
         sp18->unk_10 = 0;
         sp18->unk_04 = 0;
-        Audio_PlaySoundEffectById(3);
+        Audio_PlaySoundEffectById(SFX_MENU_BACK);
     }
 }
 
@@ -1122,17 +1122,17 @@ s32 BattleScene_HandlePlayerForcedActionState(Battler* arg0, Battler* arg1) {
 }
 
 void BattleScene_ShowParticipantOwnerAndSecondaryModels(void) {
-    D_84390010[0]->unk_728.unk_168->unk_00.unk_01 |= 1;
-    D_84390010[0]->unk_728.unk_000.unk_000.unk_01 |= 1;
-    D_84390010[1]->unk_728.unk_168->unk_00.unk_01 |= 1;
-    D_84390010[1]->unk_728.unk_000.unk_000.unk_01 |= 1;
+    D_84390010[0]->unk_728.unk_168->node.flags |= 1;
+    D_84390010[0]->unk_728.unk_000.node.flags |= 1;
+    D_84390010[1]->unk_728.unk_168->node.flags |= 1;
+    D_84390010[1]->unk_728.unk_000.node.flags |= 1;
 }
 
 void BattleScene_HideParticipantOwnerAndSecondaryModels(void) {
-    D_84390010[0]->unk_728.unk_168->unk_00.unk_01 &= ~1;
-    D_84390010[0]->unk_728.unk_000.unk_000.unk_01 &= ~1;
-    D_84390010[1]->unk_728.unk_168->unk_00.unk_01 &= ~1;
-    D_84390010[1]->unk_728.unk_000.unk_000.unk_01 &= ~1;
+    D_84390010[0]->unk_728.unk_168->node.flags &= ~1;
+    D_84390010[0]->unk_728.unk_000.node.flags &= ~1;
+    D_84390010[1]->unk_728.unk_168->node.flags &= ~1;
+    D_84390010[1]->unk_728.unk_000.node.flags &= ~1;
 }
 
 void BattleScene_AdvanceAttractInputScript(void) {
@@ -1318,7 +1318,7 @@ void BattleScene_CollectActions(void) {
 
 void BattleScene_UpdateActionCollection(void) {
     D_84390288 = 0;
-    if (D_800AE540.unk_0000 == 0x10) {
+    if (gSessionContext.mode == 0x10) {
         BattleScene_TickAttractModeInput();
     } else {
         BattleScene_CollectActions();

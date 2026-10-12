@@ -54,20 +54,20 @@ void BattlePrep_SaveVictoryPalaceRecords(void) {
     ExtendedRosterInfo* temp_v0;
     BattleMon* var_s1;
 
-    temp_v0 = D_800AE540.unk_1194[0].unk_08[0]->unk_214;
+    temp_v0 = gSessionContext.battleSides[0].unk_08[0]->unk_214;
     temp_s0 = temp_v0->unk_002;
     var_s1 = temp_v0->unk_028;
 
-    if ((D_800AE540.unk_0000 == 3) || (D_800AE540.unk_0000 == 6)) {
-        if (D_800AE540.unk_0002 != 3) {
+    if ((gSessionContext.mode == 3) || (gSessionContext.mode == 6)) {
+        if (gSessionContext.modeSelection != 3) {
             return;
         }
-    } else if ((D_800AE540.unk_0000 == 7) && (D_800AE540.unk_0002 != 9)) {
+    } else if ((gSessionContext.mode == 7) && (gSessionContext.modeSelection != 9)) {
         return;
     }
 
     while (temp_s0-- > 0) {
-        VictoryPalace_SaveSpeciesRecord(var_s1++, D_800AE540.unk_0000, D_800AE540.unk_11F2);
+        VictoryPalace_SaveSpeciesRecord(var_s1++, gSessionContext.mode, gSessionContext.unk_11F2);
     }
 
     Save_CommitTypedRecord(0x13, 0);
@@ -79,11 +79,11 @@ void BattlePrep_MarkFirstClearBonus(void) {
 
     Save_GetOptions(&sp20);
 
-    if ((D_800AE540.unk_0000 == 3) && (D_800AE540.unk_0002 == 3) && !(D_84B26670.unk_00 & 8)) {
+    if ((gSessionContext.mode == 3) && (gSessionContext.modeSelection == 3) && !(D_84B26670.unk_00 & 8)) {
         sp1C = 1;
     }
 
-    if ((D_800AE540.unk_0000 == 6) && (D_800AE540.unk_0002 == 3) && !(D_84B26670.unk_00 & 0x40)) {
+    if ((gSessionContext.mode == 6) && (gSessionContext.modeSelection == 3) && !(D_84B26670.unk_00 & 0x40)) {
         sp1C = 1;
     }
 
@@ -91,42 +91,42 @@ void BattlePrep_MarkFirstClearBonus(void) {
         sp20.unk_00++;
         Save_SetOptions(&sp20);
         if (sp20.unk_00 == 1) {
-            D_800AE540.unk_11F6 |= 8;
+            gSessionContext.transitionFlags |= 8;
         } else {
-            D_800AE540.unk_11F6 |= 0x10;
+            gSessionContext.transitionFlags |= 0x10;
         }
     }
 }
 
 void BattlePrep_MarkCupCleared(void) {
-    if (((D_800AE540.unk_0000 != 3) || (D_800AE540.unk_0002 >= 3)) &&
-        ((D_800AE540.unk_0000 != 6) || (D_800AE540.unk_0002 >= 3)) &&
-        ((D_800AE540.unk_0000 != 7) || (D_800AE540.unk_0002 >= 9))) {
-        D_84B26670.unk_00 |= (1 << D_800AE540.unk_0000);
+    if (((gSessionContext.mode != 3) || (gSessionContext.modeSelection >= 3)) &&
+        ((gSessionContext.mode != 6) || (gSessionContext.modeSelection >= 3)) &&
+        ((gSessionContext.mode != 7) || (gSessionContext.modeSelection >= 9))) {
+        D_84B26670.unk_00 |= (1 << gSessionContext.mode);
         if (D_84B26670.unk_00 == 0xF8) {
             D_84B26670.unk_07 = 1;
-            D_800AE540.unk_11F5 |= 4;
+            gSessionContext.sessionFlags |= 4;
         }
-        Save_SetModeSettings(&D_84B26670, D_800AE540.unk_11F2);
+        Save_SetModeSettings(&D_84B26670, gSessionContext.unk_11F2);
     }
 }
 
 void BattlePrep_MarkNewRoundRecord(void) {
-    if (D_800AE540.unk_0000 == 7) {
-        if ((D_800AE540.unk_0002 >= D_84B26670.unk_04) && (D_800AE540.unk_0002 < 8)) {
-            D_84B26670.unk_04 = D_800AE540.unk_0002 + 1;
-            D_800AE540.unk_11F6 |= 0x400;
+    if (gSessionContext.mode == 7) {
+        if ((gSessionContext.modeSelection >= D_84B26670.unk_04) && (gSessionContext.modeSelection < 8)) {
+            D_84B26670.unk_04 = gSessionContext.modeSelection + 1;
+            gSessionContext.transitionFlags |= 0x400;
         }
-    } else if (D_800AE540.unk_0000 == 3) {
-        if ((D_800AE540.unk_0002 >= D_84B26670.unk_05) && (D_800AE540.unk_0002 < 4)) {
-            D_84B26670.unk_05 = D_800AE540.unk_0002 + 1;
-            D_800AE540.unk_11F6 |= 0x400;
+    } else if (gSessionContext.mode == 3) {
+        if ((gSessionContext.modeSelection >= D_84B26670.unk_05) && (gSessionContext.modeSelection < 4)) {
+            D_84B26670.unk_05 = gSessionContext.modeSelection + 1;
+            gSessionContext.transitionFlags |= 0x400;
         }
-    } else if ((D_800AE540.unk_0000 == 6) && (D_800AE540.unk_0002 >= D_84B26670.unk_06) && (D_800AE540.unk_0002 < 4)) {
-        D_84B26670.unk_06 = D_800AE540.unk_0002 + 1;
-        D_800AE540.unk_11F6 |= 0x400;
+    } else if ((gSessionContext.mode == 6) && (gSessionContext.modeSelection >= D_84B26670.unk_06) && (gSessionContext.modeSelection < 4)) {
+        D_84B26670.unk_06 = gSessionContext.modeSelection + 1;
+        gSessionContext.transitionFlags |= 0x400;
     }
-    Save_SetModeSettings(&D_84B26670, D_800AE540.unk_11F2);
+    Save_SetModeSettings(&D_84B26670, gSessionContext.unk_11F2);
 }
 
 char* BattlePrep_GetString(s32 arg0) {
@@ -139,16 +139,16 @@ char* BattlePrep_FormatString(char* arg0, s32 arg1, u32 arg2) {
 
 s32 BattlePrep_StarfieldGeoCallback(s32 arg0, unk_D_86002F34_alt8* arg1) {
     if (arg0 == 5) {
-        BattlePrep_DrawStarfield(arg1->unk_00.unk_14);
+        BattlePrep_DrawStarfield(arg1->node.callbackArg);
         GeoRender_ApplyMaterialState();
     }
 }
 
-void BattlePrep_ResetDisplayObject(unk_D_86002F58_004_000* arg0) {
+void BattlePrep_ResetDisplayObject(DisplayObject* arg0) {
     ModelRenderer_ClearDisplayObject(arg0);
-    Vec3f_SetComponentsDuplicate(&arg0->unk_024, 0.0f, 0.0f, 0.0f);
-    Vec3f_SetComponentsDuplicate(&arg0->unk_030, 1.0f, 1.0f, 1.0f);
-    Vec3s_SetComponents(&arg0->unk_01E, 0, 0, 0);
+    Vec3f_SetComponentsDuplicate(&arg0->position, 0.0f, 0.0f, 0.0f);
+    Vec3f_SetComponentsDuplicate(&arg0->scale, 1.0f, 1.0f, 1.0f);
+    Vec3s_SetComponents(&arg0->rotation, 0, 0, 0);
 }
 
 void BattlePrep_ResetAllDisplayObjects(void) {
@@ -228,7 +228,7 @@ void BattlePrep_DrawBorderedRect(s16 arg0, s16 arg1, s16 arg2, s16 arg3, u8 arg4
 }
 
 void BattlePrep_DrawTrainerStatusIcon(unk_D_80068BB0* arg0, s16 arg1, u8* arg2, u8* arg3) {
-    BattleSessionTeams* temp_v1 = &D_800AE540.unk_1194[arg1];
+    BattleSessionTeams* temp_v1 = &gSessionContext.battleSides[arg1];
 
     GfxImage_SetRenderTarget(&gDisplayListHead, arg0);
 
@@ -240,7 +240,7 @@ void BattlePrep_DrawTrainerStatusIcon(unk_D_80068BB0* arg0, s16 arg1, u8* arg2, 
     Gfx_DrawTextureRgba16(4, 0x24, 0x38, 0x1C, arg2 + 0x208, 0x40, 0x200000);
     Gfx_DrawTextureRgba16(4, 0x40, 0x38, 0x1C, arg2 + 0x1008, 0x40, 0x200000);
 
-    if (D_800AE540.unk_0000 == 0 || D_800AE540.unk_0000 == 9) {
+    if (gSessionContext.mode == 0 || gSessionContext.mode == 9) {
         if (temp_v1->unk_08[0]->unk_000 & 2) {
             Gfx_DrawTextureRgba16(8, 4, 0x30, 0x10, &D_3016900, 0x30, 0x200000);
         } else if (temp_v1->unk_01 == 1) {
@@ -256,7 +256,7 @@ void BattlePrep_DrawTrainerStatusIcon(unk_D_80068BB0* arg0, s16 arg1, u8* arg2, 
         }
 
         gSPDisplayList(gDisplayListHead++, D_8006F630);
-    } else if ((arg1 == 0) || (D_800AE540.unk_0000 == 0xA)) {
+    } else if ((arg1 == 0) || (gSessionContext.mode == 0xA)) {
         Gfx_DrawTextureRgba16(8, 4, 0x30, 0x10, D_84B0FB10[temp_v1->unk_08[0]->unk_001], 0x30, 0x200000);
 
         gSPDisplayList(gDisplayListHead++, D_8006F630);
@@ -281,23 +281,23 @@ void BattlePrep_AnimateBallBurstEffect(s16 arg0) {
 
     if (arg0 < 0x10) {
         for (i = 0; i < 4; i++) {
-            D_84B1A598.unk_0008[i + 0].unk_024.y += 2.0f * arg0 * 0.5f;
-            D_84B1A598.unk_0008[i + 0].unk_01E.x += 0x300;
-            D_84B1A598.unk_0008[i + 8].unk_024.y += 2.0f * arg0 * 0.5f;
-            D_84B1A598.unk_0008[i + 8].unk_01E.x += 0x300;
-            D_84B1A598.unk_0008[i + 4].unk_01E.x -= 0x300;
+            D_84B1A598.unk_0008[i + 0].position.y += 2.0f * arg0 * 0.5f;
+            D_84B1A598.unk_0008[i + 0].rotation.x += 0x300;
+            D_84B1A598.unk_0008[i + 8].position.y += 2.0f * arg0 * 0.5f;
+            D_84B1A598.unk_0008[i + 8].rotation.x += 0x300;
+            D_84B1A598.unk_0008[i + 4].rotation.x -= 0x300;
             // clang-format off
-            D_84B1A598.unk_0008[i + 4].unk_024.y -= 2.0f * arg0 * 0.5f; D_84B1A598.unk_0008[i + 12].unk_01E.x -= 0x300;
+            D_84B1A598.unk_0008[i + 4].position.y -= 2.0f * arg0 * 0.5f; D_84B1A598.unk_0008[i + 12].rotation.x -= 0x300;
             // clang-format on
-            D_84B1A598.unk_0008[i + 12].unk_024.y -= 2.0f * arg0 * 0.5f;
+            D_84B1A598.unk_0008[i + 12].position.y -= 2.0f * arg0 * 0.5f;
         }
 
         for (i = 0; i < 8; i++) {
-            D_84B1A598.unk_0008[i + 0].unk_01E.z += D_84B0FC0C[i];
-            D_84B1A598.unk_0008[i + 8].unk_01E.z += D_84B0FC0C[i];
+            D_84B1A598.unk_0008[i + 0].rotation.z += D_84B0FC0C[i];
+            D_84B1A598.unk_0008[i + 8].rotation.z += D_84B0FC0C[i];
 
-            D_84B1A598.unk_0008[i + 0].unk_024.x += arg0 * D_84B0FC1C[i] * 0.5f;
-            D_84B1A598.unk_0008[i + 8].unk_024.x += arg0 * D_84B0FC1C[i] * 0.5f;
+            D_84B1A598.unk_0008[i + 0].position.x += arg0 * D_84B0FC1C[i] * 0.5f;
+            D_84B1A598.unk_0008[i + 8].position.x += arg0 * D_84B0FC1C[i] * 0.5f;
         }
     }
 }
@@ -307,11 +307,11 @@ void BattlePrep_FadeInBallBurstObjects(s16 arg0) {
 
     if (arg0 < 0x10) {
         for (i = 0; i < 16; i++) {
-            D_84B1A598.unk_0008[i].unk_01D = (-arg0 * 0x10) + 0xF0;
+            D_84B1A598.unk_0008[i].lodFraction = (-arg0 * 0x10) + 0xF0;
         }
 
         for (i = 28; i < 32; i++) {
-            D_84B1A598.unk_0008[i].unk_01D = (-arg0 * 0x10) + 0xF0;
+            D_84B1A598.unk_0008[i].lodFraction = (-arg0 * 0x10) + 0xF0;
         }
     }
 }
@@ -337,7 +337,7 @@ s32 BattlePrep_ShowSingleBattleIntro(void) {
     s32 var_s1 = 0;
 
     Team_LoadOpponentPreset();
-    BattlePrepRoster_Init(&D_84B25A28, D_84B1A598.unk_0004->unk_0C);
+    BattlePrepRoster_Init(&D_84B25A28, D_84B1A598.unk_0004->children);
     BattlePrepRoster_Load(&D_84B25A28, D_84B1A598.unk_B40C);
     Audio_PlayMusicIfChanged(0x31);
 
@@ -369,8 +369,8 @@ s32 BattlePrep_ShowSingleBattleIntro(void) {
         BattlePrep_UpdateSingleBattleIntroFrame();
     }
 
-    if (D_800AE540.unk_11F5 & 1) {
-        D_800AE540.unk_11F5 &= ~1;
+    if (gSessionContext.sessionFlags & 1) {
+        gSessionContext.sessionFlags &= ~1;
         Save_ResetAndCommitTypedRecord(0x15, 0);
         Save_FlushBank(2);
     }
@@ -390,7 +390,7 @@ void BattlePrep_UpdateRoundIntroFrame(void) {
 void BattlePrep_InitRoundIntroScene(void) {
     BattlePrep_InitBannerScene(&D_84B259A8);
     BattlePrep_InitBadgeCarouselScene(&D_84B259E8, D_84B1A598.unk_B408, D_84B1A598.unk_B40C);
-    BattlePrepRoster_Init(&D_84B25A28, D_84B1A598.unk_0004->unk_0C);
+    BattlePrepRoster_Init(&D_84B25A28, D_84B1A598.unk_0004->children);
 }
 
 s32 BattlePrep_ShowRoundIntro(void) {
@@ -448,8 +448,8 @@ s32 BattlePrep_ShowRoundIntro(void) {
         BattlePrep_UpdateRoundIntroFrame();
     }
 
-    if (D_800AE540.unk_11F5 & 1) {
-        D_800AE540.unk_11F5 &= ~1;
+    if (gSessionContext.sessionFlags & 1) {
+        gSessionContext.sessionFlags &= ~1;
         Save_ResetAndCommitTypedRecord(0x15, 0);
         Save_FlushBank(2);
     }
@@ -463,9 +463,9 @@ void BattlePrep_CheckPikachuNeedsSurf(void) {
     TeamRoster* var_a1;
     ExtendedRosterInfo* temp_v1;
 
-    if (!(D_800AE540.unk_11F5 & 2) && (D_800AE540.unk_11F2 == 1) && (D_800AE540.unk_0000 == 6) &&
-        (D_800AE540.unk_0002 == 3)) {
-        var_a1 = D_800AE540.unk_1194[0].unk_08[0];
+    if (!(gSessionContext.sessionFlags & 2) && (gSessionContext.unk_11F2 == 1) && (gSessionContext.mode == 6) &&
+        (gSessionContext.modeSelection == 3)) {
+        var_a1 = gSessionContext.battleSides[0].unk_08[0];
         temp_v1 = var_a1->unk_214;
 
         for (i = 0; i < temp_v1->unk_002; i++) {
@@ -488,7 +488,7 @@ void BattlePrep_CheckPikachuNeedsSurf(void) {
                         return;
                     }
                 }
-                D_800AE540.unk_11F6 |= 0x1000;
+                gSessionContext.transitionFlags |= 0x1000;
                 break;
             }
         }
@@ -539,8 +539,8 @@ void BattlePrep_RunNormalRoundIntro(void) {
         BattlePrep_UpdateRoundIntroScene();
     }
 
-    if (D_800AE540.unk_1194[1].unk_08[0]->unk_000 & 2) {
-        if (D_800AE540.unk_1194[0].unk_1C == 1) {
+    if (gSessionContext.battleSides[1].unk_08[0]->unk_000 & 2) {
+        if (gSessionContext.battleSides[0].unk_1C == 1) {
             Audio_PlayMusicIfChanged(0x32);
         } else {
             Audio_PlayMusicIfChanged(0x45);
@@ -598,12 +598,12 @@ void BattlePrep_RunFinalRoundIntro(void) {
     BattlePrepStarBurst_Launch(&D_84B25AC0, &D_84B1A598.unk_0008[0x1C], &D_84B1A598.unk_0008[0x20]);
     BattlePrepStarBurst_Launch(&D_84B26080, &D_84B1A598.unk_0008[0x1E], &D_84B1A598.unk_0008[0x20]);
 
-    if (D_800AE540.unk_0003 < 8) {
+    if (gSessionContext.roundOrDemoId < 8) {
         for (i = 0; i < 16; i++) {
             BattlePrep_UpdateRoundIntroScene();
         }
         BattlePrep_StartTrophyModelGrow(&D_84B26640.unk_10, &D_84B1A598.unk_0008[0x1B]);
-        Audio_PlaySoundEffectById(0x28);
+        Audio_PlaySoundEffectById(SFX_TROPHY_APPEAR);
     }
 
     while ((D_84B259E8.unk_00 != 0) || (D_84B26080.unk_5A0 != 0)) {
@@ -697,7 +697,7 @@ s32 BattlePrep_HandleRoundContinue(void) {
     s32 var_s2;
     s32 var_v0_2;
 
-    if (D_800AE540.unk_0000 == 7) {
+    if (gSessionContext.mode == 7) {
         BattlePrep_InitRuleWindow(&D_84B26640.unk_1C, 2);
     } else {
         BattlePrep_InitRuleWindow(&D_84B26640.unk_1C, 1);
@@ -724,7 +724,7 @@ s32 BattlePrep_HandleRoundContinue(void) {
             }
         }
         if (var_s2 == 1) {
-            D_800AE540.unk_0003 = D_800AE540.unk_0003 + 1;
+            gSessionContext.roundOrDemoId = gSessionContext.roundOrDemoId + 1;
             Session_SaveContinueData();
             Save_FlushBank(2);
         }
@@ -751,7 +751,7 @@ s32 BattlePrep_ConsumeContinueToken(void) {
     }
 
     if (sp24 != 0) {
-        D_800AE540.unk_11F3--;
+        gSessionContext.continueCount--;
         Session_SaveContinueData();
         Save_FlushBank(2);
     }
@@ -761,12 +761,12 @@ s32 BattlePrep_ConsumeContinueToken(void) {
 s32 BattlePrep_ConfirmDefaultRules(void) {
     s32 var_v0;
 
-    if (D_800AE540.unk_1194[0].unk_1C == 1) {
-        D_800AE540.unk_1194[0].unk_1E += 1;
+    if (gSessionContext.battleSides[0].unk_1C == 1) {
+        gSessionContext.battleSides[0].unk_1E += 1;
     }
 
-    if (D_800AE540.unk_1194[1].unk_1C == 1) {
-        D_800AE540.unk_1194[1].unk_1E += 1;
+    if (gSessionContext.battleSides[1].unk_1C == 1) {
+        gSessionContext.battleSides[1].unk_1E += 1;
     }
 
     BattlePrep_RunNormalRoundIntro();
@@ -782,15 +782,15 @@ s32 BattlePrep_ConfirmDefaultRules(void) {
 
     switch (var_v0) {
         case 0:
-            D_800AE540.unk_11F6 |= 0x21;
+            gSessionContext.transitionFlags |= 0x21;
             break;
 
         case 1:
-            D_800AE540.unk_11F6 |= 0x81;
+            gSessionContext.transitionFlags |= 0x81;
             break;
 
         case 2:
-            D_800AE540.unk_11F6 |= 1;
+            gSessionContext.transitionFlags |= 1;
             break;
     }
 
@@ -834,9 +834,9 @@ s32 BattlePrep_ConfirmCupRules(void) {
 
     BattlePrep_RunBadgeCarouselIntro();
 
-    if (D_800AE540.unk_1194[0].unk_1C == 1) {
-        D_800AE540.unk_11F3 += D_84B1A598.unk_0002;
-        if ((D_84B1A598.unk_0002 != 0) && (D_800AE540.unk_0003 < 8)) {
+    if (gSessionContext.battleSides[0].unk_1C == 1) {
+        gSessionContext.continueCount += D_84B1A598.unk_0002;
+        if ((D_84B1A598.unk_0002 != 0) && (gSessionContext.roundOrDemoId < 8)) {
             BattlePrep_StartTrophyModelShrink(&D_84B26640.unk_10);
         }
 
@@ -847,7 +847,7 @@ s32 BattlePrep_ConfirmCupRules(void) {
             BattlePrep_UpdateRoundIntroScene();
         }
 
-        if (D_800AE540.unk_0003 == 8) {
+        if (gSessionContext.roundOrDemoId == 8) {
             for (i = 0; i < 120; i++) {
                 BattlePrep_UpdateRoundIntroScene();
                 if (BTN_IS_PRESSED(gPlayer1Controller, BTN_A)) {
@@ -864,15 +864,15 @@ s32 BattlePrep_ConfirmCupRules(void) {
             BattlePrep_RunBallBurstTransition();
             BattlePrep_FadeToTransparentEnding();
             BattlePrep_CheckPikachuNeedsSurf();
-            D_800AE540.unk_11F6 |= 3;
+            gSessionContext.transitionFlags |= 3;
         } else if (BattlePrep_HandleRoundContinue() == 1) {
             BattlePrep_RunBallBurstTransition();
             BattlePrep_FadeToTransparentEnding();
-            D_800AE540.unk_11F6 |= 0x41;
+            gSessionContext.transitionFlags |= 0x41;
         } else {
             BattlePrep_RunBallBurstTransition();
             Audio_StopMusic(0x50);
-            D_800AE540.unk_0003++;
+            gSessionContext.roundOrDemoId++;
             sp2C = 1;
         }
     } else {
@@ -890,30 +890,30 @@ s32 BattlePrep_ConfirmCupRules(void) {
             switch (var_v0) {
                 case 0:
                     sp2C = 1;
-                    D_800AE540.unk_11F3--;
+                    gSessionContext.continueCount--;
                     var_s2 = 0;
                     break;
 
                 case 1:
                     if (BattlePrep_ConsumeContinueToken() != 0) {
                         var_s2 = 0;
-                        D_800AE540.unk_11F6 |= 0x41;
+                        gSessionContext.transitionFlags |= 0x41;
                     }
                     break;
 
                 case 2:
                     var_s2 = 0;
-                    D_800AE540.unk_11F6 |= 0x21;
+                    gSessionContext.transitionFlags |= 0x21;
                     break;
 
                 case 3:
                     var_s2 = 0;
-                    D_800AE540.unk_11F6 |= 0x801;
+                    gSessionContext.transitionFlags |= 0x801;
                     break;
 
                 case 4:
                     var_s2 = 0;
-                    D_800AE540.unk_11F6 |= 1;
+                    gSessionContext.transitionFlags |= 1;
                     break;
             }
         }
@@ -940,8 +940,8 @@ s32 BattlePrep_ConfirmCastleRules(void) {
     BattlePrep_RunNormalRoundIntro();
     BattlePrep_RunBadgeCarouselIntro();
 
-    if (D_800AE540.unk_1194[0].unk_1C == 1) {
-        if ((D_800AE540.unk_0003 == 4) || (D_800AE540.unk_0002 == 9)) {
+    if (gSessionContext.battleSides[0].unk_1C == 1) {
+        if ((gSessionContext.roundOrDemoId == 4) || (gSessionContext.modeSelection == 9)) {
             BattlePrep_MarkCupCleared();
             BattlePrep_MarkNewRoundRecord();
             BattlePrep_SaveVictoryPalaceRecords();
@@ -960,15 +960,15 @@ s32 BattlePrep_ConfirmCastleRules(void) {
             BattlePrep_RunBallBurstTransition();
             Audio_StopMusic(0x10);
 
-            D_800AE540.unk_11F6 |= 1;
-            if (D_800AE540.unk_0002 == 8) {
-                D_800AE540.unk_11F6 |= 0x400;
+            gSessionContext.transitionFlags |= 1;
+            if (gSessionContext.modeSelection == 8) {
+                gSessionContext.transitionFlags |= 0x400;
             }
 
-            if (D_800AE540.unk_0002 == 9) {
-                D_800AE540.unk_11F6 |= 0x200;
+            if (gSessionContext.modeSelection == 9) {
+                gSessionContext.transitionFlags |= 0x200;
             } else {
-                D_800AE540.unk_11F6 |= 0x100;
+                gSessionContext.transitionFlags |= 0x100;
             }
             sp24 = 3;
         } else if (BattlePrep_HandleRoundContinue() == 1) {
@@ -976,13 +976,13 @@ s32 BattlePrep_ConfirmCastleRules(void) {
             Audio_PlayCategory11SoundCommand(0x0110000D, 0, 0);
             BattlePrep_RunBallBurstTransition();
             BattlePrep_FadeToTransparentEnding();
-            D_800AE540.unk_11F6 |= 0x41;
+            gSessionContext.transitionFlags |= 0x41;
         } else {
             BattlePrepStarBurst_StartExit(&D_84B25AC0);
             Audio_PlayCategory11SoundCommand(0x0110000D, 0, 0);
             BattlePrep_RunBallBurstTransition();
             Audio_StopMusic(0x50);
-            D_800AE540.unk_0003++;
+            gSessionContext.roundOrDemoId++;
             sp24 = 1;
         }
     } else {
@@ -997,15 +997,15 @@ s32 BattlePrep_ConfirmCastleRules(void) {
 
         switch (var_v0) {
             case 0:
-                D_800AE540.unk_11F6 |= 0x21;
+                gSessionContext.transitionFlags |= 0x21;
                 break;
 
             case 1:
-                D_800AE540.unk_11F6 |= 0x801;
+                gSessionContext.transitionFlags |= 0x801;
                 break;
 
             case 2:
-                D_800AE540.unk_11F6 |= 1;
+                gSessionContext.transitionFlags |= 1;
                 break;
         }
 
@@ -1013,8 +1013,8 @@ s32 BattlePrep_ConfirmCastleRules(void) {
         BattlePrep_RunBallBurstTransition();
         BattlePrep_FadeToTransparentEnding();
 
-        if (D_800AE540.unk_0002 == 9) {
-            D_800AE540.unk_0002 = 8;
+        if (gSessionContext.modeSelection == 9) {
+            gSessionContext.modeSelection = 8;
         }
     }
     return sp24;
@@ -1025,10 +1025,10 @@ s32 BattlePrep_ConfirmMewtwoRules(void) {
     u16 sp2A;
 
     BattlePrep_RunNormalRoundIntro();
-    if (D_800AE540.unk_1194[0].unk_1C == 1) {
+    if (gSessionContext.battleSides[0].unk_1C == 1) {
         s32 tmp1 = !!(D_84B26670.unk_00 & 0x100);
 
-        if ((D_800AE540.unk_11F2 == 0) & !tmp1) {
+        if ((gSessionContext.unk_11F2 == 0) & !tmp1) {
             Save_GetOptionsField02(&sp2A);
             sp2A |= 4;
             Save_SetOptionsField02(&sp2A);
@@ -1042,7 +1042,7 @@ s32 BattlePrep_ConfirmMewtwoRules(void) {
         Audio_PlayCategory11SoundCommand(0x0110000D, 0, 0);
         BattlePrep_RunBallBurstTransition();
         BattlePrep_FadeToTransparentEnding();
-        D_800AE540.unk_11F6 |= 5;
+        gSessionContext.transitionFlags |= 5;
     } else {
         BattlePrep_InitRuleWindow(&D_84B26640.unk_28, 6);
 
@@ -1054,11 +1054,11 @@ s32 BattlePrep_ConfirmMewtwoRules(void) {
 
         switch (var_v0) {
             case 0:
-                D_800AE540.unk_11F6 |= 0x21;
+                gSessionContext.transitionFlags |= 0x21;
                 break;
 
             case 1:
-                D_800AE540.unk_11F6 |= 1;
+                gSessionContext.transitionFlags |= 1;
                 break;
         }
 
@@ -1075,11 +1075,11 @@ u8 BattlePrep_CheckTeamChosen(void) {
     s32 i;
     u8 var_v1 = 0;
 
-    if ((D_800AE540.unk_0000 > 0) && (D_800AE540.unk_0000 < 7)) {
-        if (D_800AE540.unk_1194[0].unk_1C == 1) {
+    if ((gSessionContext.mode > 0) && (gSessionContext.mode < 7)) {
+        if (gSessionContext.battleSides[0].unk_1C == 1) {
             var_v1 = 1;
             for (i = 0; i < 3; i++) {
-                if (D_800AE540.unk_1194[0].unk_08[0]->unk_01C[i].unk_02 == 0) {
+                if (gSessionContext.battleSides[0].unk_08[0]->unk_01C[i].unk_02 == 0) {
                     var_v1 = 0;
                 }
             }
@@ -1095,7 +1095,7 @@ s32 BattlePrep_DispatchRuleConfirm(void) {
     D_84B1A598.unk_0002 = BattlePrep_CheckTeamChosen();
     BattlePrep_InitRoundIntroSubScenes();
 
-    switch (D_800AE540.unk_0000) {
+    switch (gSessionContext.mode) {
         case 0:
             var_v0 = BattlePrep_ConfirmDefaultRules();
             break;
@@ -1147,7 +1147,7 @@ s32 BattlePrep_ShowCastleClearOutro(void) {
     s32 i;
     s32 var_s1;
 
-    if (D_800AE540.unk_0002 == 9) {
+    if (gSessionContext.modeSelection == 9) {
         var_s1 = 0x3C;
     } else {
         var_s1 = 0x4B;
@@ -1180,14 +1180,14 @@ s32 BattlePrep_ShowCastleClearOutro(void) {
 void BattlePrep_InitScene(void) {
     MemoryBlock* temp_v0;
     unk_D_86002F34_00C* ptr;
-    unk_D_86002F58_004_000* ptr2;
+    DisplayObject* ptr2;
     s32 i;
 
     D_84B1A598.unk_0001 = 0;
     D_84B1A598.unk_0003 = 0;
-    if (D_800AE540.unk_1194[0].unk_1C == D_800AE540.unk_1194[1].unk_1C) {
+    if (gSessionContext.battleSides[0].unk_1C == gSessionContext.battleSides[1].unk_1C) {
         D_84B1A598.unk_0003 = 1;
-    } else if (D_800AE540.unk_1194[0].unk_1C == 1) {
+    } else if (gSessionContext.battleSides[0].unk_1C == 1) {
         D_84B1A598.unk_0001 = 1;
     }
 
@@ -1195,14 +1195,14 @@ void BattlePrep_InitScene(void) {
 
     for (i = 0, ptr2 = &D_84B1A598.unk_0008[0]; i < 128; ptr2++, i++) {
         ModelRenderer_AttachDisplayObject(ptr2);
-        D_84B1A598.unk_0008[i].unk_0A6 = i;
+        D_84B1A598.unk_0008[i].effectSlot = i;
     }
 
     temp_v0 = MainPool_AllocState(main_pool_get_available(), 0);
     D_84B1A598.unk_0004 = process_geo_layout(temp_v0, &D_84B0FB20);
     MainPool_FinalizeAllocation(temp_v0);
 
-    ptr = D_84B1A598.unk_0004->unk_0C;
+    ptr = D_84B1A598.unk_0004->children;
     ptr->unk_24.near = 10.0f;
     ptr->unk_24.far = 6000.0f;
 
@@ -1216,7 +1216,7 @@ s32 BattlePrep_RunRulesScreen(s32 arg0, UNUSED s32 arg1) {
 
     main_pool_push_state('EYEC');
     Save_EnsureBankLoaded(2);
-    Save_GetModeSettings(&D_84B26670, D_800AE540.unk_11F2);
+    Save_GetModeSettings(&D_84B26670, gSessionContext.unk_11F2);
     Gfx_InitDisplayListBuffers(0x18000, 0);
     sp2C = StageContext_Allocate(0, 1, 3, 1, 2, 1);
     Font_Init(0x17, 0);

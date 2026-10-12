@@ -43,7 +43,7 @@ static void* D_84103448;
 static void* D_8410344C;
 static Vtx* D_84103450;
 static GraphNode* D_84103454;
-static unk_D_86002F58_004_000 D_84103458[6];
+static DisplayObject D_84103458[6];
 static s16 D_84103CC8;
 static unk_D_80068BB0* D_84103CD0[6];
 static GraphNode* D_84103CE8;
@@ -703,7 +703,7 @@ void StadiumSelect_DrawSelectionCorners(s16 arg0, s16 arg1, s16 arg2, s16 arg3, 
 
 s32 StadiumSelect_IconGeoPostCallback(s32 arg0, unk_func_80011B94* arg1) {
     if (arg0 == 5) {
-        s32 idx = D_8006F09C->unk_000.unk_14;
+        s32 idx = D_8006F09C->node.callbackArg;
 
         gDPPipeSync(gDisplayListHead++);
 
@@ -750,7 +750,7 @@ void StadiumSelect_DrawCupInfoPanel(s16 arg0) {
         Font_Printf(0x48, 0x182, Text_GetString(NULL, 0, D_84103440, D_84103CC8 + 6));
         Font_EndTexturedTextRendering();
 
-        if (D_800AE540.unk_11F2 == 1) {
+        if (gSessionContext.unk_11F2 == 1) {
             temp_v0 = Font_MeasureTextExtent(0x10, 0, Text_GetString(NULL, 0, D_84103440, D_84103CC8));
 
             gSPDisplayList(gDisplayListHead++, D_8006F518);
@@ -772,23 +772,23 @@ void StadiumSelect_RenderFrame(s32 arg0, s32 arg1, f32 arg2) {
     if (arg0 < 0xB) {
         var_v0 = ((10 - arg0) * -0x5000) / 10;
         for (i = 0; i < 3; i++) {
-            D_84103458[i].unk_01E.x = var_v0;
+            D_84103458[i].rotation.x = var_v0;
         }
 
         for (i = 3; i < 6; i++) {
-            D_84103458[i].unk_01E.x = -var_v0;
+            D_84103458[i].rotation.x = -var_v0;
         }
     } else {
         var_v0 = ((arg0 - 10) * -0x5000) / 10;
         for (i = 0; i < 3; i++) {
             if (i != D_84103CC8) {
-                D_84103458[i].unk_01E.x = var_v0;
+                D_84103458[i].rotation.x = var_v0;
             }
         }
 
         for (i = 3; i < 6; i++) {
             if (i != D_84103CC8) {
-                D_84103458[i].unk_01E.x = -var_v0;
+                D_84103458[i].rotation.x = -var_v0;
             }
         }
     }
@@ -886,10 +886,10 @@ void StadiumSelect_BuildCupIconGrid(void) {
     Model_InitDisplayObject(&D_84103458[3], 0, 0, D_84103CE8);
     Model_InitDisplayObject(&D_84103458[4], 0, 0, D_84103CEC);
     Model_InitDisplayObject(&D_84103458[5], 0, 0, D_84103CEC);
-    Vec3f_SetComponentsDuplicate(&D_84103458->unk_024, -80.0f, 113.0f, -579.0f);
-    Vec3f_SetComponentsDuplicate(&D_84103458[3].unk_024, -80.0f, -29.0f, -579.0f);
-    Vec3f_SetComponentsDuplicate(&D_84103458[4].unk_024, -236.0f, 42.0f, -579.0f);
-    Vec3f_SetComponentsDuplicate(&D_84103458[5].unk_024, 100.0f, 42.0f, -579.0f);
+    Vec3f_SetComponentsDuplicate(&D_84103458->position, -80.0f, 113.0f, -579.0f);
+    Vec3f_SetComponentsDuplicate(&D_84103458[3].position, -80.0f, -29.0f, -579.0f);
+    Vec3f_SetComponentsDuplicate(&D_84103458[4].position, -236.0f, 42.0f, -579.0f);
+    Vec3f_SetComponentsDuplicate(&D_84103458[5].position, 100.0f, 42.0f, -579.0f);
 }
 
 s16 StadiumSelect_HandleInput(void) {
@@ -901,7 +901,7 @@ s16 StadiumSelect_HandleInput(void) {
         var_v1 = -1;
         var_a1 = D_84103CC8;
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_B)) {
-        Audio_PlaySoundEffectById(3);
+        Audio_PlaySoundEffectById(SFX_MENU_BACK);
         var_v1 = -1;
         var_a1 = 6;
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DUP)) {
@@ -915,7 +915,7 @@ s16 StadiumSelect_HandleInput(void) {
     }
 
     if (var_v1 != -1) {
-        Audio_PlaySoundEffectById(1);
+        Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
         D_84103CC8 = var_v1;
     }
     return var_a1;
@@ -979,8 +979,8 @@ void StadiumSelect_Loop(void) {
 
 void StadiumSelect_InitGeoLayouts(void) {
     s32 i;
-    unk_D_86002F58_004_000* ptr;
-    unk_D_86002F58_004_000* ptr2;
+    DisplayObject* ptr;
+    DisplayObject* ptr2;
     MemoryBlock* temp_v0 = MainPool_AllocState(main_pool_get_available(), 0);
 
     D_84103454 = process_geo_layout(temp_v0, D_8410254C);
@@ -993,7 +993,7 @@ void StadiumSelect_InitGeoLayouts(void) {
     ptr = &D_84103458[0];
     for (i = 0; i < 6; ptr++, i++) {
         ModelRenderer_AttachDisplayObject(ptr);
-        D_84103458[i].unk_000.unk_14 = i;
+        D_84103458[i].node.callbackArg = i;
     }
 }
 
@@ -1017,7 +1017,7 @@ s32 StadiumSelect_Main(s32 arg0, s32 arg1) {
     main_pool_push_state('PSSL');
 
     Save_EnsureBankLoaded(2);
-    Save_GetModeSettings(&D_84103CF0, D_800AE540.unk_11F2);
+    Save_GetModeSettings(&D_84103CF0, gSessionContext.unk_11F2);
     Font_Init(0x18, 0);
     ASSET_LOAD(D_1000000, common_menu1_ui, 0);
     ASSET_LOAD(D_2000000, common_menu2_ui, 0);
