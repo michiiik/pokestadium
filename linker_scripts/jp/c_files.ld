@@ -49,3 +49,6 @@ jpc_src_audio_category_fade__D_8007840C = 0x8007C05C;
 jpc_src_audio_category_fade__func_8003627C = 0x8003627C;
 jpc_src_audio_category_fade__func_8003DB84 = 0x8003AC94;
 /* end audio_category_fade */
+/* libnaudio/n_syndelete */
+jpc_src_libnaudio_n_syndelete__n_syn = 0x8007C1D4;
+/* end libnaudio/n_syndelete */
