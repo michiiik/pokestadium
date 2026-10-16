@@ -38,9 +38,9 @@ void GfxImage_AttachDepthBuffer(unk_D_80068BB0* img, unk_D_80068BB0* depth);
 void GfxImage_ResetCurrent(void);
 unk_D_80068BB0* GfxImage_GetCurrent(void);
 void GfxImage_SetRenderTarget(Gfx** gfx_p, unk_D_80068BB0* arg1);
-void GfxImage_FillRectangle(Gfx** gfx_p, s32 arg1, s32 arg2, s32 arg3, s32 arg4, u16 fill_colour);
+void GfxImage_FillRectangle(Gfx** gfx_p, s32 arg1, s32 arg2, s32 arg3, s32 arg4, u16 fill_color);
 void GfxImage_ClearDepthRectangle(Gfx** gfx_p, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
-void GfxImage_FillCurrent(Gfx** gfx_p, u16 fill_colour);
+void GfxImage_FillCurrent(Gfx** gfx_p, u16 fill_color);
 
 
 #endif // _6BC0_H_
