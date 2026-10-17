@@ -116,7 +116,7 @@ s32 BattleScene_GetParticipantSideIndex(ActivePokemon* arg0) {
 u8 Battle_GetCameraShotFieldB(ActivePokemon* arg0) {
     UNUSED s32 pad;
     UNUSED s16 pad2;
-    s16 sp18 = arg0->unk_654.unk_38.unk_5A - 1;
+    s16 sp18 = arg0->unk_654.runtime.usedMove - 1;
     MovePresentationCue* ptr = &D_84384570[BattleScene_GetParticipantSideIndex(arg0)]->unk_000[sp18];
 
     return ptr->unk_02;
@@ -125,7 +125,7 @@ u8 Battle_GetCameraShotFieldB(ActivePokemon* arg0) {
 u8 Battle_GetCameraShotFieldC(ActivePokemon* arg0) {
     UNUSED s32 pad;
     UNUSED s16 pad2;
-    s16 sp18 = arg0->unk_654.unk_38.unk_5A - 1;
+    s16 sp18 = arg0->unk_654.runtime.usedMove - 1;
     MovePresentationCue* ptr = &D_84384570[BattleScene_GetParticipantSideIndex(arg0)]->unk_000[sp18];
 
     return ptr->unk_03;
@@ -152,7 +152,7 @@ f32 Battle_GetScaleRatio(ActivePokemon* arg0) {
 }
 
 s16 BattleScene_GetActiveAnimRowId(ActivePokemon* arg0) {
-    return arg0->unk_654.unk_38.unk_5A;
+    return arg0->unk_654.runtime.usedMove;
 }
 
 void BattleScene_GetParticipantModelBoundsScaled(ActivePokemon* arg0, Vec3f* arg1) {
@@ -178,7 +178,7 @@ s16 BattleScene_GetParticipantFacingAngle(ActivePokemon* arg0) {
 }
 
 s32 BattleAnim_GetSpeciesBySideIndex(s32 arg0) {
-    return D_84390010[arg0]->unk_000.objectType;
+    return sActivePokemon[arg0]->unk_000.objectType;
 }
 
 s32 BattleAnim_GetOwnerSpecies(ActivePokemon* arg0) {
@@ -270,7 +270,7 @@ s32 Battle_GetTrainerId(ActivePokemon* arg0, UNUSED s32 arg1) {
 }
 
 char* Battle_GetActiveMoveName(ActivePokemon* arg0) {
-    return Text_GetString(NULL, 0, D_843900B8, arg0->unk_654.unk_38.unk_5A - 1);
+    return Text_GetString(NULL, 0, D_843900B8, arg0->unk_654.runtime.usedMove - 1);
 }
 
 u8* Battle_GetActiveMonNickname(ActivePokemon* arg0) {
@@ -395,7 +395,7 @@ s32 Battle_HasUsableSleepStatusTarget(ActivePokemon* arg0) {
 
     for (i = 0; i < BattleScene_GetSelectedSideTeamSize(arg0); i++) {
         ptr = &arg0->unk_724->unk_01C[i];
-        if ((ptr->unk_05 & 0x20) && (arg0->unk_654.unk_38.unk_16[temp_s0->unk_08 + temp_s0->unk_2B * 3] == 0)) {
+        if ((ptr->unk_05 & 0x20) && (arg0->unk_654.runtime.unk_16[temp_s0->unk_08 + temp_s0->unk_2B * 3] == 0)) {
             return 1;
         }
     }
@@ -404,7 +404,7 @@ s32 Battle_HasUsableSleepStatusTarget(ActivePokemon* arg0) {
         for (i = 0; i < BattleScene_GetOpposingSelectedSideTeamSize(arg0); i++) {
             ptr = &arg0->unk_720->unk_08[temp_s0->unk_2B == 0]->unk_01C[i];
             if ((ptr->unk_05 & 0x20) &&
-                (arg0->unk_654.unk_38.unk_16[temp_s0->unk_08 + (temp_s0->unk_2B == 0) * 3] == 0)) {
+                (arg0->unk_654.runtime.unk_16[temp_s0->unk_08 + (temp_s0->unk_2B == 0) * 3] == 0)) {
                 return 1;
             }
         }
@@ -422,7 +422,7 @@ s32 Battle_HasUsableMajorStatusTarget(ActivePokemon* arg0) {
 
     for (i = 0; i < BattleScene_GetSelectedSideTeamSize(arg0); i++) {
         ptr = &arg0->unk_724->unk_01C[i];
-        if ((ptr->unk_05 & 7) && (arg0->unk_654.unk_38.unk_16[temp_s0->unk_08 + temp_s0->unk_2B * 3] == 0)) {
+        if ((ptr->unk_05 & 7) && (arg0->unk_654.runtime.unk_16[temp_s0->unk_08 + temp_s0->unk_2B * 3] == 0)) {
             return 1;
         }
     }
@@ -430,7 +430,7 @@ s32 Battle_HasUsableMajorStatusTarget(ActivePokemon* arg0) {
     if (arg0->unk_720->unk_01 == 2) {
         for (i = 0; i < BattleScene_GetOpposingSelectedSideTeamSize(arg0); i++) {
             ptr = &arg0->unk_720->unk_08[temp_s0->unk_2B == 0]->unk_01C[i];
-            if ((ptr->unk_05 & 7) && (arg0->unk_654.unk_38.unk_16[temp_s0->unk_08 + (temp_s0->unk_2B == 0) * 3] == 0)) {
+            if ((ptr->unk_05 & 7) && (arg0->unk_654.runtime.unk_16[temp_s0->unk_08 + (temp_s0->unk_2B == 0) * 3] == 0)) {
                 return 1;
             }
         }
@@ -460,7 +460,7 @@ void BattleScene_ReinitParticipantBodyModel(ActivePokemon* arg0, ActivePokemon* 
     BattleScene_GetParticipantSideIndex(arg0);
     ModelRenderer_ClearDisplayObject(&arg1->unk_000);
 
-    if (arg0 == D_84390010[0]) {
+    if (arg0 == sActivePokemon[0]) {
         arg1->unk_000.effectSlot = 0;
     } else {
         arg1->unk_000.effectSlot = 1;
@@ -478,7 +478,7 @@ void BattleScene_ReinitParticipantBodyModel(ActivePokemon* arg0, ActivePokemon* 
     }
 
     if (!(arg0->unk_654.unk_34 & 0x200)) {
-        if (arg0 == D_84390010[0]) {
+        if (arg0 == sActivePokemon[0]) {
             BattleScene_PositionParticipantModel(arg0);
             arg1->unk_000.rotation.y = 0x4000;
         } else {
@@ -494,13 +494,13 @@ void BattleScene_ReinitParticipantOwnerModel(ActivePokemon* arg0, PresentationSt
     sp24 = Battle_GetMoveEffectListEntry(arg0, 0);
     ModelRenderer_ClearDisplayObject(&arg1->unk_000);
 
-    if (arg0 == D_84390010[0]) {
+    if (arg0 == sActivePokemon[0]) {
         arg1->unk_000.effectSlot = 0xFF;
     } else {
         arg1->unk_000.effectSlot = 0xFF;
     }
 
-    if (arg0 == D_84390010[0]) {
+    if (arg0 == sActivePokemon[0]) {
         Model_InitDisplayObject(&arg1->unk_000, 1, arg2, sp24);
     } else {
         Model_InitDisplayObject(&arg1->unk_000, 2, arg2, sp24);
@@ -522,7 +522,7 @@ void BattleScene_ReinitParticipantSecondaryModels(ActivePokemon* arg0, s16 arg1)
         var_s0 = &arg0->unk_168[i];
 
         ModelRenderer_ClearDisplayObject(&var_s0->unk_000);
-        if (arg0 == D_84390010[0]) {
+        if (arg0 == sActivePokemon[0]) {
             var_s0->unk_000.effectSlot = 0xFF;
         } else {
             var_s0->unk_000.effectSlot = 0xFF;
@@ -534,7 +534,7 @@ void BattleScene_ReinitParticipantSecondaryModels(ActivePokemon* arg0, s16 arg1)
 
         var_s0->unk_000.node.renderFlags &= ~0x40;
 
-        if (arg0 == D_84390010[0]) {
+        if (arg0 == sActivePokemon[0]) {
             Vec3f_SetComponentsDuplicate(&var_s0->unk_000.position, -150.0f, 0.0f, 0.0f);
             var_s0->unk_000.rotation.y = 0x4000;
         } else {

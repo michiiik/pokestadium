@@ -974,7 +974,7 @@ extern BattleMonRuntime* gBattleUser;
 extern BattleMonRuntime* gBattleTarget;
 
 
-extern ActivePokemon* sActivePokemons[2];
+extern ActivePokemon* sActivePokemon[2];
 extern ActivePokemon* D_84390018;
 extern ActivePokemon* D_8439001C;
 extern unk_D_84390028 D_84390028[2];

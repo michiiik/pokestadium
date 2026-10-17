@@ -533,10 +533,10 @@ void BattleAnim_CleanupEffectsRetainingCategory4(void) {
         }
     }
 
-    Model_SetMaterialColor(&D_84390010[0]->unk_000, 0xFF, 0xFF, 0xFF, 0);
-    Model_SetMaterialColor(&D_84390010[1]->unk_000, 0xFF, 0xFF, 0xFF, 0);
-    Model_SetMaterialAlpha(&D_84390010[0]->unk_000, 0xFF);
-    Model_SetMaterialAlpha(&D_84390010[1]->unk_000, 0xFF);
+    Model_SetMaterialColor(&sActivePokemon[0]->unk_000, 0xFF, 0xFF, 0xFF, 0);
+    Model_SetMaterialColor(&sActivePokemon[1]->unk_000, 0xFF, 0xFF, 0xFF, 0);
+    Model_SetMaterialAlpha(&sActivePokemon[0]->unk_000, 0xFF);
+    Model_SetMaterialAlpha(&sActivePokemon[1]->unk_000, 0xFF);
 
     D_8439037E = 0xFF;
     D_8439037C = D_8439037E;

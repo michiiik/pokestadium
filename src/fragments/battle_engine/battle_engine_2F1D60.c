@@ -19,13 +19,13 @@ void BattleScene_SetParticipantOwnerActiveFlag(ActivePokemon* arg0) {
 }
 
 void BattleScene_ClearBothOwnerActiveFlags(void) {
-    D_84390010[0]->unk_728.unk_170 = 0;
-    D_84390010[1]->unk_728.unk_170 = 0;
+    sActivePokemon[0]->unk_728.unk_170 = 0;
+    sActivePokemon[1]->unk_728.unk_170 = 0;
 }
 
 void BattleScene_SetBothOwnerActiveFlags(void) {
-    D_84390010[0]->unk_728.unk_170 = 1;
-    D_84390010[1]->unk_728.unk_170 = 1;
+    sActivePokemon[0]->unk_728.unk_170 = 1;
+    sActivePokemon[1]->unk_728.unk_170 = 1;
 }
 
 void BattleScene_SetOwnerPoseFlag(PresentationLayout* arg0) {
@@ -35,7 +35,7 @@ void BattleScene_SetOwnerPoseFlag(PresentationLayout* arg0) {
 void BattleScene_LoadOwnerCameraFramingConstants(ActivePokemon* arg0) {
     s32 var_v0;
 
-    if (arg0 == D_84390010[0]) {
+    if (arg0 == sActivePokemon[0]) {
         var_v0 = 0;
     } else {
         var_v0 = 1;
@@ -181,11 +181,11 @@ s32 BattleScene_DispatchOwnerCameraLifecycle(s32 arg0, CameraNode* arg1, CameraN
 
         case 1:
         case 2:
-            BattleScene_TickBothOwnerSlideAnimations(D_84390010[0], D_84390010[1]);
+            BattleScene_TickBothOwnerSlideAnimations(sActivePokemon[0], sActivePokemon[1]);
             break;
 
         case 3:
-            BattleScene_InitializeOwnerCameraFraming(arg1, D_84390010[0], arg2, D_84390010[1]);
+            BattleScene_InitializeOwnerCameraFraming(arg1, sActivePokemon[0], arg2, sActivePokemon[1]);
             break;
     }
     return 0;

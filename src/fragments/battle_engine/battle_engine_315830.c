@@ -11,7 +11,7 @@ void BattleAnim_StartFreezeStatusAnimation(ActivePokemon* arg0) {
     MovePresentationCue* sp20;
     s32 idx = BattleScene_GetParticipantSideIndex(arg0);
 
-    sp28 = &arg0->unk_654.unk_38;
+    sp28 = &arg0->unk_654.runtime;
     sp2C = &arg0->unk_654;
     ptr = &arg0->unk_724->unk_01C[sp2C->unk_08];
     sp20 = &D_84384570[idx]->unk_A80;
@@ -61,7 +61,7 @@ void BattleAnim_ResetFreezeStatusAndRestoreAnimation(ActivePokemon* arg0) {
 }
 
 void BattleAnim_ClearFreezeStatusAnimationIfThawed(ActivePokemon* arg0) {
-    if ((arg0->unk_654.unk_34 & 2) && !(arg0->unk_654.unk_38.unk_15 & 0x20)) {
+    if ((arg0->unk_654.unk_34 & 2) && !(arg0->unk_654.runtime.unk_15 & 0x20)) {
         BattleAnim_StopOwnerCategoryParticles(1, arg0);
         arg0->unk_000.node.renderFlags |= 0x20;
         Battle_ClearRuntimeFlags(arg0, 2);
@@ -71,7 +71,7 @@ void BattleAnim_ClearFreezeStatusAnimationIfThawed(ActivePokemon* arg0) {
 
 void BattleAnim_UpdateSleepStatusAnimation(ActivePokemon* arg0) {
     ActivePokemonState* sp24 = &arg0->unk_654;
-    BattleMonRuntime* sp28 = &sp24->unk_38;
+    BattleMonRuntime* sp28 = &sp24->runtime;
     BattleMon* sp2C = &arg0->unk_724->unk_01C[arg0->unk_654.unk_08];
 
     if ((gBattleScene.unk_00->unk_38 != 0xB) || (gBattleScene.unk_00->unk_20 >= 6)) {
