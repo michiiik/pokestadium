@@ -87,7 +87,7 @@ void BattleScene_IntroWaitFirstMonAnim(UNUSED CameraNode* arg0) {
 }
 
 void BattleScene_IntroRevealFirstMon(CameraNode* arg0) {
-    BattlerState* sp2C = &D_84390010[0]->unk_654;
+    ActivePokemonState* sp2C = &D_84390010[0]->unk_654;
     TeamRoster* sp28 = D_84390010[0]->unk_720->unk_08[sp2C->unk_2C];
 
     D_84390010[0]->unk_728.unk_168->node.flags |= 1;
@@ -125,7 +125,7 @@ void BattleScene_IntroFirstMonSettle(CameraNode* arg0) {
 }
 
 void BattleScene_IntroRevealSecondMon(CameraNode* arg0) {
-    BattlerState* sp2C = &D_84390010[1]->unk_654;
+    ActivePokemonState* sp2C = &D_84390010[1]->unk_654;
     TeamRoster* sp28 = D_84390010[1]->unk_720->unk_08[sp2C->unk_2C];
 
     D_84390010[1]->unk_728.unk_168->node.flags |= 1;

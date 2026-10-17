@@ -111,7 +111,7 @@ void Battle_QueueMessage(s8* arg0, s8 arg1) {
 
 void Battle_QueueStatusText(char* arg0, s32 arg1) {
     UNUSED s32 pad[3];
-    BattlerState* sp28 = &D_84390010[arg1]->unk_654;
+    ActivePokemonState* sp28 = &D_84390010[arg1]->unk_654;
     UNUSED s32 pad2[2];
 
     Battle_ClearMessageCursor();
@@ -124,8 +124,8 @@ void func_84317B38(void) {
 }
 
 void Battle_DrawCompactStatusBoxesIfVisible(void) {
-    Battler* ptr1 = D_84390010[0];
-    Battler* ptr2 = D_84390010[1];
+    ActivePokemon* ptr1 = D_84390010[0];
+    ActivePokemon* ptr2 = D_84390010[1];
 
     if ((gSessionContext.mode != 0x10) && (gBattleScene.unk_00->unk_30 == 0)) {
         BattleHud_DrawCompactMonStatusBox(ptr1, 0x15, 0xF, ptr1->unk_720->unk_08[ptr1->unk_728.unk_16C]->unk_001);
@@ -688,21 +688,21 @@ void BattleBox_Update(s16 arg0, s16 arg1) {
     }
 }
 
-void BattleScene_ClearParticipantMessageBuffer(Battler* arg0) {
+void BattleScene_ClearParticipantMessageBuffer(ActivePokemon* arg0) {
     arg0->unk_8C4.unk_00 = 0;
     arg0->unk_8C4.unk_04 = 0;
     arg0->unk_8C4.unk_48[0] = 0;
     arg0->unk_8C4.unk_08[0] = 0;
 }
 
-void BattleScene_BuildParticipantMessage(Battler* arg0, s32 arg1) {
+void BattleScene_BuildParticipantMessage(ActivePokemon* arg0, s32 arg1) {
     gBattleMessageQueues->unk_000 = arg0->unk_720->unk_08[arg0->unk_654.unk_2C]->unk_001;
     arg0->unk_8C4.unk_00 = 1;
     Text_SetStringToken(0x19, arg0->unk_724->unk_01C[arg0->unk_654.unk_08].unk_30);
     Text_GetString(arg0->unk_8C4.unk_48, 0x40, D_843900B0, arg1);
 }
 
-void BattleScene_RevealParticipantMessageChars(Battler* arg0) {
+void BattleScene_RevealParticipantMessageChars(ActivePokemon* arg0) {
     TeamRoster* temp_t0 = arg0->unk_720->unk_08[arg0->unk_654.unk_2C];
 
     if (arg0->unk_8C4.unk_48[arg0->unk_8C4.unk_04] != '\x00') {
@@ -727,8 +727,8 @@ void BattleScene_RevealParticipantMessageChars(Battler* arg0) {
 }
 
 void BattleScene_TickHudTimers(void) {
-    BattlerState* sp1C = &D_84390010[0]->unk_654;
-    BattlerState* sp18 = &D_84390010[1]->unk_654;
+    ActivePokemonState* sp1C = &D_84390010[0]->unk_654;
+    ActivePokemonState* sp18 = &D_84390010[1]->unk_654;
 
     if ((gSessionContext.timeLimitsEnabled != 0) && (D_84390010[1]->unk_728.unk_168->unk_1C == 0x103) &&
         (D_84390010[0]->unk_728.unk_168->unk_1C == 0x17)) {
@@ -757,8 +757,8 @@ void BattleScene_ResetMessageQueue(void) {
 }
 
 void Battle_RenderHud(void) {
-    BattlerState* sp1C = &D_84390010[0]->unk_654;
-    BattlerState* sp18 = &D_84390010[1]->unk_654;
+    ActivePokemonState* sp1C = &D_84390010[0]->unk_654;
+    ActivePokemonState* sp18 = &D_84390010[1]->unk_654;
 
     if (1) {}
 
