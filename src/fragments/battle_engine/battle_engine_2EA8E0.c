@@ -1,4 +1,5 @@
 #include "battle_engine.h"
+#include "game_state.h"
 #include "src/geo_node.h"
 #include "src/geo_render.h"
 #include "src/display_object_textures.h"
@@ -31,7 +32,7 @@ static GraphNode* D_8438E788;
 static GraphNode* D_8438E78C;
 static unk_D_80068BB0* D_8438E790;
 static unk_D_80068BB0* D_8438E794;
-static BattleSessionTeams* D_8438E798;
+static BattleSessionTeams* sBattleSides;
 static s32 D_8438E79C;
 static s32 D_8438E7A0;
 static Color_RGBA8_u32 D_8438E7A4;
@@ -66,27 +67,29 @@ static u32 D_84384514[] = {
     &D_800AC840, 0x06000000, 0x06000000, 0x06000000,  0x06000000, 0x01000000,
 };
 
+// called every frame: bug boy in GLC
 s32 Battle_StageGeoDispatchCallback(s32 arg0, GraphNode* arg1) {
     if (arg0 == 2) {
         BattleAnim_DispatchPresentation(5, &D_8438E440);
     }
     return 0;
 }
-
+// called every frame: bug boy in GLC
 s32 Battle_StageLightAngleCallbackA(s32 arg0, unk_D_86002F34_alt18* arg1) {
     UNUSED s32 pad;
-    f32 sp28;
-    s16 sp26;
-    s16 sp24;
+    f32 distance;
+    s16 angle_x;
+    s16 angle_y;
 
     if (arg0 == 2) {
-        Vec3f_CalculateDistanceAngles(&D_8006F088->view.targetPosition, &D_8006F088->view.eyePosition, &sp28, &sp26, &sp24);
-        arg1->unk_1C = sp26 + 0x2000;
-        arg1->unk_1E = sp24 - 0x2000;
+        Vec3f_CalculateDistanceAngles(&D_8006F088->view.targetPosition, &D_8006F088->view.eyePosition, &distance, &angle_x, &angle_y);
+        arg1->unk_1C = angle_x + 0x2000;
+        arg1->unk_1E = angle_y - 0x2000;
     }
     return 0;
 }
 
+// called every frame: bug boy in GLC
 s32 Battle_StageLightAngleCallbackB(s32 arg0, unk_D_86002F34_alt18* arg1) {
     UNUSED s32 pad;
     f32 sp28;
@@ -101,6 +104,7 @@ s32 Battle_StageLightAngleCallbackB(s32 arg0, unk_D_86002F34_alt18* arg1) {
     return 0;
 }
 
+// called every frame: bug boy in GLC
 s32 Battle_StageMaterialTintCallback(s32 arg0, DisplayObject* arg1) {
     if (arg0 == 2) {
         Vec3f_SetComponentsDuplicate(&arg1->scale, D_8438E7A8, D_8438E7A8, D_8438E7A8);
@@ -109,6 +113,7 @@ s32 Battle_StageMaterialTintCallback(s32 arg0, DisplayObject* arg1) {
     return 0;
 }
 
+// called every frame: bug boy in GLC
 void Battle_SetStageTintColor(u8 arg0, u8 arg1, u8 arg2) {
     D_8438E7A4.r = arg0;
     D_8438E7A4.g = arg1;
@@ -123,10 +128,12 @@ void Battle_SetStageTintColor(u8 arg0, u8 arg1, u8 arg2) {
     }
 }
 
+// Called at the start of battles
 void BattleScene_SetModelUniformScale(f32 arg0) {
     D_8438E7A8 = arg0;
 }
 
+// called every frame: bug boy in GLC
 u16 Battle_TintTexel16(u16 arg0) {
     s32 r;
     s32 g;
@@ -139,6 +146,7 @@ u16 Battle_TintTexel16(u16 arg0) {
     return (r << 11) | (g << 6) | (b << 1) | 1;
 }
 
+// called every frame: bug boy in GLC
 void Battle_DrawStageBackdrop(void) {
     s16 sp4E;
     s16 sp4C;
@@ -190,51 +198,56 @@ void Battle_DrawStageBackdrop(void) {
     gSPDisplayList(gDisplayListHead++, D_8006F630);
 }
 
-void Battle_RenderStageThumbnail(GraphNode* arg0, unk_D_80068BB0* arg1) {
-    CameraNode* sp2C = arg0->children;
-    CameraViewport sp20;
+// called every frame: bug boy in GLC
+// Draws the Active Pokemon's portrait in the battle UI
+// Removing the branch makes it so the Pokemon in the thumbnail move!
+void Battle_RenderActivePokemonThumbnail(GraphNode* pokemon, unk_D_80068BB0* thumbnail) {
+    CameraNode* camera_node = pokemon->children;
+    CameraViewport viewport;
 
-    if (sp2C->node.flags & 0x10) {
-        sp20 = sp2C->viewport;
+    if (camera_node->node.flags & 0x10) {
+        viewport = camera_node->viewport;
 
-        sp2C->viewport.x = 0;
-        sp2C->viewport.y = 0;
-        sp2C->viewport.width = 0x4C;
-        sp2C->viewport.height = 0x4C;
+        camera_node->viewport.x = 0;
+        camera_node->viewport.y = 0;
+        camera_node->viewport.width = 76;
+        camera_node->viewport.height = 76;
 
-        GfxImage_SetRenderTarget(&gDisplayListHead, arg1);
+        GfxImage_SetRenderTarget(&gDisplayListHead, thumbnail);
         GfxImage_FillCurrent(&gDisplayListHead, 0x10D);
-        Geo_RenderRootNode(arg0);
+        Geo_RenderRootNode(pokemon);
 
-        sp2C->node.flags &= ~0x10;
+        camera_node->node.flags &= ~0x10;
 
-        sp2C->viewport = sp20;
+        camera_node->viewport = viewport;
     }
 }
 
-void Battle_DrawClippedTextureRect(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    unk_D_800A7440 sp38;
-    u16 tmp5;
-    u16 tmp6;
+// called every frame: bug boy in GLC
+void Battle_DrawClippedTextureRect(s32 x1, s32 y1, s32 x2, s32 y2) {
+    struct Rectangle dest;
+    u16 texture_spread_x;
+    u16 texture_spread_y;
 
-    GfxRect_SetBounds(&sp38, arg0, arg1, arg2, arg3);
+    GfxRect_SetBounds(&dest, x1, y1, x2, y2);
 
-    if (GfxRect_ClipToScissor(&sp38) != 0) {
-        if (!arg2) {}
+    if (GfxRect_ClipToScissor(&dest) != 0) {
+        if (!x2) {}
 
-        tmp5 = ((sp38.x1 - arg0) << 5);
-        tmp6 = ((sp38.y2 - arg1) << 5);
+        texture_spread_x = ((dest.x1 - x1) << 5);
+        texture_spread_y = ((dest.y2 - y1) << 5);
 
-        tmp5 += 0x10;
-        tmp6 += 0x10;
+        texture_spread_x += 0x10;
+        texture_spread_y += 0x10;
 
-        gSPTextureRectangle(gDisplayListHead++, sp38.x1 << 2, sp38.y2 << 2, ((sp38.y1 + 1) ^ 0) << 2,
-                            ((sp38.x2 + 1) ^ 0) << 2, G_TX_RENDERTILE, tmp5, tmp6, 0x0800, 0x0800);
+        gSPTextureRectangle(gDisplayListHead++, dest.x1 << 2, dest.y2 << 2, ((dest.y1 + 1) ^ 0) << 2,
+                            ((dest.x2 + 1) ^ 0) << 2, G_TX_RENDERTILE, texture_spread_x, texture_spread_y, 0x0800, 0x0800);
 
-        if ((arg2 && arg2) ^ 0) {}
+        if ((x2 && x2) ^ 0) {}// karodo
     }
 }
 
+// called every frame: bug boy in GLC
 void Battle_DrawTexturedRectSegment(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8* arg4, s32 arg5) {
     gDPLoadTextureBlock(gDisplayListHead++, arg4, G_IM_FMT_RGBA, G_IM_SIZ_16b, arg5, (arg3 * 2) + 2, 0,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
@@ -243,6 +256,7 @@ void Battle_DrawTexturedRectSegment(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8* 
     Battle_DrawClippedTextureRect(arg0, arg1, (arg0 + arg2) - 1, (arg1 + arg3) - 1);
 }
 
+// called every frame: bug boy in GLC
 void Battle_DrawFaintOrderMarker(GraphNode* arg0, unk_D_80068BB0* arg1) {
     s32 temp_s2;
     s32 temp_s3;
@@ -278,38 +292,40 @@ void Battle_DrawFaintOrderMarker(GraphNode* arg0, unk_D_80068BB0* arg1) {
     gDPSetTextureFilter(gDisplayListHead++, G_TF_BILERP);
 }
 
+// trigger unknown
 void func_84300D44(void) {
     s32 i;
     s32 j;
     s32 x;
     TeamRoster* temp_a2;
-    BattleSessionTeams* ptr = &D_8438E798[0];
+    BattleSessionTeams* ptr = &sBattleSides[0];
 
     for (i = 0; i < 2; i++, ptr++) {
         for (j = 0; j < ptr->unk_01; j++) {
-            temp_a2 = ptr->unk_08[j];
-            for (x = 0; x < temp_a2->unk_002; x++) {
-                temp_a2->unk_01C[x].unk_25 = 0;
+            temp_a2 = ptr->teamMember[j];
+            for (x = 0; x < temp_a2->numberOfPokemonChosen; x++) {
+                temp_a2->pokemonPicked[x].unk_25 = 0;
             }
         }
     }
 }
 
+// called every frame: bug boy in GLC
 void func_84300DC0(void) {
     s32 i;
     s32 j;
     s32 x;
     s32 var_v0 = 0;
     TeamRoster* temp_a3;
-    BattleSessionTeams* ptr = &D_8438E798[0];
+    BattleSessionTeams* ptr = &sBattleSides[0];
 
     for (i = 0; i < 2; i++, ptr++) {
         for (j = 0; j < ptr->unk_01; j++) {
-            temp_a3 = ptr->unk_08[j];
-            for (x = 0; x < temp_a3->unk_002; x++) {
-                if ((temp_a3->unk_01C[x].unk_25 == 0) && (temp_a3->unk_01C[x].unk_02 == 0)) {
+            temp_a3 = ptr->teamMember[j];
+            for (x = 0; x < temp_a3->numberOfPokemonChosen; x++) {
+                if ((temp_a3->pokemonPicked[x].unk_25 == 0) && (temp_a3->pokemonPicked[x].unk_02 == 0)) {
                     var_v0 = 1;
-                    temp_a3->unk_01C[x].unk_25 = D_8438E7A0;
+                    temp_a3->pokemonPicked[x].unk_25 = D_8438E7A0;
                 }
             }
         }
@@ -326,36 +342,38 @@ void func_84300E78(void) {
 void func_84300E80(void) {
 }
 
+// called every frame: bug boy in GLC
 s32 BattleScene_UpdateFrame(s32 arg0) {
     s32 sp1C;
 
     GeoRender_AdvanceFrameCounter();
     ModelAnim_UpdateFrameChangeState();
-    BattleScene_DispatchLifecycle(2, D_8438E798);
+    BattleScene_DispatchLifecycle(2, sBattleSides);
     BattleScene_DispatchOwnerCameraLifecycle(2, &D_8438E598, &D_8438E688);
     sp1C = BattleScene_Dispatch(2, &D_8438E440);
     BattleAnim_DispatchPresentation(2, &D_8438E440);
-    Battle_RenderStageThumbnail(D_8438E788, D_8438E790);
-    Battle_RenderStageThumbnail(D_8438E78C, D_8438E794);
+    Battle_RenderActivePokemonThumbnail(D_8438E788, D_8438E790);
+    Battle_RenderActivePokemonThumbnail(D_8438E78C, D_8438E794);
     BgStage_DrawFrame();
     Battle_DrawStageBackdrop();
     Geo_RenderRootNode(D_8438E784);
-    BattleScene_DispatchLifecycle(5, D_8438E798);
+    BattleScene_DispatchLifecycle(5, sBattleSides);
     Battle_DrawFaintOrderMarker(D_8438E788, D_8438E790);
     Battle_DrawFaintOrderMarker(D_8438E78C, D_8438E794);
     func_84300DC0();
 
     if (sp1C == 1) {
-        D_8438E798[0].unk_1C = 1;
+        sBattleSides[0].unk_1C = 1;
     }
 
     if (sp1C == 2) {
-        D_8438E798[1].unk_1C = 1;
+        sBattleSides[1].unk_1C = 1;
     }
 
     return sp1C;
 }
 
+// triggers on pressing Re-enter after loss: Bug boy in GLC. Might be a misidentification 
 s32 BattleScene_UpdatePausedFrame(s32 arg0) {
     s32 sp1C = 0;
 
@@ -366,7 +384,7 @@ s32 BattleScene_UpdatePausedFrame(s32 arg0) {
         BgStage_DrawFrame();
         Battle_DrawStageBackdrop();
         Geo_RenderRootNode(D_8438E784);
-        BattleScene_DispatchLifecycle(5, D_8438E798);
+        BattleScene_DispatchLifecycle(5, sBattleSides);
         Battle_DrawFaintOrderMarker(D_8438E788, D_8438E790);
         Battle_DrawFaintOrderMarker(D_8438E78C, D_8438E794);
     }
@@ -377,6 +395,7 @@ s32 BattleScene_UpdatePausedFrame(s32 arg0) {
     return sp1C;
 }
 
+// triggers every frame: bug boy in GLC
 void Battle_UpdateCompletionGate(void) {
     if (D_8438E7AC < 0) {
         D_8438E7AC++;
@@ -385,14 +404,15 @@ void Battle_UpdateCompletionGate(void) {
     }
 }
 
+// triggers every frame: bug boy in GLC
 s32 Battle_FrameCallback(s32 arg0) {
     s32 sp1C = 0;
 
     Cont_StartReadInputs();
-    Trainer_RequestPokeIcon(&D_8438E798[0]);
-    PokeIcon_WaitFrameLoadForObject(&D_8438E798[0]);
-    Trainer_RequestPokeIcon(&D_8438E798[1]);
-    PokeIcon_WaitFrameLoadForObject(&D_8438E798[1]);
+    Trainer_RequestPokeIcon(&sBattleSides[0]);
+    PokeIcon_WaitFrameLoadForObject(&sBattleSides[0]);
+    Trainer_RequestPokeIcon(&sBattleSides[1]);
+    PokeIcon_WaitFrameLoadForObject(&sBattleSides[1]);
     Cont_ReadInputs();
     Input_ResetRepeatState();
 
@@ -411,8 +431,8 @@ s32 Battle_FrameCallback(s32 arg0) {
     }
 
     Battle_UpdateCompletionGate();
-    PokeIcon_RequestBackgroundForObject(&D_8438E798[0]);
-    PokeIcon_RequestBackgroundForObject(&D_8438E798[1]);
+    PokeIcon_RequestBackgroundForObject(&sBattleSides[0]);
+    PokeIcon_RequestBackgroundForObject(&sBattleSides[1]);
 
     if ((arg0 != 2) && (D_8438E7AC == 1)) {
         D_8438E7AC = 2;
@@ -425,72 +445,77 @@ s32 Battle_FrameCallback(s32 arg0) {
     return 0;
 }
 
-void func_8430123C(u8* arg0, s32 arg1) {
+// triggers on battle start: bug boy in glc
+void Battle_SelectComRosterOrder(u8* com_roster, s32 number_of_pokemon_picked) {
     s32 i;
     s32 j;
 
     for (i = 0; i < 6; i++) {
-        for (j = 0; j < arg1; j++) {
-            if (i == arg0[j]) {
+        for (j = 0; j < number_of_pokemon_picked; j++) {
+            if (i == com_roster[j]) {
                 break;
             }
         }
 
-        if (j == arg1) {
-            arg0[arg1++] = i;
+        if (j == number_of_pokemon_picked) {
+            com_roster[number_of_pokemon_picked++] = i;
         }
     }
 }
 
-void func_8430128C(void) {
-    TeamRoster* temp_s0;
-    TeamRoster* temp_s1;
-    u8 sp48[8];
-    TeamRoster* temp_s2;
+// triggers on battle start: bug boy in glc
+void Battle_CompleteComRosterOrder(void) {
+    TeamRoster* com_roster;
+    TeamRoster* player_roster;
+    u8 order_of_picked_pokemon[8];
+    TeamRoster* player_teammate_roster;
     s32 i;
-    s32 var_s1;
+    s32 number_of_pokemon_picked;
 
-    temp_s1 = gSessionContext.battleSides[0].unk_08[0];
-    temp_s2 = gSessionContext.battleSides[0].unk_08[1];
-    temp_s0 = gSessionContext.battleSides[1].unk_08[0];
+    player_roster = gSessionContext.battleSides[0].teamMember[0];
+    // Free battle does let two players play against the AI
+    player_teammate_roster = gSessionContext.battleSides[0].teamMember[1];
+    com_roster = gSessionContext.battleSides[1].teamMember[0];
 
-    if (temp_s0->unk_000 & 2) {
+    if (com_roster->unk_000 & 2) {
         if (gSessionContext.mode == 0) {
-            if (gSessionContext.ruleCategory == 0) {
-                var_s1 = temp_s0->unk_214->unk_002;
+            if (gSessionContext.ruleCategory == RULE_CATEGORY_ANYTHING_GOES) {
+                number_of_pokemon_picked = com_roster->rosterInfo->numberOfPokemonCanBePicked;
             } else {
-                var_s1 = 3;
+                number_of_pokemon_picked = 3;
             }
-            func_843831A0(temp_s1, temp_s2, temp_s0, gSessionContext.aiDifficulty, sp48, gSessionContext.ruleCategory, var_s1);
+            func_843831A0(player_roster, player_teammate_roster, com_roster, gSessionContext.aiDifficulty, order_of_picked_pokemon, gSessionContext.ruleCategory, number_of_pokemon_picked);
         } else {
-            if (gSessionContext.ruleCategory == 8) {
-                var_s1 = temp_s0->unk_214->unk_002;
+            if (gSessionContext.ruleCategory == RULE_CATEGORY_VS_MEWTWO) {
+                number_of_pokemon_picked = com_roster->rosterInfo->numberOfPokemonCanBePicked;
             } else {
-                var_s1 = 3;
+                number_of_pokemon_picked = 3;
             }
-            func_843831A0(temp_s1, NULL, temp_s0, temp_s0->unk_018 & 0xFF, sp48, gSessionContext.ruleCategory, var_s1);
+            func_843831A0(player_roster, NULL, com_roster, com_roster->unk_018 & 0xFF, order_of_picked_pokemon, gSessionContext.ruleCategory, number_of_pokemon_picked);
         }
-        func_8430123C(sp48, var_s1);
-        temp_s0->unk_002 = var_s1;
+        Battle_SelectComRosterOrder(order_of_picked_pokemon, number_of_pokemon_picked);
+        com_roster->numberOfPokemonChosen = number_of_pokemon_picked;
 
-        for (i = 0; i < temp_s0->unk_214->unk_002; i++) {
-            temp_s0->unk_01C[i] = temp_s0->unk_214->unk_028[sp48[i]];
+        for (i = 0; i < com_roster->rosterInfo->numberOfPokemonCanBePicked; i++) {
+            com_roster->pokemonPicked[i] = com_roster->rosterInfo->unk_028[order_of_picked_pokemon[i]];
         }
     }
 }
 
+// triggers at the start of battle: bug boy in glc
 void BattleScene_InitializeParticipantPresentation(BattleSessionTeams* arg0, unk_D_86002F30* arg1) {
-    TeamRoster* temp_v0 = arg0->unk_08[0];
+    TeamRoster* temp_v0 = arg0->teamMember[0];
 
     arg0->unk_18 = arg1->unk_08->unk_00[0];
     arg0->unk_00 |= 0xA0;
     arg0->unk_1C = 0;
-    arg0->unk_02 = temp_v0->unk_01C[0].unk_00.unk_00;
-    arg0->unk_04 = temp_v0->unk_01C;
+    arg0->unk_02 = temp_v0->pokemonPicked[0].unk_00.unk_00;
+    arg0->unk_04 = temp_v0->pokemonPicked;
     Trainer_RequestPokeIcon(arg0);
 }
 
-void func_84301430(unk_func_80007444* arg0) {
+// triggers at the start of battle: bug boy in glc
+void BattleScene_Init(unk_func_80007444* arg0) {
     MemoryBlock* sp44;
     u32* temp_v0_4;
     FragmentEntry sp3C;
@@ -511,8 +536,8 @@ void func_84301430(unk_func_80007444* arg0) {
         Font_Init(3, 0);
     }
 
-    D_8438E798[0].unk_10 = PokeIcon_AllocFramebuffers(3);
-    D_8438E798[1].unk_10 = PokeIcon_AllocFramebuffers(3);
+    sBattleSides[0].unk_10 = PokeIcon_AllocFramebuffers(3);
+    sBattleSides[1].unk_10 = PokeIcon_AllocFramebuffers(3);
     PokeIcon_OpenModelArchives();
 
     sp2C = main_pool_alloc(0x10, 0);
@@ -546,9 +571,9 @@ void func_84301430(unk_func_80007444* arg0) {
     D_8438E780 = sp3C(2, 0);
 
     sp28 = Model_LoadByArchiveIndex(0x9A);
-    func_8430128C();
-    BattleScene_InitializeParticipantPresentation(&D_8438E798[0], sp28);
-    BattleScene_InitializeParticipantPresentation(&D_8438E798[1], sp28);
+    Battle_CompleteComRosterOrder();
+    BattleScene_InitializeParticipantPresentation(&sBattleSides[0], sp28);
+    BattleScene_InitializeParticipantPresentation(&sBattleSides[1], sp28);
 
     func_84300D44();
     GeoNode_CreateCamera(NULL, &D_8438E440, 0, 0, 0x140, 0xF0);
@@ -560,7 +585,7 @@ void func_84301430(unk_func_80007444* arg0) {
     GeoNode_CreateContainer(NULL, &D_8438E580);
     GeoCamera_SetPerspective(&D_8438E440, 30.0f, 192.0f, 24576.0f);
     ModelRenderer_InitDisplayRoots();
-    BattleScene_DispatchLifecycle(0, D_8438E798);
+    BattleScene_DispatchLifecycle(0, sBattleSides);
     BattleScene_DispatchOwnerCameraLifecycle(0, &D_8438E598, &D_8438E688);
     BattleScene_Dispatch(0, &D_8438E440);
     BattleAnim_DispatchPresentation(0, &D_8438E440);
@@ -598,7 +623,7 @@ void func_84301430(unk_func_80007444* arg0) {
         D_8438E530.node.callbackArg = 1;
     }
 
-    BattleScene_DispatchLifecycle(3, D_8438E798);
+    BattleScene_DispatchLifecycle(3, sBattleSides);
     BattleScene_DispatchOwnerCameraLifecycle(3, &D_8438E598, &D_8438E688);
     BattleScene_Dispatch(3, &D_8438E440);
     BattleAnim_DispatchPresentation(3, &D_8438E440);
@@ -610,17 +635,18 @@ void func_84301430(unk_func_80007444* arg0) {
 void func_84301A24(void) {
 }
 
+// triggers at the start of battle, battle init
 s32 Battle_Main(s32 arg0, SessionContext* arg1) {
     unk_func_80007444* sp24;
 
-    D_8438E798 = gSessionContext.battleSides;
+    sBattleSides = gSessionContext.battleSides;
     D_8438E7AC = -2;
 
     main_pool_push_state('BATL');
 
     Gfx_InitDisplayListBuffers(0x20000, 0);
     sp24 = StageContext_Allocate(0, 1, 3, 1, 2, 1);
-    func_84301430(sp24);
+    BattleScene_Init(sp24);
     StageContext_Activate(sp24);
     StageLoader_RunFrames(1);
     BgStage_WaitForCondition(Battle_FrameCallback, 0x20, 0x10);

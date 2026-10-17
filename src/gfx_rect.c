@@ -150,7 +150,7 @@ void GfxImage_SetRenderTarget(Gfx** gfx_p, unk_D_80068BB0* arg1) {
     *gfx_p = gfx;
 }
 
-void GfxImage_FillRectangle(Gfx** gfx_p, s32 arg1, s32 arg2, s32 arg3, s32 arg4, u16 fill_colour) {
+void GfxImage_FillRectangle(Gfx** gfx_p, s32 arg1, s32 arg2, s32 arg3, s32 arg4, u16 fill_color) {
     if (D_80068BB0 != NULL) {
         Gfx* gfx = *gfx_p;
 
@@ -170,7 +170,7 @@ void GfxImage_FillRectangle(Gfx** gfx_p, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
         }
 
         gDPPipeSync(gfx++);
-        gDPSetFillColor(gfx++, (fill_colour << 0x10) | fill_colour);
+        gDPSetFillColor(gfx++, (fill_color << 0x10) | fill_color);
         gDPFillRectangle(gfx++, arg1, arg2, (arg1 + arg3) - 1, (arg2 + arg4) - 1);
 
         *gfx_p = gfx;
@@ -198,6 +198,6 @@ void GfxImage_ClearDepthRectangle(Gfx** gfx_p, s32 arg1, s32 arg2, s32 arg3, s32
     }
 }
 
-void GfxImage_FillCurrent(Gfx** gfx_p, u16 fill_colour) {
-    GfxImage_FillRectangle(gfx_p, 0, 0, D_80068BB0->width, D_80068BB0->height, (fill_colour << 0x10) | fill_colour);
+void GfxImage_FillCurrent(Gfx** gfx_p, u16 fill_color) {
+    GfxImage_FillRectangle(gfx_p, 0, 0, D_80068BB0->width, D_80068BB0->height, (fill_color << 0x10) | fill_color);
 }
