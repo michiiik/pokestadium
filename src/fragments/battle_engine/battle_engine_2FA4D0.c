@@ -588,10 +588,10 @@ void BattleHud_DrawPartyBallRow(ActivePokemon* arg0, s16 arg1, s16 arg2) {
 
     if (arg0 == sActivePokemon[0]) {
         if (arg0->unk_720->unk_01 == 1) {
-            for (i = 0; i < arg0->unk_720->unk_08[0]->unk_002; i++) {
-                if (arg0->unk_720->unk_08[0]->unk_01C[i].unk_02 == 0) {
+            for (i = 0; i < arg0->unk_720->teamMember[0]->numberOfPokemonChosen; i++) {
+                if (arg0->unk_720->teamMember[0]->pokemonPicked[i].unk_02 == 0) {
                     var_v0_2 = 2;
-                } else if (arg0->unk_720->unk_08[0]->unk_01C[i].unk_05 != 0) {
+                } else if (arg0->unk_720->teamMember[0]->pokemonPicked[i].unk_05 != 0) {
                     var_v0_2 = 1;
                 } else {
                     var_v0_2 = 0;
@@ -599,10 +599,10 @@ void BattleHud_DrawPartyBallRow(ActivePokemon* arg0, s16 arg1, s16 arg2) {
                 Gfx_DrawTextureRgba16(arg1 + i * 7, arg2, 8, 6, sp74[var_v0_2], 8, 0);
             }
         } else {
-            for (i = 0; i < arg0->unk_720->unk_08[0]->unk_002; i++) {
-                if (arg0->unk_720->unk_08[0]->unk_01C[i].unk_02 == 0) {
+            for (i = 0; i < arg0->unk_720->teamMember[0]->numberOfPokemonChosen; i++) {
+                if (arg0->unk_720->teamMember[0]->pokemonPicked[i].unk_02 == 0) {
                     var_v0_2 = 2;
-                } else if (arg0->unk_720->unk_08[0]->unk_01C[i].unk_05 != 0) {
+                } else if (arg0->unk_720->teamMember[0]->pokemonPicked[i].unk_05 != 0) {
                     var_v0_2 = 1;
                 } else {
                     var_v0_2 = 0;
@@ -610,10 +610,10 @@ void BattleHud_DrawPartyBallRow(ActivePokemon* arg0, s16 arg1, s16 arg2) {
                 Gfx_DrawTextureRgba16(arg1 + i * 7, arg2, 8, 6, sp74[var_v0_2], 8, 0);
             }
 
-            for (j = 0; j < arg0->unk_720->unk_08[1]->unk_002; j++) {
-                if (arg0->unk_720->unk_08[1]->unk_01C[j].unk_02 == 0) {
+            for (j = 0; j < arg0->unk_720->teamMember[1]->numberOfPokemonChosen; j++) {
+                if (arg0->unk_720->teamMember[1]->pokemonPicked[j].unk_02 == 0) {
                     var_v0_2 = 2;
-                } else if (arg0->unk_720->unk_08[1]->unk_01C[j].unk_05 != 0) {
+                } else if (arg0->unk_720->teamMember[1]->pokemonPicked[j].unk_05 != 0) {
                     var_v0_2 = 1;
                 } else {
                     var_v0_2 = 0;
@@ -625,10 +625,10 @@ void BattleHud_DrawPartyBallRow(ActivePokemon* arg0, s16 arg1, s16 arg2) {
 
     if (arg0 == sActivePokemon[1]) {
         if (arg0->unk_720->unk_01 == 1) {
-            for (i = 0; i < arg0->unk_720->unk_08[0]->unk_002; i++) {
-                if (arg0->unk_720->unk_08[0]->unk_01C[i].unk_02 == 0) {
+            for (i = 0; i < arg0->unk_720->teamMember[0]->numberOfPokemonChosen; i++) {
+                if (arg0->unk_720->teamMember[0]->pokemonPicked[i].unk_02 == 0) {
                     var_v0_2 = 2;
-                } else if (arg0->unk_720->unk_08[0]->unk_01C[i].unk_05 != 0) {
+                } else if (arg0->unk_720->teamMember[0]->pokemonPicked[i].unk_05 != 0) {
                     var_v0_2 = 1;
                 } else {
                     var_v0_2 = 0;
@@ -636,10 +636,10 @@ void BattleHud_DrawPartyBallRow(ActivePokemon* arg0, s16 arg1, s16 arg2) {
                 Gfx_DrawTextureRgba16(arg1 - i * 7, arg2, 8, 6, sp74[var_v0_2], 8, 0);
             }
         } else {
-            for (i = 0; i < arg0->unk_720->unk_08[0]->unk_002; i++) {
-                if (arg0->unk_720->unk_08[0]->unk_01C[i].unk_02 == 0) {
+            for (i = 0; i < arg0->unk_720->teamMember[0]->numberOfPokemonChosen; i++) {
+                if (arg0->unk_720->teamMember[0]->pokemonPicked[i].unk_02 == 0) {
                     var_v0_2 = 2;
-                } else if (arg0->unk_720->unk_08[0]->unk_01C[i].unk_05 != 0) {
+                } else if (arg0->unk_720->teamMember[0]->pokemonPicked[i].unk_05 != 0) {
                     var_v0_2 = 1;
                 } else {
                     var_v0_2 = 0;
@@ -647,10 +647,10 @@ void BattleHud_DrawPartyBallRow(ActivePokemon* arg0, s16 arg1, s16 arg2) {
                 Gfx_DrawTextureRgba16(arg1 - i * 7, arg2, 8, 6, sp74[var_v0_2], 8, 0);
             }
 
-            for (j = 0; j < arg0->unk_720->unk_08[1]->unk_002; j++) {
-                if (arg0->unk_720->unk_08[1]->unk_01C[j].unk_02 == 0) {
+            for (j = 0; j < arg0->unk_720->teamMember[1]->numberOfPokemonChosen; j++) {
+                if (arg0->unk_720->teamMember[1]->pokemonPicked[j].unk_02 == 0) {
                     var_v0_2 = 2;
-                } else if (arg0->unk_720->unk_08[1]->unk_01C[j].unk_05 != 0) {
+                } else if (arg0->unk_720->teamMember[1]->pokemonPicked[j].unk_05 != 0) {
                     var_v0_2 = 1;
                 } else {
                     var_v0_2 = 0;
@@ -670,8 +670,8 @@ void BattleHud_DrawMonStatusBoxPlayer(ActivePokemon* arg0, s16 arg1, s16 arg2, u
     Color_RGB8* temp_v0_2;
     u32 var_v1;
 
-    sp80 = arg0->unk_720->unk_08[arg0->unk_728.unk_16C];
-    sp7C = &arg0->unk_720->unk_08[arg0->unk_728.unk_16C]->unk_01C[arg0->unk_654.unk_08];
+    sp80 = arg0->unk_720->teamMember[arg0->unk_728.unk_16C];
+    sp7C = &arg0->unk_720->teamMember[arg0->unk_728.unk_16C]->pokemonPicked[arg0->unk_654.unk_08];
 
     if (sp7C->unk_02 == 0) {
         var_v1 = 1;
@@ -758,8 +758,8 @@ void BattleHud_DrawMonStatusBoxOpponent(ActivePokemon* arg0, s16 arg1, s16 arg2,
     Color_RGB8* temp_v0;
     u32 var_v1;
 
-    sp80 = arg0->unk_720->unk_08[arg0->unk_728.unk_16C];
-    sp7C = &arg0->unk_720->unk_08[arg0->unk_728.unk_16C]->unk_01C[arg0->unk_654.unk_08];
+    sp80 = arg0->unk_720->teamMember[arg0->unk_728.unk_16C];
+    sp7C = &arg0->unk_720->teamMember[arg0->unk_728.unk_16C]->pokemonPicked[arg0->unk_654.unk_08];
 
     if (sp7C->unk_02 == 0) {
         var_v1 = 1;
@@ -1001,7 +1001,7 @@ void BattleHud_DrawMoveSelectMenu(ActivePokemon* arg0, s16 arg1, s16 arg2, s32 a
     BattleMon* sp58;
     UNUSED s32 pad;
 
-    sp58 = &arg0->unk_720->unk_08[arg0->unk_728.unk_16C]->unk_01C[arg0->unk_654.unk_08];
+    sp58 = &arg0->unk_720->teamMember[arg0->unk_728.unk_16C]->pokemonPicked[arg0->unk_654.unk_08];
     temp_s0 = &arg0->unk_654.runtime;
 
     Battle_DrawGradientRectWrapper(arg1 + 1, arg2 + 1, 0xC7, 0x38, &D_84385860[arg3], &D_84385870[arg3]);
@@ -1286,10 +1286,10 @@ void BattleHud_DrawDoublesRosterRow(ActivePokemon* arg0, TeamRoster* arg1, Battl
     Font_Printf(arg3 + 0x1D, arg4 + 2, arg2->unk_30);
     Font_EndTexturedTextRendering();
 
-    if (arg1->unk_01C[arg5].unk_02 == 0) {
+    if (arg1->pokemonPicked[arg5].unk_02 == 0) {
         var_t0 = 1;
     } else {
-        var_t0 = Status_ToDisplayIconIndex(arg1->unk_01C[arg5].unk_05);
+        var_t0 = Status_ToDisplayIconIndex(arg1->pokemonPicked[arg5].unk_05);
     }
 
     if (var_t0 != 0) {
@@ -1329,10 +1329,10 @@ void BattleHud_DrawPartyRosterRow(ActivePokemon* arg0, TeamRoster* arg1, BattleM
     Font_Printf(arg3 + 0x1D, arg4 + 2, arg2->unk_30);
     Font_EndTexturedTextRendering();
 
-    if (arg1->unk_01C[arg5].unk_02 == 0) {
+    if (arg1->pokemonPicked[arg5].unk_02 == 0) {
         var_t0 = 1;
     } else {
-        var_t0 = Status_ToDisplayIconIndex(arg1->unk_01C[arg5].unk_05);
+        var_t0 = Status_ToDisplayIconIndex(arg1->pokemonPicked[arg5].unk_05);
     }
 
     if (var_t0 != 0) {
@@ -1367,16 +1367,16 @@ void BattleHud_DrawTeamStatusList(ActivePokemon* arg0, TeamRoster* arg1, s16 arg
 
     BattleHud_DrawPlainText((arg2 - (Font_MeasureTextExtent(1, 0, arg1->unk_008) / 2)) + 0x32, arg3 + 3, arg1->unk_008);
 
-    if (arg1->unk_002 > 0) {
-        BattleHud_DrawPartyRosterRow(arg0, arg1, &arg1->unk_01C[0], arg2 + 1, arg3 + 0x10, 0);
+    if (arg1->numberOfPokemonChosen > 0) {
+        BattleHud_DrawPartyRosterRow(arg0, arg1, &arg1->pokemonPicked[0], arg2 + 1, arg3 + 0x10, 0);
     }
 
-    if (arg1->unk_002 >= 2) {
-        BattleHud_DrawPartyRosterRow(arg0, arg1, &arg1->unk_01C[1], arg2 + 1, arg3 + 0x2D, 1);
+    if (arg1->numberOfPokemonChosen >= 2) {
+        BattleHud_DrawPartyRosterRow(arg0, arg1, &arg1->pokemonPicked[1], arg2 + 1, arg3 + 0x2D, 1);
     }
 
-    if (arg1->unk_002 >= 3) {
-        BattleHud_DrawPartyRosterRow(arg0, arg1, &arg1->unk_01C[2], arg2 + 1, arg3 + 0x4A, 2);
+    if (arg1->numberOfPokemonChosen >= 3) {
+        BattleHud_DrawPartyRosterRow(arg0, arg1, &arg1->pokemonPicked[2], arg2 + 1, arg3 + 0x4A, 2);
     }
 
     gSPDisplayList(gDisplayListHead++, D_8006F518);
@@ -1392,7 +1392,7 @@ void BattleHud_DrawTeamStatusList(ActivePokemon* arg0, TeamRoster* arg1, s16 arg
 void BattleHud_DrawDoublesTeamStatusList(ActivePokemon* arg0, s16 arg1, s16 arg2, s32 arg3) {
     TeamRoster* temp_s0;
     TeamRoster* temp_s1;
-    BattleMon* ptr = &arg0->unk_724->unk_01C[0];
+    BattleMon* ptr = &arg0->unk_724->pokemonPicked[0];
     s32 i;
     Color_RGB8* sp88[] = {
         D_84385888,
@@ -1409,16 +1409,16 @@ void BattleHud_DrawDoublesTeamStatusList(ActivePokemon* arg0, s16 arg1, s16 arg2
     s32 tmp;
     BattleMon* sp5C[6];
 
-    temp_s0 = arg0->unk_720->unk_08[arg0->unk_728.unk_16C];
+    temp_s0 = arg0->unk_720->teamMember[arg0->unk_728.unk_16C];
     temp_s1 = arg0->unk_724;
 
-    sp5C[5] = &temp_s1->unk_01C[0];
-    sp5C[5] = &temp_s1->unk_01C[0];
-    sp5C[4] = &temp_s1->unk_01C[1];
-    sp5C[3] = &temp_s1->unk_01C[2];
-    sp5C[2] = &temp_s1->unk_01C[3];
-    sp5C[1] = &temp_s1->unk_01C[4];
-    sp5C[0] = &temp_s1->unk_01C[5];
+    sp5C[5] = &temp_s1->pokemonPicked[0];
+    sp5C[5] = &temp_s1->pokemonPicked[0];
+    sp5C[4] = &temp_s1->pokemonPicked[1];
+    sp5C[3] = &temp_s1->pokemonPicked[2];
+    sp5C[2] = &temp_s1->pokemonPicked[3];
+    sp5C[1] = &temp_s1->pokemonPicked[4];
+    sp5C[0] = &temp_s1->pokemonPicked[5];
 
     Battle_DrawGradientRectWrapper(arg1 + 1, arg2 + 1, 0xC8, 0xF, &sp88[arg3][0], &sp78[arg3][0]);
     Battle_DrawGradientRectWrapper(arg1 + 1, arg2 + 0x10, 0xC8, 0x1D, &sp88[arg3][1], &sp78[arg3][1]);
@@ -1433,27 +1433,27 @@ void BattleHud_DrawDoublesTeamStatusList(ActivePokemon* arg0, s16 arg1, s16 arg2
 
     gSPDisplayList(gDisplayListHead++, D_8006F630);
 
-    if (temp_s0->unk_002 > 0) {
+    if (temp_s0->numberOfPokemonChosen > 0) {
         BattleHud_DrawDoublesRosterRow(arg0, temp_s0, sp5C[5], arg1 + 1, arg2 + 0x10, 0);
     }
 
-    if (temp_s0->unk_002 >= 2) {
+    if (temp_s0->numberOfPokemonChosen >= 2) {
         BattleHud_DrawDoublesRosterRow(arg0, temp_s0, sp5C[4], arg1 + 1, arg2 + 0x2D, 1);
     }
 
-    if (temp_s0->unk_002 >= 3) {
+    if (temp_s0->numberOfPokemonChosen >= 3) {
         BattleHud_DrawDoublesRosterRow(arg0, temp_s0, sp5C[3], arg1 + 1, arg2 + 0x4A, 2);
     }
 
-    if (temp_s0->unk_002 >= 4) {
+    if (temp_s0->numberOfPokemonChosen >= 4) {
         BattleHud_DrawDoublesRosterRow(arg0, temp_s0, sp5C[2], arg1 + 0x66, arg2 + 0x10, 3);
     }
 
-    if (temp_s0->unk_002 >= 5) {
+    if (temp_s0->numberOfPokemonChosen >= 5) {
         BattleHud_DrawDoublesRosterRow(arg0, temp_s0, sp5C[1], arg1 + 0x66, arg2 + 0x2D, 4);
     }
 
-    if (temp_s0->unk_002 >= 6) {
+    if (temp_s0->numberOfPokemonChosen >= 6) {
         BattleHud_DrawDoublesRosterRow(arg0, temp_s0, sp5C[0], arg1 + 0x66, arg2 + 0x4A, 5);
     }
 
@@ -1469,7 +1469,7 @@ void BattleHud_DrawCompactMonStatusBox(ActivePokemon* arg0, s16 arg1, s16 arg2, 
     u16 tmp;
     BattleMon* sp40;
 
-    sp40 = &arg0->unk_720->unk_08[arg0->unk_728.unk_16C]->unk_01C[arg0->unk_654.unk_08];
+    sp40 = &arg0->unk_720->teamMember[arg0->unk_728.unk_16C]->pokemonPicked[arg0->unk_654.unk_08];
     temp_v0 = &arg0->unk_654;
 
     if (sp40->unk_02 == 0) {
@@ -1525,7 +1525,7 @@ void BattleHud_DrawExpandingCaptionBox(unk_D_843901A0_4C8* arg0, s16 arg1, s16 a
     TeamRoster* tmp;
 
     temp_v1 = sActivePokemon[arg0->unk_0C];
-    tmp = temp_v1->unk_720->unk_08[temp_v1->unk_728.unk_16C];
+    tmp = temp_v1->unk_720->teamMember[temp_v1->unk_728.unk_16C];
     temp_v0 = &D_84385860[tmp->unk_001];
 
     sp2C = (arg1 - arg3.x) * 2;
@@ -1775,7 +1775,7 @@ void Battle_DrawSpectatorModeScrollingText(void) {
 }
 
 void BattleHud_DrawOwnSideStatus(ActivePokemon* arg0, ActivePokemonState* arg1) {
-    TeamRoster* sp34 = arg0->unk_720->unk_08[arg0->unk_728.unk_16C];
+    TeamRoster* sp34 = arg0->unk_720->teamMember[arg0->unk_728.unk_16C];
     UNUSED s32 pad;
     s32 var_v1;
 
@@ -1793,17 +1793,17 @@ void BattleHud_DrawOwnSideStatus(ActivePokemon* arg0, ActivePokemonState* arg1) 
                 case 2:
                     if (arg1->unk_1C == 1) {
                         if (arg0->unk_720->unk_01 == 2) {
-                            if (arg0->unk_720->unk_08[1]->unk_001 < arg0->unk_720->unk_08[0]->unk_001) {
+                            if (arg0->unk_720->teamMember[1]->unk_001 < arg0->unk_720->teamMember[0]->unk_001) {
                                 var_v1 = 0;
                             } else {
                                 var_v1 = 1;
                             }
-                            BattleHud_DrawTeamStatusList(arg0, arg0->unk_720->unk_08[var_v1], 0x60, 0xF,
-                                          arg0->unk_720->unk_08[var_v1]->unk_001);
-                            BattleHud_DrawTeamStatusList(arg0, arg0->unk_720->unk_08[var_v1 == 0], 0xC6, 0xF,
-                                          arg0->unk_720->unk_08[var_v1 == 0]->unk_001);
-                        } else if (arg0->unk_724->unk_002 < 4) {
-                            BattleHud_DrawTeamStatusList(arg0, arg0->unk_720->unk_08[0], 0x60, 0xF, sp34->unk_001);
+                            BattleHud_DrawTeamStatusList(arg0, arg0->unk_720->teamMember[var_v1], 0x60, 0xF,
+                                          arg0->unk_720->teamMember[var_v1]->unk_001);
+                            BattleHud_DrawTeamStatusList(arg0, arg0->unk_720->teamMember[var_v1 == 0], 0xC6, 0xF,
+                                          arg0->unk_720->teamMember[var_v1 == 0]->unk_001);
+                        } else if (arg0->unk_724->numberOfPokemonChosen < 4) {
+                            BattleHud_DrawTeamStatusList(arg0, arg0->unk_720->teamMember[0], 0x60, 0xF, sp34->unk_001);
                         } else {
                             BattleHud_DrawDoublesTeamStatusList(arg0, 0x60, 0xF, sp34->unk_001);
                         }
@@ -1835,7 +1835,7 @@ void BattleHud_DrawOwnSideStatus(ActivePokemon* arg0, ActivePokemonState* arg1) 
 }
 
 void BattleHud_DrawOpponentSideStatus(ActivePokemon* arg0, ActivePokemonState* arg1) {
-    TeamRoster* sp24 = arg0->unk_720->unk_08[arg0->unk_728.unk_16C];
+    TeamRoster* sp24 = arg0->unk_720->teamMember[arg0->unk_728.unk_16C];
     s32 sp20;
 
     if (gSessionContext.mode != 0x10) {
@@ -1852,17 +1852,17 @@ void BattleHud_DrawOpponentSideStatus(ActivePokemon* arg0, ActivePokemonState* a
                 case 2:
                     if (arg1->unk_1C == 1) {
                         if (arg0->unk_720->unk_01 == 2) {
-                            if (arg0->unk_720->unk_08[1]->unk_001 < arg0->unk_720->unk_08[0]->unk_001) {
+                            if (arg0->unk_720->teamMember[1]->unk_001 < arg0->unk_720->teamMember[0]->unk_001) {
                                 sp20 = 0;
                             } else {
                                 sp20 = 1;
                             }
-                            BattleHud_DrawTeamStatusList(arg0, arg0->unk_720->unk_08[sp20 == 0], 0x16, 0x79,
-                                          arg0->unk_720->unk_08[sp20 == 0]->unk_001);
-                            BattleHud_DrawTeamStatusList(arg0, arg0->unk_720->unk_08[sp20], 0x7C, 0x79,
-                                          arg0->unk_720->unk_08[sp20]->unk_001);
-                        } else if (arg0->unk_724->unk_002 < 4) {
-                            BattleHud_DrawTeamStatusList(arg0, arg0->unk_720->unk_08[0], 0x7C, 0x79, sp24->unk_001);
+                            BattleHud_DrawTeamStatusList(arg0, arg0->unk_720->teamMember[sp20 == 0], 0x16, 0x79,
+                                          arg0->unk_720->teamMember[sp20 == 0]->unk_001);
+                            BattleHud_DrawTeamStatusList(arg0, arg0->unk_720->teamMember[sp20], 0x7C, 0x79,
+                                          arg0->unk_720->teamMember[sp20]->unk_001);
+                        } else if (arg0->unk_724->numberOfPokemonChosen < 4) {
+                            BattleHud_DrawTeamStatusList(arg0, arg0->unk_720->teamMember[0], 0x7C, 0x79, sp24->unk_001);
                         } else {
                             BattleHud_DrawDoublesTeamStatusList(arg0, 0x18, 0x79, sp24->unk_001);
                         }

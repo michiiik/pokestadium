@@ -88,7 +88,7 @@ void BattleScene_IntroWaitFirstMonAnim(UNUSED CameraNode* arg0) {
 
 void BattleScene_IntroRevealFirstMon(CameraNode* arg0) {
     ActivePokemonState* sp2C = &sActivePokemon[0]->unk_654;
-    TeamRoster* sp28 = sActivePokemon[0]->unk_720->unk_08[sp2C->unk_2C];
+    TeamRoster* sp28 = sActivePokemon[0]->unk_720->teamMember[sp2C->unk_2C];
 
     sActivePokemon[0]->unk_728.unk_168->node.flags |= 1;
     sActivePokemon[0]->unk_728.unk_000.node.flags |= 1;
@@ -101,7 +101,7 @@ void BattleScene_IntroRevealFirstMon(CameraNode* arg0) {
     BattleScene_SelectCameraFollowPreset(sActivePokemon[0], arg0, 3);
     BattleScene_EnterStateRow(sActivePokemon[0], 0x10);
     gBattleScene.unk_00->unk_2C = 0;
-    Text_SetStringToken(0x19, (u32)sp28->unk_01C[sp2C->unk_18].unk_30);
+    Text_SetStringToken(0x19, (u32)sp28->pokemonPicked[sp2C->unk_18].unk_30);
     Battle_QueueMessage(gBattleMessageQueues->unk_088, 0x21);
     BattleBox_Open(0xC);
     Battle_TriggerTrainerPresentationCue(sActivePokemon[0]);
@@ -126,7 +126,7 @@ void BattleScene_IntroFirstMonSettle(CameraNode* arg0) {
 
 void BattleScene_IntroRevealSecondMon(CameraNode* arg0) {
     ActivePokemonState* sp2C = &sActivePokemon[1]->unk_654;
-    TeamRoster* sp28 = sActivePokemon[1]->unk_720->unk_08[sp2C->unk_2C];
+    TeamRoster* sp28 = sActivePokemon[1]->unk_720->teamMember[sp2C->unk_2C];
 
     sActivePokemon[1]->unk_728.unk_168->node.flags |= 1;
     sActivePokemon[1]->unk_728.unk_000.node.flags |= 1;
@@ -139,7 +139,7 @@ void BattleScene_IntroRevealSecondMon(CameraNode* arg0) {
     BattleScene_EnterStateRow(sActivePokemon[1], 0x10);
     gBattleScene.unk_00->unk_10 = 0;
     gBattleScene.unk_00->unk_2C = 1;
-    Text_SetStringToken(0x19, (u32)sp28->unk_01C[sp2C->unk_18].unk_30);
+    Text_SetStringToken(0x19, (u32)sp28->pokemonPicked[sp2C->unk_18].unk_30);
     Battle_QueueMessage(gBattleMessageQueues->unk_088, 0x21);
     if (gSessionContext.mode != 8) {
         BattleBox_Open(0xC);

@@ -293,7 +293,7 @@ void func_8431FCC4(void) {
 
 s32 BattleScene_AnimateDisplayedHpToRuntime(ActivePokemon* arg0) {
     BattleMonRuntime* temp_s1 = &arg0->unk_654.runtime;
-    BattleMon* temp_s2 = &arg0->unk_724->unk_01C[arg0->unk_654.unk_08];
+    BattleMon* temp_s2 = &arg0->unk_724->pokemonPicked[arg0->unk_654.unk_08];
     f32 temp_fs0;
     UNUSED s16 pad;
     s16 sp30;
@@ -2460,7 +2460,7 @@ void BattleScene_Phase15(CameraNode* arg0) {
             } else {
                 D_84390204->unk_720->unk_02 = D_84390200->unk_720->unk_02;
             }
-            D_84390204->unk_720->unk_04 = &D_84390204->unk_724->unk_01C[D_84390204->unk_654.unk_08];
+            D_84390204->unk_720->unk_04 = &D_84390204->unk_724->pokemonPicked[D_84390204->unk_654.unk_08];
             D_84390204->unk_720->unk_00 |= 0x80;
             gBattleScene.unk_00->unk_20 += 1;
             break;
@@ -3307,7 +3307,7 @@ void BattleScene_PhaseWithdrawFainted(CameraNode* arg0) {
 
         case 4:
             temp_s0->unk_4EC.node.flags &= ~1;
-            temp_s0->unk_720->unk_04 = &temp_s0->unk_720->unk_08[sp34->unk_2C]->unk_01C[sp34->unk_18];
+            temp_s0->unk_720->unk_04 = &temp_s0->unk_720->teamMember[sp34->unk_2C]->pokemonPicked[sp34->unk_18];
             temp_s0->unk_720->unk_00 |= 0x80;
             gBattleScene.unk_00->unk_20 += 1;
             break;
@@ -3407,7 +3407,7 @@ void BattleScene_PhaseWithdrawSwitch(CameraNode* arg0) {
         case 3:
             temp_s0->unk_4EC.node.flags &= ~1;
             temp_s0->unk_720->unk_00 |= 0x80;
-            temp_s0->unk_720->unk_04 = &temp_s0->unk_720->unk_08[sp3C->unk_2C]->unk_01C[sp3C->unk_18];
+            temp_s0->unk_720->unk_04 = &temp_s0->unk_720->teamMember[sp3C->unk_2C]->pokemonPicked[sp3C->unk_18];
             gBattleScene.unk_00->unk_20 += 1;
             break;
 

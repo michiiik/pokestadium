@@ -257,7 +257,7 @@ void BattleAnim_BeginSessionRequest(ActivePokemon* active_pokemon) {
 }
 
 void BattleAnim_BeginSessionRequestForActiveMon(ActivePokemon* active_pokemon) {
-    active_pokemon->unk_720->unk_04 = &active_pokemon->unk_724->pokemonChosen[active_pokemon->unk_654.unk_08];
+    active_pokemon->unk_720->unk_04 = &active_pokemon->unk_724->pokemonPicked[active_pokemon->unk_654.unk_08];
     active_pokemon->unk_720->unk_00 |= 0x80;
     active_pokemon->unk_720->unk_02 = active_pokemon->unk_654.unk_BC;
 }
@@ -380,7 +380,7 @@ void func_84302658(ActivePokemon* arg0, s32 arg1) {
     sp68 = BattleScene_GetParticipantSideIndex(arg0);
     sp66 = arg0->unk_000.objectType - 1;
 
-    ptr = &arg0->unk_720->teamMember[arg0->unk_654.unk_2C]->pokemonChosen[arg0->unk_654.unk_18];
+    ptr = &arg0->unk_720->teamMember[arg0->unk_654.unk_2C]->pokemonPicked[arg0->unk_654.unk_18];
 
     var_a1 = (u32)_70D3A0_ROM_START + ((u32)D_80075BD0[sp66] & 0xFFFFFF);
     if ((arg0->unk_000.objectType == 0x19) && (ptr->unk_52 & 0x80)) {
@@ -907,7 +907,7 @@ void BattleScene_EnterRowAnim166WithCry(ActivePokemon* active_pokemon) {
     ActivePokemonState* sp24;
 
     sp34 = gBattleSceneStateRowTable[idx].unk_20;
-    sp30 = &active_pokemon->unk_724->pokemonChosen[active_pokemon->unk_654.unk_08];
+    sp30 = &active_pokemon->unk_724->pokemonPicked[active_pokemon->unk_654.unk_08];
     sp24 = &active_pokemon->unk_654;
     D_84390020 = &D_84384570[BattleScene_GetParticipantSideIndex(active_pokemon)]->unk_000[sp34];
     temp_a0 = sp24->unk_34 & 2;
@@ -943,7 +943,7 @@ void BattleScene_EnterRowAnim166WithCry(ActivePokemon* active_pokemon) {
 void BattleScene_TickRow1PlayOwnerCry(ActivePokemon* active_pokemon) {
     UNUSED s32 pad;
     ActivePokemonState* sp18 = &active_pokemon->unk_654;
-    BattleMon* ptr = &active_pokemon->unk_724->pokemonChosen[active_pokemon->unk_654.unk_08];
+    BattleMon* ptr = &active_pokemon->unk_724->pokemonPicked[active_pokemon->unk_654.unk_08];
 
     if ((sp18->unk_34 & 0x4000) || (sp18->unk_34 & 2) || (ptr->unk_05 & 7)) {
         gBattleSceneStateTickSlots[gBattleSceneStateTickSlotIndex].unk_04 = gBattleSceneStateTickSentinel;
@@ -961,7 +961,7 @@ void BattleScene_TickRow1PlayOwnerCry(ActivePokemon* active_pokemon) {
 
 void BattleScene_TickRow16PlayCryAndSpeciesSound(ActivePokemon* active_pokemon) {
     UNUSED s32 pad;
-    BattleMon* ptr = &active_pokemon->unk_724->pokemonChosen[active_pokemon->unk_654.unk_08];
+    BattleMon* ptr = &active_pokemon->unk_724->pokemonPicked[active_pokemon->unk_654.unk_08];
     ActivePokemonState* sp24 = &active_pokemon->unk_654;
 
     if ((active_pokemon->unk_654.unk_34 & 0x4000) || (sp24->unk_34 & 2) || (ptr->unk_05 & 7)) {
@@ -992,7 +992,7 @@ void BattleScene_TickRow16PlayCryAndSpeciesSound(ActivePokemon* active_pokemon) 
 
 void BattleScene_TickRow18PlayCryAndSpeciesSound(ActivePokemon* active_pokemon) {
     UNUSED s32 pad;
-    BattleMon* ptr = &active_pokemon->unk_724->pokemonChosen[active_pokemon->unk_654.unk_08];
+    BattleMon* ptr = &active_pokemon->unk_724->pokemonPicked[active_pokemon->unk_654.unk_08];
     ActivePokemonState* sp24;
 
     if ((active_pokemon->unk_654.unk_34 & 0x4000) || (ptr->unk_05 & 0x20) || (ptr->unk_05 & 7)) {
@@ -1036,7 +1036,7 @@ void BattleScene_TickAssetLoadQueueRowEffectList3(ActivePokemon* active_pokemon)
         active_pokemon->unk_4C4 = 0;
         BattleScene_QueueRowEffectList3(active_pokemon, gBattleSceneStateRowTable[sp24].unk_24);
         Audio_PlayCommand(3, 0, 0);
-        active_pokemon->unk_720->unk_04 = &active_pokemon->unk_720->teamMember[temp_v1->unk_2B]->pokemonChosen[temp_v1->unk_18];
+        active_pokemon->unk_720->unk_04 = &active_pokemon->unk_720->teamMember[temp_v1->unk_2B]->pokemonPicked[temp_v1->unk_18];
         gBattleSceneStateTickSlots[gBattleSceneStateTickSlotIndex].unk_04 = gBattleSceneStateTickSentinel;
     }
 }
@@ -1121,7 +1121,7 @@ void BattleScene_TickRow8PlayMoveEffectScriptB(ActivePokemon* active_pokemon) {
 
 void BattleScene_EnterRow9SetEventTrack(ActivePokemon* active_pokemon) {
     UNUSED s32 pad[3];
-    BattleMon* ptr = &active_pokemon->unk_724->pokemonChosen[active_pokemon->unk_654.unk_08];
+    BattleMon* ptr = &active_pokemon->unk_724->pokemonPicked[active_pokemon->unk_654.unk_08];
     s32 sp1C;
 
     active_pokemon->unk_4C4 = 0;
@@ -1493,7 +1493,7 @@ void BattleAnim_SetModelEventTrackAndState(ActivePokemon* arg0, s32 arg1, s32 ar
 
 s32 BattleScene_IsParticipantIncapacitated(ActivePokemon* active_pokemon) {
     ActivePokemonState* sp20 = &active_pokemon->unk_654;
-    BattleMon* ptr = &active_pokemon->unk_724->pokemonChosen[active_pokemon->unk_654.unk_08];
+    BattleMon* ptr = &active_pokemon->unk_724->pokemonPicked[active_pokemon->unk_654.unk_08];
 
     if ((sp20->unk_34 & 2) || (ptr->unk_05 & 7) || ((sp20->unk_34 & 0x200) && !(sp20->unk_34 & 0x400)) ||
         (sp20->unk_34 & 0x4000)) {
@@ -1600,7 +1600,7 @@ s32 BattleScene_IsMoveKeyedRowWaitComplete(ActivePokemon* arg0, s32 arg1) {
     s32 sp20;
     MovePresentationCue* sp1C;
 
-    sp28 = &arg0->unk_724->pokemonChosen[arg0->unk_654.unk_08];
+    sp28 = &arg0->unk_724->pokemonPicked[arg0->unk_654.unk_08];
     sp20 = D_84384670[arg0->unk_654.runtime.usedMove - 1];
     sp1C = &D_84384570[BattleScene_GetParticipantSideIndex(arg0)]->unk_000[sp20];
     temp_a2 = &D_84384570[BattleScene_GetParticipantSideIndex(arg0)]->unk_A50;
@@ -1906,7 +1906,7 @@ void BattleAnim_TickParticipantStatusAnimation(ActivePokemon* active_pokemon) {
 }
 
 void BattleAnim_TriggerStatusAfflictionCry(ActivePokemon* active_pokemon) {
-    BattleMon* ptr = &active_pokemon->unk_724->pokemonChosen[active_pokemon->unk_654.unk_08];
+    BattleMon* ptr = &active_pokemon->unk_724->pokemonPicked[active_pokemon->unk_654.unk_08];
 
     if ((ptr->unk_05 & 7) && !(active_pokemon->unk_654.unk_34 & 1)) {
         BattleAnim_SetModelEventTrackAndState(active_pokemon, 0xAF, 2);
@@ -1969,7 +1969,7 @@ void BattleScene_InitializeParticipantModel(ActivePokemon* active_pokemon) {
     ModelAnim_SetAnimation(&active_pokemon->unk_000, 0);
     ModelAnim_SetFrame(&active_pokemon->unk_000, 0);
 
-    active_pokemon->unk_720->unk_04 = active_pokemon->unk_724->pokemonChosen;
+    active_pokemon->unk_720->unk_04 = active_pokemon->unk_724->pokemonPicked;
     if ((active_pokemon->unk_000.objectType == 0x32) || (active_pokemon->unk_000.objectType == 0x33)) {
         active_pokemon->unk_000.node.renderFlags &= ~0x40;
     } else {

@@ -115,7 +115,7 @@ void Battle_QueueStatusText(char* arg0, s32 arg1) {
     UNUSED s32 pad2[2];
 
     Battle_ClearMessageCursor();
-    gBattleMessageQueues->unk_000 = sActivePokemon[arg1]->unk_720->unk_08[sp28->unk_2B]->unk_001;
+    gBattleMessageQueues->unk_000 = sActivePokemon[arg1]->unk_720->teamMember[sp28->unk_2B]->unk_001;
     func_84317940(gBattleMessageQueues->unk_048, arg0 + 1);
     *arg0 = 0;
 }
@@ -128,8 +128,8 @@ void Battle_DrawCompactStatusBoxesIfVisible(void) {
     ActivePokemon* ptr2 = sActivePokemon[1];
 
     if ((gSessionContext.mode != 0x10) && (gBattleScene.unk_00->unk_30 == 0)) {
-        BattleHud_DrawCompactMonStatusBox(ptr1, 0x15, 0xF, ptr1->unk_720->unk_08[ptr1->unk_728.unk_16C]->unk_001);
-        BattleHud_DrawCompactMonStatusBox(ptr2, 0xE1, 0xF, ptr2->unk_720->unk_08[ptr2->unk_728.unk_16C]->unk_001);
+        BattleHud_DrawCompactMonStatusBox(ptr1, 0x15, 0xF, ptr1->unk_720->teamMember[ptr1->unk_728.unk_16C]->unk_001);
+        BattleHud_DrawCompactMonStatusBox(ptr2, 0xE1, 0xF, ptr2->unk_720->teamMember[ptr2->unk_728.unk_16C]->unk_001);
     }
 }
 
@@ -696,14 +696,14 @@ void BattleScene_ClearParticipantMessageBuffer(ActivePokemon* arg0) {
 }
 
 void BattleScene_BuildParticipantMessage(ActivePokemon* arg0, s32 arg1) {
-    gBattleMessageQueues->unk_000 = arg0->unk_720->unk_08[arg0->unk_654.unk_2C]->unk_001;
+    gBattleMessageQueues->unk_000 = arg0->unk_720->teamMember[arg0->unk_654.unk_2C]->unk_001;
     arg0->unk_8C4.unk_00 = 1;
-    Text_SetStringToken(0x19, arg0->unk_724->unk_01C[arg0->unk_654.unk_08].unk_30);
+    Text_SetStringToken(0x19, arg0->unk_724->pokemonPicked[arg0->unk_654.unk_08].unk_30);
     Text_GetString(arg0->unk_8C4.unk_48, 0x40, D_843900B0, arg1);
 }
 
 void BattleScene_RevealParticipantMessageChars(ActivePokemon* arg0) {
-    TeamRoster* temp_t0 = arg0->unk_720->unk_08[arg0->unk_654.unk_2C];
+    TeamRoster* temp_t0 = arg0->unk_720->teamMember[arg0->unk_654.unk_2C];
 
     if (arg0->unk_8C4.unk_48[arg0->unk_8C4.unk_04] != '\x00') {
         arg0->unk_8C4.unk_08[arg0->unk_8C4.unk_04] = arg0->unk_8C4.unk_48[arg0->unk_8C4.unk_04];
