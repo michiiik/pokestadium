@@ -128,7 +128,7 @@ void BattleMenu_DrawScrollingRulesText(void) {
     s32 var_s4;
     s8 temp_v0;
     s8* var_v0;
-    unk_D_80068BB0* sp58;
+    DepthBuffer* sp58;
     Color_RGB8 sp54;
     Color_RGB8 sp50;
 

@@ -177,7 +177,7 @@ void func_8430FC20(void) {
 }
 
 void BattleHud_DrawTranslucentShadowRect(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    unk_D_80068BB0* temp_s1;
+    DepthBuffer* temp_s1;
     Vtx* temp_s2;
     Mtx* sp84;
     Vp* sp80;
@@ -211,7 +211,7 @@ void BattleHud_DrawTranslucentShadowRect(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
 
 void BattleHud_DrawGradientRect(s32 arg0, s32 arg1, s32 arg2, s32 arg3, Color_RGB8* arg4, Color_RGB8* arg5) {
     Vtx* temp_s2;
-    unk_D_80068BB0* temp_s1;
+    DepthBuffer* temp_s1;
     Mtx* sp7C;
     Vp* sp78;
 
@@ -1695,7 +1695,7 @@ void Battle_DrawSpectatorModeBackgroundPanel(void) {
 void Battle_DrawGradientTextureRect(u8* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, u8 arg5, u8 arg6, u8 arg7, u8 arg8, u8 arg9,
                    u8 argA, u8 argB, u8 argC) {
     UNUSED s32 pad;
-    unk_D_80068BB0* temp_s1 = GfxImage_GetCurrent();
+    DepthBuffer* temp_s1 = GfxImage_GetCurrent();
     Vtx* temp_s2 = Gfx_AllocDisplayList(sizeof(Vtx) * 4);
     Mtx* spC0 = Gfx_AllocDisplayList(sizeof(Mtx) * 1);
     Vp* spBC = Gfx_AllocDisplayList(sizeof(Vp));

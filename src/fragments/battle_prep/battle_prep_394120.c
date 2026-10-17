@@ -227,7 +227,7 @@ void BattlePrep_DrawBorderedRect(s16 arg0, s16 arg1, s16 arg2, s16 arg3, u8 arg4
     gSPDisplayList(gDisplayListHead++, D_8006F630);
 }
 
-void BattlePrep_DrawTrainerStatusIcon(unk_D_80068BB0* arg0, s16 arg1, u8* arg2, u8* arg3) {
+void BattlePrep_DrawTrainerStatusIcon(DepthBuffer* arg0, s16 arg1, u8* arg2, u8* arg3) {
     BattleSessionTeams* temp_v1 = &gSessionContext.battleSides[arg1];
 
     GfxImage_SetRenderTarget(&gDisplayListHead, arg0);

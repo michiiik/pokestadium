@@ -54,10 +54,10 @@ static u8 sBattleModeDispatch[] = {
     0, 0, 0, 0, 0, // 11-15: Unknown
     SESSION_MODE_NINTENDO_CUP_97, // SESSION_MODE_ATTRACT_DEMO_BATTLE
     SESSION_MODE_NINTENDO_CUP_97, SESSION_MODE_NINTENDO_CUP_97, // 17-18: Cutscenes
-    SESSION_MODE_NINTENDO_CUP_97, 0, // 19-20: Unknown
-    0, 0, 0, 0, // 21-24: Cutscenes
-    0, // SESSION_MODE_ATTRACT_DEMO_MINIGAME
-    0, // 26: Cutscene
+    SESSION_MODE_NINTENDO_CUP_97, // 19: Unknown
+    // The ROM table ends here at 20 bytes. Modes 20-26 index past it into the
+    // first bytes of D_84384364 (0x0C, 0x00, 0xFF, 0xFF, 0x05, 0x00, 0x00).
+    // Adding entries would shift .data and break ROM identity.
 };
 static u32 D_84384364[] = {
     0x0C00FFFF,  0x05000000,  0x07000000,    &D_8438E440,   0x05000000, 0x0D000000,    0x05000000,  0x07000000,
@@ -129,10 +129,11 @@ s32 Battle_StageMaterialTintCallback(s32 arg0, DisplayObject* arg1) {
     return 0;
 }
 
-void Battle_SetStageTintColor(u8 arg0, u8 arg1, u8 arg2) {
-    D_8438E7A4.r = arg0;
-    D_8438E7A4.g = arg1;
-    D_8438E7A4.b = arg2;
+// called every frame: bug boy in GLC
+void Battle_SetStageTintColor(u8 r, u8 g, u8 b) {
+    sTintColor.r = r;
+    sTintColor.g = g;
+    sTintColor.b = b;
 
     if (((r & g & b) & 0xFF) == 0xFF) {
         if (D_8438E530.node.callbackArg == 1) {
@@ -143,11 +144,13 @@ void Battle_SetStageTintColor(u8 arg0, u8 arg1, u8 arg2) {
     }
 }
 
+// Called at the start of battles
 void BattleScene_SetModelUniformScale(f32 arg0) {
     D_8438E7A8 = arg0;
 }
 
-u16 Battle_TintTexel16(u16 arg0) {
+// called every frame: bug boy in GLC
+u16 Battle_TintTexel16(u16 color) {
     s32 r;
     s32 g;
     s32 b;
@@ -211,9 +214,12 @@ void Battle_DrawStageBackdrop(void) {
     gSPDisplayList(gDisplayListHead++, D_8006F630);
 }
 
-void Battle_RenderStageThumbnail(GraphNode* arg0, unk_D_80068BB0* arg1) {
-    unk_D_86002F34_00C* sp2C = arg0->children;
-    unk_D_86002F34_00C_018 sp20;
+/*
+    Makes and Freezes the thumbnail of active pokemon
+*/
+void Battle_RenderActivePokemonThumbnail(GraphNode* pokemon, DepthBuffer* thumbnail) {
+    CameraNode* camera_node = pokemon->children;
+    CameraViewport viewport;
 
     if (camera_node->node.flags & 0x10) {
         viewport = camera_node->viewport;
@@ -257,19 +263,23 @@ void Battle_DrawClippedTextureRect(s32 x1, s32 y1, s32 x2, s32 y2) {
     }
 }
 
-void Battle_DrawTexturedRectSegment(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8* arg4, s32 arg5) {
-    gDPLoadTextureBlock(gDisplayListHead++, arg4, G_IM_FMT_RGBA, G_IM_SIZ_16b, arg5, (arg3 * 2) + 2, 0,
+// called every frame: bug boy in GLC
+void Battle_DrawTexturedRectSegment(s32 x1, s32 y1, s32 draw_width, s32 height, u8* texture, s32 load_width) {
+    gDPLoadTextureBlock(gDisplayListHead++, texture, G_IM_FMT_RGBA, G_IM_SIZ_16b, load_width, (height * 2) + 2, 0,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                         G_TX_NOLOD);
 
     Battle_DrawClippedTextureRect(x1, y1, (x1 + draw_width) - 1, (y1 + height) - 1);
 }
 
-void Battle_DrawFaintOrderMarker(GraphNode* arg0, unk_D_80068BB0* arg1) {
-    s32 temp_s2;
-    s32 temp_s3;
-    unk_D_86002F34_00C* temp_v1 = arg0->children;
-    unk_D_86002F34_00C_018* ptr = &arg0->children->unk_18;
+/*
+    Fills in the texture of the pokemon thumbnail
+*/
+void Battle_FillActivePokemonThumbnail(GraphNode* pokemon, DepthBuffer* thumbnail) {
+    s32 x;
+    s32 y;
+    CameraNode* camera_child_node = pokemon->children;
+    CameraViewport* viewport = &pokemon->children->viewport;
     s32 img;
 
     x = viewport->x;
@@ -300,18 +310,20 @@ void Battle_DrawFaintOrderMarker(GraphNode* arg0, unk_D_80068BB0* arg1) {
     gDPSetTextureFilter(gDisplayListHead++, G_TF_BILERP);
 }
 
+// trigger unknown
+// preliminary guess: initialization for Tag Team in free battle
 void func_84300D44(void) {
     s32 i;
     s32 j;
     s32 x;
-    TeamRoster* temp_a2;
-    BattleSessionTeams* ptr = &D_8438E798[0];
+    TeamRoster* current_team_member;
+    BattleSessionTeams* player_tag_team = &sBattleSides[0];
 
-    for (i = 0; i < 2; i++, ptr++) {
-        for (j = 0; j < ptr->unk_01; j++) {
-            temp_a2 = ptr->unk_08[j];
-            for (x = 0; x < temp_a2->unk_002; x++) {
-                temp_a2->unk_01C[x].unk_25 = 0;
+    for (i = 0; i < 2; i++, player_tag_team++) {
+        for (j = 0; j < player_tag_team->unk_01; j++) {
+            current_team_member = player_tag_team->teamMember[j];
+            for (x = 0; x < current_team_member->numberOfPokemonChosen; x++) {
+                current_team_member->pokemonPicked[x].unk_25 = 0;
             }
         }
     }
@@ -324,13 +336,13 @@ void func_84300DC0(void) {
     s32 x;
     s32 var_v0 = 0;
     TeamRoster* temp_a3;
-    BattleSessionTeams* ptr = &D_8438E798[0];
+    BattleSessionTeams* player_side = &sBattleSides[0];
 
-    for (i = 0; i < 2; i++, ptr++) {
-        for (j = 0; j < ptr->unk_01; j++) {
-            temp_a3 = ptr->unk_08[j];
-            for (x = 0; x < temp_a3->unk_002; x++) {
-                if ((temp_a3->unk_01C[x].unk_25 == 0) && (temp_a3->unk_01C[x].unk_02 == 0)) {
+    for (i = 0; i < 2; i++, player_side++) {
+        for (j = 0; j < player_side->unk_01; j++) {
+            temp_a3 = player_side->teamMember[j];
+            for (x = 0; x < temp_a3->numberOfPokemonChosen; x++) {
+                if ((temp_a3->pokemonPicked[x].unk_25 == 0) && (temp_a3->pokemonPicked[x].unk_02 == 0)) {
                     var_v0 = 1;
                     temp_a3->pokemonPicked[x].unk_25 = D_8438E7A0;
                 }
@@ -359,14 +371,14 @@ s32 BattleScene_UpdateFrame(s32 arg0) {
     BattleScene_DispatchOwnerCameraLifecycle(2, &D_8438E598, &D_8438E688);
     sp1C = BattleScene_Dispatch(2, &D_8438E440);
     BattleAnim_DispatchPresentation(2, &D_8438E440);
-    Battle_RenderStageThumbnail(D_8438E788, D_8438E790);
-    Battle_RenderStageThumbnail(D_8438E78C, D_8438E794);
+    Battle_RenderActivePokemonThumbnail(D_8438E788, sSide1PokemonThumbnail);
+    Battle_RenderActivePokemonThumbnail(D_8438E78C, sSide2PokemonThumbnail);
     BgStage_DrawFrame();
     Battle_DrawStageBackdrop();
     Geo_RenderRootNode(D_8438E784);
-    BattleScene_DispatchLifecycle(5, D_8438E798);
-    Battle_DrawFaintOrderMarker(D_8438E788, D_8438E790);
-    Battle_DrawFaintOrderMarker(D_8438E78C, D_8438E794);
+    BattleScene_DispatchLifecycle(5, sBattleSides);
+    Battle_FillActivePokemonThumbnail(D_8438E788, sSide1PokemonThumbnail);
+    Battle_FillActivePokemonThumbnail(D_8438E78C, sSide2PokemonThumbnail);
     func_84300DC0();
 
     if (sp1C == 1) {
@@ -380,6 +392,11 @@ s32 BattleScene_UpdateFrame(s32 arg0) {
     return sp1C;
 }
 
+/*
+    No idea what the hell this is, it's not drawing the Run selection cursor and nothing else in battle would use START
+    Stadium doesn't have pausing so it's not that either
+    preliminary guess: unused pausing debug option, sIsPaused can never be 1 through the current code
+*/
 s32 BattleScene_UpdatePausedFrame(s32 arg0) {
     s32 sp1C = 0;
 
@@ -390,9 +407,9 @@ s32 BattleScene_UpdatePausedFrame(s32 arg0) {
         BgStage_DrawFrame();
         Battle_DrawStageBackdrop();
         Geo_RenderRootNode(D_8438E784);
-        BattleScene_DispatchLifecycle(5, D_8438E798);
-        Battle_DrawFaintOrderMarker(D_8438E788, D_8438E790);
-        Battle_DrawFaintOrderMarker(D_8438E78C, D_8438E794);
+        BattleScene_DispatchLifecycle(5, sBattleSides);
+        Battle_FillActivePokemonThumbnail(D_8438E788, sSide1PokemonThumbnail);
+        Battle_FillActivePokemonThumbnail(D_8438E78C, sSide2PokemonThumbnail);
     }
 
     if ((arg0 == 0) && BTN_IS_PRESSED(gPlayer1Controller, BTN_START)) {
