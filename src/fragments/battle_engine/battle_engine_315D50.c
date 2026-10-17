@@ -4234,13 +4234,13 @@ void BattleScene_ConfigureAudioChannelGroupsByTeam(void) {
     sp20[2] = 0xA;
     sp20[3] = 0xA;
 
-    sp20[ptr1->unk_720->unk_08[0]->unk_001] = 1;
+    sp20[ptr1->unk_720->teamMember[0]->unk_001] = 1;
     if (ptr1->unk_720->unk_01 == 2) {
-        sp20[ptr1->unk_720->unk_08[1]->unk_001] = 1;
+        sp20[ptr1->unk_720->teamMember[1]->unk_001] = 1;
     }
-    sp20[ptr2->unk_720->unk_08[0]->unk_001] = 2;
+    sp20[ptr2->unk_720->teamMember[0]->unk_001] = 2;
     if (ptr2->unk_720->unk_01 == 2) {
-        sp20[ptr2->unk_720->unk_08[1]->unk_001] = 2;
+        sp20[ptr2->unk_720->teamMember[1]->unk_001] = 2;
     }
 
     for (i = 0; i < 4; i++) {
@@ -4262,14 +4262,14 @@ void BattleScene_ConfigureAudioChannelGroupCounts(void) {
     sp24[2] = 0;
     sp24[3] = 0;
 
-    sp24[ptr1->unk_720->unk_08[0]->unk_001] = BattleScene_GetRosterTeamSize(ptr1->unk_720->unk_08[0]);
+    sp24[ptr1->unk_720->teamMember[0]->unk_001] = BattleScene_GetRosterTeamSize(ptr1->unk_720->teamMember[0]);
     if (ptr1->unk_720->unk_01 == 2) {
-        sp24[ptr1->unk_720->unk_08[1]->unk_001] = BattleScene_GetRosterTeamSize(ptr1->unk_720->unk_08[1]);
+        sp24[ptr1->unk_720->teamMember[1]->unk_001] = BattleScene_GetRosterTeamSize(ptr1->unk_720->teamMember[1]);
     }
 
-    sp24[ptr2->unk_720->unk_08[0]->unk_001] = BattleScene_GetRosterTeamSize(ptr2->unk_720->unk_08[0]);
+    sp24[ptr2->unk_720->teamMember[0]->unk_001] = BattleScene_GetRosterTeamSize(ptr2->unk_720->teamMember[0]);
     if (ptr2->unk_720->unk_01 == 2) {
-        sp24[ptr2->unk_720->unk_08[1]->unk_001] = BattleScene_GetRosterTeamSize(ptr2->unk_720->unk_08[1]);
+        sp24[ptr2->unk_720->teamMember[1]->unk_001] = BattleScene_GetRosterTeamSize(ptr2->unk_720->teamMember[1]);
     }
     Audio_SetChannelGroupCounts(sp24[0], sp24[1], sp24[2], sp24[3]);
 }
