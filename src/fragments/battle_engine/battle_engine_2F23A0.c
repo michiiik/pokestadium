@@ -17,7 +17,7 @@ s32 BattleScene_ByteArrayContains(u8 arg0, u8* arg1, s32 arg2) {
 }
 
 BattleMon* BattleScene_GetParticipantSessionMon(ActivePokemon* arg0) {
-    BattleMon* ptr = &arg0->unk_720->unk_08[arg0->unk_654.unk_2C]->unk_01C[arg0->unk_654.unk_08];
+    BattleMon* ptr = &arg0->unk_720->teamMember[arg0->unk_654.unk_2C]->pokemonPicked[arg0->unk_654.unk_08];
 
     return ptr;
 }
@@ -97,13 +97,13 @@ void BattleScene_SetParticipantModelScale(ActivePokemon* arg0, f32 arg1) {
 }
 
 s32 BattleScene_GetSelectedSideTeamSize(ActivePokemon* arg0) {
-    return arg0->unk_720->unk_08[arg0->unk_654.unk_2B]->unk_002;
+    return arg0->unk_720->teamMember[arg0->unk_654.unk_2B]->numberOfPokemonChosen;
 }
 
 s32 BattleScene_GetOpposingSelectedSideTeamSize(ActivePokemon* arg0) {
     s32 idx = arg0->unk_654.unk_2B == 0;
 
-    return arg0->unk_720->unk_08[idx]->unk_002;
+    return arg0->unk_720->teamMember[idx]->numberOfPokemonChosen;
 }
 
 s32 BattleScene_GetParticipantSideIndex(ActivePokemon* arg0) {
@@ -168,7 +168,7 @@ void BattleScene_GetParticipantModelRotation(ActivePokemon* arg0, Vec3s* arg1) {
 }
 
 u16 Battle_GetActiveMonHp(ActivePokemon* arg0) {
-    BattleMon* ptr = &arg0->unk_724->unk_01C[arg0->unk_654.unk_08];
+    BattleMon* ptr = &arg0->unk_724->pokemonPicked[arg0->unk_654.unk_08];
 
     return ptr->unk_02;
 }
@@ -274,7 +274,7 @@ char* Battle_GetActiveMoveName(ActivePokemon* arg0) {
 }
 
 u8* Battle_GetActiveMonNickname(ActivePokemon* arg0) {
-    return arg0->unk_724->unk_01C[arg0->unk_654.unk_08].unk_30;
+    return arg0->unk_724->pokemonPicked[arg0->unk_654.unk_08].unk_30;
 }
 
 void BattleScene_SetParticipantModelFlags(ActivePokemon* arg0, s32 arg1, s32 arg2) {
@@ -366,7 +366,7 @@ void Battle_SetModelToStatusAnim(ActivePokemon* arg0) {
 }
 
 void BattleScene_BindParticipantRosterForSide(ActivePokemon* arg0, s32 arg1) {
-    arg0->unk_724 = arg0->unk_720->unk_08[arg1];
+    arg0->unk_724 = arg0->unk_720->teamMember[arg1];
 }
 
 void BattleScene_SetParticipantSelectedSide(ActivePokemon* arg0, s32 arg1) {
@@ -394,7 +394,7 @@ s32 Battle_HasUsableSleepStatusTarget(ActivePokemon* arg0) {
     temp_s0 = &arg0->unk_654;
 
     for (i = 0; i < BattleScene_GetSelectedSideTeamSize(arg0); i++) {
-        ptr = &arg0->unk_724->unk_01C[i];
+        ptr = &arg0->unk_724->pokemonPicked[i];
         if ((ptr->unk_05 & 0x20) && (arg0->unk_654.runtime.unk_16[temp_s0->unk_08 + temp_s0->unk_2B * 3] == 0)) {
             return 1;
         }
@@ -402,7 +402,7 @@ s32 Battle_HasUsableSleepStatusTarget(ActivePokemon* arg0) {
 
     if (arg0->unk_720->unk_01 == 2) {
         for (i = 0; i < BattleScene_GetOpposingSelectedSideTeamSize(arg0); i++) {
-            ptr = &arg0->unk_720->unk_08[temp_s0->unk_2B == 0]->unk_01C[i];
+            ptr = &arg0->unk_720->teamMember[temp_s0->unk_2B == 0]->pokemonPicked[i];
             if ((ptr->unk_05 & 0x20) &&
                 (arg0->unk_654.runtime.unk_16[temp_s0->unk_08 + (temp_s0->unk_2B == 0) * 3] == 0)) {
                 return 1;
@@ -421,7 +421,7 @@ s32 Battle_HasUsableMajorStatusTarget(ActivePokemon* arg0) {
     temp_s0 = &arg0->unk_654;
 
     for (i = 0; i < BattleScene_GetSelectedSideTeamSize(arg0); i++) {
-        ptr = &arg0->unk_724->unk_01C[i];
+        ptr = &arg0->unk_724->pokemonPicked[i];
         if ((ptr->unk_05 & 7) && (arg0->unk_654.runtime.unk_16[temp_s0->unk_08 + temp_s0->unk_2B * 3] == 0)) {
             return 1;
         }
@@ -429,7 +429,7 @@ s32 Battle_HasUsableMajorStatusTarget(ActivePokemon* arg0) {
 
     if (arg0->unk_720->unk_01 == 2) {
         for (i = 0; i < BattleScene_GetOpposingSelectedSideTeamSize(arg0); i++) {
-            ptr = &arg0->unk_720->unk_08[temp_s0->unk_2B == 0]->unk_01C[i];
+            ptr = &arg0->unk_720->teamMember[temp_s0->unk_2B == 0]->pokemonPicked[i];
             if ((ptr->unk_05 & 7) && (arg0->unk_654.runtime.unk_16[temp_s0->unk_08 + (temp_s0->unk_2B == 0) * 3] == 0)) {
                 return 1;
             }
@@ -440,17 +440,17 @@ s32 Battle_HasUsableMajorStatusTarget(ActivePokemon* arg0) {
 
 s32 BattleScene_GetCombinedTeamSize(ActivePokemon* arg0) {
     if (arg0->unk_720->unk_01 != 2) {
-        return arg0->unk_720->unk_08[0]->unk_002;
+        return arg0->unk_720->teamMember[0]->numberOfPokemonChosen;
     }
-    return arg0->unk_720->unk_08[1]->unk_002 + arg0->unk_720->unk_08[0]->unk_002;
+    return arg0->unk_720->teamMember[1]->numberOfPokemonChosen + arg0->unk_720->teamMember[0]->numberOfPokemonChosen;
 }
 
 u8 BattleScene_GetRosterTeamSize(TeamRoster* arg0) {
-    return arg0->unk_002;
+    return arg0->numberOfPokemonChosen;
 }
 
 s32 BattleScene_GetParticipantDisplayPlayerNumber(ActivePokemon* arg0) {
-    return arg0->unk_720->unk_08[arg0->unk_728.unk_16C]->unk_001 + 1;
+    return arg0->unk_720->teamMember[arg0->unk_728.unk_16C]->unk_001 + 1;
 }
 
 void BattleScene_ReinitParticipantBodyModel(ActivePokemon* arg0, ActivePokemon* arg1, s32 arg2, s32 arg3) {
