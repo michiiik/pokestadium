@@ -24,24 +24,40 @@ static GraphNode D_8438E568;
 static GraphNode D_8438E580;
 static CameraNode D_8438E598;
 static CameraNode D_8438E688;
-u8* D_8438E778;
-u8* D_8438E77C;
+u8* sSide1PokemonThumbnailImage;
+u8* sSide2PokemonThumbnailImage;
 static void* D_8438E780;
 static GraphNode* D_8438E784;
 static GraphNode* D_8438E788;
 static GraphNode* D_8438E78C;
-static unk_D_80068BB0* D_8438E790;
-static unk_D_80068BB0* D_8438E794;
+static DepthBuffer* sSide1PokemonThumbnail;
+static DepthBuffer* sSide2PokemonThumbnail;
 static BattleSessionTeams* sBattleSides;
-static s32 D_8438E79C;
+static s32 sIsPaused;
 static s32 D_8438E7A0;
-static Color_RGBA8_u32 D_8438E7A4;
+static Color_RGBA8_u32 sTintColor;
 static f32 D_8438E7A8;
 static s32 D_8438E7AC;
 
-static u8 D_84384350[] = {
-    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x11, 0x01,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x01,
+static u8 sBattleModeDispatch[] = {
+    SESSION_MODE_ANYTHING_GOES, // SESSION_MODE_ANYTHING_GOES
+    SESSION_MODE_NINTENDO_CUP_97, // SESSION_MODE_NINTENDO_CUP_97
+    SESSION_MODE_NINTENDO_CUP_98, // SESSION_MODE_NINTENDO_CUP_98
+    SESSION_MODE_NINTENDO_CUP_99, // SESSION_MODE_NINTENDO_CUP_99
+    SESSION_MODE_PETIT_CUP, // SESSION_MODE_PETIT_CUP
+    SESSION_MODE_PIKA_CUP, // SESSION_MODE_PIKA_CUP
+    SESSION_MODE_PRIME_CUP, // SESSION_MODE_PRIME_CUP
+    SESSION_MODE_GYM_LEADER_CASTLE, // SESSION_MODE_GYM_LEADER_CASTLE
+    17, // SESSION_MODE_VS_MEWTWO
+    SESSION_MODE_NINTENDO_CUP_97, // SESSION_MODE_BATTLE_NOW
+    SESSION_MODE_ANYTHING_GOES, // SESSION_MODE_EVENT_BATTLE
+    0, 0, 0, 0, 0, // 11-15: Unknown
+    SESSION_MODE_NINTENDO_CUP_97, // SESSION_MODE_ATTRACT_DEMO_BATTLE
+    SESSION_MODE_NINTENDO_CUP_97, SESSION_MODE_NINTENDO_CUP_97, // 17-18: Cutscenes
+    SESSION_MODE_NINTENDO_CUP_97, 0, // 19-20: Unknown
+    0, 0, 0, 0, // 21-24: Cutscenes
+    0, // SESSION_MODE_ATTRACT_DEMO_MINIGAME
+    0, // 26: Cutscene
 };
 static u32 D_84384364[] = {
     0x0C00FFFF,  0x05000000,  0x07000000,    &D_8438E440,   0x05000000, 0x0D000000,    0x05000000,  0x07000000,
@@ -108,18 +124,18 @@ s32 Battle_StageLightAngleCallbackB(s32 arg0, unk_D_86002F34_alt18* arg1) {
 s32 Battle_StageMaterialTintCallback(s32 arg0, DisplayObject* arg1) {
     if (arg0 == 2) {
         Vec3f_SetComponentsDuplicate(&arg1->scale, D_8438E7A8, D_8438E7A8, D_8438E7A8);
-        arg1->textureTint.rgba = D_8438E7A4.rgba;
+        arg1->textureTint.rgba = sTintColor.rgba;
     }
     return 0;
 }
 
 // called every frame: bug boy in GLC
-void Battle_SetStageTintColor(u8 arg0, u8 arg1, u8 arg2) {
-    D_8438E7A4.r = arg0;
-    D_8438E7A4.g = arg1;
-    D_8438E7A4.b = arg2;
+void Battle_SetStageTintColor(u8 r, u8 g, u8 b) {
+    sTintColor.r = r;
+    sTintColor.g = g;
+    sTintColor.b = b;
 
-    if (((arg0 & arg1 & arg2) & 0xFF) == 0xFF) {
+    if (((r & g & b) & 0xFF) == 0xFF) {
         if (D_8438E530.node.callbackArg == 1) {
             D_8438E530.node.flags |= 1;
         }
@@ -134,14 +150,14 @@ void BattleScene_SetModelUniformScale(f32 arg0) {
 }
 
 // called every frame: bug boy in GLC
-u16 Battle_TintTexel16(u16 arg0) {
+u16 Battle_TintTexel16(u16 color) {
     s32 r;
     s32 g;
     s32 b;
 
-    r = ((((((arg0 >> 11) & 0x1F) << 3) + (((arg0 >> 11) & 0x1F) >> 2)) * D_8438E7A4.r) / 255) >> 3;
-    g = ((((((arg0 >> 6) & 0x1F) << 3) + (((arg0 >> 6) & 0x1F) >> 2)) * D_8438E7A4.g) / 255) >> 3;
-    b = ((((((arg0 >> 1) & 0x1F) << 3) + (((arg0 >> 1) & 0x1F) >> 2)) * D_8438E7A4.b) / 255) >> 3;
+    r = ((((((color >> 11) & 0x1F) << 3) + (((color >> 11) & 0x1F) >> 2)) * sTintColor.r) / 255) >> 3;
+    g = ((((((color >> 6) & 0x1F) << 3) + (((color >> 6) & 0x1F) >> 2)) * sTintColor.g) / 255) >> 3;
+    b = ((((((color >> 1) & 0x1F) << 3) + (((color >> 1) & 0x1F) >> 2)) * sTintColor.b) / 255) >> 3;
 
     return (r << 11) | (g << 6) | (b << 1) | 1;
 }
@@ -186,7 +202,7 @@ void Battle_DrawStageBackdrop(void) {
     gDPSetCycleType(gDisplayListHead++, G_CYC_1CYCLE);
     gDPSetTexturePersp(gDisplayListHead++, G_TP_NONE);
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEI_PRIM, G_CC_MODULATEI_PRIM);
-    gDPSetPrimColor(gDisplayListHead++, 0, 0, D_8438E7A4.r, D_8438E7A4.g, D_8438E7A4.b, 255);
+    gDPSetPrimColor(gDisplayListHead++, 0, 0, sTintColor.r, sTintColor.g, sTintColor.b, 255);
     gSPClearGeometryMode(gDisplayListHead++, G_ZBUFFER | G_LIGHTING);
 
     gDPLoadTextureBlock(gDisplayListHead++, Memmap_GetFragmentVaddr(D_8438E780), G_IM_FMT_RGBA, G_IM_SIZ_32b, 4, 64, 0,
@@ -198,10 +214,10 @@ void Battle_DrawStageBackdrop(void) {
     gSPDisplayList(gDisplayListHead++, D_8006F630);
 }
 
-// called every frame: bug boy in GLC
-// Draws the Active Pokemon's portrait in the battle UI
-// Removing the branch makes it so the Pokemon in the thumbnail move!
-void Battle_RenderActivePokemonThumbnail(GraphNode* pokemon, unk_D_80068BB0* thumbnail) {
+/*
+    Makes and Freezes the thumbnail of active pokemon
+*/
+void Battle_RenderActivePokemonThumbnail(GraphNode* pokemon, DepthBuffer* thumbnail) {
     CameraNode* camera_node = pokemon->children;
     CameraViewport viewport;
 
@@ -248,26 +264,28 @@ void Battle_DrawClippedTextureRect(s32 x1, s32 y1, s32 x2, s32 y2) {
 }
 
 // called every frame: bug boy in GLC
-void Battle_DrawTexturedRectSegment(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8* arg4, s32 arg5) {
-    gDPLoadTextureBlock(gDisplayListHead++, arg4, G_IM_FMT_RGBA, G_IM_SIZ_16b, arg5, (arg3 * 2) + 2, 0,
+void Battle_DrawTexturedRectSegment(s32 x1, s32 y1, s32 draw_width, s32 height, u8* texture, s32 load_width) {
+    gDPLoadTextureBlock(gDisplayListHead++, texture, G_IM_FMT_RGBA, G_IM_SIZ_16b, load_width, (height * 2) + 2, 0,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                         G_TX_NOLOD);
 
-    Battle_DrawClippedTextureRect(arg0, arg1, (arg0 + arg2) - 1, (arg1 + arg3) - 1);
+    Battle_DrawClippedTextureRect(x1, y1, (x1 + draw_width) - 1, (y1 + height) - 1);
 }
 
-// called every frame: bug boy in GLC
-void Battle_DrawFaintOrderMarker(GraphNode* arg0, unk_D_80068BB0* arg1) {
-    s32 temp_s2;
-    s32 temp_s3;
-    CameraNode* temp_v1 = arg0->children;
-    CameraViewport* ptr = &arg0->children->viewport;
+/*
+    Fills in the texture of the pokemon thumbnail
+*/
+void Battle_FillActivePokemonThumbnail(GraphNode* pokemon, DepthBuffer* thumbnail) {
+    s32 x;
+    s32 y;
+    CameraNode* camera_child_node = pokemon->children;
+    CameraViewport* viewport = &pokemon->children->viewport;
     s32 img;
 
-    temp_s2 = ptr->x;
-    temp_s3 = ptr->y;
+    x = viewport->x;
+    y = viewport->y;
 
-    temp_v1++;
+    camera_child_node++;
 
     gDPPipeSync(gDisplayListHead++);
 
@@ -277,14 +295,14 @@ void Battle_DrawFaintOrderMarker(GraphNode* arg0, unk_D_80068BB0* arg1) {
     gDPSetTexturePersp(gDisplayListHead++, G_TP_NONE);
     gDPSetTextureFilter(gDisplayListHead++, G_TF_AVERAGE);
 
-    img = arg1->img_p;
-    Battle_DrawTexturedRectSegment(temp_s2, temp_s3, 0x25, 0xA, img, 0x4C);
-    img = arg1->img_p + 0xBE0;
-    Battle_DrawTexturedRectSegment(temp_s2, temp_s3 + 0xA, 0x25, 0xA, img, 0x4C);
-    img = arg1->img_p + 0x17C0;
-    Battle_DrawTexturedRectSegment(temp_s2, temp_s3 + 0x14, 0x25, 0xA, img, 0x4C);
-    img = arg1->img_p + 0x23A0;
-    Battle_DrawTexturedRectSegment(temp_s2, temp_s3 + 0x1E, 0x25, 7, img, 0x4C);
+    img = thumbnail->img_p;
+    Battle_DrawTexturedRectSegment(x, y, 37, 10, img, 76);
+    img = thumbnail->img_p + 0xBE0;
+    Battle_DrawTexturedRectSegment(x, y + 10, 37, 10, img, 76);
+    img = thumbnail->img_p + 0x17C0;
+    Battle_DrawTexturedRectSegment(x, y + 20, 37, 10, img, 76);
+    img = thumbnail->img_p + 0x23A0;
+    Battle_DrawTexturedRectSegment(x, y + 30, 37, 7, img, 76);
 
     gDPPipeSync(gDisplayListHead++);
 
@@ -293,18 +311,19 @@ void Battle_DrawFaintOrderMarker(GraphNode* arg0, unk_D_80068BB0* arg1) {
 }
 
 // trigger unknown
+// preliminary guess: initialization for Tag Team in free battle
 void func_84300D44(void) {
     s32 i;
     s32 j;
     s32 x;
-    TeamRoster* temp_a2;
-    BattleSessionTeams* ptr = &sBattleSides[0];
+    TeamRoster* current_team_member;
+    BattleSessionTeams* player_tag_team = &sBattleSides[0];
 
-    for (i = 0; i < 2; i++, ptr++) {
-        for (j = 0; j < ptr->unk_01; j++) {
-            temp_a2 = ptr->teamMember[j];
-            for (x = 0; x < temp_a2->numberOfPokemonChosen; x++) {
-                temp_a2->pokemonPicked[x].unk_25 = 0;
+    for (i = 0; i < 2; i++, player_tag_team++) {
+        for (j = 0; j < player_tag_team->unk_01; j++) {
+            current_team_member = player_tag_team->teamMember[j];
+            for (x = 0; x < current_team_member->numberOfPokemonChosen; x++) {
+                current_team_member->pokemonPicked[x].unk_25 = 0;
             }
         }
     }
@@ -317,11 +336,11 @@ void func_84300DC0(void) {
     s32 x;
     s32 var_v0 = 0;
     TeamRoster* temp_a3;
-    BattleSessionTeams* ptr = &sBattleSides[0];
+    BattleSessionTeams* player_side = &sBattleSides[0];
 
-    for (i = 0; i < 2; i++, ptr++) {
-        for (j = 0; j < ptr->unk_01; j++) {
-            temp_a3 = ptr->teamMember[j];
+    for (i = 0; i < 2; i++, player_side++) {
+        for (j = 0; j < player_side->unk_01; j++) {
+            temp_a3 = player_side->teamMember[j];
             for (x = 0; x < temp_a3->numberOfPokemonChosen; x++) {
                 if ((temp_a3->pokemonPicked[x].unk_25 == 0) && (temp_a3->pokemonPicked[x].unk_02 == 0)) {
                     var_v0 = 1;
@@ -352,14 +371,14 @@ s32 BattleScene_UpdateFrame(s32 arg0) {
     BattleScene_DispatchOwnerCameraLifecycle(2, &D_8438E598, &D_8438E688);
     sp1C = BattleScene_Dispatch(2, &D_8438E440);
     BattleAnim_DispatchPresentation(2, &D_8438E440);
-    Battle_RenderActivePokemonThumbnail(D_8438E788, D_8438E790);
-    Battle_RenderActivePokemonThumbnail(D_8438E78C, D_8438E794);
+    Battle_RenderActivePokemonThumbnail(D_8438E788, sSide1PokemonThumbnail);
+    Battle_RenderActivePokemonThumbnail(D_8438E78C, sSide2PokemonThumbnail);
     BgStage_DrawFrame();
     Battle_DrawStageBackdrop();
     Geo_RenderRootNode(D_8438E784);
     BattleScene_DispatchLifecycle(5, sBattleSides);
-    Battle_DrawFaintOrderMarker(D_8438E788, D_8438E790);
-    Battle_DrawFaintOrderMarker(D_8438E78C, D_8438E794);
+    Battle_FillActivePokemonThumbnail(D_8438E788, sSide1PokemonThumbnail);
+    Battle_FillActivePokemonThumbnail(D_8438E78C, sSide2PokemonThumbnail);
     func_84300DC0();
 
     if (sp1C == 1) {
@@ -373,7 +392,11 @@ s32 BattleScene_UpdateFrame(s32 arg0) {
     return sp1C;
 }
 
-// triggers on pressing Re-enter after loss: Bug boy in GLC. Might be a misidentification 
+/*
+    No idea what the hell this is, it's not drawing the Run selection cursor and nothing else in battle would use START
+    Stadium doesn't have pausing so it's not that either
+    preliminary guess: unused pausing debug option, sIsPaused can never be 1 through the current code
+*/
 s32 BattleScene_UpdatePausedFrame(s32 arg0) {
     s32 sp1C = 0;
 
@@ -385,12 +408,12 @@ s32 BattleScene_UpdatePausedFrame(s32 arg0) {
         Battle_DrawStageBackdrop();
         Geo_RenderRootNode(D_8438E784);
         BattleScene_DispatchLifecycle(5, sBattleSides);
-        Battle_DrawFaintOrderMarker(D_8438E788, D_8438E790);
-        Battle_DrawFaintOrderMarker(D_8438E78C, D_8438E794);
+        Battle_FillActivePokemonThumbnail(D_8438E788, sSide1PokemonThumbnail);
+        Battle_FillActivePokemonThumbnail(D_8438E78C, sSide2PokemonThumbnail);
     }
 
     if ((arg0 == 0) && BTN_IS_PRESSED(gPlayer1Controller, BTN_START)) {
-        D_8438E79C = 0;
+        sIsPaused = 0;
     }
     return sp1C;
 }
@@ -416,7 +439,7 @@ s32 Battle_FrameCallback(s32 arg0) {
     Cont_ReadInputs();
     Input_ResetRepeatState();
 
-    switch (D_8438E79C) {
+    switch (sIsPaused) {
         case 0:
             sp1C = BattleScene_UpdateFrame(arg0);
             break;
@@ -522,7 +545,7 @@ void BattleScene_Init(unk_func_80007444* arg0) {
     unk_D_8690A610_018* temp_v0_7;
     s32 pad;
     s16 sp32;
-    unk_D_80068BB0* sp2C;
+    DepthBuffer* sp2C;
     unk_D_86002F30* sp28;
 
     Battle_SetStageTintColor(0xFF, 0xFF, 0xFF);
@@ -542,27 +565,27 @@ void BattleScene_Init(unk_func_80007444* arg0) {
 
     sp2C = main_pool_alloc(0x10, 0);
     GfxImage_Initialize(sp2C, 0, 2, 0x4C, 0x4C, arg0->unk_18[0]->depth_p->img_p);
-    D_8438E790 = GfxImage_Allocate(0, 2, 0x4C, 0x4C, 0);
-    D_8438E794 = GfxImage_Allocate(0, 2, 0x4C, 0x4C, 0);
+    sSide1PokemonThumbnail = GfxImage_Allocate(0, 2, 0x4C, 0x4C, 0);
+    sSide2PokemonThumbnail = GfxImage_Allocate(0, 2, 0x4C, 0x4C, 0);
 
-    GfxImage_AttachDepthBuffer(D_8438E790, sp2C);
-    GfxImage_AttachDepthBuffer(D_8438E794, sp2C);
+    GfxImage_AttachDepthBuffer(sSide1PokemonThumbnail, sp2C);
+    GfxImage_AttachDepthBuffer(sSide2PokemonThumbnail, sp2C);
 
-    D_8438E778 = D_8438E790->img_p;
-    D_8438E77C = D_8438E794->img_p;
+    sSide1PokemonThumbnailImage = sSide1PokemonThumbnail->img_p;
+    sSide2PokemonThumbnailImage = sSide2PokemonThumbnail->img_p;
 
     FRAGMENT_LOAD(fragment31);
     ASSET_LOAD(D_1000000, common_menu1_ui, 0);
     ASSET_LOAD(D_3000000, battle_ui, 0);
 
-    if ((gSessionContext.mode == 0x10) || (gSessionContext.mode == 0xA)) {
-        sp32 = D_84384350[gSessionContext.ruleCategory];
-        if (gSessionContext.ruleCategory == 7) {
+    if ((gSessionContext.mode == SESSION_MODE_ATTRACT_DEMO_BATTLE) || (gSessionContext.mode == SESSION_MODE_EVENT_BATTLE)) {
+        sp32 = sBattleModeDispatch[gSessionContext.ruleCategory];
+        if (gSessionContext.ruleCategory == SESSION_MODE_GYM_LEADER_CASTLE) {
             sp32 += gSessionContext.modeSelection;
         }
     } else {
-        sp32 = D_84384350[gSessionContext.mode];
-        if (gSessionContext.mode == 7) {
+        sp32 = sBattleModeDispatch[gSessionContext.mode];
+        if (gSessionContext.mode == SESSION_MODE_GYM_LEADER_CASTLE) {
             sp32 += gSessionContext.modeSelection;
         }
     }
@@ -629,7 +652,7 @@ void BattleScene_Init(unk_func_80007444* arg0) {
     BattleAnim_DispatchPresentation(3, &D_8438E440);
 
     D_8438E7A0 = 1;
-    D_8438E79C = 0;
+    sIsPaused = 0;
 }
 
 void func_84301A24(void) {
