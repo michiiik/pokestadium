@@ -41,7 +41,7 @@ void BattleScene_FinalPresentationFrameOwner0(CameraNode* arg0) {
     gBattleScene.unk_00->unk_20 += 1;
 }
 
-void BattleScene_RunFinalPresentation(CameraNode* arg0, UNUSED Battler* arg1, UNUSED Battler* arg2) {
+void BattleScene_RunFinalPresentation(CameraNode* arg0, UNUSED ActivePokemon* arg1, UNUSED ActivePokemon* arg2) {
     gBattleScene.unk_00->unk_40 = 0;
     gBattleScene.unk_00->unk_60 = 30.0f;
     gBattleScene.unk_00->unk_6C = 10.0f;
@@ -71,7 +71,7 @@ void BattleScene_RunFinalPresentation(CameraNode* arg0, UNUSED Battler* arg1, UN
     gBattleScene.unk_00->unk_DC = arg0;
 }
 
-void BattleScene_Init(void) {
+void BattleScene_AllocateMemory(void) {
     gBattleScene.unk_00 = main_pool_alloc(sizeof(BattleScene), 0);
     bzero(gBattleScene.unk_00, sizeof(BattleScene));
 }
@@ -249,7 +249,7 @@ void BattleScene_TickCameraSubstate(CameraNode* arg0) {
     }
 }
 
-u16 BattleScene_IsOwnerInViewWedge(Battler* arg0, CameraNode* arg1, Battler* a2, s16 arg3, f32 arg4) {
+u16 BattleScene_IsOwnerInViewWedge(ActivePokemon* arg0, CameraNode* arg1, ActivePokemon* a2, s16 arg3, f32 arg4) {
     UNUSED s32 pad[6];
     f32 sp6C;
     f32 sp68;
@@ -264,7 +264,7 @@ u16 BattleScene_IsOwnerInViewWedge(Battler* arg0, CameraNode* arg1, Battler* a2,
     s16 sp46;
     s16 sp44;
     f32 sp40;
-    Battler* arg2;
+    ActivePokemon* arg2;
     f32 sp38;
     s32 sp34 = 0;
 
@@ -291,7 +291,7 @@ u16 BattleScene_IsOwnerInViewWedge(Battler* arg0, CameraNode* arg1, Battler* a2,
     return sp34;
 }
 
-u16 BattleScene_IsOwnerInViewWedgeAlt(Battler* arg0, CameraNode* arg1, Battler* a2, s16 arg3, f32 arg4) {
+u16 BattleScene_IsOwnerInViewWedgeAlt(ActivePokemon* arg0, CameraNode* arg1, ActivePokemon* a2, s16 arg3, f32 arg4) {
     UNUSED s32 pad[6];
     f32 sp94;
     f32 sp90;
@@ -301,7 +301,7 @@ u16 BattleScene_IsOwnerInViewWedgeAlt(Battler* arg0, CameraNode* arg1, Battler* 
     UNUSED s32 pad2;
     f32 sp7C;
     f32 sp78;
-    Battler* arg2;
+    ActivePokemon* arg2;
     f32 sp70;
     s16 sp6E;
     s16 sp6C;
@@ -355,7 +355,7 @@ void BattleScene_UpdateBothOwnersVisibilityCulling(CameraNode* arg0) {
 }
 
 void BattleScene_UpdateOpponentVisibilityCulling(CameraNode* arg0) {
-    Battler* sp24 = D_84390010[!gBattleScene.unk_00->unk_2C];
+    ActivePokemon* sp24 = D_84390010[!gBattleScene.unk_00->unk_2C];
 
     if (BattleScene_IsOwnerInViewWedgeAlt(sp24, arg0, sp24, 0x2AA8, 2500.0f) != 0) {
         sp24->unk_000.node.flags |= 1;
@@ -383,8 +383,8 @@ void BattleScene_HideActiveOwner(void) {
 }
 
 void BattleScene_HideFaintedOwners(void) {
-    Battler* ptr1 = D_84390010[0];
-    Battler* ptr2 = D_84390010[1];
+    ActivePokemon* ptr1 = D_84390010[0];
+    ActivePokemon* ptr2 = D_84390010[1];
 
     if ((ptr1->unk_654.unk_2D == 0x10) || ((ptr1 = D_84390010[0])->unk_654.unk_2D == 0x13)) {
         ptr1->unk_000.node.flags &= ~1;
@@ -397,9 +397,9 @@ void BattleScene_HideFaintedOwners(void) {
 
 void BattleScene_UpdateOwnerVisibilitySingle(CameraNode* arg0) {
     UNUSED s32 pad;
-    BattlerState* sp40 = &D_84390204->unk_654;
+    ActivePokemonState* sp40 = &D_84390204->unk_654;
     s32 temp_lo;
-    BattlerState* sp38 = &D_84390200->unk_654;
+    ActivePokemonState* sp38 = &D_84390200->unk_654;
     f32 sp34;
     s16 sp32;
     s16 sp30;
@@ -730,7 +730,7 @@ void BattleScene_Update(CameraNode* arg0) {
 s32 BattleScene_Dispatch(s32 arg0, CameraNode* arg1) {
     switch (arg0) {
         case 0:
-            BattleScene_Init();
+            BattleScene_AllocateMemory();
             break;
 
         case 1:

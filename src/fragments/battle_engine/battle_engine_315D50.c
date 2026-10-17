@@ -4224,8 +4224,8 @@ void BattleAnim_PlaySpeciesReactionSound(ActivePokemon* arg0, BattleMonRuntime* 
 }
 
 void BattleScene_ConfigureAudioChannelGroupsByTeam(void) {
-    ActivePokemon* ptr1 = sBattlers[0];
-    ActivePokemon* ptr2 = sBattlers[1];
+    ActivePokemon* ptr1 = sActivePokemons[0];
+    ActivePokemon* ptr2 = sActivePokemons[1];
     u8 i;
     u8 sp20[4];
 
@@ -4253,8 +4253,8 @@ void BattleScene_ConfigureAudioChannelGroupsByTeam(void) {
 }
 
 void BattleScene_ConfigureAudioChannelGroupCounts(void) {
-    ActivePokemon* ptr1 = sBattlers[0];
-    ActivePokemon* ptr2 = sBattlers[1];
+    ActivePokemon* ptr1 = sActivePokemons[0];
+    ActivePokemon* ptr2 = sActivePokemons[1];
     u8 sp24[4];
 
     sp24[0] = 0;

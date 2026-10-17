@@ -513,6 +513,7 @@ void BattleScene_InitializeParticipantPresentation(BattleSessionTeams* arg0, unk
 }
 
 // triggers at the start of battle: bug boy in glc
+// Proposed: BattleScene_AllocateMemory, but there is already a function called that
 void func_84301430(unk_func_80007444* arg0) {
     MemoryBlock* sp44;
     u32* temp_v0_4;

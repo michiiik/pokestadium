@@ -199,7 +199,7 @@ void Battle_Effect_Explosion(void) {
 
 void Battle_Effect_SecondaryStatusChance(void) {
     BattleMonRuntime* temp_a2 = &D_84390010[!gBattleScene.unk_00->unk_2C]->unk_654.unk_38;
-    BattlerState* temp_a0 = &D_84390010[!gBattleScene.unk_00->unk_2C]->unk_654;
+    ActivePokemonState* temp_a0 = &D_84390010[!gBattleScene.unk_00->unk_2C]->unk_654;
 
     if (gBattleTarget->unk_4D & 0x10) {
         return;
@@ -858,7 +858,7 @@ void Battle_Effect_Rage(void) {
 }
 
 void Battle_Effect_Mimic(void) {
-    BattlerState* sp24 = &D_84390010[gBattleScene.unk_00->unk_2C]->unk_654;
+    ActivePokemonState* sp24 = &D_84390010[gBattleScene.unk_00->unk_2C]->unk_654;
     s32 var_t0;
     u8 temp_v0;
 
@@ -993,7 +993,7 @@ void Battle_Effect_Haze(void) {
 
 void Battle_Effect_Heal(void) {
     u8 temp_v0;
-    BattlerState* temp_a1;
+    ActivePokemonState* temp_a1;
     BattleMonRuntime* temp_a2;
 
     temp_a1 = &D_84390010[gBattleScene.unk_00->unk_2C]->unk_654;
@@ -1040,8 +1040,8 @@ void Battle_Effect_Heal(void) {
 
 void Battle_Effect_Transform(void) {
     s32 i;
-    BattlerState* sp20;
-    BattlerState* sp1C;
+    ActivePokemonState* sp20;
+    ActivePokemonState* sp1C;
     BattleMonRuntime* ptr;
 
     sp20 = &D_84390010[gBattleScene.unk_00->unk_2C]->unk_654;
