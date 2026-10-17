@@ -13,7 +13,7 @@ void BattleAnim_StartFreezeStatusAnimation(ActivePokemon* arg0) {
 
     sp28 = &arg0->unk_654.runtime;
     sp2C = &arg0->unk_654;
-    ptr = &arg0->unk_724->pokemonInParty[sp2C->unk_08];
+    ptr = &arg0->unk_724->pokemonPicked[sp2C->unk_08];
     sp20 = &D_84384570[idx]->unk_A80;
 
     if ((ptr->unk_05 & 0x20) && (sp2C->unk_34 & 2)) {
@@ -49,7 +49,7 @@ void BattleAnim_ClearFreezeStatusAnimation(ActivePokemon* arg0) {
 }
 
 void BattleAnim_ResetFreezeStatusAndRestoreAnimation(ActivePokemon* arg0) {
-    BattleMon* ptr = &arg0->unk_724->pokemonInParty[arg0->unk_654.unk_08];
+    BattleMon* ptr = &arg0->unk_724->pokemonPicked[arg0->unk_654.unk_08];
 
     if (arg0->unk_654.unk_34 & 2) {
         ptr->unk_05 = 0;
@@ -72,7 +72,7 @@ void BattleAnim_ClearFreezeStatusAnimationIfThawed(ActivePokemon* arg0) {
 void BattleAnim_UpdateSleepStatusAnimation(ActivePokemon* arg0) {
     ActivePokemonState* sp24 = &arg0->unk_654;
     BattleMonRuntime* sp28 = &sp24->runtime;
-    BattleMon* sp2C = &arg0->unk_724->pokemonInParty[arg0->unk_654.unk_08];
+    BattleMon* sp2C = &arg0->unk_724->pokemonPicked[arg0->unk_654.unk_08];
 
     if ((gBattleScene.unk_00->unk_38 != 0xB) || (gBattleScene.unk_00->unk_20 >= 6)) {
         if ((sp2C->unk_05 & 7) && (sp28->unk_15 & 7) && !(arg0->unk_654.unk_34 & 1)) {
@@ -96,7 +96,7 @@ void BattleAnim_UpdateSleepStatusAnimation(ActivePokemon* arg0) {
 }
 
 void BattleAnim_EndSleepStatusAnimation(ActivePokemon* arg0) {
-    BattleMon* ptr = &arg0->unk_724->pokemonInParty[arg0->unk_654.unk_08];
+    BattleMon* ptr = &arg0->unk_724->pokemonPicked[arg0->unk_654.unk_08];
 
     if (arg0->unk_654.unk_34 & 1) {
         ptr->unk_05 = 0;

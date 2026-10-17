@@ -117,7 +117,7 @@ void BattleScene_ApplyCameraPhaseDefaults(void) {
 }
 
 void BattleScene_SetDamageShakeAmplitude(ActivePokemon* arg0) {
-    BattleMon* ptr = &arg0->unk_724->unk_01C[arg0->unk_654.unk_08];
+    BattleMon* ptr = &arg0->unk_724->pokemonPicked[arg0->unk_654.unk_08];
 
     gBattleScene.unk_00->unk_68 = ((ptr->unk_02 - arg0->unk_654.runtime.unk_0C) / 996.0f) * 1400.0f;
 
