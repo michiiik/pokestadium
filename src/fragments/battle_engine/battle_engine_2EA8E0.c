@@ -1,4 +1,5 @@
 #include "battle_engine.h"
+#include "game_state.h"
 #include "src/geo_node.h"
 #include "src/geo_render.h"
 #include "src/display_object_textures.h"
@@ -301,9 +302,9 @@ void func_84300D44(void) {
 
     for (i = 0; i < 2; i++, ptr++) {
         for (j = 0; j < ptr->unk_01; j++) {
-            temp_a2 = ptr->unk_08[j];
-            for (x = 0; x < temp_a2->unk_002; x++) {
-                temp_a2->unk_01C[x].unk_25 = 0;
+            temp_a2 = ptr->teamMember[j];
+            for (x = 0; x < temp_a2->numberOfPokemonChosen; x++) {
+                temp_a2->pokemonChosen[x].unk_25 = 0;
             }
         }
     }
@@ -320,11 +321,11 @@ void func_84300DC0(void) {
 
     for (i = 0; i < 2; i++, ptr++) {
         for (j = 0; j < ptr->unk_01; j++) {
-            temp_a3 = ptr->unk_08[j];
-            for (x = 0; x < temp_a3->unk_002; x++) {
-                if ((temp_a3->unk_01C[x].unk_25 == 0) && (temp_a3->unk_01C[x].unk_02 == 0)) {
+            temp_a3 = ptr->teamMember[j];
+            for (x = 0; x < temp_a3->numberOfPokemonChosen; x++) {
+                if ((temp_a3->pokemonChosen[x].unk_25 == 0) && (temp_a3->pokemonChosen[x].unk_02 == 0)) {
                     var_v0 = 1;
-                    temp_a3->unk_01C[x].unk_25 = D_8438E7A0;
+                    temp_a3->pokemonChosen[x].unk_25 = D_8438E7A0;
                 }
             }
         }
@@ -464,51 +465,52 @@ void func_8430123C(u8* arg0, s32 arg1) {
 
 // triggers on battle start: bug boy in glc
 void func_8430128C(void) {
-    TeamRoster* temp_s0;
-    TeamRoster* temp_s1;
-    u8 sp48[8];
-    TeamRoster* temp_s2;
+    TeamRoster* ai_roster;
+    TeamRoster* player_roster;
+    u8 pokemon_choosen_for_battle[8];
+    TeamRoster* player_teammate_roster;
     s32 i;
-    s32 var_s1;
+    s32 number_of_pokemon_chosen;
 
-    temp_s1 = gSessionContext.battleSides[0].unk_08[0];
-    temp_s2 = gSessionContext.battleSides[0].unk_08[1];
-    temp_s0 = gSessionContext.battleSides[1].unk_08[0];
+    player_roster = gSessionContext.battleSides[0].teamMember[0];
+    // Free battle does let two players play against the AI
+    player_teammate_roster = gSessionContext.battleSides[0].teamMember[1];
+    ai_roster = gSessionContext.battleSides[1].teamMember[0];
 
-    if (temp_s0->unk_000 & 2) {
+    if (ai_roster->unk_000 & 2) {
         if (gSessionContext.mode == 0) {
-            if (gSessionContext.ruleCategory == 0) {
-                var_s1 = temp_s0->unk_214->unk_002;
+            if (gSessionContext.ruleCategory == RULE_CATEGORY_ANYTHING_GOES) {
+                number_of_pokemon_chosen = ai_roster->rosterInfo->numberOfPokemonCanBeChosen;
             } else {
-                var_s1 = 3;
+                number_of_pokemon_chosen = 3;
             }
-            func_843831A0(temp_s1, temp_s2, temp_s0, gSessionContext.aiDifficulty, sp48, gSessionContext.ruleCategory, var_s1);
+            func_843831A0(player_roster, player_teammate_roster, ai_roster, gSessionContext.aiDifficulty, pokemon_choosen_for_battle, gSessionContext.ruleCategory, number_of_pokemon_chosen);
         } else {
-            if (gSessionContext.ruleCategory == 8) {
-                var_s1 = temp_s0->unk_214->unk_002;
+            if (gSessionContext.ruleCategory == RULE_CATEGORY_VS_MEWTWO) {
+                number_of_pokemon_chosen = ai_roster->rosterInfo->numberOfPokemonCanBeChosen;
             } else {
-                var_s1 = 3;
+                number_of_pokemon_chosen = 3;
             }
-            func_843831A0(temp_s1, NULL, temp_s0, temp_s0->unk_018 & 0xFF, sp48, gSessionContext.ruleCategory, var_s1);
+            func_843831A0(player_roster, NULL, ai_roster, ai_roster->unk_018 & 0xFF, pokemon_choosen_for_battle, gSessionContext.ruleCategory, number_of_pokemon_chosen);
         }
-        func_8430123C(sp48, var_s1);
-        temp_s0->unk_002 = var_s1;
+        func_8430123C(pokemon_choosen_for_battle, number_of_pokemon_chosen);
+        ai_roster->numberOfPokemonChosen = number_of_pokemon_chosen;
 
-        for (i = 0; i < temp_s0->unk_214->unk_002; i++) {
-            temp_s0->unk_01C[i] = temp_s0->unk_214->unk_028[sp48[i]];
+        for (i = 0; i < ai_roster->rosterInfo->numberOfPokemonCanBeChosen; i++) {
+            ai_roster->pokemonChosen[i] = ai_roster->rosterInfo->unk_028[pokemon_choosen_for_battle[i]];
         }
     }
 }
 
 // triggers at the start of battle: bug boy in glc
 void BattleScene_InitializeParticipantPresentation(BattleSessionTeams* arg0, unk_D_86002F30* arg1) {
-    TeamRoster* temp_v0 = arg0->unk_08[0];
+    TeamRoster* temp_v0 = arg0->teamMember[0];
 
     arg0->unk_18 = arg1->unk_08->unk_00[0];
     arg0->unk_00 |= 0xA0;
     arg0->unk_1C = 0;
-    arg0->unk_02 = temp_v0->unk_01C[0].unk_00.unk_00;
-    arg0->unk_04 = temp_v0->unk_01C;
+    arg0->unk_02 = temp_v0->pokemonChosen[0].unk_00.unk_00;
+    arg0->unk_04 = temp_v0->pokemonChosen;
     Trainer_RequestPokeIcon(arg0);
 }
 

@@ -62,7 +62,7 @@ typedef struct BattleMon {
 
 typedef struct ExtendedRosterInfo {
     /* 0x000 */ u16 unk_000;
-    /* 0x002 */ u8 unk_002;
+    /* 0x002 */ u8 numberOfPokemonCanBeChosen; // Only changes for Free Battle and VS Mewtwo, see @src/fragments/battle_engine/battle_engine_2EA8E0.c
     /* 0x003 */ u8 unk_003;
     /* 0x004 */ char unk004[0x10];
     /* 0x014 */ char unk_014[4];
@@ -76,13 +76,13 @@ typedef struct ExtendedRosterInfo {
 typedef struct TeamRoster {
     /* 0x000 */ u8 unk_000;
     /* 0x001 */ u8 unk_001;
-    /* 0x002 */ u8 unk_002;
+    /* 0x002 */ u8 numberOfPokemonChosen;
     /* 0x004 */ Controller* controller;
     /* 0x008 */ char unk_008[4];
     /* 0x00C */ char unk00C[0xC];
     /* 0x018 */ s32 unk_018;
-    /* 0x01C */ BattleMon unk_01C[6];
-    /* 0x214 */ ExtendedRosterInfo* unk_214;
+    /* 0x01C */ BattleMon pokemonChosen[6];
+    /* 0x214 */ ExtendedRosterInfo* rosterInfo;
     /* 0x218 */ char unk218[0x4];
 } TeamRoster; // size = 0x21C
 
@@ -91,7 +91,7 @@ typedef struct BattleSessionTeams {
     /* 0x01 */ u8 unk_01;
     /* 0x02 */ s16 unk_02;
     /* 0x04 */ TeamRoster* unk_04;
-    /* 0x08 */ TeamRoster* unk_08[2];
+    /* 0x08 */ TeamRoster* teamMember[2];
     /* 0x10 */ ModelLoadContext* unk_10;
     /* 0x14 */ ModelNodeView* unk_14;
     /* 0x18 */ ModelNodeView* unk_18;
