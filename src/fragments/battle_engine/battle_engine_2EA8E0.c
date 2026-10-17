@@ -304,7 +304,7 @@ void func_84300D44(void) {
         for (j = 0; j < ptr->unk_01; j++) {
             temp_a2 = ptr->teamMember[j];
             for (x = 0; x < temp_a2->numberOfPokemonChosen; x++) {
-                temp_a2->pokemonChosen[x].unk_25 = 0;
+                temp_a2->pokemonPicked[x].unk_25 = 0;
             }
         }
     }
@@ -323,9 +323,9 @@ void func_84300DC0(void) {
         for (j = 0; j < ptr->unk_01; j++) {
             temp_a3 = ptr->teamMember[j];
             for (x = 0; x < temp_a3->numberOfPokemonChosen; x++) {
-                if ((temp_a3->pokemonChosen[x].unk_25 == 0) && (temp_a3->pokemonChosen[x].unk_02 == 0)) {
+                if ((temp_a3->pokemonPicked[x].unk_25 == 0) && (temp_a3->pokemonPicked[x].unk_02 == 0)) {
                     var_v0 = 1;
-                    temp_a3->pokemonChosen[x].unk_25 = D_8438E7A0;
+                    temp_a3->pokemonPicked[x].unk_25 = D_8438E7A0;
                 }
             }
         }
@@ -446,58 +446,58 @@ s32 Battle_FrameCallback(s32 arg0) {
 }
 
 // triggers on battle start: bug boy in glc
-void func_8430123C(u8* arg0, s32 arg1) {
+void Battle_SelectComRosterOrder(u8* com_roster, s32 number_of_pokemon_picked) {
     s32 i;
     s32 j;
 
     for (i = 0; i < 6; i++) {
-        for (j = 0; j < arg1; j++) {
-            if (i == arg0[j]) {
+        for (j = 0; j < number_of_pokemon_picked; j++) {
+            if (i == com_roster[j]) {
                 break;
             }
         }
 
-        if (j == arg1) {
-            arg0[arg1++] = i;
+        if (j == number_of_pokemon_picked) {
+            com_roster[number_of_pokemon_picked++] = i;
         }
     }
 }
 
 // triggers on battle start: bug boy in glc
-void func_8430128C(void) {
-    TeamRoster* ai_roster;
+void Battle_CompleteComRosterOrder(void) {
+    TeamRoster* com_roster;
     TeamRoster* player_roster;
-    u8 pokemon_choosen_for_battle[8];
+    u8 order_of_picked_pokemon[8];
     TeamRoster* player_teammate_roster;
     s32 i;
-    s32 number_of_pokemon_chosen;
+    s32 number_of_pokemon_picked;
 
     player_roster = gSessionContext.battleSides[0].teamMember[0];
     // Free battle does let two players play against the AI
     player_teammate_roster = gSessionContext.battleSides[0].teamMember[1];
-    ai_roster = gSessionContext.battleSides[1].teamMember[0];
+    com_roster = gSessionContext.battleSides[1].teamMember[0];
 
-    if (ai_roster->unk_000 & 2) {
+    if (com_roster->unk_000 & 2) {
         if (gSessionContext.mode == 0) {
             if (gSessionContext.ruleCategory == RULE_CATEGORY_ANYTHING_GOES) {
-                number_of_pokemon_chosen = ai_roster->rosterInfo->numberOfPokemonCanBeChosen;
+                number_of_pokemon_picked = com_roster->rosterInfo->numberOfPokemonCanBePicked;
             } else {
-                number_of_pokemon_chosen = 3;
+                number_of_pokemon_picked = 3;
             }
-            func_843831A0(player_roster, player_teammate_roster, ai_roster, gSessionContext.aiDifficulty, pokemon_choosen_for_battle, gSessionContext.ruleCategory, number_of_pokemon_chosen);
+            func_843831A0(player_roster, player_teammate_roster, com_roster, gSessionContext.aiDifficulty, order_of_picked_pokemon, gSessionContext.ruleCategory, number_of_pokemon_picked);
         } else {
             if (gSessionContext.ruleCategory == RULE_CATEGORY_VS_MEWTWO) {
-                number_of_pokemon_chosen = ai_roster->rosterInfo->numberOfPokemonCanBeChosen;
+                number_of_pokemon_picked = com_roster->rosterInfo->numberOfPokemonCanBePicked;
             } else {
-                number_of_pokemon_chosen = 3;
+                number_of_pokemon_picked = 3;
             }
-            func_843831A0(player_roster, NULL, ai_roster, ai_roster->unk_018 & 0xFF, pokemon_choosen_for_battle, gSessionContext.ruleCategory, number_of_pokemon_chosen);
+            func_843831A0(player_roster, NULL, com_roster, com_roster->unk_018 & 0xFF, order_of_picked_pokemon, gSessionContext.ruleCategory, number_of_pokemon_picked);
         }
-        func_8430123C(pokemon_choosen_for_battle, number_of_pokemon_chosen);
-        ai_roster->numberOfPokemonChosen = number_of_pokemon_chosen;
+        Battle_SelectComRosterOrder(order_of_picked_pokemon, number_of_pokemon_picked);
+        com_roster->numberOfPokemonChosen = number_of_pokemon_picked;
 
-        for (i = 0; i < ai_roster->rosterInfo->numberOfPokemonCanBeChosen; i++) {
-            ai_roster->pokemonChosen[i] = ai_roster->rosterInfo->unk_028[pokemon_choosen_for_battle[i]];
+        for (i = 0; i < com_roster->rosterInfo->numberOfPokemonCanBePicked; i++) {
+            com_roster->pokemonPicked[i] = com_roster->rosterInfo->unk_028[order_of_picked_pokemon[i]];
         }
     }
 }
@@ -509,8 +509,8 @@ void BattleScene_InitializeParticipantPresentation(BattleSessionTeams* arg0, unk
     arg0->unk_18 = arg1->unk_08->unk_00[0];
     arg0->unk_00 |= 0xA0;
     arg0->unk_1C = 0;
-    arg0->unk_02 = temp_v0->pokemonChosen[0].unk_00.unk_00;
-    arg0->unk_04 = temp_v0->pokemonChosen;
+    arg0->unk_02 = temp_v0->pokemonPicked[0].unk_00.unk_00;
+    arg0->unk_04 = temp_v0->pokemonPicked;
     Trainer_RequestPokeIcon(arg0);
 }
 
@@ -571,7 +571,7 @@ void BattleScene_Init(unk_func_80007444* arg0) {
     D_8438E780 = sp3C(2, 0);
 
     sp28 = Model_LoadByArchiveIndex(0x9A);
-    func_8430128C();
+    Battle_CompleteComRosterOrder();
     BattleScene_InitializeParticipantPresentation(&sBattleSides[0], sp28);
     BattleScene_InitializeParticipantPresentation(&sBattleSides[1], sp28);
 

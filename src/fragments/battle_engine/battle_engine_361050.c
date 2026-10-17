@@ -418,12 +418,12 @@ void BattleAI_AppendTrainerTeamSpecies(TeamRoster* arg0) {
         i++;
     }
 
-    for (j = 0; j < arg0->rosterInfo->numberOfPokemonCanBeChosen; j++) {
+    for (j = 0; j < arg0->rosterInfo->numberOfPokemonCanBePicked; j++) {
         temp_v0 = i + j;
         if (temp_v0 >= 18) {
             break;
         }
-        temp_a0 = arg0->pokemonChosen[j].unk_00.unk_00;
+        temp_a0 = arg0->pokemonPicked[j].unk_00.unk_00;
         D_843C5550[temp_v0] = temp_a0;
         Battle_DmaLoadAnimRecord(temp_a0, &D_843C5310[temp_v0]);
     }
@@ -1072,10 +1072,10 @@ void BattleAI_InitializeOrderCandidates(TeamRoster* arg0, TeamRoster* arg1, Team
                 arg3->unk_002 = 2;
                 arg3->unk_006 = arg0->numberOfPokemonChosen;
                 arg3->unk_007 = arg1->numberOfPokemonChosen;
-                arg3->unk_004 = arg1->rosterInfo->numberOfPokemonCanBeChosen;
+                arg3->unk_004 = arg1->rosterInfo->numberOfPokemonCanBePicked;
             }
 
-            arg3[0].unk_003 = arg0->rosterInfo->numberOfPokemonCanBeChosen;
+            arg3[0].unk_003 = arg0->rosterInfo->numberOfPokemonCanBePicked;
             arg3[0].unk_005 = arg3[0].unk_003 + arg3[0].unk_004;
             arg3[0].unk_008 = arg3[0].unk_006 + arg3[0].unk_007;
 
@@ -3541,9 +3541,9 @@ void BattleAI_InitTeamContext(TeamRoster* arg0, TeamRoster* arg1, BattleAiTeamSt
     BattleMon* sp64[2];
     BattleMon* temp_s7;
 
-    sp64[0] = arg0->pokemonChosen;
+    sp64[0] = arg0->pokemonPicked;
     if (arg1 != NULL) {
-        sp64[1] = arg1->pokemonChosen;
+        sp64[1] = arg1->pokemonPicked;
     } else {
         sp64[1] = NULL;
     }
@@ -5305,7 +5305,7 @@ void BattleAI_SyncTeamStateFromRuntime(void) {
 
         for (j = 0; j < D_843C5568[i].unk_008; j++) {
             temp_s0 = &D_843C5568[i].unk_016[j].unk_12;
-            temp_s0->unk_0C = sActivePokemon[i]->unk_724->pokemonChosen[j].unk_02;
+            temp_s0->unk_0C = sActivePokemon[i]->unk_724->pokemonPicked[j].unk_02;
 
             if ((temp_s0->unk_0C > 0) && (D_843C5568[i].unk_012 != j)) {
                 BattleAI_ResetTeamState(&D_843C5568[i].unk_016[j]);
@@ -5361,7 +5361,7 @@ void BattleAI_SyncTeamStateFromRuntime(void) {
             temp_v1_5 = j + var_v0;
             var_a2 = 1;
             D_843C60A8->unk_14[temp_v1_5].unk_12.unk_0C =
-                sActivePokemon[1 - D_843C5568[0].unk_000]->unk_720->teamMember[i]->pokemonChosen[j].unk_02;
+                sActivePokemon[1 - D_843C5568[0].unk_000]->unk_720->teamMember[i]->pokemonPicked[j].unk_02;
             if (D_843C60A8->unk_14[temp_v1_5].unk_12.unk_0C == 0) {
                 var_a2 = 0;
                 for (k = 0; k < D_843C60A8->unk_09; k++) {

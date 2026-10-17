@@ -62,7 +62,7 @@ typedef struct BattleMon {
 
 typedef struct ExtendedRosterInfo {
     /* 0x000 */ u16 unk_000;
-    /* 0x002 */ u8 numberOfPokemonCanBeChosen; // Only changes for Free Battle and VS Mewtwo, see @src/fragments/battle_engine/battle_engine_2EA8E0.c
+    /* 0x002 */ u8 numberOfPokemonCanBePicked; // Only changes for Free Battle and VS Mewtwo, see @src/fragments/battle_engine/battle_engine_2EA8E0.c
     /* 0x003 */ u8 unk_003;
     /* 0x004 */ char unk004[0x10];
     /* 0x014 */ char unk_014[4];
@@ -81,7 +81,7 @@ typedef struct TeamRoster {
     /* 0x008 */ char unk_008[4];
     /* 0x00C */ char unk00C[0xC];
     /* 0x018 */ s32 unk_018;
-    /* 0x01C */ BattleMon pokemonChosen[6];
+    /* 0x01C */ BattleMon pokemonPicked[6];
     /* 0x214 */ ExtendedRosterInfo* rosterInfo;
     /* 0x218 */ char unk218[0x4];
 } TeamRoster; // size = 0x21C
