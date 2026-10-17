@@ -214,7 +214,7 @@ void BattleScene_ResetParticipantModelFlags(ActivePokemon* arg0) {
 
 void BattleAnim_StatusIdleCase1Sub0(UNUSED ActivePokemon* arg0, ActivePokemon* arg1) {
     arg1->unk_4EC.node.flags |= 1;
-    if (arg1 == D_84390010[0]) {
+    if (arg1 == sActivePokemon[0]) {
         Vec3f_SetComponentsDuplicate(&arg1->unk_4EC.position, 35.0f, 50.0f, -250.0f);
     } else {
         Vec3f_SetComponentsDuplicate(&arg1->unk_4EC.position, -35.0f, 50.0f, -250.0f);
@@ -741,7 +741,7 @@ void BattleAnim_StatusIdleCase13Sub1(ActivePokemon* arg0, ActivePokemon* arg1) {
         arg1->unk_4A6 += arg1->unk_4A8;
     }
 
-    if (arg1->unk_654.unk_38.unk_56 == 0) {
+    if (arg1->unk_654.runtime.unk_56 == 0) {
         var_fv0 = 1.0f;
     } else {
         var_fv0 = 0.8f;
@@ -770,7 +770,7 @@ void BattleAnim_StatusIdleCase13Sub2(ActivePokemon* arg0, ActivePokemon* arg1) {
         var_fv1 = SINS(arg1->unk_4A6) * arg1->unk_4A0;
     }
 
-    if (arg1->unk_654.unk_38.unk_56 == 0) {
+    if (arg1->unk_654.runtime.unk_56 == 0) {
         var_fv0 = 1.0f;
     } else {
         var_fv0 = 0.8f;
@@ -813,7 +813,7 @@ void BattleAnim_StatusIdleCase15Sub0(ActivePokemon* arg0, ActivePokemon* arg1) {
 }
 
 void BattleAnim_StatusIdleCase15Sub1(ActivePokemon* arg0, ActivePokemon* arg1) {
-    BattleMonRuntime* temp_a0 = &arg1->unk_654.unk_38;
+    BattleMonRuntime* temp_a0 = &arg1->unk_654.runtime;
     s16 sp22;
 
     arg1->unk_4A8 += 0xCCC;
@@ -862,7 +862,7 @@ void BattleAnim_StatusIdleCase16Sub0(UNUSED ActivePokemon* arg0, ActivePokemon* 
 }
 
 void BattleAnim_StatusIdleCase16Sub1(ActivePokemon* arg0, ActivePokemon* arg1) {
-    BattleMonRuntime* ptr = &arg1->unk_654.unk_38;
+    BattleMonRuntime* ptr = &arg1->unk_654.runtime;
     UNUSED s32 pad;
     f32 temp_fs0;
 
@@ -926,10 +926,10 @@ void BattleAnim_StatusIdleCase0(UNUSED ActivePokemon* arg0, UNUSED ActivePokemon
 }
 
 void BattleAnim_UpdateOwnerStatusIdleAnimation(s32 arg0) {
-    ActivePokemon* temp_a1 = D_84390010[arg0];
-    ActivePokemon* temp_a2 = D_84390010[arg0];
+    ActivePokemon* temp_a1 = sActivePokemon[arg0];
+    ActivePokemon* temp_a2 = sActivePokemon[arg0];
 
-    switch (D_84390010[arg0]->unk_4B4) {
+    switch (sActivePokemon[arg0]->unk_4B4) {
         case 0:
             BattleAnim_StatusIdleCase0(temp_a1, temp_a2);
             break;
@@ -1066,8 +1066,8 @@ void BattleAnim_SecondaryStatusDefault(UNUSED ActivePokemon* arg0, UNUSED Active
 }
 
 void BattleAnim_UpdateOwnerSecondaryStatusAnimation(s32 arg0) {
-    ActivePokemon* temp_v0 = D_84390010[arg0];
-    ActivePokemon* temp_v1 = D_84390010[arg0];
+    ActivePokemon* temp_v0 = sActivePokemon[arg0];
+    ActivePokemon* temp_v1 = sActivePokemon[arg0];
 
     if (temp_v1->unk_4E8 == 0xB) {
         BattleAnim_SecondaryStatusCaseB(temp_v0, temp_v1);

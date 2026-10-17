@@ -586,7 +586,7 @@ void BattleHud_DrawPartyBallRow(ActivePokemon* arg0, s16 arg1, s16 arg2) {
 
     gSPDisplayList(gDisplayListHead++, D_8006F518);
 
-    if (arg0 == D_84390010[0]) {
+    if (arg0 == sActivePokemon[0]) {
         if (arg0->unk_720->unk_01 == 1) {
             for (i = 0; i < arg0->unk_720->unk_08[0]->unk_002; i++) {
                 if (arg0->unk_720->unk_08[0]->unk_01C[i].unk_02 == 0) {
@@ -623,7 +623,7 @@ void BattleHud_DrawPartyBallRow(ActivePokemon* arg0, s16 arg1, s16 arg2) {
         }
     }
 
-    if (arg0 == D_84390010[1]) {
+    if (arg0 == sActivePokemon[1]) {
         if (arg0->unk_720->unk_01 == 1) {
             for (i = 0; i < arg0->unk_720->unk_08[0]->unk_002; i++) {
                 if (arg0->unk_720->unk_08[0]->unk_01C[i].unk_02 == 0) {
@@ -1002,7 +1002,7 @@ void BattleHud_DrawMoveSelectMenu(ActivePokemon* arg0, s16 arg1, s16 arg2, s32 a
     UNUSED s32 pad;
 
     sp58 = &arg0->unk_720->unk_08[arg0->unk_728.unk_16C]->unk_01C[arg0->unk_654.unk_08];
-    temp_s0 = &arg0->unk_654.unk_38;
+    temp_s0 = &arg0->unk_654.runtime;
 
     Battle_DrawGradientRectWrapper(arg1 + 1, arg2 + 1, 0xC7, 0x38, &D_84385860[arg3], &D_84385870[arg3]);
     BattleHud_DrawBoxBorder(arg1, arg2, 0xC7, 0x38);
@@ -1524,7 +1524,7 @@ void BattleHud_DrawExpandingCaptionBox(unk_D_843901A0_4C8* arg0, s16 arg1, s16 a
     ActivePokemon* temp_v1;
     TeamRoster* tmp;
 
-    temp_v1 = D_84390010[arg0->unk_0C];
+    temp_v1 = sActivePokemon[arg0->unk_0C];
     tmp = temp_v1->unk_720->unk_08[temp_v1->unk_728.unk_16C];
     temp_v0 = &D_84385860[tmp->unk_001];
 
