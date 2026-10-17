@@ -513,8 +513,7 @@ void BattleScene_InitializeParticipantPresentation(BattleSessionTeams* arg0, unk
 }
 
 // triggers at the start of battle: bug boy in glc
-// Proposed: BattleScene_AllocateMemory, but there is already a function called that
-void func_84301430(unk_func_80007444* arg0) {
+void BattleScene_Init(unk_func_80007444* arg0) {
     MemoryBlock* sp44;
     u32* temp_v0_4;
     FragmentEntry sp3C;
@@ -645,7 +644,7 @@ s32 Battle_Main(s32 arg0, SessionContext* arg1) {
 
     Gfx_InitDisplayListBuffers(0x20000, 0);
     sp24 = StageContext_Allocate(0, 1, 3, 1, 2, 1);
-    func_84301430(sp24);
+    BattleScene_Init(sp24);
     StageContext_Activate(sp24);
     StageLoader_RunFrames(1);
     BgStage_WaitForCondition(Battle_FrameCallback, 0x20, 0x10);
