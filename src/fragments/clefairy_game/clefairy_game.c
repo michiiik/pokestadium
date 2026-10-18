@@ -180,6 +180,9 @@ static u32 D_86104B78[] = {
     0x0001F7CB, 0xF7CB0001, 0x0001F7CB, 0xF7CB0001, 0xFFFE0001, 0xFFCDF7CB, 0xF7CBF7CB, 0x0001FFFE,
     0xFFFEFFFE, 0x0001FFCD, 0xF7CB0001, 0xFFFEFFFE, 0xFFFE0001, 0xFFCDF7CB, 0xF7CBF7CB, 0x0001FFFE,
     0x0001F7CB, 0xF7CB0001, 0x0001F7CB, 0xF7CB0001, 0xFFFE0001, 0x0001FFFE, 0xFFFE0001, 0x0001FFFE,
+    // PORT: drawn as a 9x9 tile of this 8x8 texture; row 9 on the N64 is the gsSPEndDisplayList after it and the
+    // start of D_86104C00 (see there)
+    0xDF000000, 0x00000000, 0xFFFEFFFE, 0xFFFED6B5, 0xD6B5D6B5,
 };
 
 static Gfx D_86104BF8[] = {
@@ -194,6 +197,9 @@ u32 D_86104C00[] = {
     0xD6B50025, 0x00270027, 0x00290029, 0x00250027, 0x0025D6B5, 0xD6B5D6B5, 0xFFFED6B5, 0x00250025, 0x00270025,
     0x00250025, 0xD6B5FFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xD6B50025, 0x00250025, 0x0025D6B5, 0xFFFEFFFE, 0xFFFEFFFE,
     0xFFFEFFFE, 0xFFFED6B5, 0xD6B5D6B5, 0xD6B5FFFE, 0xFFFEFFFE, 0xFFFEFFFE,
+    // PORT: the arrow drawing loads 11 rows of this 10-row (12x10) texture; on the N64 row 11 is what follows in
+    // memory (the gsSPEndDisplayList after it, then the next texture), kept here so the host reads the same bytes
+    0xDF000000, 0x00000000, 0xFFFEFFFE, 0xFFFED6B5, 0xD6B5D6B5, 0xD6B5FFFE,
 };
 
 static Gfx D_86104CF0[] = {
@@ -208,6 +214,9 @@ u32 D_86104CF8[] = {
     0xD6B50037, 0x0879297B, 0x31BB2979, 0x08790039, 0x0039D6B3, 0xD6B5D6B5, 0xFFFED6B5, 0x00370039, 0x08770039,
     0x00390039, 0xD6B3FFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xD6B50037, 0x00390039, 0x0039D6B3, 0xFFFEFFFE, 0xFFFEFFFE,
     0xFFFEFFFE, 0xFFFED6B5, 0xD6B5D6B5, 0xD6B5FFFE, 0xFFFEFFFE, 0xFFFEFFFE,
+    // PORT: the arrow drawing loads 11 rows of this 10-row (12x10) texture; on the N64 row 11 is what follows in
+    // memory (the gsSPEndDisplayList after it, then the next texture), kept here so the host reads the same bytes
+    0xDF000000, 0x00000000, 0xFFFEFFFE, 0xFFFED6B5, 0xD6B5D6B5, 0xD6B5FFFE,
 };
 
 static Gfx D_86104DE8[] = {
@@ -222,6 +231,9 @@ u32 D_86104DF0[] = {
     0xD6B51209, 0x1A0B1A4B, 0x1A4B1A4B, 0x1A0B1A4B, 0x1A0BCEB3, 0xD6B5D6B5, 0xFFFED6B5, 0x1A0B1A0B, 0x1A0B1A0B,
     0x1A0B1A0B, 0xCEB3FFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xD6B51A0B, 0x1A0B1A0B, 0x1A0BCEB3, 0xFFFEFFFE, 0xFFFEFFFE,
     0xFFFEFFFE, 0xFFFED6B5, 0xD6B5D6B5, 0xD6B5FFFE, 0xFFFEFFFE, 0xFFFEFFFE,
+    // PORT: the arrow drawing loads 11 rows of this 10-row (12x10) texture; on the N64 row 11 is what follows in
+    // memory (the gsSPEndDisplayList after it, then the next texture), kept here so the host reads the same bytes
+    0xDF000000, 0x00000000, 0xFFFEFFFE, 0xFFFED6B5, 0xD6B5D6B5, 0xD6B5FFFE,
 };
 
 static Gfx D_86104EE0[] = {
@@ -236,6 +248,9 @@ u32 D_86104EE8[] = {
     0xD6B5234F, 0x2B512C15, 0x2C553413, 0x23512B51, 0x2351D6B3, 0xD6B5D6B5, 0xFFFED6B5, 0x23512351, 0x2B512351,
     0x23512351, 0xD6B3FFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xD6B52351, 0x23512351, 0x2351D6B3, 0xFFFEFFFE, 0xFFFEFFFE,
     0xFFFEFFFE, 0xFFFED6B5, 0xD6B5D6B5, 0xD6B5FFFE, 0xFFFEFFFE, 0xFFFEFFFE,
+    // PORT: the arrow drawing loads 11 rows of this 10-row (12x10) texture; on the N64 row 11 is what follows in
+    // memory (the gsSPEndDisplayList after it, then the next texture), kept here so the host reads the same bytes
+    0xDF000000, 0x00000000, 0xFFFEFFFE, 0xFFFED6B5, 0xD6B5D6B5, 0xD6B5FFFE,
 };
 
 static Gfx D_86104FD8[] = {
@@ -250,6 +265,9 @@ u32 D_86104FE0[] = {
     0xD6B53141, 0x39814181, 0x39813981, 0x39813941, 0x3981CE75, 0xD6B5D6B5, 0xFFFED6B5, 0x39813981, 0x39413981,
     0x39813981, 0xCE75FFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xD6B53981, 0x39813981, 0x3981CE75, 0xFFFEFFFE, 0xFFFEFFFE,
     0xFFFEFFFE, 0xFFFED6B5, 0xD6B5D6B5, 0xD6B5FFFE, 0xFFFEFFFE, 0xFFFEFFFE,
+    // PORT: the arrow drawing loads 11 rows of this 10-row (12x10) texture; on the N64 row 11 is what follows in
+    // memory (the gsSPEndDisplayList after it, then the next texture), kept here so the host reads the same bytes
+    0xDF000000, 0x00000000, 0xFFFEFFFE, 0xFFFED6B5, 0xD6B5D6B5, 0xD6B5FFFE,
 };
 
 static Gfx D_861050D0[] = {
@@ -264,6 +282,9 @@ u32 D_861050D8[] = {
     0xD6B5940D, 0x9C4DB4CF, 0xBD51B4D1, 0xA44D940D, 0x940DD6B5, 0xD6B5D6B5, 0xFFFED6B5, 0x940D940D, 0x9C4D940F,
     0x940D940D, 0xD6B5FFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xD6B5940D, 0x940D940D, 0x940DD6B5, 0xFFFEFFFE, 0xFFFEFFFE,
     0xFFFEFFFE, 0xFFFED6B5, 0xD6B5D6B5, 0xD6B5FFFE, 0xFFFEFFFE, 0xFFFEFFFE,
+    // PORT: the arrow drawing loads 11 rows of this 10-row (12x10) texture; on the N64 row 11 is what follows in
+    // memory (the gsSPEndDisplayList after it, then the next texture), kept here so the host reads the same bytes
+    0xDF000000, 0x00000000, 0xFFFEFFFE, 0xFFFED6B5, 0xD6B5D6B5, 0xD6B5FFFE,
 };
 
 static Gfx D_861051C8[] = {
@@ -278,6 +299,9 @@ u32 D_861051D0[] = {
     0xD6B55801, 0x58016001, 0x60016001, 0x60015801, 0x5801D6B5, 0xD6B5D6B5, 0xFFFED6B5, 0x58015801, 0x58015801,
     0x58015801, 0xD6B5FFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xD6B55801, 0x58015801, 0x5801D6B5, 0xFFFEFFFE, 0xFFFEFFFE,
     0xFFFEFFFE, 0xFFFED6B5, 0xD6B5D6B5, 0xD6B5FFFE, 0xFFFEFFFE, 0xFFFEFFFE,
+    // PORT: the arrow drawing loads 11 rows of this 10-row (12x10) texture; on the N64 row 11 is what follows in
+    // memory (the gsSPEndDisplayList after it, then the next texture), kept here so the host reads the same bytes
+    0xDF000000, 0x00000000, 0xFFFEFFFE, 0xFFFED6B5, 0xD6B5D6B5, 0xD6B5FFFE,
 };
 
 static Gfx D_861052C0[] = {
@@ -292,6 +316,9 @@ u32 D_861052C8[] = {
     0xD6B5B909, 0xC909D98D, 0xDA11E18D, 0xC109C109, 0xB909D6B5, 0xD6B5D6B5, 0xFFFED6B5, 0xB909B909, 0xC109C14B,
     0xB909B909, 0xD6B5FFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xD6B5B909, 0xB909B909, 0xB909D6B5, 0xFFFEFFFE, 0xFFFEFFFE,
     0xFFFEFFFE, 0xFFFED6B5, 0xD6B5D6B5, 0xD6B5FFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0x00000000, 0x00000000,
+    // PORT: the arrow drawing loads 11 rows of this 10-row (12x10) texture; on the N64 row 11 is what follows in
+    // memory (the gsSPEndDisplayList after it, then the next texture), kept here so the host reads the same bytes
+    0x00000000, 0x00000000, 0x00000000, 0x00000000,
 };
 
 static unk_D_86002F30* D_86105480;

@@ -150,6 +150,10 @@ s16 AuxiliaryEffect_Alloc(void) {
 void AuxiliaryEffect_Spawn(s16 arg0, f32 arg1, f32 arg2, f32 arg3, s16 arg4, f32 arg5) {
     s32 i;
     AuxiliaryEffect* temp_v0 = &D_843C49C0[arg0];
+
+    if (arg0 < 0) { // PORT: no free effect slot (the caller keeps -1); element -1 is unrelated memory on the host
+        return;
+    }
     AuxiliaryEffectNode* var_v1;
 
     if (temp_v0->unk_000 != 0) {
@@ -171,6 +175,10 @@ void AuxiliaryEffect_Spawn(s16 arg0, f32 arg1, f32 arg2, f32 arg3, s16 arg4, f32
 
 void AuxiliaryEffect_Update(s16 arg0) {
     AuxiliaryEffect* temp_v0 = &D_843C49C0[arg0];
+
+    if (arg0 < 0) { // PORT: no free effect slot (the caller keeps -1); element -1 is unrelated memory on the host
+        return;
+    }
     AuxiliaryEffectNode* var_v1;
     s32 i;
 
@@ -220,6 +228,10 @@ Gfx* AuxiliaryEffect_DrawOne(Gfx* arg0, AuxiliaryEffectNode* arg1, MtxF* arg2) {
 Gfx* AuxiliaryEffect_Draw(s16 arg0, Gfx* arg1) {
     UNUSED s32 pad;
     AuxiliaryEffect* temp_s3 = &D_843C49C0[arg0];
+
+    if (arg0 < 0) { // PORT: no free effect slot (the caller keeps -1); element -1 is unrelated memory on the host
+        return arg1;
+    }
     AuxiliaryEffectNode* var_s0;
     s32 i;
     MtxF sp78;

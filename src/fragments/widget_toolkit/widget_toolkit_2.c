@@ -1253,8 +1253,10 @@ static char pad_D_8780FCB4[0x4];
 static u16 D_8780FCB8[10]; // grid x coordinates; [10 + i] aliases D_8780FCCC
 // IDO 8-aligns arrays of 8+ bytes, so the grid y coordinates (6 entries) are declared as
 // a 4-byte array plus a filler to keep D_8780FCCC at 0x8780FCCC.
-static u16 D_8780FCCC[2];
-static u16 D_8780FCD0[4];
+// PORT: one array, as in N64 memory (FCCC..FCD7): the grid code writes D_8780FCCC[0..5]; separate host globals put
+// [2..5] outside it (ASan: global-buffer-overflow in the mini-game pause menu)
+static u16 D_8780FCCC[6];
+#define D_8780FCD0 (D_8780FCCC + 2)
 
 typedef struct unk_D_8780FCD8 {
     /* 0x00 */ s16 unk_00;

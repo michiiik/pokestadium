@@ -132,13 +132,13 @@ void func_812070A0(void) {
     D_81234690.unk_02 = 0xBB80;
     D_81234690.unk_04 = osAiSetFrequency(D_81234690.unk_02);
     D_81234690.unk_06 = (s16) (((D_81234690.unk_02 / D_812346DC) + 0xF) & ~0xF);
-    var_v1_2 = (s16*) &D_812346EC;
     D_81234690.unk_0A = (s16) (D_81234690.unk_06 - 0x10);
     D_81234690.unk_08 = (s16) (D_81234690.unk_06 + 0x10);
-    do {
-        *var_v1_2 = 0xA0;
-        var_v1_2++;
-    } while (var_v1_2 < (s16*) &D_812346F2);
+    // PORT: was a loop from &D_812346EC up to &D_812346F2 (adjacent on the N64; separate host globals, so it wrote
+    // past the array)
+    for (var_a0 = 0; var_a0 < 3; var_a0++) {
+        D_812346EC[var_a0] = 0xA0;
+    }
     D_812346C8 = 0;
     D_812346D4 = 0;
     GbApu_InitAllocator(&D_81234680, (intptr_t) D_81231450, D_812286F0);

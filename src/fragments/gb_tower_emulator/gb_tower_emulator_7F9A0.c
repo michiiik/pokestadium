@@ -763,8 +763,11 @@ u8 D_8120E958[0xF8] = {
 };
 
 // .bss
-unk_D_80068BB0* D_8122B1E0;
-unk_D_80068BB0* D_8122B1E4;
+// PORT: the two frame buffers as one array: the code indexes (&D_8122B1E0)[i], which needs D_8122B1E4 right after
+// D_8122B1E0 (true on the N64, not guaranteed for separate host globals)
+unk_D_80068BB0* gGbEmuFrameBuffers[2];
+#define D_8122B1E0 (gGbEmuFrameBuffers[0])
+#define D_8122B1E4 (gGbEmuFrameBuffers[1])
 unk_D_8122B1E8 D_8122B1E8[2];
 s32 D_8122B2B8;
 s32 D_8122B2BC;
@@ -806,8 +809,9 @@ u8 D_8122C4F8;
 u8 D_8122C4F9;
 unk_D_8122C4FA gGbEmuButtonBindingSelections;
 u8 D_8122C4FC;
-u8 D_8122C500[0x1F];
-u8 D_8122C51F;
+// PORT: one 32-byte block, as in N64 memory: GbPak_WriteFilledRegisterBlock fills and sends D_8122C500[0..0x1F]
+u8 D_8122C500[0x20];
+#define D_8122C51F (D_8122C500[0x1F])
 u8 D_8122C520[0x20];
 u8 D_8122C540[0x100];
 u8 D_8122C640[0x100];
