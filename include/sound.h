@@ -9,9 +9,10 @@ typedef struct SoundBank {
   /* 0x10 */ u32 flags;
   /* 0x14 */ char wbk_name[12];
   /* 0x20 */ s32 count;
-  /* 0x24 */ char* basenote;
-  /* 0x28 */ f32* detune;
-  /* 0x2C */ ALWaveTable** wave_list;
+  // PORT: big-endian offsets from the bank in ROM; the host view is PortSoundBank (src/port_audio.h)
+  /* 0x24 */ u32 basenote;
+  /* 0x28 */ u32 detune;
+  /* 0x2C */ u32 wave_list;
 } SoundBank; // size = 0x30
 
 #endif

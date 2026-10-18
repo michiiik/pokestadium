@@ -55,7 +55,7 @@ typedef struct unk_D_800FC6D4 {
     /* 0x02 */ u16 num_entries;
     /* 0x04 */ u16 unk_04;
     /* 0x06 */ u16 unk_06;
-    /* 0x08 */ unk_D_800FC6D4_008* offset;
+    /* 0x08 */ u32 offset; // PORT: offset of the unk_D_800FC6D4_008 records from the table (was a pointer)
     /* 0x0C */ char unk_0C[0x4];
     /* 0x10 */ unk_D_800FC6D4_entry entries[ENTRY_SIZE];
 } unk_D_800FC6D4; // size = 0x10
@@ -63,7 +63,7 @@ typedef struct unk_D_800FC6D4 {
 typedef struct MoveSoundEntry { u8 unk0[0x6]; } MoveSoundEntry;
 typedef struct MoveSoundTable { u8 header[0x10]; MoveSoundEntry entries[1]; } MoveSoundTable;
 
-extern u8 D_800B32A0[0x493E0];
+extern u8 D_800B32A0[0x493E0 * 2]; // PORT: doubled (audio_commands.c)
 extern u32* D_800FC680;
 extern u8* D_800FC684;
 extern u8* D_800FC688;

@@ -11,27 +11,29 @@
 static s32 D_800FF9B0;
 static s32 D_800FF9B4;
 
-extern u8 D_80078E83;
-extern u8 D_80078E8B;
-extern u8 D_80078E93;
-extern u8 D_80078E9B;
-extern u8 D_80078EA3;
-extern u8 D_80078EAB;
-extern u8 D_80078EB3;
-extern u8 D_80078EBC;
-extern u8 D_80078EBF;
+// PORT: interior aliases of the loop-point tables (gb_audio_render.c; undefined_syms.ld in the decomp)
+extern u8 sLoopPointTable[0x3C];
+extern u8 D_80078EBC[0xC];
+#define D_80078E83 (sLoopPointTable[0x03])
+#define D_80078E8B (sLoopPointTable[0x0B])
+#define D_80078E93 (sLoopPointTable[0x13])
+#define D_80078E9B (sLoopPointTable[0x1B])
+#define D_80078EA3 (sLoopPointTable[0x23])
+#define D_80078EAB (sLoopPointTable[0x2B])
+#define D_80078EB3 (sLoopPointTable[0x33])
+#define D_80078EBF (D_80078EBC[3])
 
 void Audio_SetMusicLoopPoint(s32 arg0) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     D_80078EC8 = arg0;
 }
 
 s32 Audio_StartMusicTrack(s32 arg0) {
-#ifdef PORT_NO_AUDIO
-    return 0;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return 0;
+    }
     u32 sp2C;
     s32 var_a2;
     UNUSED s32 pad;
@@ -477,9 +479,9 @@ s32 Audio_StartMusicTrack(s32 arg0) {
 }
 
 void Audio_FadeOutAll(s32 arg0) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     s32 i;
 
     if (arg0 == 0) {
@@ -503,9 +505,9 @@ void Audio_FadeOutAll(s32 arg0) {
 }
 
 s32 Audio_StartTrackForCategory(s32 arg0, s32 arg1) {
-#ifdef PORT_NO_AUDIO
-    return 0;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return 0;
+    }
     s32 ret;
     D_80078E80 = 0;
     if ((arg0 == 0) || (arg0 == 0xFF)) {
@@ -566,7 +568,7 @@ s32 Audio_StartTrackForCategory(s32 arg0, s32 arg1) {
         if (arg0 >= 0x21U) {
             return 0;
         }
-        ret = Audio_StartMusicTrack(*(&D_80078EBC + ((arg0 - 1) & 3)));
+        ret = Audio_StartMusicTrack(D_80078EBC[(arg0 - 1) & 3]);
         break;
     case 13:
         if (arg0 >= 6U) {
@@ -584,9 +586,9 @@ s32 Audio_StartTrackForCategory(s32 arg0, s32 arg1) {
 }
 
 s32 Audio_UpdateSpecialSequence(s32 arg0, u32 arg1) {
-#ifdef PORT_NO_AUDIO
-    return 0;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return 0;
+    }
     s32 var_a3;
 
     switch (arg0) {
@@ -695,11 +697,12 @@ s32 Audio_UpdateSpecialSequence(s32 arg0, u32 arg1) {
             }
             return 0;
     }
+    return 0; // PORT: missing in the decomp (v0 = 0 on this path)
 }
 
 u32 Audio_GetSpecialSequenceState(void) {
-#ifdef PORT_NO_AUDIO
-    return 0;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return 0;
+    }
     return D_80078ED4;
 }

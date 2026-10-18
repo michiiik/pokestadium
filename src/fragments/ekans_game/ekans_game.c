@@ -1,3 +1,4 @@
+#include "src/port_audio.h"
 #include "ekans_game.h"
 #include "src/geo_render.h"
 #include "src/model_animation.h"
@@ -3442,7 +3443,9 @@ void ekansMinigameUpdate(void) {
         EkansGame_DrawFrame(2);
     }
 
-    while (Audio_GetActivityScore() != 0) {}
+    while (Audio_GetActivityScore() != 0) {
+        PortA_SpinWait(); // PORT: let the audio thread run (it preempted this loop on the N64)
+    }
 
     EkansGame_PlaySoundEventGuarded(0x14, 0);
 }

@@ -1,3 +1,4 @@
+#include "src/port_audio.h"
 #include "metapod_game.h"
 #include "src/geo_render.h"
 #include "src/model_animation.h"
@@ -1796,7 +1797,9 @@ void MetapodGame_ShowResultText(void) {
         MetapodGame_DrawFrame(2); // display text ?
     }
 
-    while (Audio_GetActivityScore() != 0) {}
+    while (Audio_GetActivityScore() != 0) {
+        PortA_SpinWait(); // PORT: let the audio thread run (it preempted this loop on the N64)
+    }
 
     MetapodGame_PlaySoundEventGuarded(0x10, 0);
 }

@@ -67,7 +67,7 @@ typedef struct N_PVoice_s {
     s32                         dc_sample;
     s32                         dc_lastsam;
     s32                         dc_first;
-    s32                         dc_memin; 
+    intptr_t                    dc_memin; /* PORT: can be a host pointer (wave data in RAM); was s32 */
 /** ALResampler *********************************/
     RESAMPLE_STATE      *rs_state;
     f32                 rs_ratio;

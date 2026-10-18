@@ -188,9 +188,9 @@ u8 D_800789FC[4] = { 0 };
 u8 D_80078A00[16] = { 0 };
 
 s32 func_800479C0(u32 arg0, u32 arg1, u32 arg2) {
-#ifdef PORT_NO_AUDIO
-    return 0;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return 0;
+    }
     s32 var;
     unk_D_800FC6F0* sp;
     s32 ret;
@@ -229,7 +229,7 @@ s32 func_800479C0(u32 arg0, u32 arg1, u32 arg2) {
                 case 0x35:
                 case 0x52:
                 case 0x53:
-                    if (D_800786FD[arg1 * 5] == 1) {
+                    if ((arg1 != 0 && D_80078700[arg1 - 1].unk_02 == 1) /* PORT: D_800786FD[arg1 * 5] */) {
                         var = 0;
                     } else {
                         var = 4;
@@ -293,7 +293,7 @@ s32 func_800479C0(u32 arg0, u32 arg1, u32 arg2) {
                     break;
 
                 case 0x35: case 0x52: case 0x53:
-                    if (D_800786FD[arg1 * 5] == 1) {
+                    if ((arg1 != 0 && D_80078700[arg1 - 1].unk_02 == 1) /* PORT: D_800786FD[arg1 * 5] */) {
                         var = 0;
                     } else {
                         var = 4;
@@ -388,11 +388,12 @@ s32 func_800479C0(u32 arg0, u32 arg1, u32 arg2) {
                 break;
         }
     }
+    return ret; // PORT: missing in the decomp (v0 is whatever the last call left)
 }
 void Audio_FadeAndClearStoredSounds(void) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
   Audio_QueueFadeSoundCommand(D_800789F8, 0x5A);
   Audio_QueueFadeSoundCommand(D_800789F4, 0x5A);
   D_800789F8 = 0;

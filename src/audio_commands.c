@@ -8,6 +8,7 @@
 #include "src/audio_cache.h"
 #include "src/cry.h"
 #include "src/audio_fade.h"
+#include "src/port_audio.h"
 
 typedef struct unk_D_80077970 {
     /* 0x00 */ u8 unk_00;
@@ -65,7 +66,8 @@ static s32 D_80077C70 = 0;
 static s32 D_80077C74 = 0;
 static s32 D_80077C78 = 0;
 
-u8 D_800B32A0[0x493E0];
+// PORT: twice the size: the engine's host structures are larger (64-bit pointers)
+u8 D_800B32A0[0x493E0 * 2] __attribute__((aligned(16)));
 u32* D_800FC680;
 u8* D_800FC684;
 u8* D_800FC688;
@@ -101,9 +103,9 @@ u8 pad_D_800FC718[0x80];
 u32* D_800FC798;
 
 s32 Audio_PlayCommand(u32 arg0, s32 arg1, s32 arg2) {
-#ifdef PORT_NO_AUDIO
-    return 0;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return 0;
+    }
     static s32 D_80077C7C = 0;
 
     UNUSED s32 pad;
@@ -121,6 +123,7 @@ s32 Audio_PlayCommand(u32 arg0, s32 arg1, s32 arg2) {
     if (sp20 != D_80079014) {
         sp40 = D_800FC6F4->seqArray[0].offset;
         Rom_DmaRead(sp40, D_800FC798, 0xC);
+        PortA_Swap32(D_800FC798, 3); // PORT: big-endian header
         Audio_RelocateOffsets(D_800FC798, sp40, 3);
         Rom_DmaRead(D_800FC798[0], D_800FC6DC, D_800FC798[1] - D_800FC798[0]);
         Audio_CopyDataWithCacheSync(D_800FC6DC, D_800FC6A8, 0xBB8);
@@ -434,9 +437,9 @@ s32 Audio_PlayCommand(u32 arg0, s32 arg1, s32 arg2) {
 }
 
 s32 Audio_FadeCommand(s32 arg0, u32 arg1) {
-#ifdef PORT_NO_AUDIO
-    return 0;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return 0;
+    }
     switch (arg0) {
         case 0x0:
             if (arg1 == 0) {
@@ -481,22 +484,22 @@ s32 Audio_FadeCommand(s32 arg0, u32 arg1) {
 }
 
 void func_8003733C(void) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
 }
 
 void Audio_CreateFrameTaskWrapper(void* arg0) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     Audio_CreateFrameTask(arg0);
 }
 
 void Audio_RelocateOffsets(u32* arg0, uintptr_t arg1, s32 arg2) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     u32 i;
 
     for (i = 0; i < arg2; i++, arg0++) {
@@ -504,12 +507,12 @@ void Audio_RelocateOffsets(u32* arg0, uintptr_t arg1, s32 arg2) {
     }
 }
 
-#define AUDIO_HEAP_SIZE 300000
+#define AUDIO_HEAP_SIZE (300000 * 2) // PORT: was 300000 (see D_800B32A0)
 
 s32 Audio_InitBanks(void) {
-#ifdef PORT_NO_AUDIO
-    return 0;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return 0;
+    }
     s32 i;
     FileHeaders* sp78;
     UNUSED s32 pad[3];
@@ -537,7 +540,8 @@ s32 Audio_InitBanks(void) {
     gAudioRegions = alHeapAlloc(audio_heap, 7, 4);
 
     // Copy rom data from 0x15C0000 into gAudioRegions
-    Rom_DmaRead(&gAudioData, gAudioRegions, sizeof(u8*) * 7);
+    Rom_DmaRead(&gAudioData, gAudioRegions, sizeof(u32) * 7); // PORT: was sizeof(u8*) * 7
+    PortA_Swap32(gAudioRegions, 7);
     // Add the address 0x15C0000 to every offset (besides the first which is the total size)
     // to make absolute offsets.
     Audio_RelocateOffsets(&gAudioRegions[1], &gAudioData, 6);
@@ -545,11 +549,12 @@ s32 Audio_InitBanks(void) {
     // Copy data from the offset at 0x15C0004 into sp78, a sub-header for this "archive,"
     // specifying the size of the header and number of files etc. Header at 0x15C0020
     Rom_DmaRead(gAudioRegions[1], sp78, 0xC);
-    num_files = sp78->file1.num_files;
+    num_files = PortA_BE32(&sp78->file1.num_files);
     // Allocate vram, copy rom bytes, and add address to make absolute,
     // for all of the first archive's files, including header.
     D_800FC6E4 = alHeapAlloc(audio_heap, (0xC / sizeof(u32)) + num_files, sizeof(u32));
     Rom_DmaRead(gAudioRegions[1], D_800FC6E4, 0xC + (num_files * 4));
+    PortA_Swap32(D_800FC6E4, 3 + num_files);
     // Update just the first 2 pointers from the header,
     // pointer to first file, and pointer to N64 wave tables.
     Audio_RelocateOffsets(&D_800FC6E4->offset1, gAudioRegions[1], 2);
@@ -572,17 +577,18 @@ s32 Audio_InitBanks(void) {
 
     // Load second archive header at 0x16F27E0
     Rom_DmaRead(gAudioRegions[2], sp78, 4 + 4);
-    num_files = sp78->seq.seqCount;
+    num_files = PortA_BE16(&sp78->seq.seqCount);
     // Memory to hold archive toc
-    D_800FC6E8 = alHeapAlloc(audio_heap, 1, 4 + (num_files * sizeof(ALSeqData)));
+    D_800FC6E8 = alHeapAlloc(audio_heap, 1, PORT_SEQFILE_BYTES(num_files));
     // Read the alSeqFile into D_800FC6E8
-    Rom_DmaRead(gAudioRegions[2], D_800FC6E8, 4 + (num_files * sizeof(ALSeqData)));
+    Rom_DmaRead(gAudioRegions[2], D_800FC6E8, PORT_SEQFILE_ROM_BYTES(num_files));
     // Initialise the memory as an alSeqFile
     alSeqFileNew(D_800FC6E8, gAudioRegions[2]);
 
     // Read the first archive sub header from 0x16F2804, into D_800FC6EC
     D_800FC6EC = alHeapAlloc(audio_heap, 3, 4);
     Rom_DmaRead(D_800FC6E8->seqArray[0].offset, D_800FC6EC, sizeof(File2SubHeader1));
+    PortA_Swap32(D_800FC6EC, 3);
     Audio_RelocateOffsets(D_800FC6EC, D_800FC6E8->seqArray[0].offset, sizeof(File2SubHeader1) / sizeof(u32));
 
     // Read the first file from the sub header into D_800FC6DC (0x16F2814)
@@ -603,10 +609,11 @@ s32 Audio_InitBanks(void) {
 
     // Read archive 2 sub file 2 (0x1722F74)
     Rom_DmaRead(D_800FC6E8->seqArray[1].offset, sp78, sizeof(File2SubHeader2));
-    num_files = sp78->file2sub2.num_files;
+    num_files = PortA_BE32(&sp78->file2sub2.num_files);
 
     D_800FC6F0 = alHeapAlloc(audio_heap, 4, (sizeof(File2SubHeader2) / sizeof(u32)) + num_files);
     Rom_DmaRead(D_800FC6E8->seqArray[1].offset, D_800FC6F0, sizeof(File2SubHeader2) + (num_files * sizeof(u32)));
+    PortA_Swap32(D_800FC6F0, 3 + num_files);
     Audio_RelocateOffsets(&D_800FC6F0->offset1, D_800FC6E8->seqArray[1].offset, num_files + 2);
     Rom_DmaRead(D_800FC6F0->offset1, D_800FC6DC, D_800FC6F0->wave_tables_offset - D_800FC6F0->offset1);
     // Decompress the yay0 file into D_800FC688
@@ -621,10 +628,11 @@ s32 Audio_InitBanks(void) {
 
     // Read the second seq array (0x17C9C24)
     Rom_DmaRead(D_800FC6E8->seqArray[2].offset, sp78, sizeof(File2SubHeader2));
-    num_files = sp78->file2sub2.num_files;
+    num_files = PortA_BE32(&sp78->file2sub2.num_files);
 
     D_800FC6FC = alHeapAlloc(audio_heap, 4, num_files + 3);
     Rom_DmaRead(D_800FC6E8->seqArray[2].offset, D_800FC6FC, sizeof(File2SubHeader2) + (num_files * sizeof(u32)));
+    PortA_Swap32(D_800FC6FC, 3 + num_files);
     Audio_RelocateOffsets(&D_800FC6FC->offset1, D_800FC6E8->seqArray[2].offset, num_files + 2);
     Rom_DmaRead(D_800FC6FC->offset1, D_800FC6DC, D_800FC6FC->wave_tables_offset - D_800FC6FC->offset1);
     D_800FC6AC = alHeapAlloc(audio_heap, 1, 0x9C4);
@@ -638,18 +646,18 @@ s32 Audio_InitBanks(void) {
 
     // Read seq header from 0x17DC304
     Rom_DmaRead(D_800FC6E8->seqArray[3].offset, sp78, 4 + 4);
-    num_files = sp78->seq.seqCount;
+    num_files = PortA_BE16(&sp78->seq.seqCount);
 
-    D_800FC6F4 = alHeapAlloc(audio_heap, 4, 4 + (num_files * sizeof(ALSeqData)));
-    Rom_DmaRead(D_800FC6E8->seqArray[3].offset, D_800FC6F4, 4 + (num_files * sizeof(ALSeqData)));
+    D_800FC6F4 = alHeapAlloc(audio_heap, 4, PORT_SEQFILE_BYTES(num_files));
+    Rom_DmaRead(D_800FC6E8->seqArray[3].offset, D_800FC6F4, PORT_SEQFILE_ROM_BYTES(num_files));
     alSeqFileNew(D_800FC6F4, D_800FC6E8->seqArray[3].offset);
 
     // Load second seq header from 0x1850C20
     Rom_DmaRead(D_800FC6F4->seqArray[1].offset, sp78, 4 + 4);
-    num_files = sp78->seq.seqCount;
+    num_files = PortA_BE16(&sp78->seq.seqCount);
 
-    D_800FC6F8 = alHeapAlloc(audio_heap, 4, 4 + (num_files * sizeof(ALSeqData)));
-    Rom_DmaRead(D_800FC6F4->seqArray[1].offset, D_800FC6F8, 4 + (num_files * sizeof(ALSeqData)));
+    D_800FC6F8 = alHeapAlloc(audio_heap, 4, PORT_SEQFILE_BYTES(num_files));
+    Rom_DmaRead(D_800FC6F4->seqArray[1].offset, D_800FC6F8, PORT_SEQFILE_ROM_BYTES(num_files));
     alSeqFileNew(D_800FC6F8, D_800FC6F4->seqArray[1].offset);
 
     D_800FC6A4 = alHeapAlloc(audio_heap, 1, 0x1388);
@@ -657,18 +665,18 @@ s32 Audio_InitBanks(void) {
 
     // load third archive from the main list, archive is at 0x1978820
     Rom_DmaRead(gAudioRegions[3], sp78, 4 + 4);
-    num_files = sp78->seq.seqCount;
+    num_files = PortA_BE16(&sp78->seq.seqCount);
 
-    D_800FC700 = alHeapAlloc(audio_heap, 1, 4 + (num_files * sizeof(ALSeqData)));
-    Rom_DmaRead(gAudioRegions[3], D_800FC700, 4 + (num_files * sizeof(ALSeqData)));
+    D_800FC700 = alHeapAlloc(audio_heap, 1, PORT_SEQFILE_BYTES(num_files));
+    Rom_DmaRead(gAudioRegions[3], D_800FC700, PORT_SEQFILE_ROM_BYTES(num_files));
     alSeqFileNew(D_800FC700, gAudioRegions[3]);
 
     // load fourth archive from the main list, archive is at 0x197C1E0
     Rom_DmaRead(gAudioRegions[4], sp78, 4 + 4);
-    num_files = sp78->seq.seqCount;
+    num_files = PortA_BE16(&sp78->seq.seqCount);
 
-    D_800FC704 = alHeapAlloc(audio_heap, 1, 4 + (num_files * sizeof(ALSeqData)));
-    Rom_DmaRead(gAudioRegions[4], D_800FC704, 4 + (num_files * sizeof(ALSeqData)));
+    D_800FC704 = alHeapAlloc(audio_heap, 1, PORT_SEQFILE_BYTES(num_files));
+    Rom_DmaRead(gAudioRegions[4], D_800FC704, PORT_SEQFILE_ROM_BYTES(num_files));
     alSeqFileNew(D_800FC704, gAudioRegions[4]);
 
     D_800FC6C0[0] = alHeapAlloc(audio_heap, 1, 0x44C);
@@ -677,18 +685,18 @@ s32 Audio_InitBanks(void) {
 
     // load the fourth archive's first seq, at 0x197C1FC
     Rom_DmaRead(D_800FC704->seqArray[0].offset, sp78, 4 + 4);
-    num_files = sp78->seq.seqCount;
-    D_800FC708 = alHeapAlloc(audio_heap, 1, 4 + (num_files * sizeof(ALSeqData)));
-    Rom_DmaRead(D_800FC704->seqArray[0].offset, D_800FC708, 4 + (num_files * sizeof(ALSeqData)));
+    num_files = PortA_BE16(&sp78->seq.seqCount);
+    D_800FC708 = alHeapAlloc(audio_heap, 1, PORT_SEQFILE_BYTES(num_files));
+    Rom_DmaRead(D_800FC704->seqArray[0].offset, D_800FC708, PORT_SEQFILE_ROM_BYTES(num_files));
     alSeqFileNew(D_800FC708, D_800FC704->seqArray[0].offset);
 
     D_80079364 = 0;
 
     // load the fourth archive's third seq at 0x1A2AD20
     Rom_DmaRead(D_800FC704->seqArray[2].offset, sp78, 4 + 4);
-    num_files = sp78->seq.seqCount;
-    D_800FC714 = alHeapAlloc(audio_heap, 1, 4 + (num_files * sizeof(ALSeqData)));
-    Rom_DmaRead(D_800FC704->seqArray[2].offset, D_800FC714, 4 + (num_files * sizeof(ALSeqData)));
+    num_files = PortA_BE16(&sp78->seq.seqCount);
+    D_800FC714 = alHeapAlloc(audio_heap, 1, PORT_SEQFILE_BYTES(num_files));
+    Rom_DmaRead(D_800FC704->seqArray[2].offset, D_800FC714, PORT_SEQFILE_ROM_BYTES(num_files));
     alSeqFileNew(D_800FC714, D_800FC704->seqArray[2].offset);
 
     D_800FC6D8 = alHeapAlloc(audio_heap, 0xB80, 2);
@@ -700,6 +708,7 @@ s32 Audio_InitBanks(void) {
     // load the 6th main archive at 0x1FBB220
     D_800FC6CC = alHeapAlloc(audio_heap, 0x100, 1);
     Rom_DmaRead(gAudioRegions[6], D_800FC6CC, 0x100);
+    PortA_Swap32(D_800FC6CC, 0x100 / 4);
 
     for (i = 0; i < 32; i++) {
         D_800FC6CC[i].unk_00 += gAudioRegions[6];

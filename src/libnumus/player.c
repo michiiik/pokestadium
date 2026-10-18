@@ -1,6 +1,10 @@
 #include "player.h"
 #include "src/3D140.h"
 #include "src/libnaudio/n_synsetpriority.h"
+#include "src/port_audio.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <stddef.h>
 
 typedef u8* (*command_func_t)(channel_t*, u8*);
 typedef u8* (*api_func_t)(u8*);
@@ -36,15 +40,26 @@ static u8* mus_command_queue;
 static s32 mus_command_queue_size;
 static u32 mus_command_queue_max_size;
 
-#ifdef PORT_NO_AUDIO
-// PORT: with the audio engine not initialized, commands still get queued by game code; give them a sink.
+// PORT: with the sound off (PORT_AUDIO_OFF) the engine is not initialized, but game code still queues commands;
+// give them a sink.
 static u8 sPortDummyQueue[0x1000];
+void Audio_PortDumpChannels(void) { // PORT: debug aid (PORT_TRACE_ACTIVITY)
+    u32 i;
+    for (i = 0; i < max_channels; i++) {
+        channel_t* cp = &mus_channels[i];
+        if (cp->pdata != NULL || cp->voice != NULL) {
+            fprintf(stderr, "  ch %2u handle %d fx %d pdata %p (+0x%lx) voice %p playing %d env %d song %p\n", (unsigned)i,
+                    (int)cp->handle, (int)cp->IsFX, cp->pdata, (long)(cp->pdata - cp->pbase), (void*)cp->voice,
+                    (int)cp->playing, cp->voice ? (int)cp->voice->env_phase : -1, (void*)cp->song_addr);
+        }
+    }
+}
+
 void Audio_PortInitDummyQueue(void) {
     mus_command_queue = sPortDummyQueue;
     mus_command_queue_size = 0;
     mus_command_queue_max_size = sizeof(sPortDummyQueue);
 }
-#endif
 static u8 mus_use_fixed_pan_mode;
 static u32 mus_current_frame_counter;
 static audio_voice_t* mus_voices;
@@ -237,7 +252,7 @@ u8* Audio_SetVoiceEnvelopeFromTable(channel_t* cp, u8* ptr) {
         value |= *ptr++;
     }
 
-    Audio_SetVoiceVolumeEnvelope(cp, (u8*)&cp->song_addr->env_table[value]);
+    Audio_SetVoiceVolumeEnvelope(cp, PORT_BLOB_AT(cp->song_addr, cp->song_addr->env_table) + value * sizeof(envelope_t));
     return ptr;
 }
 
@@ -348,7 +363,8 @@ u8* Audio_SkipVoiceCommandWord(UNUSED channel_t* cp, u8* ptr) {
 }
 
 u8* Audio_SetVoiceSubEnvelopePointer(channel_t* cp, u8* ptr) {
-    u8* addr = (u8*)&cp->song_addr->num_channels + cp->song_addr->drum_table[*ptr++];
+    u8* addr = (u8*)&cp->song_addr->num_channels +
+               (s32)PortA_BE32(PORT_BLOB_AT(cp->song_addr, cp->song_addr->drum_table) + 4 * *ptr++); // PORT: big-endian table
 
     cp->pdrums = addr;
     return ptr;
@@ -430,7 +446,7 @@ u8* Audio_AllocateSubVoiceFromCommand(channel_t* cp, u8* ptr) {
         num = *ptr++ + ((num & 0x7F) << 8);
     }
 
-    fx_data = cp->fx_bank->fx_data;
+    fx_data = (u32*)PORT_BLOB_AT(cp->fx_bank, cp->fx_bank->fx_data);
     for (i = 0, sp = mus_channels; i < max_channels; i++, sp++) {
         if (sp->pdata == NULL) {
             Audio_InitializeVoice(sp, num, cp->volume_scale, cp->sweep_amount, cp->priority);
@@ -439,7 +455,7 @@ u8* Audio_AllocateSubVoiceFromCommand(channel_t* cp, u8* ptr) {
             sp->fx_bank = cp->fx_bank;
             sp->duration = cp->duration;
             sp->duration_scale = cp->duration_scale;
-            sp->pdata = sp->pbase = fx_data[num];
+            sp->pdata = sp->pbase = PORT_BLOB_AT(cp->fx_bank, fx_data[num]);
             break;
         }
     }
@@ -473,7 +489,7 @@ u8* Audio_AllocateVoiceFromCommand(channel_t* cp, u8* ptr) {
         num = *ptr++ + ((num & 0x7F) << 8);
     }
 
-    fx_data = cp->fx_bank->fx_data;
+    fx_data = (u32*)PORT_BLOB_AT(cp->fx_bank, cp->fx_bank->fx_data);
     for (i = 0, sp = mus_channels; i < max_channels; i++, sp++) {
         if (sp->pdata == NULL) {
             Audio_InitializeVoice(sp, num, cp->volume_scale, cp->sweep_amount, cp->priority);
@@ -482,7 +498,7 @@ u8* Audio_AllocateVoiceFromCommand(channel_t* cp, u8* ptr) {
             sp->fx_bank = cp->fx_bank;
             sp->duration = cp->duration;
             sp->duration_scale = cp->duration_scale;
-            sp->pdata = sp->pbase = fx_data[num];
+            sp->pdata = sp->pbase = PORT_BLOB_AT(cp->fx_bank, fx_data[num]);
             break;
         }
     }
@@ -630,9 +646,9 @@ s32 Audio_PlayMusicSequence(SoundBank* sample_bank_ptr, song_t* song_data) {
     mus_current_handle++;
 
     *queue++ = 0x0;
-    Audio_WriteU32BE(queue, sample_bank_ptr);
+    Audio_WriteU32BE(queue, PortA_PtrId(sample_bank_ptr)); // PORT: 32-bit ids for pointers
     queue += 4;
-    Audio_WriteU32BE(queue, song_data);
+    Audio_WriteU32BE(queue, PortA_PtrId(song_data));
     queue += 4;
     Audio_WriteU32BE(queue, song_handle);
     queue += 4;
@@ -674,11 +690,16 @@ s32 Audio_PlaySoundEffect(SoundBank* sample_bank_ptr, fx_t* fx_bank_ptr, s32 eff
 
     effect_handle = mus_current_handle;
     mus_current_handle++;
+    if (getenv("PORT_TRACE_SFX")) {
+        extern unsigned long long Port_ViTick(void);
+        fprintf(stderr, "[sfx] frame %llu handle %u effect %d table %p caller %p\n", Port_ViTick(), (unsigned)effect_handle,
+                (int)effect_id, (void*)fx_bank_ptr, __builtin_return_address(0));
+    }
 
     *queue++ = 0x1;
-    Audio_WriteU32BE(queue, sample_bank_ptr);
+    Audio_WriteU32BE(queue, PortA_PtrId(sample_bank_ptr)); // PORT: 32-bit ids for pointers
     queue += 4;
-    Audio_WriteU32BE(queue, fx_bank_ptr);
+    Audio_WriteU32BE(queue, PortA_PtrId(fx_bank_ptr));
     queue += 4;
     Audio_WriteU32BE(queue, effect_handle);
     queue += 4;
@@ -745,6 +766,11 @@ void Audio_QueueFadeSoundCommand(s32 channel_handle, u32 duration_frames) {
     UNUSED s32 pad;
     u8* queue;
     u32 mask;
+    if (getenv("PORT_TRACE_SFX")) {
+        extern unsigned long long Port_ViTick(void);
+        fprintf(stderr, "[sfx] frame %llu fade handle %d over %u frames, caller %p\n", Port_ViTick(), (int)channel_handle,
+                (unsigned)duration_frames, __builtin_return_address(0));
+    }
 
     if (channel_handle != 0) {
         mask = osSetIntMask(1);
@@ -943,7 +969,7 @@ void Audio_QueueVoiceVolumeByte(u32 channel_handle, s32 tempo_scale_factor) {
     }
 }
 
-void Audio_RelocateSoundBankWrapper(intptr_t arg0, s32 arg1) {
+void Audio_RelocateSoundBankWrapper(intptr_t arg0, uintptr_t arg1) { // PORT: arg1 was s32
     Audio_RelocateSoundBank(arg0, arg1);
 }
 
@@ -951,33 +977,41 @@ void Audio_RelocateSoundBankWrapper(intptr_t arg0, s32 arg1) {
  * Remap relative pointers in sound bank/fx bank to absolute addresses
  */
 void Audio_RelocateSoundBankTable(bank_remap_descriptor_t* descriptor) {
+    // PORT: the table stays offsets from the blob (readers use PORT_BLOB_AT); only the byte order changes
     u32 i;
     u32* ptr;
-    u32 num_entries;
-    u32 val;
-    u32 a0 = (uintptr_t)descriptor;
 
     if (descriptor->flags & 2) {
         return;
     }
 
-    num_entries = descriptor->num_entries;
-
-    val = descriptor->metadata_offset;
-    descriptor->metadata_offset = a0 + val;
-
-    val = descriptor->entries_offset;
-    descriptor->entries_offset = a0 + val;
-
-    ptr = descriptor->entries_offset;
-    // FAKE
-    if (0) {}
-
-    for (i = 0; i < num_entries; i++, ptr++) {
-        *ptr += a0;
-    }
+    PortA_Swap32(descriptor, 4);
+    ptr = (u32*)PORT_BLOB_AT(descriptor, descriptor->fx_data);
+    PortA_Swap32(ptr, descriptor->num_entries);
 
     descriptor->flags |= 2;
+}
+
+/**
+ * PORT: first use of a freshly loaded song: byte-swap the header and the channel / volume / pitch-bend offset tables
+ * (they stay offsets from the song). A fresh big-endian header reads as a byte-swapped offset (>= 0x10000: songs are
+ * smaller than 64 KB). Returns the channel count.
+ */
+u32 Audio_PortRelocateSong(song_t* song) {
+    u32 n;
+
+    if (song->channel_data >= 0x10000) {
+        PortA_Swap32(song, 6);
+        n = song->num_channels;
+        PortA_Swap32(PORT_BLOB_AT(song, song->channel_data), n);
+        if (song->volume_data != song->channel_data) {
+            PortA_Swap32(PORT_BLOB_AT(song, song->volume_data), n);
+        }
+        if (song->pitchbend_data != song->channel_data && song->pitchbend_data != song->volume_data) {
+            PortA_Swap32(PORT_BLOB_AT(song, song->pitchbend_data), n);
+        }
+    }
+    return song->num_channels;
 }
 
 /**
@@ -1078,9 +1112,9 @@ s32 Audio_PlayMusicSequenceLooped(SoundBank* bank, song_t* song_data, u32 fade_o
     song_handle = mus_current_handle++;
 
     *queue++ = 0xB;
-    Audio_WriteU32BE(queue, bank->header_name);
+    Audio_WriteU32BE(queue, PortA_PtrId(bank));
     queue += sizeof(u32);
-    Audio_WriteU32BE(queue, song_data);
+    Audio_WriteU32BE(queue, PortA_PtrId(song_data));
     queue += sizeof(u32);
     Audio_WriteU32BE(queue, song_handle);
     queue += sizeof(u32);
@@ -1161,17 +1195,17 @@ void Audio_ProcessCommandQueue(void) {
  * Initialize and load a song for playback with associated sample bank.
  */
 u8* Audio_PlayMusicSequenceHandler(u8* buf) {
-    song_t* song_handle;
+    u32 song_handle;
     song_t* song_data;
-    song_t* sample_bank_ptr;
+    SoundBank* sample_bank_ptr;
     channel_t* cp;
     u32 i;
     u32 count;
     u32 index;
 
-    sample_bank_ptr = Audio_ReadU32BE(buf);
+    sample_bank_ptr = PortA_IdPtr(Audio_ReadU32BE(buf));
     buf += 4;
-    song_data = Audio_ReadU32BE(buf);
+    song_data = PortA_IdPtr(Audio_ReadU32BE(buf));
     buf += 4;
     song_handle = Audio_ReadU32BE(buf);
     buf += 4;
@@ -1179,15 +1213,13 @@ u8* Audio_PlayMusicSequenceHandler(u8* buf) {
     mus_command_queue_size -= 0xC;
 
     count = song_data->num_channels;
-    if ((uintptr_t)song_data->channel_data < 0x400) {
-        Audio_RelocatePointerArray(&song_data->channel_data, song_data, 5);
-        Audio_RelocatePointerArray(song_data->channel_data, song_data, count);
-        Audio_RelocatePointerArray(song_data->volume_data, song_data, count);
-        Audio_RelocatePointerArray(song_data->pitchbend_data, song_data, count);
+    count = Audio_PortRelocateSong(song_data); // PORT: was an in-place relocation to 32-bit pointers
+    if (getenv("PORT_TRACE_SFX")) {
+        fprintf(stderr, "[song] %p bank %p channels %u handle %d\n", (void*)song_data, (void*)sample_bank_ptr, (unsigned)count, (int)song_handle);
     }
 
     for (i = 0; i < count; i++) {
-        if (song_data->channel_data[i] == 0) {
+        if (PORT_BLOB_TABLE(song_data, song_data->channel_data, i) == 0) {
             continue;
         }
 
@@ -1200,9 +1232,9 @@ u8* Audio_PlayMusicSequenceHandler(u8* buf) {
         Audio_ResetVoiceState(cp);
         cp->song_addr = song_data;
         cp->sample_bank = sample_bank_ptr;
-        cp->pvolumebase = cp->pvolumebase_offset = cp->song_addr->volume_data[i];
-        cp->ppitchbendbase = cp->ppitchbendbase_offset = cp->song_addr->pitchbend_data[i];
-        cp->pdata = cp->pbase = cp->song_addr->channel_data[i];
+        cp->pvolumebase = cp->pvolumebase_offset = PORT_BLOB_PTR_OR_NULL(song_data, PORT_BLOB_TABLE(song_data, song_data->volume_data, i));
+        cp->ppitchbendbase = cp->ppitchbendbase_offset = PORT_BLOB_PTR_OR_NULL(song_data, PORT_BLOB_TABLE(song_data, song_data->pitchbend_data, i));
+        cp->pdata = cp->pbase = PORT_BLOB_PTR_OR_NULL(song_data, PORT_BLOB_TABLE(song_data, song_data->channel_data, i));
         cp->handle = song_handle;
         cp->priority = 0x3C;
     }
@@ -1218,16 +1250,16 @@ u8* Audio_PlayMusicSequenceHandler(u8* buf) {
 u8* Audio_PlayMusicSequenceLoopedHandler(u8* buf) {
     u32 song_handle;
     u32 i;
-    u32 sample_bank_ptr;
+    SoundBank* sample_bank_ptr;
     s32 channel_index;
     u32 num_channels;
     song_t* song_data;
     channel_t* cp;
     u32 fade_out_delay_frames;
 
-    sample_bank_ptr = Audio_ReadU32BE(buf);
+    sample_bank_ptr = PortA_IdPtr(Audio_ReadU32BE(buf));
     buf += 4;
-    song_data = Audio_ReadU32BE(buf);
+    song_data = PortA_IdPtr(Audio_ReadU32BE(buf));
     buf += 4;
     song_handle = Audio_ReadU32BE(buf);
     buf += 4;
@@ -1237,15 +1269,10 @@ u8* Audio_PlayMusicSequenceLoopedHandler(u8* buf) {
     mus_command_queue_size -= 0x10;
 
     num_channels = song_data->num_channels;
-    if ((uintptr_t)song_data->channel_data < 0x400) {
-        Audio_RelocatePointerArray(&song_data->channel_data, song_data, 5);
-        Audio_RelocatePointerArray(song_data->channel_data, song_data, num_channels);
-        Audio_RelocatePointerArray(song_data->volume_data, song_data, num_channels);
-        Audio_RelocatePointerArray(song_data->pitchbend_data, song_data, num_channels);
-    }
+    num_channels = Audio_PortRelocateSong(song_data); // PORT: was an in-place relocation to 32-bit pointers
 
     for (i = 0; i < num_channels; i++) {
-        if (song_data->channel_data[i] == 0) {
+        if (PORT_BLOB_TABLE(song_data, song_data->channel_data, i) == 0) {
             continue;
         }
 
@@ -1258,9 +1285,9 @@ u8* Audio_PlayMusicSequenceLoopedHandler(u8* buf) {
         Audio_ResetVoiceState(cp);
         cp->song_addr = song_data;
         cp->sample_bank = sample_bank_ptr;
-        cp->pvolumebase = cp->pvolumebase_offset = song_data->volume_data[i];
-        cp->ppitchbendbase = cp->ppitchbendbase_offset = song_data->pitchbend_data[i];
-        cp->pdata = cp->pbase = song_data->channel_data[i];
+        cp->pvolumebase = cp->pvolumebase_offset = PORT_BLOB_PTR_OR_NULL(song_data, PORT_BLOB_TABLE(song_data, song_data->volume_data, i));
+        cp->ppitchbendbase = cp->ppitchbendbase_offset = PORT_BLOB_PTR_OR_NULL(song_data, PORT_BLOB_TABLE(song_data, song_data->pitchbend_data, i));
+        cp->pdata = cp->pbase = PORT_BLOB_PTR_OR_NULL(song_data, PORT_BLOB_TABLE(song_data, song_data->channel_data, i));
         cp->handle = song_handle;
         cp->priority = 0x3C;
     }
@@ -1274,7 +1301,7 @@ u8* Audio_PlayMusicSequenceLoopedHandler(u8* buf) {
  * Start a sound effect/FX using a specified FX bank and sample bank.
  */
 u8* Audio_PlaySoundEffectHandler(u8* buf) {
-    u32 sample_bank_ptr;
+    SoundBank* sample_bank_ptr;
     fx_t* fx_bank_ptr;
     u32* fx_data;
     u32 effect_handle;
@@ -1286,9 +1313,9 @@ u8* Audio_PlaySoundEffectHandler(u8* buf) {
     channel_t* cp;
     fx_metadata_t* metadata;
 
-    sample_bank_ptr = Audio_ReadU32BE(buf);
+    sample_bank_ptr = PortA_IdPtr(Audio_ReadU32BE(buf));
     buf += 4;
-    fx_bank_ptr = Audio_ReadU32BE(buf);
+    fx_bank_ptr = PortA_IdPtr(Audio_ReadU32BE(buf));
     buf += 4;
     effect_handle = Audio_ReadU32BE(buf);
     buf += 4;
@@ -1300,8 +1327,8 @@ u8* Audio_PlaySoundEffectHandler(u8* buf) {
     effect_priority = *buf++;
 
     mus_command_queue_size -= 0x13;
-    fx_data = fx_bank_ptr->fx_data;
-    metadata = fx_bank_ptr->fx_metadata;
+    fx_data = (u32*)PORT_BLOB_AT(fx_bank_ptr, fx_bank_ptr->fx_data);
+    metadata = (fx_metadata_t*)PORT_BLOB_AT(fx_bank_ptr, fx_bank_ptr->fx_metadata);
 
     /* Use default priority from FX bank metadata if specified as 0xFF */
     if (effect_priority == 0xFF) {
@@ -1314,7 +1341,7 @@ u8* Audio_PlaySoundEffectHandler(u8* buf) {
             cp->handle = effect_handle;
             cp->sample_bank = sample_bank_ptr;
             cp->fx_bank = fx_bank_ptr;
-            cp->pdata = cp->pbase = fx_data[effect_id];
+            cp->pdata = cp->pbase = PORT_BLOB_AT(fx_bank_ptr, fx_data[effect_id]);
             break;
         }
     }
@@ -1753,16 +1780,22 @@ s32 Audio_PlayerFrameHandler(UNUSED void* node) {
 
 void Audio_DecodeVoiceCommandStream(channel_t* arg0) {
     s32 pad[2];
-    song_t* bank;
+    PortSoundBank* bank;
     u8* var_s0;
     u8 temp_a0;
     u8 tmp;
     u8 tmp1;
     u16 wave;
-    u32 sample;
+    ALWaveTable* sample;
 
     var_s0 = arg0->pdata;
     while (var_s0 != NULL && (tmp1 = *var_s0) >= 0x80) {
+        if (command_func_jumptable[tmp1 & 0x7F] == NULL) { // PORT: debug aid (a jump to address 0 on the N64)
+            fprintf(stderr, "[audio] bad command 0x%02x at %p (base %p, song %p, fx %p, handle %d)\n", tmp1, var_s0,
+                    arg0->pbase, arg0->song_addr, arg0->fx_bank, (int)arg0->handle);
+            var_s0 = NULL;
+            break;
+        }
         var_s0 = command_func_jumptable[tmp1 & 0x7F](arg0, var_s0 + 1);
     }
     arg0->pdata = var_s0;
@@ -1806,7 +1839,7 @@ void Audio_DecodeVoiceCommandStream(channel_t* arg0) {
         arg0->wobble_counter = arg0->wobble_off_speed;
 
         if (tmp != 0x60) {
-            bank = arg0->sample_bank;
+            bank = PortA_Bank(arg0->sample_bank); // PORT: host view of the bank
             Audio_UpdateVoicePlaybackEnd(arg0);
 
             if (arg0->sweep_speed != 0) {
@@ -1819,7 +1852,7 @@ void Audio_DecodeVoiceCommandStream(channel_t* arg0) {
             }
 
             wave = arg0->wave;
-            sample = bank->samples[wave];
+            sample = bank->wave_list[wave];
             arg0->sample = sample;
             arg0->base_note = bank->detune[wave] + tmp;
         } else {
@@ -2138,21 +2171,17 @@ f32 Audio_ExpApproximation(f32 arg0) {
     }
 }
 
-void Audio_RelocateSoundBank(u8* arg0, s32 arg1) {
+void Audio_RelocateSoundBank(u8* arg0, uintptr_t arg1) { // PORT: arg1 (wave data address) was s32
     UNUSED s32 pad;
     u32 i;
     f32 var_fv0;
-    SoundBank* soundbank = arg0;
     u8 temp_v1;
+    // PORT: builds the host wave tables (port_audio.c); NULL when the bank was already relocated
+    PortSoundBank* soundbank = PortA_RelocateSoundBank(arg0, arg1);
 
-    if (soundbank->flags & 1) {
+    if (soundbank == NULL) {
         return;
     }
-
-    soundbank->flags |= 1;
-
-    Audio_RelocatePointerArray(&soundbank->basenote, arg0, 3);
-    Audio_RelocatePointerArray(soundbank->wave_list, arg0, soundbank->count);
 
     for (i = 0; i < soundbank->count; i++) {
         f32* ptr = &soundbank->detune[i];
@@ -2172,27 +2201,6 @@ void Audio_RelocateSoundBank(u8* arg0, s32 arg1) {
             var_fv0 = (s32)temp_v1;
         }
         *ptr += var_fv0;
-
-        if (soundbank->wave_list[i]->flags == 0) {
-            uintptr_t tmp = soundbank->wave_list[i]->base;
-
-            if ((tmp & 0xFF000000) != 0xFF000000) {
-                tmp += arg1;
-                soundbank->wave_list[i]->base = tmp;
-            }
-
-            soundbank->wave_list[i]->flags = 1;
-
-            if (soundbank->wave_list[i]->waveInfo.rawWave.loop != NULL) {
-                soundbank->wave_list[i]->waveInfo.rawWave.loop =
-                    (uintptr_t)soundbank + (uintptr_t)soundbank->wave_list[i]->waveInfo.rawWave.loop;
-            }
-
-            if (soundbank->wave_list[i]->type == AL_ADPCM_WAVE) {
-                soundbank->wave_list[i]->waveInfo.adpcmWave.book =
-                    (uintptr_t)soundbank + (uintptr_t)soundbank->wave_list[i]->waveInfo.adpcmWave.book;
-            }
-        }
     }
 
     osWritebackDCacheAll();
@@ -2233,7 +2241,8 @@ void Audio_ResetVoiceState(channel_t* arg0) {
     arg0->envelope_end = 0;
 
     ptr = (u8*)&arg0->envelope_end + 4;
-    for (i = 0x34; i < 0x150; i++) {
+    // PORT: to the end of the struct (0x34..0x150 in the N64 layout; the host struct is larger)
+    for (i = offsetof(channel_t, envelope_end) + 4; i < sizeof(channel_t); i++) {
         *ptr++ = 0;
     }
 

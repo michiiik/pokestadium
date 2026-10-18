@@ -1,3 +1,4 @@
+#include "src/port_audio.h"
 #include "gb_audio_render.h"
 #include "src/rom_device.h"
 #include "src/audio_commands.h"
@@ -85,8 +86,11 @@ unk_D_800FCFD8 D_800FCFD8;
 u32 D_800FD004;
 unk_D_800FD008 D_800FD008;
 u8 D_800FD048[32];
-unk_D_800FD068 D_800FD068[199];
-u8 D_800FD6A0[8];
+// PORT: on the N64 the 200-entry (0xC8) register-write queue ends in D_800FD6A0's first 8 bytes, and the register
+// mirror D_800FD6A0, indexed by the register's low byte (0x10-0x3F), runs on into the padding at 0x800FD6B0. Here
+// they get their full sizes (out of bounds, the writes hit whatever the host linker placed after them).
+unk_D_800FD068 D_800FD068[200];
+u8 D_800FD6A0[0x40];
 u32 D_800FD6A8;
 u32 D_800FD6AC;
 static u8 D_800FD6B0[0x30]; // pad
@@ -212,16 +216,16 @@ s32 D_80078ED8 = 0;
 s32 D_80078EDC = 0;
 
 void GbAudio_GenerateSamples(s16* arg0, s32 arg1, u32 arg2, f32 arg3) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     func_80049A60(arg2);
 }
 
 void GbAudio_QueueRegisterWrite(u16 arg0, u8 arg1, u16 arg2) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     D_800FD068[D_800FD6AC].unk_00 = (u8*)&D_800FD008.unk_00[(arg0 & 0xFF) - 0x10];
     D_800FD068[D_800FD6AC].unk_04 = arg1;
     D_800FD068[D_800FD6AC].unk_06 = arg2 + 1;
@@ -232,16 +236,16 @@ void GbAudio_QueueRegisterWrite(u16 arg0, u8 arg1, u16 arg2) {
 }
 
 u8 GbAudio_GetRegisterValue(u16 arg0) {
-#ifdef PORT_NO_AUDIO
-    return 0;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return 0;
+    }
     return D_800FD6A0[arg0 & 0xFF];
 }
 
 void func_800498A8(u32 arg0, u8 arg1, u32 arg2) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     u32 temp_t3;
     u8* p;
     s32 i;
@@ -313,9 +317,9 @@ s16 func_8004A474(void);
 s16 func_8004A89C(void);
 
 void func_80049A60(u32 arg0) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     s32 pad[3];
     s16 sp4C[4];
     u32 i;
@@ -394,9 +398,9 @@ void func_80049A60(u32 arg0) {
 }
 
 void GbAudio_ApplyQueuedWrites(u16 arg0) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     while (D_800FD068[D_800FD6A8].unk_06 >= arg0) {
         D_800FD068[D_800FD6A8].unk_00[0] = D_800FD068[D_800FD6A8].unk_04;
         D_800FD068[D_800FD6A8].unk_00[1] = 1;
@@ -408,9 +412,9 @@ void GbAudio_ApplyQueuedWrites(u16 arg0) {
 }
 
 s16 func_80049DF0(void) {
-#ifdef PORT_NO_AUDIO
-    return 0;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return 0;
+    }
     s32 i;
     s32 changed;
     s32 nr14;
@@ -603,9 +607,9 @@ skip:
 }
 
 s16 func_8004A474(void) {
-#ifdef PORT_NO_AUDIO
-    return 0;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return 0;
+    }
     s32 i;
     s32 changed;
     s32 nr24;
@@ -739,9 +743,9 @@ s16 func_8004A474(void) {
 }
 
 s16 func_8004A89C(void) {
-#ifdef PORT_NO_AUDIO
-    return 0;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return 0;
+    }
     s32 i;
     s32 nr43;
     s32 row;
@@ -766,7 +770,7 @@ s16 func_8004A89C(void) {
         row = nr43 & 7;
         col = (GB_REG(0x12) & 0xF0) >> 4;
         entry = &GB_NOISE_TABLE[row][col];
-        sampleId = entry->sampleId;
+        sampleId = (u8)(*(u32*)entry >> 24); // PORT: the id is the first (big-endian) byte of a u32 word
         if (sampleId == 0xFF) {
             D_800FCFD8.unk_28 = 0;
             return 0;
@@ -838,7 +842,7 @@ s16 func_8004A89C(void) {
 
     ent = (unk_D_800FC6CC*)((u32*)D_800FC6CC + (D_800FCFD8.unk_04 << 1));
     if (1) {}
-    sample = ((s16*)D_800FC6D0)[D_800FCFD8.unk_08];
+    sample = (s16)PortA_BE16((u8*)D_800FC6D0 + 2 * D_800FCFD8.unk_08); // PORT: big-endian samples from ROM
     D_800FCFD8.unk_10 += 1.0f;
     if (D_800FCFD8.unk_0C <= D_800FCFD8.unk_10) {
         D_800FCFD8.unk_08++;
@@ -863,9 +867,9 @@ s16 func_8004A89C(void) {
 }
 
 void GbAudio_ClearInterpolationHistory(void) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     s32 i;
 
     for (i = 0; i < ARRAY_COUNT(D_800FD6F8); i++) {
@@ -875,9 +879,9 @@ void GbAudio_ClearInterpolationHistory(void) {
 }
 
 void GbAudio_ClearOutputBuffer(void) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     s32 i;
 
     for (i = 0; i < 0xB80; i++) {
@@ -888,8 +892,8 @@ void GbAudio_ClearOutputBuffer(void) {
 }
 
 void func_8004AD2C(void) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
 
 }

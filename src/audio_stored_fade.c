@@ -13,9 +13,9 @@ u8 D_80078A1C[4] = { 0 };
 u8 D_80078A20[16] = { 0 };
 
 s32 func_80048060(s32 arg0, u32 arg1, u32 arg2, u32 arg3) {
-#ifdef PORT_NO_AUDIO
-    return 0;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return 0;
+    }
     u32 i;
     u32 temp_v0;
     u32 slot;
@@ -131,9 +131,9 @@ block_38:
 }
 
 void Audio_FadeStoredSound(void) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
   if (D_80078A1C[0] != 0) {
       Audio_QueueFadeSoundCommand(D_80078A18, (s32)D_80078A1C[0]);
   }
