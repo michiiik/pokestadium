@@ -144,7 +144,8 @@ s32 BattlePrepBadgeAward_DrawBadgeIcon(s32 arg0, unk_func_80011B94* arg1) {
 
         gDPPipeSync(gDisplayListHead++);
         gSPSegment(gDisplayListHead++, 0x0F,
-                   (uintptr_t)Memmap_GetSegmentVaddr(*(s32*)(temp_v0->unk_1C + tmp * 4)));
+                   // PORT: a table of big-endian segmented addresses in ROM data (all three badge tables below)
+                   (uintptr_t)Memmap_GetSegmentVaddr(PORT_BE32(*(s32*)(temp_v0->unk_1C + tmp * 4))));
         gSPDisplayList(gDisplayListHead++, arg1->display_node_header.callbackArg);
 
         GeoRender_ApplyMaterialState();
@@ -162,7 +163,7 @@ s32 BattlePrepBadgeAward_DrawBadgeIconAlt(s32 arg0, unk_func_80011B94* arg1) {
 
         gDPPipeSync(gDisplayListHead++);
         gSPSegment(gDisplayListHead++, 0x0F,
-                   (uintptr_t)Memmap_GetSegmentVaddr(*(s32*)(temp_v0->unk_20 + tmp * 4)));
+                   (uintptr_t)Memmap_GetSegmentVaddr(PORT_BE32(*(s32*)(temp_v0->unk_20 + tmp * 4))));
         gSPDisplayList(gDisplayListHead++, arg1->display_node_header.callbackArg);
 
         GeoRender_ApplyMaterialState();
@@ -181,7 +182,8 @@ s32 BattlePrepBadgeAward_DrawSparkle(s32 arg0, unk_func_80011B94* arg1) {
         if (temp_a3->unk_28[tmp] >= 0) {
             gDPPipeSync(gDisplayListHead++);
             gSPSegment(gDisplayListHead++, 0x0F,
-                       (uintptr_t)Memmap_GetSegmentVaddr(temp_a3->unk_24[temp_a3->unk_28[tmp]]));
+                       // PORT: 32-bit entries (unk_24 is u8**: 8-byte reads joined two of them into one wild address)
+                       (uintptr_t)Memmap_GetSegmentVaddr(PORT_BE32(((s32*)temp_a3->unk_24)[temp_a3->unk_28[tmp]])));
             gSPDisplayList(gDisplayListHead++, arg1->display_node_header.callbackArg);
 
             GeoRender_ApplyMaterialState();
