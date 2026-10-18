@@ -80,10 +80,17 @@ typedef struct unk_D_80078548 {
 // .data
 // global
 
-extern u8 D_800780B3[]; // needs addressing
-extern u16 D_80078410[1][9];
-extern u16 D_80078446[1][9];
-extern u16 D_800784EA[1][9];
+extern u16 D_800780A8[6];
+extern u8 D_800780B4[204];
+// PORT: D_800780B3 is the last byte of D_800780A8 (big-endian u16 array), followed by D_800780B4
+#define PORT_D_800780B3(i) ((i) == 0 ? (u8)(D_800780A8[5] & 0xFF) : D_800780B4[(i) - 1])
+// PORT: u16 [][9] tables at interior addresses of sMusicSeqTables (0x80078410), kept as big-endian bytes
+extern u8 sMusicSeqTables[0x134];
+#define PORT_SEQ_TABLE(off, row, col) \
+    ((u16)((sMusicSeqTables[(off) + 2 * ((row) * 9 + (col))] << 8) | sMusicSeqTables[(off) + 2 * ((row) * 9 + (col)) + 1]))
+#define PORT_D_80078410(r, c) PORT_SEQ_TABLE(0x00, r, c)
+#define PORT_D_80078446(r, c) PORT_SEQ_TABLE(0x36, r, c)
+#define PORT_D_800784EA(r, c) PORT_SEQ_TABLE(0xDA, r, c)
 
 // .rodata
 
@@ -536,9 +543,9 @@ u8 D_80078568[24] = {
 
 
 void BitArray_SetBit(u8* array, u8 index, u8 flag) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     u8 offset = index / 8;
     u8 bitPosition = index % 8;
     u8 mask = (1 << bitPosition);
@@ -553,9 +560,9 @@ void BitArray_SetBit(u8* array, u8 index, u8 flag) {
  * Checks if a bit is set in an array.
  */
 s32 BitArray_IsBitSet(u8* array, u8 index) {
-#ifdef PORT_NO_AUDIO
-    return 0;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return 0;
+    }
     u8 offset = index / 8;
     u8 bitPosition = index % 8;
     u8 flag = (array[offset] & (u8)(1 << bitPosition));
@@ -566,9 +573,9 @@ s32 BitArray_IsBitSet(u8* array, u8 index) {
 }
 
 void Audio_SetVoiceEnabled(s32 arg0) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     if (arg0 != 0) {
         D_80078388 = 1;
     } else {
@@ -577,9 +584,9 @@ void Audio_SetVoiceEnabled(s32 arg0) {
 }
 
 void Audio_SetChannelGroupCounts(u8 arg0, u8 arg1, u8 arg2, u8 arg3) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     D_8007838C[0] = arg0;
     D_8007838C[1] = arg1;
     D_8007838C[2] = arg2;
@@ -587,9 +594,9 @@ void Audio_SetChannelGroupCounts(u8 arg0, u8 arg1, u8 arg2, u8 arg3) {
 }
 
 void Audio_ResetChannelGroupState(u8 arg0) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     s32 i;
 
     if (arg0 < 3) {
@@ -624,9 +631,9 @@ void Audio_ResetChannelGroupState(u8 arg0) {
 }
 
 void Audio_ConfigureChannelGroups(u8 arg0, u8 arg1, u8 arg2, u8 arg3) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     s32 i;
     s32 j;
 
@@ -654,9 +661,9 @@ void Audio_ConfigureChannelGroups(u8 arg0, u8 arg1, u8 arg2, u8 arg3) {
 }
 
 void Audio_SelectModeMusic(u32 arg0, u32 arg1) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     s32 pad[1];
     u8 sp1B = 0;
     u16 var_a0;
@@ -679,7 +686,7 @@ void Audio_SelectModeMusic(u32 arg0, u32 arg1) {
 
         if (arg1 < 0xC) {
             if (arg0 < 9) {
-                var_a0 = D_80078410[arg1][arg0];
+                var_a0 = PORT_D_80078410(arg1, arg0);
                 D_800783FC = 1;
                 D_80078400 = 1;
             } else {
@@ -687,7 +694,7 @@ void Audio_SelectModeMusic(u32 arg0, u32 arg1) {
             }
         } else if (arg1 == 0xC) {
             if ((arg0 < 0x21) && (arg0 != 0)) {
-                var_a0 = D_800784EA[(arg0 - 1) / 8][(arg0 - 1) % 8];
+                var_a0 = PORT_D_800784EA((arg0 - 1) / 8, (arg0 - 1) % 8);
                 D_800783FC = 1;
                 D_80078400 = 0;
             } else {
@@ -695,7 +702,7 @@ void Audio_SelectModeMusic(u32 arg0, u32 arg1) {
             }
         } else if (arg1 == 0xD) {
             if (arg0 < 6) {
-                var_a0 = D_80078446[arg1][arg0];
+                var_a0 = PORT_D_80078446(arg1, arg0);
                 D_800783FC = 1;
                 D_80078400 = 0;
             } else {
@@ -735,9 +742,9 @@ void Audio_SelectModeMusic(u32 arg0, u32 arg1) {
 }
 
 void func_8003DB84(s32 arg0) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     s8 var_t0;
     s8 var_t2;
     s8 var_t4;
@@ -1137,9 +1144,9 @@ block_53:
 }
 
 void func_8003EB40(s32 arg0, BattleMonRuntime* arg1) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     u8 pad;
     u8 value;
     u8 side;
@@ -1317,9 +1324,9 @@ found_value:
 }
 
 void func_8003F1AC(u32 arg0) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     u8 sp1F;
 
     if (arg0 == 0 || arg0 >= 5) {
@@ -1378,9 +1385,9 @@ void func_8003F1AC(u32 arg0) {
 }
 
 void func_8003F4C0(u32 arg0) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     u8 temp_v0;
     
     if (arg0 == 0 || arg0 >= 5) {
@@ -1429,9 +1436,9 @@ void func_8003F4C0(u32 arg0) {
 }
 
 void Audio_QueuePendingSoundId(u32 arg0) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     D_800FCCF0[D_80078544] = arg0;
     D_80078544++;
     if (D_80078544 >= 0xA) {
@@ -1440,9 +1447,9 @@ void Audio_QueuePendingSoundId(u32 arg0) {
 }
 
 void func_8003F660(s32 arg0) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     u32 mask;
     u32 sp40;
     s32 sp3C;
@@ -1744,7 +1751,7 @@ void func_8003F660(s32 arg0) {
             return;
         case 0x19:
         case 0x1B:
-            if ((D_800780B3[D_800FCCAC * 3] == 0) && ((D_800FCB18[temp_s0]->unk_16[6] == 8) || (D_800FCB18[temp_s0]->unk_16[7] == 8))) {
+            if ((PORT_D_800780B3(D_800FCCAC * 3) == 0) && ((D_800FCB18[temp_s0]->unk_16[6] == 8) || (D_800FCB18[temp_s0]->unk_16[7] == 8))) {
                 Audio_QueueSoundAvoidingRecent(&D_80077F24);
             } else {
                 Audio_QueueSoundAvoidingRecent(&D_80077F14);
@@ -2004,9 +2011,9 @@ void func_8003F660(s32 arg0) {
 }
 
 void func_80040A70(BattleMonRuntime* arg0, s32 arg1, s32 arg2, s32 arg3) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     s32 i;
     s32 sp40;
     u32 temp_lo;
@@ -2268,9 +2275,9 @@ void func_80040A70(BattleMonRuntime* arg0, s32 arg1, s32 arg2, s32 arg3) {
 }
 
 void func_800414B8(s32 arg0) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     u8 temp_v0;
 
     if (arg0 == 0 || arg0 >= 5U) {
@@ -2291,9 +2298,9 @@ void func_800414B8(s32 arg0) {
 }
 
 void Audio_StartBattleMusicSequence(void) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     if (D_80078E80 == 0) {
         Audio_StartMusicTrack(0x3D);
         Audio_PlayCommand(0x16, D_80078400, 0);
@@ -2326,17 +2333,17 @@ void Audio_StartBattleMusicSequence(void) {
 }
 
 void Audio_StartResultMusicSequence(void) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     Audio_PlayCommand(0x16, D_80078400, 0);
     Audio_QueueSequenceId(0x1A2);
 }
 
 void Audio_UpdateBattleAudioFrame(void) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     u8* seq;
 
     if ((D_800783B4 < D_800783B8) && (D_80078388 != 0) && (AudioStream_IsPlaying(1) == 0)) {
@@ -2430,9 +2437,9 @@ void Audio_UpdateBattleAudioFrame(void) {
  * register-materialised store.
  */
 void func_80041A98(void) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     s32 i;
     s32 j;
 
@@ -2483,9 +2490,9 @@ void func_80041A98(void) {
 }
 
 void Audio_QueueSequenceId(u32 arg0) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     OSIntMask mask;
 
     if ((D_80078388 != 0) && (D_800783FC != 0) && (arg0 != 0)) {
@@ -2497,9 +2504,9 @@ void Audio_QueueSequenceId(u32 arg0) {
 }
 
 void Audio_RemoveLastQueuedSequenceId(void) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     OSIntMask mask;
 
     if ((D_80078388 != 0) && (D_800783FC != 0)) {
@@ -2510,9 +2517,9 @@ void Audio_RemoveLastQueuedSequenceId(void) {
 }
 
 void Audio_SwapSoundCandidates(u8* arg0, u8* arg1) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     u8 temp_v0 = *arg0;
     u8 temp_v1 = *arg1;
 
@@ -2523,9 +2530,9 @@ void Audio_SwapSoundCandidates(u8* arg0, u8* arg1) {
 }
 
 u16 Audio_FilterRecentSoundId(u16 arg0) {
-#ifdef PORT_NO_AUDIO
-    return 0;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return 0;
+    }
     s32 i;
 
     for (i = 0; i < 20; i++) {
@@ -2538,9 +2545,9 @@ u16 Audio_FilterRecentSoundId(u16 arg0) {
 }
 
 void Audio_RecordRecentSoundId(u16 arg0) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     u16 i;
 
     for (i = 0; i < 19; i++) {
@@ -2551,9 +2558,9 @@ void Audio_RecordRecentSoundId(u16 arg0) {
 }
 
 void Audio_RemoveRecentSoundAt(u16 arg0) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     u32 i;
 
     for (i = arg0; i > 0; i--) {
@@ -2564,9 +2571,9 @@ void Audio_RemoveRecentSoundAt(u16 arg0) {
 }
 
 u32 Audio_SelectSoundAvoidingRecent(u16* arg0) {
-#ifdef PORT_NO_AUDIO
-    return 0;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return 0;
+    }
     u16 temp_v0 = *arg0;
     u32 i;
     u32 j;
@@ -2602,9 +2609,9 @@ u32 Audio_SelectSoundAvoidingRecent(u16* arg0) {
 }
 
 void Audio_QueueSoundAvoidingRecent(u16* arg0) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     u32 temp_v0 = Audio_SelectSoundAvoidingRecent(arg0);
 
     if (temp_v0 != 0) {
@@ -2613,9 +2620,9 @@ void Audio_QueueSoundAvoidingRecent(u16* arg0) {
 }
 
 void Audio_QueueSoundWithFallbackList(u16 arg0, u16* arg1, u8* arg2) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     u8 temp_v0;
 
     if (*arg2 == 0) {
@@ -2630,9 +2637,9 @@ void Audio_QueueSoundWithFallbackList(u16 arg0, u16* arg1, u8* arg2) {
 }
 
 void func_800420F0_empty() {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     
 }
 
@@ -2640,9 +2647,9 @@ void func_800420F0_empty() {
 // commentary lines. Returns a small negative code for moves that are classified rather
 // than scored (see the effect switch below), otherwise a damage estimate capped at 0x7FFF.
 u32 Battle_EstimateMoveDamage(u32 moveId, BattleMonRuntime* attacker, BattleMonRuntime* defender) {
-#ifdef PORT_NO_AUDIO
-    return 0;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return 0;
+    }
     f32 var_f0;  // defense stat, then the STAB multiplier, then the defender's status multiplier
     f32 var_f2;  // attack stat, then the attacker's hp reference
     f32 var_f12; // multiplier for the defender's first type, then the attacker's boost
@@ -2850,9 +2857,9 @@ u32 Battle_EstimateMoveDamage(u32 moveId, BattleMonRuntime* attacker, BattleMonR
 }
 
 s32 Battle_MapCategoryIdToCompactIndex(u8 arg0) {
-#ifdef PORT_NO_AUDIO
-    return 0;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return 0;
+    }
     switch (arg0) {
     case 0:
         return 0;
@@ -2890,8 +2897,8 @@ s32 Battle_MapCategoryIdToCompactIndex(u8 arg0) {
 }
 
 void Audio_QueueSequenceIdWrapper(u32 arg0) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     Audio_QueueSequenceId(arg0);
 }

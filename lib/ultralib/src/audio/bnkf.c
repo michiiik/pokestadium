@@ -33,15 +33,27 @@ static  void _bnkfPatchWaveTable(ALWaveTable *w, s32 offset, s32 table);
 
 void alSeqFileNew(ALSeqFile *file, u8 *base)
 {
-    s32 offset = (intptr_t) base;
-    s32 i;
-    
     /*
-     * patch the file so that offsets are pointers
+     * PORT: the file arrives as stored in ROM: s16 revision, s16 seqCount, then {u32 offset, s32 len} per
+     * sequence, big-endian. Convert it in place to the host layout (ALSeqData holds a pointer, so the entries
+     * grow: the buffer must hold PORT_SEQFILE_BYTES(seqCount)), last entry first, turning the offsets into
+     * addresses (ROM addresses here: base is one).
      */
-    for (i = 0; i < file->seqCount; i++) {
-        file->seqArray[i].offset = (u8 *)((u8 *)file->seqArray[i].offset + offset);
+    u8 *raw = (u8 *)file;
+    s16 revision = (s16)((raw[0] << 8) | raw[1]);
+    s32 count = (s16)((raw[2] << 8) | raw[3]);
+    s32 i;
+
+    for (i = count - 1; i >= 0; i--) {
+        const u8 *e = raw + 4 + 8 * i;
+        u32 offset = ((u32)e[0] << 24) | ((u32)e[1] << 16) | ((u32)e[2] << 8) | e[3];
+        s32 len = (s32)(((u32)e[4] << 24) | ((u32)e[5] << 16) | ((u32)e[6] << 8) | e[7]);
+
+        file->seqArray[i].offset = (u8 *)((uintptr_t)base + offset);
+        file->seqArray[i].len = len;
     }
+    file->revision = revision;
+    file->seqCount = count;
 }
 
 void alBnkfNew(ALBankFile *file, u8 *table)

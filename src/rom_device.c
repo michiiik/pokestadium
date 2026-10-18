@@ -22,7 +22,7 @@ void Rom_InitDevice(s32 arg0) {
 void Rom_DmaRead(uintptr_t dev_addr, uintptr_t dram_addr, u32 size) {
     OSIoMesg msg;
     u32 dev = dev_addr;
-    u32 dram = dram_addr;
+    uintptr_t dram = dram_addr; // PORT: was u32
     s32 var_s0;
 
     while (size != 0) {

@@ -281,7 +281,7 @@ Acmd* n_alEnvmixerPull(N_PVoice* filter, s32 sampleOffset, Acmd* p) {
                 break;
             case (AL_FILTER_SET_WAVETABLE):
                 ptr = _pullSubFrame(e, &inp, &loutp, samples, ptr);
-                n_alLoadParam(e, AL_FILTER_SET_WAVETABLE, (void*)e->em_ctrlList->data.i);
+                n_alLoadParam(e, AL_FILTER_SET_WAVETABLE, e->em_ctrlList->data.p); // PORT: was (void*)data.i
                 break;
 #endif
             default:
@@ -290,7 +290,7 @@ Acmd* n_alEnvmixerPull(N_PVoice* filter, s32 sampleOffset, Acmd* p) {
                  * on down the chain
                  */
                 ptr = _pullSubFrame(e, &inp, &loutp, samples, ptr);
-                n_alEnvmixerParam(e, e->em_ctrlList->type, (void*)e->em_ctrlList->data.i);
+                n_alEnvmixerParam(e, e->em_ctrlList->type, (void*)(intptr_t)e->em_ctrlList->data.i);
                 break;
         }
         loutp += (samples << 1);

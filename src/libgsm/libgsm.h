@@ -30,9 +30,9 @@ typedef struct xMc {
     s16 unkD;
 } xMc; // size 0x1A
 
-// libgsm.s
+// libgsm.s (PORT: C translation in libgsm.c)
 void Gsm_Short_Term_Synthesis_Filter(gsm_state*, s16*, s16*);
-void Gsm_RPE_Decoding(s16*, s16*, xMc*, s16*);
+void Gsm_RPE_Decoding(s16 xmaxcr, s16 Mcr, xMc*, s16*); // PORT: the first two are values (were declared s16*)
 void Gsm_Long_term_synthesis_filtering(gsm_state*, s16, s32, s16*);
 
 #endif // _LIBGSM_H_

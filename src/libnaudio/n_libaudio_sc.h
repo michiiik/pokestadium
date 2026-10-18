@@ -56,7 +56,7 @@ typedef struct {
     s32                 maxAuxBusses;
     s32                 outputRate; 
     s32                 maxOutSamples;
-    s32	       		sv_dramout;
+    intptr_t		sv_dramout; // PORT: a host pointer (was s32)
     s32                 sv_first;
 } N_ALSynth;
 

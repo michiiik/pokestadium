@@ -45,22 +45,27 @@ typedef struct fx_metadata_t {
     /* 0x00 */ u8 params[4]; // [3] = default priority
 } fx_metadata_t; // size = 0x4
 
+// PORT: song and FX files are big-endian blobs whose tables hold 32-bit offsets from the blob. They are byte-swapped
+// to host order on first use (Audio_PortRelocateSong / Audio_RelocateSoundBankTable) but stay offsets; the PORT_*_AT
+// macros below turn them into pointers.
 typedef struct song_t {
     /* 0x00 */ u32 num_channels;
-    /* 0x04 */ u32* channel_data;
-    /* 0x08 */ u32* volume_data;
-    /* 0x0C */ u32* pitchbend_data;
-    /* 0x10 */ envelope_t* env_table;
-    /* 0x14 */ s32* drum_table;
-    /* 0x18 */ char unk18[0x10];
-    /* 0x28 */ f32* detune;
-    /* 0x2C */ u32* samples;
+    /* 0x04 */ u32 channel_data;   // offset of u32 channel_data[num_channels] (offsets of command streams, 0 = none)
+    /* 0x08 */ u32 volume_data;    // offset of u32 volume_data[num_channels]
+    /* 0x0C */ u32 pitchbend_data; // offset of u32 pitchbend_data[num_channels]
+    /* 0x10 */ u32 env_table;      // offset of envelope_t env_table[]
+    /* 0x14 */ u32 drum_table;     // offset of s32 drum_table[] (offsets from the song)
 } song_t; // size >= 0x18
 
+#define PORT_BLOB_AT(blob, off) ((u8*)(blob) + (off))
+#define PORT_BLOB_TABLE(blob, tableOff, i) (((u32*)PORT_BLOB_AT(blob, tableOff))[i])
+#define PORT_BLOB_PTR_OR_NULL(blob, off) ((off) != 0 ? PORT_BLOB_AT(blob, off) : NULL)
+
 typedef struct fx_t {
-    /* 0x00 */ char unk00[0x8];
-    /* 0x08 */ fx_metadata_t** fx_metadata;
-    /* 0x0C */ u32* fx_data;
+    /* 0x00 */ u32 num_entries;
+    /* 0x04 */ u32 flags;
+    /* 0x08 */ u32 fx_metadata; // offset of fx_metadata_t[num_entries]
+    /* 0x0C */ u32 fx_data;     // offset of u32 fx_data[num_entries] (offsets of command streams)
 } fx_t; // size >= 0x10
 
 typedef struct audio_voice_t {
@@ -81,7 +86,7 @@ typedef struct channel_t {
     /* 0x028 */ u64 note_start_frame;
     /* 0x030 */ u64 envelope_end;
     /* 0x038 */ u8* pdata;
-    /* 0x03C */ s32 sample;
+    /* 0x03C */ ALWaveTable* sample; // PORT: was s32
     /* 0x040 */ s32 duration;
     /* 0x044 */ s32 duration_scale;
     /* 0x048 */ f32 vib_amount;
@@ -102,7 +107,7 @@ typedef struct channel_t {
     /* 0x084 */ f32 bendrange;
     /* 0x088 */ f32 pitchbend;
     /* 0x08C */ song_t* song_addr;
-    /* 0x090 */ song_t* sample_bank;
+    /* 0x090 */ SoundBank* sample_bank; // PORT: was song_t*
     /* 0x094 */ u8* pbase;
     /* 0x098 */ u8* pdrums;
     /* 0x09C */ u8* ppitchbendbase_offset;
@@ -176,12 +181,10 @@ typedef struct channel_t {
     /* 0x14C */ char unk14C[0x4];
 } channel_t; // size = 0x150
 
-typedef struct bank_remap_descriptor_t {
-    /* 0x00 */ u32 num_entries;
-    /* 0x04 */ u32 flags;
-    /* 0x08 */ u32* metadata_offset;
-    /* 0x0C */ u32* entries_offset;
-} bank_remap_descriptor_t; // size = 0x10
+typedef fx_t bank_remap_descriptor_t; // PORT: the same blob
+typedef struct bank_remap_descriptor_t_unused {
+    u32 unused;
+} bank_remap_descriptor_t_unused;
 
 extern ALHeap* audio_heap;
 extern u32 mus_num_vvoices;
@@ -246,8 +249,9 @@ void Audio_QueueVoicePan(s32, u16);
 void Audio_QueueVoiceDetune(s32, f32);
 void Audio_QueueVoiceVolume(s32, s32);
 void Audio_QueueVoiceVolumeByte(u32, s32);
-void Audio_RelocateSoundBankWrapper(intptr_t arg0, s32 arg1);
+void Audio_RelocateSoundBankWrapper(intptr_t arg0, uintptr_t arg1);
 void Audio_RelocateSoundBankTable(bank_remap_descriptor_t*);
+u32 Audio_PortRelocateSong(song_t*);
 void Audio_QueueSetMonoOutputCommand(s32);
 void Audio_SetVoiceStartTimingMode(s32);
 void Audio_StopAllSoundEffects(void);
@@ -281,7 +285,7 @@ f32 Audio_ComputeSinePitchModulation(channel_t*);
 void Audio_AdvancePitchEnvelope(channel_t*);
 void Audio_AdvanceVolumeEnvelope(channel_t*);
 f32 Audio_ExpApproximation(f32);
-void Audio_RelocateSoundBank(u8*, s32);
+void Audio_RelocateSoundBank(u8*, uintptr_t);
 s32 Audio_RandomScale(s32);
 void Audio_ResetVoiceState(channel_t*);
 s32 Audio_FindFreeVoice(song_t*, s32);

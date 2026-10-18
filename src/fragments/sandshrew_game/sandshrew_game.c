@@ -1,3 +1,4 @@
+#include "src/port_audio.h"
 #include "sandshrew_game.h"
 #include "src/geo_render.h"
 #include "src/model_animation.h"
@@ -2428,7 +2429,9 @@ void SandshrewGame_ShowResultText(void) {
         SandshrewGame_DrawFrame(2);
     }
 
-    while (Audio_GetActivityScore() != 0) {}
+    while (Audio_GetActivityScore() != 0) {
+        PortA_SpinWait(); // PORT: let the audio thread run (it preempted this loop on the N64)
+    }
 
     SandshrewGame_PlaySoundEventGuarded(0xB, 0);
 }

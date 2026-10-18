@@ -945,7 +945,8 @@ extern s32 D_80078408;
 extern s32 D_80078E74;
 extern u8 D_80078E78;
 extern u8 D_80078E7C;
-extern u8 D_80078E80;
+extern u8 sLoopPointTable[0x3C]; // PORT: D_80078E80 is its first byte
+#define D_80078E80 (sLoopPointTable[0])
 extern s32 D_80078EC8;
 extern s32 D_80078ED4;
 extern s32 D_80078ED8;

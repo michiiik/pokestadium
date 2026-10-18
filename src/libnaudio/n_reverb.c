@@ -95,8 +95,8 @@ Acmd* n_alFxPull(s32 sampleOffset, Acmd* p) {
 
     for (i = 0; i < r->section_count; i++) {
         d = &r->delay[i]; /* get the ALDelay structure */
-        in_ptr = &r->input[-d->input];
-        out_ptr = &r->input[-d->output];
+        in_ptr = &r->input[-(s32)d->input]; // PORT: u32 negation wrapped on the 32-bit N64
+        out_ptr = &r->input[-(s32)d->output];
 
         if (in_ptr == prev_out_ptr) {
             SWAP(buff1, buff2);
@@ -252,7 +252,7 @@ Acmd* _n_loadOutputBuffer(ALFx* r, ALDelay* d, s32 buff, Acmd* p) {
         fincount = d->rs->delta + (fratio * (f32)incount);
         count = (s32)fincount;
         d->rs->delta = fincount - (f32)count;
-        out_ptr = &r->input[-(d->output - d->rsdelta)];
+        out_ptr = &r->input[-(s32)(d->output - d->rsdelta)];
         ramalign = ((intptr_t)out_ptr & 0x7) >> 1;
         ptr = _n_loadBuffer(r, out_ptr - ramalign, rbuff, count + ramalign, ptr);
 
@@ -271,7 +271,7 @@ Acmd* _n_loadOutputBuffer(ALFx* r, ALDelay* d, s32 buff, Acmd* p) {
         d->rs->first = 0;
         d->rsdelta += count - incount;
     } else {
-        out_ptr = &r->input[-d->output];
+        out_ptr = &r->input[-(s32)d->output];
         ptr = _n_loadBuffer(r, out_ptr, buff, FIXED_SAMPLE, ptr);
     }
 

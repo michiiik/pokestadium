@@ -89,6 +89,8 @@ typedef struct ALParam_s {
     union {
         f32             f;
         s32             i;
+        void           *p;              /* PORT: pointer params; also makes ALParam large enough for
+                                           ALStartParamAlt, which shares the param pool */
     } data;
     union {
         f32             f;

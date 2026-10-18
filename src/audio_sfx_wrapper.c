@@ -2,16 +2,16 @@
 #include "src/audio_sfx.h"
 
 void Audio_PlaySoundEffectByIdWrapper(s32 arg0) {
-#ifdef PORT_NO_AUDIO
-    return;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return;
+    }
     Audio_PlaySoundEffectById(arg0);
 }
 
 s32 func_80036790(void) {
-#ifdef PORT_NO_AUDIO
-    return 0;
-#endif
+    if (PORT_AUDIO_OFF()) {
+        return 0;
+    }
     s32 arr[1];
 
     return arr[16];
