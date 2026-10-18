@@ -187,7 +187,9 @@ void BattlePrepStarBurst_UpdateSparkSlot(unk_D_84B25AC0_000* arg0) {
     DisplayObject* temp_v1_2;
 
     if (arg0->unk_04 < 0x10) {
-        arg0->unk_0C = Memmap_GetSegmentVaddr(((s32*)Memmap_GetSegmentVaddr(D_2023240))[(arg0->unk_04 / 2)]);
+        // PORT: a table of big-endian segmented addresses in ROM data (was read as 0x401A0202 for 0x02021A40: the
+        // smoke puffs behind LOSE showed whatever texture was loaded before)
+        arg0->unk_0C = Memmap_GetSegmentVaddr(PORT_BE32(((s32*)Memmap_GetSegmentVaddr(D_2023240))[(arg0->unk_04 / 2)]));
         arg0->unk_08.b = ((arg0->unk_04 * -0x5A) / 16) + 0x82;
         arg0->unk_00->position.x += 2.0f * COSS(arg0->unk_06);
         arg0->unk_00->position.y += 2.0f * SINS(arg0->unk_06);

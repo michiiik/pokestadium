@@ -657,6 +657,14 @@ extern const unsigned gPortFuncTableCount;
 static unsigned sPortSlotRom[240];
 
 void Port_NoteLoadedFragment(u32 slot, u8* romStart) {
+    // PORT_TRACE_FRAGMENTS=1: which fragment each scene loads
+    static int sTrace = -1;
+    if (sTrace < 0) sTrace = getenv("PORT_TRACE_FRAGMENTS") != NULL;
+    if (sTrace) {
+        extern unsigned long long Port_ViTick(void);
+        const struct PortFragmentEntry* e = Port_FindFragment(romStart);
+        fprintf(stderr, "[fragment] slot %u: %s @frame %llu\n", (unsigned)slot, e && e->name ? e->name : "?", Port_ViTick());
+    }
     if (slot < 240) {
         sPortSlotRom[slot] = (unsigned)(uintptr_t)romStart;
     }
