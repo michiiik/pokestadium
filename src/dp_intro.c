@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <mach-o/dyld.h>
+#include "../../src/port/port_platform.h"
 #include "global.h"
 #include <PR/os_internal_reg.h>
 #include "dp_intro.h"
@@ -224,7 +224,7 @@ void Display_ClearFramebufferLine(u16 color) {
     s32 width = 640;
     u16* buf = (u16*)D_80083CA0.unk_9E0->img_p;
 
-    if (getenv("PORT_TRACE_VI")) fprintf(stderr, "[line] clear color 0x%04x buf %p caller %p slide 0x%lx\n", color, (void*)buf, __builtin_return_address(0), (unsigned long)_dyld_get_image_vmaddr_slide(0));
+    if (getenv("PORT_TRACE_VI")) fprintf(stderr, "[line] clear color 0x%04x buf %p caller %p slide 0x%lx\n", color, (void*)buf, __builtin_return_address(0), (unsigned long)Port_ImageSlide());
     while (width-- > 0) {
         *(buf)++ = (u16)((color << 8) | (color >> 8)); // PORT: frame buffers hold big-endian RGBA5551 (as N64 RDRAM)
     }
@@ -272,19 +272,28 @@ void Display_SetBufferConfig(struct UnkArray4* arg0, u8 arg1, u8 arg2, u8 arg3, 
     arg0->unk_0C = (struct unk_D_80068BB0*)(uintptr_t)arg7;
 }
 
-s32 Display_GetWorkerStatus(void) {
-    return (intptr_t)D_80083CA0.unk_AAC.unk_0C;
+// PORT: returns the pointer (reset.c reads through it); was s32, which cut 64-bit host pointers
+void* Display_GetWorkerStatus(void) {
+    return (void*)D_80083CA0.unk_AAC.unk_0C;
 }
 
 void Display_ApplyPendingVideoMode(void) {
     Video_SetMode((s8)D_80083CA0.unk_AAC.unk_01, (s8)D_80083CA0.unk_AAC.unk_02);
 }
 
+void osYieldThread(void); // src/port/os_thread.cpp
+
 s32 Display_IsFrameReady(void) {
     s32 result = 1;
 
     if (D_80083CA0.unk_A9C.unk_04 != 0) {
         result = D_80083CA0.unk_A20.queue.validCount > 0;
+    }
+    if (!result) {
+        // PORT: callers spin on this (StageLoader_WaitForRetrace, jpeg_stream.c, poke_icon.c). On the N64 interrupts
+        // fill the queue meanwhile; here game threads take turns, so the spinning thread must let the scheduler thread
+        // run (on a slower host the frame was not submitted yet and the loop never ended).
+        osYieldThread();
     }
     return result;
 }

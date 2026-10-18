@@ -3950,7 +3950,7 @@ s32 BattleAI_ScoreAllTeamCandidates(BattleAiTeamState* arg0, BattleAiTeamState* 
 }
 
 typedef struct unk_func_8437F85C_sp74 {
-    /* 0x00 */ s32 unk_00[6];
+    /* 0x00 */ s32 unk_00[8]; // PORT: up to 7 entries are written; [6] overran the host stack frame (Linux crash)
 } unk_func_8437F85C_sp74; // size >= 0x20
 
 s32 BattleAI_InsertRankedCandidateGroup(BattleAiTeamState* arg0, s32* arg1, s32 arg2, unk_func_8437F85C_arg3* arg3, u8* arg4, u8 arg5, u8 arg6) {

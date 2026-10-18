@@ -899,8 +899,8 @@ typedef struct unk_func_8438220C {
 } unk_func_8438220C; // size = 0xBC
 
 typedef struct unk_func_8437F85C_arg3 {
-    /* 0x00 */ u8 unk_00[3][3];
-} unk_func_8437F85C_arg3; // size = 0x3
+    /* 0x00 */ u8 unk_00[8][3]; // PORT: 8 groups, as the callers use (sp78[0x18]); was [3][3]
+} unk_func_8437F85C_arg3; // size = 0x18
 
 extern unk_D_8438E7B0* D_84384570[];
 extern SpeciesModelTransform* D_84384578[];

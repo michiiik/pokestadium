@@ -19,7 +19,7 @@ void Display_WaitForCompletion(void);
 void Display_QueueFramebufferRequest(void* arg0);
 void Display_WaitForFrames(s32 arg0);
 void Display_SetBufferConfig(struct UnkArray4* arg0, u8 arg1, u8 arg2, u8 arg3, u8 arg4, uintptr_t arg5, uintptr_t arg6, uintptr_t arg7);
-s32 Display_GetWorkerStatus(void);
+void* Display_GetWorkerStatus(void);
 void Display_ApplyPendingVideoMode(void);
 s32 Display_IsFrameReady(void);
 void Display_EnableBlackout(void);

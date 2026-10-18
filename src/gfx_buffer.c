@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <mach-o/dyld.h>
+#include "../../src/port/port_platform.h"
 #include "global.h"
 #include "gfx_buffer.h"
 #include "src/memory.h"
@@ -66,7 +66,7 @@ void* Gfx_AllocDisplayList(s32 arg0) {
             if (off < 0 || off >= D_800A7428.unkC * 2) off = (long)((u8*)ret - D_800A7428.buf[1]);
             if (off <= sAt && sAt < off + arg0 + 0x40) {
                 fprintf(stderr, "[dlalloc] off=0x%lx size=0x%x caller=%p slide=0x%lx\n", off, arg0, __builtin_return_address(0),
-                        (unsigned long)_dyld_get_image_vmaddr_slide(0));
+                        (unsigned long)Port_ImageSlide());
             }
         }
     }

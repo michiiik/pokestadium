@@ -261,7 +261,7 @@ void BattlePrep_BadgeHideSpin(unk_D_84B259E8* arg0);
 void BattlePrep_UpdateBadgeCarousel(unk_D_84B259E8* arg0);
 void BattlePrep_InitBadgeCarousel(unk_D_84B259E8* arg0, DisplayObject* arg1, s16 arg2);
 void BattlePrep_RenderBadgeBackground(unk_D_84B259E8* arg0, s16 arg1, char* arg2);
-s32 BattlePrep_Align64PoolBlock(s32* arg0);
+uintptr_t BattlePrep_Align64PoolBlock(s32* arg0);
 void BattlePrep_LoadBadgeTextures(unk_D_84B259E8* arg0, BinArchive* arg1, BinArchive* arg2);
 void BattlePrep_InitBadgeCarouselScene(unk_D_84B259E8* arg0, BinArchive* arg1, BinArchive* arg2);
 

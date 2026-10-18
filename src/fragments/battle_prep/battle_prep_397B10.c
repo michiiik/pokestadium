@@ -1560,9 +1560,10 @@ void BattlePrep_RenderBadgeBackground(unk_D_84B259E8* arg0, s16 arg1, char* arg2
     }
 }
 
-s32 BattlePrep_Align64PoolBlock(s32* arg0) {
+// PORT: returns the moved block's address; was s32, which cut 64-bit host pointers (the badge textures on Linux)
+uintptr_t BattlePrep_Align64PoolBlock(s32* arg0) {
     u32 temp_v0;
-    s32 var_v1;
+    intptr_t var_v1;
     s32 i;
     u32 sp1C;
 
