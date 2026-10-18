@@ -1635,7 +1635,7 @@ void BattlePrep_LoadBadgeTextures(unk_D_84B259E8* arg0, BinArchive* arg1, BinArc
         for (i = 0; i < 4; i++) {
             ptr = i + ((void)0, temp_s5);
 
-            tmp = (ptr->unk_038 >> 8) & 0xFF;
+            tmp = (Port_Swap16(ptr->unk_038) >> 8) & 0xFF; // PORT: the trainer record is big-endian ROM data
             arg0->unk_10[i] = BattlePrep_Align64PoolBlock(BinArchive_GetFile(arg2, tmp));
             if (i < (gSessionContext.roundOrDemoId - 1)) {
                 BattlePrep_RenderBadgeGlowTexture(arg0->unk_10[i]);
@@ -1646,7 +1646,8 @@ void BattlePrep_LoadBadgeTextures(unk_D_84B259E8* arg0, BinArchive* arg1, BinArc
     } else {
         for (i = 0; i < 8; i++) {
             if (i < gSessionContext.roundOrDemoId) {
-                tmp = (temp_s5[gSessionContext.opponentHistory[0][i]].unk_038 >> 8) & 0xFF;
+                // PORT: the trainer record is big-endian ROM data (was the low byte: another trainer's portrait)
+                tmp = (Port_Swap16(temp_s5[gSessionContext.opponentHistory[0][i]].unk_038) >> 8) & 0xFF;
 
                 arg0->unk_10[i] = BattlePrep_Align64PoolBlock(BinArchive_GetFile(arg2, tmp));
                 if (i < (gSessionContext.roundOrDemoId - 1)) {
