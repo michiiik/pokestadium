@@ -90,7 +90,7 @@ s32 minigameDebuggModeControl(void) {
     s16 sp6;
 
     if (miniDebugMode == 0) {
-        return;
+        return 0; // PORT: a value (older clang rejects a bare return in a non-void function)
     }
 
     if (BTN_IS_PRESSED(gPlayer1Controller, BTN_L)) {
