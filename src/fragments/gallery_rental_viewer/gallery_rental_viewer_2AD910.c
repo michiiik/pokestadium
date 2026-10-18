@@ -264,6 +264,20 @@ s32 Gallery_RentalViewerMain(s32 arg0, s32 arg1) {
 
     D_83805658 = BinArchive_GetFile(ASSET_LOAD2(backgrounds, 1, 1), 0x14);
     D_8380565C = BinArchive_GetFile(BinArchive_Open(TRAINER_DATA_ROM_START, NULL, 1, 0), 0x1A);
+    // PORT: the rental roster is big-endian ROM data (count, then BattleMon records), swapped in place once as in
+    // fragment61's Rental_LoadRoster. Unswapped, the count read as a huge number and the records' 16/32-bit fields
+    // (stats, experience) were byte-swapped. The archive may hand out the same buffer again: the count tells.
+    if ((D_8380565C != NULL) && (D_8380565C->unk_000 > 0x1000)) {
+        extern void Port_BattleMonFromBE(BattleMon * dst, const BattleMon* src);
+        u32 n = Port_Swap32(D_8380565C->unk_000);
+        u32 k;
+
+        D_8380565C->unk_000 = n;
+        for (k = 0; k < n; k++) {
+            BattleMon tmp = D_8380565C->unk_004[k];
+            Port_BattleMonFromBE(&D_8380565C->unk_004[k], &tmp);
+        }
+    }
 
     PokeIcon_OpenModelArchive();
     Gallery_RentalViewerInit(arg0);
