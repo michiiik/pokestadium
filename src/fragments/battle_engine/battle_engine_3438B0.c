@@ -32,7 +32,7 @@ void BattleAnim_RenderEffectsFrame(unk_D_86002F34_00C* arg0) {
     Particle_RenderWorldChains(arg0);
     guOrtho(&gParticleMatrixPool->unk_5B80, 0.0f, 320.0f, 240.0f, 0.0f, -2.0f, 2.0f, 1.0f);
 
-    gSPMatrix(gDisplayListHead++, (u32)&gParticleMatrixPool->unk_5B80 & 0x1FFFFFFF,
+    gSPMatrix(gDisplayListHead++, (uintptr_t)&gParticleMatrixPool->unk_5B80,
               G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     gSPDisplayList(gDisplayListHead++, D_8140DD78);
 

@@ -101,7 +101,7 @@ void BattleScene_IntroRevealFirstMon(unk_D_86002F34_00C* arg0) {
     BattleScene_SelectCameraFollowPreset(D_84390010[0], arg0, 3);
     BattleScene_EnterStateRow(D_84390010[0], 0x10);
     gBattleScene.unk_00->unk_2C = 0;
-    Text_SetStringToken(0x19, (u32)sp28->unk_01C[sp2C->unk_18].unk_30);
+    Text_SetStringToken(0x19, (uintptr_t)sp28->unk_01C[sp2C->unk_18].unk_30);
     Battle_QueueMessage(gBattleMessageQueues->unk_088, 0x21);
     BattleBox_Open(0xC);
     Battle_TriggerTrainerPresentationCue(D_84390010[0]);
@@ -139,7 +139,7 @@ void BattleScene_IntroRevealSecondMon(unk_D_86002F34_00C* arg0) {
     BattleScene_EnterStateRow(D_84390010[1], 0x10);
     gBattleScene.unk_00->unk_10 = 0;
     gBattleScene.unk_00->unk_2C = 1;
-    Text_SetStringToken(0x19, (u32)sp28->unk_01C[sp2C->unk_18].unk_30);
+    Text_SetStringToken(0x19, (uintptr_t)sp28->unk_01C[sp2C->unk_18].unk_30);
     Battle_QueueMessage(gBattleMessageQueues->unk_088, 0x21);
     if (gSessionContext.mode != 8) {
         BattleBox_Open(0xC);

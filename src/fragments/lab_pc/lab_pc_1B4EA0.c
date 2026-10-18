@@ -265,7 +265,7 @@ void LabItem_SetConfirmDialogText(unk_func_8821421C_034* arg0, char* arg1) {
 
 s32 LabItem_RunConfirmDialog(unk_func_8821421C_034* arg0, Controller* arg1) {
     s32 var_s0;
-    s32 var_s1 = 0;
+    intptr_t var_s1 = 0;
 
     arg0->unk_30->unk_14(arg0->unk_30, 1);
 
@@ -1187,7 +1187,7 @@ s32 LabItem_BoxScreen_HandleInput(unk_func_8821421C_038* arg0, Controller* arg1)
     return var_v1;
 }
 
-void LabItem_BoxScreen_SetMenuState(unk_func_8821421C_038* arg0, s32 arg1) {
+void LabItem_BoxScreen_SetMenuState(unk_func_8821421C_038* arg0, intptr_t arg1) {
     arg0->unk_00.unk_2A = arg1;
     arg0->unk_4C->unk_00.unk_14(&arg0->unk_4C->unk_00, arg1);
 }
@@ -1201,7 +1201,7 @@ s32 LabItem_RunBoxScreenModal(unk_func_8821421C_038* arg0, Controller* arg1) {
     s32 temp_v0;
     s32 var_v0;
     unk_func_8821421C_038_04C* temp_a0;
-    s32 var_s0 = 0;
+    intptr_t var_s0 = 0;
 
     arg0->unk_4C->unk_00.unk_14(arg0->unk_4C, 1);
 
@@ -2856,7 +2856,7 @@ s32 LabItem_BoxPairMenu_HandleInput(unk_func_8821421C_02C_06C* arg0, Controller*
     return var_s0;
 }
 
-void LabPC_BuildItemScreenWidget(unk_func_8821421C* arg0, s32 arg1, s32 arg2, MemoryPool* arg3, s32 arg4, char** arg5) {
+void LabPC_BuildItemScreenWidget(unk_func_8821421C* arg0, s32 arg1, s32 arg2, MemoryPool* arg3, intptr_t arg4, char** arg5) {
     static Color_RGBA8 D_882181A4 = { 0x1E, 0x50, 0x50, 0xFF };
     static Color_RGBA8 D_882181A8 = { 0x00, 0x0A, 0x0A, 0xFF };
 
@@ -2956,7 +2956,7 @@ void LabPC_ItemScreen_DrawLoop(unk_func_8821421C* arg0) {
 }
 
 void LabPC_ItemScreen_InputThread(unk_func_8821421C* arg0) {
-    s32 sp24 = LabPC_ItemMenu_ModalLoop(arg0->unk_2C, gPlayer1Controller);
+    intptr_t sp24 = LabPC_ItemMenu_ModalLoop(arg0->unk_2C, gPlayer1Controller);
 
     while (arg0->unk_2C->unk_2C->unk_00.unk_28 & 1) {
         Ui_SendMessageAndPollInput(0);
@@ -2990,7 +2990,7 @@ void LabPC_ShowItems(UNUSED FontContext* arg0) {
     sp30 = mem_pool_alloc(sp34, sizeof(unk_func_8821421C));
     LabPC_BuildItemScreenWidget(sp30, 0, 0, sp34, arg0, sp24);
 
-    sp28 = ALIGN16((u32)mem_pool_alloc(sp34, sizeof(func_88002628_sp38)));
+    sp28 = ALIGN16((uintptr_t)mem_pool_alloc(sp34, sizeof(func_88002628_sp38)));
 
     osCreateThread(&sp28->thread, 0x32, LabPC_ItemScreen_InputThread, sp30, sp2C + 0x10000, osGetThreadPri(NULL) - 1);
 

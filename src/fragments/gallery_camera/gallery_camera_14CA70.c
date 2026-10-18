@@ -64,15 +64,19 @@ static u8 D_86908A80[] = {
 
 static s32 gCameraTutorialTextIds[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0xB, 0xFF };
 
-static u32 D_86908ABC[] = {
+static unk_D_8690A610 D_8690A610; // PORT: tentative definitions, referenced by the layout below
+static DisplayNodeHeader D_8690A630;
+static DisplayNodeHeader D_8690A648;
+static DisplayNodeHeader D_8690A660;
+static uintptr_t D_86908ABC[] = { // PORT64: holds addresses (the raw 0x869... node/callback addresses are now symbols)
     0x0C00FFFF, 0x05000000, 0x0B00001E, 0x00000000, 0x014000F0, 0x0000000F, 0x00000000, 0x00000000, 0x05000000,
-    0x0D000000, 0x05000000, 0x07000000, 0x8690A610, 0x14000000, 0x002D0019, 0xFFFFFF28, 0x08000000, 0x86900020,
-    0x00000000, 0x14000000, 0x002D0019, 0x80808028, 0x08000000, 0x86900088, 0x00000000, 0x16646464, 0x0F000002,
-    0x05000000, 0x1F00FFFF, 0x00000000, 0x00000000, 0x00000000, 0x00640064, 0x00640000, 0x08000000, 0x869000F4,
-    0x00000000, 0x05000000, 0x07000000, 0x8690A630, 0x06000000, 0x06000000, 0x0F000003, 0x05000000, 0x1F00FFFF,
-    0x00000000, 0x00000000, 0x00000000, 0x00640064, 0x00640000, 0x08000000, 0x869000F4, 0x00000000, 0x05000000,
-    0x07000000, 0x8690A648, 0x06000000, 0x06000000, 0x0F000002, 0x05000000, 0x1F00FFFF, 0x00000000, 0x00000000,
-    0x00000000, 0x00640064, 0x00640000, 0x08000000, 0x869000F4, 0x00000000, 0x05000000, 0x07000000, 0x8690A660,
+    0x0D000000, 0x05000000, 0x07000000, &D_8690A610, 0x14000000, 0x002D0019, 0xFFFFFF28, 0x08000000, GalleryCamera_BgAngleCallbackA,
+    0x00000000, 0x14000000, 0x002D0019, 0x80808028, 0x08000000, GalleryCamera_BgAngleCallbackB, 0x00000000, 0x16646464, 0x0F000002,
+    0x05000000, 0x1F00FFFF, 0x00000000, 0x00000000, 0x00000000, 0x00640064, 0x00640000, 0x08000000, GalleryCamera_FogColorCallback,
+    0x00000000, 0x05000000, 0x07000000, &D_8690A630, 0x06000000, 0x06000000, 0x0F000003, 0x05000000, 0x1F00FFFF,
+    0x00000000, 0x00000000, 0x00000000, 0x00640064, 0x00640000, 0x08000000, GalleryCamera_FogColorCallback, 0x00000000, 0x05000000,
+    0x07000000, &D_8690A648, 0x06000000, 0x06000000, 0x0F000002, 0x05000000, 0x1F00FFFF, 0x00000000, 0x00000000,
+    0x00000000, 0x00640064, 0x00640000, 0x08000000, GalleryCamera_FogColorCallback, 0x00000000, 0x05000000, 0x07000000, &D_8690A660,
     0x06000000, 0x06000000, 0x0F000003, 0x05000000, 0x0A000000, &D_800AC840, 0x06000000, 0x0F000002, 0x05000000,
     0x0A000000, &D_800AC858, 0x06000000, 0x09000000, 0x06000000, 0x06000000, 0x06000000, 0x01000000,
 };
@@ -394,18 +398,25 @@ void Gallery_SetBackgroundTint(u8 arg0, u8 arg1, u8 arg2) {
 
 void Gallery_LoadPhotoTextures(void) {
     UNUSED s32 pad[2];
-    u8* temp_a1 = (u32)_70D3A0_ROM_START + (D_80075BD0[D_8690A69C->unk_16C - 1] & 0xFFFFFF);
-    u8* sp20 = (u32)_70D3A0_ROM_START +
-               (((D_8690A69C->unk_16C * sizeof(unk_70D3A0)) - sizeof(unk_70D3A0) + (u32)D_70110) & 0xFFFFFF);
+    u8* temp_a1 = (uintptr_t)_70D3A0_ROM_START + (D_80075BD0[D_8690A69C->unk_16C - 1] & 0xFFFFFF);
+    u8* sp20 = (uintptr_t)_70D3A0_ROM_START +
+               (((D_8690A69C->unk_16C * sizeof(unk_70D3A0)) - sizeof(unk_70D3A0) + (uintptr_t)D_70110) & 0xFFFFFF);
     u8* sp1C = sp20 + sizeof(unk_70D3A0);
 
     if (D_8690A69C->unk_16C == 153) {
-        sp20 = (u32)_70D3A0_ROM_START + ((u32)D_70290 & 0xFFFFFF);
+        sp20 = (uintptr_t)_70D3A0_ROM_START + ((uintptr_t)D_70290 & 0xFFFFFF);
         sp1C = sp20 + sizeof(unk_70D3A0);
     }
 
     Dma_WriteChunks(&D_8690A718->unk_00, temp_a1, temp_a1 + 0xBC0, 0);
     Dma_WriteChunks(&D_8690B2F8, sp20, sp1C, 0);
+    { // PORT: the four floats come from ROM in big-endian order
+        u32* w = (u32*)&D_8690B2F8;
+        s32 i;
+        for (i = 0; i < 4; i++) {
+            w[i] = PORT_BE32(w[i]);
+        }
+    }
 }
 
 ModelLoadResult* Gallery_LoadSurfingPikachuIcon(BattleMon* arg0) {
@@ -458,7 +469,7 @@ void Gallery_FinalizeBackgroundLoad(void) {
 
 void Gallery_LoadBackgroundSet(s32 arg0) {
     MemoryBlock* sp1C;
-    FragmentEntry sp18;
+    void* sp18; // PORT: a code fragment from the archive, run by Port_CallFragmentLeaf (was FragmentEntry)
     u32* temp_v0;
     unk_D_8690A610_018* temp_v1;
 
@@ -467,31 +478,32 @@ void Gallery_LoadBackgroundSet(s32 arg0) {
     sp18 = BinArchive_GetFile(D_8690A698, D_86908A80[arg0]);
     sp1C = MainPool_AllocState(main_pool_get_available(), 0);
 
-    temp_v0 = sp18(0, 0);
+    temp_v0 = (void*)Port_CallFragmentLeaf(sp18, 0, 0);
     if (temp_v0 != NULL) {
         GraphNode_AppendChild(&D_8690A630, process_geo_layout(sp1C, temp_v0));
     }
 
-    temp_v0 = sp18(1, 0);
+    temp_v0 = (void*)Port_CallFragmentLeaf(sp18, 1, 0);
     if (temp_v0 != NULL) {
         GraphNode_AppendChild(&D_8690A648, process_geo_layout(sp1C, temp_v0));
     }
 
-    temp_v0 = sp18(3, 0);
+    temp_v0 = (void*)Port_CallFragmentLeaf(sp18, 3, 0);
     if (temp_v0 != NULL) {
         GraphNode_AppendChild(&D_8690A660, process_geo_layout(sp1C, temp_v0));
     }
 
-    D_8690A688 = sp18(2, 0);
+    D_8690A688 = (u32)Port_CallFragmentLeaf(sp18, 2, 0); // the fill colour (values >= 0x10000 select the default)
     MainPool_FinalizeAllocation(sp1C);
 
-    temp_v1 = sp18(4, 0);
+    temp_v1 = (void*)Port_CallFragmentLeaf(sp18, 4, 0);
     if (temp_v1 == NULL) {
         D_8690A610.node.callbackArg = 0;
         D_8690A610.node.flags &= ~1;
     } else {
-        D_8690A610.unk_18.unk_00 = temp_v1->unk_00;
-        D_8690A610.unk_18.unk_02 = temp_v1->unk_02;
+        // PORT: big-endian data inside the background file
+        D_8690A610.unk_18.unk_00 = (s16)((((u8*)&temp_v1->unk_00)[0] << 8) | ((u8*)&temp_v1->unk_00)[1]);
+        D_8690A610.unk_18.unk_02 = (s16)((((u8*)&temp_v1->unk_02)[0] << 8) | ((u8*)&temp_v1->unk_02)[1]);
         D_8690A610.unk_18.unk_04.rgba = temp_v1->unk_04.rgba;
         D_8690A610.node.callbackArg = 1;
     }

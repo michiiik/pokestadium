@@ -122,15 +122,27 @@ typedef struct unk_func_800228F0_sp24 {
 } unk_func_800228F0_sp24; // size >= 0x1C
 
 
-extern u8 gDexToInternalIndex[];
-extern u8 gInternalIndexToDex[];
+// PORT: interior aliases of D_80073230 (see the table above); the zero stand-ins left every conversion at 0.
+#define gDexToInternalIndex (D_80073230 + 0x37)
+#define gInternalIndexToDex (D_80073230 + 0xCF)
+#define D_800733BF (D_80073230 + 0x18F)
+#define D_80073457 (D_80073230 + 0x227)
+#define D_800734EF (D_80073230 + 0x2BF)
+#define D_80073597 (D_80073230 + 0x367)
+#define D_8007364C (D_80073230 + 0x41C)
 
 static char D_800AC890[4][0x20];
 static GbSavePort D_800AC910[4];
 static u32 D_800ACA70;
 static u8 D_800ACA74;
 static u8 D_800ACA75;
-static GbSaveMainData D_800ACA78;
+// PORT: GbSave_WriteBoxBank reads a whole box bank (0x1A60 bytes) back into this main-data buffer to verify it; on the
+// N64 the overrun lands in memory nobody minds, on the host it overwrote D_800AC910. Room for both.
+static union {
+    GbSaveMainData main;
+    u8 boxBank[0x1A60];
+} sPortVerifyBuffer;
+#define D_800ACA78 (sPortVerifyBuffer.main)
 static u8 D_800ADA38[0xAA8]; // unreferenced bss
 
 u16 Pokemon_LevelFromExp(s32 arg0, u32 arg1) {
@@ -237,20 +249,14 @@ s32 Species_FromInternalIndex(s32 arg0) {
 }
 
 u8 func_80022A88(s32 arg0) {
-    extern u8 D_800733BF[];
-
     return D_800733BF[arg0];
 }
 
 u8 func_80022A98(s32 arg0) {
-    extern u8 D_80073457[];
-
     return D_80073457[arg0];
 }
 
 s32 func_80022AA8(s32 arg0) {
-    extern u8 D_800734EF[];
-
     if (arg0 == 0) {
         return 0;
     }
@@ -258,8 +264,6 @@ s32 func_80022AA8(s32 arg0) {
 }
 
 s32 func_80022ACC(s32 arg0) {
-    extern u8 D_80073597[];
-
     if (arg0 == 0) {
         return 0;
     }
@@ -326,7 +330,7 @@ DeckHandle* Deck_Open(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return sp1C;
 }
 
-DeckHandle* Deck_OpenAndSetName(s32 arg0, s32 arg1, s32 arg2, s32 arg3, char* arg4, u16 arg5) {
+DeckHandle* Deck_OpenAndSetName(s32 arg0, s32 arg1, s32 arg2, intptr_t arg3, char* arg4, u16 arg5) {
     DeckHandle* sp24;
     DeckHandle* temp_v0;
     DeckHandle* var_v1;
@@ -688,8 +692,11 @@ void GbSave_ReleasePortBuffers(UNUSED MainPoolBlock* arg0, u32 arg1) {
     }
 }
 
+// PORT: was an extern resolved to its N64 address (pokemon_stats .data that the C file did not define): the map ids of
+// the Pokémon Centers, from ROM 0x74240.
+static u8 D_80073640[12] = { 0x29, 0x3A, 0x40, 0x44, 0x51, 0x59, 0x85, 0x8D, 0x9A, 0xAB, 0xAE, 0xB6 };
+
 void GbSave_CheckLocationFlag(s32 arg0) {
-    extern u8 D_80073640[12];
 
     s32 i;
     s32 temp_t1 = D_800AC910[arg0].unk_50->unk_08A;
@@ -822,8 +829,6 @@ s32 GbSave_LoadPort(s32 arg0) {
 }
 
 s32 GbSave_PollCartRemoval(s32 arg0) {
-    extern u8 D_8007364C[];
-
     s32 sp24 = 0;
 
     switch (D_8007364C[arg0]) {

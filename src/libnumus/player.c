@@ -35,6 +35,16 @@ static s32 mus_random_seed;
 static u8* mus_command_queue;
 static s32 mus_command_queue_size;
 static u32 mus_command_queue_max_size;
+
+#ifdef PORT_NO_AUDIO
+// PORT: with the audio engine not initialized, commands still get queued by game code; give them a sink.
+static u8 sPortDummyQueue[0x1000];
+void Audio_PortInitDummyQueue(void) {
+    mus_command_queue = sPortDummyQueue;
+    mus_command_queue_size = 0;
+    mus_command_queue_max_size = sizeof(sPortDummyQueue);
+}
+#endif
 static u8 mus_use_fixed_pan_mode;
 static u32 mus_current_frame_counter;
 static audio_voice_t* mus_voices;
@@ -933,7 +943,7 @@ void Audio_QueueVoiceVolumeByte(u32 channel_handle, s32 tempo_scale_factor) {
     }
 }
 
-void Audio_RelocateSoundBankWrapper(s32 arg0, s32 arg1) {
+void Audio_RelocateSoundBankWrapper(intptr_t arg0, s32 arg1) {
     Audio_RelocateSoundBank(arg0, arg1);
 }
 
@@ -945,7 +955,7 @@ void Audio_RelocateSoundBankTable(bank_remap_descriptor_t* descriptor) {
     u32* ptr;
     u32 num_entries;
     u32 val;
-    u32 a0 = (u32)descriptor;
+    u32 a0 = (uintptr_t)descriptor;
 
     if (descriptor->flags & 2) {
         return;
@@ -1169,7 +1179,7 @@ u8* Audio_PlayMusicSequenceHandler(u8* buf) {
     mus_command_queue_size -= 0xC;
 
     count = song_data->num_channels;
-    if ((u32)song_data->channel_data < 0x400) {
+    if ((uintptr_t)song_data->channel_data < 0x400) {
         Audio_RelocatePointerArray(&song_data->channel_data, song_data, 5);
         Audio_RelocatePointerArray(song_data->channel_data, song_data, count);
         Audio_RelocatePointerArray(song_data->volume_data, song_data, count);
@@ -1227,7 +1237,7 @@ u8* Audio_PlayMusicSequenceLoopedHandler(u8* buf) {
     mus_command_queue_size -= 0x10;
 
     num_channels = song_data->num_channels;
-    if ((u32)song_data->channel_data < 0x400) {
+    if ((uintptr_t)song_data->channel_data < 0x400) {
         Audio_RelocatePointerArray(&song_data->channel_data, song_data, 5);
         Audio_RelocatePointerArray(song_data->channel_data, song_data, num_channels);
         Audio_RelocatePointerArray(song_data->volume_data, song_data, num_channels);
@@ -2164,7 +2174,7 @@ void Audio_RelocateSoundBank(u8* arg0, s32 arg1) {
         *ptr += var_fv0;
 
         if (soundbank->wave_list[i]->flags == 0) {
-            u32 tmp = soundbank->wave_list[i]->base;
+            uintptr_t tmp = soundbank->wave_list[i]->base;
 
             if ((tmp & 0xFF000000) != 0xFF000000) {
                 tmp += arg1;
@@ -2175,12 +2185,12 @@ void Audio_RelocateSoundBank(u8* arg0, s32 arg1) {
 
             if (soundbank->wave_list[i]->waveInfo.rawWave.loop != NULL) {
                 soundbank->wave_list[i]->waveInfo.rawWave.loop =
-                    (u32)soundbank + (u32)soundbank->wave_list[i]->waveInfo.rawWave.loop;
+                    (uintptr_t)soundbank + (uintptr_t)soundbank->wave_list[i]->waveInfo.rawWave.loop;
             }
 
             if (soundbank->wave_list[i]->type == AL_ADPCM_WAVE) {
                 soundbank->wave_list[i]->waveInfo.adpcmWave.book =
-                    (u32)soundbank + (u32)soundbank->wave_list[i]->waveInfo.adpcmWave.book;
+                    (uintptr_t)soundbank + (uintptr_t)soundbank->wave_list[i]->waveInfo.adpcmWave.book;
             }
         }
     }

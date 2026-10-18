@@ -19,8 +19,9 @@ void guMtxF2L(float mf[4][4], Mtx *m)
 	int	*ai,*af;
 
 
-	ai=(int *) &m->m[0][0];
-	af=(int *) &m->m[2][0];
+	{ extern void Port_LogF2L(float mf[4][4], Mtx *m); Port_LogF2L(mf, m); }
+	ai=(int *) m; /* PORT: Mtx.m is long[4][4] (8-byte longs on the host); the layout is 8 int words + 8 fraction words */
+	af=ai + 8;
 
 	for (i=0; i<4; i++)
 	for (j=0; j<2; j++) {
@@ -38,8 +39,8 @@ void guMtxL2F(float mf[4][4], Mtx *m)
 	unsigned int	*ai,*af;
 	int		q1,q2;
 
-	ai=(unsigned int *) &m->m[0][0];
-	af=(unsigned int *) &m->m[2][0];
+	ai=(unsigned int *) m; /* PORT: see guMtxF2L */
+	af=ai + 8;
 
 	for (i=0; i<4; i++)
 	for (j=0; j<2; j++) {

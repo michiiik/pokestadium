@@ -5,14 +5,23 @@
 #include "src/audio_commands.h"
 
 void Audio_IsSoundPlayingWrapper(s32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     Audio_IsSoundPlaying(arg0);
 }
 
 s32 Audio_CountCategorySounds(s32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     return Audio_CountActiveSoundsByCategory(arg0);
 }
 
 s32 Audio_GetActivityScore(void) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     s32 i;
     s32 temp_v0;
     s32 var_s1;
@@ -37,9 +46,15 @@ s32 Audio_GetActivityScore(void) {
 }
 
 s32 Audio_GetFreeVoiceCount(void) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     return mus_free_voices_count;
 }
 
 s32 Audio_GetActiveVoiceCount(void) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     return mus_releasing_voices_count;
 }

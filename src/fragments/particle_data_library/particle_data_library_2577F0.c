@@ -50,8 +50,8 @@ void DisplayList_InitScrollingDualPanel(s32 arg0, DisplayListState* state) {
     DisplayListAddresses* addresses;
 
     if (arg0 == 2) {
-        addresses = state->addresses;
-        gfx = Gfx_AllocDisplayList(0xF0);
+        addresses = (DisplayListAddresses*)Port_PdlWords(state->addresses);
+        gfx = Gfx_AllocDisplayList(GFX_N64_BYTES(0xF0));
         state->gfx = gfx;
         func_81002530(gfx, addresses);
     }

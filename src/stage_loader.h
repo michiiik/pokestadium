@@ -9,8 +9,8 @@ typedef struct unk_D_800A7450 {
     /* 0x01 */ u8 zoom;
     /* 0x02 */ u8 unk_02;
     /* 0x03 */ u8 unk_03;
-    /* 0x04 */ Gfx* unk_04;
-    /* 0x08 */ Gfx* unk_08;
+    /* 0x04 */ uintptr_t unk_04; // PORT64: display list start; layout mirrors UnkArray4 (scheduler.h)
+    /* 0x08 */ uintptr_t unk_08; // display list size in bytes
     /* 0x0C */ void* unk_0C;
     /* 0x10 */ char unk10[0x4];
 } unk_D_800A7450; // size >= 0x14

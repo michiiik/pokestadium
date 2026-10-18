@@ -155,7 +155,7 @@ static unk_D_70B10 D_86B10670;
 static TeamRoster* D_86B10690;
 static BattleSessionTeams* D_86B10694;
 
-static u32 D_86B0DE5C[] = {
+static uintptr_t D_86B0DE5C[] = { // PORT64: holds addresses
     0x0C00FFFF, 0x05000000,    0x0B00001E,  0x00000000,    0x014000F0,  0x0000000F,  0x00000000, 0x00000000,
     0x05000000, 0x0D000000,    0x05000000,  0x07000000,    &D_86B0F9D0, 0x14000000,  0x002D0019, 0xFFFFFF28,
     0x08000000, Intro_LightAngleCallbackA, 0x00000000,  0x14000000,    0x002D0019,  0x80808028,  0x08000000, Intro_LightAngleCallbackB,
@@ -232,11 +232,11 @@ void Intro_LoadPokemonTextures(void) {
     u8* temp_a1;
     u8* sp1C;
 
-    temp_a1 = (u32)_70D3A0_ROM_START + (D_80075BD0[D_86B0FA78->unk_174 - 1] & 0xFFFFFF);
-    sp24 = (u32)_70D3A0_ROM_START +
-           ((((D_86B0FA78->unk_174 ^ 0) * sizeof(unk_D_70B10)) - sizeof(unk_D_70B10) + (u32)D_70B10) & 0xFFFFFF);
-    sp1C = (u32)_70D3A0_ROM_START +
-           (((D_86B0FA78->unk_174 * sizeof(unk_70D3A0)) - sizeof(unk_70D3A0) + (u32)D_70110) & 0xFFFFFF);
+    temp_a1 = (uintptr_t)_70D3A0_ROM_START + (D_80075BD0[D_86B0FA78->unk_174 - 1] & 0xFFFFFF);
+    sp24 = (uintptr_t)_70D3A0_ROM_START +
+           ((((D_86B0FA78->unk_174 ^ 0) * sizeof(unk_D_70B10)) - sizeof(unk_D_70B10) + (uintptr_t)D_70B10) & 0xFFFFFF);
+    sp1C = (uintptr_t)_70D3A0_ROM_START +
+           (((D_86B0FA78->unk_174 * sizeof(unk_70D3A0)) - sizeof(unk_70D3A0) + (uintptr_t)D_70110) & 0xFFFFFF);
 
     Dma_WriteChunks(D_86B0FA80, temp_a1, temp_a1 + 0xBC0, 0);
     Dma_WriteChunks(&D_86B10660, sp1C, sp1C + sizeof(unk_70D3A0), 0);

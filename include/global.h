@@ -4,7 +4,7 @@
 #include <ultra64.h>
 #include <PR/sched.h>
 
-typedef unsigned int uintptr_t;
+// uintptr_t comes from <stdint.h> via libultraship (64-bit on this host).
 
 #include "macros.h"
 #include "versions.h"
@@ -49,12 +49,12 @@ typedef struct ModelLoadContext {
     /* 0x00 */ u8 flags;
     /* 0x01 */ u8 pendingLoads;
     /* 0x02 */ u8 bufferIndex;
-    /* 0x04 */ s32 modelBuffers[5];
-    /* 0x18 */ s32 backgroundBuffer;
+    /* 0x04 */ void* modelBuffers[5]; // PORT64: pointers (were s32)
+    /* 0x18 */ void* backgroundBuffer;
     /* 0x1C */ s32 modelSize;
     /* 0x20 */ s32 backgroundSize;
     /* 0x24 */ ModelLoadResult* loadedModel;
-    /* 0x28 */ s32 loadedBackground;
+    /* 0x28 */ void* loadedBackground;
     /* 0x2C */ arg1_func_80010CA8 colorVariant;
     /* 0x30 */ OSMesgQueue modelQueue;
     /* 0x48 */ OSMesg modelMessage;
@@ -88,7 +88,7 @@ typedef struct DisplayNodeHeader {
     /* 0x08 */ struct DisplayNodeHeader* nextSibling;
     /* 0x0C */ ModelAssetNode* children;
     /* 0x10 */ ModelLoadContext* callback;
-    /* 0x14 */ s32 callbackArg;
+    /* 0x14 */ intptr_t callbackArg; // PORT: also holds pointers (display lists, callback data)
 } DisplayNodeHeader; // size = 0x18
 
 typedef struct TransformAnimData {
@@ -467,7 +467,7 @@ typedef struct UnkInputStruct8000D738 {
 
 typedef struct unk_D_800AA660 {
     /* 0x0000 */ OSThread thread;
-    /* 0x01B0 */ char unk01B0[0x10];
+    /* 0x01B0 */ OSMesg unk01B0[4]; // PORT: same size as UnkStruct80083CA0_2.unk_1B0 (scheduler.h), which this overlays
     /* 0x01C0 */ OSMesgQueue queue1;
     /* 0x01D8 */ struct unk_D_800AA660* unk_01D8;
     /* 0x01DC */ s32 unk_01DC;
@@ -594,7 +594,7 @@ typedef struct unk_D_8122B2C0 {
     /* 0x05D64 */ u8* transferBuffer;
     /* 0x05D68 */ u32 gbAddress;
     /* 0x05D6C */ s32 transferSize;
-    /* 0x05D70 */ u32 unk_5D70[4];
+    /* 0x05D70 */ uintptr_t unk_5D70[4]; // PORT64: [1]/[2] hold table addresses (were u32)
     /* 0x05D80 */ u32 unk_5D80[4];
     /* 0x05D90 */ u32 unk_5D90[4];
     /* 0x05DA0 */ u16 unk_5DA0;

@@ -74,12 +74,13 @@ typedef struct unk_func_80003680_sp300 {
 } unk_func_80003680_sp300; // size = 0x18
 
 typedef struct unk_func_80003680_sp90 {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ s32 unk_04;
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ s32 unk_0C;
-    /* 0x10 */ s32 unk_10;
-    /* 0x14 */ s32 unk_14;
+    // PORT64: the host JPEG task (src/port/jpeg_task.cpp) reads these as pointer-sized fields (JpegTaskData layout)
+    /* 0x00 */ uintptr_t unk_00; // data/output address
+    /* 0x04 */ uintptr_t unk_04; // macroblock count
+    /* 0x08 */ uintptr_t unk_08; // mode (0 = 4:2:2, 2 = 4:2:0)
+    /* 0x0C */ uintptr_t unk_0C; // Y quantization table
+    /* 0x10 */ uintptr_t unk_10; // U quantization table
+    /* 0x14 */ uintptr_t unk_14; // V quantization table
 } unk_func_80003680_sp90; // size >= 0x18
 
 typedef void (*ret_func_80004454)(void);
@@ -89,26 +90,26 @@ void Jpeg_ParseStreamMarkers(unk_func_80003680_sp300* arg0, u8* arg1);
 void Jpeg_InitializeDspTask(UnkStruct80001380* arg0, unk_func_80003680_sp90* arg1);
 void Jpeg_BuildDspInput(JpegDecoder* arg0, JpegHuffmanTable* arg1, unk_func_80003680_sp300* arg2);
 void Jpeg_BuildDspOutput(unk_func_80003680_sp90* arg0, u8(arg1)[2][0x80], unk_func_80003680_sp300* arg2);
-s32 Jpeg_DecodeImage(u32 addr, s32 arg1, u8* arg2);
+s32 Jpeg_DecodeImage(uintptr_t addr, s32 arg1, u8* arg2);
 void Dma_InitializeCompletionQueue(void);
 void Yay0_DecompressAndRelocate(u8* in_header, u8* memory);
 void Dma_ReadChunks(u8* arg0, s32 arg1, s32 arg2, s32 arg3);
 s32 Flash_ProgramPages(u8* arg0, s16 arg1, s16 arg2, s32 arg3);
 s32 Flash_EraseSectorByIndex(s16 arg0);
-void Dma_WriteChunks(u32 arg0, u32 arg1, u32 arg2, s32 arg3);
+void Dma_WriteChunks(uintptr_t arg0, uintptr_t arg1, uintptr_t arg2, s32 arg3);
 void Dma_CopyChunks(u8* arg0, u8* arg1, u8* arg2);
 void* Jpeg_LoadDecodedImage(u8* addr, PRESJPEG* arg1, s32 side);
-s32 Yay0_LoadDecompressedAsset(s32 arg0, PERSSZP* arg1, s32 side);
+void* Yay0_LoadDecompressedAsset(intptr_t arg0, PERSSZP* arg1, s32 side);
 u32* Asset_CopyUncompressed(u8* arg0, s32 arg1, u32 arg2, s32 arg3);
 void* Asset_LoadCompressed(u8* romStart, u8* romEnd, s32 arg2, s32 arg3);
 void* Storage_LoadAssetByLbaRange(unk_func_800041C0* arg0, s32 arg1);
 unk_func_800041C0* Storage_SetLbaRange(unk_func_800041C0* arg0, s32 arg1, s32 arg2);
 unk_func_800041C0* Storage_SetByteRange(unk_func_800041C0* arg0, u32 arg1, u32 offset, u32 size);
 void Storage_PrefetchLbaRange(s32 arg0, s32 arg1, s32 arg2);
-void Memmap_ClearSegmentOnBlockFree(u32 block_addr, u32 addr);
+void Memmap_ClearSegmentOnBlockFree(uintptr_t block_addr, u32 addr);
 u8* Asset_LoadToSegment(s32 id, u8* rom_start, u8* rom_end, s32 arg3);
 MainPoolBlock* Asset_LoadToSegmentByLbaRange(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
-void Fragment_FreeCallback(u32 base_addr, u32 addr);
+void Fragment_FreeCallback(uintptr_t base_addr, u32 addr);
 void Fragment_Register(s32 arg0, Fragment* addr);
 ret_func_80004454 Fragment_Load(s32 arg0, u8* romStart, u8* romEnd);
 void* Fragment_LoadByLbaRange(s32 arg0, s32 arg1, s32 arg2);
@@ -118,6 +119,14 @@ void BinArchive_Free(void* arg0);
 Fragment* BinArchive_LoadFileFromRom(BinArchive* arg0, BinArchiveFile* arg1);
 void* BinArchive_LoadFileBuffered(BinArchive* arg0, BinArchiveFile* arg1);
 void* BinArchive_GetFile(BinArchive* archive, s32 file_number);
-s32 BinArchive_GetCachedFile(BinArchive* archive, s32 file_number);
+void* Port_ResolveCode(uintptr_t addr);
+uintptr_t Port_CallFragmentLeaf(const void* code, s32 a0, s32 a1);
+void Port_NoteLoadedFragment(u32 slot, u8* romStart);
+extern int gPortRelocateDataBlob;
+void Port_FixPersHeader(PERSSZP* h);
+void Port_FixPresJpegHeader(PRESJPEG* h);
+void* BinArchive_GetCachedFile(BinArchive* archive, s32 file_number);
+u32 Port_PtrToHandle(void* p);
+void* Port_HandleToPtr(u32 h);
 
 #endif // _JPEG_STREAM_H_

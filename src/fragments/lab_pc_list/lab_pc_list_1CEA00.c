@@ -723,21 +723,22 @@ void LabPCList_InitDeckSlots(unk_func_8830867C_02C* arg0, MemoryPool* arg1) {
     arg0->unk_0E4[0].unk_04 = GbSave_GetActivePort();
     arg0->unk_0E4[0].unk_08 = 0;
     arg0->unk_0E4[0].unk_1C = 6;
-    ByteMatrix_Allocate(&arg0->unk_0E4[0].unk_0C, 0x1C, 1, arg1);
+    // PORT64: record size from the host struct (was 0x1C, its N64 size)
+    ByteMatrix_Allocate(&arg0->unk_0E4[0].unk_0C, sizeof(unk_func_8820BE14_06C_000_alt), 1, arg1);
     LabPCList_AllocateBoxSlots(&arg0->unk_0E4[0], 6, 1, arg1);
 
     arg0->unk_0E4[1].unk_00 = 0x21;
     arg0->unk_0E4[1].unk_04 = arg0->unk_0E4[0].unk_04;
     arg0->unk_0E4[1].unk_08 = 1;
     arg0->unk_0E4[1].unk_1C = 0x14;
-    ByteMatrix_Allocate(&arg0->unk_0E4[1].unk_0C, 0x1C, 0xC, arg1);
+    ByteMatrix_Allocate(&arg0->unk_0E4[1].unk_0C, sizeof(unk_func_8820BE14_06C_000_alt), 0xC, arg1);
     LabPCList_AllocateBoxSlots(&arg0->unk_0E4[1], 0x14, 0, arg1);
 
     arg0->unk_0E4[2].unk_00 = 0x11;
     arg0->unk_0E4[2].unk_04 = 0;
     arg0->unk_0E4[2].unk_08 = 2;
     arg0->unk_0E4[2].unk_1C = 0x14;
-    ByteMatrix_Allocate(&arg0->unk_0E4[2].unk_0C, 0x1C, 0xC, arg1);
+    ByteMatrix_Allocate(&arg0->unk_0E4[2].unk_0C, sizeof(unk_func_8820BE14_06C_000_alt), 0xC, arg1);
     LabPCList_AllocateBoxSlots(&arg0->unk_0E4[2], 0x14, 0, arg1);
 
     TableView_Initialize(&arg0->unk_144, arg0->unk_0E4, 0x20, 3, 3);
@@ -1589,7 +1590,7 @@ void LabPCList_PerformMoveMon(unk_func_8830867C_02C* arg0, unk_func_8830867C_02C
 
     LabPCList_SwitchColumnPage(arg0);
 
-    sp78.unk_00 = arg0->unk_0DC->unk_08 + (s32)arg0->unk_0DC->unk_00 + arg0->unk_0DC->unk_04 + 0x84;
+    sp78.unk_00 = arg0->unk_0DC->unk_08 + (intptr_t)arg0->unk_0DC->unk_00 + arg0->unk_0DC->unk_04 + 0x84;
     sp78.unk_02 = arg0->unk_034->unk_5C - arg0->unk_034->unk_58;
 
     LabPCList_LocationCrossfadeWidget_Start(arg0->unk_0C8, sp80, sp7C, sp78);
@@ -3142,7 +3143,7 @@ s32 LabPCList_ShowListScreen(UNUSED s32 arg0, UNUSED s32 arg1) {
     sp4C = mem_pool_alloc(sp50, sizeof(unk_func_8830867C));
     LabPCList_BuildWidget(sp4C, 0, 0, sp50, sp54, sp40, sp3C, sp38, sp34, sp30);
 
-    sp44 = ALIGN16((u32)mem_pool_alloc(sp50, sizeof(func_88002628_sp38)));
+    sp44 = ALIGN16((uintptr_t)mem_pool_alloc(sp50, sizeof(func_88002628_sp38)));
 
     osCreateThread(&sp44->thread, 0x32, LabPCList_ScreenThreadEntry, sp4C, sp48 + 0x1000, osGetThreadPri(NULL) - 1);
 

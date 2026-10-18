@@ -90,7 +90,7 @@ typedef struct BattleSessionTeams {
     /* 0x00 */ u8 unk_00;
     /* 0x01 */ u8 unk_01;
     /* 0x02 */ s16 unk_02;
-    /* 0x04 */ TeamRoster* unk_04;
+    /* 0x04 */ BattleMon* unk_04; // PORT: was TeamRoster*; every writer stores the Pokemon whose model is to be loaded
     /* 0x08 */ TeamRoster* unk_08[2];
     /* 0x10 */ ModelLoadContext* unk_10;
     /* 0x14 */ ModelNodeView* unk_14;
@@ -98,7 +98,7 @@ typedef struct BattleSessionTeams {
     /* 0x1C */ u8 unk_1C;
     /* 0x1D */ u8 unk_1D;
     /* 0x1E */ u8 unk_1E;
-    /* 0x20 */ s32 unk_20;
+    /* 0x20 */ intptr_t unk_20; // PORT: holds the resource list pointer (gBattleAnimResourceList)
     /* 0x24 */ arg1_func_80019420* unk_24;
 } BattleSessionTeams; // size = 0x28
 
@@ -142,7 +142,7 @@ extern SessionContext gSessionContext;
 extern BinArchive* D_800AF738;
 
 s32 Game_DoCopyProtection(s32 state);
-s32 Fragment_LoadAndCall(s32 arg0, u8* romStart, u8* romEnd, u32 arg3, u32 arg4);
+s32 Fragment_LoadAndCall(s32 arg0, u8* romStart, u8* romEnd, u32 arg3, uintptr_t arg4);
 void Fragment_QueueCall(s32 arg0, u8* arg1, u8* arg2, s32 arg3, s32 arg4);
 TeamRoster* Trainer_GetSlots(void);
 s32 GbSave_GetActivePort(void);

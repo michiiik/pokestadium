@@ -1,4 +1,10 @@
+#include <stdlib.h>
 #include "battle_engine.h"
+#include "src/util.h"
+
+// PORT: tables of texture addresses in ROM data are big-endian 32-bit words (segment or link addresses), not host
+// pointers; this reads entry i as an address the display list code accepts.
+#define PORT_BE_ADDR(tbl, i) ((u8*)(uintptr_t)PORT_BE32(((u32*)(tbl))[i]))
 #include "src/graphics_textures.h"
 #include "src/ui_graphics.h"
 #include "src/status_icons.h"
@@ -188,7 +194,7 @@ void BattleHud_DrawTranslucentShadowRect(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
     sp80 = Gfx_AllocDisplayList(sizeof(Vp) * 1);
     Gfx_SetViewportDimensions(sp80, temp_s1->width, temp_s1->height);
 
-    gSPViewport(gDisplayListHead++, (u32)sp80 & 0x1FFFFFFF);
+    gSPViewport(gDisplayListHead++, (uintptr_t)sp80);
 
     guOrtho(sp84, 0.5f, temp_s1->width - 0.5f, temp_s1->height - 0.5f, 0.5f, -2.0f, 2.0f, 1.0f);
 
@@ -203,9 +209,9 @@ void BattleHud_DrawTranslucentShadowRect(s32 arg0, s32 arg1, s32 arg2, s32 arg3,
     gDPSetCombineMode(gDisplayListHead++, G_CC_SHADE, G_CC_SHADE);
     gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
     gSPPerspNormalize(gDisplayListHead++, 0xFFFF);
-    gSPMatrix(gDisplayListHead++, (u32)sp84 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    gSPMatrix(gDisplayListHead++, (u32)&D_8006F010 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gSPVertex(gDisplayListHead++, (u32)temp_s2 & 0x1FFFFFFF, 4, 0);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)sp84, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)&D_8006F010, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPVertex(gDisplayListHead++, (uintptr_t)temp_s2, 4, 0);
     gSP2Triangles(gDisplayListHead++, 0, 2, 3, 0, 0, 3, 1, 0);
 }
 
@@ -221,7 +227,7 @@ void BattleHud_DrawGradientRect(s32 arg0, s32 arg1, s32 arg2, s32 arg3, Color_RG
     sp78 = Gfx_AllocDisplayList(sizeof(Vp) * 1);
     Gfx_SetViewportDimensions(sp78, temp_s1->width, temp_s1->height);
 
-    gSPViewport(gDisplayListHead++, (u32)sp78 & 0x1FFFFFFF);
+    gSPViewport(gDisplayListHead++, (uintptr_t)sp78);
 
     guOrtho(sp7C, 0.5f, temp_s1->width - 0.5f, temp_s1->height - 0.5f, 0.5f, -2.0f, 2.0f, 1.0f);
     Gfx_SetVertexAttributes(&temp_s2[0], arg0, arg1, -1, 0, 0, arg4->r, arg4->g, arg4->b, 0xFF);
@@ -235,9 +241,9 @@ void BattleHud_DrawGradientRect(s32 arg0, s32 arg1, s32 arg2, s32 arg3, Color_RG
     gDPSetCombineMode(gDisplayListHead++, G_CC_SHADE, G_CC_SHADE);
     gDPSetRenderMode(gDisplayListHead++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
     gSPPerspNormalize(gDisplayListHead++, 0xFFFF);
-    gSPMatrix(gDisplayListHead++, (u32)sp7C & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    gSPMatrix(gDisplayListHead++, (u32)&D_8006F010 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gSPVertex(gDisplayListHead++, (u32)temp_s2 & 0x1FFFFFFF, 4, 0);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)sp7C, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)&D_8006F010, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPVertex(gDisplayListHead++, (uintptr_t)temp_s2, 4, 0);
     gSP2Triangles(gDisplayListHead++, 0, 2, 3, 0, 0, 3, 1, 0);
 }
 
@@ -298,7 +304,7 @@ void func_843109EC(void) {
 void BattleHud_DrawLevelNumber(s32 arg0, s32 arg1, s32 arg2) {
     UNUSED s32 pad[2];
     s8* var_s2;
-    s8 sp58[2];
+    s8 sp58[4]; // PORT: was [2]; "%d" of a level writes up to 4 bytes (spilled into padding on N64)
     u8** temp_s4;
 
     var_s2 = &sp58;
@@ -309,16 +315,16 @@ void BattleHud_DrawLevelNumber(s32 arg0, s32 arg1, s32 arg2) {
 
     if (arg2 >= 0x64) {
         arg0 -= 2;
-        Gfx_DrawTextureRgba16(arg0, arg1, 8, 6, temp_s4[sp58[0] - '0'], 8, 0);
+        Gfx_DrawTextureRgba16(arg0, arg1, 8, 6, PORT_BE_ADDR(temp_s4, sp58[0] - '0'), 8, 0);
         arg0 += 8;
         var_s2 = &sp58[1];
     } else {
-        Gfx_DrawTextureRgba16(arg0, arg1, 4, 6, temp_s4[11], 4, 0);
+        Gfx_DrawTextureRgba16(arg0, arg1, 4, 6, PORT_BE_ADDR(temp_s4, 11), 4, 0);
         arg0 += 5;
     }
 
     while (*var_s2 != 0) {
-        Gfx_DrawTextureRgba16(arg0, arg1, 8, 6, temp_s4[*var_s2 - '0'], 8, 0);
+        Gfx_DrawTextureRgba16(arg0, arg1, 8, 6, PORT_BE_ADDR(temp_s4, *var_s2 - '0'), 8, 0);
         arg0 += 8;
         var_s2++;
     }
@@ -328,7 +334,7 @@ void BattleHud_DrawLevelNumber(s32 arg0, s32 arg1, s32 arg2) {
 
 void BattleHud_DrawHpFractionText(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     UNUSED s32 pad[2];
-    s8 sp70[7];
+    s8 sp70[8]; // PORT: was [7]; "%3d/%3d" writes 8 bytes with the terminator
     UNUSED s32 pad2;
     u8** temp_s2;
     u8* var_v0;
@@ -339,18 +345,18 @@ void BattleHud_DrawHpFractionText(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
     gSPDisplayList(gDisplayListHead++, D_8006F518);
 
-    for (i = 0; i < sizeof(sp70); i++) {
+    for (i = 0; i < 7 /* PORT: the 7 characters, as with the original sp70[7] */; i++) {
         switch (sp70[i]) {
             case ' ':
                 var_v0 = NULL;
                 break;
 
             case '/':
-                var_v0 = temp_s2[10];
+                var_v0 = PORT_BE_ADDR(temp_s2, 10);
                 break;
 
             default:
-                var_v0 = temp_s2[sp70[i] - '0'];
+                var_v0 = PORT_BE_ADDR(temp_s2, sp70[i] - '0');
                 break;
         }
 
@@ -371,6 +377,11 @@ void BattleHud_DrawSpeciesNameLabel(s16 arg0, s16 arg1, s32 arg2, char* arg3, s3
         Gfx_SetEnvColor(0xFF, 0x64, 0xFF, 0xFF);
     }
     Font_SetActive(2, 0);
+    if (getenv("PORT_TRACE_HUD")) { // PORT debug
+        fprintf(stderr, "[hud] label:");
+        for (int k = 0; k < 12 && arg3[k]; k++) fprintf(stderr, " %02x", (u8)arg3[k]);
+        fputc('\n', stderr);
+    }
     Font_Printf((arg0 - (Font_MeasureTextExtent(2, 0, arg3) / 2)) + 0x23, arg1 + 2, arg3);
     Font_EndTexturedTextRendering();
 }
@@ -446,6 +457,12 @@ void BattleHud_DrawMonInfoPanel(Battler* arg0, BattleMon* arg1, unk_D_84385790* 
     Font_BeginTranslucentTextRendering();
     Font_SetActive(2, 0);
 
+    if (getenv("PORT_TRACE_HUD")) { // PORT debug
+        const u8* nn = (const u8*)Battle_GetActiveMonNickname(arg0);
+        fprintf(stderr, "[hud] nick:");
+        for (int k = 0; k < 12 && nn[k]; k++) fprintf(stderr, " %02x", nn[k]);
+        fputc('\n', stderr);
+    }
     sp34 = Font_MeasureTextExtent(2, 0, Battle_GetActiveMonNickname(arg0)) / 2;
     Font_Printf((arg3 - sp34) + 0x23, arg4 + 2, Battle_GetActiveMonNickname(arg0));
     sp34 = Font_MeasureTextExtent(1, 0, Text_GetString(NULL, 0, D_843900BC, arg2->unk_00));
@@ -478,6 +495,12 @@ s32 BattleHud_DrawBorderTile(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8* arg4) {
     if (arg3 < 9) { sp28 = 0x400; } else { sp28 = 0; }
     // clang-format on
 
+    if (getenv("PORT_SKIP_BORDER")) return 0; // PORT debug
+    if (getenv("PORT_TRACE_HUD")) { // PORT debug
+        const u8* t = (const u8*)Util_ConvertAddrToVirtAddr((uintptr_t)arg4);
+        static int n;
+        if (t != NULL && n++ < 40) fprintf(stderr, "[border] %p -> %p %02x%02x %02x%02x %02x%02x %02x%02x | %02x%02x %02x%02x\n", (void*)arg4, (const void*)t, t[0], t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[64], t[65], t[66], t[67]);
+    }
     gDPLoadTextureBlock(gDisplayListHead++, arg4, G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 8, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
 
@@ -907,7 +930,7 @@ void Battle_DrawRightAlignedText(s32 arg0, s32 arg1, char* arg2) {
 
 s32 BattleHud_DrawMovePpTextLTR(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     UNUSED s32 pad[2];
-    s8 sp70[7];
+    s8 sp70[8]; // PORT: was [7]; "%3d/%3d" writes 8 bytes with the terminator
     s32 i;
     u8** temp_s2;
     u8* var_v1;
@@ -926,12 +949,12 @@ s32 BattleHud_DrawMovePpTextLTR(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
                 break;
 
             case '/':
-                var_v1 = temp_s2[10];
+                var_v1 = PORT_BE_ADDR(temp_s2, 10);
                 break;
 
             default:
                 if ((c >= 0x30) && (c < 0x3A)) {
-                    var_v1 = temp_s2[c - '0'];
+                    var_v1 = PORT_BE_ADDR(temp_s2, c - '0');
                 } else {
                     var_v1 = NULL;
                 }
@@ -951,7 +974,7 @@ s32 BattleHud_DrawMovePpTextLTR(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 s32 BattleHud_DrawMovePpTextRTL(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     UNUSED s32 pad[2];
-    s8 sp70[7];
+    s8 sp70[8]; // PORT: was [7]; "%3d/%3d" writes 8 bytes with the terminator
     s32 i;
     u8** temp_s2;
     u8* var_v1;
@@ -970,12 +993,12 @@ s32 BattleHud_DrawMovePpTextRTL(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
                 break;
 
             case '/':
-                var_v1 = temp_s2[10];
+                var_v1 = PORT_BE_ADDR(temp_s2, 10);
                 break;
 
             default:
                 if ((c >= 0x30) && (c < 0x3A)) {
-                    var_v1 = temp_s2[c - '0'];
+                    var_v1 = PORT_BE_ADDR(temp_s2, c - '0');
                 } else {
                     var_v1 = NULL;
                 }
@@ -1702,7 +1725,7 @@ void Battle_DrawGradientTextureRect(u8* arg0, s32 arg1, s32 arg2, s32 arg3, s32 
 
     Gfx_SetViewportDimensions(spBC, temp_s1->width, temp_s1->height);
 
-    gSPViewport(gDisplayListHead++, (u32)spBC & 0x1FFFFFFF);
+    gSPViewport(gDisplayListHead++, (uintptr_t)spBC);
 
     guOrtho(spC0, 0.5f, temp_s1->width - 0.5f, temp_s1->height - 0.5f, 0.5f, -2.0f, 2.0f, 1.0f);
 
@@ -1728,9 +1751,9 @@ void Battle_DrawGradientTextureRect(u8* arg0, s32 arg1, s32 arg2, s32 arg3, s32 
                        G_TX_NOLOD);
 
     gSPPerspNormalize(gDisplayListHead++, 0xFFFF);
-    gSPMatrix(gDisplayListHead++, (u32)spC0 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    gSPMatrix(gDisplayListHead++, (u32)&D_8006F010 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gSPVertex(gDisplayListHead++, (u32)temp_s2 & 0x1FFFFFFF, 4, 0);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)spC0, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)&D_8006F010, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPVertex(gDisplayListHead++, (uintptr_t)temp_s2, 4, 0);
     gSP2Triangles(gDisplayListHead++, 0, 2, 3, 0, 0, 3, 1, 0);
     gSPDisplayList(gDisplayListHead++, D_8006F630);
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF);
@@ -1781,14 +1804,14 @@ void BattleHud_DrawOwnSideStatus(Battler* arg0, BattlerState* arg1) {
 
     if (gSessionContext.mode != 0x10) {
         if (arg1->unk_10 == 3) {
-            BattleHud_DrawMonStatusBoxPlayer(arg0, arg0->unk_728.unk_168->unk_1C - 2, arg0->unk_728.unk_168->unk_1E - 0x3A, arg1->unk_1E,
+            BattleHud_DrawMonStatusBoxPlayer(arg0, arg0->unk_728.unk_168->unk_18.x - 2, arg0->unk_728.unk_168->unk_18.y - 0x3A, arg1->unk_1E,
                           1);
         } else {
-            BattleHud_DrawMonStatusBoxPlayer(arg0, arg0->unk_728.unk_168->unk_1C - 2, arg0->unk_728.unk_168->unk_1E - 0x3A, arg1->unk_1E,
+            BattleHud_DrawMonStatusBoxPlayer(arg0, arg0->unk_728.unk_168->unk_18.x - 2, arg0->unk_728.unk_168->unk_18.y - 0x3A, arg1->unk_1E,
                           0);
         }
 
-        if ((arg1->unk_10 != 3) && (arg0->unk_728.unk_168->unk_1C == 0x17)) {
+        if ((arg1->unk_10 != 3) && (arg0->unk_728.unk_168->unk_18.x == 0x17)) {
             switch (arg1->unk_10) {
                 case 2:
                     if (arg1->unk_1C == 1) {
@@ -1840,14 +1863,14 @@ void BattleHud_DrawOpponentSideStatus(Battler* arg0, BattlerState* arg1) {
 
     if (gSessionContext.mode != 0x10) {
         if (arg1->unk_10 == 3) {
-            BattleHud_DrawMonStatusBoxOpponent(arg0, arg0->unk_728.unk_168->unk_1C - 0x20, arg0->unk_728.unk_168->unk_1E - 2, arg1->unk_1E,
+            BattleHud_DrawMonStatusBoxOpponent(arg0, arg0->unk_728.unk_168->unk_18.x - 0x20, arg0->unk_728.unk_168->unk_18.y - 2, arg1->unk_1E,
                           1);
         } else {
-            BattleHud_DrawMonStatusBoxOpponent(arg0, arg0->unk_728.unk_168->unk_1C - 0x20, arg0->unk_728.unk_168->unk_1E - 2, arg1->unk_1E,
+            BattleHud_DrawMonStatusBoxOpponent(arg0, arg0->unk_728.unk_168->unk_18.x - 0x20, arg0->unk_728.unk_168->unk_18.y - 2, arg1->unk_1E,
                           0);
         }
 
-        if ((arg1->unk_10 != 3) && (arg0->unk_728.unk_168->unk_1C == 0x103)) {
+        if ((arg1->unk_10 != 3) && (arg0->unk_728.unk_168->unk_18.x == 0x103)) {
             switch (arg1->unk_10) {
                 case 2:
                     if (arg1->unk_1C == 1) {

@@ -18,20 +18,24 @@ typedef struct unk_func_888044BC_038_02C_044 {
     /* 0x00 */ WidgetNode unk_00;
 } unk_func_888044BC_038_02C_044; // size >= 0x2C
 
+// View of unk_func_8821421C_038_034 (scrollable grid). The anonymous struct mirrors its embedded
+// unk_func_88200FA0_030_030 (padded to its host size) so the fields after 0x54 sit where the grid code puts them.
 typedef struct unk_func_888044BC_038_02C_000 {
-    /* 0x00 */ WidgetNode unk_00;
-    /* 0x2C */ unk_func_888044BC_038_02C_02C* unk_2C;
-    /* 0x30 */ char unk30[0x4];
-    /* 0x34 */ u16* unk_34;
-    /* 0x38 */ s32 unk_38;
-    /* 0x3C */ s16 unk_3C;
-    /* 0x3E */ s16 unk_3E;
-    /* 0x40 */ char unk40[0x4];
-    /* 0x44 */ unk_func_888044BC_038_02C_044* unk_44;
-    /* 0x48 */ char unk48[0x2];
-    /* 0x4A */ s16 unk_4A;
-    /* 0x4C */ char unk4C[0x4];
-    /* 0x50 */ WidgetPoint unk_50;
+    struct {
+        /* 0x00 */ WidgetNode unk_00;
+        /* 0x2C */ unk_func_888044BC_038_02C_02C* unk_2C;
+        /* 0x30 */ char unk30[0x4];
+        /* 0x34 */ u16* unk_34;
+        /* 0x38 */ s32 unk_38;
+        /* 0x3C */ s16 unk_3C;
+        /* 0x3E */ s16 unk_3E;
+        /* 0x40 */ void* unk40; // unk_func_88200FA0_030_030_040
+        /* 0x44 */ unk_func_888044BC_038_02C_044* unk_44;
+        /* 0x48 */ char unk48[0x2];
+        /* 0x4A */ s16 unk_4A;
+        /* 0x4C */ char unk4C[0x4];
+        /* 0x50 */ WidgetPoint unk_50;
+    };
     /* 0x54 */ s16 unk_54;
     /* 0x58 */ s32 unk_58;
     /* 0x5C */ s32 unk_5C;
@@ -189,7 +193,7 @@ void Pokedex_UpdateAreaMapFrame(void);
 s32 Pokedex_GetCountTier(s32 arg0);
 s32 Pokedex_DrawAreaMapFrame(UNUSED u8 arg0);
 s32 Pokedex_CheckAreaMapExit(void);
-void func_88807D04(s32 arg0, MainPoolState* arg1, UNUSED s32 arg2, s32 arg3, s32 arg4, char* arg5, char** arg6);
+void func_88807D04(intptr_t arg0, MainPoolState* arg1, UNUSED s32 arg2, uintptr_t arg3, s32 arg4, char* arg5, char** arg6);
 void Pokedex_ExitAreaMapPool(void);
 
 #endif // _FRAGMENT28_H_

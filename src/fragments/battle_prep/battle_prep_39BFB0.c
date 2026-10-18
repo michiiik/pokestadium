@@ -37,10 +37,11 @@ static Gfx D_84B14CE0[] = {
     gsSP2Triangles(8, 9, 10, 0, 8, 10, 11, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B14DC8[] = {
+static uintptr_t D_84B14DC8[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_84B14C20, 0x05000000, 0x22050000,
     0x00000000, 0x08000000, BattlePrepTeamIcons_DrawActiveTeamBadge, D_84B14CE0, 0x06000000, 0x01000000, 0x00000000,
 };
+// PORT: one array (the N64 layout): the game indexes across these symbols
 static Vtx D_84B14E00[] = {
     VTX(-32, 48, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),       VTX(-32, 16, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(32, 16, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(32, 48, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
@@ -48,49 +49,42 @@ static Vtx D_84B14E00[] = {
     VTX(32, -16, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF), VTX(32, 16, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-32, -16, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),      VTX(-32, -48, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(32, -48, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF), VTX(32, -16, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_84B14EC0[] = {
     VTX(-30, 45, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),      VTX(-30, 30, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 30, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(0, 45, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 45, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),     VTX(0, 30, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(30, 30, 0, 4096, 1024, 0xFF, 0xFF, 0xFF, 0xFF), VTX(30, 45, 0, 4096, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_84B14F40[] = {
     VTX(-30, 30, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),      VTX(-30, 15, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 15, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(0, 30, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 30, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),     VTX(0, 15, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(30, 15, 0, 4096, 1024, 0xFF, 0xFF, 0xFF, 0xFF), VTX(30, 30, 0, 4096, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_84B14FC0[] = {
     VTX(-30, 15, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),     VTX(-30, 0, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 0, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(0, 15, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 15, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),    VTX(0, 0, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(30, 0, 0, 4096, 1024, 0xFF, 0xFF, 0xFF, 0xFF), VTX(30, 15, 0, 4096, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_84B15040[] = {
     VTX(-30, 0, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),        VTX(-30, -15, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -15, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(0, 0, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 0, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),       VTX(0, -15, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(30, -15, 0, 4096, 1024, 0xFF, 0xFF, 0xFF, 0xFF), VTX(30, 0, 0, 4096, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_84B150C0[] = {
     VTX(-30, -15, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),      VTX(-30, -30, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -30, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(0, -15, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -15, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),     VTX(0, -30, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(30, -30, 0, 4096, 1024, 0xFF, 0xFF, 0xFF, 0xFF), VTX(30, -15, 0, 4096, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_84B15140[] = {
     VTX(-30, -30, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),      VTX(-30, -45, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -45, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(0, -30, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -30, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),     VTX(0, -45, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(30, -45, 0, 4096, 1024, 0xFF, 0xFF, 0xFF, 0xFF), VTX(30, -30, 0, 4096, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_84B151C0[] = {
     VTX(-30, 30, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-30, -30, 0, 0, 2048, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(30, -30, 0, 2048, 2048, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(30, 30, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
+#define D_84B14EC0 (D_84B14E00 + 12)
+#define D_84B14F40 (D_84B14E00 + 20)
+#define D_84B14FC0 (D_84B14E00 + 28)
+#define D_84B15040 (D_84B14E00 + 36)
+#define D_84B150C0 (D_84B14E00 + 44)
+#define D_84B15140 (D_84B14E00 + 52)
+#define D_84B151C0 (D_84B14E00 + 60)
 static Gfx D_84B15200[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetCombineLERP(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, COMBINED, COMBINED, 0, PRIM_LOD_FRAC, 0),
@@ -161,10 +155,11 @@ static Gfx D_84B15618[] = {
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B15688[] = {
+static uintptr_t D_84B15688[] = { // PORT64: holds addresses
     0x17000000, 0x00000000,    0x00000000, 0x00000000, D_84B14E00, 0x05000000, 0x22050000, 0x00000000,
     0x08000000, BattlePrepTeamIcons_DrawIconSingle, D_84B15200, 0x22050000, D_84B15618, 0x25000000, 0x06000000, 0x01000000,
 };
+// PORT: one array (the N64 layout): the game indexes across these symbols
 static Vtx D_84B156C8[] = {
     VTX(-32, 48, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),       VTX(-32, 16, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(32, 16, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(32, 48, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
@@ -176,13 +171,12 @@ static Vtx D_84B156C8[] = {
     VTX(20, -10, 0, 1280, 1280, 0xFF, 0xFF, 0xFF, 0xFF), VTX(20, 30, 0, 1280, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-24, -20, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),      VTX(-24, -44, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(24, -44, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF), VTX(24, -20, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_84B15808[] = {
     VTX(-20, 30, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-20, -10, 0, 0, 2048, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(20, -10, 0, 2048, 2048, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(20, 30, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
+#define D_84B15808 (D_84B156C8 + 20)
 static Gfx D_84B15848[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetCombineLERP(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, COMBINED, COMBINED, 0, PRIM_LOD_FRAC, 0),
@@ -217,40 +211,37 @@ static Gfx D_84B159B0[] = {
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B15A20[] = {
+static uintptr_t D_84B15A20[] = { // PORT64: holds addresses
     0x17000000, 0x00000000,    0x00000000, 0x00000000, D_84B156C8, 0x05000000, 0x22050000, 0x00000000,
     0x08000000, BattlePrepTeamIcons_DrawIconDouble, D_84B15848, 0x22050000, D_84B159B0, 0x25000000, 0x06000000, 0x01000000,
 };
+// PORT: one array (the N64 layout): the game indexes across these symbols
 static Vtx D_84B15A60[] = {
     VTX(-32, 24, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),      VTX(-32, 0, 0, 0, 768, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(32, 0, 0, 2048, 768, 0xFF, 0xFF, 0xFF, 0xFF),   VTX(32, 24, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-32, 0, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),       VTX(-32, -24, 0, 0, 768, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(32, -24, 0, 2048, 768, 0xFF, 0xFF, 0xFF, 0xFF), VTX(32, 0, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_84B15AE0[] = {
     VTX(-30, 22, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),     VTX(-30, 7, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 7, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(0, 22, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 22, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),    VTX(0, 7, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(30, 7, 0, 4096, 1024, 0xFF, 0xFF, 0xFF, 0xFF), VTX(30, 22, 0, 4096, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_84B15B60[] = {
     VTX(-30, 7, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),       VTX(-30, -7, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -7, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(0, 7, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 7, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),      VTX(0, -7, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(30, -7, 0, 4096, 1024, 0xFF, 0xFF, 0xFF, 0xFF), VTX(30, 7, 0, 4096, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_84B15BE0[] = {
     VTX(-30, -7, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),       VTX(-30, -22, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -22, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(0, -7, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -7, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),      VTX(0, -22, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(30, -22, 0, 4096, 1024, 0xFF, 0xFF, 0xFF, 0xFF), VTX(30, -7, 0, 4096, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_84B15C60[] = {
     VTX(-22, 22, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-22, -22, 0, 0, 2048, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(22, -22, 0, 2048, 2048, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(22, 22, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
+#define D_84B15AE0 (D_84B15A60 + 8)
+#define D_84B15B60 (D_84B15A60 + 16)
+#define D_84B15BE0 (D_84B15A60 + 24)
+#define D_84B15C60 (D_84B15A60 + 32)
 static Gfx D_84B15CA0[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetCombineLERP(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, COMBINED, COMBINED, 0, PRIM_LOD_FRAC, 0),
@@ -297,16 +288,17 @@ static Gfx D_84B15EE0[] = {
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B15F50[] = {
+static uintptr_t D_84B15F50[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000, 0x00000000, D_84B15A60, 0x05000000, 0x1B000000,    0x00000000,
     0x00000000, 0x00180000, 0x05000000, 0x22050000, 0x00000000, 0x08000000, BattlePrepTeamIcons_DrawBadgeIconSingle, D_84B15CA0,
     0x22050000, D_84B15EE0, 0x25000000, 0x06000000, 0x06000000, 0x01000000,
 };
-static u32 D_84B15FA8[] = {
+static uintptr_t D_84B15FA8[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000, 0x00000000, D_84B15A60, 0x05000000, 0x1B000000,    0x00000000,
     0x00000000, 0xFFE80000, 0x05000000, 0x22050000, 0x00000000, 0x08000000, BattlePrepTeamIcons_DrawBadgeIconSingle, D_84B15CA0,
     0x22050000, D_84B15EE0, 0x25000000, 0x06000000, 0x06000000, 0x01000000,
 };
+// PORT: one array (the N64 layout): the game indexes across these symbols
 static Vtx D_84B16000[] = {
     VTX(-32, 24, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),       VTX(-32, 0, 0, 0, 768, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(32, 0, 0, 2048, 768, 0xFF, 0xFF, 0xFF, 0xFF),    VTX(32, 24, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
@@ -316,13 +308,12 @@ static Vtx D_84B16000[] = {
     VTX(14, -8, 0, 1280, 1280, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(14, 20, 0, 1280, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-12, -8, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),       VTX(-12, -20, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(12, -20, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF), VTX(12, -8, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_84B16100[] = {
     VTX(-14, 20, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-14, -8, 0, 0, 2048, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(14, -8, 0, 2048, 2048, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(14, 20, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
+#define D_84B16100 (D_84B16000 + 16)
 static Gfx D_84B16140[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetCombineLERP(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, COMBINED, COMBINED, 0, PRIM_LOD_FRAC, 0),
@@ -354,12 +345,12 @@ static Gfx D_84B16268[] = {
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B162D8[] = {
+static uintptr_t D_84B162D8[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000, 0x00000000, D_84B16000, 0x05000000, 0x1B000000,    0x00000000,
     0x00000000, 0x00180000, 0x05000000, 0x22050000, 0x00000000, 0x08000000, BattlePrepTeamIcons_DrawBadgeIconDouble, D_84B16140,
     0x22050000, D_84B16268, 0x25000000, 0x06000000, 0x06000000, 0x01000000,
 };
-static u32 D_84B16330[] = {
+static uintptr_t D_84B16330[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000, 0x00000000, D_84B16000, 0x05000000, 0x1B000000,    0x00000000,
     0x00000000, 0xFFE80000, 0x05000000, 0x22050000, 0x00000000, 0x08000000, BattlePrepTeamIcons_DrawBadgeIconDouble, D_84B16140,
     0x22050000, D_84B16268, 0x25000000, 0x06000000, 0x06000000, 0x01000000, 0x00000000,    0x00000000,
@@ -378,7 +369,7 @@ s32 BattlePrepTeamIcons_DrawActiveTeamBadge(s32 arg0, unk_func_80011B94* arg1) {
         }
 
         gDPPipeSync(gDisplayListHead++);
-        gSPSegment(gDisplayListHead++, 0x0F, (u32)var_a3 & 0x1FFFFFFF);
+        gSPSegment(gDisplayListHead++, 0x0F, (uintptr_t)var_a3);
         gSPDisplayList(gDisplayListHead++, arg1->display_node_header.callbackArg);
 
         GeoRender_ApplyMaterialState();
@@ -401,8 +392,8 @@ s32 BattlePrepTeamIcons_DrawIconSingle(s32 arg0, unk_func_80011B94* arg1) {
         }
 
         gDPPipeSync(gDisplayListHead++);
-        gSPSegment(gDisplayListHead++, 0x0F, (u32)PokeIcon_GetImage(temp_t1->unk_1C, temp_t2 - 1) & 0x1FFFFFFF);
-        gSPSegment(gDisplayListHead++, 0x0E, (u32)Memmap_GetSegmentVaddr(var_a3) & 0x1FFFFFFF);
+        gSPSegment(gDisplayListHead++, 0x0F, (uintptr_t)PokeIcon_GetImage(temp_t1->unk_1C, temp_t2 - 1));
+        gSPSegment(gDisplayListHead++, 0x0E, (uintptr_t)Memmap_GetSegmentVaddr(var_a3));
         gSPDisplayList(gDisplayListHead++, arg1->display_node_header.callbackArg);
 
         GeoRender_ApplyMaterialState();
@@ -431,8 +422,8 @@ s32 BattlePrepTeamIcons_DrawIconDouble(s32 arg0, unk_func_80011B94* arg1) {
         }
 
         gDPPipeSync(gDisplayListHead++);
-        gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a3->unk_20[temp_t0 - 1] & 0x1FFFFFFF);
-        gSPSegment(gDisplayListHead++, 0x0E, (u32)Memmap_GetSegmentVaddr(var_a0) & 0x1FFFFFFF);
+        gSPSegment(gDisplayListHead++, 0x0F, (uintptr_t)temp_a3->unk_20[temp_t0 - 1]);
+        gSPSegment(gDisplayListHead++, 0x0E, (uintptr_t)Memmap_GetSegmentVaddr(var_a0));
         gSPDisplayList(gDisplayListHead++, arg1->display_node_header.callbackArg);
 
         GeoRender_ApplyMaterialState();
@@ -462,8 +453,8 @@ s32 BattlePrepTeamIcons_DrawBadgeIconSingle(s32 arg0, unk_func_80011B94* arg1) {
         }
 
         gDPPipeSync(gDisplayListHead++);
-        gSPSegment(gDisplayListHead++, 0x0F, (u32)PokeIcon_GetImage(temp_t1->unk_1C, temp_a1) & 0x1FFFFFFF);
-        gSPSegment(gDisplayListHead++, 0x0E, (u32)Memmap_GetSegmentVaddr(var_a3) & 0x1FFFFFFF);
+        gSPSegment(gDisplayListHead++, 0x0F, (uintptr_t)PokeIcon_GetImage(temp_t1->unk_1C, temp_a1));
+        gSPSegment(gDisplayListHead++, 0x0E, (uintptr_t)Memmap_GetSegmentVaddr(var_a3));
         gSPDisplayList(gDisplayListHead++, arg1->display_node_header.callbackArg);
 
         GeoRender_ApplyMaterialState();
@@ -499,8 +490,8 @@ s32 BattlePrepTeamIcons_DrawBadgeIconDouble(s32 arg0, unk_func_80011B94* arg1) {
         }
 
         gDPPipeSync(gDisplayListHead++);
-        gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_t1->unk_20[temp_a3] & 0x1FFFFFFF);
-        gSPSegment(gDisplayListHead++, 0x0E, (u32)Memmap_GetSegmentVaddr(var_a0) & 0x1FFFFFFF);
+        gSPSegment(gDisplayListHead++, 0x0F, (uintptr_t)temp_t1->unk_20[temp_a3]);
+        gSPSegment(gDisplayListHead++, 0x0E, (uintptr_t)Memmap_GetSegmentVaddr(var_a0));
         gSPDisplayList(gDisplayListHead++, arg1->display_node_header.callbackArg);
 
         GeoRender_ApplyMaterialState();
@@ -1199,10 +1190,10 @@ void BattlePrepTeamIcons_Init(unk_D_84B25A58* arg0) {
 
     if (arg0->unk_02 == 1) {
         arg0->unk_1C = PokeIcon_CreateRenderList(NULL, 0xC, 0x80, 0x60);
-        arg0->unk_20 = ALIGN64((u32)main_pool_alloc(0x9640, 0));
+        arg0->unk_20 = ALIGN64((uintptr_t)main_pool_alloc(0x9640, 0));
     } else {
         arg0->unk_1C = PokeIcon_CreateRenderList(NULL, 6, 0x80, 0xC0);
-        arg0->unk_20 = ALIGN64((u32)main_pool_alloc(0x4B40, 0));
+        arg0->unk_20 = ALIGN64((uintptr_t)main_pool_alloc(0x4B40, 0));
     }
 
     PokeIcon_SetNameTable(arg0->unk_1C, D_84B186C0);

@@ -188,6 +188,9 @@ u8 D_800789FC[4] = { 0 };
 u8 D_80078A00[16] = { 0 };
 
 s32 func_800479C0(u32 arg0, u32 arg1, u32 arg2) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     s32 var;
     unk_D_800FC6F0* sp;
     s32 ret;
@@ -353,7 +356,7 @@ s32 func_800479C0(u32 arg0, u32 arg1, u32 arg2) {
     if (arg0 < sp->num_files - 1) {
         size = sp->files[arg0 + 1] - sp->files[arg0];
     } else {
-        size = (u32)D_800FC6E8->seqArray[2].offset - sp->files[arg0];
+        size = (uintptr_t)D_800FC6E8->seqArray[2].offset - sp->files[arg0];
     }
 
     Rom_DmaRead(sp->files[arg0], D_800FC6DC, size);
@@ -387,6 +390,9 @@ s32 func_800479C0(u32 arg0, u32 arg1, u32 arg2) {
     }
 }
 void Audio_FadeAndClearStoredSounds(void) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
   Audio_QueueFadeSoundCommand(D_800789F8, 0x5A);
   Audio_QueueFadeSoundCommand(D_800789F4, 0x5A);
   D_800789F8 = 0;

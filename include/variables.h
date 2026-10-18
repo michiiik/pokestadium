@@ -89,8 +89,8 @@ extern u8 gPool[];
 extern Gfx* gDisplayListHead;
 extern u64 _binary_assets_us_F3DEX2_bin_start[];
 
-extern f32 gSineTable[];
-extern f32 gCosineTable[0x1000];
+extern f32 gSineTable[0x1400];
+#define gCosineTable (gSineTable + 0x400) // PORT: see trig_tables.inc.c
 extern s16 gArctanTable[0x401];
 extern s32 D_B0000504;
 extern s32 D_B0000800;
@@ -902,14 +902,14 @@ typedef struct unk_D_8006FF00 {
 	/* 0x01 */ u8 unk_01;
 	/* 0x02 */ s16 unk_02;
 	/* 0x04 */ char* name;
-	/* 0x08 */ s32 unk_08;
+	/* 0x08 */ intptr_t unk_08; // PORT64: holds the name pointer
 	/* 0x0C */ u8 unk_0C;
 	/* 0x0D */ u8 unk_0D;
 	/* 0x0E */ s16 unk_0E;
 	/* 0x10 */ s16 unk_10;
 	/* 0x12 */ s16 unk_12;
 	/* 0x14 */ u32 unk_14;
-	/* 0x18 */ u32 unk_18;
+	/* 0x18 */ uintptr_t unk_18; // PORT64: holds the name pointer
 } unk_D_8006FF00; // size = 0x1C
 extern unk_D_8006FF00 D_8006FF00[152];
 
@@ -923,7 +923,7 @@ typedef struct FontSet {
 typedef struct FontContext {
     /* 0x00 */ FontSet unk_00[6];
     /* 0x48 */ void* unk_48;
-    /* 0x4C */ s32 unk_4C;
+    /* 0x4C */ uintptr_t unk_4C; // PORT: address of the loaded glyph source (cache key; was s32)
     /* 0x50 */ u8 unk_50;
     /* 0x51 */ s8 unk_51;
     /* 0x52 */ u8 line_height;
@@ -993,7 +993,8 @@ typedef struct MoveData {
     /* 0x04 */ u8 unk_04;
     /* 0x05 */ u8 unk_05;
 } MoveData; // size = 0x6
-extern MoveData gMoveData[];
+extern MoveData gMoveDataWithZeroth[];
+#define gMoveData (&gMoveDataWithZeroth[1]) // PORT: see gb_data.c
 
 typedef struct unk_D_80072338 {
     /* 0x00 */ char unk00[0x1];
@@ -1004,8 +1005,9 @@ typedef struct unk_D_80072338 {
 } unk_D_80072338; // size = 0xC
 extern unk_D_80072338 gMoveDisplayInfo[];
 
-extern char D_8006FEE8[][0x1C];
-#define gSpeciesDataById D_8006FEE8
+// PORT: D_8006FEE8 was a byte view 0x18 before D_8006FF00 (0x1C-byte records, 1-based species); [species][8] is
+// D_8006FF00[species - 1].unk_0C, the cup eligibility flags. The host struct holds pointers, so the view is replaced.
+#define gSpeciesEligibilityFlags(species) (D_8006FF00[(species) - 1].unk_0C)
 
 typedef struct unk_rom_70D3A0_offset_72780 {
     /* 0x00 */ char unk00[0x20];

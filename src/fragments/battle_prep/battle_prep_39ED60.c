@@ -37,7 +37,7 @@ static Gfx D_84B164A0[] = {
     gsSP2Triangles(8, 9, 10, 0, 8, 10, 11, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B16588[] = {
+static uintptr_t D_84B16588[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_84B163E0, 0x05000000, 0x22010000,
     0x00000000, 0x08000000, BattlePrepBadgeAward_DrawBadgeIcon, D_84B164A0, 0x06000000, 0x01000000, 0x00000000,
 };
@@ -60,7 +60,7 @@ static Gfx D_84B16640[] = {
     gsSP2Triangles(4, 5, 6, 0, 4, 6, 7, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B166E8[] = {
+static uintptr_t D_84B166E8[] = { // PORT64: holds addresses
     0x17000000,    0x00000000, 0x00000000, 0x00000000, D_84B165C0, 0x05000000, 0x1B000000,
     0x00000000,    0x00000000, 0x00050000, 0x05000000, 0x22050000, 0x00000000, 0x08000000,
     BattlePrepBadgeAward_DrawBadgeIconAlt, D_84B16640, 0x06000000, 0x06000000, 0x01000000, 0x00000000,
@@ -81,7 +81,7 @@ static Gfx D_84B16778[] = {
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B167E0[] = {
+static uintptr_t D_84B167E0[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_84B16738, 0x05000000, 0x22050000,
     0x00000000, 0x08000000, BattlePrepBadgeAward_DrawSparkle, D_84B16778, 0x06000000, 0x01000000, 0x00000000,
 };
@@ -106,7 +106,7 @@ static Gfx D_84B16898[] = {
     gsSP2Triangles(4, 5, 6, 0, 4, 6, 7, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B16948[] = {
+static uintptr_t D_84B16948[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_84B16818, 0x05000000, 0x22050000,
     0x00000000, 0x08000000, BattlePrepBadgeAward_DrawGlowFade, D_84B16898, 0x06000000, 0x01000000, 0x00000000,
 };
@@ -129,7 +129,7 @@ static Gfx D_84B169C0[] = {
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B16A38[] = {
+static uintptr_t D_84B16A38[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000, 0x00000000, D_84B16980, 0x05000000,
     0x22050000, D_84B169C0, 0x25000000, 0x06000000, 0x01000000,
 };
@@ -144,7 +144,7 @@ s32 BattlePrepBadgeAward_DrawBadgeIcon(s32 arg0, unk_func_80011B94* arg1) {
 
         gDPPipeSync(gDisplayListHead++);
         gSPSegment(gDisplayListHead++, 0x0F,
-                   (u32)Memmap_GetSegmentVaddr(*(s32*)(temp_v0->unk_1C + tmp * 4)) & 0x1FFFFFFF);
+                   (uintptr_t)Memmap_GetSegmentVaddr(*(s32*)(temp_v0->unk_1C + tmp * 4)));
         gSPDisplayList(gDisplayListHead++, arg1->display_node_header.callbackArg);
 
         GeoRender_ApplyMaterialState();
@@ -162,7 +162,7 @@ s32 BattlePrepBadgeAward_DrawBadgeIconAlt(s32 arg0, unk_func_80011B94* arg1) {
 
         gDPPipeSync(gDisplayListHead++);
         gSPSegment(gDisplayListHead++, 0x0F,
-                   (u32)Memmap_GetSegmentVaddr(*(s32*)(temp_v0->unk_20 + tmp * 4)) & 0x1FFFFFFF);
+                   (uintptr_t)Memmap_GetSegmentVaddr(*(s32*)(temp_v0->unk_20 + tmp * 4)));
         gSPDisplayList(gDisplayListHead++, arg1->display_node_header.callbackArg);
 
         GeoRender_ApplyMaterialState();
@@ -181,7 +181,7 @@ s32 BattlePrepBadgeAward_DrawSparkle(s32 arg0, unk_func_80011B94* arg1) {
         if (temp_a3->unk_28[tmp] >= 0) {
             gDPPipeSync(gDisplayListHead++);
             gSPSegment(gDisplayListHead++, 0x0F,
-                       (u32)Memmap_GetSegmentVaddr(temp_a3->unk_24[temp_a3->unk_28[tmp]]) & 0x1FFFFFFF);
+                       (uintptr_t)Memmap_GetSegmentVaddr(temp_a3->unk_24[temp_a3->unk_28[tmp]]));
             gSPDisplayList(gDisplayListHead++, arg1->display_node_header.callbackArg);
 
             GeoRender_ApplyMaterialState();
@@ -351,7 +351,7 @@ void BattlePrepBadgeAward_UpdateSparkleStep(unk_D_84B25A90* arg0) {
     BattlePrepBadgeAward_SpawnSparkleParticle(arg0, &arg0->unk_04[28 + arg0->unk_01], 7 - temp_s0);
 
     for (i = 16; i < 41; i++) {
-        if ((s32)arg0->unk_18 == (s32)arg0->unk_04[i].node.children) {
+        if ((intptr_t)arg0->unk_18 == (intptr_t)arg0->unk_04[i].node.children) {
             s32 idx = arg0->unk_04[i].node.callbackArg;
 
             Vec3f_SetComponentsDuplicate(&arg0->unk_04[i].scale, D_84B163B0[idx], D_84B163B0[idx], D_84B163B0[idx]);

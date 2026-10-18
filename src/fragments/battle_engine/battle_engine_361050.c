@@ -66,10 +66,19 @@ static u8 D_8438B0D8[] = {
 };
 static u8 D_8438B0F4[] = { 0x27, 0x2B };
 
-void BattleAI_LoadConfiguration(s32 arg0, u32 arg1) {
-    u32 temp_a1 = (u32)_7820E0_ROM_START + arg0 * 0x48;
+void BattleAI_LoadConfiguration(s32 arg0, uintptr_t arg1) {
+    u32 temp_a1 = (uintptr_t)_7820E0_ROM_START + arg0 * 0x48;
 
     Dma_WriteChunks(arg1, temp_a1, temp_a1 + 0x48, 0);
+    {
+        // PORT: big-endian ROM record; the three difficulty configs (read as AIDifficultyConfig) start with an s32
+        // flag word.
+        s32 i;
+        for (i = 0; i < 3; i++) {
+            u32* w = (u32*)(arg1 + 0xC + i * 0x14);
+            *w = Port_Swap32(*w);
+        }
+    }
 }
 
 void func_843767DC(void) {
@@ -3525,7 +3534,7 @@ u16 BattleAI_ComputeDifficultyThreshold(u8 arg0, u8 arg1) {
 }
 
 u8 BattleAI_GetPpWeight(u8 arg0) {
-    u8 var_a1 = gMoveData[arg0 - 1].unk_05;
+    u8 var_a1 = gMoveData[arg0 - 1].unk_05; // PORT: gMoveData[-1] exists (zero) for empty slots, see gb_data.c
 
     var_a1 += ((var_a1 / 5 >= 8) ? 7 : var_a1 / 5) * 3;
     return var_a1;
@@ -4091,7 +4100,7 @@ s32 func_8437FD74(BattleAiTeamState* arg0, u8* arg1, s32* arg2, u8 arg3) {
     unsigned int temp_l;
     // The loop below and BattleAI_InsertRankedCandidateGroup use 8 entries, but only 6 fit in the
     // target's frame. The last two overlap the unused stack homes of var_a1 and temp_l.
-    s32 sp94[6];
+    s32 sp94[8]; // PORT: 8, the entries actually used (6 overflowed into the host's stack)
     u8 sp90[3];
     u8 sp78[0x18];
     u8 spBF;
@@ -5394,7 +5403,7 @@ s32 func_843831A0(TeamRoster* arg0, TeamRoster* arg1, TeamRoster* arg2, s32 arg3
     if (arg3 < 0xFF) {
         BattleAI_LoadConfiguration(arg3, &D_843C60F0);
     }
-    bzero(D_843C5568, sizeof(D_843C5568) + 2);
+    bzero(D_843C5568, sizeof(D_843C5568)); // PORT: was + 2 (padding after the array on N64; fortified bzero traps)
     D_843C5568->unk_000 = 1;
     BattleAI_SeedRandomState(0x35);
 

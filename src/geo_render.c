@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "geo_render.h"
 #include "src/geo_render.h"
 #include "src/graphics_textures.h"
@@ -107,8 +109,8 @@ static u8 D_8006F1B4[15][16] = {
 static s16 D_8006F2A4[] = { 16, 8, 4, 2, 0, 0 };
 
 static s32 D_800AA6C0;
-static MtxF* D_800AA6C8[8];
-static u8 pad_D_800AA6E8[0x1E0];
+// PORT: the original declared 8 entries followed by 0x1E0 bytes of padding: 128 four-byte pointers in total
+static MtxF* D_800AA6C8[128];
 static unk_D_800AA8C8 D_800AA8C8;
 static unk_D_800AB970 D_800AB970;
 static s32 D_800ABB00;
@@ -234,7 +236,7 @@ void GeoOverlay_DrawFadeQuad(unk_D_86002F34_00C_0CC* arg0, unk_D_86002F34_00C_04
         gDPSetCombineMode(gDisplayListHead++, G_CC_SHADE, G_CC_SHADE);
         gDPSetRenderMode(gDisplayListHead++, G_RM_AA_XLU_SURF, G_RM_AA_XLU_SURF2);
 
-        gSPVertex(gDisplayListHead++, (u32)temp_v0 & 0x1FFFFFFF, 4, 0);
+        gSPVertex(gDisplayListHead++, (uintptr_t)temp_v0, 4, 0);
         gSP2Triangles(gDisplayListHead++, 0, 1, 2, 0, 0, 2, 3, 0);
     }
 
@@ -316,7 +318,7 @@ void GeoOverlay_DrawRotatingQuad(unk_D_86002F34_00C_0CC* arg0, UNUSED unk_D_8600
         gDPSetCombineMode(gDisplayListHead++, G_CC_SHADE, G_CC_SHADE);
         gDPSetRenderMode(gDisplayListHead++, G_RM_AA_OPA_SURF, G_RM_AA_OPA_SURF2);
 
-        gSPVertex(gDisplayListHead++, (u32)temp_v0 & 0x1FFFFFFF, 8, 0);
+        gSPVertex(gDisplayListHead++, (uintptr_t)temp_v0, 8, 0);
         gSP2Triangles(gDisplayListHead++, 0, 4, 1, 0, 1, 4, 5, 0);
         gSP2Triangles(gDisplayListHead++, 1, 5, 2, 0, 2, 5, 6, 0);
         gSP2Triangles(gDisplayListHead++, 2, 6, 7, 0, 2, 7, 3, 0);
@@ -338,7 +340,7 @@ void GeoOverlay_DrawRotatingQuad(unk_D_86002F34_00C_0CC* arg0, UNUSED unk_D_8600
 
         gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
 
-        gSPVertex(gDisplayListHead++, (u32)temp_v0 & 0x1FFFFFFF, 4, 0);
+        gSPVertex(gDisplayListHead++, (uintptr_t)temp_v0, 4, 0);
         gSP2Triangles(gDisplayListHead++, 0, 1, 2, 0, 0, 2, 3, 0);
 
         gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF);
@@ -362,8 +364,8 @@ void GeoOverlay_Draw(unk_D_86002F34_00C_0CC* arg0, unk_D_86002F34_00C_040* arg1)
         gDPSetCycleType(gDisplayListHead++, G_CYC_1CYCLE);
         gSPClearGeometryMode(gDisplayListHead++, G_ZBUFFER | G_LIGHTING);
         gSPPerspNormalize(gDisplayListHead++, 0xFFFF);
-        gSPMatrix(gDisplayListHead++, (u32)arg1->mtx & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-        gSPMatrix(gDisplayListHead++, (u32)&D_8006F010 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        gSPMatrix(gDisplayListHead++, (uintptr_t)arg1->mtx, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+        gSPMatrix(gDisplayListHead++, (uintptr_t)&D_8006F010, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
         if ((arg0->unk_00 == 1) || (arg0->unk_00 == 2) || (arg0->unk_00 == 3)) {
             GeoOverlay_DrawFadeQuad(arg0, arg1);
@@ -431,7 +433,7 @@ void Geo_NodeCamera(GraphNode* arg0) {
     temp_s0->vp->vp.vscale[1] = temp_s0->height * 2;
     temp_s0->vp->vp.vscale[2] = 0x1FF;
 
-    gSPViewport(gDisplayListHead++, (u32)temp_s0->vp & 0x1FFFFFFF);
+    gSPViewport(gDisplayListHead++, (uintptr_t)temp_s0->vp);
     gDPSetScissorFrac(gDisplayListHead++, G_SC_NON_INTERLACE, temp_s0->x * 4.0f, temp_s0->y * 4.0f,
                       (temp_s0->x + temp_s0->width) * 4.0f, (temp_s0->y + temp_s0->height) * 4.0f);
 
@@ -479,7 +481,7 @@ void Geo_NodeModelRoot(GraphNode* arg0) {
         GeoRender_InitMatrixStack();
         GeoRender_ResetTransformStack();
 
-        gSPMatrix(gDisplayListHead++, (u32)D_800AA8C8.unk_1000[D_800AA8C8.unk_10A0] & 0x1FFFFFFF,
+        gSPMatrix(gDisplayListHead++, (uintptr_t)D_800AA8C8.unk_1000[D_800AA8C8.unk_10A0],
                   G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
         D_8006F090 = arg;
@@ -505,7 +507,7 @@ void Geo_NodeModelPartRoot(GraphNode* arg0) {
 void Geo_NodeOrtho(GraphNode* arg0) {
     if ((D_8006F094 == NULL) && (arg0->children != NULL)) {
         gSPPerspNormalize(gDisplayListHead++, 0xFFFF);
-        gSPMatrix(gDisplayListHead++, (u32)D_8006F088->unk_40.mtx & 0x1FFFFFFF,
+        gSPMatrix(gDisplayListHead++, (uintptr_t)D_8006F088->unk_40.mtx,
                   G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
 
         Geo_NodeModelPartRoot(arg0);
@@ -514,13 +516,13 @@ void Geo_NodeOrtho(GraphNode* arg0) {
 
 void Geo_NodePerspective(GraphNode* arg0) {
     if ((D_8006F094 == NULL) && (arg0->children != NULL)) {
-        gSPLookAt(gDisplayListHead++, (u32)&D_8006F088->unk_60.lookat->l & 0x1FFFFFFF);
+        gSPLookAt(gDisplayListHead++, (uintptr_t)&D_8006F088->unk_60.lookat->l);
 
         gSPPerspNormalize(gDisplayListHead++, D_8006F088->unk_24.perspNorm);
 
-        gSPMatrix(gDisplayListHead++, (u32)D_8006F088->unk_24.mtx & 0x1FFFFFFF,
+        gSPMatrix(gDisplayListHead++, (uintptr_t)D_8006F088->unk_24.mtx,
                   G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-        gSPMatrix(gDisplayListHead++, (u32)D_8006F088->unk_60.p_mtxf & 0x1FFFFFFF,
+        gSPMatrix(gDisplayListHead++, (uintptr_t)D_8006F088->unk_60.p_mtxf,
                   G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
 
         Geo_NodeModelPartRoot(arg0);
@@ -710,6 +712,7 @@ void Geo_NodeAnimatedPart(GraphNode* arg0) {
     s32 sp30;
 
     sp30 = 0;
+    if (getenv("PORT_TRACE_GEO")) fprintf(stderr, "[animpart] scale=%d mtx=%d flags31=0x%x u30=%d node=%p\n", D_800AB970.unk_180, D_800AA8C8.unk_10A0, arg->unk_31, arg->unk_30, (void*)arg);
     sp90 = arg->unk_1E;
     sp78 = arg->unk_24;
 
@@ -805,7 +808,7 @@ void Geo_NodeModelPart(GraphNode* arg0) {
                 Geo_ProcessNodeChildren(arg0);
             }
 
-            sp34.rgba = 0xFFFFFF00;
+            sp34.rgba = PORT_BE32(0xFFFFFF00); /* PORT: .rgba holds the bytes r,g,b,a in memory order; the numeric 0xRRGGBBAA form needs a swap on this host */
             GeoRender_SetMaterialParams(sp34, 0xFF, 0);
             D_8006F09C = NULL;
         }
@@ -866,12 +869,14 @@ void Geo_NodeDisplayList(GraphNode* arg0) {
     Geo_ProcessNodeChildren(arg0);
 }
 
+extern void* Port_DescAt(void* base, int idx, size_t hostStride);
+
 void Geo_NodeShadowTexture(GraphNode* arg0) {
     Color_RGBA8_u32 sp44;
     unk_D_86002F34_alt10* arg = (unk_D_86002F34_alt10*)arg0;
     unk_D_86002F34_alt11_018* sp3C;
     unk_D_86002F34_alt11_018* sp38;
-    s32 sp34;
+    void* sp34; // PORT64: pointer (was s32)
 
     sp3C = NULL;
     sp38 = NULL;
@@ -883,12 +888,12 @@ void Geo_NodeShadowTexture(GraphNode* arg0) {
         sp44.rgba = arg->unk_24.rgba;
     }
 
-    if (arg->unk_1C >= 0) {
-        sp3C = &D_8006F0A0->unk_18[arg->unk_1C];
+    if (arg->unk_1C >= 0 && D_8006F0A0 != NULL) {
+        sp3C = Port_DescAt(D_8006F0A0->unk_18, arg->unk_1C, sizeof(unk_D_86002F34_alt11_018));
     }
 
-    if (arg->unk_1E >= 0) {
-        sp38 = &D_8006F0A0->unk_1C[arg->unk_1E];
+    if (arg->unk_1E >= 0 && D_8006F0A0 != NULL) {
+        sp38 = Port_DescAt(D_8006F0A0->unk_1C, arg->unk_1E, sizeof(unk_D_86002F34_alt11_018));
     }
 
     if (D_8006F09C != NULL) {
@@ -987,7 +992,7 @@ void Geo_NodeShadow(GraphNode* arg0) {
         gDPSetFogColor(gDisplayListHead++, 255, 255, 255, 0);
         gDPSetPrimColor(gDisplayListHead++, 0, D_8006F09C->lodFraction, 255, 255, 255, 255);
 
-        GeoRender_SubmitDisplayList((u32)temp_s1 & 0x1FFFFFFF, 1);
+        GeoRender_SubmitDisplayList((uintptr_t)temp_s1, 1);
         Geo_ProcessNodeChildren(arg0);
 
         D_800AA8C8.unk_10A0--;
@@ -1160,7 +1165,7 @@ void GeoRender_ApplyMaterialState(void) {
     gSPSetGeometryMode(gDisplayListHead++, G_SHADE | G_CULL_BACK | G_SHADING_SMOOTH);
     gSPClearGeometryMode(gDisplayListHead++, G_FOG | G_TEXTURE_GEN);
 
-    gSPLookAt(gDisplayListHead++, (u32)&D_8006F088->unk_60.lookat->l & 0x1FFFFFFF);
+    gSPLookAt(gDisplayListHead++, (uintptr_t)&D_8006F088->unk_60.lookat->l);
 
     if (D_8006F090->unk_1D != 0) {
         gSPSetGeometryMode(gDisplayListHead++, G_FOG);
@@ -1171,7 +1176,7 @@ void GeoRender_SetFogColor(unk_D_800ABB10* arg0) {
     if (arg0->unk_08.rgba != D_800ABCB8->unk_14.rgba) {
         GeoRender_SyncMaterialState();
 
-        gDPSetColor(gDisplayListHead++, G_SETFOGCOLOR, arg0->unk_08.rgba);
+        gDPSetColor(gDisplayListHead++, G_SETFOGCOLOR, PORT_BE32(arg0->unk_08.rgba)); /* PORT: .rgba holds the bytes r,g,b,a in memory order; the numeric 0xRRGGBBAA form needs a swap on this host */
         gDPSetRenderMode(gDisplayListHead++, D_8006F124[D_800ABB00][D_800ABCB8->unk_24], 0xC4000000);
 
         D_800ABCB8->unk_14.rgba = arg0->unk_08.rgba;
@@ -1179,7 +1184,7 @@ void GeoRender_SetFogColor(unk_D_800ABB10* arg0) {
 }
 
 void GeoRender_RestoreRenderMode(UNUSED unk_D_800ABB10* arg0) {
-    if (D_800ABCB8->unk_14.rgba & 0xFF) {
+    if (D_800ABCB8->unk_14.a) { // PORT: was .rgba & 0xFF (the alpha byte on the N64)
         GeoRender_SetRenderMode();
     }
 }
@@ -1205,6 +1210,7 @@ void GeoRender_SetCombineTableEntry(unk_D_800ABB10* arg0) {
 }
 
 void GeoRender_DisableTexture(UNUSED unk_D_800ABB10* arg0) {
+    if (getenv("PORT_TRACE_GEO") && (D_800ABCB8 < D_800ABB28 || D_800ABCB8 >= D_800ABB28 + 10)) fprintf(stderr, "[slot] D_800ABCB8 off=%ld slotidx=%d\n", (long)(D_800ABCB8 - D_800ABB28), (int)D_800ABCBC);
     if (D_800ABCB8->unk_18 != NULL) {
         gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF);
     }
@@ -1226,7 +1232,9 @@ void GeoRender_BindTexture(unk_D_800ABB10* arg0) {
         temp_t0 = arg0->unk_0C;
 
         if (arg0->unk_10 != NULL) {
-            gSPDisplayList(gDisplayListHead++, arg0->unk_10->unk_08);
+            // PORT: unk_10 is a palette descriptor {u16 count; data; display list} converted by Port_ConvertDesc, whose
+            // list address sits in the host descriptor's pointer field at +8 (read through unk_D_800ABB28 it is at +16)
+            gSPDisplayList(gDisplayListHead++, ((unk_D_86002F34_alt11_018*)arg0->unk_10)->texture);
         } else {
             gDPSetTextureLUT(gDisplayListHead++, G_TT_NONE);
         }
@@ -1238,7 +1246,9 @@ void GeoRender_BindTexture(unk_D_800ABB10* arg0) {
                 gDPSetTextureImage(gDisplayListHead++, temp_t0->fmt, G_IM_SIZ_8b, temp_t0->unk_02 >> 1,
                                    temp_t0->texture);
             }
-        } else if ((temp_t0->unk_02 % D_8006F2A4[temp_t0->unk_01]) == 0) {
+        } else if ((temp_t0->unk_01 < 4) && ((temp_t0->unk_02 % D_8006F2A4[temp_t0->unk_01]) == 0)) {
+            // PORT: some materials (attract intro, a few Pokémon) carry a size byte past this 4-entry table; the N64
+            // read whatever followed it. Those take the generic branch below.
             if (temp_t0->unk_01 == 3) {
                 var_a3 = 3;
             } else {
@@ -1325,6 +1335,7 @@ s16 GeoRender_NormalizeTextureFormat(s16 arg0) {
 void GeoRender_SubmitMaterial(s16 arg0, MtxF* arg1) {
     if ((D_8006F120 != 0) && !(D_800ABB04 & 2) && (D_800ABB10.unk_01 > 0)) {
         GeoRender_SetTextureMode(arg0);
+        if (getenv("PORT_TRACE_GEO") && GeoRender_NormalizeTextureFormat(arg0) > 9) fprintf(stderr, "[mat] layer=%d normalized=%d\n", arg0, GeoRender_NormalizeTextureFormat(arg0));
         GeoRender_SelectMaterialSlot(GeoRender_NormalizeTextureFormat(arg0));
         D_800ABB08 = 0;
 
@@ -1334,7 +1345,7 @@ void GeoRender_SubmitMaterial(s16 arg0, MtxF* arg1) {
             D_800ABCB8->unk_00 = 1;
         }
 
-        if (D_800ABB10.unk_08.rgba & 0xFF) {
+        if (D_800ABB10.unk_08.a) { // PORT: was .rgba & 0xFF (the alpha byte on the N64)
             GeoRender_SetFogColor(&D_800ABB10);
         } else {
             GeoRender_RestoreRenderMode(&D_800ABB10);
@@ -1359,7 +1370,7 @@ void GeoRender_SubmitMaterial(s16 arg0, MtxF* arg1) {
 
         if (arg1 != D_800ABCB8->unk_0C) {
             D_800ABCB8->unk_0C = arg1;
-            gSPMatrix(gDisplayListHead++, (u32)arg1 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            gSPMatrix(gDisplayListHead++, (uintptr_t)arg1, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         }
     }
 }
@@ -1367,8 +1378,8 @@ void GeoRender_SubmitMaterial(s16 arg0, MtxF* arg1) {
 void GeoRender_SubmitDisplayList(Gfx* arg0, s32 arg1) {
     if ((D_8006F120 != 0) && !(D_800ABB04 & 2) && (D_800ABB10.unk_01 > 0)) {
         if (arg0 != NULL) {
-            if (((u32)arg0 >= 0x81000000) && ((u32)arg0 < 0x90000000)) {
-                gSPDisplayList(gDisplayListHead++, Memmap_GetFragmentVaddr((u32)arg0));
+            if (((uintptr_t)arg0 >= 0x81000000) && ((uintptr_t)arg0 < 0x90000000)) {
+                gSPDisplayList(gDisplayListHead++, Memmap_GetFragmentVaddr((uintptr_t)arg0));
             } else {
                 gSPDisplayList(gDisplayListHead++, arg0);
             }
@@ -1380,6 +1391,9 @@ void GeoRender_SubmitDisplayList(Gfx* arg0, s32 arg1) {
     }
 }
 
+extern void* Port_ConvertDesc(void* link);
+extern void* Port_DescAt(void* base, int idx, size_t hostStride);
+
 void GeoRender_SetMaterialParams(Color_RGBA8_u32 arg0, u8 arg1, u32 arg2) {
     D_800ABB10.unk_08.rgba = arg0.rgba;
     D_800ABB10.unk_01 = arg1;
@@ -1387,11 +1401,11 @@ void GeoRender_SetMaterialParams(Color_RGBA8_u32 arg0, u8 arg1, u32 arg2) {
 }
 
 void GeoRender_SetMaterialTexture(s32 arg0, Color_RGBA8_u32 arg1, unk_D_86002F34_alt11_018* arg2, unk_D_86002F34_alt11_018* arg3,
-                   s32 arg4) {
+                   void* arg4) {
     D_800ABB10.unk_00 = arg0;
     D_800ABB10.unk_04.rgba = arg1.rgba;
-    D_800ABB10.unk_0C = arg2;
-    D_800ABB10.unk_10 = arg3;
+    D_800ABB10.unk_0C = Port_ConvertDesc(arg2); // PORT: descriptors in ROM blobs are big-endian with 32-bit pointers
+    D_800ABB10.unk_10 = Port_ConvertDesc(arg3);
     D_800ABB10.unk_14 = arg4;
 }
 
@@ -1416,7 +1430,7 @@ void GeoRender_InitMaterialState(s32 arg0, s32 arg1) {
         ptr->unk_0C = 0;
 
         ptr->unk_10.rgba = 0xFFFFFFFF;
-        ptr->unk_14.rgba = 0xFFFFFF00;
+        ptr->unk_14.rgba = PORT_BE32(0xFFFFFF00); /* PORT: .rgba holds the bytes r,g,b,a in memory order; the numeric 0xRRGGBBAA form needs a swap on this host */
 
         ptr->unk_18 = NULL;
         ptr->unk_1C = NULL;
@@ -1433,7 +1447,7 @@ void GeoRender_InitMaterialState(s32 arg0, s32 arg1) {
     D_800ABB10.unk_02 = 0;
     D_800ABB10.unk_03 = 0;
     D_800ABB10.unk_04.rgba = -1;
-    D_800ABB10.unk_08.rgba = 0xFFFFFF00;
+    D_800ABB10.unk_08.rgba = PORT_BE32(0xFFFFFF00); /* PORT: .rgba holds the bytes r,g,b,a in memory order; the numeric 0xRRGGBBAA form needs a swap on this host */
     D_800ABB10.unk_0C = 0;
     D_800ABB10.unk_10 = 0;
     D_800ABB10.unk_14 = 0;

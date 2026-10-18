@@ -50,7 +50,10 @@ typedef struct unk_D_80070F84 {
     /* 0x14 */ char unk14[0x3];
 } unk_D_80070F84; // size = 0x17
 
-extern PokemonStats gBaseStats[];
+// PORT: gBaseStats is an interior alias the original linker script places 0x1C bytes before D_80070FA0 (1-based species
+// index into the base-stats table); the host has no linker alias, so it is spelled out.
+extern unk_D_80070F84 D_80070FA0[];
+#define gBaseStats ((PokemonStats*)((u8*)D_80070FA0 - 0x1C))
 extern unk_D_80070F84 D_80070FA0[]; //TODO: is this typed correctly?
 
 typedef struct unk_D_80071D88 {

@@ -730,8 +730,8 @@ void BattleScene_TickHudTimers(void) {
     BattlerState* sp1C = &D_84390010[0]->unk_654;
     BattlerState* sp18 = &D_84390010[1]->unk_654;
 
-    if ((gSessionContext.timeLimitsEnabled != 0) && (D_84390010[1]->unk_728.unk_168->unk_1C == 0x103) &&
-        (D_84390010[0]->unk_728.unk_168->unk_1C == 0x17)) {
+    if ((gSessionContext.timeLimitsEnabled != 0) && (D_84390010[1]->unk_728.unk_168->unk_18.x == 0x103) &&
+        (D_84390010[0]->unk_728.unk_168->unk_18.x == 0x17)) {
         BattleHud_DrawBattleTimer(0x101, 0x64);
         if (D_84390134 == 0) {
             if (sp1C->unk_10 != 3) {

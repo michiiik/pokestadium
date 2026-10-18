@@ -232,7 +232,7 @@ void showDebuggJoystickInfo(void);
 void minigameDebuggVectorEditor(void);
 
 void MiniFx_Init(void);
-s32 MiniFx_AllocEmitter(void);
+intptr_t MiniFx_AllocEmitter(void);
 void MiniFx_FreeEmitter(ParticleEmitter* arg0);
 void MiniFx_ConfigureOneShotEmitter(s32 arg0, f32 arg1, Vec3f arg2, ParticleUpdateCallback arg3, ParticleDescriptor* arg4, s16 arg5, u8 arg6, u8 arg7);
 void MiniFx_ConfigureEmitterWithPeriodAndRepeat(s32 arg0, s32 arg1, s8 arg2, f32 arg3, Vec3f arg4, ParticleUpdateCallback arg7, ParticleDescriptor* arg8, s16 arg9, u8 argA, u8 argB);

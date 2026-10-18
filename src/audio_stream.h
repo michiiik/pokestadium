@@ -17,7 +17,7 @@ void AudioStream_Stop(u32, u32);
 s32 AudioStream_IsPlaying(u32);
 void AudioStream_SetEnabled(s32);
 void func_80044EA4(void);
-void AudioStream_DmaReadChunk(u32 arg0, u32 arg1, u32 arg2, OSMesgQueue* arg3);
+void AudioStream_DmaReadChunk(uintptr_t arg0, u32 arg1, u32 arg2, OSMesgQueue* arg3);
 void AudioStream_OpenChannel(unk_D_800FCED8*, s32, s32);
 void AudioStream_RefillAndDecode(unk_D_800FCED8*);
 u32 AudioStream_ConsumeSamples(unk_D_800FCED8*, u32);

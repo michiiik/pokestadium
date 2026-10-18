@@ -252,7 +252,7 @@ s32 BattlePrep_BadgeCarouselGeoCallback(s32 arg0, unk_func_80011B94* arg1);
 s32 BattlePrep_BadgeCarouselGlowCallback(s32 arg0, unk_func_80011B94* arg1);
 s32 BattlePrep_BadgeCarouselTextureCallback(s32 arg0, unk_func_80011B94* arg1);
 s32 BattlePrep_BadgeCarouselGlowCallback2(s32 arg0, unk_func_80011B94* arg1);
-void BattlePrep_RenderBadgeGlowTexture(s32 arg0);
+void BattlePrep_RenderBadgeGlowTexture(intptr_t arg0);
 void BattlePrep_ResetBadgeSlideSlots(unk_D_84B259E8* arg0);
 void BattlePrep_BadgeSlideInLeft(unk_D_84B259E8* arg0);
 void BattlePrep_BadgeSlideInRight(unk_D_84B259E8* arg0);
@@ -268,7 +268,7 @@ void BattlePrep_InitBadgeCarouselScene(unk_D_84B259E8* arg0, BinArchive* arg1, B
 s32 BattlePrepRoster_DrawIconVariantA(s32 arg0, unk_func_80011B94* arg1);
 s32 BattlePrepRoster_DrawIconVariantB(s32 arg0, unk_func_80011B94* arg1);
 s32 BattlePrepRoster_DrawTrainerBadge(s32 arg0, unk_func_80011B94* arg1);
-s32 BattlePrepRoster_ScrollBackgroundTexture(s32 arg0, unk_func_80011B94* arg1);
+intptr_t BattlePrepRoster_ScrollBackgroundTexture(s32 arg0, unk_func_80011B94* arg1);
 s32 BattlePrepRoster_ConvergeIconsStep(unk_D_84B25A28* arg0, s16 arg1);
 void BattlePrepRoster_UpdateCameraSwoop(unk_D_84B25A28* arg0, s16 arg1);
 s32 BattlePrepRoster_ZoomStepNTSC(unk_D_84B25A28* arg0, s16 arg1);

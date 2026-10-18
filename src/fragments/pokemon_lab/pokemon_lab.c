@@ -2980,7 +2980,7 @@ s32 Lab_HandleMainMenuInput(WidgetMainMenu* arg0) {
 }
 
 void Lab_MainMenuThread(WidgetMainMenu* arg0) {
-    s32 sp34;
+    intptr_t sp34;
     s32 i;
     UNUSED s32 pad;
     func88506074 temp_s0;
@@ -3061,10 +3061,10 @@ void Lab_DrawFrame(WidgetMainMenu* arg0) {
 
     BgStage_DrawFrame();
 
-    func1 = Memmap_GetFragmentVaddr((u32)WidgetTree_Update);
+    func1 = Memmap_GetFragmentVaddr((uintptr_t)WidgetTree_Update);
     func1(arg0);
 
-    func2 = Memmap_GetFragmentVaddr((u32)WidgetTree_Draw);
+    func2 = Memmap_GetFragmentVaddr((uintptr_t)WidgetTree_Draw);
     func2(arg0, 0, 0);
 
     BgStage_AdvanceFrame();
@@ -3110,7 +3110,7 @@ s32 Lab_Main(s32 arg0, UNUSED s32 arg1) {
 
     Lab_BuildMainMenu(sp38, 0, 0, arg0, sp40, sp2C, sp44);
 
-    sp30 = ALIGN16((u32)mem_pool_alloc(sp44, sizeof(func_88002628_sp38)));
+    sp30 = ALIGN16((uintptr_t)mem_pool_alloc(sp44, sizeof(func_88002628_sp38)));
     osCreateThread(&sp30->thread, 0x32, Lab_MainMenuThread, sp38, sp34 + 0x1000, osGetThreadPri(NULL) - 1);
     Ui_InitInputMessageQueue();
     Input_SetRepeatController(gPlayer1Controller);

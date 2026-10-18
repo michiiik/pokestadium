@@ -190,7 +190,7 @@ Acmd* n_alAudioFrame(Acmd* cmdList, s32* cmdLen, s16* outBuf, s32 outLen) {
 #ifndef N_MICRO
         aSegment(cmdPtr++, 0, 0);
 #endif
-        n_syn->sv_dramout = (s32)lOutBuf;
+        n_syn->sv_dramout = (intptr_t)lOutBuf;
         cmdlEnd = n_alSavePull(n_syn->curSamples, cmdPtr);
 
         outLen -= nOut;

@@ -1077,6 +1077,9 @@ static unk_D_80079070 D_80079070[151] = {
 u8 D_80079364 = 0;
 
 void Cry_Play(u32 arg0, u32 arg1) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     UNUSED s32 pad[2];
     u32 sp24;
     u32 var_a3;
@@ -1239,5 +1242,8 @@ void Cry_Play(u32 arg0, u32 arg1) {
 }
 
 void Cry_PlayVariant4(u32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     Cry_Play(arg0, 4);
 }

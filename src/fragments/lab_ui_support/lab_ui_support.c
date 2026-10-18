@@ -202,7 +202,7 @@ s32 LabUI_ConfirmDialogHandleInput(unk_func_889000C4* arg0, Controller* arg1) {
 
 s32 LabUI_RunConfirmDialog(unk_func_889000C4* arg0, Controller* arg1, s32 arg2) {
     s32 temp_v0;
-    u32 var_s0 = 0;
+    uintptr_t var_s0 = 0;
 
     while (var_s0 == 0) {
         Ui_SendMessageAndPollInput(var_s0);

@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "poke_icon.h"
 #include "src/geo_node.h"
 #include "src/geo_render.h"
@@ -15,10 +17,10 @@
 static DisplayObject* D_800AC830;
 static s32 D_800AC834;
 
-s32 PokeIcon_CapturePreviewGeoNode(s32, GraphNode*);
-s32 PokeIcon_CaptureGeoNode(s32, GraphNode*);
+intptr_t PokeIcon_CapturePreviewGeoNode(s32 arg0, GraphNode* arg1);
+intptr_t PokeIcon_CaptureGeoNode(s32 arg0, GraphNode* arg1);
 
-s32 PokeIcon_CaptureGeoNode(s32 arg0, GraphNode* arg1) {
+intptr_t PokeIcon_CaptureGeoNode(s32 arg0, GraphNode* arg1) {
     if (arg0 == 0) {
         D_800ABE10.unk_A04.unk_0C = arg1;
     }
@@ -26,7 +28,7 @@ s32 PokeIcon_CaptureGeoNode(s32 arg0, GraphNode* arg1) {
 }
 
 void PokeIcon_InitRenderScene(unk_func_8001A024* arg0, s16 arg1, s16 arg2) {
-    static u32 D_8006F350[] = {
+    static uintptr_t D_8006F350[] = { // PORT64: holds addresses
         0x0C00FFFF,    0x05000000, 0x0B00001E, 0x00000000, 0x00300030, 0x00000000, 0x0000000A, 0x015404E2, 0x05000000,
         0x0D000000,    0x05000000, 0x14000000, 0x002D0019, 0xFFFFFF32, 0x14000000, 0xFFD300CD, 0x80808032, 0x16646464,
         0x0F000001,    0x05000000, 0x1F000000, 0x00000000, 0x00000000, 0xFF060000, 0x00640064, 0x00640000, 0x08000000,
@@ -189,7 +191,8 @@ void PokeIcon_AdjustImageColors(u16* arg0, s32 a1, arg1_func_80010CA8 arg2) {
     arg1 -= 2;
     // clang-format off
     while (cond != 0) {
-        *arg0 = Color_AdjustRGB5551(*arg0, arg2);        cond = arg1 >= 2;        arg1 -= 2;
+        // PORT: texels are big-endian RGBA5551 (the renderer reads image memory in N64 byte order)
+        *arg0 = Port_Swap16(Color_AdjustRGB5551(Port_Swap16(*arg0), arg2));        cond = arg1 >= 2;        arg1 -= 2;
         arg0++;
     }
     // clang-format on
@@ -207,6 +210,13 @@ void PokeIcon_RenderSlot(unk_func_8001A024* arg0, s32 arg1) {
     unk_func_8001A024_008* temp_s1;
     ModelNodeView* sp2C;
 
+    if (getenv("PORT_TRACE_ICON")) {
+        fprintf(stderr, "[icon] render slot %d species %ld img %p model %p\n", arg1, (long)(arg0->unk_08[arg1].unk_14.raw & 0xFFFF),
+                (void*)arg0->unk_08[arg1].unk_0C->img_p, (void*)arg0->unk_04->loadedModel);
+    }
+    if (arg0->unk_04->loadedModel == NULL || arg0->unk_04->loadedModel->modelRoot == NULL) {
+        return; // PORT: the model blob could not be set up; leave the slot blank instead of crashing
+    }
     sp34 = arg0->unk_0C->children;
     temp_s1 = &arg0->unk_08[arg1];
     sp2C = arg0->unk_04->loadedModel->modelRoot->unk_00[0];
@@ -225,7 +235,7 @@ void PokeIcon_RenderSlot(unk_func_8001A024* arg0, s32 arg1) {
         sp38.x = (s16)(arg0->unk_18[temp_s1->unk_14.raw - 1].unk_14 >> 0x10) >> 6;
         sp38.y = (s16)(arg0->unk_18[temp_s1->unk_14.raw - 1].unk_14 >> 6) >> 4;
         sp38.z = (s16)(arg0->unk_18[temp_s1->unk_14.raw - 1].unk_14 << 6) >> 6;
-        Model_InitDisplayObject(arg0->unk_10, 0, temp_s1->unk_14.unk_02, sp2C);
+        Model_InitDisplayObject(arg0->unk_10, 0, temp_s1->unk_14.raw & 0xFFFF /* PORT: was .unk_02 */, sp2C);
         ModelAnim_SetAnimation(arg0->unk_10, 1);
         ModelAnim_SetFrame(arg0->unk_10, arg0->unk_18[temp_s1->unk_14.raw - 1].unk_01);
     }
@@ -277,7 +287,7 @@ s32 PokeIcon_ProcessNextSlot(unk_func_8001A024* arg0, s32 arg1) {
                 if (temp_v0_2->unk_00 & 2) {
                     PokeIcon_RequestFrameLoad(arg0->unk_04, *temp_v0_2->unk_14.ptr, temp_v0_2->unk_10);
                 } else {
-                    PokeIcon_RequestFrameLoad(arg0->unk_04, temp_v0_2->unk_14.unk_02, temp_v0_2->unk_10);
+                    PokeIcon_RequestFrameLoad(arg0->unk_04, temp_v0_2->unk_14.raw & 0xFFFF /* PORT: was .unk_02 */, temp_v0_2->unk_10);
                 }
                 arg0->unk_02 = sp20;
                 break;
@@ -325,7 +335,7 @@ s32 PokeIcon_ProcessAllSlots(unk_func_8001A024* arg0, s32 arg1) {
                     temp_s1->unk_00 |= 4;
                 }
             } else {
-                PokeIcon_RequestFrameLoad(arg0->unk_04, temp_s1->unk_14.unk_02, sp48);
+                PokeIcon_RequestFrameLoad(arg0->unk_04, temp_s1->unk_14.raw & 0xFFFF /* PORT: was .unk_02 */, sp48);
             }
 
             PokeIcon_WaitFrameLoad(arg0->unk_04);
@@ -369,7 +379,7 @@ s32 PokeIcon_RenderNextSlotBlocking(unk_func_8001A024* arg0, s32 arg1) {
             if (temp_s1->unk_00 & 2) {
                 PokeIcon_RequestFrameLoad(arg0->unk_04, *temp_s1->unk_14.ptr, temp_s1->unk_10);
             } else {
-                PokeIcon_RequestFrameLoad(arg0->unk_04, temp_s1->unk_14.unk_02, temp_s1->unk_10);
+                PokeIcon_RequestFrameLoad(arg0->unk_04, temp_s1->unk_14.raw & 0xFFFF /* PORT: was .unk_02 */, temp_s1->unk_10);
             }
             PokeIcon_WaitFrameLoad(arg0->unk_04);
             arg0->unk_08[var_s0].unk_00 &= ~1;
@@ -468,7 +478,7 @@ void PokeIcon_LoadModelTextureForMon(u16* arg0, s32 arg1, BattleMon* arg2) {
 }
 #endif
 
-s32 PokeIcon_CapturePreviewGeoNode(s32 arg0, GraphNode* arg1) {
+intptr_t PokeIcon_CapturePreviewGeoNode(s32 arg0, GraphNode* arg1) {
     if (arg0 == 0) {
         D_800AC830 = arg1;
     }
@@ -476,7 +486,7 @@ s32 PokeIcon_CapturePreviewGeoNode(s32 arg0, GraphNode* arg1) {
 }
 
 void PokeIcon_InitPreviewScene(unk_func_8001B1FC* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4) {
-    static u32 D_8006F3E0[] = {
+    static uintptr_t D_8006F3E0[] = { // PORT64: holds addresses
         0x0C00FFFF,    0x05000000, 0x0B00001E, 0x00000000, 0x010000E0, 0x00000000, 0x0000000A, 0x015404E2, 0x05000000,
         0x0D000000,    0x05000000, 0x14000000, 0x002D013B, 0xFFFFFF32, 0x14000000, 0xFFD30087, 0x80808032, 0x16646464,
         0x0F000001,    0x05000000, 0x1F000000, 0x00000000, 0x00000000, 0xFF060000, 0x00640064, 0x00640000, 0x08000000,
@@ -659,7 +669,7 @@ void PokeIcon_UpdatePreview(unk_func_8001B1FC* arg0) {
 
 void PokeIcon_DrawPreview(unk_func_8001B1FC* arg0) {
     s32 var_v0;
-    s32 var_s2;
+    intptr_t var_s2;
     s32 i;
 
     if (arg0->unk_0C == 0) {

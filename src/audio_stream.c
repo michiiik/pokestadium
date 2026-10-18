@@ -23,6 +23,9 @@ OSMesgQueue D_800FCF40;
 OSMesg D_800FCF58;
 
 void AudioStream_Init(ALHeap* arg0, u32 arg1, u32 arg2) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     s32 i;
 
     D_800FCEE8 = arg1 >> 1;
@@ -32,7 +35,7 @@ void AudioStream_Init(ALHeap* arg0, u32 arg1, u32 arg2) {
         D_800FCED8[i] = alHeapDBAlloc(NULL, 0, arg0, 1, sizeof(unk_D_800FCED8));
         D_800FCF28[i] = alHeapDBAlloc(NULL, 0, arg0, sizeof(*D_800FCF28[0]) / 2, 2);
 
-        D_800FCEE0[i] = (u32)D_800FCED8[i] + 0x198;
+        D_800FCEE0[i] = (uintptr_t)D_800FCED8[i] + 0x198;
         D_800FCF30[i] = 0;
         D_800FCF38[i] = 0x400;
         D_800FCEF0[i] = 2;
@@ -51,6 +54,9 @@ void AudioStream_Init(ALHeap* arg0, u32 arg1, u32 arg2) {
 }
 
 void AudioStream_Start(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     u32 temp_a0;
 
     if ((arg0 < 2) && (D_800785F0 == 0)) {
@@ -75,6 +81,9 @@ void AudioStream_Start(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
 }
 
 void AudioStream_Stop(u32 arg0, u32 arg1) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     u32 temp_a0;
 
     if (arg0 < 2) {
@@ -92,6 +101,9 @@ void AudioStream_Stop(u32 arg0, u32 arg1) {
 }
 
 s32 AudioStream_IsPlaying(u32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     if (D_800FCEF0[arg0] == 2) {
         return 0;
     }
@@ -99,6 +111,9 @@ s32 AudioStream_IsPlaying(u32 arg0) {
 }
 
 void AudioStream_SetEnabled(s32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     if (arg0 != 0) {
         D_800785F0 = 0;
     } else {
@@ -107,6 +122,9 @@ void AudioStream_SetEnabled(s32 arg0) {
 }
 
 void func_80044EA4(void) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     UNUSED s32 pad;
     u32 j;
     u32 var_s7;
@@ -203,7 +221,10 @@ void func_80044EA4(void) {
 }
 
 
-void AudioStream_DmaReadChunk(u32 arg0, u32 arg1, u32 arg2, OSMesgQueue* arg3) {
+void AudioStream_DmaReadChunk(uintptr_t arg0, u32 arg1, u32 arg2, OSMesgQueue* arg3) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     OSIoMesg sp48;
     u32 var_s1;
     u32 var_s2;
@@ -238,6 +259,9 @@ void AudioStream_DmaReadChunk(u32 arg0, u32 arg1, u32 arg2, OSMesgQueue* arg3) {
 }
 
 void AudioStream_OpenChannel(unk_D_800FCED8* arg0, s32 arg1, s32 arg2) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     bzero(&arg0->unk_0000, sizeof(unk_D_800FCED8_0000));
 
     arg0->unk_0000.gsm.nrp = 0x28;
@@ -263,6 +287,9 @@ void AudioStream_OpenChannel(unk_D_800FCED8* arg0, s32 arg1, s32 arg2) {
 }
 
 void AudioStream_RefillAndDecode(unk_D_800FCED8* arg0) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     s32 var_a2;
     s32 var_s2;
     u32 var_v1;
@@ -321,6 +348,9 @@ void AudioStream_RefillAndDecode(unk_D_800FCED8* arg0) {
 }
 
 u32 AudioStream_ConsumeSamples(unk_D_800FCED8* arg0, u32 arg1) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     u32 temp_v0;
     u32 var_a2;
 
@@ -342,11 +372,17 @@ u32 AudioStream_ConsumeSamples(unk_D_800FCED8* arg0, u32 arg1) {
 }
 
 void AudioStream_MarkLoaded(unk_D_800FCED8* arg0) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     if (arg0->unk_25D1 == 2) {
         arg0->unk_25D1 = 3;
     }
 }
 
 void AudioStream_Abort(unk_D_800FCED8* arg0) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     arg0->unk_25D1 = 4;
 }

@@ -66,7 +66,7 @@ static Gfx D_84B17080[] = {
     gsSP2Triangles(20, 21, 22, 0, 20, 22, 23, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B17240[] = {
+static uintptr_t D_84B17240[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000, 0x00000000, D_84B16F00,
     0x05000000, 0x22050000, D_84B17080, 0x06000000, 0x01000000,
 };
@@ -107,7 +107,7 @@ static Gfx D_84B173A8[] = {
     gsSP2Triangles(16, 17, 18, 0, 16, 18, 19, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B17528[] = {
+static uintptr_t D_84B17528[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000, 0x00000000, D_84B17268,
     0x05000000, 0x22050000, D_84B173A8, 0x06000000, 0x01000000,
 };

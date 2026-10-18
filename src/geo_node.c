@@ -1,7 +1,10 @@
 #include "global.h"
 #include "geo_node.h"
+#include <stdio.h>
+#include <stdlib.h>
 #include "matrix.h"
 #include "util.h"
+#include "src/jpeg_stream.h"
 
 void GeoNode_Init(GraphNode* arg0, u8 arg1) {
     if (arg0 != NULL) {
@@ -18,9 +21,11 @@ void GeoNode_Init(GraphNode* arg0, u8 arg1) {
 }
 
 void GeoNode_SetCallback(GraphNode* arg0, GraphNodeCallback arg1, void* arg2) {
+    if (getenv("PORT_TRACE_GEO")) fprintf(stderr, "[cb] in=%p\n", (void*)arg1);
     if (arg1 != NULL) {
-        arg1 = Util_ConvertAddrToVirtAddr(arg1);
+        arg1 = Port_ResolveCode((uintptr_t)arg1);
     }
+    if (getenv("PORT_TRACE_GEO")) fprintf(stderr, "[cb] out=%p\n", (void*)arg1);
 
     if (arg0 != NULL) {
         arg0->callbackArg = arg2;
@@ -151,7 +156,7 @@ unk_D_86002F34_alt17* GeoNode_CreateClearDepth(MainPoolState* arg0, unk_D_86002F
     return arg1;
 }
 
-unk_D_8690A610* GeoNode_CreateFog(s32 arg0, unk_D_8690A610* arg1, s16 arg2, s16 arg3, u8 r, u8 g, u8 b, u8 a) {
+unk_D_8690A610* GeoNode_CreateFog(intptr_t arg0, unk_D_8690A610* arg1, s16 arg2, s16 arg3, u8 r, u8 g, u8 b, u8 a) {
     if (arg0 != 0) {
         arg1 = MainPool_AllocAligned(arg0, sizeof(unk_D_8690A610), 4);
     }
@@ -159,7 +164,7 @@ unk_D_8690A610* GeoNode_CreateFog(s32 arg0, unk_D_8690A610* arg1, s16 arg2, s16 
     if (arg1 != NULL) {
         arg1->unk_18.unk_00 = arg2;
         arg1->unk_18.unk_02 = arg3;
-        arg1->unk_18.unk_04.rgba = (r << 0x18) | (g << 0x10) | (b << 8) | a;
+        arg1->unk_18.unk_04.rgba = PORT_BE32((r << 0x18) | (g << 0x10) | (b << 8) | a); /* PORT: .rgba holds the bytes r,g,b,a in memory order; the numeric 0xRRGGBBAA form needs a swap on this host */
         GeoNode_Init(arg1, 0xA);
     }
 
@@ -341,8 +346,8 @@ DisplayObject* GeoNode_CreateModelPart(MainPoolState* arg0, DisplayObject* arg1,
         arg1->lodFraction = 0xFF;
         arg1->textureMode = 0;
         arg1->effectSlot = 0;
-        arg1->fogColor.rgba = 0xFFFFFF00;
-        arg1->textureTint.rgba = 0xFFFFFF00;
+        arg1->fogColor.rgba = PORT_BE32(0xFFFFFF00); /* PORT: .rgba holds the bytes r,g,b,a in memory order; the numeric 0xRRGGBBAA form needs a swap on this host */
+        arg1->textureTint.rgba = PORT_BE32(0xFFFFFF00);
         arg1->transformAnim.animationId = 0;
         arg1->transformAnim.data = NULL;
         arg1->transformAnim.frameFixed = 0;
@@ -429,7 +434,7 @@ unk_D_86002F34_alt10* GeoNode_CreateShadowTexture(MainPoolState* arg0, unk_D_860
         arg1->unk_18 = arg4;
         arg1->unk_1C = arg5;
         arg1->unk_1E = arg6;
-        arg1->unk_24.rgba = (r << 0x18) | (g << 0x10) | (b << 8) | a;
+        arg1->unk_24.rgba = PORT_BE32((r << 0x18) | (g << 0x10) | (b << 8) | a); /* PORT: .rgba holds the bytes r,g,b,a in memory order; the numeric 0xRRGGBBAA form needs a swap on this host */
         GeoNode_Init(arg1, 0x1A);
     }
 
@@ -463,7 +468,7 @@ unk_D_86002F34_alt24* GeoNode_CreateGroup(MainPoolState* arg0, unk_D_86002F34_al
         arg1->unk_18 = arg7;
         arg1->unk_1A = arg8;
         arg1->unk_24 = arg9;
-        arg1->unk_28.rgba = (r << 0x18) | (g << 0x10) | (b << 8) | a;
+        arg1->unk_28.rgba = PORT_BE32((r << 0x18) | (g << 0x10) | (b << 8) | a); /* PORT: .rgba holds the bytes r,g,b,a in memory order; the numeric 0xRRGGBBAA form needs a swap on this host */
         GeoNode_Init(arg1, 0x1C);
         arg1->node.renderLayer = arg2;
     }

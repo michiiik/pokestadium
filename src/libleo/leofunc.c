@@ -54,7 +54,7 @@ void leoInitialize(OSPri compri, OSPri intpri, OSMesg* command_que_buf, u32 cmd_
     osCreateMesgQueue(&LEOpost_que, LEOpost_que_buf, ARRAY_COUNT(LEOpost_que_buf));
     osCreateThread(&LEOcommandThread, 1, leomain, NULL, LEOcommandThreadStack, compri);
     osStartThread(&LEOcommandThread);
-    osCreateThread(&LEOinterruptThread, 1, leointerrupt, NULL, (u32)&LEOcommand_que,
+    osCreateThread(&LEOinterruptThread, 1, leointerrupt, NULL, (uintptr_t)&LEOcommand_que,
                    intpri); // this is not a stack. TODO: what is this call doing?
     osStartThread(&LEOinterruptThread);
     osSetEventMesg(OS_EVENT_CART, &LEOevent_que, (OSMesg)0x30000);

@@ -88,7 +88,7 @@ typedef struct unk_D_82F20A10 {
     /* 0x10 */ s16 unk_10;
     /* 0x14 */ BattleMon* unk_14;
     /* 0x18 */ unk_D_82F144D0* unk_18;
-    /* 0x1C */ s32 unk_1C;
+    /* 0x1C */ u8* unk_1C; // PORT64: the preview image (PokeIcon_RenderPreview), was s32
     /* 0x20 */ ModelLoadContext* unk_20;
     /* 0x24 */ unk_func_8001B1FC* unk_24;
 } unk_D_82F20A10; // size >= 0x28
@@ -215,7 +215,7 @@ typedef struct unk_D_82F21238 {
     /* 0x1A */ s16 unk_1A;
     /* 0x1C */ s16 unk_1C;
     /* 0x1E */ s16 unk_1E;
-    /* 0x20 */ s32 unk_20;
+    /* 0x20 */ u8* unk_20; // PORT64: the preview image (PokeIcon_RenderPreview), was s32
     /* 0x24 */ BattleMon* unk_24;
     /* 0x28 */ ModelLoadContext* unk_28;
     /* 0x2C */ unk_func_8001B1FC* unk_2C;
@@ -296,7 +296,7 @@ void Trade_UpdateInfoBoxChoose(unk_D_82F20A10* arg0);
 void Trade_UpdateInfoBoxCloseOut(unk_D_82F20A10* arg0);
 void Trade_DrawSolidFillRect(s16 arg0, s16 arg1, s16 arg2, s16 arg3, u8 arg4, u8 arg5, u8 arg6);
 void Trade_DrawFilledFrame(s16 arg0, s16 arg1, s16 arg2, s16 arg3, u8 arg4, u8 arg5, u8 arg6);
-void Trade_DrawMovingSheen(s16 arg0, s16 arg1, s32 arg2);
+void Trade_DrawMovingSheen(s16 arg0, s16 arg1, u8* arg2);
 void Trade_DrawNumberTwoDigits(s16 arg0, s16 arg1, s16 arg2);
 s32 Trade_IsMoveInvalid(s32 arg0);
 void Trade_DrawInfoBox(unk_D_82F20A10* arg0);

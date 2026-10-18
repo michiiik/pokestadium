@@ -5,6 +5,8 @@
 #include "src/memory.h"
 #include "src/stage_loader.h"
 
+void LabPC_ShowBoxes(FontContext* arg0); // defined in lab_pc_1A9780.c
+
 FontContext* LabPC_Enter(void) {
     FontContext* sp1C;
 

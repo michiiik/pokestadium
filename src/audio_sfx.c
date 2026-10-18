@@ -16,6 +16,9 @@ static s32 D_80078A4C = 0;
 static u8 D_80078A50 = 0;
 
 s32 Audio_PlaySoundEffectById(u32 sfx) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     u32 temp_v0_3;
     s32 sp28;
     f32 sp24;

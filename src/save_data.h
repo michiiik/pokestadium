@@ -7,7 +7,8 @@
 
 typedef struct GameOptions {
     /* 0x00 */ s16 unk_00;
-    /* 0x04 */ struct GameOptions* unk_04;
+    /* 0x04 */ u32 unk_04; // PORT: a 32-bit word handed to/from the GB Tower (was a pointer, 8 bytes on the host,
+                           // which moved the progress array of SaveOptionsRecord from 0x0C to 0x18)
 } GameOptions; // size = 0x8
 
 typedef struct ModeSettings {

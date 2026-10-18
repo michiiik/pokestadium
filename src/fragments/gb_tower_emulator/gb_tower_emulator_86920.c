@@ -1,8 +1,9 @@
 #include "global.h"
 
+// PORT64: a bump allocator; unk_00/unk_04 are addresses (were s32)
 typedef struct unk_func_81206FA0 {
-  /* 0x00 */ s32 unk_00;
-  /* 0x04 */ s32 unk_04;
+  /* 0x00 */ uintptr_t unk_00;
+  /* 0x04 */ uintptr_t unk_04;
   /* 0x08 */ s32 unk_08;
   /* 0x0C */ s32 unk_0C;
 } unk_func_81206FA0; // size = 0x10
@@ -61,10 +62,10 @@ s32 D_81234704;
 s32 D_81234708;
 s32 D_8123470C;
 
-u32 GbApu_AllocZeroed(unk_func_81206FA0* arg0, s32 arg1) {
+uintptr_t GbApu_AllocZeroed(unk_func_81206FA0* arg0, s32 arg1) {
   s32 temp_v0;
-  u32 temp_a2;
-  u32 var_a1;
+  uintptr_t temp_a2;
+  uintptr_t var_a1;
   temp_v0 = ALIGN16(arg1);
   temp_a2 = arg0->unk_04;
   if ((arg0->unk_00 + arg0->unk_08) >= (temp_a2 + temp_v0)) {
@@ -80,8 +81,8 @@ u32 GbApu_AllocZeroed(unk_func_81206FA0* arg0, s32 arg1) {
   return temp_a2;
 }
 
-s32 GbApu_Alloc(unk_func_81206FA0* arg0, s32 arg1) {
-  s32 temp_a2;
+uintptr_t GbApu_Alloc(unk_func_81206FA0* arg0, s32 arg1) {
+  uintptr_t temp_a2;
   u32 temp_v0;
 
   temp_v0 = ALIGN16(arg1);
@@ -96,7 +97,7 @@ s32 GbApu_Alloc(unk_func_81206FA0* arg0, s32 arg1) {
 }
 
 
-void GbApu_InitAllocator(unk_func_81206FA0* arg0, s32 arg1, s32 arg2) {
+void GbApu_InitAllocator(unk_func_81206FA0* arg0, intptr_t arg1, s32 arg2) {
   arg0->unk_00 = ALIGN16(arg1);
   arg0->unk_04 = ALIGN16(arg1);
   arg0->unk_08 = (s32) (arg2 - (arg1 & 0xF));
@@ -116,7 +117,8 @@ void func_812070A0(void) {
         D_81231450[i] = 0;
     }
     var_v0_2 = D_81234650;
-    var_v1 = (u32) ((s32) &D_81234700 - (s32) D_81234650) >> 3;
+    // PORT: cleared D_81234650 up to D_81234700 (the variables that follow it on the N64); host layout differs
+    var_v1 = (u32) (sizeof(D_81234650) >> 3) - 1;
     if ((s32) var_v1 >= 0) {
         do {
             var_v1--;
@@ -139,7 +141,7 @@ void func_812070A0(void) {
     } while (var_v1_2 < (s16*) &D_812346F2);
     D_812346C8 = 0;
     D_812346D4 = 0;
-    GbApu_InitAllocator(&D_81234680, (s32) D_81231450, D_812286F0);
+    GbApu_InitAllocator(&D_81234680, (intptr_t) D_81231450, D_812286F0);
     for (i = 0; i < 3; i++) {
         D_812346E0[i] = (s16*) GbApu_Alloc(&D_81234680, 0xFC0);
         var_v1_3 = D_812346E0[i];

@@ -1,3 +1,4 @@
+#include "src/memmap.h"
 #include "credits.h"
 #include "src/geo_node.h"
 #include "src/geo_render.h"
@@ -96,7 +97,7 @@ unk_D_86A025A0 D_86A025A0[9] = {
 u8 D_86A025C4 = 0;
 u32 D_86A025C8 = 0;
 u16 D_86A025CC = 0;
-u32 D_86A025D0[] = {
+uintptr_t D_86A025D0[] = { // PORT64: holds addresses
     0x0C00FFFF, 0x05000000, 0x0B00001E,    0x00000000, 0x014000F0,  0x0000000F, 0x00000000,  0x00000000,
     0x05000000, 0x0D000000, 0x05000000,    0x07000000, &D_86A06170, 0x14000000, 0x002D0019,  0xFFFFFF28,
     0x16646464, 0x0F000002, 0x05000000,    0x1F00FFFF, 0x00000000,  0x00000000, 0x00000000,  0x00640064,
@@ -153,31 +154,32 @@ void Credits_LoadBackgroundScene(s8 arg0, u8 arg1) {
     sp28 = BinArchive_GetFile(D_86A061DC, arg0);
     sp2C = MainPool_AllocState(main_pool_get_available(), 0);
 
-    temp_v0 = sp28(0, 0);
+    temp_v0 = (u32*)Port_CallBlobEntry((void*)sp28, 0, 0); // PORT: the scene file's entry is MIPS code (see memmap.c)
     if (temp_v0 != NULL) {
         GraphNode_AppendChild(&D_86A06190, process_geo_layout(sp2C, temp_v0));
     }
 
-    temp_v0 = sp28(1, 0);
+    temp_v0 = (u32*)Port_CallBlobEntry((void*)sp28, 1, 0);
     if (temp_v0 != NULL) {
         GraphNode_AppendChild(&D_86A061A8, process_geo_layout(sp2C, temp_v0));
     }
 
-    temp_v0 = sp28(3, 0);
+    temp_v0 = (u32*)Port_CallBlobEntry((void*)sp28, 3, 0);
     if (temp_v0 != NULL) {
         GraphNode_AppendChild(&D_86A061C0, process_geo_layout(sp2C, temp_v0));
     }
 
-    D_86A025C8 = sp28(2, 0);
+    D_86A025C8 = (u32)Port_CallBlobEntry((void*)sp28, 2, 0);
     MainPool_FinalizeAllocation(sp2C);
 
-    temp_v0_4 = sp28(4, 0);
+    temp_v0_4 = Port_VResolve(Port_CallBlobEntry((void*)sp28, 4, 0)); // PORT: as the battle stages (battle_engine_2EA8E0.c)
     if (temp_v0_4 == NULL) {
         D_86A06170.node.callbackArg = 0;
         D_86A06170.node.flags &= ~1;
     } else {
-        D_86A06170.unk_18.unk_00 = temp_v0_4->unk_00;
-        D_86A06170.unk_18.unk_02 = temp_v0_4->unk_02;
+        // PORT: big-endian data inside the scene file
+        D_86A06170.unk_18.unk_00 = (s16)((((u8*)&temp_v0_4->unk_00)[0] << 8) | ((u8*)&temp_v0_4->unk_00)[1]);
+        D_86A06170.unk_18.unk_02 = (s16)((((u8*)&temp_v0_4->unk_02)[0] << 8) | ((u8*)&temp_v0_4->unk_02)[1]);
         D_86A06170.unk_18.unk_04.rgba = temp_v0_4->unk_04.rgba;
         D_86A06170.node.callbackArg = 1;
     }

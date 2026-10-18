@@ -117,12 +117,12 @@ static unk_D_86203CEC D_86203CEC[] = {
     { D_87A011A4, 0x0028, 0x005A },
 };
 
-static u32 D_86203D0C[] = {
-    0x0C00FFFF,       (u32)&D_5000000, 0x0B00001E,      0x00000000,      0x014000F0,      0x0000000F,
-    0x00000000,       0x00000000,      (u32)&D_5000000, 0x0D000000,      (u32)&D_5000000, 0x14000000,
-    0x002B0012,       0xFFFFFF32,      0x16FFFFFF,      0x0F000003,      (u32)&D_5000000, 0x0A000000,
-    (u32)&D_800AC840, (u32)&D_6000000, (u32)&D_6000000, (u32)&D_6000000, (u32)&D_3000000, D_87806398,
-    (u32)&D_6000000,  (u32)&D_1000000, 0xFFFFFFFF,      0x0505FFFF,      0x0505FFFF,      0xFFFFFFFF,
+static uintptr_t D_86203D0C[] = { // PORT64: holds addresses
+    0x0C00FFFF,       (uintptr_t)&D_5000000, 0x0B00001E,      0x00000000,      0x014000F0,      0x0000000F,
+    0x00000000,       0x00000000,      (uintptr_t)&D_5000000, 0x0D000000,      (uintptr_t)&D_5000000, 0x14000000,
+    0x002B0012,       0xFFFFFF32,      0x16FFFFFF,      0x0F000003,      (uintptr_t)&D_5000000, 0x0A000000,
+    (uintptr_t)&D_800AC840, (uintptr_t)&D_6000000, (uintptr_t)&D_6000000, (uintptr_t)&D_6000000, (uintptr_t)&D_3000000, D_87806398,
+    (uintptr_t)&D_6000000,  (uintptr_t)&D_1000000, 0xFFFFFFFF,      0x0505FFFF,      0x0505FFFF,      0xFFFFFFFF,
     0xFFFFFFFF,       0x05FF05FF,      0x05FF05FF,      0xFFFFFFFF,      0xFFFFFFFF,      0xFF0505FF,
     0xFF0505FF,       0xFFFFFFFF,      0xFFFFFFFF,      0xFFFF05FF,      0xFFFF05FF,      0xFFFFFFFF,
 };
@@ -1374,7 +1374,7 @@ void RattataGame_InitPlayerSlots(void) {
     }
 }
 
-void RattataGame_Main(s32 arg0, UNUSED s32 arg1) {
+s32 RattataGame_Main(s32 arg0, UNUSED s32 arg1) {
     unk_func_80007444* sp24;
 
     if (arg0 == 1) {
@@ -1395,7 +1395,7 @@ void RattataGame_Main(s32 arg0, UNUSED s32 arg1) {
     ASSET_LOAD(D_04000000, run_rattata_run_flag_gfx, 0);
     FRAGMENT_LOAD(fragment31);
 
-    Fragment_Load((((u32)&D_8D000000 & 0x0FF00000) >> 0x14) - 0x10, _5C7A70_ROM_START, _5C7A70_ROM_END);
+    Fragment_Load((((uintptr_t)&D_8D000000 & 0x0FF00000) >> 0x14) - 0x10, _5C7A70_ROM_START, _5C7A70_ROM_END);
 
     RattataGame_LoadAssets();
     Widget_PauseMenuInit();
@@ -1425,5 +1425,5 @@ void RattataGame_Main(s32 arg0, UNUSED s32 arg1) {
 
     main_pool_pop_state('MINI');
 
-    Widget_PauseMenuGetResult();
+    return Widget_PauseMenuGetResult(); // PORT: the caller uses this result (on the N64 it was left in v0)
 }

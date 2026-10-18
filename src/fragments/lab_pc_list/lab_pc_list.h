@@ -18,8 +18,7 @@ typedef struct unk_func_8830867C_02C_04C_018 {
 } unk_func_8830867C_02C_04C_018; // size >= 0x20
 
 typedef struct unk_func_8830867C_02C_04C {
-    /* 0x00 */ char unk00[0xC];
-    /* 0x00 */ WidgetGridMenuItem* unk_0C;
+    /* 0x00 */ WidgetLinkHeader unk_00;
     /* 0x10 */ WidgetGridMenuInputCallback unk_10;
     /* 0x14 */ WidgetGridMenuSetStateCallback unk_14;
     /* 0x18 */ unk_func_8830867C_02C_04C_018* unk_18;
@@ -40,11 +39,17 @@ typedef struct unk_func_8830867C_02C_050 {
     /* 0x2C */ struct unk_func_8830867C_02C* unk_2C;
 } unk_func_8830867C_02C_050; // size = 0x30
 
+// View of unk_func_88200FA0_030_030 (paged grid): pointer slots as in that type.
 typedef struct unk_func_8830867C_02C_0B4_030 {
     /* 0x00 */ WidgetNode unk_00;
-    /* 0x2C */ char unk2C[0xC];
+    /* 0x2C */ void* unk2C;
+    /* 0x30 */ s32 unk30;
+    /* 0x34 */ u16* unk34;
     /* 0x38 */ s32 unk_38;
-    /* 0x3C */ char unk3C[0x18];
+    /* 0x3C */ char unk3C[0x4];
+    /* 0x40 */ void* unk40;
+    /* 0x44 */ void* unk44;
+    /* 0x48 */ char unk48[0xC];
 } unk_func_8830867C_02C_0B4_030; // size = 0x54
 
 typedef struct unk_func_8830867C_02C_0B4 {
@@ -243,7 +248,10 @@ typedef struct unk_func_8830867C_044 {
 } unk_func_8830867C_044; // size = 0x48
 
 typedef struct unk_func_8830867C_048_04C {
-    /* 0x00 */ char unk00[0x1C];
+    /* 0x00 */ WidgetLinkHeader unk00;
+    /* 0x10 */ void* unk10; // input callback (unk_func_8830867C_02C_048_000)
+    /* 0x14 */ void* unk14; // set-state callback
+    /* 0x18 */ char unk18[0x4];
     /* 0x1C */ s32 unk_1C;
     /* 0x20 */ char unk20[0x4];
 } unk_func_8830867C_048_04C; // size = 0x24
@@ -279,15 +287,22 @@ typedef struct unk_func_8830867C_04C_030_02C {
     /* 0x08 */ s32 unk_08;
 } unk_func_8830867C_04C_030_02C; // size >= 0xC
 
+// View of unk_func_8821421C_038_034 (scrollable grid). The anonymous struct mirrors its embedded
+// unk_func_88200FA0_030_030 (padded to its host size) so the fields after 0x54 sit where the grid code puts them.
 typedef struct unk_func_8830867C_04C_030 {
-    /* 0x00 */ WidgetNode unk_00;
-    /* 0x2C */ unk_func_8830867C_04C_030_02C* unk_2C;
-    /* 0x30 */ char unk30[0x4];
-    /* 0x34 */ u16* unk_34;
-    /* 0x38 */ s32 unk_38;
-    /* 0x3C */ char unk3C[0x2];
-    /* 0x3E */ s16 unk_3E;
-    /* 0x40 */ char unk40[0x18];
+    struct {
+        /* 0x00 */ WidgetNode unk_00;
+        /* 0x2C */ unk_func_8830867C_04C_030_02C* unk_2C;
+        /* 0x30 */ char unk30[0x4];
+        /* 0x34 */ u16* unk_34;
+        /* 0x38 */ s32 unk_38;
+        /* 0x3C */ char unk3C[0x2];
+        /* 0x3E */ s16 unk_3E;
+        /* 0x40 */ void* unk40; // unk_func_88200FA0_030_030_040
+        /* 0x44 */ void* unk44; // WidgetAnimatedFrame*
+        /* 0x48 */ char unk48[0xC];
+    };
+    /* 0x54 */ char unk54[0x4];
     /* 0x58 */ s32 unk_58;
     /* 0x5C */ char unk5C[0x14];
 } unk_func_8830867C_04C_030; // size = 0x70
@@ -381,7 +396,7 @@ typedef struct unk_func_8830867C_054 {
     /* 0x02 */ s16 unk_02;
     /* 0x04 */ MemoryPool* unk_04;
     /* 0x08 */ WidgetNode* unk_08;
-    /* 0x0C */ s32 unk_0C;
+    /* 0x0C */ void* unk_0C; // PORT64: pointer into the selected entry (was s32)
     /* 0x10 */ s32 unk_10;
     /* 0x14 */ WidgetNode* unk_14;
 } unk_func_8830867C_054; // size = 0x18
@@ -574,8 +589,10 @@ typedef struct unk_func_88313894_020 {
     /* 0x1C */ s32 unk_1C;
 } unk_func_88313894_020; // size = 0x20
 
+// View of unk_func_8830867C_02C_0CC_000 (list entry): pointer + s32 header as in that type.
 typedef struct unk_func_88316128 {
-    /* 0x00 */ char unk00[0x8];
+    /* 0x00 */ void* unk00;
+    /* 0x04 */ s32 unk04;
     /* 0x08 */ u8 unk_08;
     /* 0x09 */ char unk09[0xD];
     /* 0x16 */ u16 unk_16;
@@ -841,7 +858,7 @@ void LabPCList_DrawLocationCaption(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 a
 s32 LabPCList_DrawLocationCrossfadeWidget(unk_func_882173EC* arg0, s32 arg1, s32 arg2);
 void LabPCList_LocationCrossfadeWidget_Start(unk_func_882173EC* arg0, s32 arg1, s32 arg2, WidgetPoint arg3);
 
-s32 LabPCList_CompareByPointer(unk_func_88316128*, unk_func_88316128*);
+s32 LabPCList_CompareByPointer(void*, void*);
 s32 LabPCList_CompareByLevelAsc(unk_func_88316128*, unk_func_88316128*);
 s32 LabPCList_CompareByLevelDesc(unk_func_88316128*, unk_func_88316128*);
 s32 LabPCList_CompareByHpAsc(unk_func_88316128*, unk_func_88316128*);

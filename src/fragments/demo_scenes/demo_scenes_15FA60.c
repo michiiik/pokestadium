@@ -32,8 +32,8 @@ extern u32 D_86B0BD60[];
 extern unk_D_86B0C4C8* D_86B0C4C8[];
 extern unk_D_86B0C160 D_86B0C160[];
 extern unk_D_86B0C264 D_86B0C264[];
-extern u32 D_86B0CF9C[];
-extern u32 D_86B0DA9C[];
+extern uintptr_t D_86B0CF9C[];
+extern uintptr_t D_86B0DA9C[];
 
 s32 Diorama_LogoRotateColorCallback(s32, GraphNode*);
 s32 Diorama_ScaleRotateCallbackA(s32, GraphNode*);
@@ -43,7 +43,7 @@ s32 Diorama_GroupStateCallback(s32, GraphNode*);
 static s16 D_86B0BBF0 = -0x3C6E;
 static s16 D_86B0BBF4 = 0x38E;
 
-static u32 D_86B0BBF8[] = {
+static uintptr_t D_86B0BBF8[] = { // PORT64: holds addresses
     0x0C00FFFF, 0x05000000, 0x0B00001E, 0x00000000, 0x014000F0,  0x0000000F,    0x00000000,    0x00000000,
     0x05000000, 0x0D000000, 0x05000000, 0x1A050000, 0x08000000,  Diorama_GroupStateCallback, 0x00000000,    0x05000000,
     0x0F000002, 0x05000000, 0x06000000, 0x0F000002, 0x05000000,  0x06000000,    0x0F000002,    0x05000000,
@@ -66,7 +66,9 @@ static u8* D_86B0E5E8;
 static unk_D_86B0E5F0 D_86B0E5F0[4];
 static s32 D_86B0EBB0;
 static s32 D_86B0EBB4;
-static u16 D_86B0EBB8;
+// PORT: Save_GetModeSettings copies a whole ModeSettings into this; the original declared only the leading u16
+static ModeSettings D_86B0EBB8_full;
+#define D_86B0EBB8 (*(u16*)&D_86B0EBB8_full)
 
 s32 Diorama_LogoRotateColorCallback(s32 arg0, GraphNode* arg1) {
     if (arg0 == 2) {
@@ -530,7 +532,7 @@ s32 Stage_ShowBootDiorama(void) {
 
     ASSET_LOAD(D_1000000, common_menu1_ui, 0);
     FRAGMENT_LOAD(fragment31);
-    Fragment_Load((((u32)D_8D000000 & 0x0FF00000) >> 0x14) - 0x10, _5C7A70_ROM_START, _5C7A70_ROM_END);
+    Fragment_Load((((uintptr_t)D_8D000000 & 0x0FF00000) >> 0x14) - 0x10, _5C7A70_ROM_START, _5C7A70_ROM_END);
 
     Save_EnsureBankLoaded(2);
     Save_GetModeSettings(&D_86B0EBB8, 0);

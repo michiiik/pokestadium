@@ -13,12 +13,19 @@ typedef struct unk_func_8001C014 {
 
 typedef struct unk_func_8001C248 {
     /* 0x000 */ DisplayNodeHeader node;
-    /* 0x018 */ s16 unk_018;
-    /* 0x01A */ s16 unk_01A;
+    // PORT: these functions are called with a BattleSessionTeams, whose word at 0x18 is a pointer; keep that slot
+    // pointer-sized so the flags below line up with BattleSessionTeams.unk_1D on the host.
+    union {
+        struct {
+            /* 0x018 */ s16 unk_018;
+            /* 0x01A */ s16 unk_01A;
+        };
+        void* unk_018_ptr;
+    };
     /* 0x01C */ u8 unk_01C;
     /* 0x01D */ u8 unk_01D;
     /* 0x01E */ char unk01E[0x2];
-    /* 0x020 */ s32 unk_020;
+    /* 0x020 */ intptr_t unk_020; // PORT: pointer-sized like BattleSessionTeams.unk_20
     /* 0x024 */ s32* unk_024;
 } unk_func_8001C248; // size >= 0x28
 

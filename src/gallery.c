@@ -1,3 +1,7 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "src/memmap.h"
 #include "gallery.h"
 #include "src/fragments/gallery_camera/gallery_camera.h"
 #include "src/fragments/particle_data_library/particle_data_library.h"
@@ -47,16 +51,16 @@ unk_D_80068BB0* D_80075F90 = NULL;
 s32 D_80075F94 = 0xC8;
 s32 D_80075F98 = 0x2B;
 s32 D_80075F9C = 0;
-s32 Gallery_ConfigurePhotoCamera();
-s32 Gallery_SetScenePoseCamera();
-s32 Gallery_SetCameraAngleOffsets();
-s32 Gallery_SetCameraAngleOffsetsAlternate();
-s32 Gallery_SetSceneModelNode();
-s32 Gallery_SetSceneRenderState();
-s32 Gallery_SetSceneGraphNode();
-s32 func_800303C8();
+s32 Gallery_ConfigurePhotoCamera(s32 arg0, unk_D_86002F34_00C* arg1);
+s32 Gallery_SetScenePoseCamera(s32 arg0, unk_D_86002F34_00C* arg1);
+s32 Gallery_SetCameraAngleOffsets(s32 arg0, unk_func_8003013C_arg1* arg1);
+s32 Gallery_SetCameraAngleOffsetsAlternate(s32 arg0, unk_func_8003013C_arg1* arg1);
+s32 Gallery_SetSceneModelNode(s32 arg0, DisplayObject* arg1);
+s32 Gallery_SetSceneRenderState(s32 arg0, unk_func_80031270_024* arg1);
+s32 Gallery_SetSceneGraphNode(s32 arg0, GraphNode* arg1);
+s32 func_800303C8(s32 arg0, UNUSED GraphNode* arg1);
 
-u32 D_80075FA0[115] = {
+uintptr_t D_80075FA0[115] = { // PORT64: holds addresses
     0x0C00FFFF, 0x05000000, 0x0B00001E, 0x00000000, 0x014000F0, 0x0000000F,
     0x00000000, 0x00000000, 0x08000000, Gallery_ConfigurePhotoCamera, 0x00000000, 0x05000000,
     0x0D000000, 0x05000000, 0x13FFFFFF, 0x03C003E8, 0x08000000, Gallery_SetSceneRenderState,
@@ -123,7 +127,7 @@ void Gallery_Dispatch(void) {
     FRAGMENT_LOAD(fragment34);
 
     do {
-        temp_s0 = Util_ConvertAddrToVirtAddr((u32)val);
+        temp_s0 = Util_ConvertAddrToVirtAddr((uintptr_t)val);
         var_s6 = 1;
 
         main_pool_push_state('galy');
@@ -324,8 +328,10 @@ s32 Gallery_ConfigurePhotoCamera(s32 arg0, unk_D_86002F34_00C* arg1) {
         src = (unk_D_83403C60_050_00C*)((u8*)D_80075F84->unk_18 + 0x50);
         GeoCamera_SetViewport(arg1, 0, 0, D_80075F84->unk_04, D_80075F84->unk_06);
         GeoCamera_SetPerspective(arg1, Gallery_GetPhotoScaleIndex(D_80075F84->unk_18), 20.0f, 10000.0f);
-        ((unk_D_83403C60_050_00C*)((u8*)arg1 + 0xA8))[0] = src[0];
-        ((unk_D_83403C60_050_00C*)((u8*)arg1 + 0xA8))[1] = src[1];
+        // PORT: N64 offset 0xA8 is the camera's eye (unk_60 + 0x48), then at; on the host the struct is laid out
+        // differently and the raw offset hit other fields (photos were re-rendered without a viewport: blank)
+        memcpy(&arg1->unk_60.eye, &src[0], sizeof(src[0]));
+        memcpy(&arg1->unk_60.at, &src[1], sizeof(src[1]));
         pad = 0;
     }
     return 0;
@@ -650,7 +656,7 @@ void Gallery_InitializePhotoModel(unk_func_80031270* arg0) {
     UNUSED s32 pad[3]; // BattleMon potentially bigger?
     BattleMon sp30;
     unk_D_83403C60_raw* temp_s1;
-    void (*sp28)(void*, u32);
+    void (*sp28)(void*, uintptr_t); // PORT64: the slot data pointer (was u32)
 
     temp_s1 = (unk_D_83403C60_raw*)arg0->unk_18;
     Gallery_CopyBattleMonFromPhotoMon(&sp30, &temp_s1->unk_70);
@@ -688,33 +694,37 @@ void Gallery_LoadPhotoSceneGraph(unk_func_80031270* arg0) {
     GeoNode_CreateContainer(0, arg0->unk_30);
     sp20 = BinArchive_GetFile(arg0->unk_14, D_8007616C[Gallery_GetPhotoVariantIndex(arg0->unk_18)]);
     sp24 = MainPool_AllocState(main_pool_get_available(), 0);
-    temp_v0 = sp20(0, 0);
+    temp_v0 = (u32*)Port_CallBlobEntry((void*)sp20, 0, 0); // PORT: the stage file's entry is MIPS code (memmap.c)
     if (temp_v0 != NULL) {
         GraphNode_AppendChild(arg0->unk_28, process_geo_layout(sp24, temp_v0));
     }
-    temp_v0_2 = sp20(1, 0);
+    temp_v0_2 = (u32*)Port_CallBlobEntry((void*)sp20, 1, 0);
     if (temp_v0_2 != NULL) {
         GraphNode_AppendChild(arg0->unk_2C, process_geo_layout(sp24, temp_v0_2));
     }
-    temp_v0_3 = sp20(3, 0);
+    temp_v0_3 = (u32*)Port_CallBlobEntry((void*)sp20, 3, 0);
     if (temp_v0_3 != NULL) {
         GraphNode_AppendChild(arg0->unk_30, process_geo_layout(sp24, temp_v0_3));
     }
-    arg0->unk_34 = sp20(2, 0);
+    arg0->unk_34 = (s32)Port_CallBlobEntry((void*)sp20, 2, 0);
     MainPool_FinalizeAllocation(sp24);
-    temp_v0_4 = sp20(4, 0);
-    if (temp_v0_4 == NULL) {
-        temp_v1 = arg0->unk_24;
-        temp_v1->unk_01 = (u8) (temp_v1->unk_01 & 0xFFFE);
-        arg0->unk_24->unk_14 = 0;
-        return;
+    temp_v0_4 = Port_VResolve(Port_CallBlobEntry((void*)sp20, 4, 0)); // PORT: as the battle stages
+    {
+        // PORT: unk_24 is a fog node (unk_D_8690A610, as in gallery_camera's Gallery_LoadBackgroundSet); the N64 offsets
+        // of unk_func_80031270_024 (flags at 0x01, callbackArg 0x14, fog 0x18..0x1F) do not match the host node, so the
+        // stage's fog was written into other fields and the photos came out washed out
+        unk_D_8690A610* fog = (unk_D_8690A610*)arg0->unk_24;
+        if (temp_v0_4 == NULL) {
+            fog->node.callbackArg = 0;
+            fog->node.flags &= ~1;
+            return;
+        }
+        fog->unk_18.unk_00 = (s16)((((u8*)&temp_v0_4->unk_00)[0] << 8) | ((u8*)&temp_v0_4->unk_00)[1]);
+        fog->unk_18.unk_02 = (s16)((((u8*)&temp_v0_4->unk_02)[0] << 8) | ((u8*)&temp_v0_4->unk_02)[1]);
+        fog->unk_18.unk_04.rgba = ((unk_D_8690A610_018*)temp_v0_4)->unk_04.rgba;
+        fog->node.callbackArg = 1;
+        fog->node.flags |= 1;
     }
-    arg0->unk_24->unk_18 = (s16) temp_v0_4->unk_00;
-    arg0->unk_24->unk_1A = (s16) temp_v0_4->unk_02;
-    arg0->unk_24->unk_1C = (s32) temp_v0_4->unk_04;
-    arg0->unk_24->unk_14 = 1;
-    temp_v1 = arg0->unk_24;
-    temp_v1->unk_01 = (u8) (temp_v1->unk_01 | 1);
 }
 
 u8* Gallery_ProcessSceneInstance(unk_func_80031270* arg0) {

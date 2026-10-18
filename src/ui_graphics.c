@@ -141,7 +141,7 @@ Gfx D_8006F630[] = {
     gsSPEndDisplayList(),
 };
 
-static u8 D_8006F650[] = {
+u8 D_8006F650[] = {
 #if defined(VERSION_US_REV2)
     0x00, 0x34, 0x35, 0x0F, 0x00, 0x06, 0x0D, 0x37, 0x03, 0x04, 0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x10, 0x11,
     0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x3E, 0x42, 0x00, 0x3F, 0x00, 0x40, 0x00, 0x1A, 0x1B, 0x1C,
@@ -305,7 +305,7 @@ void Ui_DrawGradientRectangle(s32 x1, s32 y1, s32 width, s32 height, Color_RGB8*
 
     Gfx_SetViewportDimensions(sp78, temp_s1->width, temp_s1->height);
 
-    gSPViewport(gDisplayListHead++, (u32)sp78 & 0x1FFFFFFF);
+    gSPViewport(gDisplayListHead++, (uintptr_t)sp78);
 
     guOrtho(sp7C, 0.5f, temp_s1->width - 0.5f, temp_s1->height - 0.5f, 0.5f, -2.0f, 2.0f, 1.0f);
     Gfx_SetVertexAttributes(&temp_s2[0], x1, y1, -1, 0, 0, top_color->r, top_color->g, top_color->b, 0xFF);
@@ -323,10 +323,10 @@ void Ui_DrawGradientRectangle(s32 x1, s32 y1, s32 width, s32 height, Color_RGB8*
     gDPSetRenderMode(gDisplayListHead++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
     gSPPerspNormalize(gDisplayListHead++, 0xFFFF);
 
-    gSPMatrix(gDisplayListHead++, (u32)sp7C & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    gSPMatrix(gDisplayListHead++, (u32)&D_8006F010 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)sp7C, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)&D_8006F010, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
-    gSPVertex(gDisplayListHead++, (u32)temp_s2 & 0x1FFFFFFF, 4, 0);
+    gSPVertex(gDisplayListHead++, (uintptr_t)temp_s2, 4, 0);
     gSP2Triangles(gDisplayListHead++, 0, 2, 3, 0, 0, 3, 1, 0);
 }
 

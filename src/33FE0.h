@@ -76,11 +76,11 @@ typedef struct ModelSegment {
     /* 0x02 */ u16 nodeCount;
     /* 0x04 */ u16 vertexCount;
     /* 0x06 */ u16 triangleCount;
-    /* 0x08 */ u32 indexSegment;
-    /* 0x0C */ u32 unk_0C;
-    /* 0x10 */ u32 tableSegment;
-    /* 0x14 */ u32 remapSegment;
-    /* 0x18 */ u32 vertexSegment;
+    /* 0x08 */ uintptr_t indexSegment; // PORT64: holds addresses
+    /* 0x0C */ uintptr_t unk_0C;
+    /* 0x10 */ uintptr_t tableSegment;
+    /* 0x14 */ uintptr_t remapSegment;
+    /* 0x18 */ uintptr_t vertexSegment;
     /* 0x1C */ Gfx* displayList;
 } ModelSegment; // size = 20
 
@@ -88,10 +88,9 @@ typedef struct StadiumModel {
     /* 0x00 */  s16 unk_00;
     /* 0x02 */  s16 unk_02;
     /* 0x04 */  StadiumTransform transforms[5];
-    /* 0x130 */ u32 modelSegment;
+    /* 0x130 */ uintptr_t modelSegment; // PORT64: holds a pointer (func_80033B2C points it at unkSegment)
     /* 0x134 */ s8 pad134[0x4];
-    /* 0x138 */ u32 unkSegment;
-    /* 0x13C */ s8 pad13C[0x1C];
+    /* 0x138 */ ModelSegment unkSegment; // PORT: was u32 + pad[0x1C]: a whole segment is copied here (size 0x20)
     /* 0x158 */ Vec3f position;
     /* 0x164 */ s8 pad164[0xC];
     /* 0x170 */ ModelVertex mvtx;
@@ -105,5 +104,9 @@ void Model_InitializeVertexPositions(ModelSegment*, MtxF*, ModelVertex*);
 void func_800357F4(StadiumModel* model);
 void Model_ApplyTransformCommands(ModelSegment*, ModelVertex*, StadiumModel*, f32);
 void func_80035FA8(ModelSegment*, ModelVertex*);
+
+void func_80033B2C(StadiumModel* model, void* arg1, void* arg2, void* arg3);
+void func_800361C4(StadiumModel* model, MtxF* mtx);
+Gfx* Model_Draw(Gfx* gfx, StadiumModel* model, Vtx* vtxBuf);
 
 #endif // _33E30_H_

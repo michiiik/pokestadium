@@ -29,7 +29,7 @@ s32 osGbSetNextBuffer(void* bufPtr, u32 size) {
       bptr = (u8*)bufPtr - 0x2000;
   }
 
-  if ((((u32)bufPtr + size) & 0x1fff) == 0) {
+  if ((((uintptr_t)bufPtr + size) & 0x1fff) == 0) {
       hdwrBugFlag = TRUE;
   } else {
       hdwrBugFlag = FALSE;
@@ -47,5 +47,10 @@ s32 osGbSetNextBuffer(void* bufPtr, u32 size) {
 
   IO_WRITE(AI_DRAM_ADDR_REG, OS_PHYSICAL_TO_K0(bptr));
   IO_WRITE(AI_LEN_REG, size);
+  {
+      // PORT: the audio interface is the host's sound output (src/port/gb_audio_out.cpp)
+      extern void Port_GbAudioSubmit(const void* samples, u32 bytes);
+      Port_GbAudioSubmit(bufPtr, size);
+  }
   return 0;
 }

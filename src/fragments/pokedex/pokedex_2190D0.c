@@ -3347,12 +3347,12 @@ static s16 D_88826564[] = {
     0x21, 0xC,  0x22, 0x1B, 0x21, -1,   0xE,  0xE,  0xE,  0xE,  0xE,  0xE,  0xE,  0x1D, 0,    1,    4,    6, 9, 0xA,
     0x10, 0xF,  0xB,  0xD,  0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x1A, 0x1C, 0x1E, 0x1F, 0x20, 7, 8, 0,
 };
-static u32 D_888265DC[] = {
+static uintptr_t D_888265DC[] = { // PORT64: holds addresses (was u32 with raw node addresses)
     0x0C000001, 0x05000000, 0x0B00003C, 0x00000000, 0x014000F0, 0xFE700000, 0x00000000, 0x00000C80,
     0x05000000, 0x0D000000, 0x05000000, 0x0E000000, 0x05000000, 0x10000000, 0x06000000, 0x1396C8FF,
     0x03D903ED, 0x14000000, 0x002D0019, 0xFFFFFF32, 0x16FFFFFF, 0x0F000003, 0x05000000, 0x00000000,
-    0x8C000260, 0x07000000, 0x888269C0, 0x07000000, 0x888269E0, 0x07000000, 0x88826A00, 0x07000000,
-    0x88826A20, 0x06000000, 0x06000000, 0x06000000, 0x06000000, 0x01000000, 0x00000000,
+    0x8C000260, 0x07000000, &D_888269C0, 0x07000000, &D_888269E0, 0x07000000, &D_88826A00, 0x07000000,
+    &D_88826A20, 0x06000000, 0x06000000, 0x06000000, 0x06000000, 0x01000000, 0x00000000,
 };
 
 s32 Pokedex_FindNextMapArea(s32 arg0) {
@@ -4098,7 +4098,7 @@ s32 Pokedex_CheckAreaMapExit(void) {
     return 0;
 }
 
-void func_88807D04(s32 arg0, MainPoolState* arg1, UNUSED s32 arg2, s32 arg3, s32 arg4, char* arg5, char** arg6) {
+void func_88807D04(intptr_t arg0, MainPoolState* arg1, UNUSED s32 arg2, uintptr_t arg3, s32 arg4, char* arg5, char** arg6) {
     s32 i;
     unk_D_86002F34_00C* ptr;
     MemoryBlock* sp4C;
@@ -4127,7 +4127,7 @@ void func_88807D04(s32 arg0, MainPoolState* arg1, UNUSED s32 arg2, s32 arg3, s32
     Pokedex_LoadIcon(D_88826CD4, arg0);
 
     ASSET_LOAD(D_3000000, kanto_gb_map, 0);
-    Fragment_LoadAndRelocateFromRomRange(sp4C, (((u32)&D_8C000000 & 0x0FF00000) >> 0x14) - 0x10, pokedex_area_model_ROM_START,
+    Fragment_LoadAndRelocateFromRomRange(sp4C, (((uintptr_t)&D_8C000000 & 0x0FF00000) >> 0x14) - 0x10, pokedex_area_model_ROM_START,
                   pokedex_area_model_ROM_END, arg3, arg4);
 
     D_88826A48 = BinArchive_GetFile(ASSET_LOAD2(_6EB340, 1, 1), 0);

@@ -1,4 +1,6 @@
 #include "global.h"
+#include <stdio.h>
+#include <stdlib.h>
 #include "rsp.h"
 #include "flash.h"
 #include "util.h"
@@ -205,6 +207,7 @@ void thread20_rsp(UNUSED void* arg) {
     while (true) {
         osRecvMesg(&D_80083BD0.queue1, (void*)&sp2C, OS_MESG_BLOCK);
 
+        if (getenv("PORT_TRACE")) fprintf(stderr, "[rsp] req=%p type=0x%x\n", (void*)sp2C, (unsigned)(unsigned char)sp2C->unk0);
         switch (sp2C->unk0) {
             case 0xF0:
                 var_v0 = (OSMesg)INT2VOID(Storage_ReadRom(sp2C, 0));
@@ -255,8 +258,8 @@ void thread20_rsp(UNUSED void* arg) {
                 break;
         }
 
-        if ((OSMesgQueue*)INT2VOID(sp2C->unk28) != NULL) {
-            osSendMesg(INT2VOID(sp2C->unk28), var_v0, 0);
+        if (sp2C->unk28 != NULL) {
+            osSendMesg(sp2C->unk28, var_v0, 0);
         }
 
         Util_Free(sp2C);

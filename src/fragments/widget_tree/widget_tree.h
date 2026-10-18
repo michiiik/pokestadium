@@ -102,8 +102,7 @@ typedef s32 (*WidgetGridMenuInputCallback)(struct WidgetGridMenu*, Controller*);
 typedef void (*WidgetGridMenuSetStateCallback)(struct WidgetGridMenu*, s32);
 
 typedef struct WidgetGridMenu {
-    /* 0x00 */ char unk00[0xC];
-    /* 0x00 */ WidgetGridMenuItem* unk_0C;
+    /* 0x00 */ WidgetLinkHeader unk_00;
     /* 0x10 */ WidgetGridMenuInputCallback unk_10;
     /* 0x14 */ WidgetGridMenuSetStateCallback unk_14;
     /* 0x18 */ WidgetNode** unk_18;
@@ -331,7 +330,7 @@ typedef struct unk_func_882173EC {
 } unk_func_882173EC; // size = 0x38
 
 typedef struct unk_func_8850CD44 {
-    /* 0x00 */ char unk00[0x10];
+    /* 0x00 */ WidgetLinkHeader unk_00;
     /* 0x10 */ unk_func_8850CD44_010 unk_10;
     /* 0x14 */ unk_func_8850CD44_014 unk_14;
     /* 0x18 */ s32 unk_18;
@@ -621,7 +620,7 @@ typedef struct unk_func_8820BE14_02C_038 {
 
 typedef struct unk_func_88507D4C {
     /* 0x00 */ WidgetNode unk_00;
-    /* 0x2C */ unk_func_8820BE14_02C_038* unk_2C;
+    /* 0x2C */ struct unk_func_8821421C_038_034* unk_2C;
     /* 0x30 */ s32 unk_30;
 } unk_func_88507D4C; // size = 0x34
 
@@ -721,12 +720,12 @@ typedef struct unk_func_8830867C_048_048 {
 
 typedef void (*func88500020)(unk_func_88500020*, s32, s32);
 typedef void (*func88500338)(unk_func_88500020* arg0, s32 arg1, s32 arg2, s32 arg3);
-typedef void (*func88500668)(unk_func_882025E0*, s32);
+typedef void (*func88500668)(WidgetLinkHeader*, s32);
 typedef void (*func8850068C)(WidgetLinkHeader*, WidgetLinkHeader*);
 typedef void (*func885007CC)(WidgetNode*, s32);
 typedef void (*func88500828)(WidgetNode*, s32, s32);
 typedef void (*func885008C4)(WidgetNode*);
-typedef void (*func8850093C)(s32, s32);
+typedef void (*func8850093C)(void*, s32); // PORT64: first argument is a widget (was s32)
 typedef void (*func88500994)(unk_func_88500994*, s32, s32);
 typedef void (*func88500A3C)(unk_func_88500994*, WidgetNode*);
 typedef void (*func88500A6C)(unk_func_88500994*, s32);
@@ -757,23 +756,23 @@ typedef void (*func88506404)(unk_func_88200FA0_030_030*, u8*, MemoryPool*);
 typedef void (*func88506BFC)(unk_func_88200FA0_030_030*, s32);
 typedef void (*func88506CE4)(unk_func_88200FA0_030_030*);
 typedef void (*func88506DCC)(unk_func_8821421C_038_034*, s32, s32, void (*)(), s32, s32, s32, MemoryPool*);
-typedef void (*func88506EE4)(unk_func_8820BE14_02C_038*, unk_func_88200FA0_030_038*);
-typedef void (*func88506F1C)(unk_func_8830867C_02C_034*, unk_func_88200FA0_030_038*, MemoryPool*);
+typedef void (*func88506EE4)(unk_func_8821421C_038_034*, unk_func_88200FA0_030_038*);
+typedef void (*func88506F1C)(unk_func_8821421C_038_034*, unk_func_88200FA0_030_038*, MemoryPool*);
 typedef void (*func88506F50)(unk_func_8821421C_038_034*, unk_func_8821421C_038_050**);
 typedef void (*func88506F8C)(unk_func_8821421C_038_034*, unk_func_8830867C_03C_0D0*, MemoryPool*);
-typedef void (*func88506FC0)(unk_func_8820BE14_02C_038*);
-typedef void (*func88506FE0)(unk_func_8820BE14_02C_038*);
-typedef void (*func88507AE4)(unk_func_8820BE14_02C_038*, s32);
-typedef void (*func88507B80)(unk_func_8820BE14_02C_038*, s32);
-typedef void (*func88507C0C)(unk_func_8830867C_02C_034*, s32, s32);
-typedef void (*func88507CC4)(unk_func_8820BE14_02C_038*, unk_func_88205880_00D0*);
-typedef void (*func88507CEC)(unk_func_8820BE14_02C_038*);
-typedef void (*func88507D4C)(unk_func_88507D4C*, s32, s32, s32, s32, unk_func_8820BE14_02C_038*);
+typedef void (*func88506FC0)(unk_func_8821421C_038_034*);
+typedef void (*func88506FE0)(unk_func_8821421C_038_034*);
+typedef void (*func88507AE4)(unk_func_8821421C_038_034*, s32);
+typedef void (*func88507B80)(unk_func_8821421C_038_034*, s32);
+typedef void (*func88507C0C)(unk_func_8821421C_038_034*, s32, s32);
+typedef void (*func88507CC4)(unk_func_8821421C_038_034*, unk_func_88205880_00D0*);
+typedef void (*func88507CEC)(unk_func_8821421C_038_034*);
+typedef void (*func88507D4C)(unk_func_88507D4C*, s32, s32, s32, s32, unk_func_8821421C_038_034*);
 typedef void (*func8850878C)(unk_func_8850878C*, s32, s32, char*, s32);
 typedef void (*func885088F4)(unk_func_885088F4*, s32, s32, s32);
 typedef void (*func88509A2C)(unk_func_88509A2C*, s32, s32, s32, char*);
 typedef void (*func88509E34)(unk_func_88509F0C*, s32, s32, char*);
-typedef void (*func88509F48)(unk_func_88509F48*, s32, s32, s32, s32, MemoryPool*, s32);
+typedef void (*func88509F48)(unk_func_88509F48*, s32, s32, s32, s32, MemoryPool*, FontContext*); // PORT64: last argument was s32
 typedef void (*func8850A10C)(unk_func_88509F48*, unk_func_8850878C*, s32, s32);
 typedef void (*func8850A3CC)(unk_func_88509F48*, Controller*);
 typedef void (*func8850A3EC)(unk_func_88509F48*, Controller*);
@@ -784,14 +783,16 @@ typedef void (*func8850BC94)(s32);
 typedef void (*func8850BD40)(unk_func_8850BD40*, unk_func_8821421C_038_034*);
 typedef void (*func8850BDF0)(unk_func_88203ED8_064* arg0);
 typedef void (*func8850BF60)(WidgetNode*, s32);
-typedef void (*func8850BF80)(WidgetNode*, WidgetNode*);
+// arg1 is any widget (only its link header is used)
+typedef void (*func8850BF80)(unk_func_8830867C_02C_048_000*, WidgetLinkHeader*);
 typedef void (*func8850BFB0)(unk_func_88203ED8_064*);
 typedef void (*func8850C064)(unk_func_88203ED8_064*, s32);
 typedef void (*func8850C284)(WidgetGridMenu*, s32, s32, MemoryPool*);
 typedef void (*func8850CAB4)(WidgetGridMenu*);
 typedef void (*func8850CB48)(WidgetGridMenu*, s32);
 typedef void (*func8850CBA8)(unk_func_8830867C_02C_048*);
-typedef void (*func8850CC74)(WidgetNode*, WidgetNode*);
+// arg1 is any widget (only its link header is used)
+typedef void (*func8850CC74)(unk_func_8830867C_02C_048_000*, WidgetLinkHeader*);
 typedef void (*func8850CD24)(unk_func_8830867C_02C_048*, s32);
 typedef void (*func8850CD44)(unk_func_8850CD44*, s32, MemoryPool*);
 typedef void (*func8850CF00)(unk_func_8850CD44*, Controller*);
@@ -868,21 +869,21 @@ s32 func_885065E0(unk_func_88200FA0_030_030*, Controller*);
 void WidgetTree_SetPagedGridSelection(unk_func_88200FA0_030_030*, s32);
 s32 WidgetTree_FindSelectableGridEntry(unk_func_88200FA0_030_030*);
 void WidgetTree_InitScrollableGrid(unk_func_8821421C_038_034*, s32, s32, unk_func_88200FA0_030_030_040, s32, s32, s32, MemoryPool*);
-void WidgetTree_BindScrollableGridData(unk_func_8820BE14_02C_038*, unk_func_88200FA0_030_038*);
-void WidgetTree_BindScrollableGridPage(unk_func_8830867C_02C_034*, unk_func_88200FA0_030_038*, MemoryPool*);
+void WidgetTree_BindScrollableGridData(unk_func_8821421C_038_034*, unk_func_88200FA0_030_038*);
+void WidgetTree_BindScrollableGridPage(unk_func_8821421C_038_034*, unk_func_88200FA0_030_038*, MemoryPool*);
 void WidgetTree_BindScrollableGridStridedData(unk_func_8821421C_038_034*, unk_func_8821421C_038_050**);
 void WidgetTree_BindScrollableGridStridedPage(unk_func_8821421C_038_034*, unk_func_8830867C_03C_0D0*, MemoryPool*);
-void WidgetTree_ClampScrollableGridTop(unk_func_8820BE14_02C_038*);
-void WidgetTree_ClampScrollableGridBottom(unk_func_8820BE14_02C_038*);
+void WidgetTree_ClampScrollableGridTop(unk_func_8821421C_038_034*);
+void WidgetTree_ClampScrollableGridBottom(unk_func_8821421C_038_034*);
 s32 WidgetTree_UpdateScrollableGridScroll(unk_func_8821421C_038_034*);
 s32 func_8850734C(unk_func_8821421C_038_034*, s32, s32);
 s32 WidgetTree_HandleScrollableGridInput(unk_func_8821421C_038_034*, Controller*);
-void WidgetTree_SetScrollableGridIndex(unk_func_8820BE14_02C_038*, s32);
-void WidgetTree_SetScrollableGridIndexPreserveScroll(unk_func_8820BE14_02C_038*, s32);
-void WidgetTree_SetPagedGridSelectionWithOffset(unk_func_8830867C_02C_034*, s32, s32);
-void WidgetTree_SetScrollableGridEntryText(unk_func_8820BE14_02C_038*, unk_func_88205880_00D0*);
-void WidgetTree_RemoveScrollableGridEntry(unk_func_8820BE14_02C_038*);
-void WidgetTree_InitScrollableGridScrollbar(unk_func_88507D4C*, s32, s32, s32, s32, unk_func_8820BE14_02C_038*);
+void WidgetTree_SetScrollableGridIndex(unk_func_8821421C_038_034*, s32);
+void WidgetTree_SetScrollableGridIndexPreserveScroll(unk_func_8821421C_038_034*, s32);
+void WidgetTree_SetPagedGridSelectionWithOffset(unk_func_8821421C_038_034*, s32, s32);
+void WidgetTree_SetScrollableGridEntryText(unk_func_8821421C_038_034*, unk_func_88205880_00D0*);
+void WidgetTree_RemoveScrollableGridEntry(unk_func_8821421C_038_034*);
+void WidgetTree_InitScrollableGridScrollbar(unk_func_88507D4C*, s32, s32, s32, s32, unk_func_8821421C_038_034*);
 s32 WidgetTree_DrawScrollableGridScrollbar(unk_func_88507D4C*, s32, s32);
 void WidgetTree_InitTextLabel(unk_func_8850878C*, s32, s32, char*, s32);
 s32 WidgetTree_DrawTextLabel(unk_func_8850878C*, s32, s32);
@@ -927,7 +928,7 @@ void WidgetTree_InitChildSelectionProxy(unk_func_8830867C_02C_048_000*);
 s32 WidgetTree_HandleChildSelectionProxyInput(unk_func_8830867C_02C_048_000*, Controller*);
 void WidgetTree_SetChildSelectionProxyState(unk_func_8830867C_02C_048_000*, s32);
 void WidgetTree_UpdateChildSelectionProxyItems(unk_func_8830867C_02C_048_000* arg0);
-void WidgetTree_AppendChildSelectionProxyItem(unk_func_8830867C_02C_048_000*, WidgetNode*);
+void WidgetTree_AppendChildSelectionProxyItem(unk_func_8830867C_02C_048_000*, WidgetLinkHeader*);
 void WidgetTree_SetChildSelectionProxySelection(unk_func_8830867C_02C_048*, s32);
 void WidgetTree_InitChildWidgetGroup(unk_func_8850CD44*, s32, MemoryPool*);
 s32 WidgetTree_HandleChildWidgetGroupInput(unk_func_8850CD44* arg0, Controller* arg1);

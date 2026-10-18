@@ -38,8 +38,8 @@ static unk_func_8001B1FC* D_88826920;
 static unk_func_80007444* D_88826924;
 static unk_func_80007444* D_88826928;
 static ModelLoadContext* D_8882692C;
-static s32 D_88826930;
-static s32 D_88826934;
+static uintptr_t D_88826930; // PORT64: frame-buffer memory reused as a pool (was s32)
+static uintptr_t D_88826934; // PORT64: ... and as a decompression buffer (was s32)
 static s32 D_88826938;
 static s32 D_8882693C;
 static unk_func_888044BC* D_88826940;
@@ -6181,7 +6181,7 @@ void Pokedex_EnterAreaMapScreen(void) {
     StageContext_SaveAndSwitch(D_88826928);
     StageLoader_RunFrames(2);
     sp2C = Pokedex_GetSelectedSpeciesIndex(D_88826940->unk_38->unk_2C) + 1;
-    func_88807D04(sp2C, D_88826930, 0x70800, D_88826934, 0x4B000, Text_GetString(NULL, 0, D_888267A4, sp2C - 1),
+    func_88807D04(sp2C, (MainPoolState*)D_88826930, 0x70800, D_88826934, 0x4B000, Text_GetString(NULL, 0, D_888267A4, sp2C - 1),
                   D_888267B0);
     StageFade_Start(8);
     BgStage_RunUntilCondition(0xA, Pokedex_DrawAreaMapFrame);
@@ -6267,9 +6267,9 @@ s32 Pokedex_GetHighestSeenSpeciesIndex(void) {
 }
 
 void Pokedex_InitFramebuffers(void) {
-    u32 sp34;
-    u32 sp30;
-    u32 sp2C;
+    uintptr_t sp34; // PORT64: frame-buffer addresses (were u32)
+    uintptr_t sp30;
+    uintptr_t sp2C;
     unk_D_80068BB0* sp28;
 
     sp28 = main_pool_alloc(sizeof(unk_D_80068BB0), 0);

@@ -10,15 +10,17 @@ struct BattleAnimEffectSlot;
 
 typedef void (*ParticleUpdateCallback)(struct Particle*);
 typedef void (*ParticleRenderCallback)(struct Particle*, unk_D_86002F34_00C*);
-typedef void (*unk_D_8140E728_01C_004_1_04)(struct Particle*, s32, struct ParticleDescriptorChild*);
-typedef void (*unk_D_8140E728_01C_004_1_08)(struct Particle*, s32, struct ParticleDescriptorChild*);
+// PORT: the second argument is unk_D_8140E728_01C_00C.arg, which carries pointers (the callbacks take u8* / node
+// pointers); it was s32 and truncated them.
+typedef void (*unk_D_8140E728_01C_004_1_04)(struct Particle*, intptr_t, struct ParticleDescriptorChild*);
+typedef void (*unk_D_8140E728_01C_004_1_08)(struct Particle*, intptr_t, struct ParticleDescriptorChild*);
 
 typedef struct unk_D_8140E728_01C_00C_1 {
     /* 0x00 */ s32 arg;
 } unk_D_8140E728_01C_00C_1;
 
 typedef union unk_D_8140E728_01C_00C {
-    s32 arg;
+    intptr_t arg; // PORT64: widened so the union can hold the pointer form
     unk_D_8140E728_01C_00C_1* s;
 } unk_D_8140E728_01C_00C;
 
@@ -181,15 +183,10 @@ typedef struct arg1_func_81407874_014_000_01C {
     /* 0x02 */ u16 unk_02;
 } arg1_func_81407874_014_000_01C; // size >= 0x04
 
-typedef struct arg1_func_81407874_014_000 {
-    /* 0x00 */ struct arg1_func_81407874_014_000* unk_00;
-    /* 0x04 */ s32 unk_04;
-    /* 0x08 */ char unk08[0x8];
-    /* 0x10 */ arg1_func_81407874_014_000_010* unk_10;
-    /* 0x14 */ arg1_func_81407874_014_000_014* unk_14;
-    /* 0x18 */ arg1_func_81407874_014_000_014* unk_18;
-    /* 0x1C */ arg1_func_81407874_014_000_01C* unk_1C;
-} arg1_func_81407874_014_000; // size >= 0x20
+struct arg1_func_81407874_014_004;
+// PORT: the material record (0x20 bytes on the N64) was declared as two flat views; they disagree about the field
+// order once pointers are 8 bytes. It is one record: see arg1_func_81407874_014_004.
+typedef struct arg1_func_81407874_014_004 arg1_func_81407874_014_000;
 
 typedef struct arg1_func_81407874_014_004_008 {
     /* 0x00 */ s16 unk_00;
@@ -212,12 +209,18 @@ typedef struct arg1_func_81407874_014_004_004 {
     /* 0x12 */ s16 shiftt;
 } arg1_func_81407874_014_004_004; // size >= 0x14
 
+// Material record of the geo-node material lists (ParticleGfx_GraphNodeBuildDescriptorMaterialList): the texture and
+// its tile setup, then (for the first record of a list) the combine mode, prim/env colours and texture generation.
 typedef struct arg1_func_81407874_014_004 {
-    /* 0x00 */ arg1_func_81407874_014_000* unk_00;
-    /* 0x04 */ arg1_func_81407874_014_004_004* unk_04;
-    /* 0x08 */ arg1_func_81407874_014_004_008* unk_08;
-    /* 0x0C */ arg1_func_81407874_014_000_014* unk_0C;
-} arg1_func_81407874_014_004; // size >= 0x4
+    /* 0x00 */ u8* unk_00; // texture
+    /* 0x04 */ arg1_func_81407874_014_004_004* unk_04; // tile parameters (non-NULL: textured)
+    /* 0x08 */ arg1_func_81407874_014_004_008* unk_08; // tile size / scroll
+    /* 0x0C */ arg1_func_81407874_014_000_014* unk_0C; // texture animation (frames: unk_00.texture)
+    /* 0x10 */ arg1_func_81407874_014_000_010* unk_10; // combine mode
+    /* 0x14 */ arg1_func_81407874_014_000_014* unk_14; // prim colour (or animation)
+    /* 0x18 */ arg1_func_81407874_014_000_014* unk_18; // env colour (or animation)
+    /* 0x1C */ arg1_func_81407874_014_000_01C* unk_1C; // texture generation scale
+} arg1_func_81407874_014_004; // size = 0x20
 
 typedef struct arg1_func_81407874_014 {
     /* 0x00 */ arg1_func_81407874_014_000* unk_00;

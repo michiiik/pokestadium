@@ -22,10 +22,16 @@ extern u8 D_80078EBC;
 extern u8 D_80078EBF;
 
 void Audio_SetMusicLoopPoint(s32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     D_80078EC8 = arg0;
 }
 
 s32 Audio_StartMusicTrack(s32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     u32 sp2C;
     s32 var_a2;
     UNUSED s32 pad;
@@ -471,6 +477,9 @@ s32 Audio_StartMusicTrack(s32 arg0) {
 }
 
 void Audio_FadeOutAll(s32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     s32 i;
 
     if (arg0 == 0) {
@@ -494,6 +503,9 @@ void Audio_FadeOutAll(s32 arg0) {
 }
 
 s32 Audio_StartTrackForCategory(s32 arg0, s32 arg1) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     s32 ret;
     D_80078E80 = 0;
     if ((arg0 == 0) || (arg0 == 0xFF)) {
@@ -572,6 +584,9 @@ s32 Audio_StartTrackForCategory(s32 arg0, s32 arg1) {
 }
 
 s32 Audio_UpdateSpecialSequence(s32 arg0, u32 arg1) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     s32 var_a3;
 
     switch (arg0) {
@@ -683,5 +698,8 @@ s32 Audio_UpdateSpecialSequence(s32 arg0, u32 arg1) {
 }
 
 u32 Audio_GetSpecialSequenceState(void) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     return D_80078ED4;
 }

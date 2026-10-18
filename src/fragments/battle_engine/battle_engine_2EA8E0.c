@@ -1,3 +1,5 @@
+#include <stdlib.h>
+#include <stdio.h>
 #include "battle_engine.h"
 #include "src/geo_node.h"
 #include "src/geo_render.h"
@@ -42,7 +44,7 @@ static u8 D_84384350[] = {
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x11, 0x01,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x01,
 };
-static u32 D_84384364[] = {
+static uintptr_t D_84384364[] = { // PORT64: holds addresses
     0x0C00FFFF,  0x05000000,  0x07000000,    &D_8438E440,   0x05000000, 0x0D000000,    0x05000000,  0x07000000,
     &D_8438E530, 0x14000000,  0x002D0019,    0xFFFFFF28,    0x08000000, Battle_StageLightAngleCallbackA, 0x00000000,  0x14000000,
     0x002D0019,  0x80808028,  0x08000000,    Battle_StageLightAngleCallbackB, 0x00000000, 0x16646464,    0x0F000002,  0x05000000,
@@ -55,12 +57,12 @@ static u32 D_84384364[] = {
     0x0A000000,  &D_800AC840, 0x06000000,    0x0F000002,    0x05000000, 0x0A000000,    &D_800AC858, 0x06000000,
     0x09000000,  0x08000000,  Battle_StageGeoDispatchCallback, 0x00000000,    0x06000000, 0x06000000,    0x06000000,  0x01000000,
 };
-static u32 D_843844C4[] = {
+static uintptr_t D_843844C4[] = { // PORT64: holds addresses
     0x0C00FFFF,  0x05000000, 0x07000000, &D_8438E598, 0x05000000, 0x0D000001, 0x05000000,
     0x14000000,  0x002D0019, 0xFFFFFF28, 0x16FFFFFF,  0x0F000003, 0x05000000, 0x0A000000,
     &D_800AC840, 0x06000000, 0x06000000, 0x06000000,  0x06000000, 0x01000000,
 };
-static u32 D_84384514[] = {
+static uintptr_t D_84384514[] = { // PORT64: holds addresses
     0x0C00FFFF,  0x05000000, 0x07000000, &D_8438E688, 0x05000000, 0x0D000002, 0x05000000,
     0x14000000,  0x002D0019, 0xFFFFFF28, 0x16FFFFFF,  0x0F000003, 0x05000000, 0x0A000000,
     &D_800AC840, 0x06000000, 0x06000000, 0x06000000,  0x06000000, 0x01000000,
@@ -127,7 +129,7 @@ void BattleScene_SetModelUniformScale(f32 arg0) {
     D_8438E7A8 = arg0;
 }
 
-u16 Battle_TintTexel16(u16 arg0) {
+u16 Battle_TintTexel16(uintptr_t arg0) {
     s32 r;
     s32 g;
     s32 b;
@@ -147,17 +149,17 @@ void Battle_DrawStageBackdrop(void) {
     s16 sp46;
     s16 sp44;
 
-    if ((u32)D_8438E780 == NULL) {
+    if ((uintptr_t)D_8438E780 == NULL) {
         GfxImage_ClearDepthRectangle(&gDisplayListHead, 0, 0, 0x140, 0xF0);
         return;
     }
 
-    if ((u32)D_8438E780 == -1) {
+    if ((uintptr_t)D_8438E780 == -1) {
         GfxImage_FillCurrent(&gDisplayListHead, 1);
         return;
     }
 
-    if ((u32)D_8438E780 < 0x10000) {
+    if ((uintptr_t)D_8438E780 < 0x10000) {
         GfxImage_FillCurrent(&gDisplayListHead, Battle_TintTexel16(D_8438E780));
         return;
     }
@@ -204,6 +206,12 @@ void Battle_RenderStageThumbnail(GraphNode* arg0, unk_D_80068BB0* arg1) {
 
         GfxImage_SetRenderTarget(&gDisplayListHead, arg1);
         GfxImage_FillCurrent(&gDisplayListHead, 0x10D);
+        if (getenv("PORT_TRACE_BATTLE")) {
+            extern unsigned long long Port_ViTick(void);
+            GraphNode* c = (GraphNode*)sp2C->node.children;
+            fprintf(stderr, "[thumb] frame %llu image %p %dx%d children %p\n", Port_ViTick(), (void*)arg1->img_p,
+                    arg1->width, arg1->height, (void*)c);
+        }
         Geo_RenderRootNode(arg0);
 
         sp2C->node.flags &= ~0x10;
@@ -248,7 +256,7 @@ void Battle_DrawFaintOrderMarker(GraphNode* arg0, unk_D_80068BB0* arg1) {
     s32 temp_s3;
     unk_D_86002F34_00C* temp_v1 = arg0->children;
     unk_D_86002F34_00C_018* ptr = &arg0->children->unk_18;
-    s32 img;
+    intptr_t img;
 
     temp_s2 = ptr->x;
     temp_s3 = ptr->y;
@@ -515,7 +523,7 @@ void func_84301430(unk_func_80007444* arg0) {
     D_8438E798[1].unk_10 = PokeIcon_AllocFramebuffers(3);
     PokeIcon_OpenModelArchives();
 
-    sp2C = main_pool_alloc(0x10, 0);
+    sp2C = main_pool_alloc(sizeof(unk_D_80068BB0), 0); // PORT64: host size (was 0x10)
     GfxImage_Initialize(sp2C, 0, 2, 0x4C, 0x4C, arg0->unk_18[0]->depth_p->img_p);
     D_8438E790 = GfxImage_Allocate(0, 2, 0x4C, 0x4C, 0);
     D_8438E794 = GfxImage_Allocate(0, 2, 0x4C, 0x4C, 0);
@@ -542,8 +550,16 @@ void func_84301430(unk_func_80007444* arg0) {
         }
     }
 
-    sp3C = BinArchive_GetFile(ASSET_LOAD2(stadium_models, 1, 1), sp32);
-    D_8438E780 = sp3C(2, 0);
+    if (getenv("PORT_BOOT_STAGE") != NULL) { // PORT debug: force a stage file of stadium_models
+        sp32 = atoi(getenv("PORT_BOOT_STAGE"));
+    }
+    {
+        BinArchive* arc = ASSET_LOAD2(stadium_models, 1, 1);
+        sp3C = BinArchive_GetFile(arc, sp32);
+        fprintf(stderr, "[stadium] archive %p flags 0x%x id 0x%x files %u -> file %d at %p\n", (void*)arc, arc ? arc->unk_00 : 0, arc ? arc->unk_02 : 0, arc ? arc->num_files : 0, sp32, (void*)sp3C);
+        if (sp3C) { for (int k = 0; k < 64; k++) fprintf(stderr, "%02x%s", ((u8*)sp3C)[k], (k % 16 == 15) ? "\n" : " "); }
+    }
+    D_8438E780 = (void*)Port_CallBlobEntry(sp3C, 2, 0);
 
     sp28 = Model_LoadByArchiveIndex(0x9A);
     func_8430128C();
@@ -570,30 +586,31 @@ void func_84301430(unk_func_80007444* arg0) {
     D_8438E788 = process_geo_layout(sp44, D_843844C4);
     D_8438E78C = process_geo_layout(sp44, D_84384514);
 
-    temp_v0_4 = sp3C(0, 0);
+    temp_v0_4 = (void*)Port_CallBlobEntry(sp3C, 0, 0);
     if (temp_v0_4 != NULL) {
         GraphNode_AppendChild(&D_8438E550, process_geo_layout(sp44, temp_v0_4));
     }
 
-    temp_v0_4 = sp3C(1, 0);
+    temp_v0_4 = (void*)Port_CallBlobEntry(sp3C, 1, 0);
     if (temp_v0_4 != NULL) {
         GraphNode_AppendChild(&D_8438E568, process_geo_layout(sp44, temp_v0_4));
     }
 
-    temp_v0_4 = sp3C(3, 0);
+    temp_v0_4 = (void*)Port_CallBlobEntry(sp3C, 3, 0);
     if (temp_v0_4 != NULL) {
         GraphNode_AppendChild(&D_8438E580, process_geo_layout(sp44, temp_v0_4));
     }
 
     MainPool_FinalizeAllocation(sp44);
 
-    temp_v0_7 = sp3C(4, 0);
+    temp_v0_7 = Port_VResolve(Port_CallBlobEntry(sp3C, 4, 0)); // PORT: the stage blob returns its pseudo address
     if (temp_v0_7 == NULL) {
         D_8438E530.node.callbackArg = 0;
         D_8438E530.node.flags &= ~1;
     } else {
-        D_8438E530.unk_18.unk_00 = temp_v0_7->unk_00;
-        D_8438E530.unk_18.unk_02 = temp_v0_7->unk_02;
+        // PORT: big-endian data inside the stage file
+        D_8438E530.unk_18.unk_00 = (s16)((((u8*)&temp_v0_7->unk_00)[0] << 8) | ((u8*)&temp_v0_7->unk_00)[1]);
+        D_8438E530.unk_18.unk_02 = (s16)((((u8*)&temp_v0_7->unk_02)[0] << 8) | ((u8*)&temp_v0_7->unk_02)[1]);
         D_8438E530.unk_18.unk_04.rgba = temp_v0_7->unk_04.rgba;
         D_8438E530.node.callbackArg = 1;
     }

@@ -124,10 +124,10 @@ void Sched_HandleRdpCompletion(UnkStruct80001380* arg0) {
 void Sched_InitClientQueue(UnkStruct80083CA0_2* arg0, s32 arg1, s32 arg2) {
     arg0->unk_1DC = arg1;
     arg0->unk_1D8 = 0;
-    osCreateMesgQueue(&arg0->unk_1C0, &arg0->unk_1B0, arg2);
+    osCreateMesgQueue(&arg0->unk_1C0, arg0->unk_1B0, arg2);
 }
 
-s32 Sched_WaitClientQueue(UnkStruct80083CA0_2* arg0) {
+intptr_t Sched_WaitClientQueue(UnkStruct80083CA0_2* arg0) {
     void* sp1C;
 
     osRecvMesg(&arg0->unk_1C0, &sp1C, 1);
@@ -159,7 +159,7 @@ void Sched_PromotePendingTasks(void) {
 void func_80004DB4(void) {
 }
 
-void Sched_NotifyClients(u32 arg0) {
+void Sched_NotifyClients(uintptr_t arg0) {
     unk_D_800AA660* var_s0 = D_800A62E0.unk_A10;
 
     while (var_s0 != NULL) {

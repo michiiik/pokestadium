@@ -183,9 +183,10 @@ u16 Jpeg_ReadBits(u8 len) {
         sJpegBitStreamBitIdx -= 8;
     }
 
-    ret = sJpegBitStreamCurWord << sJpegBitStreamBitIdx;
+    // PORT: the original relies on MIPS variable shifts taking the count modulo 32 (also for the negative count -len)
+    ret = sJpegBitStreamCurWord << (sJpegBitStreamBitIdx & 31);
     temp = ret;
-    ret = temp >> -len;
+    ret = temp >> ((32 - len) & 31);
     sJpegBitStreamBitIdx += len;
     return ret;
 }

@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "battle_engine.h"
 #include "src/text_system.h"
 

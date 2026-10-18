@@ -66,7 +66,7 @@ s32 RentalRules_SpeciesMatchesCategory(s16 species, s16 ruleset) {
     }
 
     if (is_eligible == 0) {
-        if (gSpeciesDataById[species][8] & eligibility_mask) {
+        if (gSpeciesEligibilityFlags(species) & eligibility_mask) {
             is_eligible = 1;
         } else {
             is_eligible = 0;

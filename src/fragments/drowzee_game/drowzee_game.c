@@ -51,7 +51,7 @@ static unk_func_87801684 D_864028E4[] = {
     { 0x03040580, 18 }, { 0x03040980, 2 }, { 0x03040D80, 8 }, { 0x03040980, 2 }, { NULL, 0 },
 };
 
-static u32 D_8640290C[] = {
+static uintptr_t D_8640290C[] = { // PORT64: holds addresses
     0x0C00FFFF, 0x05000000, 0x0B00001E, 0x00000000, 0x014000F0, 0x0000000F, 0x00000000, 0x00000000, 0x05000000,
     0x0D000000, 0x05000000, 0x14000000, 0x002B0012, 0xFFFFFF32, 0x16FFFFFF, 0x0F000003, 0x05000000, 0x1F00FFFF,
     0x00000000, 0x00000000, 0x00000000, 0x00640064, 0x00640000, 0x06000000, 0x05000000, 0x0A000000, &D_800AC840,
@@ -289,7 +289,7 @@ void DrowzeeGame_DrawPlayerOverlay(UNUSED s32 arg0) {
     for (i = 0; i < 4; i++) {
         D_864052C8 = &D_86404778[i];
 
-        temp_v0 = Gfx_AllocDisplayList(0x80);
+        temp_v0 = Gfx_AllocDisplayList(GFX_N64_BYTES(0x80));
         D_864052C8->unk_190->unk_18 = temp_v0;
 
         if ((D_864052C8->unk_010 == 0) || (D_864052C8->unk_00C == 1)) {
@@ -943,7 +943,7 @@ void DrowzeeGame_LoadAssets(void) {
     Widget_PauseMenuInit();
 }
 
-void DrowzeeGame_Main(UNUSED s32 arg0, UNUSED s32 arg1) {
+s32 DrowzeeGame_Main(UNUSED s32 arg0, UNUSED s32 arg1) {
     unk_func_80007444* sp24;
 
     main_pool_push_state('MINI');
@@ -964,5 +964,5 @@ void DrowzeeGame_Main(UNUSED s32 arg0, UNUSED s32 arg1) {
 
     main_pool_pop_state('MINI');
 
-    Widget_PauseMenuGetResult();
+    return Widget_PauseMenuGetResult(); // PORT: the caller uses this result (on the N64 it was left in v0)
 }

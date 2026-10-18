@@ -49,8 +49,9 @@ typedef struct unk_D_88217EA4 {
     /* 0x18 */ u16 unk_18;
 } unk_D_88217EA4; // size = 0x1C
 
-typedef struct unk_func_8820634C_arg2_unk0 {
-    /* 0x00 */ char pad00[0x8];
+typedef struct unk_func_8820634C_arg2_unk0 { // a view of unk_func_8820BE14_06C_000
+    /* 0x00 */ s32 unk_00;
+    /* 0x04 */ void* unk_04; // PORT64: the list pointer of unk_04 (was padding; host fields after it move)
     /* 0x08 */ s32 unk_08;
     /* 0x0C */ s32 unk_0C;
 } unk_func_8820634C_arg2_unk0;
@@ -205,7 +206,8 @@ static Color_RGBA8 D_88217DF0 = { 0xF0, 0xF0, 0x00, 0xFF };
 const char D_88224E90[] = "%d";
 const char D_88224E94[] = " 00";
 
-void LabPC_DrawBoxNumberCell(s32 arg0, s32 arg1, unk_func_8820634C_arg2* arg2, s32 arg3, s32 arg4, unk_func_88200FA0_030_030* arg5) {
+// PORT64: a cell is one box record (unk_func_8820BE14_06C_000), not a bank
+void LabPC_DrawBoxNumberCell(s32 arg0, s32 arg1, unk_func_8820634C_arg2_unk0* arg2, s32 arg3, s32 arg4, unk_func_88200FA0_030_030* arg5) {
     static Color_RGBA8 D_88217DF4 = { 0x6C, 0x6C, 0x7E, 0xFF };
     Color_RGBA8 sp64;
     s32 pad60[1];
@@ -295,7 +297,7 @@ s32 LabPC_BoxNumberSelectorInput(unk_func_8820BE14_02C_078_034* arg0, Controller
 
 s32 LabPC_RunBoxNumberSelectorModal(WidgetTextList* arg0, Controller* arg1) {
     s32 var_s0;
-    s32 var_s1 = 0;
+    intptr_t var_s1 = 0;
 
     arg0->unk_00.unk_24(&arg0->unk_00, 1);
 
@@ -402,7 +404,7 @@ void LabPC_InitBoxTypeSelector(unk_func_8820BE14_02C_078* arg0, s32 arg1, s32 ar
 
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&arg0->unk_00, arg0->unk_2C);
 
-    TableView_Initialize(&arg0->unk_38, arg4, 0x10, 3, 3);
+    TableView_Initialize(&arg0->unk_38, arg4, sizeof(unk_func_8820BE14_06C), 3, 3); // PORT64: was 0x10 (N64 size)
 
     arg0->unk_30 = mem_pool_alloc(arg6, sizeof(unk_func_88200FA0_030_030));
     ((func885060BC)Memmap_GetFragmentVaddr(WidgetTree_InitPagedGrid))(arg0->unk_30, 0, 0, LabPC_DrawBoxTypeCell, sp48, 0x1C, 3, 1, arg6);
@@ -503,7 +505,7 @@ s32 LabPC_BoxTypeSelectorInput(unk_func_8820BE14_02C_078* arg0, Controller* arg1
 
 s32 LabPC_RunBoxTypeSelectorModal(unk_func_8820BE14_02C_078* arg0, Controller* arg1) {
     s32 var_s0;
-    s32 var_s1 = 0;
+    intptr_t var_s1 = 0;
 
     arg0->unk_00.unk_24(&arg0->unk_00, 1);
 
@@ -1286,7 +1288,8 @@ s32 LabPC_DrawPokemonInfoCard(unk_func_8820BE14_02C_070* arg0, s32 arg1, s32 arg
 
     spB0 = BattleMon_CountMoves(ptr);
 
-    i = (u32)arg0->unk_0039[arg0->unk_0030] & ~7;
+    // port: the icon buffer's address was kept in the s32 `i` (truncated host pointer: noise instead of the icon)
+    uintptr_t iconTex = (uintptr_t)arg0->unk_0039[arg0->unk_0030] & ~7;
 
     gDPPipeSync(gDisplayListHead++);
 
@@ -1295,7 +1298,7 @@ s32 LabPC_DrawPokemonInfoCard(unk_func_8820BE14_02C_070* arg0, s32 arg1, s32 arg
     gDPSetAlphaCompare(gDisplayListHead++, G_AC_THRESHOLD);
     gDPSetTexturePersp(gDisplayListHead++, G_TP_NONE);
 
-    gDPLoadTextureBlock(gDisplayListHead++, i, G_IM_FMT_RGBA, G_IM_SIZ_16b, 40, 40, 0, G_TX_NOMIRROR | G_TX_WRAP,
+    gDPLoadTextureBlock(gDisplayListHead++, iconTex, G_IM_FMT_RGBA, G_IM_SIZ_16b, 40, 40, 0, G_TX_NOMIRROR | G_TX_WRAP,
                         G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     gSPTextureRectangle(gDisplayListHead++, (arg1 + 0x84) << 2, (arg2 + 0xA) << 2, (arg1 + 0xAB) << 2,
                         (arg2 + 0x31) << 2, G_TX_RENDERTILE, 0, 0, 0x1000, 0x0400);
@@ -1358,7 +1361,7 @@ void LabPC_InfoCard_SetMon(unk_func_8820BE14_02C_070* arg0, unk_func_88205880_00
     arg0->unk_002C = arg1;
     if (arg1 != NULL) {
         arg0->unk_0030 = (arg0->unk_0030 + 1) & 1;
-        PokeIcon_LoadModelTextureForMon((u32)arg0->unk_0039[arg0->unk_0030] & ~7, 0, arg0->unk_002C);
+        PokeIcon_LoadModelTextureForMon((uintptr_t)arg0->unk_0039[arg0->unk_0030] & ~7, 0, arg0->unk_002C);
     }
 }
 
@@ -1517,7 +1520,7 @@ void func_88209B54(unk_func_8820BE14_02C* arg0, s32 arg1, s32 arg2, unk_func_882
     s32 temp_s0_5;
     char* temp_s1_2;
     char* temp_v0_10;
-    unk_func_8850878C* temp_s0;
+    void* temp_s0; // reused for several widget types
     u32 temp_v0_17;
     unk_func_8850878C* temp_v0_8;
 
@@ -1635,7 +1638,7 @@ void func_88209B54(unk_func_8820BE14_02C* arg0, s32 arg1, s32 arg2, unk_func_882
     ((func88503340)Memmap_GetFragmentVaddr(WidgetTree_InitAnimatedFrameVariantA))(temp_s0, 0, 0, 0x10, 0x10,
                                                                                   D_88217F84);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, temp_s0);
-    arg0->unk_74->unk_28->unk_1C = (unk_func_882170A8*)temp_s0;
+    arg0->unk_74->unk_28->unk_1C = temp_s0;
 
     temp_s0 = mem_pool_alloc(argA, sizeof(unk_func_8850143C));
     ((func8850143C)Memmap_GetFragmentVaddr(WidgetTree_InitPatternTexture))(temp_s0, 0, 0xF4, 0x228, 0x6C, D_88217F88,
@@ -1879,12 +1882,14 @@ void LabPC_SwapScreen_SetMenuState(unk_func_8820BE14_02C* arg0, s32 arg1) {
     ((func8850BF60)Memmap_GetFragmentVaddr(WidgetTree_SetVerticalMenuState))(arg0->unk_74, arg1);
 }
 
-void LabPC_ReleaseSwapWidgets(unk_func_8820B12C_02C* arg0) {
-    LabPC_TabWidget_ToggleFlip(arg0->unk_4C[0]);
-    LabPC_TabWidget_ToggleFlip(arg0->unk_54[0]);
-    LabPC_TabWidget_ToggleFlip(arg0->unk_54[1]);
-    LabPC_TabWidget_ToggleFlip(arg0->unk_4C[1]);
-    LabPC_TabWidget_ToggleFlip(arg0->unk_5C[1]);
+// The caller passes the swap screen (unk_func_8820BE14_02C); the decomp typed it as unk_func_8820B12C_02C and read
+// its tab widgets (unk_44[], N64 offsets 0x4C/0x50/0x54/0x58/0x60) through that type's unk_4C/unk_54/unk_5C.
+void LabPC_ReleaseSwapWidgets(unk_func_8820BE14_02C* arg0) {
+    LabPC_TabWidget_ToggleFlip(arg0->unk_44[2]);
+    LabPC_TabWidget_ToggleFlip(arg0->unk_44[4]);
+    LabPC_TabWidget_ToggleFlip(arg0->unk_44[5]);
+    LabPC_TabWidget_ToggleFlip(arg0->unk_44[3]);
+    LabPC_TabWidget_ToggleFlip(arg0->unk_44[7]);
 }
 
 void LabPC_InitSwapController(unk_func_8820B12C* arg0, unk_func_8820BE14_02C* arg1) {
@@ -2277,7 +2282,7 @@ s32 LabPC_SwapControllerInput(unk_func_8820B12C* arg0, Controller* arg1) {
     return var_s1;
 }
 
-void func_8820BE14(unk_func_8820BE14* arg0, s32 arg1, s32 arg2, s32 arg3, MemoryPool* arg4, s32 arg5, char** arg6,
+void func_8820BE14(unk_func_8820BE14* arg0, s32 arg1, s32 arg2, s32 arg3, MemoryPool* arg4, intptr_t arg5, char** arg6,
                    char** arg7, char** arg8, char** arg9, char** argA, char** argB) {
     static Color_RGBA8 D_88217FC0 = { 0x1E, 0x50, 0x50, 0xFF };
     static Color_RGBA8 D_88217FC4 = { 0x00, 0x0A, 0x0A, 0xFF };
@@ -2318,9 +2323,10 @@ void func_8820BE14(unk_func_8820BE14* arg0, s32 arg1, s32 arg2, s32 arg3, Memory
     var_s1 = mem_pool_alloc(arg4, sizeof(unk_func_882062E4) * (6 + (12 * 20) * 2));
     bzero(var_s1, sizeof(unk_func_882062E4) * (6 + (12 * 20) * 2));
 
-    ByteMatrix_Allocate(&arg0->unk_6C, 0x10, 1, arg4);
-    ByteMatrix_Allocate(&arg0->unk_7C, 0x10, 12, arg4);
-    ByteMatrix_Allocate(&arg0->unk_8C, 0x10, 12, arg4);
+    // PORT64: record size from the host struct (was 0x10, its N64 size; the records hold pointer lists)
+    ByteMatrix_Allocate(&arg0->unk_6C, sizeof(unk_func_8820BE14_06C_000), 1, arg4);
+    ByteMatrix_Allocate(&arg0->unk_7C, sizeof(unk_func_8820BE14_06C_000), 12, arg4);
+    ByteMatrix_Allocate(&arg0->unk_8C, sizeof(unk_func_8820BE14_06C_000), 12, arg4);
 
     arg0->unk_6C.unk_08 = 1;
     ptr = arg0->unk_6C.unk_00;
@@ -2423,7 +2429,7 @@ void func_8820BE14(unk_func_8820BE14* arg0, s32 arg1, s32 arg2, s32 arg3, Memory
     ((func885031E8)Memmap_GetFragmentVaddr(WidgetTree_InitVisibilityGate))(temp_s0_4, 0, 0, 0x280, 0x1E0);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, temp_s0_4);
 
-    temp_v0_7 = Fragment_Load(((((u32)fragment27_TEXT_START) & 0x0FF00000) >> 0x14) - 0x10, fragment27_ROM_START,
+    temp_v0_7 = Fragment_Load(((((uintptr_t)fragment27_TEXT_START) & 0x0FF00000) >> 0x14) - 0x10, fragment27_ROM_START,
                               fragment28_ROM_START);
 
     arg0->unk_30.unk_04 = arg4;
@@ -2472,7 +2478,7 @@ void LabPC_RunSwapScreenLoop(unk_func_8820BE14* arg0) {
 }
 
 void LabPC_PokemonSessionThread(unk_func_8820BE14* arg0) {
-    s32 sp24 = LabPC_RunSwapScreenModal(arg0->unk_2C, gPlayer1Controller);
+    intptr_t sp24 = LabPC_RunSwapScreenModal(arg0->unk_2C, gPlayer1Controller);
 
     while (arg0->unk_2C->unk_2C->unk_00.unk_28 & 1) {
         Ui_SendMessageAndPollInput(0);
@@ -2483,7 +2489,7 @@ void LabPC_PokemonSessionThread(unk_func_8820BE14* arg0) {
 }
 
 void LabPC_PrizePokemonThread(unk_func_8820BE14* arg0) {
-    s32 sp24;
+    intptr_t sp24;
     s32 var_s0;
 
     StageFade_StartFromOpaque(8);
@@ -2554,7 +2560,7 @@ void LabPC_ShowPokemon(FontContext* arg0, s32 arg1) {
     sp58 = mem_pool_alloc(sp5C, sizeof(unk_func_8820BE14));
     func_8820BE14(sp58, 0, 0, arg1, sp5C, arg0, sp4C, sp48, sp44, sp40, sp3C, sp38);
 
-    sp50 = ALIGN16((u32)mem_pool_alloc(sp5C, sizeof(func_88002628_sp38)));
+    sp50 = ALIGN16((uintptr_t)mem_pool_alloc(sp5C, sizeof(func_88002628_sp38)));
 
     osCreateThread(&sp50->thread, 0x32, D_88217FC8[arg1], sp58, sp54 + 0x10000, osGetThreadPri(NULL) - 1);
 

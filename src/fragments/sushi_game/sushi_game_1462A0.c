@@ -45,9 +45,10 @@ static Gfx D_86807010[] = {
     gsSPEndDisplayList(),
 };
 
-static u32 D_86807078[] = {
-    0x17000000, 0x00000000, 0x00000000, 0x00000000, 0x86806FD0, 0x05000000, 0x22040000,
-    0x00000000, 0x08000000, 0x86802084, 0x00000000, 0x06000000, 0x01000000,
+void SushiGame_NameTagGeoCallback(s32 arg0, UNUSED s32 arg1);
+static uintptr_t D_86807078[] = { // PORT64: holds addresses (was u32 with raw vertex/callback addresses)
+    0x17000000, 0x00000000, 0x00000000, 0x00000000, D_86806FD0, 0x05000000, 0x22040000,
+    0x00000000, 0x08000000, SushiGame_NameTagGeoCallback, 0x00000000, 0x06000000, 0x01000000,
 };
 static Controller** D_868070AC[] = {
     &gPlayer1Controller,
@@ -348,7 +349,7 @@ void SushiGame_InitPlayerSlot(unk_D_86807558* arg0, s32 arg1, s32 arg2) {
     arg0->unk_0C0 = 0;
     arg0->unk_0C4 = 0;
     arg0->unk_0CC = 0;
-    arg0->unk_0D0.rgba = -0x100;
+    arg0->unk_0D0.rgba = PORT_BE32(-0x100); /* PORT: .rgba holds the bytes r,g,b,a in memory order; the numeric 0xRRGGBBAA form needs a swap on this host */
     arg0->unk_0C8 = 1.0f;
     arg0->unk_0D4 = SushiGame_ClassifyDifficultyTier(arg0->unk_004);
     arg0->unk_0D8 = SushiGame_ScaleAnimSpeed(arg0->unk_004);
@@ -465,7 +466,7 @@ void SushiGame_SetPlayerEatState(unk_D_86807558* arg0, u32 arg1) {
     switch (arg1) {
         case 0:
             arg0->unk_006 = 0;
-            arg0->unk_0D0.rgba = -0x100;
+            arg0->unk_0D0.rgba = PORT_BE32(-0x100); /* PORT: .rgba holds the bytes r,g,b,a in memory order; the numeric 0xRRGGBBAA form needs a swap on this host */
             arg0->unk_0DC = 0;
             arg0->unk_0C0 = 0;
             arg0->unk_0C8 = 1.0f;
@@ -498,7 +499,7 @@ void SushiGame_SetPlayerEatState(unk_D_86807558* arg0, u32 arg1) {
 
         case 4:
             arg0->unk_006 = 0;
-            arg0->unk_0D0.rgba = -0x100;
+            arg0->unk_0D0.rgba = PORT_BE32(-0x100); /* PORT: .rgba holds the bytes r,g,b,a in memory order; the numeric 0xRRGGBBAA form needs a swap on this host */
             if ((arg0->unk_028 != 1) || (arg0->unk_018 == 0)) {
                 arg0->unk_0C0 = 9;
                 arg0->unk_24C.node.flags &= ~1;

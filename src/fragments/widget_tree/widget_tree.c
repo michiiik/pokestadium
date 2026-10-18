@@ -228,7 +228,7 @@ void WidgetTree_SelectPage(unk_func_88500994* arg0, s32 arg1) {
     arg0->unk_2C = arg1;
 }
 
-void func_88500A74(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+void func_88500A74(s32 arg0, s32 arg1, s32 arg2, s32 arg3, intptr_t arg4) {
     s32 var_x;
     s32 var_y;
     s32 sp34;
@@ -1436,7 +1436,7 @@ s32 WidgetTree_DrawPagedGrid(unk_func_88200FA0_030_030* arg0, s32 arg1, s32 arg2
             if (arg0->unk_30 != 0) {
                 var_a2 = &((s8*)var_s2)[var_s5 * i];
             } else {
-                var_a2 = ((s32*)var_s2)[i];
+                var_a2 = ((void**)var_s2)[i]; // PORT64: a list of pointers (was read as s32)
             }
 
             var_v0 = arg0->unk_34[i];
@@ -1679,7 +1679,7 @@ void WidgetTree_InitScrollableGrid(unk_func_8821421C_038_034* arg0, s32 arg1, s3
     arg0->unk_6C = 8;
 }
 
-void WidgetTree_BindScrollableGridData(unk_func_8820BE14_02C_038* arg0, unk_func_88200FA0_030_038* arg1) {
+void WidgetTree_BindScrollableGridData(unk_func_8821421C_038_034* arg0, unk_func_88200FA0_030_038* arg1) {
     arg0->unk_00.unk_2C = arg1;
     arg0->unk_00.unk_30 = 0;
     arg0->unk_00.unk_38 = 0;
@@ -1690,7 +1690,7 @@ void WidgetTree_BindScrollableGridData(unk_func_8820BE14_02C_038* arg0, unk_func
     WidgetTree_ClearEntryFlags(&arg0->unk_00);
 }
 
-void WidgetTree_BindScrollableGridPage(unk_func_8830867C_02C_034* arg0, unk_func_88200FA0_030_038* arg1, MemoryPool* arg2) {
+void WidgetTree_BindScrollableGridPage(unk_func_8821421C_038_034* arg0, unk_func_88200FA0_030_038* arg1, MemoryPool* arg2) {
     WidgetTree_AllocateEntryFlags(arg0, arg1->unk_04, arg2);
     WidgetTree_BindScrollableGridData(arg0, arg1);
 }
@@ -1711,13 +1711,13 @@ void WidgetTree_BindScrollableGridStridedPage(unk_func_8821421C_038_034* arg0, u
     WidgetTree_BindScrollableGridStridedData(arg0, arg1);
 }
 
-void WidgetTree_ClampScrollableGridTop(unk_func_8820BE14_02C_038* arg0) {
+void WidgetTree_ClampScrollableGridTop(unk_func_8821421C_038_034* arg0) {
     if (arg0->unk_5C < arg0->unk_58) {
         arg0->unk_58 = arg0->unk_5C;
     }
 }
 
-void WidgetTree_ClampScrollableGridBottom(unk_func_8820BE14_02C_038* arg0) {
+void WidgetTree_ClampScrollableGridBottom(unk_func_8821421C_038_034* arg0) {
     s32 temp_v0 = (arg0->unk_5C - (arg0->unk_00.unk_3E * arg0->unk_00.unk_4A)) + 1;
 
     if (arg0->unk_58 < temp_v0) {
@@ -1840,7 +1840,7 @@ s32 func_8850734C(unk_func_8821421C_038_034* arg0, s32 arg1, s32 arg2) {
             if (arg0->unk_00.unk_30 != 0) {
                 var_a2 = &((s8*)var_s3)[var_s6 * var_s0];
             } else {
-                var_a2 = ((s32*)var_s3)[var_s0];
+                var_a2 = ((void**)var_s3)[var_s0]; // PORT64: a list of pointers (was read as s32)
             }
 
             var_v0 = arg0->unk_00.unk_34[var_s0];
@@ -1980,7 +1980,7 @@ s32 WidgetTree_HandleScrollableGridInput(unk_func_8821421C_038_034* arg0, Contro
     return var_t2;
 }
 
-void WidgetTree_SetScrollableGridIndex(unk_func_8820BE14_02C_038* arg0, s32 arg1) {
+void WidgetTree_SetScrollableGridIndex(unk_func_8821421C_038_034* arg0, s32 arg1) {
     s32 temp_v1;
     s32 var_a3;
 
@@ -2010,7 +2010,7 @@ void WidgetTree_SetScrollableGridIndex(unk_func_8820BE14_02C_038* arg0, s32 arg1
     }
 }
 
-void WidgetTree_SetScrollableGridIndexPreserveScroll(unk_func_8820BE14_02C_038* arg0, s32 arg1) {
+void WidgetTree_SetScrollableGridIndexPreserveScroll(unk_func_8821421C_038_034* arg0, s32 arg1) {
     s32 temp_a2;
     s32 temp_v0;
     s32 var_a1;
@@ -2035,7 +2035,7 @@ void WidgetTree_SetScrollableGridIndexPreserveScroll(unk_func_8820BE14_02C_038* 
     }
 }
 
-void WidgetTree_SetPagedGridSelectionWithOffset(unk_func_8830867C_02C_034* arg0, s32 arg1, s32 arg2) {
+void WidgetTree_SetPagedGridSelectionWithOffset(unk_func_8821421C_038_034* arg0, s32 arg1, s32 arg2) {
     s32 temp_a2;
     s32 temp_a2_2;
     s32 temp_lo;
@@ -2069,11 +2069,11 @@ void WidgetTree_SetPagedGridSelectionWithOffset(unk_func_8830867C_02C_034* arg0,
     }
 }
 
-void WidgetTree_SetScrollableGridEntryText(unk_func_8820BE14_02C_038* arg0, unk_func_88205880_00D0* arg1) {
+void WidgetTree_SetScrollableGridEntryText(unk_func_8821421C_038_034* arg0, unk_func_88205880_00D0* arg1) {
     PointerList_Insert(arg0->unk_00.unk_2C, arg1, arg0->unk_00.unk_38);
 }
 
-void WidgetTree_RemoveScrollableGridEntry(unk_func_8820BE14_02C_038* arg0) {
+void WidgetTree_RemoveScrollableGridEntry(unk_func_8821421C_038_034* arg0) {
     s32 var_a1;
 
     PointerList_Remove(arg0->unk_00.unk_2C, arg0->unk_00.unk_38);
@@ -2085,7 +2085,7 @@ void WidgetTree_RemoveScrollableGridEntry(unk_func_8820BE14_02C_038* arg0) {
     WidgetTree_SetScrollableGridIndexPreserveScroll(arg0, var_a1);
 }
 
-void WidgetTree_InitScrollableGridScrollbar(unk_func_88507D4C* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, unk_func_8820BE14_02C_038* arg5) {
+void WidgetTree_InitScrollableGridScrollbar(unk_func_88507D4C* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, unk_func_8821421C_038_034* arg5) {
     WidgetTree_InitWidget(&arg0->unk_00, sizeof(unk_func_88507D4C));
     arg0->unk_00.unk_18 = WidgetTree_DrawScrollableGridScrollbar;
     arg0->unk_00.unk_10.unk_00 = arg1;
@@ -2480,7 +2480,7 @@ void WidgetTree_ResetMessagePanelAnimation(unk_func_88509F48* arg0) {
 
 void WidgetTree_RunMessagePanel(unk_func_88509F48* arg0, Controller* arg1, s32 arg2) {
     s32 temp_v0;
-    s32 var_s0 = 0;
+    intptr_t var_s0 = 0;
 
     WidgetTree_OpenMessagePanel(arg0);
 
@@ -3153,8 +3153,8 @@ void WidgetTree_SetChildSelectionProxyState(unk_func_8830867C_02C_048_000* arg0,
     WidgetTree_UpdateChildSelectionProxyItems(arg0);
 }
 
-void WidgetTree_AppendChildSelectionProxyItem(unk_func_8830867C_02C_048_000* arg0, WidgetNode* arg1) {
-    WidgetTree_AppendChild(&arg0->unk_00.unk_00, &arg1->unk_00);
+void WidgetTree_AppendChildSelectionProxyItem(unk_func_8830867C_02C_048_000* arg0, WidgetLinkHeader* arg1) {
+    WidgetTree_AppendChild(&arg0->unk_00, arg1);
     arg0->unk_20++;
 }
 
@@ -3187,7 +3187,7 @@ void WidgetTree_InitChildWidgetGroup(unk_func_8850CD44* arg0, s32 arg1, MemoryPo
     arg0->unk_14 = WidgetTree_SetChildWidgetGroupState;
     arg0->unk_18 = 0;
     arg0->unk_20 = arg1;
-    arg0->unk_1C = mem_pool_alloc(arg2, arg1 * 4);
+    arg0->unk_1C = mem_pool_alloc(arg2, arg1 * sizeof(*arg0->unk_1C)); // was arg1 * 4: pointer array
 
     for (i = 0; i < arg1; i++) {
         arg0->unk_1C[i] = NULL;
@@ -3215,7 +3215,7 @@ void WidgetTree_SetChildWidgetGroupState(unk_func_8850CD44* arg0, s32 arg1) {
 
 void WidgetTree_RunChildWidgetGroup(unk_func_8850CD44* arg0, Controller* arg1) {
     s32 temp_v0;
-    s32 var_s0 = 0;
+    intptr_t var_s0 = 0;
 
     while (var_s0 == 0) {
         Ui_SendMessageAndPollInput(var_s0);

@@ -2,6 +2,11 @@
 #include "memmap.h"
 #include "memory.h"
 #include "util.h"
+#include "src/memmap.h"
+
+#define PORT_HEAP_SIZE (96 * 1024 * 1024)
+extern unsigned char gPortHeap[];
+#include "src/stage_loader.h"
 
 /**
  * Based on the context of this variable's usage, it appears to be intended to
@@ -23,10 +28,15 @@ s32 StageContext_IsHighResolution(void);
 uintptr_t Util_ConvertAddrToVirtAddr(uintptr_t addr) {
     uintptr_t retaddr = NULL; // any invalid cases are treated as NULL return.
 
-    // convert physical (in installed memory range) to virtual.
-    if (addr < osMemSize) {
+    // PORT: a host pointer (>= 4 GB) is already a valid address.
+    if (addr >= 0x100000000ULL) {
+        retaddr = addr;
+        // convert physical (in installed memory range) to virtual.
+    } else if (addr < osMemSize) {
         retaddr = addr | 0x80000000;
         // convert segmented to virtual.
+    } else if (Port_VResolve(addr) != NULL) {
+        retaddr = (uintptr_t)Port_VResolve(addr); // PORT: pseudo address of a relocated data blob
     } else if (addr < 0x10000000U) {
         retaddr = Memmap_GetSegmentVaddr(addr);
         // convert a fragment pre-relocated address to a post-relocated virtual address.
@@ -62,12 +72,10 @@ void Util_InitMainPools(void) {
      * 0x600000. This is not known to occur in practical contexts, but there may be
      * some other unknown reason for this.
      */
-    if ((gExpansionRAMStart > 0) && (osMemSize > 0x600000U)) {
-        main_pool_init(&gPool, POOL_END_6MB);
-    } else {
-        main_pool_init(&gPool, POOL_END_4MB);
-        gExpansionRAMStart = 0;
-    }
+    // PORT: the original pool spans RDRAM from the end of .bss to 0x80400000 (or 0x80600000). The host
+    // has no fixed RDRAM, so the pool is carved out of a static arena (src/port/stubs.c).
+    main_pool_init(gPortHeap, gPortHeap + PORT_HEAP_SIZE);
+    gExpansionRAMStart = 0;
     Dma_InitializeCompletionQueue();
     gMainPool = mem_pool_try_init(0x10000, 0);
 }

@@ -212,6 +212,7 @@ static Gfx D_86E03E48[] = {
     gsDPSetTileSize(G_TX_RENDERTILE, 0, 0, 0x017C, 0x037C),
     gsSPEndDisplayList(),
 };
+// PORT: one array (the N64 layout): the game indexes across these symbols
 static Vtx D_86E03E88[] = {
     VTX(-2544, 844, -2221, 392, 3180, 0x4D, 0x73, 0x20, 0xFF),
     VTX(-1824, 587, -2393, 641, 3314, 0x4D, 0x73, 0x20, 0xFF),
@@ -245,8 +246,6 @@ static Vtx D_86E03E88[] = {
     VTX(3153, 941, -5254, 2736, 5774, 0xCC, 0xAA, 0x6F, 0xFF),
     VTX(3792, 1101, -4141, 3064, 4864, 0xCC, 0xAA, 0x6F, 0xFF),
     VTX(4028, 1471, -5000, 3049, 5453, 0xCC, 0xAA, 0x6F, 0xFF),
-};
-static Vtx D_86E04088[] = {
     VTX(-749, 250, -5106, 1152, 5759, 0xBF, 0xA2, 0x7D, 0xFF),
     VTX(566, 791, -6840, 1841, 7000, 0x9D, 0xDF, 0xCC, 0xFF),
     VTX(-243, 675, -6701, 1561, 6892, 0x9D, 0xDF, 0xCC, 0xFF),
@@ -279,8 +278,6 @@ static Vtx D_86E04088[] = {
     VTX(-3500, 250, -125, 520, 1660, 0x84, 0x5E, 0x3E, 0xFF),
     VTX(1990, 250, -937, 2419, 2288, 0xBD, 0x97, 0x5E, 0xFF),
     VTX(3500, 250, -937, 2941, 2288, 0x84, 0x5E, 0x3E, 0xFF),
-};
-static Vtx D_86E04288[] = {
     VTX(-2206, 587, -1462, 389, 2594, 0x2D, 0x46, 0x09, 0xFF),
     VTX(-2452, 806, -984, 823, 2288, 0x4D, 0x73, 0x20, 0xFF),
     VTX(-1230, 250, -938, 1126, 2288, 0xBD, 0x97, 0x5E, 0xFF),
@@ -313,8 +310,6 @@ static Vtx D_86E04288[] = {
     VTX(1752, 1031, -2893, 1878, 3700, 0x4F, 0x73, 0x3E, 0xFF),
     VTX(1824, 362, -3604, 2458, 4448, 0x5E, 0x2F, 0x04, 0xFF),
     VTX(1032, 250, -3085, 1896, 3948, 0xCC, 0xAA, 0x6F, 0xFF),
-};
-static Vtx D_86E04488[] = {
     VTX(-1848, 250, -2970, 633, 3759, 0x5E, 0x2F, 0x04, 0xFF),
     VTX(-3500, 250, -2780, 62, 3612, 0xCC, 0xAA, 0x6F, 0xFF),
     VTX(-2544, 844, -2221, 392, 3180, 0x4D, 0x73, 0x20, 0xFF),
@@ -347,14 +342,10 @@ static Vtx D_86E04488[] = {
     VTX(2784, 587, -3392, 2790, 4285, 0x5E, 0x2F, 0x04, 0xFF),
     VTX(1752, 1031, -2893, 2361, 3948, 0x4F, 0x73, 0x3E, 0xFF),
     VTX(3624, 1310, -2586, 2526, 3462, 0x4F, 0x73, 0x3E, 0xFF),
-};
-static Vtx D_86E04688[] = {
     VTX(-250, 0, 250, 0, 2880, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(250, 0, 250, 128, 2880, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(250, 620, 250, 128, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-250, 620, 250, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_86E046C8[] = {
     VTX(-206, -33, 80, 0, 974, 0x8E, 0xF2, 0x20, 0xFF),    VTX(-111, 68, 137, 233, 556, 0xAC, 0x30, 0x46, 0xFF),
     VTX(-159, 120, 14, 116, 339, 0x9D, 0x40, 0x11, 0xFF),  VTX(-82, -45, 202, 305, 1024, 0xDB, 0xE4, 0x6E, 0xFF),
     VTX(-25, 125, 193, 447, 318, 0xEE, 0x40, 0x63, 0xFF),  VTX(185, -19, -121, 968, 917, 0x5C, 0xD9, 0xBE, 0xFF),
@@ -364,6 +355,11 @@ static Vtx D_86E046C8[] = {
     VTX(146, 21, 169, 871, 749, 0x52, 0x0C, 0x56, 0xFF),   VTX(121, 184, 54, 809, 73, 0x3D, 0x5F, 0x27, 0xFF),
     VTX(-60, 191, 78, 361, 46, 0xD7, 0x69, 0x27, 0xFF),    VTX(-181, 22, -65, 61, 744, 0x9A, 0x00, 0xC2, 0xFF),
 };
+#define D_86E04088 (D_86E03E88 + 32)
+#define D_86E04288 (D_86E03E88 + 64)
+#define D_86E04488 (D_86E03E88 + 96)
+#define D_86E04688 (D_86E03E88 + 128)
+#define D_86E046C8 (D_86E03E88 + 132)
 static Gfx D_86E047C8[] = {
     gsSPVertex(D_86E046C8, 16, 0),
     gsSPSetGeometryMode(G_CULL_BACK),
@@ -437,7 +433,7 @@ static Gfx D_86E04870[] = {
     gsSPEndDisplayList(),
 };
 
-static u32 D_86E049F8[] = {
+static uintptr_t D_86E049F8[] = { // PORT64: holds addresses
     0x09000000, 0x05000000, 0x1D030100, 0x00000000, 0x00000000, 0x00000000, 0x00010000, 0x00010000, 0x00010000,
     0x05000000, 0x1D020101, 0x0000FF06, 0x00000000, 0x00000000, 0x0000CCCC, 0x00010000, 0x00010000, 0x05000000,
     0x2303FFFF, D_86E03E48, 0x0000FFFF, 0xFFFFFFFF, 0x22010000, D_86E04870, 0x1D010102, 0x03F400E0, 0xFB500000,
@@ -447,7 +443,7 @@ static u32 D_86E049F8[] = {
     0x06000000, 0x06000000, 0x06000000, 0x04000000,
 };
 
-static u32 D_86E04AE0[] = {
+static uintptr_t D_86E04AE0[] = { // PORT64: holds addresses
     0x17000003, 0x00000094, D_86E03DB0, 0x00000000, D_86E03E88, 0x05000000, 0x1C000000, 0x00001999,
     0x00001999, 0x00001999, 0x05000000, 0x03000000, D_86E049F8, 0x06000000, 0x06000000, 0x01000000,
 };
@@ -457,7 +453,7 @@ static s16 D_86E04B24 = 1;
 static s16 D_86E04B28 = 0;
 static MiniActor* miniMetapodPtr = miniMetapods;
 static MiniActor* miniRockPtr = miniMetapodRocks;
-static u32 D_86E04B34[] = {
+static uintptr_t D_86E04B34[] = { // PORT64: holds addresses
     0x0C00FFFF, 0x05000000, 0x0B00001E, 0x00000000, 0x014000F0, 0xFFE20032, 0x00000000,  0x00000000,
     0x05000000, 0x0D000000, 0x05000000, 0x14000000, 0x002B0012, 0xFFFFFF32, 0x16FFFFFF,  0x0F000003,
     0x05000000, 0x1F00FFFF, 0x00000000, 0x00000000, 0xFFFE0000, 0x00640064, 0x00640000,  0x05000000,
@@ -1877,7 +1873,7 @@ s32 metapodMinigameLoad(s32 arg0, s32 arg1) {
 
     ASSET_LOAD(D_1000000, common_menu1_ui, 0);
     FRAGMENT_LOAD(fragment31);
-    Fragment_Load((((u32)D_8D000000 & 0x0FF00000) >> 0x14) - 0x10, _5C7A70_ROM_START, pokedex_area_model_ROM_START);
+    Fragment_Load((((uintptr_t)D_8D000000 & 0x0FF00000) >> 0x14) - 0x10, _5C7A70_ROM_START, pokedex_area_model_ROM_START);
 
     MetapodGame_LoadAssets();
     StageContext_Activate(sp24);

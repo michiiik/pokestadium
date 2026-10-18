@@ -39,7 +39,7 @@ void GalleryUI_DrawGradientQuad(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4
 
     Gfx_SetViewportDimensions(sp80, temp_s1->width, temp_s1->height);
 
-    gSPViewport(gDisplayListHead++, (u32)sp80 & 0x1FFFFFFF);
+    gSPViewport(gDisplayListHead++, (uintptr_t)sp80);
 
     guOrtho(sp84, 0.5f, temp_s1->width - 0.5f, temp_s1->height - 0.5f, 0.5f, -2.0f, 2.0f, 1.0f);
 
@@ -55,9 +55,9 @@ void GalleryUI_DrawGradientQuad(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4
     gDPSetCombineMode(gDisplayListHead++, G_CC_SHADE, G_CC_SHADE);
     gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
     gSPPerspNormalize(gDisplayListHead++, 0xFFFF);
-    gSPMatrix(gDisplayListHead++, (u32)sp84 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    gSPMatrix(gDisplayListHead++, (u32)&D_8006F010 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gSPVertex(gDisplayListHead++, (u32)temp_s2 & 0x1FFFFFFF, 4, 0);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)sp84, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)&D_8006F010, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPVertex(gDisplayListHead++, (uintptr_t)temp_s2, 4, 0);
     gSP2Triangles(gDisplayListHead++, 0, 2, 3, 0, 0, 3, 1, 0);
 }
 
@@ -202,7 +202,7 @@ void GalleryUI_DrawRotatedSprite(u8* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg
     MtxF_ToFixed(spB0, spA8);
     Gfx_SetViewportDimensions(spA4, spB8->width, spB8->height);
 
-    gSPViewport(gDisplayListHead++, (u32)spA4 & 0x1FFFFFFF);
+    gSPViewport(gDisplayListHead++, (uintptr_t)spA4);
 
     guOrtho(spAC, 0.5f, spB8->width - 0.5f, spB8->height - 0.5f, 0.5f, -2.0f, 2.0f, 1.0f);
 
@@ -230,9 +230,9 @@ void GalleryUI_DrawRotatedSprite(u8* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg
                        G_TX_NOLOD);
 
     gSPPerspNormalize(gDisplayListHead++, 0xFFFF);
-    gSPMatrix(gDisplayListHead++, (u32)spAC & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    gSPMatrix(gDisplayListHead++, (u32)spB0 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gSPVertex(gDisplayListHead++, (u32)spB4 & 0x1FFFFFFF, 4, 0);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)spAC, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)spB0, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPVertex(gDisplayListHead++, (uintptr_t)spB4, 4, 0);
     gSP2Triangles(gDisplayListHead++, 0, 2, 3, 0, 0, 3, 1, 0);
     gSPDisplayList(gDisplayListHead++, D_8006F630);
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF);
@@ -270,7 +270,7 @@ void func_86905734(u8* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, u
 
     Gfx_SetViewportDimensions(spE0, spEC->width, spEC->height);
 
-    gSPViewport(gDisplayListHead++, (u32)spE0 & 0x1FFFFFFF);
+    gSPViewport(gDisplayListHead++, (uintptr_t)spE0);
 
     guOrtho(spE4, 0.5f, spEC->width - 0.5f, spEC->height - 0.5f, 0.5f, -2.0f, 2.0f, 1.0f);
     Gfx_SetVertexAttributes(&spE8[0], spF8[0], spF0[0], -1, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF);
@@ -301,10 +301,10 @@ void func_86905734(u8* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, u
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
 
     gSPPerspNormalize(gDisplayListHead++, 0xFFFF);
-    gSPMatrix(gDisplayListHead++, (u32)spE4 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    gSPMatrix(gDisplayListHead++, (u32)&D_8006F010 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)spE4, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)&D_8006F010, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
-    gSPVertex(gDisplayListHead++, (u32)spE8 & 0x1FFFFFFF, 4, 0);
+    gSPVertex(gDisplayListHead++, (uintptr_t)spE8, 4, 0);
     gSP2Triangles(gDisplayListHead++, 0, 2, 3, 0, 0, 3, 1, 0);
 
     gSPDisplayList(gDisplayListHead++, D_8006F630);
@@ -344,7 +344,7 @@ void GalleryUI_DrawRotateArrowIcon(u8* arg0, s16 arg1, s16 arg2, s16 arg3, s16 a
 
     Gfx_SetViewportDimensions(spC8, spD4->width, spD4->height);
 
-    gSPViewport(gDisplayListHead++, (u32)spC8 & 0x1FFFFFFF);
+    gSPViewport(gDisplayListHead++, (uintptr_t)spC8);
 
     guOrtho(spCC, 0.5f, spD4->width - 0.5f, spD4->height - 0.5f, 0.5f, -2.0f, 2.0f, 1.0f);
 
@@ -376,10 +376,10 @@ void GalleryUI_DrawRotateArrowIcon(u8* arg0, s16 arg1, s16 arg2, s16 arg3, s16 a
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
     gSPPerspNormalize(gDisplayListHead++, 0xFFFF);
 
-    gSPMatrix(gDisplayListHead++, (u32)spCC & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    gSPMatrix(gDisplayListHead++, (u32)&D_8006F010 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)spCC, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)&D_8006F010, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
-    gSPVertex(gDisplayListHead++, (u32)spD0 & 0x1FFFFFFF, 4, 0);
+    gSPVertex(gDisplayListHead++, (uintptr_t)spD0, 4, 0);
     gSP2Triangles(gDisplayListHead++, 0, 2, 3, 0, 0, 3, 1, 0);
 
     gSPDisplayList(gDisplayListHead++, D_8006F630);
@@ -419,7 +419,7 @@ void GalleryUI_DrawRotateArrowIconMirrored(u8* arg0, s16 arg1, s16 arg2, s16 arg
 
     Gfx_SetViewportDimensions(spC8, spD4->width, spD4->height);
 
-    gSPViewport(gDisplayListHead++, (u32)spC8 & 0x1FFFFFFF);
+    gSPViewport(gDisplayListHead++, (uintptr_t)spC8);
 
     guOrtho(spCC, 0.5f, spD4->width - 0.5f, spD4->height - 0.5f, 0.5f, -2.0f, 2.0f, 1.0f);
 
@@ -451,10 +451,10 @@ void GalleryUI_DrawRotateArrowIconMirrored(u8* arg0, s16 arg1, s16 arg2, s16 arg
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
     gSPPerspNormalize(gDisplayListHead++, 0xFFFF);
 
-    gSPMatrix(gDisplayListHead++, (u32)spCC & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    gSPMatrix(gDisplayListHead++, (u32)&D_8006F010 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)spCC, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)&D_8006F010, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
-    gSPVertex(gDisplayListHead++, (u32)spD0 & 0x1FFFFFFF, 4, 0);
+    gSPVertex(gDisplayListHead++, (uintptr_t)spD0, 4, 0);
     gSP2Triangles(gDisplayListHead++, 0, 2, 3, 0, 0, 3, 1, 0);
 
     gSPDisplayList(gDisplayListHead++, D_8006F630);
@@ -470,7 +470,7 @@ void GalleryUI_DrawNicknameRibbonSegment(u8* arg0, s32 arg1, s32 arg2, s32 arg3,
 
     Gfx_SetViewportDimensions(spA8, temp_s1->width, temp_s1->height);
 
-    gSPViewport(gDisplayListHead++, (u32)spA8 & 0x1FFFFFFF);
+    gSPViewport(gDisplayListHead++, (uintptr_t)spA8);
 
     guOrtho(spAC, 0.5f, temp_s1->width - 0.5f, temp_s1->height - 0.5f, 0.5f, -2.0f, 2.0f, 1.0f);
 
@@ -490,9 +490,9 @@ void GalleryUI_DrawNicknameRibbonSegment(u8* arg0, s32 arg1, s32 arg2, s32 arg3,
                        G_TX_NOLOD);
 
     gSPPerspNormalize(gDisplayListHead++, 0xFFFF);
-    gSPMatrix(gDisplayListHead++, (u32)spAC & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    gSPMatrix(gDisplayListHead++, (u32)&D_8006F010 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gSPVertex(gDisplayListHead++, (u32)temp_s2 & 0x1FFFFFFF, 4, 0);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)spAC, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)&D_8006F010, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPVertex(gDisplayListHead++, (uintptr_t)temp_s2, 4, 0);
     gSP2Triangles(gDisplayListHead++, 0, 2, 3, 0, 0, 3, 1, 0);
     gSPDisplayList(gDisplayListHead++, D_8006F630);
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF);
@@ -599,7 +599,7 @@ void Gallery_DrawBackgroundSelectMenu(UNUSED s32 arg0) {
 
 void Gallery_CameraDrawHelpBalloon(void) {
     s32 sp3C;
-    s32 sp38;
+    intptr_t sp38;
     Color_RGB8 sp34 = D_86908C98;
     Color_RGB8 sp30 = D_86908C9C;
 

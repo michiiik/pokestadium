@@ -68,6 +68,10 @@ void* main_pool_alloc_from_pool(u32 size, u32 side) {
             addr = ((u8*)newListHead + sizeof(MainPoolBlock));
         }
     }
+    if (addr != NULL) { // PORT: a reused block is no longer a GPU render target (see interpreter.cpp)
+        extern void Port_GfxForgetRenderTargets(const void* start, size_t size);
+        Port_GfxForgetRenderTargets(addr, size);
+    }
     return addr;
 }
 
@@ -397,4 +401,18 @@ size_t main_pool_get_block_dist(MainPoolBlock* block) {
  */
 MainPool* main_pool_get_pool(void) {
     return &sMemPool;
+}
+
+// PORT: segment maps record "distance to the end of the pool" as their size, which spans unrelated later
+// allocations. The block header knows where this block really ends (the next header sits right after its data).
+size_t Port_PoolBlockSize(void* data) {
+    MainPoolBlock* node = (MainPoolBlock*)((u8*)data - sizeof(MainPoolBlock));
+
+    if ((uintptr_t)data < (uintptr_t)sMemPool.start || (uintptr_t)data >= (uintptr_t)sMemPool.end) {
+        return 0;
+    }
+    if (node->next != NULL && (uintptr_t)node->next > (uintptr_t)data) {
+        return (uintptr_t)node->next - (uintptr_t)data;
+    }
+    return 0; // newest block: size unknown
 }

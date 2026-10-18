@@ -20,8 +20,7 @@ typedef struct unk_func_88200FA0_030_038 {
 } unk_func_88200FA0_030_038; // size = 0xC
 
 typedef struct unk_func_88201DA0_034 {
-    /* 0x0000 */ s32 unk_000;
-    /* 0x0004 */ char unk004[0x4];
+    /* 0x0000 */ BattleMon* unk_000; // PORT64: the Pokémon (was s32 + 4 bytes of padding; same size)
     /* 0x0008 */ u16 unk_008[0x640];
 } unk_func_88201DA0_034; // size = 0xC88
 
@@ -44,7 +43,7 @@ typedef struct unk_func_8820BE14_06C_000 {
 } unk_func_8820BE14_06C_000; // size = 0x10
 
 typedef struct unk_func_8820BE14_06C_000_alt {
-    /* 0x00 */ s32 unk_00;
+    /* 0x00 */ void* unk_00; // PORT64: the owning list (was s32)
     /* 0x04 */ unk_func_88200FA0_030_038 unk_04;
     /* 0x10 */ unk_func_88205880_A030 unk_10;
 } unk_func_8820BE14_06C_000_alt; // size = 0x1C
@@ -131,9 +130,9 @@ typedef struct unk_func_8830867C_04C_030_02C_000_000_00C {
 } unk_func_8830867C_04C_030_02C_000_000_00C; // size >= 0xC
 
 typedef s32 (*func_func_8002D1AC)(unk_func_8830867C_02C_0CC_000*, s32*);
-typedef s32 (*unk_D_8831A1F8)(s32, s32);
+typedef s32 (*unk_D_8831A1F8)(void*, void*); // PORT64: comparators take pointers (was (s32, s32))
 
-void TableView_Initialize(unk_func_88201DA0_038*, unk_func_88201DA0_034*, s32, s32, s32);
+void TableView_Initialize(unk_func_88201DA0_038*, void*, s32, s32, s32); // arg1: table base, only stored
 void ByteMatrix_Allocate(unk_func_8820BE14_06C*, s32, s32, MemoryPool*);
 s32 ByteMatrix_InsertRow(unk_func_8820BE14_06C*, s8*, s32);
 s32 ByteMatrix_RemoveRow(unk_func_8820BE14_06C*, s32);

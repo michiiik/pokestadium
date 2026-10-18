@@ -8,6 +8,7 @@
 #include "scheduler.h"
 #include "util.h"
 #include "src/fragments/gb_tower_emulator/gb_tower_emulator.h"
+#include "src/gb_tower.h"
 
 unk_D_800AA660* D_800AA660;
 unk_D_800AA664* D_800AA664;
@@ -51,11 +52,11 @@ void GbTower_EmuThread(UNUSED void* arg0) {
 }
 
 void GbTower_Start(UnkInputStruct8000D738* arg0) {
-    s32 temp_v0;
+    intptr_t temp_v0;
 
     main_pool_push_state('GBEM');
-    D_800AA660 = main_pool_alloc(0x2210, 0);
-    D_800AA664 = main_pool_alloc(0x21E0, 0);
+    D_800AA660 = main_pool_alloc(sizeof(unk_D_800AA660), 0); // PORT64: host struct sizes (were 0x2210 / 0x21E0)
+    D_800AA664 = main_pool_alloc(sizeof(unk_D_800AA664), 0);
 
     FRAGMENT_LOAD(fragment1);
     temp_v0 = ASSET_LOAD2(fonts, 1, 1);
@@ -64,8 +65,8 @@ void GbTower_Start(UnkInputStruct8000D738* arg0) {
     D_800AA660->font2 = BinArchive_GetFile(temp_v0, 1);
     D_800AA660->unk_2204 = *arg0;
     osCreateMesgQueue(&D_800AA660->queue2, &D_800AA660->mesg, 1);
-    osCreateThread(&D_800AA664->thread, 10, GbTower_AudioThread, NULL, (u32)D_800AA664 + 0x21E0, 0x11);
-    osCreateThread(&D_800AA660->thread, 8, GbTower_EmuThread, NULL, (u32)D_800AA660 + 0x21E0, 0xF);
+    osCreateThread(&D_800AA664->thread, 10, GbTower_AudioThread, NULL, (uintptr_t)D_800AA664 + 0x21E0, 0x11);
+    osCreateThread(&D_800AA660->thread, 8, GbTower_EmuThread, NULL, (uintptr_t)D_800AA660 + 0x21E0, 0xF);
     D_800AA668 = GbTower_SetPollMask(0);
     osStartThread(&D_800AA660->thread);
 }

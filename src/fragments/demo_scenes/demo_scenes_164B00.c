@@ -12,7 +12,7 @@ void UI_DrawSplitGradientPanel(u8* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
 
     Gfx_SetViewportDimensions(temp_v0, temp_s1->width, temp_s1->height);
 
-    gSPViewport(gDisplayListHead++, (u32)temp_v0 & 0x1FFFFFFF);
+    gSPViewport(gDisplayListHead++, (uintptr_t)temp_v0);
 
     guOrtho(spD4, 0.5f, temp_s1->width - 0.5f, temp_s1->height - 0.5f, 0.5f, -2.0f, 2.0f, 1.0f);
     if (argE != 0) {
@@ -53,9 +53,9 @@ void UI_DrawSplitGradientPanel(u8* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
                        G_TX_NOLOD);
 
     gSPPerspNormalize(gDisplayListHead++, 0xFFFF);
-    gSPMatrix(gDisplayListHead++, (u32)spD4 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    gSPMatrix(gDisplayListHead++, (u32)&D_8006F010 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gSPVertex(gDisplayListHead++, (u32)temp_s6 & 0x1FFFFFFF, 4, 0);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)spD4, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)&D_8006F010, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPVertex(gDisplayListHead++, (uintptr_t)temp_s6, 4, 0);
     gSP2Triangles(gDisplayListHead++, 0, 2, 3, 0, 0, 3, 1, 0);
     gSPDisplayList(gDisplayListHead++, D_8006F630);
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF);
@@ -69,7 +69,7 @@ void UI_DrawAlphaQuad(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
 
     Gfx_SetViewportDimensions(sp80, temp_s1->width, temp_s1->height);
 
-    gSPViewport(gDisplayListHead++, (u32)sp80 & 0x1FFFFFFF);
+    gSPViewport(gDisplayListHead++, (uintptr_t)sp80);
 
     guOrtho(sp84, 0.5f, temp_s1->width - 0.5f, temp_s1->height - 0.5f, 0.5f, -2.0f, 2.0f, 1.0f);
 
@@ -86,8 +86,8 @@ void UI_DrawAlphaQuad(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
     gSPPerspNormalize(gDisplayListHead++, 0xFFFF);
 
-    gSPMatrix(gDisplayListHead++, (u32)sp84 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    gSPMatrix(gDisplayListHead++, (u32)&D_8006F010 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gSPVertex(gDisplayListHead++, (u32)temp_s2 & 0x1FFFFFFF, 4, 0);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)sp84, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)&D_8006F010, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPVertex(gDisplayListHead++, (uintptr_t)temp_s2, 4, 0);
     gSP2Triangles(gDisplayListHead++, 0, 2, 3, 0, 0, 3, 1, 0);
 }

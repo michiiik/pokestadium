@@ -1,8 +1,8 @@
 #ifndef _MATH_UTIL_H_
 #define _MATH_UTIL_H_
 
-extern f32 gSineTable[];
-extern f32 gCosineTable[0x1000];
+extern f32 gSineTable[0x1400];
+// gCosineTable is a macro (gSineTable + 0x400); see variables.h
 extern s16 gArctanTable[0x401];
 
 u16 MathUtil_Atan2Lookup(f32 y, f32 x);

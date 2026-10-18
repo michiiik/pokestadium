@@ -66,212 +66,178 @@ FontContext* D_8250A304;
 static unk_D_8250A308 D_8250A308;
 static char** D_8250A47C;
 
+// PORT: one array (the N64 layout): the game indexes across these symbols
 static Vtx D_825061B0[] = {
     VTX(0, 40, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 36, 0, 0, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 36, 0, 9600, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 40, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-
-static Vtx D_825061F0[] = {
     VTX(0, 36, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 32, 0, 0, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 32, 0, 9600, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 36, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-
-static Vtx D_82506230[] = {
     VTX(0, 32, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 28, 0, 0, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 28, 0, 9600, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 32, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82506270[] = {
     VTX(0, 28, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 24, 0, 0, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 24, 0, 9600, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 28, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_825062B0[] = {
     VTX(0, 24, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 20, 0, 0, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 20, 0, 9600, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 24, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_825062F0[] = {
     VTX(0, 20, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 16, 0, 0, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 16, 0, 9600, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 20, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82506330[] = {
     VTX(0, 16, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 12, 0, 0, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 12, 0, 9600, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 16, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82506370[] = {
     VTX(0, 12, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 8, 0, 0, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 8, 0, 9600, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 12, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_825063B0[] = {
     VTX(0, 8, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 4, 0, 0, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 4, 0, 9600, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 8, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_825063F0[] = {
     VTX(0, 4, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 0, 0, 0, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 0, 0, 9600, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 4, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82506430[] = {
     VTX(0, 0, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -4, 0, 0, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -4, 0, 9600, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 0, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82506470[] = {
     VTX(0, -4, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -8, 0, 0, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -8, 0, 9600, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -4, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_825064B0[] = {
     VTX(0, -8, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -12, 0, 0, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -12, 0, 9600, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -8, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_825064F0[] = {
     VTX(0, -12, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -16, 0, 0, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -16, 0, 9600, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -12, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82506530[] = {
     VTX(0, -16, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -20, 0, 0, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -20, 0, 9600, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -16, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82506570[] = {
     VTX(0, -20, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -24, 0, 0, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -24, 0, 9600, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -20, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_825065B0[] = {
     VTX(0, -24, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -28, 0, 0, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -28, 0, 9600, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -24, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_825065F0[] = {
     VTX(0, -28, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -32, 0, 0, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -32, 0, 9600, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -28, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82506630[] = {
     VTX(0, -32, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -36, 0, 0, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -36, 0, 9600, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -32, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82506670[] = {
     VTX(0, -36, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -40, 0, 0, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -40, 0, 9600, 128, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -36, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_825066B0[] = {
     VTX(130, 35, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(130, 25, 0, 0, 320, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(290, 25, 0, 5120, 320, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(290, 35, 0, 5120, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_825066F0[] = {
     VTX(130, 25, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(130, 15, 0, 0, 320, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(290, 15, 0, 5120, 320, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(290, 25, 0, 5120, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82506730[] = {
     VTX(130, 15, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(130, 5, 0, 0, 320, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(290, 5, 0, 5120, 320, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(290, 15, 0, 5120, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82506770[] = {
     VTX(130, 5, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(130, -5, 0, 0, 320, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(290, -5, 0, 5120, 320, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(290, 5, 0, 5120, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_825067B0[] = {
     VTX(130, -5, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(130, -15, 0, 0, 320, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(290, -15, 0, 5120, 320, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(290, -5, 0, 5120, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_825067F0[] = {
     VTX(130, -15, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(130, -25, 0, 0, 320, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(290, -25, 0, 5120, 320, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(290, -15, 0, 5120, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82506830[] = {
     VTX(130, -25, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(130, -35, 0, 0, 320, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(290, -35, 0, 5120, 320, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(290, -25, 0, 5120, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82506870[] = {
     VTX(150, 35, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(150, 25, 0, 0, 320, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(260, 25, 0, 3520, 320, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(260, 35, 0, 3520, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_825068B0[] = {
     VTX(150, 25, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(150, 15, 0, 0, 320, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(260, 15, 0, 3520, 320, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(260, 25, 0, 3520, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_825068F0[] = {
     VTX(150, 15, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(150, 5, 0, 0, 320, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(260, 5, 0, 3520, 320, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(260, 15, 0, 3520, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82506930[] = {
     VTX(150, 5, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(150, -5, 0, 0, 320, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(260, -5, 0, 3520, 320, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(260, 5, 0, 3520, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82506970[] = {
     VTX(150, -5, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(150, -15, 0, 0, 320, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(260, -15, 0, 3520, 320, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(260, -5, 0, 3520, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_825069B0[] = {
     VTX(150, -15, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(150, -25, 0, 0, 320, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(260, -25, 0, 3520, 320, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(260, -15, 0, 3520, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_825069F0[] = {
     VTX(150, -25, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(150, -35, 0, 0, 320, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(260, -35, 0, 3520, 320, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(260, -25, 0, 3520, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
+#define D_825061F0 (D_825061B0 + 4)
+#define D_82506230 (D_825061B0 + 8)
+#define D_82506270 (D_825061B0 + 12)
+#define D_825062B0 (D_825061B0 + 16)
+#define D_825062F0 (D_825061B0 + 20)
+#define D_82506330 (D_825061B0 + 24)
+#define D_82506370 (D_825061B0 + 28)
+#define D_825063B0 (D_825061B0 + 32)
+#define D_825063F0 (D_825061B0 + 36)
+#define D_82506430 (D_825061B0 + 40)
+#define D_82506470 (D_825061B0 + 44)
+#define D_825064B0 (D_825061B0 + 48)
+#define D_825064F0 (D_825061B0 + 52)
+#define D_82506530 (D_825061B0 + 56)
+#define D_82506570 (D_825061B0 + 60)
+#define D_825065B0 (D_825061B0 + 64)
+#define D_825065F0 (D_825061B0 + 68)
+#define D_82506630 (D_825061B0 + 72)
+#define D_82506670 (D_825061B0 + 76)
+#define D_825066B0 (D_825061B0 + 80)
+#define D_825066F0 (D_825061B0 + 84)
+#define D_82506730 (D_825061B0 + 88)
+#define D_82506770 (D_825061B0 + 92)
+#define D_825067B0 (D_825061B0 + 96)
+#define D_825067F0 (D_825061B0 + 100)
+#define D_82506830 (D_825061B0 + 104)
+#define D_82506870 (D_825061B0 + 108)
+#define D_825068B0 (D_825061B0 + 112)
+#define D_825068F0 (D_825061B0 + 116)
+#define D_82506930 (D_825061B0 + 120)
+#define D_82506970 (D_825061B0 + 124)
+#define D_825069B0 (D_825061B0 + 128)
+#define D_825069F0 (D_825061B0 + 132)
 
 static Gfx D_82506A30[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
@@ -422,107 +388,93 @@ static Gfx D_825071F0[] = {
     gsSPEndDisplayList(),
 };
 
-static u32 D_825073F0[] = {
+static uintptr_t D_825073F0[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_825061B0, 0x05000000, 0x22040000,
     0x00000000, 0x08000000, MiniGameSelect_DrawMenuBackdrop, 0x00000000, 0x06000000, 0x01000000, 0x00000000,
 };
 
+// PORT: one array (the N64 layout): the game indexes across these symbols
 static Vtx D_82507428[] = {
     VTX(0, 40, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 35, 0, 0, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 35, 0, 9600, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 40, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82507468[] = {
     VTX(0, 35, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 30, 0, 0, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 30, 0, 9600, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 35, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_825074A8[] = {
     VTX(0, 30, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 25, 0, 0, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 25, 0, 9600, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 30, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_825074E8[] = {
     VTX(0, 25, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 20, 0, 0, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 20, 0, 9600, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 25, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82507528[] = {
     VTX(0, 20, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 15, 0, 0, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 15, 0, 9600, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 20, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82507568[] = {
     VTX(0, 15, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 10, 0, 0, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 10, 0, 9600, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 15, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_825075A8[] = {
     VTX(0, 10, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 5, 0, 0, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 5, 0, 9600, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 10, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_825075E8[] = {
     VTX(0, 5, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 0, 0, 0, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 0, 0, 9600, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 5, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82507628[] = {
     VTX(0, 0, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -5, 0, 0, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -5, 0, 9600, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, 0, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82507668[] = {
     VTX(0, -5, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -10, 0, 0, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -10, 0, 9600, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -5, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_825076A8[] = {
     VTX(0, -10, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -15, 0, 0, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -15, 0, 9600, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -10, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_825076E8[] = {
     VTX(0, -15, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -20, 0, 0, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -20, 0, 9600, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -15, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82507728[] = {
     VTX(0, -20, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -25, 0, 0, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -25, 0, 9600, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -20, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82507768[] = {
     VTX(0, -25, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -30, 0, 0, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -30, 0, 9600, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -25, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_825077A8[] = {
     VTX(0, -30, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -35, 0, 0, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -35, 0, 9600, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -30, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_825077E8[] = {
     VTX(0, -35, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -40, 0, 0, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -40, 0, 9600, 160, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(300, -35, 0, 9600, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
+#define D_82507468 (D_82507428 + 4)
+#define D_825074A8 (D_82507428 + 8)
+#define D_825074E8 (D_82507428 + 12)
+#define D_82507528 (D_82507428 + 16)
+#define D_82507568 (D_82507428 + 20)
+#define D_825075A8 (D_82507428 + 24)
+#define D_825075E8 (D_82507428 + 28)
+#define D_82507628 (D_82507428 + 32)
+#define D_82507668 (D_82507428 + 36)
+#define D_825076A8 (D_82507428 + 40)
+#define D_825076E8 (D_82507428 + 44)
+#define D_82507728 (D_82507428 + 48)
+#define D_82507768 (D_82507428 + 52)
+#define D_825077A8 (D_82507428 + 56)
+#define D_825077E8 (D_82507428 + 60)
 
 static Gfx D_82507828[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
@@ -595,7 +547,7 @@ static Gfx D_82507828[] = {
     gsSPEndDisplayList(),
 };
 
-static u32 D_82507CC8[] = {
+static uintptr_t D_82507CC8[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_82507428, 0x05000000, 0x22040000,
     0x00000000, 0x08000000, MiniGameSelect_DrawGameBackdrop, 0x00000000, 0x06000000, 0x01000000, 0x00000000,
 };
@@ -704,7 +656,7 @@ static Gfx D_82508100[] = {
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_825085A0[] = {
+static uintptr_t D_825085A0[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_82507D00, 0x05000000, 0x22040000,
     0x00000000, 0x08000000, MiniGameSelect_DrawStaticBackdrop, 0x00000000, 0x06000000, 0x01000000, 0x00000000,
 };
@@ -741,7 +693,7 @@ static Gfx D_825086D8[] = {
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsSPEndDisplayList(),
 };
-static u32 D_825086F8[] = {
+static uintptr_t D_825086F8[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_825085D8, 0x05000000, 0x22040000,
     0x00000000, 0x08000000, MiniGameSelect_DrawLabelStrips, 0x00000000, 0x06000000, 0x01000000, 0x00000000,
 };
@@ -762,11 +714,11 @@ static Gfx D_82508770[] = {
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_825087D8[] = {
+static uintptr_t D_825087D8[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_82508730, 0x05000000, 0x22040000,
     0x00000000, 0x08000000, MiniGameSelect_CursorNodeCallback, 0x00000000, 0x06000000, 0x01000000,
 };
-static u32 D_8250880C[] = {
+static uintptr_t D_8250880C[] = { // PORT64: holds addresses
     0x0C000000,  0x05000000, 0x0B00002D, 0x00000000, 0x028001E0, 0x00000000, 0xFDBD0000,
     0x00000243,  0x05000000, 0x0D000000, 0x05000000, 0x0F000002, 0x05000000, 0x0A000000,
     &D_800AC840, 0x06000000, 0x06000000, 0x06000000, 0x06000000, 0x01000000,
@@ -832,7 +784,7 @@ s32 MiniGameSelect_DrawGameBackdrop(s32 arg0, GraphNode* arg1) {
         gDPPipeSync(gDisplayListHead++);
 
         if (tmp == 0) {
-            gSPSegment(gDisplayListHead++, 0x0F, (u32)D_8250A230[tmp]->unk_38->img_p & 0x1FFFFFFF);
+            gSPSegment(gDisplayListHead++, 0x0F, (uintptr_t)D_8250A230[tmp]->unk_38->img_p);
             gSPDisplayList(gDisplayListHead++, D_82507828);
         } else {
             u8* var_a2;
@@ -861,7 +813,7 @@ s32 MiniGameSelect_DrawGameBackdrop(s32 arg0, GraphNode* arg1) {
 s32 MiniGameSelect_DrawStaticBackdrop(s32 arg0, GraphNode* arg1) {
     if (arg0 == 5) {
         gDPPipeSync(gDisplayListHead++);
-        gSPSegment(gDisplayListHead++, 0x0F, (u32)D_8250A238->unk_38->img_p & 0x1FFFFFFF);
+        gSPSegment(gDisplayListHead++, 0x0F, (uintptr_t)D_8250A238->unk_38->img_p);
         gSPDisplayList(gDisplayListHead++, D_82508100);
 
         GeoRender_ApplyMaterialState();
@@ -1334,15 +1286,15 @@ unk_D_8250A228* MiniGameSelect_CreateMenuWidget(s16 arg0, s16 arg1, GraphNode* a
     temp_v0->unk_02 = 0;
     temp_v0->unk_04 = arg1;
     ModelRenderer_AttachDisplayObject(temp_s1);
-    temp_s1->unk_1E = -0x4000;
+    temp_s1->rotation.x = -0x4000;
     Model_InitDisplayObject(temp_s1, 0, 0, arg2);
-    temp_s1->unk_01 &= ~1;
+    temp_s1->node.flags &= ~1;
 
     switch (temp_v0->unk_00) {
         case 1:
             temp_v0->unk_38 = NULL;
-            Vec3f_SetComponentsDuplicate(&temp_s1->unk_24, -150.0f, 240.0f - ((arg1 * 88.0f) + 196.0f), -579.0f);
-            temp_s1->unk_14 = arg1;
+            Vec3f_SetComponentsDuplicate(&temp_s1->position, -150.0f, 240.0f - ((arg1 * 88.0f) + 196.0f), -579.0f);
+            temp_s1->node.callbackArg = arg1;
             break;
 
         case 2:
@@ -1352,24 +1304,24 @@ unk_D_8250A228* MiniGameSelect_CreateMenuWidget(s16 arg0, s16 arg1, GraphNode* a
             } else {
                 temp_v0->unk_38 = NULL;
             }
-            Vec3f_SetComponentsDuplicate(&temp_s1->unk_24, -150.0f, 240.0f - ((arg1 * 98.0f) + 190.0f), -579.0f);
-            temp_s1->unk_14 = arg1;
+            Vec3f_SetComponentsDuplicate(&temp_s1->position, -150.0f, 240.0f - ((arg1 * 98.0f) + 190.0f), -579.0f);
+            temp_s1->node.callbackArg = arg1;
             break;
 
         case 3:
             temp_v0->unk_38 = GfxImage_Allocate(0, 2, 0x12C, 0x50, 1);
             temp_v0->unk_06 |= 1;
-            Vec3f_SetComponentsDuplicate(&temp_s1->unk_24, -150.0f, 0.0f, -579.0f);
+            Vec3f_SetComponentsDuplicate(&temp_s1->position, -150.0f, 0.0f, -579.0f);
             break;
 
         case 4:
             temp_v0->unk_38 = NULL;
             temp_v0->unk_0C = temp_v0->unk_04;
             temp_v0->unk_0A = temp_v0->unk_04;
-            Vec3f_SetComponentsDuplicate(&temp_s1->unk_24, (((arg1 % 3) * 96.0f) + 224.0f) - 320.0f,
+            Vec3f_SetComponentsDuplicate(&temp_s1->position, (((arg1 % 3) * 96.0f) + 224.0f) - 320.0f,
                           240.0f - (((arg1 / 3) * 96.0f) + 156.0f), -579.0f);
-            temp_s1->unk_14 = arg1;
-            temp_s1->unk_30.x = temp_s1->unk_30.y = temp_s1->unk_30.z = 1.2f;
+            temp_s1->node.callbackArg = arg1;
+            temp_s1->scale.x = temp_s1->scale.y = temp_s1->scale.z = 1.2f;
             break;
     }
     return temp_v0;
@@ -1406,7 +1358,7 @@ void func_82501B18(unk_D_8250A228* arg0, s16 arg1) {
         case 1:
             arg0->unk_06 |= 1;
             arg0->unk_08 = 0xA;
-            arg0->unk_3C.unk_01 |= 1;
+            arg0->unk_3C.node.flags |= 1;
 
             arg0->unk_0E[0] = 0xFF;
             arg0->unk_0E[1] = 0xFF;
@@ -1454,7 +1406,7 @@ void func_82501B18(unk_D_8250A228* arg0, s16 arg1) {
             if (arg0->unk_34 != NULL) {
                 var_v0 = 1;
             }
-            arg0->unk_3C.unk_01 |= 1;
+            arg0->unk_3C.node.flags |= 1;
             break;
     }
 
@@ -1577,9 +1529,9 @@ void MiniGameSelect_UpdateWidgets(void) {
 
             case 1:
                 var_s0->unk_008--;
-                temp_v0->unk_1E = (((0xA - var_s0->unk_008) << 0xE) / 10) - 0x4000;
+                temp_v0->rotation.x = (((0xA - var_s0->unk_008) << 0xE) / 10) - 0x4000;
                 if (var_s0->unk_008 <= 0) {
-                    temp_v0->unk_1E = 0;
+                    temp_v0->rotation.x = 0;
                     var_s0->unk_002 = 2;
                     var_s0->unk_008 = 0;
                 }
@@ -1593,12 +1545,12 @@ void MiniGameSelect_UpdateWidgets(void) {
 
             case 3:
                 var_s0->unk_008--;
-                temp_v0->unk_1E = ((0xA - var_s0->unk_008) << 0xE) / 10;
+                temp_v0->rotation.x = ((0xA - var_s0->unk_008) << 0xE) / 10;
                 if (var_s0->unk_008 <= 0) {
                     var_s0->unk_002 = 4;
                     var_s0->unk_008 = 0;
-                    temp_v0->unk_1E = 0x4000;
-                    temp_v0->unk_01 &= ~1;
+                    temp_v0->rotation.x = 0x4000;
+                    temp_v0->node.flags &= ~1;
                     if (var_s0->unk_030 != NULL) {
                         func_82501B18(var_s0->unk_030, 1);
                     }
@@ -1636,32 +1588,32 @@ void MiniGameSelect_UpdateWidgets(void) {
                 }
 
                 var_s0->unk_01C += var_s0->unk_018;
-                temp_v0->unk_24.x += (var_s0->unk_020.x * var_s0->unk_01C);
-                temp_v0->unk_24.y += (var_s0->unk_020.y * var_s0->unk_01C);
-                temp_v0->unk_24.z += (var_s0->unk_020.z * var_s0->unk_01C);
+                temp_v0->position.x += (var_s0->unk_020.x * var_s0->unk_01C);
+                temp_v0->position.y += (var_s0->unk_020.y * var_s0->unk_01C);
+                temp_v0->position.z += (var_s0->unk_020.z * var_s0->unk_01C);
 
                 if ((var_s0->unk_004 & 0xFFFFFFFF) != 4) {
                     if (var_s0->unk_004 & 1) {
-                        temp_v0->unk_22 += 0x1400;
+                        temp_v0->rotation.z += 0x1400;
                     } else {
-                        temp_v0->unk_22 -= 0x1400;
+                        temp_v0->rotation.z -= 0x1400;
                     }
-                    temp_v0->unk_1E += 0x1000;
-                    temp_v0->unk_20 += 0x1000;
+                    temp_v0->rotation.x += 0x1000;
+                    temp_v0->rotation.y += 0x1000;
                 } else {
-                    temp_v0->unk_30.x += 0.05f;
-                    temp_v0->unk_30.y = temp_v0->unk_30.z = temp_v0->unk_30.x;
+                    temp_v0->scale.x += 0.05f;
+                    temp_v0->scale.y = temp_v0->scale.z = temp_v0->scale.x;
                 }
                 break;
 
             case 8:
                 var_s0->unk_008--;
-                temp_v0->unk_1E = ((0xA - var_s0->unk_008) * -0x4000) / 10;
+                temp_v0->rotation.x = ((0xA - var_s0->unk_008) * -0x4000) / 10;
                 if (var_s0->unk_008 <= 0) {
-                    temp_v0->unk_1E = -0x4000;
+                    temp_v0->rotation.x = -0x4000;
                     var_s0->unk_002 = 0;
                     var_s0->unk_008 = 0;
-                    temp_v0->unk_01 &= ~1;
+                    temp_v0->node.flags &= ~1;
                     if (var_s0->unk_02C != NULL) {
                         func_82501B18(var_s0->unk_02C, 7);
                     }
@@ -1670,11 +1622,11 @@ void MiniGameSelect_UpdateWidgets(void) {
 
             case 7:
                 var_s0->unk_008--;
-                temp_v0->unk_1E = 0x4000 - (((0xA - var_s0->unk_008) << 0xE) / 10);
+                temp_v0->rotation.x = 0x4000 - (((0xA - var_s0->unk_008) << 0xE) / 10);
                 if (var_s0->unk_008 <= 0) {
                     var_s0->unk_002 = 2;
                     var_s0->unk_008 = 0;
-                    temp_v0->unk_1E = 0;
+                    temp_v0->rotation.x = 0;
                 }
 
                 break;
@@ -1808,7 +1760,7 @@ void MiniGameSelect_InitMenuNodes(s16 arg0, s16 arg1) {
 void func_8250281C(void) {
     s32 sp44;
     s32 sp40;
-    s32 ptr;
+    intptr_t ptr; // PORT: holds an address (was s32)
     s32 sp38;
     s32 tmp;
     u32 var_a2 = 0;
@@ -1885,7 +1837,7 @@ void func_8250281C(void) {
         Ui_DrawTextureMarker(sp40 + var_a2, sp38, var_a2);
 
         if (sp2C != 0) {
-            ptr = (s32)&D_8780FA48;
+            ptr = (intptr_t)&D_8780FA48;
 
             if (*(s16*)ptr >= 0) {
             gSPDisplayList(gDisplayListHead++, D_8006F518);

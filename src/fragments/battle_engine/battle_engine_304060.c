@@ -557,11 +557,11 @@ void BattleScene_UpdateIntroCameraSequence(unk_D_86002F34_00C* arg0) {
     if ((gSessionContext.mode == 0x10) && (gBattleScene.unk_00->unk_1C == 1)) {
         BattleScene_UpdateActionSelectPhase();
     } else if (gBattleScene.unk_00->unk_1C == 1) {
-        if ((gBattleScene.unk_00->unk_30 == 0) && (D_84390010[0]->unk_728.unk_168->unk_1C == 0x17) &&
-            (D_84390010[1]->unk_728.unk_168->unk_1C == 0x103)) {
+        if ((gBattleScene.unk_00->unk_30 == 0) && (D_84390010[0]->unk_728.unk_168->unk_18.x == 0x17) &&
+            (D_84390010[1]->unk_728.unk_168->unk_18.x == 0x103)) {
             BattleScene_UpdateActionSelectPhase();
-        } else if ((gBattleScene.unk_00->unk_30 == 0) && (D_84390010[0]->unk_728.unk_168->unk_1C < 0xE) &&
-                   (D_84390010[1]->unk_728.unk_168->unk_1C >= 0x10D)) {
+        } else if ((gBattleScene.unk_00->unk_30 == 0) && (D_84390010[0]->unk_728.unk_168->unk_18.x < 0xE) &&
+                   (D_84390010[1]->unk_728.unk_168->unk_18.x >= 0x10D)) {
             BattleScene_ResetActionSelectionTimers();
         }
     }

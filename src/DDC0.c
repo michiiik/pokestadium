@@ -10,6 +10,7 @@
 #include "src/audio_sound_state.h"
 #include "src/audio_channel.h"
 #include "src/audio_loop_point.h"
+#include "src/3D140.h"
 
 typedef struct unk_D_800A8480 {
   /* 0x0000 */ OSThread thread;
@@ -104,16 +105,20 @@ void Audio_ThreadMain(void* unused) {
     osCreateMesgQueue(&D_800A83A8[1].queue, &D_800A83A8[1].mesg, 1);
     osSendMesg(&D_800A83A8[0].queue, (void*)'DONE', 0);
     osSendMesg(&D_800A83A8[1].queue, (void*)'DONE', 0);
+#ifndef PORT_NO_AUDIO
     Audio_InitBanks();
     Audio_SetMonoOutput(0);
     Audio_SetChannelVolume(3, 4);
+#endif
 
     // thread loop
     while (1) {
         Sched_WaitClientQueue(&D_800A8480.thread);
         profiler_log_thread4_time();
         if ((D_800A83A0 != 0) && (D_800A62E0.unk_A38 < 0x15)) {
+#ifndef PORT_NO_AUDIO
             Audio_CreateFrameTaskWrapper(&D_800A83A8[D_800A8478].task);
+#endif
             Sched_SubmitTask(&D_800A83A8[D_800A8478], 0);
         }
         D_800A8478 ^= 1;
@@ -121,7 +126,14 @@ void Audio_ThreadMain(void* unused) {
     }
 }
 
+#ifdef PORT_NO_AUDIO
+extern void Audio_PortInitDummyQueue(void);
+#endif
+
 void Audio_StartThread(void) {
+#ifdef PORT_NO_AUDIO
+    Audio_PortInitDummyQueue();
+#endif
     osCreateThread(&D_800A8480.thread, 4, Audio_ThreadMain, NULL, &D_800AA660, 0x50);
     osStartThread(&D_800A8480.thread);
 }

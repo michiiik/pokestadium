@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "battle_engine.h"
 #include "src/model_animation.h"
 #include "src/model_animation_events.h"
@@ -336,8 +338,8 @@ void Battle_InitializeMoveUsabilityMask(Battler* arg0) {
     }
 }
 
-void Battle_DmaLoadAnimRecord(u8 arg0, u32 arg1) {
-    u32 temp_a1 = (u32)_70D3A0_ROM_START + ((u32)&D_72780[arg0 - 1] & 0xFFFFFF);
+void Battle_DmaLoadAnimRecord(u8 arg0, uintptr_t arg1) {
+    u32 temp_a1 = (uintptr_t)_70D3A0_ROM_START + ((uintptr_t)&D_72780[arg0 - 1] & 0xFFFFFF);
 
     Dma_WriteChunks(arg1, temp_a1, temp_a1 + 0x20, 0);
 }
@@ -346,10 +348,27 @@ void Battle_DmaLoadAnimRecordPair(s32 arg0, SpeciesLearnsetBuffer* arg1, Species
     UNUSED s32 pad[3];
     u32 temp_a1;
 
-    temp_a1 = (u32)_70D3A0_ROM_START + ((u32)&D_72780[arg0] & 0xFFFFFF);
+    temp_a1 = (uintptr_t)_70D3A0_ROM_START + ((uintptr_t)&D_72780[arg0] & 0xFFFFFF);
     Dma_WriteChunks(arg1, temp_a1, temp_a1 + 0x20, 0);
-    temp_a1 = (u32)_70D3A0_ROM_START + ((u32)&D_73A60[arg0] & 0xFFFFFF);
+    temp_a1 = (uintptr_t)_70D3A0_ROM_START + ((uintptr_t)&D_73A60[arg0] & 0xFFFFFF);
     Dma_WriteChunks(arg2, temp_a1, temp_a1 + 0x20, 0);
+}
+
+// PORT: the per-species records below are copied raw from the big-endian ROM: swap their f32 words and s16 halves.
+static void Port_SwapWords(void* p, s32 n) {
+    u32* w = p;
+    while (n-- > 0) {
+        *w = Port_Swap32(*w);
+        w++;
+    }
+}
+
+static void Port_SwapSpeciesModelTransform(SpeciesModelTransform* t) {
+    Port_SwapWords(&t->unk_00, 3);
+    t->unk_0C = Port_Swap16(t->unk_0C);
+    t->unk_0E = Port_Swap16(t->unk_0E);
+    t->unk_10 = Port_Swap16(t->unk_10);
+    t->unk_12 = Port_Swap16(t->unk_12);
 }
 
 void func_84302658(Battler* arg0, s32 arg1) {
@@ -367,36 +386,41 @@ void func_84302658(Battler* arg0, s32 arg1) {
 
     ptr = &arg0->unk_720->unk_08[arg0->unk_654.unk_2C]->unk_01C[arg0->unk_654.unk_18];
 
-    var_a1 = (u32)_70D3A0_ROM_START + ((u32)D_80075BD0[sp66] & 0xFFFFFF);
+    var_a1 = (uintptr_t)_70D3A0_ROM_START + ((u32)D_80075BD0[sp66] & 0xFFFFFF);
     if ((arg0->unk_000.objectType == 0x19) && (ptr->unk_52 & 0x80)) {
-        var_a1 = (u32)_70D3A0_ROM_START + ((u32)D_80075BD0[152] & 0xFFFFFF);
+        var_a1 = (uintptr_t)_70D3A0_ROM_START + ((u32)D_80075BD0[152] & 0xFFFFFF);
     }
-    tmp = ((u32)_70D3A0_ROM_START + ((u32)(D_6E910 + (sp66 << 5)) & 0xFFFFFF)) + 0x20;
+    tmp = ((uintptr_t)_70D3A0_ROM_START + ((uintptr_t)(D_6E910 + (sp66 << 5)) & 0xFFFFFF)) + 0x20;
     Dma_WriteChunks(D_84384570[sp68], var_a1, var_a1 + 0xBC0, 0);
 
-    var_a1 = (u32)_70D3A0_ROM_START + ((u32)(D_6E910 + (sp66 << 5)) & 0xFFFFFF);
+    var_a1 = (uintptr_t)_70D3A0_ROM_START + ((uintptr_t)(D_6E910 + (sp66 << 5)) & 0xFFFFFF);
     Dma_WriteChunks(D_84384580[sp68], var_a1, tmp, 0);
+    Port_SwapSpeciesModelTransform(D_84384580[sp68]);
 
     if (sp68 == 1) {
-        var_a1 = (u32)_70D3A0_ROM_START + ((u32)(D_6E910 + (sp66 << 5)) & 0xFFFFFF);
+        var_a1 = (uintptr_t)_70D3A0_ROM_START + ((uintptr_t)(D_6E910 + (sp66 << 5)) & 0xFFFFFF);
         Dma_WriteChunks(D_84384578[sp68], var_a1, var_a1 + 0x20, 0);
+        Port_SwapSpeciesModelTransform(D_84384578[sp68]);
 
         ptr2 = D_84384578[sp68];
         if (ptr2->unk_10 != 0xFF) {
             sp6E = ptr2->unk_10;
 
-            var_a1 = ((u32)_70D3A0_ROM_START) + (((u32)(D_6E910 + ((ptr2->unk_10 - (tmp = 2)) * 0x20))) & 0xFFFFFF);
+            var_a1 = ((uintptr_t)_70D3A0_ROM_START) + (((uintptr_t)(D_6E910 + ((ptr2->unk_10 - (tmp = 2)) * 0x20))) & 0xFFFFFF);
             Dma_WriteChunks(ptr2, var_a1, var_a1 + 0x20, 0);
+            Port_SwapSpeciesModelTransform(ptr2);
 
             D_84384578[sp68]->unk_10 = sp6E;
         }
     } else {
-        var_a1 = (u32)_70D3A0_ROM_START + ((u32)(D_6E910 + (sp66 << 5)) & 0xFFFFFF);
+        var_a1 = (uintptr_t)_70D3A0_ROM_START + ((uintptr_t)(D_6E910 + (sp66 << 5)) & 0xFFFFFF);
         Dma_WriteChunks(D_84384578[sp68], var_a1, var_a1 + 0x20, 0);
+        Port_SwapSpeciesModelTransform(D_84384578[sp68]);
     }
 
-    var_a1 = (u32)_70D3A0_ROM_START + ((u32)(D_70B10 + (sp66 * 0x20)) & 0xFFFFFF);
+    var_a1 = (uintptr_t)_70D3A0_ROM_START + ((uintptr_t)(D_70B10 + (sp66 * 0x20)) & 0xFFFFFF);
     Dma_WriteChunks(&D_84390048, var_a1, var_a1 + 0x20, 0);
+    Port_SwapWords(&D_84390048, 6);
 
     BattleAnim_Vec3fCopy(&arg0->unk_448.unk_24.unk_00, &D_84390048.unk_00);
     BattleAnim_Vec3fCopy(&arg0->unk_448.unk_24.unk_0C, &D_84390048.unk_0C);
@@ -408,10 +432,11 @@ void func_84302658(Battler* arg0, s32 arg1) {
     arg0->unk_448.unk_24.unk_00.x *= arg0->unk_4B0;
     arg0->unk_448.unk_24.unk_0C.x *= arg0->unk_4B0;
 
-    var_a1 = (u32)_70D3A0_ROM_START + ((u32)(D_70110 + (sp66 << 4)) & 0xFFFFFF);
+    var_a1 = (uintptr_t)_70D3A0_ROM_START + ((uintptr_t)(D_70110 + (sp66 << 4)) & 0xFFFFFF);
     Dma_WriteChunks(&D_84390028[sp68], var_a1, var_a1 + 0x10, 0);
+    Port_SwapWords(&D_84390028[sp68], 4);
 
-    var_a1 = (u32)_70D3A0_ROM_START + ((u32)(D_71E10 + (sp66 * 0x10)) & 0xFFFFFF);
+    var_a1 = (uintptr_t)_70D3A0_ROM_START + ((uintptr_t)(D_71E10 + (sp66 * 0x10)) & 0xFFFFFF);
     Dma_WriteChunks(D_84384588[sp68], var_a1, var_a1 + 0x10, 0);
 
     Battle_DmaLoadAnimRecordPair(sp66, &arg0->unk_94C, &arg0->unk_9AC);
@@ -946,6 +971,7 @@ void BattleScene_TickRow1PlayOwnerCry(Battler* arg0) {
 
 void BattleScene_TickRow16PlayCryAndSpeciesSound(Battler* arg0) {
     UNUSED s32 pad;
+    if (getenv("PORT_TRACE_BATTLE")) fprintf(stderr, "[battle] cry: battler %p roster %p teams %p idx %d\n", (void*)arg0, (void*)arg0->unk_724, (void*)arg0->unk_720, (int)arg0->unk_654.unk_08);
     BattleMon* ptr = &arg0->unk_724->unk_01C[arg0->unk_654.unk_08];
     BattlerState* sp24 = &arg0->unk_654;
 

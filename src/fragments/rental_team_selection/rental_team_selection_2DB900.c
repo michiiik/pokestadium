@@ -83,11 +83,31 @@ unk_D_8380548C D_84210DA0[] = {
         -32768,
         1600,
     },
+    // PORT: entries 4 and 5 (Registered Pokémon, Rental Only) were a separate big-endian byte array (D_84210DD8)
+    // that the code reads as D_84210DA0[4..5]; as bytes on the host the positions came out byte-swapped
+    {
+        0x01,
+        0x00,
+        190,
+        368,
+        76,
+        0,
+        0,
+        1568,
+    },
+    {
+        0x01,
+        0x00,
+        450,
+        368,
+        100,
+        -32768,
+        -32768,
+        1504,
+    },
 };
-u8 D_84210DD8[] = {
-    1, 0, 0, 0xBE, 1, 0x70, 0, 0x4C, 0, 0, 0, 0, 6, 0x20, 1, 0, 1, 0xC2, 1, 0x70, 0, 0x64, 0x80, 0, 0x80, 0, 5, 0xE0,
-};
-u32 D_84210DF4[] = {
+#define D_84210DD8 (&D_84210DA0[4].unk_00) // PORT: entry 4's "available" flag, written as a byte array
+uintptr_t D_84210DF4[] = { // PORT64: holds addresses
     0x0C000000,  0x05000000, 0x0B00002D, 0x00000000, 0x028001E0, 0x00000000, 0xFDBD0000,
     0x00000243,  0x05000000, 0x0D000000, 0x05000000, 0x0F000002, 0x05000000, 0x0A000000,
     &D_800AC840, 0x06000000, 0x06000000, 0x06000000, 0x06000000, 0x01000000, 0x00000000,
@@ -116,7 +136,7 @@ static Gfx D_84210F08[] = {
     gsSP2Triangles(8, 9, 10, 0, 8, 10, 11, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84210FF0[] = {
+static uintptr_t D_84210FF0[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_84210E48, 0x05000000, 0x22040000,
     0x00000000, 0x08000000, TeamSelection_TrainerSlots_GraphCallback, D_84210F08, 0x06000000, 0x01000000, 0x00000000,
 };
@@ -144,7 +164,7 @@ static Gfx D_842110E8[] = {
     gsSP2Triangles(8, 9, 10, 0, 8, 10, 11, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_842111D0[] = {
+static uintptr_t D_842111D0[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_84211028, 0x05000000, 0x22050000,
     0x00000000, 0x08000000, TeamSelection_TrainerSlots_GraphCallback, D_842110E8, 0x06000000, 0x01000000, 0x00000000,
 };
@@ -177,7 +197,7 @@ static Gfx D_84211308[] = {
     gsSP2Triangles(12, 13, 14, 0, 12, 14, 15, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84211430[] = {
+static uintptr_t D_84211430[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_84211208, 0x05000000, 0x22040000,
     0x00000000, 0x08000000, TeamSelection_TrainerSlots_GraphCallback, D_84211308, 0x06000000, 0x01000000, 0x00000000,
 };
@@ -197,17 +217,19 @@ static Gfx D_842114A8[] = {
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84211510[] = {
+static uintptr_t D_84211510[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_84211468, 0x05000000, 0x22050000,
     0x00000000, 0x08000000, TeamSelection_TrainerSlots_GraphCallback, D_842114A8, 0x06000000, 0x01000000,
 };
 
 s16 D_84211544[] = { 0x46, 0x28, 0x1E, 0x1E, 0x1E, 0x1E, 0x28, 0x3C, 0x5A, 0x78, 0x6E, 0x64 };
 s16 D_8421155C[] = { 0x14, 0x3C, 0x5F, 0x78, 0x82, 0x87, 0x82, 0x78, 0x6E, 0x69, 0x66, 0x64 };
-s16 D_84211574[] = { 0x46, 0x32, 0x28, 0x1E, 0x19, 0x14, 0x14, 0x14, 0x19, 0x1E, 0x28, 0x32 };
-s16 D_8421158C[] = {
-    0x64, 0x6E, 0x82, 0x96, 0xA0, 0xA0, 0x78, 0x50, 0x32, 0x1E, 0xA, 5,
-};
+// PORT: one array as laid out in the ROM. TeamSelection_TrainerSlots_AnimateSelected reads index 12 of both tables
+// (post-increment), which on the N64 is the next table's first entry / the zero word after them.
+s16 D_84211574[] = { 0x46, 0x32, 0x28, 0x1E, 0x19, 0x14, 0x14, 0x14, 0x19, 0x1E, 0x28, 0x32,
+                     0x64, 0x6E, 0x82, 0x96, 0xA0, 0xA0, 0x78, 0x50, 0x32, 0x1E, 0xA,  5,
+                     0 };
+#define D_8421158C (&D_84211574[12])
 
 s32 TeamSelection_TrainerSlots_GraphCallback(s32 arg0, unk_func_80011B94* arg1) {
     u32 var_a0;

@@ -114,12 +114,12 @@ static unk_func_87801684 D_86002AF0[] = {
     },
 };
 
-static u32 D_86002B18[] = {
-    0x0C00FFFF, (u32)&D_5000000,  0x0B00001E,      0x00000000,      0x014000F0,      0x0000000F,
-    0x00000000, 0x00000000,       (u32)&D_5000000, 0x0D000000,      (u32)&D_5000000, 0x0F000002,
-    0x14000000, 0x002B0012,       0xFFFFFF32,      0x16FFFFFF,      0x0F000003,      (u32)&D_5000000,
-    0x0A000000, (u32)&D_800AC840, (u32)&D_6000000, (u32)&D_6000000, (u32)&D_6000000, (u32)&D_3000000,
-    D_87806398, (u32)&D_6000000,  (u32)&D_1000000,
+static uintptr_t D_86002B18[] = { // PORT64: holds addresses
+    0x0C00FFFF, (uintptr_t)&D_5000000,  0x0B00001E,      0x00000000,      0x014000F0,      0x0000000F,
+    0x00000000, 0x00000000,       (uintptr_t)&D_5000000, 0x0D000000,      (uintptr_t)&D_5000000, 0x0F000002,
+    0x14000000, 0x002B0012,       0xFFFFFF32,      0x16FFFFFF,      0x0F000003,      (uintptr_t)&D_5000000,
+    0x0A000000, (uintptr_t)&D_800AC840, (uintptr_t)&D_6000000, (uintptr_t)&D_6000000, (uintptr_t)&D_6000000, (uintptr_t)&D_3000000,
+    D_87806398, (uintptr_t)&D_6000000,  (uintptr_t)&D_1000000,
 };
 
 static unk_D_86002F30* D_86002F30;
@@ -132,7 +132,7 @@ static u16 D_86002F42;
 static s16 D_86002F44;
 static s32 D_86002F48;
 static s16 D_86002F4C;
-static s32 D_86002F50;
+static uintptr_t D_86002F50; // PORT64: holds the background picture address (was s32)
 
 typedef struct unk_D_86002F58_004 {
     /* 0x000 */ DisplayObject unk_000;
@@ -1184,7 +1184,7 @@ void MagikarpGame_InitActors(void) {
     Widget_CountdownInit();
 }
 
-void MagikarpGame_Main(UNUSED s32 arg0, UNUSED s32 arg1) {
+s32 MagikarpGame_Main(UNUSED s32 arg0, UNUSED s32 arg1) {
     unk_func_80007444* sp24;
 
     main_pool_push_state('MINI');
@@ -1196,7 +1196,7 @@ void MagikarpGame_Main(UNUSED s32 arg0, UNUSED s32 arg1) {
     ASSET_LOAD(D_1000000, common_menu1_ui, 0);
     FRAGMENT_LOAD(fragment31);
 
-    Fragment_Load((((u32)D_8D000000 & 0x0FF00000) >> 0x14) - 0x10, _5C7A70_ROM_START, _5C7A70_ROM_END);
+    Fragment_Load((((uintptr_t)D_8D000000 & 0x0FF00000) >> 0x14) - 0x10, _5C7A70_ROM_START, _5C7A70_ROM_END);
 
     MagikarpGame_InitActors();
     Widget_PauseMenuInit();
@@ -1224,5 +1224,5 @@ void MagikarpGame_Main(UNUSED s32 arg0, UNUSED s32 arg1) {
 
     main_pool_pop_state('MINI');
 
-    Widget_PauseMenuGetResult();
+    return Widget_PauseMenuGetResult(); // PORT: the caller uses this result (on the N64 it was left in v0)
 }

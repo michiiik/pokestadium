@@ -1102,6 +1102,7 @@ static u32 D_8780EBE8[] = {
 };
 
 // Meant to be 32, this is only 30, it uses 2 vertices from the next list
+// PORT: one array (the N64 layout): the game indexes across these symbols
 static Vtx D_8780F3E8[] = {
     VTX(0, 0, -11, 512, 566, 0x2D, 0x18, 0x94, 0xFF),    VTX(0, 50, 0, 512, 0, 0x2D, 0x18, 0x94, 0xFF),
     VTX(15, 21, 0, 677, 326, 0x2D, 0x18, 0x94, 0xFF),    VTX(15, 21, 0, 677, 326, 0x2D, 0x18, 0x6C, 0xFF),
@@ -1118,9 +1119,6 @@ static Vtx D_8780F3E8[] = {
     VTX(0, 0, -11, 512, 566, 0x24, 0xDD, 0x94, 0xFF),    VTX(48, 15, 0, 1024, 391, 0x24, 0xDD, 0x94, 0xFF),
     VTX(25, -8, 0, 779, 657, 0x24, 0xDD, 0x94, 0xFF),    VTX(25, -8, 0, 779, 657, 0x24, 0xDD, 0x6C, 0xFF),
     VTX(48, 15, 0, 1024, 391, 0x24, 0xDD, 0x6C, 0xFF),   VTX(0, 0, 11, 512, 566, 0x24, 0xDD, 0x6C, 0xFF),
-};
-
-static Vtx D_8780F5C8[] = {
     VTX(0, 0, 11, 512, 566, 0x32, 0x07, 0x6C, 0xFF),     VTX(29, -40, 0, 828, 1023, 0x32, 0x07, 0x6C, 0xFF),
     VTX(25, -8, 0, 779, 657, 0x32, 0x07, 0x6C, 0xFF),    VTX(25, -8, 0, 779, 657, 0x32, 0x07, 0x94, 0xFF),
     VTX(29, -40, 0, 828, 1023, 0x32, 0x07, 0x94, 0xFF),  VTX(0, 0, -11, 512, 566, 0x32, 0x07, 0x94, 0xFF),
@@ -1137,6 +1135,7 @@ static Vtx D_8780F5C8[] = {
     VTX(0, -26, 0, 512, 861, 0x16, 0xD2, 0x6C, 0xFF),    VTX(0, -26, 0, 512, 861, 0x16, 0xD2, 0x94, 0xFF),
     VTX(-29, -40, 0, 195, 1023, 0x16, 0xD2, 0x94, 0xFF), VTX(0, 0, -11, 512, 566, 0x16, 0xD2, 0x94, 0xFF),
 };
+#define D_8780F5C8 (D_8780F3E8 + 30)
 
 static Gfx D_8780F7A8[] = {
     gsDPPipeSync(),
@@ -1514,7 +1513,7 @@ void Widget_PauseMenuDrawWinIcons(s16 arg0) {
 
     guOrtho(temp_s3, -160.0f, 160.0f, -120.0f, 120.0f, -100.0f, 100.0f, 1.0f);
 
-    gSPMatrix(gDisplayListHead++, (u32)temp_s3 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)temp_s3, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
 
     for (i = 0; i < 4; i++) {
         for (j = 0; j < D_8780FA40[i]; j++) {
@@ -1565,7 +1564,7 @@ void Widget_PauseMenuDrawWinIcons(s16 arg0) {
             MathUtil_BuildTransformMtx(spC8, 0.2f, 0.2f, 0.2f, D_8780FCD8[i][j].unk_04, 0.0f, 1.0f, 0.0f,
                           (D_8780FCD8[i][j].unk_00 + arg0) - 0xA0, 0x78 - D_8780FCD8[i][j].unk_02, 0.0f);
 
-            gSPMatrix(gDisplayListHead++, (u32)spC8++ & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+            gSPMatrix(gDisplayListHead++, (uintptr_t)spC8++, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
             gSPDisplayList(gDisplayListHead++, D_8780F840);
         }
     }
@@ -1599,9 +1598,9 @@ void Widget_PauseMenuDrawIconQuad(s32 arg0, u32* arg1, u8 arg2, u8 arg3, s16 arg
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                         G_TX_NOLOD);
 
-    gSPMatrix(gDisplayListHead++, (u32)spC8 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    gSPMatrix(gDisplayListHead++, (u32)spC4 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gSPVertex(gDisplayListHead++, (u32)spCC & 0x1FFFFFFF, 4, 0);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)spC8, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)spC4, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPVertex(gDisplayListHead++, (uintptr_t)spCC, 4, 0);
 
     for (i = 0; i <= arg0; i++) {
         if (i == 0) {
@@ -1684,8 +1683,8 @@ void func_87804320(u8 arg0, s8 arg1, s8 arg2, s8 arg3, s8 arg4) {
     guOrtho(temp_v0, -320.0f / (2.0f * var_fv1), 320.0f / (2.0f * var_fv1), 240.0f / (2.0f * var_fv1),
             -240.0f / (2.0f * var_fv1), -2.0f, 2.0f, 1.0f);
 
-    gSPMatrix(gDisplayListHead++, (u32)temp_v0 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    gSPMatrix(gDisplayListHead++, (u32)&D_8006F010 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)temp_v0, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)&D_8006F010, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     if (temp_s2 == -4) {
         D_8780FCB8[0] = 0;

@@ -74,7 +74,7 @@ void *mem_pool_alloc(MemoryPool* node, s32 size);
 
 void mem_pool_free(MemoryPool* pool, void* addr);
 void *MainPool_AllocState(u32 size, s32 side);
-void MainPool_FinalizeAllocation(struct MemoryBlock* block);
+void MainPool_FinalizeAllocation(struct MainPoolState* state);
 void* MainPool_InitState(struct MainPoolState* block, s32 size);
 void* MainPool_AllocAligned(struct MainPoolState* state, s32 arg1, s32 arg2);
 void MainPool_ResetStateToOffset(struct MainPoolState* state, s32 size);

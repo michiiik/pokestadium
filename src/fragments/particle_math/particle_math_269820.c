@@ -92,13 +92,13 @@ Particle* Particle_AllocChain(u8 arg0) {
 
     sp28 = Particle_Alloc();
 
-    if ((u32)sp28 != -1) {
+    if ((uintptr_t)sp28 != -1) {
         var_s0 = sp28;
         arg0--;
 
         for (i = 0; i < arg0; i++) {
             temp_v0 = Particle_Alloc();
-            if ((u32)temp_v0 == -1) {
+            if ((uintptr_t)temp_v0 == -1) {
                 break;
             }
             var_s0->next = temp_v0;
@@ -111,10 +111,10 @@ Particle* Particle_AllocChain(u8 arg0) {
 }
 
 Particle* Particle_CreateAtTransform(f32 arg0, Vec3f arg1, Vec3s arg2, ParticleUpdateCallback arg3, ParticleDescriptor* arg4,
-                              s16 arg5, s16 arg6, s16 arg7) {
+                              s16 arg5, s16 arg6, intptr_t arg7) {
     Particle* sp1C = Particle_New();
 
-    if ((u32)sp1C != -1) {
+    if ((uintptr_t)sp1C != -1) {
         sp1C->unk_28 = arg0;
 
         ParticleMath_CopyVec3f(&sp1C->unk_68, &arg1);
@@ -135,7 +135,7 @@ Particle* Particle_CreateFromObjectTransform(DisplayObject* arg0, ParticleUpdate
                               s16 arg3, s16 arg4, s16 arg5) {
     Particle* sp1C = Particle_New();
 
-    if ((u32)sp1C != -1) {
+    if ((uintptr_t)sp1C != -1) {
         if (arg4 == 0xFF) {
             sp1C->unk_38.x = arg0->position.x;
             sp1C->unk_38.y = arg0->position.y;
@@ -165,7 +165,7 @@ void Particle_EmitBurstAtTransform(f32 arg0, Vec3f arg1, Vec3s arg2, ParticleUpd
     s32 i;
 
     for (i = 0; i < arg5; i++) {
-        if ((u32)Particle_CreateAtTransform(arg0, arg1, arg2, arg3, arg4, i, 0xFF, NULL) == -1) {
+        if ((uintptr_t)Particle_CreateAtTransform(arg0, arg1, arg2, arg3, arg4, i, 0xFF, NULL) == -1) {
             break;
         }
     }
@@ -176,7 +176,7 @@ void Particle_EmitBurstAtTransformWithMetadata(f32 arg0, Vec3f arg1, Vec3s arg2,
     s32 i;
 
     for (i = 0; i < arg5; i++) {
-        if ((u32)Particle_CreateAtTransform(arg0, arg1, arg2, arg3, arg4, i, 0xFF, arg6) == -1) {
+        if ((uintptr_t)Particle_CreateAtTransform(arg0, arg1, arg2, arg3, arg4, i, 0xFF, arg6) == -1) {
             break;
         }
     }
@@ -187,7 +187,7 @@ void Particle_EmitBurstFromObject(DisplayObject* arg0, ParticleUpdateCallback ar
     s32 i;
 
     for (i = 0; i < arg3; i++) {
-        if ((u32)Particle_CreateFromObjectTransform(arg0, arg1, arg2, i, arg4, 0) == -1) {
+        if ((uintptr_t)Particle_CreateFromObjectTransform(arg0, arg1, arg2, i, arg4, 0) == -1) {
             break;
         }
     }
@@ -198,7 +198,7 @@ void Particle_EmitBurstFromObjectWithMetadata(DisplayObject* arg0, ParticleUpdat
     s32 i;
 
     for (i = 0; i < arg3; i++) {
-        if ((u32)Particle_CreateFromObjectTransform(arg0, arg1, arg2, i, arg4, arg5) == -1) {
+        if ((uintptr_t)Particle_CreateFromObjectTransform(arg0, arg1, arg2, i, arg4, arg5) == -1) {
             break;
         }
     }
@@ -1902,61 +1902,61 @@ s16 Particle_FieldAA_GetS16_0C068(Particle* arg0) {
 }
 
 void Particle_SetFieldOffsetACIfNotSentinel(Particle* arg0, s16 arg1) {
-    if ((u32)arg0 != -1) {
+    if ((uintptr_t)arg0 != -1) {
         Particle_FieldAC_SetS16_0BED8(arg0, arg1);
     }
 }
 
 void Particle_SetFieldOffsetCFIfNotSentinel(Particle* arg0, u8 arg1) {
-    if ((u32)arg0 != -1) {
+    if ((uintptr_t)arg0 != -1) {
         Particle_FieldCF_SetU8_0BEEC(arg0, arg1);
     }
 }
 
 void Particle_SetFieldOffsetA6IfNotSentinel(Particle* arg0, s16 arg1) {
-    if ((u32)arg0 != -1) {
+    if ((uintptr_t)arg0 != -1) {
         Particle_FieldA6_SetS16_0BCA8(arg0, arg1);
     }
 }
 
 void Particle_SetFieldOffsetA8IfNotSentinel(Particle* arg0, s16 arg1) {
-    if ((u32)arg0 != -1) {
+    if ((uintptr_t)arg0 != -1) {
         Particle_FieldA8_SetS16_0BE14(arg0, arg1);
     }
 }
 
 void Particle_SetFieldOffsetCEIfNotSentinel(Particle* arg0, u8 arg1) {
-    if ((u32)arg0 != -1) {
+    if ((uintptr_t)arg0 != -1) {
         arg0->unk_CE = arg1;
     }
 }
 
 void Particle_SetFieldOffsetCDIfNotSentinel(Particle* arg0, u8 arg1) {
-    if ((u32)arg0 != -1) {
+    if ((uintptr_t)arg0 != -1) {
         arg0->unk_CD = arg1;
     }
 }
 
 void Particle_SetFieldOffsetAAIfNotSentinel(Particle* arg0, s16 arg1) {
-    if ((u32)arg0 != -1) {
+    if ((uintptr_t)arg0 != -1) {
         arg0->unk_AA = arg1;
     }
 }
 
 void Particle_SetPrimAlphaIfNotSentinel(Particle* arg0, u8 arg1) {
-    if ((u32)arg0 != -1) {
+    if ((uintptr_t)arg0 != -1) {
         Particle_SetPrimAlpha(arg0, arg1);
     }
 }
 
 void Particle_SetFieldOffsetAEIfNotSentinel(Particle* arg0, s16 arg1) {
-    if ((u32)arg0 != -1) {
+    if ((uintptr_t)arg0 != -1) {
         arg0->unk_AE = arg1;
     }
 }
 
 void Particle_SetFieldOffsetB0IfNotSentinel(Particle* arg0, s16 arg1) {
-    if ((u32)arg0 != -1) {
+    if ((uintptr_t)arg0 != -1) {
         arg0->unk_B0 = arg1;
     }
 }

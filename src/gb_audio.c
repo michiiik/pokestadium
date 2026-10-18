@@ -59,6 +59,9 @@ static u8 D_800785B4 = 0;
 static u8 D_800785B8 = 0xFF;
 
 void GbMusic_UpdateChannels(void) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     s32 i;
 
     for (i = 0; i < 8; i++) {
@@ -69,6 +72,9 @@ void GbMusic_UpdateChannels(void) {
 }
 
 void GbMusic_StartSequenceById(u8 arg0) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     D_800FCEB4 = arg0;
     if (arg0 == 0xFF) {
         GbMusic_ResetApu();
@@ -80,6 +86,9 @@ void GbMusic_StartSequenceById(u8 arg0) {
 }
 
 s32 GbMusic_StartTableSequence(u16 arg0) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     s32 a;
     s32 offset;
 
@@ -110,6 +119,9 @@ s32 GbMusic_StartTableSequence(u16 arg0) {
 }
 
 void GbMusic_UpdateChannel(u32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     if (D_800FCD50[arg0] < 2) {
         D_800FCD70[arg0].unk_03 = D_800FCD70[arg0].unk_04;
         D_800FCD58[arg0] &= (u8)~0x30;
@@ -165,6 +177,9 @@ void GbMusic_UpdateChannel(u32 arg0) {
 }
 
 void GbMusic_DecodeChannelCommands(u32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     u32 var_v0;
     u8 temp_v0;
 
@@ -231,6 +246,9 @@ void GbMusic_DecodeChannelCommands(u32 arg0) {
 }
 
 u8 GbMusic_CmdEndOrReturn(u32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     if (D_800FCD58[arg0] & 2) {
         D_800FCD58[arg0] &= ~2;
         D_800FCE68[arg0] = D_800FCE48[arg0];
@@ -266,6 +284,9 @@ u8 GbMusic_CmdEndOrReturn(u32 arg0) {
 }
 
 u8 GbMusic_CmdCall(u32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     u8 sp1F;
     u8 temp_v0;
     s32 tmp;
@@ -281,6 +302,9 @@ u8 GbMusic_CmdCall(u32 arg0) {
 }
 
 u8 GbMusic_CmdLoop(u32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     u8 sp27;
     u8 sp26;
     u32 temp_v0 = GbMusic_ReadStreamByte(arg0);
@@ -303,11 +327,17 @@ u8 GbMusic_CmdLoop(u32 arg0) {
 }
 
 u8 GbMusic_CmdToggleFinePitch(u32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     D_800FCD58[arg0] ^= 1;
     return 0;
 }
 
 u8 GbMusic_CmdSetEnvelope(u32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     u8 temp_a0;
     u8 temp_a1;
     u8 temp_v0;
@@ -336,6 +366,9 @@ u8 GbMusic_CmdSetEnvelope(u32 arg0) {
 }
 
 u8 GbMusic_CmdPitchSlide(u32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     UNUSED s32 pad;
     u8 temp_v0;
 
@@ -348,11 +381,17 @@ u8 GbMusic_CmdPitchSlide(u32 arg0) {
 }
 
 u8 GbMusic_CmdSetDutyCycle(u32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     D_800FCE20[arg0] = GbMusic_ReadStreamByte(arg0) << 6;
     return 0;
 }
 
 u8 GbMusic_CmdSetTempo(u32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     u8 sp1F;
     u8 sp1E;
 
@@ -377,11 +416,17 @@ u8 GbMusic_CmdSetTempo(u32 arg0) {
 }
 
 u8 GbMusic_CmdSetPanMask(u32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     D_800FCE40[1] = GbMusic_ReadStreamByte(arg0);
     return 0;
 }
 
 u8 GbMusic_CmdPlaySequence(u32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     GbMusic_StartSequenceById(GbMusic_ReadStreamByte(arg0));
     if (D_800FCD68 == 0) {
         D_800FCD68 = D_800FCD48[7];
@@ -391,6 +436,9 @@ u8 GbMusic_CmdPlaySequence(u32 arg0) {
 }
 
 u8 GbMusic_CmdSetDutyRotation(u32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     u8 temp_v0 = GbMusic_ReadStreamByte(arg0);
 
     D_800FCE18[arg0] = temp_v0;
@@ -400,16 +448,25 @@ u8 GbMusic_CmdSetDutyRotation(u32 arg0) {
 }
 
 u8 GbMusic_CmdSetMasterVolume(u32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     GbAudio_QueueRegisterWrite(0xFF24, GbMusic_ReadStreamByte(arg0), 0);
     return 0;
 }
 
 u8 GbMusic_CmdEnableEnvelope(u32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     D_800FCD60[arg0] |= 1;
     return 0;
 }
 
 u8 GbMusic_CmdSetNoteLength(u32 arg0, u8 arg1) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     u8 var_a1;
 
     D_800FCEA8[arg0] = arg1 & 0xF;
@@ -428,11 +485,17 @@ u8 GbMusic_CmdSetNoteLength(u32 arg0, u8 arg1) {
 }
 
 u8 GbMusic_CmdSetOctave(u32 arg0, u8 arg1) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     D_800FCE38[arg0] = arg1 & 0xF;
     return 0;
 }
 
 s32 GbMusic_CmdPlayNoteWithDuty(u32 arg0, u8 arg1) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     u8 sp27;
     u8 sp26;
     u8 sp25;
@@ -459,6 +522,9 @@ s32 GbMusic_CmdPlayNoteWithDuty(u32 arg0, u8 arg1) {
 }
 
 u8 GbMusic_CmdPlayNote(u32 arg0, u8 arg1) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     if (arg0 < 4) {
         GbMusic_TriggerNoteFromByte(arg0, arg1);
     }
@@ -478,6 +544,9 @@ u8 GbMusic_CmdPlayNote(u32 arg0, u8 arg1) {
 }
 
 u8 GbMusic_TriggerNoteFromByte(u32 arg0, u8 arg1) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     u8 sp1F;
     s32 temp_v0 = arg1 & 0xF0;
 
@@ -500,6 +569,9 @@ u8 GbMusic_TriggerNoteFromByte(u32 arg0, u8 arg1) {
 }
 
 s32 GbMusic_ScheduleNote(u32 arg0, u8 arg1) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     u16 sp26;
     u16 tmp;
     u16 var_t0;
@@ -541,6 +613,9 @@ s32 GbMusic_ScheduleNote(u32 arg0, u8 arg1) {
 }
 
 s32 GbMusic_TriggerChannelNote(u32 arg0, u16 arg1, u16 arg2) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     u16 var_s1;
     s32 tmp;
     u8 tmp1;
@@ -571,6 +646,9 @@ s32 GbMusic_TriggerChannelNote(u32 arg0, u16 arg1, u16 arg2) {
 }
 
 s32 GbMusic_UpdateChannelPanning(u32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     u8 tmp;
     u8 sp1E;
     u8 temp_v1 = D_80078590[arg0] | GbAudio_GetRegisterValue(0xFF25);
@@ -593,6 +671,9 @@ s32 GbMusic_UpdateChannelPanning(u32 arg0) {
 }
 
 s32 GbMusic_WriteChannelDutyLength(u32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     u8 sp1F = D_800FCD50[arg0];
     u8 tmp;
 
@@ -607,6 +688,9 @@ s32 GbMusic_WriteChannelDutyLength(u32 arg0) {
 }
 
 s32 GbMusic_WriteChannelFrequency(u32 arg0, u16 arg1) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     u8 sp2E[4];
     s32 var_s2;
     u16 temp_v0;
@@ -647,6 +731,9 @@ s32 GbMusic_WriteChannelFrequency(u32 arg0, u16 arg1) {
 }
 
 void GbMusic_UpdateHighChannelTempo(void) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     s32 tmp;
 
     if (GbMusic_IsSfxActive() != 0) {
@@ -658,6 +745,9 @@ void GbMusic_UpdateHighChannelTempo(void) {
 }
 
 void GbMusic_WriteTransposedFrequency(u16 arg0, u16 arg1) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     if (GbMusic_IsSfxActive() != 0) {
         u16 sp18 = D_800FCECC;
 
@@ -668,6 +758,9 @@ void GbMusic_WriteTransposedFrequency(u16 arg0, u16 arg1) {
 }
 
 s32 GbMusic_RewindIfSfxActive(u32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     if (GbMusic_IsSfxActive() != 0) {
         D_800FCE48[arg0]--;
         return 1;
@@ -676,6 +769,9 @@ s32 GbMusic_RewindIfSfxActive(u32 arg0) {
 }
 
 s32 GbMusic_IsSfxActive(void) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     if ((D_800FCD48[4] < D_800785A4) && (D_800FCD48[4] >= D_800785A0)) {
         return 1;
     }
@@ -683,6 +779,9 @@ s32 GbMusic_IsSfxActive(void) {
 }
 
 void GbMusic_AdvancePitchSlide(u32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     u8 sp1F;
     u8 sp1E;
     u16 sp1C;
@@ -706,6 +805,9 @@ void GbMusic_AdvancePitchSlide(u32 arg0) {
 }
 
 s32 GbMusic_StartPitchSlide(u32 arg0, u16 arg1) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     D_800FCD98[arg0].unk_00 = arg1;
     if (arg1 < D_800FCD98[arg0].unk_04) {
         D_800FCD58[arg0] &= ~0x20;
@@ -717,6 +819,9 @@ s32 GbMusic_StartPitchSlide(u32 arg0, u16 arg1) {
 }
 
 void GbMusic_RotateChannelDuty(u32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     u8 sp1F;
     u16 sp1C;
 
@@ -730,10 +835,16 @@ void GbMusic_RotateChannelDuty(u32 arg0) {
 }
 
 u8 GbMusic_ReadStreamByte(u32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     return *D_800FCE48[arg0]++;
 }
 
 u16 GbMusic_GetChannelRegister(u32 arg0, s32 arg1) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     UNUSED s32 pad;
     u16 D_800785BC[] = {
         0xFF10, 0XFF15, 0xFF1A, 0XFF1F, 0xFF10, 0XFF15, 0xFF1A, 0XFF1F,
@@ -744,6 +855,9 @@ u16 GbMusic_GetChannelRegister(u32 arg0, s32 arg1) {
 }
 
 u16 GbMusic_GetNoteFrequency(u8 arg0, u8 arg1) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     s16 sp8[] = {
         0xF82C, 0xF89D, 0xF907, 0xF96B, 0xF9CA, 0xFA23, 0xFA77, 0xFAC7, 0xFB12, 0xFB58, 0xFB9B, 0xFBDA,
     };
@@ -755,6 +869,9 @@ u16 GbMusic_GetNoteFrequency(u8 arg0, u8 arg1) {
 }
 
 void GbMusic_StartMusic(u8 arg0) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     s32 i;
 
     D_800FCD68 = 0;
@@ -802,6 +919,9 @@ void GbMusic_StartMusic(u8 arg0) {
 }
 
 void GbMusic_StartSfx(u8 arg0) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     u8 i;
 
     D_800FCE40[1] = 0xFF;
@@ -856,6 +976,9 @@ void GbMusic_StartSfx(u8 arg0) {
 }
 
 void GbMusic_ResetApu(void) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     s32 i;
 
     GbAudio_QueueRegisterWrite(0xFF26, 0x80, 0);
@@ -888,6 +1011,9 @@ void GbMusic_ResetApu(void) {
 }
 
 void GbMusic_BindSequenceTracks(u8 arg0) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     u32 i;
     u8 x;
     u8 temp;
@@ -927,6 +1053,9 @@ void GbMusic_BindSequenceTracks(u8 arg0) {
 }
 
 s32 GbMusic_CountActiveHighChannels(void) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     s32 ret = 0;
     s32 i;
 
@@ -945,18 +1074,21 @@ typedef struct unk_80044A50_008 {
 } unk_80044A50_008;
 
 void func_80044A50(unk_D_800FC6D4* arg0) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     s32 i, end;
     u32 base;
     u8* temp_v1;
     unk_80044A50_008* temp_v0;
     if (arg0->flags != 0) return;
     end = arg0->unk_04;
-    base = (u32)arg0;
+    base = (uintptr_t)arg0;
     temp_v1 = arg0->offset;
     temp_v1 += base;
-    arg0->offset = (u32)temp_v1;
+    arg0->offset = (uintptr_t)temp_v1;
     for (i = 0; i != (end * 3); i++) {
-        temp_v0 = (unk_80044A50_008*)((u32)i * 8 + (u32)temp_v1);
+        temp_v0 = (unk_80044A50_008*)((u32)i * 8 + (uintptr_t)temp_v1);
         temp_v0 += 0;
         temp_v0->unk_00 += base;
     }

@@ -1,4 +1,5 @@
 #include "global.h"
+#include "gb_tower_emulator.h"
 
 // GB APU debug output. Dead data: the osSyncPrintf calls these fed were compiled
 // out, so nothing references them any more.
@@ -51,6 +52,11 @@ typedef struct GbApuChannelState {
   /* 0x4C */ u8 unk_4C;
   /* 0x4D */ char unk4D[0x3];
 } GbApuChannelState; // size = 0x50
+
+// PORT: unk_08 overlays a u16 on the s32 phase accumulator; on the big-endian N64 that u16 is its high half (the
+// duty / wave / noise-table position). Read and write that half explicitly.
+#define GBAPU_PHASE(ch) ((u16)((u32)(ch).unk_08.unk_02 >> 16))
+#define GBAPU_SET_PHASE(ch, v) ((ch).unk_08.unk_02 = (s32)(((u32)(ch).unk_08.unk_02 & 0xFFFF) | ((u32)(u16)(v) << 16)))
 
 typedef struct unk_D_8122EEA8 {
   /* 0x00 */ u8 unk_00;
@@ -128,6 +134,58 @@ typedef struct GbApuRegs {
 } GbApuRegs; // size = 0x18
 
 #define GB_APU_REGS (*(GbApuRegs*)D_8120EA70)
+// PORT: GbApuRegs is a big-endian bitfield layout (IDO allocates fields from the most significant bit); read on the
+// host it gave the wrong bits for every field. The fields are read through these byte/shift accessors instead.
+#define GBAPU_sweepTime ((u32)((D_8120EA70[0x00] >> 4) & 0x7))
+#define GBAPU_sweepDir ((u32)((D_8120EA70[0x00] >> 3) & 0x1))
+#define GBAPU_sweepShift ((u32)((D_8120EA70[0x00] >> 0) & 0x7))
+#define GBAPU_duty1 ((u32)((D_8120EA70[0x01] >> 6) & 0x3))
+#define GBAPU_length1 ((u32)((D_8120EA70[0x01] >> 0) & 0x3F))
+#define GBAPU_volume1 ((u32)((D_8120EA70[0x02] >> 4) & 0xF))
+#define GBAPU_envDir1 ((u32)((D_8120EA70[0x02] >> 3) & 0x1))
+#define GBAPU_envSweep1 ((u32)((D_8120EA70[0x02] >> 0) & 0x7))
+#define GBAPU_freqLo1 ((u32)((D_8120EA70[0x03] >> 0) & 0xFF))
+#define GBAPU_trigger1 ((u32)((D_8120EA70[0x04] >> 7) & 0x1))
+#define GBAPU_counter1 ((u32)((D_8120EA70[0x04] >> 6) & 0x1))
+#define GBAPU_freqHi1 ((u32)((D_8120EA70[0x04] >> 0) & 0x7))
+#define GBAPU_duty2 ((u32)((D_8120EA70[0x06] >> 6) & 0x3))
+#define GBAPU_length2 ((u32)((D_8120EA70[0x06] >> 0) & 0x3F))
+#define GBAPU_volume2 ((u32)((D_8120EA70[0x07] >> 4) & 0xF))
+#define GBAPU_envDir2 ((u32)((D_8120EA70[0x07] >> 3) & 0x1))
+#define GBAPU_envSweep2 ((u32)((D_8120EA70[0x07] >> 0) & 0x7))
+#define GBAPU_freqLo2 ((u32)((D_8120EA70[0x08] >> 0) & 0xFF))
+#define GBAPU_trigger2 ((u32)((D_8120EA70[0x09] >> 7) & 0x1))
+#define GBAPU_counter2 ((u32)((D_8120EA70[0x09] >> 6) & 0x1))
+#define GBAPU_freqHi2 ((u32)((D_8120EA70[0x09] >> 0) & 0x7))
+#define GBAPU_waveOn ((u32)((D_8120EA70[0x0A] >> 7) & 0x1))
+#define GBAPU_length3 ((u32)((D_8120EA70[0x0B] >> 0) & 0xFF))
+#define GBAPU_level3 ((u32)((D_8120EA70[0x0C] >> 5) & 0x3))
+#define GBAPU_freqLo3 ((u32)((D_8120EA70[0x0D] >> 0) & 0xFF))
+#define GBAPU_trigger3 ((u32)((D_8120EA70[0x0E] >> 7) & 0x1))
+#define GBAPU_counter3 ((u32)((D_8120EA70[0x0E] >> 6) & 0x1))
+#define GBAPU_freqHi3 ((u32)((D_8120EA70[0x0E] >> 0) & 0x7))
+#define GBAPU_length4 ((u32)((D_8120EA70[0x10] >> 0) & 0x3F))
+#define GBAPU_volume4 ((u32)((D_8120EA70[0x11] >> 4) & 0xF))
+#define GBAPU_envDir4 ((u32)((D_8120EA70[0x11] >> 3) & 0x1))
+#define GBAPU_envSweep4 ((u32)((D_8120EA70[0x11] >> 0) & 0x7))
+#define GBAPU_shift4 ((u32)((D_8120EA70[0x12] >> 4) & 0xF))
+#define GBAPU_width4 ((u32)((D_8120EA70[0x12] >> 3) & 0x1))
+#define GBAPU_ratio4 ((u32)((D_8120EA70[0x12] >> 0) & 0x7))
+#define GBAPU_trigger4 ((u32)((D_8120EA70[0x13] >> 7) & 0x1))
+#define GBAPU_counter4 ((u32)((D_8120EA70[0x13] >> 6) & 0x1))
+#define GBAPU_vinLeft ((u32)((D_8120EA70[0x14] >> 7) & 0x1))
+#define GBAPU_leftVolume ((u32)((D_8120EA70[0x14] >> 4) & 0x7))
+#define GBAPU_vinRight ((u32)((D_8120EA70[0x14] >> 3) & 0x1))
+#define GBAPU_rightVolume ((u32)((D_8120EA70[0x14] >> 0) & 0x7))
+#define GBAPU_noiseLeft ((u32)((D_8120EA70[0x15] >> 7) & 0x1))
+#define GBAPU_waveLeft ((u32)((D_8120EA70[0x15] >> 6) & 0x1))
+#define GBAPU_sq2Left ((u32)((D_8120EA70[0x15] >> 5) & 0x1))
+#define GBAPU_sq1Left ((u32)((D_8120EA70[0x15] >> 4) & 0x1))
+#define GBAPU_noiseRight ((u32)((D_8120EA70[0x15] >> 3) & 0x1))
+#define GBAPU_waveRight ((u32)((D_8120EA70[0x15] >> 2) & 0x1))
+#define GBAPU_sq2Right ((u32)((D_8120EA70[0x15] >> 1) & 0x1))
+#define GBAPU_sq1Right ((u32)((D_8120EA70[0x15] >> 0) & 0x1))
+#define GBAPU_power ((u32)((D_8120EA70[0x16] >> 7) & 0x1))
 
 // A queued APU register write, packed into an OSMesg as (reg << 24) | (value << 16) | time.
 typedef struct GbApuWrite {
@@ -142,8 +200,10 @@ typedef union GbApuMesg {
 } GbApuMesg;
 
 extern u8 gGbMemoryMap[];
-extern u16 D_8120EA86;
-extern u32 D_8120EA80;
+// PORT: D_8120EA80 / D_8120EA86 were interior aliases of the APU register block (big-endian u32 at 0x10 and u16 at
+// 0x16 of D_8120EA70): read them byte-wise
+#define D_8120EA80 ((u32)((D_8120EA70[0x10] << 24) | (D_8120EA70[0x11] << 16) | (D_8120EA70[0x12] << 8) | D_8120EA70[0x13]))
+#define D_8120EA86 ((u16)((D_8120EA70[0x16] << 8) | D_8120EA70[0x17]))
 
 // .bss
 s16 D_8122C790;
@@ -188,16 +248,9 @@ s32 D_8120EA60 = 0;
 u8 D_8120EA64[0xC] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
-u8 D_8120EA70[0x10] = {
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-};
-// D_8120EA80 and D_8120EA86 are interior aliases (undefined_syms.ld).
-u8 sGbApuRegs[0x40] = {
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-};
+// PORT: one block (GbApuRegs spans 0x18 bytes from D_8120EA70; on the N64 sGbApuRegs followed directly)
+u8 D_8120EA70[0x50];
+#define sGbApuRegs (D_8120EA70 + 0x10)
 f32 D_8120EAC0 = 1500.0f;
 s32 D_8120EAC4 = 17784;
 s32 D_8120EAC8 = 2048;
@@ -337,7 +390,7 @@ u16 GbApu_UpdateSquare1Channel(void) {
         gGbApuSquare1.unk_4C = 0U;
     }
     {
-        s32 temp_v0 = func_81207698(gGbApuSquare1.unk_3B, gGbApuSquare1.unk_08.unk_00);
+        s32 temp_v0 = func_81207698(gGbApuSquare1.unk_3B, GBAPU_PHASE(gGbApuSquare1));
         gGbApuSquare1.unk_08.unk_02 += gGbApuSquare1.unk_0C;
         gGbApuSquare1.unk_08.unk_02 &= 0x1FFFFF;
         if (gGbApuSquare1.unk_4C == 1) {
@@ -428,7 +481,7 @@ s32 GbApu_UpdateSquare2Channel(void) {
     } else {
         gGbApuSquare2.unk_4C = 0U;
     }
-    temp_v0 = func_81207698(gGbApuSquare2.unk_3B, gGbApuSquare2.unk_08.unk_00);
+    temp_v0 = func_81207698(gGbApuSquare2.unk_3B, GBAPU_PHASE(gGbApuSquare2));
     gGbApuSquare2.unk_08.unk_02 += gGbApuSquare2.unk_0C;
     gGbApuSquare2.unk_08.unk_02 &= 0x1FFFFF;
     if (gGbApuSquare2.unk_4C == 1) {
@@ -513,7 +566,7 @@ u16 GbApu_UpdateWaveChannel(void) {
             }
         }
     }
-    temp_a0 = func_81207698(7, gGbApuWave.unk_08.unk_00);
+    temp_a0 = func_81207698(7, GBAPU_PHASE(gGbApuWave));
     gGbApuWave.unk_08.unk_02 += gGbApuWave.unk_0C;
     gGbApuWave.unk_08.unk_02 &= 0x1FFFFF;
     if (gGbApuWave.unk_4C - 1 == 0) {
@@ -569,10 +622,10 @@ u16 func_81207DF8(void) {
         gGbApuNoise.unk_20 = gGbApuNoise.unk_3C;
         gGbApuNoise.unk_0C = gGbApuNoise.unk_40;
     }
-    temp_v0 = func_81207698(6, gGbApuNoise.unk_08.unk_00);
+    temp_v0 = func_81207698(6, GBAPU_PHASE(gGbApuNoise));
     gGbApuNoise.unk_08.unk_02 += var_a2;
-    if (gGbApuNoise.unk_08.unk_00  >= (u32)D_8120EACC) {
-        gGbApuNoise.unk_08.unk_00  = D_8120EAC8;
+    if (GBAPU_PHASE(gGbApuNoise) >= (u32)D_8120EACC) {
+        GBAPU_SET_PHASE(gGbApuNoise, D_8120EAC8);
     }
     temp_v0 *= gGbApuNoise.unk_3C;
     if ((gGbApuNoise.unk_3C != gGbApuNoise.unk_20) && ((D_8120EB6C % 95) == 0)) {
@@ -7229,29 +7282,18 @@ u8 D_81226964[0x1CE8] = {
 u8 D_8122864C[0x8] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
-u8 D_81228654[0x24] = {
-#if defined(VERSION_US_REV2)
-    0x81, 0x22, 0x86, 0xEC, 0x81, 0x22, 0x86, 0xEC, 0x81, 0x20, 0xEC, 0x34, 0x81, 0x21, 0x57, 0x74,
-    0x81, 0x21, 0xB2, 0x64, 0x81, 0x21, 0xDB, 0x34, 0x81, 0x21, 0xF6, 0x14, 0x81, 0x22, 0x37, 0xA4,
-    0x81, 0x22, 0x6A, 0x04,
-#elif defined(VERSION_US_REV1)
-    0x81, 0x22, 0x86, 0x7C, 0x81, 0x22, 0x86, 0x7C, 0x81, 0x20, 0xEB, 0xC4, 0x81, 0x21, 0x57, 0x04,
-    0x81, 0x21, 0xB1, 0xF4, 0x81, 0x21, 0xDA, 0xC4, 0x81, 0x21, 0xF5, 0xA4, 0x81, 0x22, 0x37, 0x34,
-    0x81, 0x22, 0x69, 0x94,
-#else
-    0x81, 0x22, 0x86, 0x4C, 0x81, 0x22, 0x86, 0x4C, 0x81, 0x20, 0xEB, 0x94, 0x81, 0x21, 0x56, 0xD4,
-    0x81, 0x21, 0xB1, 0xC4, 0x81, 0x21, 0xDA, 0x94, 0x81, 0x21, 0xF5, 0x74, 0x81, 0x22, 0x37, 0x04,
-    0x81, 0x22, 0x69, 0x64,
-#endif
+// PORT: stream start pointers and byte sizes of the menu voice/sound samples (the ROM holds 32-bit N64 addresses and
+// big-endian sizes; entries 0 and 1 point at the 8-byte silent block D_8122864C).
+s8* D_81228654[9] = {
+    (s8*)D_8122864C, (s8*)D_8122864C, (s8*)D_8120EB94, (s8*)D_812156D4, (s8*)D_8121B1C4,
+    (s8*)D_8121DA94, (s8*)D_8121F574, (s8*)D_81223704, (s8*)D_81226964,
 };
-u8 D_81228678[0x24] = {
-    0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x6B, 0x40, 0x00, 0x00, 0x5A, 0xF0,
-    0x00, 0x00, 0x28, 0xD0, 0x00, 0x00, 0x1A, 0xE0, 0x00, 0x00, 0x41, 0x90, 0x00, 0x00, 0x32, 0x60,
-    0x00, 0x00, 0x1C, 0xE0,
+s32 D_81228678[9] = {
+    0x8, 0x8, 0x6B40, 0x5AF0, 0x28D0, 0x1AE0, 0x4190, 0x3260, 0x1CE0,
 };
 
-#define GB_AUDIO_STREAM_DATA ((s8**)D_81228654)
-#define GB_AUDIO_STREAM_SIZE ((s32*)D_81228678)
+#define GB_AUDIO_STREAM_DATA D_81228654
+#define GB_AUDIO_STREAM_SIZE D_81228678
 
 void func_8120806C(u16 reg, u8 value) {
     s32 pad;
@@ -7264,7 +7306,7 @@ void func_8120806C(u16 reg, u8 value) {
         }
     }
 
-    if ((reg < 0x24) && !GB_APU_REGS.power) {
+    if ((reg < 0x24) && !GBAPU_power) {
         return;
     }
 
@@ -7272,9 +7314,9 @@ void func_8120806C(u16 reg, u8 value) {
 
     switch (reg) {
         case 0x10:
-            gGbApuSquare1.unk_34 = GB_APU_REGS.sweepTime * 400;
-            gGbApuSquare1.unk_39 = GB_APU_REGS.sweepDir;
-            gGbApuSquare1.unk_38 = GB_APU_REGS.sweepShift;
+            gGbApuSquare1.unk_34 = GBAPU_sweepTime * 400;
+            gGbApuSquare1.unk_39 = GBAPU_sweepDir;
+            gGbApuSquare1.unk_38 = GBAPU_sweepShift;
             if (gGbApuSquare1.unk_3A == 0) {
                 gGbApuSquare1.unk_30 = 0;
             }
@@ -7285,32 +7327,32 @@ void func_8120806C(u16 reg, u8 value) {
             }
             break;
         case 0x11:
-            gGbApuSquare1.unk_3B = GB_APU_REGS.duty1;
-            gGbApuSquare1.unk_1C = 0x40 - GB_APU_REGS.length1;
+            gGbApuSquare1.unk_3B = GBAPU_duty1;
+            gGbApuSquare1.unk_1C = 0x40 - GBAPU_length1;
             break;
         case 0x12:
-            gGbApuSquare1.unk_21 = GB_APU_REGS.volume1;
-            if ((GB_APU_REGS.volume1 == 0) && (GB_APU_REGS.envDir1 == 0)) {
+            gGbApuSquare1.unk_21 = GBAPU_volume1;
+            if ((GBAPU_volume1 == 0) && (GBAPU_envDir1 == 0)) {
                 gGbApuSquare1.unk_00 = 0;
             }
             break;
         case 0x13:
-            gGbApuSquare1.unk_10 = GB_APU_REGS.freqLo1 | (GB_APU_REGS.freqHi1 << 8);
+            gGbApuSquare1.unk_10 = GBAPU_freqLo1 | (GBAPU_freqHi1 << 8);
             gGbApuSquare1.unk_0C = GbApu_FreqToStep2x(gGbApuSquare1.unk_10);
             break;
         case 0x14:
-            gGbApuSquare1.unk_18 = GB_APU_REGS.counter1;
-            gGbApuSquare1.unk_10 = GB_APU_REGS.freqLo1 | (GB_APU_REGS.freqHi1 << 8);
+            gGbApuSquare1.unk_18 = GBAPU_counter1;
+            gGbApuSquare1.unk_10 = GBAPU_freqLo1 | (GBAPU_freqHi1 << 8);
             gGbApuSquare1.unk_0C = GbApu_FreqToStep2x(gGbApuSquare1.unk_10);
-            if ((s32)GB_APU_REGS.trigger1 == 1) {
+            if ((s32)GBAPU_trigger1 == 1) {
                 gGbApuSquare1.unk_14 = gGbApuSquare1.unk_1C * 200;
                 gGbApuSquare1.unk_20 = D_8120EB14[gGbApuSquare1.unk_21];
                 gGbApuSquare1.unk_24 = 0;
                 gGbApuSquare1.unk_30 = 0;
-                gGbApuSquare1.unk_2E = GB_APU_REGS.envDir1;
-                gGbApuSquare1.unk_28 = GB_APU_REGS.envSweep1 * 800;
+                gGbApuSquare1.unk_2E = GBAPU_envDir1;
+                gGbApuSquare1.unk_28 = GBAPU_envSweep1 * 800;
                 gGbApuSquare1.unk_2D = gGbApuSquare1.unk_21;
-                if (GB_APU_REGS.power) {
+                if (GBAPU_power) {
                     gGbApuSquare1.unk_00 = 1;
                 }
             }
@@ -7321,60 +7363,60 @@ void func_8120806C(u16 reg, u8 value) {
             }
             break;
         case 0x16:
-            gGbApuSquare2.unk_3B = GB_APU_REGS.duty2;
-            gGbApuSquare2.unk_1C = 0x40 - GB_APU_REGS.length2;
+            gGbApuSquare2.unk_3B = GBAPU_duty2;
+            gGbApuSquare2.unk_1C = 0x40 - GBAPU_length2;
             break;
         case 0x17:
-            gGbApuSquare2.unk_21 = GB_APU_REGS.volume2;
-            if ((GB_APU_REGS.volume2 == 0) && (GB_APU_REGS.envDir2 == 0)) {
+            gGbApuSquare2.unk_21 = GBAPU_volume2;
+            if ((GBAPU_volume2 == 0) && (GBAPU_envDir2 == 0)) {
                 gGbApuSquare2.unk_00 = 0;
             }
             break;
         case 0x18:
-            gGbApuSquare2.unk_10 = GB_APU_REGS.freqLo2 | (GB_APU_REGS.freqHi2 << 8);
+            gGbApuSquare2.unk_10 = GBAPU_freqLo2 | (GBAPU_freqHi2 << 8);
             gGbApuSquare2.unk_0C = GbApu_FreqToStep2x(gGbApuSquare2.unk_10);
             break;
         case 0x19:
-            gGbApuSquare2.unk_18 = GB_APU_REGS.counter2;
-            gGbApuSquare2.unk_10 = GB_APU_REGS.freqLo2 | (GB_APU_REGS.freqHi2 << 8);
+            gGbApuSquare2.unk_18 = GBAPU_counter2;
+            gGbApuSquare2.unk_10 = GBAPU_freqLo2 | (GBAPU_freqHi2 << 8);
             gGbApuSquare2.unk_0C = GbApu_FreqToStep2x(gGbApuSquare2.unk_10);
-            if ((s32)GB_APU_REGS.trigger2 == 1) {
+            if ((s32)GBAPU_trigger2 == 1) {
                 gGbApuSquare2.unk_14 = gGbApuSquare2.unk_1C * 200;
                 gGbApuSquare2.unk_08.unk_02 = 0;
                 gGbApuSquare2.unk_20 = D_8120EB14[gGbApuSquare2.unk_21];
                 gGbApuSquare2.unk_24 = 0;
-                gGbApuSquare2.unk_2E = GB_APU_REGS.envDir2;
-                gGbApuSquare2.unk_28 = GB_APU_REGS.envSweep2 * 800;
+                gGbApuSquare2.unk_2E = GBAPU_envDir2;
+                gGbApuSquare2.unk_28 = GBAPU_envSweep2 * 800;
                 gGbApuSquare2.unk_2D = gGbApuSquare2.unk_21;
-                if (GB_APU_REGS.power) {
+                if (GBAPU_power) {
                     gGbApuSquare2.unk_00 = 1;
                 }
             }
             break;
         case 0x1A:
-            if (GB_APU_REGS.waveOn == 0) {
-                gGbApuWave.unk_00 = GB_APU_REGS.waveOn;
+            if (GBAPU_waveOn == 0) {
+                gGbApuWave.unk_00 = GBAPU_waveOn;
             }
             break;
         case 0x1B:
-            gGbApuWave.unk_1C = 0x100 - GB_APU_REGS.length3;
+            gGbApuWave.unk_1C = 0x100 - GBAPU_length3;
             break;
         case 0x1C:
-            gGbApuWave.unk_21 = GB_APU_REGS.level3;
+            gGbApuWave.unk_21 = GBAPU_level3;
             gGbApuWave.unk_20 = D_8120EB24[gGbApuWave.unk_21];
             break;
         case 0x1D:
-            gGbApuWave.unk_10 = GB_APU_REGS.freqLo3 | (GB_APU_REGS.freqHi3 << 8);
+            gGbApuWave.unk_10 = GBAPU_freqLo3 | (GBAPU_freqHi3 << 8);
             gGbApuWave.unk_0C = GbApu_FreqToStep(gGbApuWave.unk_10);
             break;
         case 0x1E:
-            gGbApuWave.unk_10 = GB_APU_REGS.freqLo3 | (GB_APU_REGS.freqHi3 << 8);
+            gGbApuWave.unk_10 = GBAPU_freqLo3 | (GBAPU_freqHi3 << 8);
             gGbApuWave.unk_0C = GbApu_FreqToStep(gGbApuWave.unk_10);
-            gGbApuWave.unk_18 = GB_APU_REGS.counter3;
-            if ((s32)GB_APU_REGS.trigger3 == 1) {
+            gGbApuWave.unk_18 = GBAPU_counter3;
+            if ((s32)GBAPU_trigger3 == 1) {
                 gGbApuWave.unk_14 = gGbApuWave.unk_1C * 200;
                 gGbApuWave.unk_04 = 0x140;
-                if (GB_APU_REGS.power && ((s32)GB_APU_REGS.waveOn == 1)) {
+                if (GBAPU_power && ((s32)GBAPU_waveOn == 1)) {
                     gGbApuWave.unk_00 = 1;
                 }
             }
@@ -7399,17 +7441,17 @@ void func_8120806C(u16 reg, u8 value) {
             D_8122EE58[(reg - 0x30) * 2 + 1] = D_8120EA70[reg - 0x10] & 0xF;
             break;
         case 0x20:
-            gGbApuNoise.unk_1C = 0x40 - GB_APU_REGS.length4;
+            gGbApuNoise.unk_1C = 0x40 - GBAPU_length4;
             break;
         case 0x21:
-            gGbApuNoise.unk_21 = GB_APU_REGS.volume4;
-            if ((GB_APU_REGS.volume4 == 0) && (GB_APU_REGS.envDir4 == 0)) {
+            gGbApuNoise.unk_21 = GBAPU_volume4;
+            if ((GBAPU_volume4 == 0) && (GBAPU_envDir4 == 0)) {
                 gGbApuNoise.unk_00 = 0;
             }
             break;
         case 0x22:
-            gGbApuNoise.unk_10 = GB_APU_REGS.shift4;
-            gGbApuNoise.unk_0C = func_81207494(GB_APU_REGS.shift4, GB_APU_REGS.width4, GB_APU_REGS.ratio4);
+            gGbApuNoise.unk_10 = GBAPU_shift4;
+            gGbApuNoise.unk_0C = func_81207494(GBAPU_shift4, GBAPU_width4, GBAPU_ratio4);
             if (gGbApuNoise.unk_00 == 0) {
                 gGbApuNoise.unk_40 = gGbApuNoise.unk_0C;
             }
@@ -7424,14 +7466,14 @@ void func_8120806C(u16 reg, u8 value) {
             }
             break;
         case 0x23:
-            gGbApuNoise.unk_18 = GB_APU_REGS.counter4;
-            if ((s32)GB_APU_REGS.trigger4 == 1) {
+            gGbApuNoise.unk_18 = GBAPU_counter4;
+            if ((s32)GBAPU_trigger4 == 1) {
                 gGbApuNoise.unk_14 = gGbApuNoise.unk_1C * 200;
                 if (gGbApuNoise.unk_00 == 0) {
                     gGbApuNoise.unk_08.unk_02 = 0;
                 }
                 gGbApuNoise.unk_2D = gGbApuNoise.unk_21;
-                switch ((s32)GB_APU_REGS.width4) {
+                switch ((s32)GBAPU_width4) {
                     case 0:
                         gGbApuNoise.unk_20 = D_8120EB28[gGbApuNoise.unk_2D];
                         break;
@@ -7443,9 +7485,9 @@ void func_8120806C(u16 reg, u8 value) {
                     gGbApuNoise.unk_3C = gGbApuNoise.unk_20;
                 }
                 gGbApuNoise.unk_24 = 0;
-                gGbApuNoise.unk_2E = GB_APU_REGS.envDir4;
-                gGbApuNoise.unk_28 = GB_APU_REGS.envSweep4 * 800;
-                if (GB_APU_REGS.power) {
+                gGbApuNoise.unk_2E = GBAPU_envDir4;
+                gGbApuNoise.unk_28 = GBAPU_envSweep4 * 800;
+                if (GBAPU_power) {
                     gGbApuNoise.unk_00 = 1;
                 }
             }
@@ -7493,8 +7535,16 @@ void func_81208828(s32 numSamples, s16* out) {
     idx = 0;
     lastTime = 0;
     while (TRUE) {
-        if (osRecvMesg(&D_8122EEB0, (OSMesg*)&msg, OS_MESG_NOBLOCK) == -1) {
-            break;
+        { // PORT64: the message is the packed u32 itself; unpack it (a raw copy wrote 8 bytes, in host byte order)
+            OSMesg m;
+            u32 v;
+            if (osRecvMesg(&D_8122EEB0, &m, OS_MESG_NOBLOCK) == -1) {
+                break;
+            }
+            v = (u32)(uintptr_t)m;
+            msg.reg = v >> 24;
+            msg.value = v >> 16;
+            msg.time = v;
         }
         if (first) {
             startTime = msg.time;
@@ -7502,7 +7552,8 @@ void func_81208828(s32 numSamples, s16* out) {
         }
         if (msg.time < lastTime) {
             if (startTime < D_8120EAD0) {
-                osJamMesg(&D_8122EEB0, *(OSMesg*)&msg, OS_MESG_NOBLOCK);
+                osJamMesg(&D_8122EEB0, (OSMesg)(uintptr_t)(((u32)msg.reg << 24) | ((u32)msg.value << 16) | msg.time),
+                          OS_MESG_NOBLOCK); // PORT64: repack (was a raw copy of the struct)
                 break;
             }
             startTime = 0;
@@ -7547,17 +7598,17 @@ void func_81208828(s32 numSamples, s16* out) {
         wave = GbApu_UpdateWaveChannel();
         noise = func_81207DF8();
 
-        noiseL = GB_APU_REGS.noiseLeft ? noise : 0;
-        noiseR = GB_APU_REGS.noiseRight ? noise : 0;
-        waveL = GB_APU_REGS.waveLeft ? wave : 0;
-        waveR = GB_APU_REGS.waveRight ? wave : 0;
-        sq2L = GB_APU_REGS.sq2Left ? sq2 : 0;
-        sq2R = GB_APU_REGS.sq2Right ? sq2 : 0;
-        sq1L = GB_APU_REGS.sq1Left ? sq1 : 0;
-        sq1R = GB_APU_REGS.sq1Right ? sq1 : 0;
+        noiseL = GBAPU_noiseLeft ? noise : 0;
+        noiseR = GBAPU_noiseRight ? noise : 0;
+        waveL = GBAPU_waveLeft ? wave : 0;
+        waveR = GBAPU_waveRight ? wave : 0;
+        sq2L = GBAPU_sq2Left ? sq2 : 0;
+        sq2R = GBAPU_sq2Right ? sq2 : 0;
+        sq1L = GBAPU_sq1Left ? sq1 : 0;
+        sq1R = GBAPU_sq1Right ? sq1 : 0;
 
-        right = (sq1R + sq2R + waveR + noiseR) / (8 - GB_APU_REGS.rightVolume);
-        left = (sq1L + sq2L + waveL + noiseL) / (8 - GB_APU_REGS.leftVolume);
+        right = (sq1R + sq2R + waveR + noiseR) / (8 - GBAPU_rightVolume);
+        left = (sq1L + sq2L + waveL + noiseL) / (8 - GBAPU_leftVolume);
         if (right >= 0x8000) {
             right = 0x7FFF;
         }
@@ -7656,7 +7707,7 @@ void GbApu_ResetChannels(void) {
   gGbApuNoise.unk_08.unk_02 = 0;
 }
 
-void GbApu_Reset(s32 arg0) {
+void GbApu_Reset(void* arg0) { // PORT64: the noise table pointer (was s32, truncated on the host)
   D_8122C794 = arg0;
   GbApu_ResetChannels();
 }
@@ -7736,7 +7787,10 @@ s32 func_81209078(void) {
     D_812346D4++;
     D_812346D4 %= 3;
     idx = (D_812346D4 + 2) % 3;
-    aiLen = osAiGetLength() >> 2;
+    {
+        extern u32 Port_GbAudioQueuedBytes(void); // PORT: bytes still queued in the host's sound output
+        aiLen = Port_GbAudioQueuedBytes() >> 2;
+    }
 
     if (D_812346FC < 16) {
         len = &D_812346EC[idx];

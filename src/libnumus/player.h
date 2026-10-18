@@ -246,7 +246,7 @@ void Audio_QueueVoicePan(s32, u16);
 void Audio_QueueVoiceDetune(s32, f32);
 void Audio_QueueVoiceVolume(s32, s32);
 void Audio_QueueVoiceVolumeByte(u32, s32);
-void Audio_RelocateSoundBankWrapper(s32, s32);
+void Audio_RelocateSoundBankWrapper(intptr_t arg0, s32 arg1);
 void Audio_RelocateSoundBankTable(bank_remap_descriptor_t*);
 void Audio_QueueSetMonoOutputCommand(s32);
 void Audio_SetVoiceStartTimingMode(s32);

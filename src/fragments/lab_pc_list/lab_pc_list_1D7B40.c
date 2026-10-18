@@ -846,7 +846,7 @@ void BattleInfoWidget_SetCloseState(unk_func_8830867C_034* arg0) {
 }
 
 s32 BattleInfoWidget_RunSelectionModal(unk_func_8830867C_034* arg0, Controller* arg1) {
-    s32 var_s0 = 0;
+    intptr_t var_s0 = 0;
     s32 temp_v0;
 
     BattleInfoWidget_OpenPanels(arg0);
@@ -1031,7 +1031,7 @@ void BattleInfoWidget_CloseSelection(unk_func_8830867C_030* arg0) {
 
 u32 BattleInfoWidget_RunEntryModal(unk_func_8830867C_030* arg0, Controller* arg1, s32 arg2) {
     s32 var_s0;
-    s32 var_s1 = 0;
+    intptr_t var_s1 = 0;
 
     BattleInfoWidget_OpenSelectionAt(arg0, arg2);
 
@@ -1288,7 +1288,7 @@ s32 BattleInfoWidget_HandleStatusInput(unk_func_8830867C_038* arg0, Controller* 
 
 s32 BattleInfoWidget_RunStatusModal(unk_func_8830867C_038* arg0, Controller* arg1) {
     s32 temp_v0;
-    s32 var_s0;
+    intptr_t var_s0;
 
     var_s0 = NULL;
     arg0->unk_00.unk_24(&arg0->unk_00, 1);
@@ -1575,7 +1575,7 @@ s32 BattleInfoWidget_HandleLevelRangeInput(unk_func_8830867C_044* arg0, Controll
 s32 BattleInfoWidget_RunLevelRangeModal(unk_func_8830867C_044* arg0, Controller* arg1) {
     s32 temp_v0;
     s32 var_v0;
-    s32 var_s0 = 0;
+    intptr_t var_s0 = 0;
 
     ((func8850CB48)Memmap_GetFragmentVaddr(WidgetTree_SetGridMenuSelection))(arg0->unk_44, 0);
     ((func8850CD24)Memmap_GetFragmentVaddr(WidgetTree_SetChildSelectionProxySelection))(arg0->unk_40, 0);
@@ -1991,7 +1991,7 @@ s32 BattleInfoWidget_HandleTypePanelInput(unk_func_8830867C_03C* arg0, Controlle
 s32 BattleInfoWidget_RunTypeSelectionModal(unk_func_8830867C_03C* arg0, Controller* arg1) {
     s32 temp_v0;
     s32 var_v0;
-    s32 var_s0 = 0;
+    intptr_t var_s0 = 0;
 
     ((func88507AE4)Memmap_GetFragmentVaddr(WidgetTree_SetScrollableGridIndex))(arg0->unk_54, 0);
     ((func8850CB48)Memmap_GetFragmentVaddr(WidgetTree_SetGridMenuSelection))(arg0->unk_50, 0);
@@ -2205,7 +2205,7 @@ void BattleInfoWidget_BuildMovePanel(unk_func_8830867C_040* arg0, s32 arg1, s32 
     WidgetNode* temp_s1_4;
     WidgetNode* temp_s2_2;
     unk_func_88507D4C* sp68[2];
-    s32* temp_s2_3;
+    void** temp_s2_3; // PORT64: pointer list (was s32*)
 
     arg0->unk_74 = Font_MeasureTextExtent(8, 0, "WWWWWWWWWWWW");
     spC4 = Font_MeasureTextExtent(4, 0, "000") + arg0->unk_74 + 0x18;
@@ -2295,7 +2295,7 @@ void BattleInfoWidget_BuildMovePanel(unk_func_8830867C_040* arg0, s32 arg1, s32 
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(spA0, temp_s0_2);
     arg0->unk_60->unk_1C = temp_s0_2;
 
-    temp_s2_3 = mem_pool_alloc(arg4, sizeof(s32) * 0xA4);
+    temp_s2_3 = mem_pool_alloc(arg4, sizeof(void*) * 0xA4);
 
     for (i = 0; i < 0xA4; i++) {
         temp_s2_3[D_88317360[i]] = Move_GetDisplayInfo(i + 1);
@@ -2404,7 +2404,7 @@ s32 BattleInfoWidget_RunMovePanelModal(unk_func_8830867C_040* arg0, Controller* 
     s32 i;
     s32 temp_v0;
     s32 var_v0;
-    s32 var_s0 = 0;
+    intptr_t var_s0 = 0;
 
     ((func88507AE4)Memmap_GetFragmentVaddr(WidgetTree_SetScrollableGridIndex))(arg0->unk_64, 0);
     ((func8850CB48)Memmap_GetFragmentVaddr(WidgetTree_SetGridMenuSelection))(arg0->unk_60, 0);
@@ -3469,7 +3469,7 @@ void BattleInfoWidget_CloseItemMenu(unk_func_8830867C_04C* arg0) {
 
 s32 BattleInfoWidget_RunItemMenuModal(unk_func_8830867C_04C* arg0, Controller* arg1) {
     s32 temp_v0;
-    s32 var_s0 = 0;
+    intptr_t var_s0 = 0;
 
     if (arg0->unk_80->unk_00.unk_1C == 0) {
         BattleInfoWidget_OpenItemMenu(arg0);
@@ -3940,7 +3940,7 @@ s32 BattleInfoWidget_MoveDestinationSelectionInput(unk_func_8830867C_048_048* ar
 s32 BattleInfoWidget_RunMoveDestinationModal(unk_func_8830867C_048* arg0, Controller* arg1) {
     s32 temp_v0;
     s32 var_s0;
-    s32 var_s1 = 0;
+    intptr_t var_s1 = 0;
 
     BattleInfoWidget_OpenMoveDestinationMenu(arg0);
 
@@ -4041,7 +4041,7 @@ s32 BattleInfoWidget_HandleSaveConfirmInput(unk_func_8830867C_02C_0B4* arg0, Con
 s32 BattleInfoWidget_RunSaveConfirmModal(unk_func_8830867C_02C_0B4* arg0, Controller* arg1) {
     s32 temp_v0_3;
     s32 var_s0;
-    s32 var_s1 = 0;
+    intptr_t var_s1 = 0;
 
     ((func88506BFC)Memmap_GetFragmentVaddr(WidgetTree_SetPagedGridSelection))(arg0->unk_30, 0);
 

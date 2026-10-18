@@ -85,7 +85,9 @@ static Mtx gAreaSelectProjectionMtx;
 static u8* gAreaSelectCurrentBackground;
 static u8* gAreaSelectNextBackground;
 static AreaSelectCursorGlow gAreaSelectCursorGlow;
-static AreaSelectSparkleTrail gAreaSelectSparkleTrails[3];
+// PORT: one spare element: AreaSelect_AdvanceSparkleTrail shifts points [4] and [5] of a 4-point array (an original
+// bug: they land in the next trail's header), which for the last trail ran past the array into other globals
+static AreaSelectSparkleTrail gAreaSelectSparkleTrails[3 + 1];
 static s32 pad_D_822031D0[0x2];
 static s16 gAreaSelectSelectedIndex;
 static s16 gAreaSelectPreviousIndex;
@@ -93,10 +95,11 @@ static s16 gAreaSelectTransitionFrame;
 static ModeSettings gAreaSelectModeSettings;
 static GameOptions gAreaSelectGameOptions;
 
+extern u32 port_rom_read_u32(u32 romOffset); // PORT: cartridge ROM is not memory-mapped on the host
 s32 AreaSelect_CheckCartRemoved(s32 arg0) {
     u32 temp_a0 = osSetIntMask(1);
 
-    if (!(HW_REG(PI_STATUS_REG, u32) & 3) && ((*(u32*)0xB0000D10 & 0xFFFF) != 0x400)) {
+    if (!(HW_REG(PI_STATUS_REG, u32) & 3) && ((port_rom_read_u32(0xD10) & 0xFFFF) != 0x400)) {
         arg0 = -0x40;
     }
 
@@ -192,7 +195,7 @@ void AreaSelect_DrawCursorGlow(void) {
         gDPSetCombineLERP(gDisplayListHead++, ENVIRONMENT, SHADE, ENV_ALPHA, SHADE, 0, 0, 0, SHADE, ENVIRONMENT, SHADE,
                           ENV_ALPHA, SHADE, 0, 0, 0, SHADE);
 
-        gSPVertex(gDisplayListHead++, (u32)temp_v0 & 0x1FFFFFFF, 8, 0);
+        gSPVertex(gDisplayListHead++, (uintptr_t)temp_v0, 8, 0);
         gSP2Triangles(gDisplayListHead++, 0, 4, 1, 0, 1, 4, 5, 0);
         gSP2Triangles(gDisplayListHead++, 1, 5, 2, 0, 2, 5, 6, 0);
         gSP2Triangles(gDisplayListHead++, 2, 6, 7, 0, 2, 7, 3, 0);
@@ -211,7 +214,7 @@ void AreaSelect_DrawCursorGlow(void) {
 
         gDPLoadTextureBlock(gDisplayListHead++, D_3000000, G_IM_FMT_I, G_IM_SIZ_8b, 64, 32, 0, G_TX_MIRROR | G_TX_WRAP,
                             G_TX_MIRROR | G_TX_WRAP, 6, 5, G_TX_NOLOD, G_TX_NOLOD);
-        gSPVertex(gDisplayListHead++, (u32)temp_v0 & 0x1FFFFFFF, 4, 0);
+        gSPVertex(gDisplayListHead++, (uintptr_t)temp_v0, 4, 0);
         gSP2Triangles(gDisplayListHead++, 0, 1, 2, 0, 0, 2, 3, 0);
         gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF);
     }
@@ -278,7 +281,7 @@ void AreaSelect_DrawSparkleQuad(s16 arg0, s16 arg1, s16 arg2, u8* arg3, Color_RG
         gDPLoadTextureBlock(gDisplayListHead++, arg3, G_IM_FMT_RGBA, G_IM_SIZ_16b, 36, 36, 0,
                             G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
                             G_TX_NOLOD, G_TX_NOLOD);
-        gSPVertex(gDisplayListHead++, (u32)temp_v0 & 0x1FFFFFFF, 4, 0);
+        gSPVertex(gDisplayListHead++, (uintptr_t)temp_v0, 4, 0);
         gSP2Triangles(gDisplayListHead++, 0, 1, 2, 0, 0, 2, 3, 0);
     }
 }
@@ -672,9 +675,9 @@ void AreaSelect_SetupOrthoProjection(void) {
 
     gSPClearGeometryMode(gDisplayListHead++, G_ZBUFFER | G_LIGHTING);
     gSPPerspNormalize(gDisplayListHead++, 0xFFFF);
-    gSPViewport(gDisplayListHead++, (u32)&gAreaSelectViewport & 0x1FFFFFFF);
-    gSPMatrix(gDisplayListHead++, (u32)&gAreaSelectProjectionMtx & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    gSPMatrix(gDisplayListHead++, (u32)&D_8006F010 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPViewport(gDisplayListHead++, (uintptr_t)&gAreaSelectViewport);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)&gAreaSelectProjectionMtx, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)&D_8006F010, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 }
 
 void AreaSelect_Draw(s16 arg0) {

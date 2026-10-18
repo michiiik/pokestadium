@@ -24,6 +24,9 @@ static s32 D_80078F00[8] = {
 };
 
 s32 Audio_PlayCategory2SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     s32 sp34;
     UNUSED s32 pad[3];
     f32 var_fv0;
@@ -78,9 +81,15 @@ s32 Audio_PlayCategory2SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 void Audio_StopCategory2SoundCommand(UNUSED s32 arg0, UNUSED s32 arg1, UNUSED s32 arg2) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
 }
 
 s32 Audio_PlayCategory3SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     s32 sp44;
     UNUSED s32 pad[2];
     u32 sp38;
@@ -148,9 +157,15 @@ s32 Audio_PlayCategory3SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 void Audio_StopCategory3SoundCommand(UNUSED s32 arg0, UNUSED s32 arg1, UNUSED s32 arg2) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
 }
 
 s32 Audio_ComputeIndexedVolume(u32 arg0, u32 arg1) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     s32 ret;
 
     if ((arg0 == 0) || (arg0 >= 5)) {
@@ -183,6 +198,9 @@ s32 Audio_ComputeIndexedVolume(u32 arg0, u32 arg1) {
 }
 
 s32 Audio_PlayCategory4SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     s32 sp3C;
     UNUSED s32 pad;
     s32 var_v1 = 0x80;
@@ -242,9 +260,15 @@ s32 Audio_PlayCategory4SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 void Audio_StopCategory4SoundCommand(UNUSED s32 arg0, UNUSED s32 arg1, UNUSED s32 arg2) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
 }
 
 s32 Audio_PlayCategory5SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     static s32 D_80078F20 = 0x00000000;
 
     s32 sp34;
@@ -298,9 +322,15 @@ s32 Audio_PlayCategory5SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 void Audio_StopCategory5SoundCommand(UNUSED s32 arg0, UNUSED s32 arg1, UNUSED s32 arg2) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
 }
 
 s32 Audio_PlayCategory6SoundCommand(s32 arg0, s32 arg1, UNUSED s32 arg2) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     static s32 D_80078F24[4] = {
         0xFFFFFF88,
         0xFFFFFFC4,
@@ -382,11 +412,17 @@ s32 Audio_PlayCategory6SoundCommand(s32 arg0, s32 arg1, UNUSED s32 arg2) {
 }
 
 void Audio_StopCategory6SoundCommand(UNUSED s32 arg0, UNUSED s32 arg1, UNUSED s32 arg2) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
 }
 
 static u8 D_80078F4C = 0;
 
 s32 Audio_PlayCategory7SoundCommand(s32 arg0, s32 arg1, UNUSED s32 arg2) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     s32 sp44;
     s32 var_a2;
     s32 var_a3;
@@ -467,6 +503,9 @@ s32 Audio_PlayCategory7SoundCommand(s32 arg0, s32 arg1, UNUSED s32 arg2) {
 }
 
 void Audio_StopCategory7SoundCommand(UNUSED s32 arg0, UNUSED s32 arg1, UNUSED s32 arg2) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
 }
 
 static s32 D_80078F54[4] = {
@@ -505,11 +544,17 @@ static s32 D_80078F9C = 0x00003039;
 static u32 D_80078FA0 = 0x00001A85;
 
 void Audio_SeedRandom(s32 arg0, u32 arg1) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     D_80078F9C = arg0;
     D_80078FA0 = arg1;
 }
 
 u32 Audio_NextRandom(void) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     D_80078F9C = (D_80078F9C * 0x41C64E6D) + 0x3039;
 
     if (D_80078FA0 & 1) {
@@ -522,10 +567,16 @@ u32 Audio_NextRandom(void) {
 }
 
 f32 Audio_RandomFloat(void) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     return (f32)Audio_NextRandom() / -1u;
 }
 
 s32 Audio_PlayCategory8SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     static u32 D_80078FA4 = 0;
 
     s32 sp44;
@@ -674,6 +725,9 @@ s32 Audio_PlayCategory8SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 void Audio_StopCategory8SoundCommand(s32 arg0, s32 arg1, UNUSED s32 arg2) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     if (arg0 == 0x80001) {
         Audio_QueueFadeSoundCommand(D_80078F74[arg1], 0xA);
     }
@@ -682,6 +736,9 @@ void Audio_StopCategory8SoundCommand(s32 arg0, s32 arg1, UNUSED s32 arg2) {
 s32 D_80078FA8 = 0;
 
 s32 Audio_PlayCategory9SoundCommand(s32 arg0, UNUSED s32 arg1, UNUSED s32 arg2) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     static s32 D_80078FAC = 0;
 
     s32 sp3C;
@@ -767,9 +824,15 @@ s32 Audio_PlayCategory9SoundCommand(s32 arg0, UNUSED s32 arg1, UNUSED s32 arg2) 
 }
 
 void Audio_StopCategory9SoundCommand(UNUSED s32 arg0, UNUSED s32 arg1, UNUSED s32 arg2) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
 }
 
 s32 Audio_PlayCategoryASoundCommand(s32 arg0, s32 arg1, s32 arg2) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     static s32 D_80078FB0[4] = {
         0xFFFFFF88,
         0xFFFFFFD8,
@@ -950,9 +1013,15 @@ s32 Audio_PlayCategoryASoundCommand(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 void Audio_StopCategoryASoundCommand(UNUSED s32 arg0, UNUSED s32 arg1, UNUSED s32 arg2) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
 }
 
 s32 Audio_PlayPersistentSoundCommand(s32 arg0, u32 arg1) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     static s32 D_80079008 = 0x00000000;
     static s32 D_8007900C = 0x00000000;
     static s32 D_80079010 = 0x00000000;
@@ -1012,6 +1081,9 @@ u32 D_80079014 = 0xFFFFFFFF;
 static s32 D_80079018 = 0x00000000;
 
 s32 Audio_DispatchSoundBankCommand(s32 arg0, s32 arg1, s32 arg2) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     UNUSED s32 pad[5];
     s32 var_v0;
     u32 sp24;
@@ -1038,8 +1110,8 @@ s32 Audio_DispatchSoundBankCommand(s32 arg0, s32 arg1, s32 arg2) {
     if (temp_v1 != D_80079014) {
         sp24 = D_800FC6F8->seqArray[(temp_v1 >> 0x10) - 2].offset;
 
-        Rom_DmaRead(sp24, (u32)D_800FC798, 0xC);
-        Audio_RelocateOffsets((u32)D_800FC798, sp24, 3);
+        Rom_DmaRead(sp24, (uintptr_t)D_800FC798, 0xC);
+        Audio_RelocateOffsets((uintptr_t)D_800FC798, sp24, 3);
         Rom_DmaRead(D_800FC798[0], D_800FC6DC, D_800FC798[1] - D_800FC798[0]);
         Audio_CopyDataWithCacheSync(D_800FC6DC, D_800FC6A8, 0xBB8);
         Audio_RelocateSoundBankTable(D_800FC6A8);
@@ -1095,6 +1167,9 @@ s32 Audio_DispatchSoundBankCommand(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 void Audio_DispatchSoundBankStopCommand(s32 arg0, s32 arg1, s32 arg2) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     switch (arg0 & 0xFFFF0000) {
         case 0x20000:
             Audio_StopCategory2SoundCommand(arg0, arg1, arg2);
@@ -1135,6 +1210,9 @@ void Audio_DispatchSoundBankStopCommand(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 s32 Audio_PlayDirectSoundCommand(s32 arg0, UNUSED s32 arg1, UNUSED s32 arg2) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     UNUSED s32 pad[4];
     s32 var_v0;
     s32 sp2C;
@@ -1182,6 +1260,9 @@ s32 Audio_PlayDirectSoundCommand(s32 arg0, UNUSED s32 arg1, UNUSED s32 arg2) {
 }
 
 s32 Audio_PlayCategory11SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     static s32 D_8007901C = 0x00000000;
     static s32 D_80079020 = 0x00000000;
     static s32 D_80079024 = 0x00000000;
@@ -1212,8 +1293,8 @@ s32 Audio_PlayCategory11SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
     if (sp20 != D_80079014) {
         sp2C = D_800FC6F4->seqArray[3].offset;
 
-        Rom_DmaRead(sp2C, (u32)D_800FC798, 0xC);
-        Audio_RelocateOffsets((u32)D_800FC798, sp2C, 3);
+        Rom_DmaRead(sp2C, (uintptr_t)D_800FC798, 0xC);
+        Audio_RelocateOffsets((uintptr_t)D_800FC798, sp2C, 3);
         Rom_DmaRead(D_800FC798[0], D_800FC6DC, D_800FC798[1] - D_800FC798[0]);
         Audio_CopyDataWithCacheSync(D_800FC6DC, D_800FC6A8, 0xBB8);
         Audio_RelocateSoundBankTable(D_800FC6A8);
@@ -1323,6 +1404,9 @@ s32 Audio_PlayCategory11SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 s32 Audio_PlayCategory12SoundCommand(s32 arg0, UNUSED s32 arg1, UNUSED s32 arg2) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     static s32 D_8007904C = 0x00000000;
     static s32 D_80079050 = 0x00000000;
     static s32 D_80079054 = 0x00000000;
@@ -1342,8 +1426,8 @@ s32 Audio_PlayCategory12SoundCommand(s32 arg0, UNUSED s32 arg1, UNUSED s32 arg2)
     if (sp24 != D_80079014) {
         sp3C = D_800FC6F4->seqArray[4].offset;
 
-        Rom_DmaRead(sp3C, (u32)D_800FC798, 0xC);
-        Audio_RelocateOffsets((u32)D_800FC798, sp3C, 3);
+        Rom_DmaRead(sp3C, (uintptr_t)D_800FC798, 0xC);
+        Audio_RelocateOffsets((uintptr_t)D_800FC798, sp3C, 3);
         Rom_DmaRead(D_800FC798[0], D_800FC6DC, D_800FC798[1] - D_800FC798[0]);
         Audio_CopyDataWithCacheSync(D_800FC6DC, D_800FC6A8, 0xBB8);
         Audio_RelocateSoundBankTable(D_800FC6A8);

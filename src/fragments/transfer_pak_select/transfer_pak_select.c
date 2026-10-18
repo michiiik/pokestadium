@@ -46,7 +46,7 @@ static u32 D_81303C20[] = {
 
 static s16 D_81303CB0 = 0;
 
-static u32 D_81303CB4[] = {
+static uintptr_t D_81303CB4[] = { // PORT64: holds addresses
     0x0C000000,  0x05000000, 0x0B00002D, 0x00000000, 0x028001E0, 0x00000000, 0xFDBD0000, 0x00000243, 0x05000000,
     0x0D000000,  0x05000000, 0x14000000, 0x002D013B, 0xFFFFFF32, 0x16FFFFFF, 0x0F000002, 0x05000000, 0x0A000000,
     &D_800AC840, 0x06000000, 0x06000000, 0x06000000, 0x06000000, 0x01000000, 0x00000000,
@@ -78,12 +78,12 @@ static Gfx D_81303DD8[] = {
     gsSPEndDisplayList(),
 };
 
-static u32 D_81303EC0[] = {
+static uintptr_t D_81303EC0[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_81303D18, 0x05000000, 0x22050000,
     0x00000000, 0x08000000, TransferPak_RenderPortNodeCallback, D_81303DD8, 0x06000000, 0x01000000,
 };
 
-static u32 D_81303EF4[] = {
+static uintptr_t D_81303EF4[] = { // PORT64: holds addresses
     D_201D820, D_201DB20, D_201DE20, D_201E120, NULL,
 };
 

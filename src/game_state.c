@@ -1,3 +1,8 @@
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include "src/text_system.h"
+#include "src/ui_graphics.h"
 #include "game_state.h"
 #include "include/functions.h"
 #include "src/input.h"
@@ -22,7 +27,7 @@
 #include "src/memory.h"
 #include "src/rsp.h"
 #include "src/stage_loader.h"
-#include "lib/ultralib/include/PR/os_internal_reg.h"
+#include <PR/os_internal_reg.h>
 
 // .data
 u16 D_80073660[16][256] = {
@@ -586,11 +591,14 @@ s32 pad_D_800AE534[2];
 SessionContext gSessionContext;
 BinArchive* D_800AF738;
 
+extern void Port_FragmentFree(u8* romStart);
+extern u32 port_rom_read_u32(u32 romOffset); // PORT: cartridge ROM is not memory-mapped on the host
+
 s32 Game_DoCopyProtection(s32 state) {
     u32 intr = osSetIntMask(1);
 
     // if the 16-bit value at ROM offset 0xE38 is not 0x828A, make the state an invalid one.
-    if (!(HW_REG(PI_STATUS_REG, u32) & 3) && ((*(u32*)0xB0000E38 & 0xFFFF) != 0x828A)) {
+    if (!(HW_REG(PI_STATUS_REG, u32) & 3) && ((port_rom_read_u32(0xE38) & 0xFFFF) != 0x828A)) {
         state = -0x10;
     }
 
@@ -599,7 +607,7 @@ s32 Game_DoCopyProtection(s32 state) {
     return state;
 }
 
-s32 Fragment_LoadAndCall(s32 arg0, u8* romStart, u8* romEnd, u32 arg3, u32 arg4) {
+s32 Fragment_LoadAndCall(s32 arg0, u8* romStart, u8* romEnd, u32 arg3, uintptr_t arg4) {
     s32 result;
     FragmentEntry func;
 
@@ -607,7 +615,11 @@ s32 Fragment_LoadAndCall(s32 arg0, u8* romStart, u8* romEnd, u32 arg3, u32 arg4)
 
     result = func(arg3, arg4);
 
+#ifdef PORT_STATIC_FRAGMENTS
+    Port_FragmentFree(romStart); // func is the statically linked entry, not the loaded image
+#else
     main_pool_try_free(func);
+#endif
 
     return result;
 }
@@ -1338,8 +1350,38 @@ void Game_Thread(UNUSED LEODiskID* arg) {
         gCurrentGameState = STATE_FAST_N64_LOGO;
     }
 
+    // PORT debug boot: PORT_BOOT=battle starts "Battle Now!" (quick-battle teams, straight into the battle),
+    // PORT_BOOT=menu the main menu, PORT_BOOT=<number> any game state (see variables.h); skips intro and title.
+    {
+        const char* boot = getenv("PORT_BOOT");
+        if (boot != NULL && *boot != '\0') {
+            if (strcmp(boot, "battle") == 0) {
+                gCurrentGameState = STATE_BATTLE_NOW_1P;
+            } else if (strcmp(boot, "battle2p") == 0) {
+                gCurrentGameState = STATE_BATTLE_NOW_2P;
+            } else if (strcmp(boot, "menu") == 0) {
+                gCurrentGameState = STATE_MENU_SELECT;
+            } else {
+                gCurrentGameState = (s32)strtol(boot, NULL, 0);
+            }
+            fprintf(stderr, "[boot] PORT_BOOT=%s -> game state 0x%x\n", boot, gCurrentGameState);
+            // what the skipped N64 logo intro initialises (n64_logo.c): save bank, text tables, player labels and the
+            // species names (without them every species name is a placeholder, so every Pokemon counts as nicknamed
+            // and gets a colour variant)
+            Save_EnsureBankLoaded(2);
+            Text_InitStringTables();
+            Text_LoadPlayerLabels();
+            Text_LoadNameTable();
+            if (strcmp(boot, "credits") == 0) { // PORT debug: the ending credits (normally after beating Mewtwo)
+                State_RunCredits();
+                gCurrentGameState = STATE_N64_LOGO_INTRO;
+            }
+        }
+    }
+
     while (1) {
         state = Game_DoCopyProtection(gCurrentGameState);
+        { extern void Port_TraceState(int); Port_TraceState((int)state); }
 
         switch (state) {
             case STATE_N64_LOGO_INTRO:

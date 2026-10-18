@@ -1,6 +1,6 @@
 #include "table_view.h"
 
-void TableView_Initialize(unk_func_88201DA0_038* arg0, unk_func_88201DA0_034* arg1, s32 arg2, s32 arg3, s32 arg4) {
+void TableView_Initialize(unk_func_88201DA0_038* arg0, void* arg1, s32 arg2, s32 arg3, s32 arg4) {
     arg0->unk_00 = arg1;
     arg0->unk_0C = arg2;
     arg0->unk_04 = arg3;
@@ -162,7 +162,7 @@ void PointerList_Initialize(unk_func_88205880_A030* arg0, void** arg1, s32 arg2,
 }
 
 void PointerList_Allocate(unk_func_88200FA0_030_038* arg0, s32 arg1, MemoryPool* arg2) {
-    arg0->unk_00 = mem_pool_alloc(arg2, arg1 * 4);
+    arg0->unk_00 = mem_pool_alloc(arg2, arg1 * sizeof(*arg0->unk_00)); // PORT64: pointer-sized entries (was arg1 * 4)
     arg0->unk_04 = arg1;
     arg0->unk_08 = 0;
 }
@@ -217,7 +217,10 @@ void PointerList_SwapRange(void** arg0, void** arg1, s32 arg2) {
     }
 }
 
-s32* Sort_SelectMedianPointer(s32* arg0, s32* arg1, s32* arg2, s32 (*arg3)(s32, s32)) {
+// PORT64: the list holds pointers and the comparators take pointers; the sort used s32 for both (was s32* / (s32, s32))
+typedef s32 (*SortCompare)(void*, void*);
+
+void** Sort_SelectMedianPointer(void** arg0, void** arg1, void** arg2, SortCompare arg3) {
     return (arg3(*arg0, *arg1) < 0)   ? (arg3(*arg1, *arg2) < 0)   ? arg1
                                         : (arg3(*arg0, *arg2) < 0) ? arg2
                                                                    : arg0
@@ -226,7 +229,7 @@ s32* Sort_SelectMedianPointer(s32* arg0, s32* arg1, s32* arg2, s32 (*arg3)(s32, 
                                       : arg0;
 }
 
-void Sort_QuickSort(void** base, s32 n, s32 (*cmp)(s32, s32)) {
+void Sort_QuickSort(void** base, s32 n, SortCompare cmp) {
     void** sp8C;
     s32 temp_s2;
     void* temp_s4;
@@ -273,11 +276,11 @@ void Sort_QuickSort(void** base, s32 n, s32 (*cmp)(s32, s32)) {
         var_a2 = (base + n) - 1;
         if (n >= 0x29) {
             temp_v0_2 = n / 8;
-            var_s2 = (void**)Sort_SelectMedianPointer((s32*)base, (s32*)(base + temp_v0_2), (s32*)(base + temp_v0_2 * 2), cmp);
-            sp8C = (void**)Sort_SelectMedianPointer((s32*)(sp8C - temp_v0_2), (s32*)sp8C, (s32*)(sp8C + temp_v0_2), cmp);
-            var_a2 = (void**)Sort_SelectMedianPointer((s32*)(var_a2 - temp_v0_2 * 2), (s32*)(var_a2 - temp_v0_2), (s32*)var_a2, cmp);
+            var_s2 = Sort_SelectMedianPointer(base, base + temp_v0_2, base + temp_v0_2 * 2, cmp);
+            sp8C = Sort_SelectMedianPointer(sp8C - temp_v0_2, sp8C, sp8C + temp_v0_2, cmp);
+            var_a2 = Sort_SelectMedianPointer(var_a2 - temp_v0_2 * 2, var_a2 - temp_v0_2, var_a2, cmp);
         }
-        sp8C = (void**)Sort_SelectMedianPointer((s32*)var_s2, (s32*)sp8C, (s32*)var_a2, cmp);
+        sp8C = Sort_SelectMedianPointer(var_s2, sp8C, var_a2, cmp);
     }
 
     temp_s4 = *sp8C;
@@ -353,8 +356,8 @@ void Sort_QuickSort(void** base, s32 n, s32 (*cmp)(s32, s32)) {
     }
 }
 
-void PointerList_Sort(unk_func_8830867C_02C_0CC* arg0, s32 (*arg1)(s32, s32)) {
-    Sort_QuickSort(arg0->unk_00, arg0->unk_08, arg1);
+void PointerList_Sort(unk_func_8830867C_02C_0CC* arg0, unk_D_8831A1F8 arg1) {
+    Sort_QuickSort((void**)arg0->unk_00, arg0->unk_08, (SortCompare)arg1);
 }
 
 void PointerList_Filter(unk_func_8830867C_02C_0CC* arg0, unk_func_8830867C_02C_0CC* arg1,
@@ -375,7 +378,7 @@ void PointerList_Filter(unk_func_8830867C_02C_0CC* arg0, unk_func_8830867C_02C_0
         var_s0++;
     }
 
-    arg1->unk_08 = ((s32)var_s1 - (s32)arg1->unk_00) >> 2;
+    arg1->unk_08 = ((intptr_t)var_s1 - (intptr_t)arg1->unk_00) >> 2;
 }
 
 s32 Text_CompareU16Terminated(u16* a0, u16* a1) {

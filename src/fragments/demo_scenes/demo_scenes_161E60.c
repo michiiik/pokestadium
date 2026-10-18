@@ -464,13 +464,13 @@ static unk_D_86002F34_000_014 D_86B0CF38 = {
     D_86B0CF18,
 };
 
-static u32 D_86B0CF40[] = {
+static uintptr_t D_86B0CF40[] = {
     0x09000000, 0x05000000, 0x09000000, 0x05000000, 0x09000000, 0x05000000, 0x13000005, 0x03E303E8,
     0x2309FFFF, 0x86B0CCF0, 0x0000FFFF, 0xFFFFFFFF, 0x22050000, 0x00000000, 0x08000000, 0x810001D0,
     0x86B0CF38, 0x22050000, 0x86B0CE28, 0x06000000, 0x06000000, 0x06000000, 0x04000000,
 };
 
-u32 D_86B0CF9C[] = {
+uintptr_t D_86B0CF9C[] = { // PORT64: holds addresses
     0x17000001, 0x00000010, &D_86B0CCE0, 0x00000000, D_86B0CD28, 0x05000000, 0x1C000000, 0x00008000, 0x00008000,
     0x00008000, 0x05000000, 0x03000000,  D_86B0CF40, 0x06000000, 0x06000000, 0x01000000, 0x00000000,
 };
@@ -603,12 +603,12 @@ static unk_D_86002F34_000_014 D_86B0DA38 = {
     D_86B0D9F8,
     D_86B0DA18,
 };
-static u32 D_86B0DA40[] = {
+static uintptr_t D_86B0DA40[] = { // PORT64: holds addresses
     0x09000000,  0x05000000, 0x09000000, 0x05000000, 0x09000000, 0x05000000, 0x13000005, 0x03E303E8,
     0x2306FFFF,  D_86B0D7F0, 0x0000FFFF, 0xFFFFFFFF, 0x22010000, 0x00000000, 0x08000000, 0x810001D0,
     &D_86B0DA38, 0x22010000, D_86B0D928, 0x06000000, 0x06000000, 0x06000000, 0x04000000,
 };
-u32 D_86B0DA9C[] = {
+uintptr_t D_86B0DA9C[] = { // PORT64: holds addresses
     0x17000001, 0x00000010, &D_86B0D7E0, 0x00000000, D_86B0D828, 0x05000000, 0x1C000000, 0x00008000, 0x00008000,
     0x00008000, 0x05000000, 0x03000000,  D_86B0DA40, 0x06000000, 0x06000000, 0x01000000, 0x00000000,
 };
@@ -730,7 +730,7 @@ static unk_D_86B0DBCC D_86B0DBCC[] = {
     { 1200.0f, 0.0f, 27.0f, 0.0f },
 };
 
-static u32 D_86B0DC5C[] = {
+static uintptr_t D_86B0DC5C[] = { // PORT64: holds addresses
     0x0C00FFFF,  0x05000000, 0x0B00001E, 0x00000000,    0x014000F0, 0x0000000F, 0x00000000,    0x00000000, 0x05000000,
     0x0D000000,  0x05000000, 0x14000000, 0x002D0019,    0xFFFFFF28, 0x08000000, Completion_LightAngleCallbackA, 0x00000000, 0x14000000,
     0x002D0019,  0x80808028, 0x08000000, Completion_LightAngleCallbackB, 0x00000000, 0x16646464, 0x0F000003,    0x05000000, 0x0A000000,
@@ -1616,13 +1616,13 @@ void Completion_InitScene(void) {
     MainPool_FinalizeAllocation(sp1C);
     ModelRenderer_InitDisplayRoots();
 
-    D_86B0EBE0 = main_pool_alloc(0x20, 0);
+    D_86B0EBE0 = main_pool_alloc(sizeof(unk_D_86B0EBE0), 0); // PORT64: host sizes (were 0x20 / 0x30C / 0x4C)
     bzero(D_86B0EBE0, 0x20);
 
-    D_86B0EBDC = main_pool_alloc(0x30C, 0);
+    D_86B0EBDC = main_pool_alloc(sizeof(unk_D_86B0EBDC), 0);
     bzero(D_86B0EBDC, 0x30C);
 
-    D_86B0EBD8 = main_pool_alloc(0x4C, 0);
+    D_86B0EBD8 = main_pool_alloc(sizeof(unk_D_86B0EBD8), 0);
     bzero(D_86B0EBD8, 0x4C);
 
     Completion_SelectBonusPokemon();
@@ -1647,7 +1647,7 @@ s32 Stage_ShowCompletionScene(void) {
     ASSET_LOAD(D_3000000, cup_clear_ui, 0);
 
     FRAGMENT_LOAD(fragment31);
-    Fragment_Load((((u32)D_8D000000 & 0x0FF00000) >> 0x14) - 0x10, _5C7A70_ROM_START, _5C7A70_ROM_END);
+    Fragment_Load((((uintptr_t)D_8D000000 & 0x0FF00000) >> 0x14) - 0x10, _5C7A70_ROM_START, _5C7A70_ROM_END);
 
     Text_InitStringTables();
 

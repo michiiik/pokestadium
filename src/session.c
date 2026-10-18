@@ -122,6 +122,26 @@ void Team_AddTrainer(s32 arg0, TeamRoster* arg1) {
     }
 }
 
+// PORT: Pokemon records stored in ROM archives (trainer presets, rentals) are big-endian; swaps the 16/32-bit fields
+// of such a record into host order.
+void Port_BattleMonFromBE(BattleMon* dst, const BattleMon* src) {
+    *dst = *src;
+    dst->unk_02 = Port_Swap16(src->unk_02);
+    dst->unk_0E = Port_Swap16(src->unk_0E);
+    dst->unk_10 = Port_Swap32(src->unk_10);
+    dst->unk_14 = Port_Swap16(src->unk_14);
+    dst->unk_16 = Port_Swap16(src->unk_16);
+    dst->unk_18 = Port_Swap16(src->unk_18);
+    dst->unk_1A = Port_Swap16(src->unk_1A);
+    dst->unk_1C = Port_Swap16(src->unk_1C);
+    dst->unk_1E = Port_Swap16(src->unk_1E);
+    dst->unk_26 = Port_Swap16(src->unk_26);
+    dst->unk_28 = Port_Swap16(src->unk_28);
+    dst->unk_2A = Port_Swap16(src->unk_2A);
+    dst->unk_2C = Port_Swap16(src->unk_2C);
+    dst->unk_2E = Port_Swap16(src->unk_2E);
+}
+
 void Trainer_AddPokemon(TeamRoster* arg0, BattleMon* arg1) {
     ExtendedRosterInfo* ptr = arg0->unk_214;
     s32 tmp = arg0->unk_002;
@@ -179,8 +199,8 @@ BattleMon* Pokemon_CreateDefault(BattleMon* arg0, u8 arg1, s16 arg2) {
 
 void Session_SetupDemoBattle(s16 arg0, s16 arg1, s16 arg2, s16 arg3) {
     s16 spD6;
-    s32 spD0;
-    s32 spCC;
+    intptr_t spD0;
+    intptr_t spCC;
     BattleMon sp78;
     BattleMon sp24;
 
@@ -398,18 +418,20 @@ void Team_LoadPresetTrainer(s16 arg0, s16 arg1, s16 arg2, s32 arg3) {
 
     gSessionContext.opponentHistory[0][gSessionContext.roundOrDemoId - 1] = arg2;
 
-    temp_s3->unk_018 = temp_s2->unk_34;
+    temp_s3->unk_018 = Port_Swap16(temp_s2->unk_34); // PORT: ROM data is big-endian
     temp_s3->unk_002 = 0;
 
-    for (i = 0; i < temp_s2->unk_36; i++) {
-        Trainer_AddPokemon(temp_s3, &temp_s2->unk_38[i]);
+    for (i = 0; i < Port_Swap16(temp_s2->unk_36); i++) {
+        BattleMon mon;
+        Port_BattleMonFromBE(&mon, &temp_s2->unk_38[i]);
+        Trainer_AddPokemon(temp_s3, &mon);
     }
 
     HAL_Strcpy(temp_s3->unk_008, temp_s2->unk_00);
     HAL_Strcpy(temp_s3->unk_214->unk_014, temp_s2->unk_00);
     HAL_Strcpy(temp_s3->unk_214->unk_220, temp_s2->unk_0C);
 
-    temp_s3->unk_214->unk_003 = (temp_s2->unk_34 >> 8) & 0xFF;
+    temp_s3->unk_214->unk_003 = (Port_Swap16(temp_s2->unk_34) >> 8) & 0xFF;
 
     if (arg3 != 0) {
         Team_ScaleOpponentToLevel(Team_GetHighestPartyLevel());

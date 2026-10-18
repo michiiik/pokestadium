@@ -23,7 +23,7 @@ void ModelAnim_BeginEventContext(EventTrackState* arg0, u16 arg1, s32 arg2);
 void ModelAnim_EndEventContext(void);
 void ModelAnim_GetEventAtFrame(unk_D_86002F34_alt11_018** arg0, unk_D_86002F34_alt11_018* arg1, s32 arg2);
 void ModelAnim_ClearEventTrack(DisplayObject* arg0);
-s16 ModelAnim_BindEventTrack(DisplayObject* arg0, s16 arg1, s32 arg2);
+s16 ModelAnim_BindEventTrack(DisplayObject* arg0, s16 arg1, intptr_t arg2);
 void ModelAnim_SetEventFrame(DisplayObject* arg0, s16 arg1);
 s32 ModelAnim_IsEventFrame(DisplayObject* arg0, s16 arg1);
 s32 ModelAnim_IsEventTrackNearEnd(DisplayObject* arg0);

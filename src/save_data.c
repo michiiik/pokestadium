@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "save_data.h"
 #include "src/save_data.h"
 #include "src/gb_data.h"
@@ -889,6 +891,14 @@ void Save_SetOptions(GameOptions* arg0) {
 
 void Save_GetModeSettings(ModeSettings* arg0, s16 arg1) {
     *arg0 = D_800AE4E8[2].unk_04.unk2->unk_1EA0.unk_0C[arg1];
+    if (getenv("PORT_TRACE_SAVE")) { // PORT debug
+        const u8* b = (const u8*)arg0;
+        fprintf(stderr, "[save] mode settings %d: %02x %02x %02x %02x %02x %02x %02x %02x\n", arg1, b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7]);
+        const u8* bank = (const u8*)D_800AE4E8[2].unk_04.unk2;
+        fprintf(stderr, "[save] offsetof options %ld; raw 0x1EA0:", (long)((const u8*)&D_800AE4E8[2].unk_04.unk2->unk_1EA0 - bank));
+        for (int k = 0; k < 0x28; k++) fprintf(stderr, " %02x", bank[0x1EA0 + k]);
+        fputc('\n', stderr);
+    }
 }
 
 void Save_SetModeSettings(ModeSettings* arg0, s16 arg1) {
@@ -1005,6 +1015,124 @@ s32 Save_ContinueRecordExists(void) {
     return var_v1;
 }
 
+// PORT: the RAM banks hold the records as host-native structs (u16/u32/f32 fields in host order), while the
+// flash image is kept in N64 (big-endian) order like a cartridge save (tools/save_editor/SAVE_FORMAT.md). These
+// helpers swap every multi-byte record field between the two orders; they are called when a bank is read from
+// flash (Save_AllocateBank) and on a copy of the bank when it is programmed (Save_FlushBank). Swapping is its own
+// inverse, so one routine serves both directions. Pokemon entries (GbPokemonNamedRecord) and the gallery's
+// particle slot data are byte arrays in a fixed order and are not touched; the checksum is a byte sum and does
+// not depend on the order.
+static void Save_PortSwap16(u8* p) {
+    u8 t = p[0];
+
+    p[0] = p[1];
+    p[1] = t;
+}
+
+static void Save_PortSwap32(u8* p) {
+    u8 t0 = p[0];
+    u8 t1 = p[1];
+
+    p[0] = p[3];
+    p[1] = p[2];
+    p[2] = t1;
+    p[3] = t0;
+}
+
+// Footer: 'PO' 'KE' (or 'XX' 'XX') and the checksum, three u16 at the end of the record.
+static void Save_PortSwapFooter(u8* rec, s32 size) {
+    Save_PortSwap16(rec + size - 6);
+    Save_PortSwap16(rec + size - 4);
+    Save_PortSwap16(rec + size - 2);
+}
+
+// Registered team, Lab box and item box: DeckRecordHeader trainer ID (0x0C) and count (0x0E).
+static void Save_PortSwapDeckRecord(u8* rec, s32 size) {
+    Save_PortSwap16(rec + 0x0C);
+    Save_PortSwap16(rec + 0x0E);
+    Save_PortSwapFooter(rec, size);
+}
+
+// Gallery album / photo set: 0x8C-byte photos (unk_D_83402EE0) from offset 2.
+static void Save_PortSwapPhotoRecord(u8* rec, s32 size, s32 count) {
+    s32 i;
+    s32 k;
+
+    for (i = 0; i < count; i++) {
+        u8* photo = rec + 2 + i * 0x8C;
+
+        Save_PortSwap32(photo + 0x00); // f32 model Y
+        Save_PortSwap16(photo + 0x06); // s16 animation frame
+        for (k = 0; k < 6; k++) {
+            Save_PortSwap32(photo + 0x50 + k * 4); // Vec3f unk_50, unk_5C
+        }
+        Save_PortSwap32(photo + 0x68); // u32
+        Save_PortSwap16(photo + 0x70); // u16 OT ID
+    }
+    Save_PortSwapFooter(rec, size);
+}
+
+static void Save_PortSwapBank(s16 bank, u8* buf) {
+    s32 i;
+    u8* rec;
+
+    switch (bank) {
+        case 0:
+        case 1:
+            for (i = 0; i < 40; i++) {
+                Save_PortSwapDeckRecord(buf + i * 0x160, 0x160);
+            }
+            break;
+
+        case 2:
+            for (i = 0; i < 10; i++) {
+                Save_PortSwapDeckRecord(buf + i * 0x160, 0x160);
+            }
+
+            rec = buf + 0x0DC0; // Victory Palace: u16 OT ID of each 0x1A entry
+            for (i = 0; i < 151; i++) {
+                Save_PortSwap16(rec + 2 + i * 0x1A + 0x02);
+            }
+            Save_PortSwapFooter(rec, 0xF60);
+
+            rec = buf + 0x1D20; // saved battle: session trainer ID, team count
+            Save_PortSwap16(rec + 0x02 + 0x0E);
+            Save_PortSwap16(rec + 0x22);
+            Save_PortSwapFooter(rec, 0x180);
+
+            rec = buf + 0x1EA0; // options and progress
+            Save_PortSwap16(rec + 0x02);
+            Save_PortSwap16(rec + 0x04);
+            Save_PortSwap32(rec + 0x08);
+            Save_PortSwap16(rec + 0x0C);
+            Save_PortSwap16(rec + 0x14);
+            Save_PortSwap16(rec + 0x1C);
+            Save_PortSwapFooter(rec, 0x28);
+
+            Save_PortSwapPhotoRecord(buf + 0x1EC8, 0x13B8, 36);
+            Save_PortSwapPhotoRecord(buf + 0x3280, 0xB84, 21);
+            break;
+
+        case 3:
+            for (i = 0; i < 12; i++) {
+                Save_PortSwapDeckRecord(buf + i * 0x468, 0x468);
+            }
+            for (i = 0; i < 4; i++) {
+                Save_PortSwapDeckRecord(buf + 0x34E0 + i * 0xE0, 0xE0);
+            }
+            break;
+    }
+}
+
+// Copy of a bank in flash order, for Flash_ProgramPages (the RAM bank stays host-native).
+static u8* Save_PortFlashImage(s16 bank, u8* src, u32 size) {
+    static u8 sFlashImage[0x4000];
+
+    _bcopy(src, sFlashImage, size);
+    Save_PortSwapBank(bank, sFlashImage);
+    return sFlashImage;
+}
+
 s32 Save_FlushBank(s16 arg0) {
     static u32 D_80073650[] = {
         0x3700,
@@ -1031,7 +1159,8 @@ s32 Save_FlushBank(s16 arg0) {
 
         var_s0 = 0;
         sp38 = arg0 << 7;
-        while (Flash_ProgramPages((u8*)D_800AE4E8[arg0].unk_04.unk1, sp38, temp_s5, 1) == -1) {
+        while (Flash_ProgramPages(Save_PortFlashImage(arg0, (u8*)D_800AE4E8[arg0].unk_04.unk1, D_80073650[arg0]), sp38,
+                                  temp_s5, 1) == -1) { // PORT: N64 byte order in flash
             var_s0++;
             if (var_s0 == 4) {
                 return -1;
@@ -1049,7 +1178,8 @@ s32 Save_FlushBank(s16 arg0) {
         sp38 = arg0 << 7;
         sp38 += 0x200;
         var_s0 = 0;
-        while (Flash_ProgramPages((u8*)D_800AE4E8[arg0].unk_08.unk1, sp38, temp_s5, 1) == -1) {
+        while (Flash_ProgramPages(Save_PortFlashImage(arg0, (u8*)D_800AE4E8[arg0].unk_08.unk1, D_80073650[arg0]), sp38,
+                                  temp_s5, 1) == -1) { // PORT: N64 byte order in flash
             var_s0++;
             if (var_s0 == 4) {
                 return 0;
@@ -1087,6 +1217,8 @@ s32 Save_AllocateBank(s16 arg0, u32 arg1) {
             D_800AE4E8[arg0].unk_08.unk1 = sp28 + arg1;
             Flash_ProgramPages(sp28, arg0 << 7, arg1 >> 7, 0);
             Flash_ProgramPages(D_800AE4E8[arg0].unk_08.unk1, (arg0 << 7) + 0x200, arg1 >> 7, 0);
+            Save_PortSwapBank(arg0, sp28); // PORT: flash (N64) order -> host order
+            Save_PortSwapBank(arg0, D_800AE4E8[arg0].unk_08.unk1);
             sp2C = 1;
         }
     }

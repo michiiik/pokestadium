@@ -4,6 +4,9 @@
 #include "src/3D140.h"
 
 void Audio_SetChannelVolume(s32 arg0, u32 arg1) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     s32 var_a1;
 
     switch (arg1) {
@@ -48,10 +51,16 @@ void Audio_SetChannelVolume(s32 arg0, u32 arg1) {
 }
 
 void Audio_SetMonoOutput(s32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     Audio_QueueSetMonoOutputCommand(arg0);
 }
 
 void Audio_SetPauseMixMode(u32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     switch (arg0) {
         case 1:
             Audio_QueueFadeSoundCommand(D_80078E68, 3);
@@ -85,6 +94,9 @@ void Audio_SetPauseMixMode(u32 arg0) {
 }
 
 void Audio_BeginVolumeTransition(u32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     u32 temp_v0;
 
     if (arg0 == 0) {
@@ -103,6 +115,9 @@ void Audio_BeginVolumeTransition(u32 arg0) {
 }
 
 void Audio_ResetVolumeTransition(void) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     u32 temp_v0 = osSetIntMask(1);
 
     mus_sound_effect_blocked = 0;

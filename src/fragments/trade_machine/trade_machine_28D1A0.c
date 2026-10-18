@@ -148,7 +148,7 @@ void Trade_DrawFilledFrame(s16 arg0, s16 arg1, s16 arg2, s16 arg3, u8 arg4, u8 a
     gSPDisplayList(gDisplayListHead++, D_8006F630);
 }
 
-void Trade_DrawMovingSheen(s16 arg0, s16 arg1, s32 arg2) {
+void Trade_DrawMovingSheen(s16 arg0, s16 arg1, u8* arg2) { // PORT64: arg2 was s32
     s32 temp_v0_3;
     s16 var_a3;
     s16 i;

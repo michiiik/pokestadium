@@ -217,7 +217,7 @@ void TeamSelection_Preview_DrawTypeIcon(s16 arg0, s16 arg1, s16 arg2) {
     Gfx_DrawTexturedRectClipped(arg0 + 0x14, arg1, 0x24, 0x28, 0, 0, 0, 0x400, 0);
 }
 
-void TeamSelection_Preview_DrawMovePanel(s16 arg0, s16 arg1, s32 arg2) {
+void TeamSelection_Preview_DrawMovePanel(s16 arg0, s16 arg1, u8* arg2) { // PORT64: arg2 was s32
     s16 i;
     s16 var_a3;
 

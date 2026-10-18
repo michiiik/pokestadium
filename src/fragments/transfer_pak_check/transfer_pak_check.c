@@ -43,89 +43,78 @@ static GraphNode* D_82D0AC08;
 static GraphNode* D_82D0AC0C;
 
 static s16 D_82D06FA0 = 7;
-static u32 D_82D06FA4[] = {
+static uintptr_t D_82D06FA4[] = { // PORT64: holds addresses
     0x0C000000,  0x05000000, 0x0B00002D, 0x00000000, 0x028001E0, 0x00000000, 0xFDBD0000, 0x00000243, 0x05000000,
     0x0D000000,  0x05000000, 0x14000000, 0x00000000, 0xFFFFFF32, 0x16FFFFFF, 0x0F000002, 0x05000000, 0x0A000000,
     &D_800AC840, 0x06000000, 0x06000000, 0x06000000, 0x06000000, 0x01000000, 0x00000000,
 };
+// PORT: one array (the N64 layout): the game indexes across these symbols
 static Vtx D_82D07008[] = {
     VTX(-64, 0, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, -16, 0, 0, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -16, 0, 4096, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, 0, 0, 4096, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07048[] = {
     VTX(-64, -16, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, -32, 0, 0, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -32, 0, 4096, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -16, 0, 4096, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07088[] = {
     VTX(-64, -32, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, -48, 0, 0, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -48, 0, 4096, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -32, 0, 4096, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D070C8[] = {
     VTX(-64, -48, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, -64, 0, 0, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -64, 0, 4096, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -48, 0, 4096, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07108[] = {
     VTX(-64, -64, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, -80, 0, 0, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -80, 0, 4096, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -64, 0, 4096, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07148[] = {
     VTX(-64, -80, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, -96, 0, 0, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -96, 0, 4096, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -80, 0, 4096, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07188[] = {
     VTX(-64, -96, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, -112, 0, 0, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -112, 0, 4096, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -96, 0, 4096, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D071C8[] = {
     VTX(-64, -112, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, -128, 0, 0, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -128, 0, 4096, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -112, 0, 4096, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07208[] = {
     VTX(-64, -128, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, -144, 0, 0, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -144, 0, 4096, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -128, 0, 4096, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07248[] = {
     VTX(-64, -144, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, -160, 0, 0, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -160, 0, 4096, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -144, 0, 4096, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07288[] = {
     VTX(-64, -160, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, -176, 0, 0, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -176, 0, 4096, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -160, 0, 4096, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D072C8[] = {
     VTX(-64, -176, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, -192, 0, 0, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -192, 0, 4096, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -176, 0, 4096, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07308[] = {
     VTX(-64, -192, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, -204, 0, 0, 384, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -204, 0, 4096, 384, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -192, 0, 4096, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
+#define D_82D07048 (D_82D07008 + 4)
+#define D_82D07088 (D_82D07008 + 8)
+#define D_82D070C8 (D_82D07008 + 12)
+#define D_82D07108 (D_82D07008 + 16)
+#define D_82D07148 (D_82D07008 + 20)
+#define D_82D07188 (D_82D07008 + 24)
+#define D_82D071C8 (D_82D07008 + 28)
+#define D_82D07208 (D_82D07008 + 32)
+#define D_82D07248 (D_82D07008 + 36)
+#define D_82D07288 (D_82D07008 + 40)
+#define D_82D072C8 (D_82D07008 + 44)
+#define D_82D07308 (D_82D07008 + 48)
 static Gfx D_82D07348[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_PASS2),
@@ -184,178 +173,152 @@ static Gfx D_82D07348[] = {
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_82D07710[] = {
+static uintptr_t D_82D07710[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_82D07008, 0x05000000, 0x22040000,
     0x00000000, 0x08000000, PakUi_RenderPartyCardTexture, 0x00000000, 0x06000000, 0x01000000, 0x00000000,
 };
+// PORT: one array (the N64 layout): the game indexes across these symbols
 static Vtx D_82D07748[] = {
     VTX(0, 50, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 0, 0, 0, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(40, 0, 0, 1280, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(40, 50, 0, 1280, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07788[] = {
     VTX(40, 50, 0, 1280, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(40, 0, 0, 1280, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(80, 0, 0, 2560, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(80, 50, 0, 2560, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D077C8[] = {
     VTX(80, 50, 0, 2560, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(80, 0, 0, 2560, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(120, 0, 0, 3840, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(120, 50, 0, 3840, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07808[] = {
     VTX(120, 50, 0, 3840, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(120, 0, 0, 3840, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(160, 0, 0, 5120, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(160, 50, 0, 5120, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07848[] = {
     VTX(160, 50, 0, 5120, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(160, 0, 0, 5120, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(200, 0, 0, 6400, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(200, 50, 0, 6400, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07888[] = {
     VTX(200, 50, 0, 6400, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(200, 0, 0, 6400, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(240, 0, 0, 7680, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(240, 50, 0, 7680, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D078C8[] = {
     VTX(240, 50, 0, 7680, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(240, 0, 0, 7680, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(280, 0, 0, 8960, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(280, 50, 0, 8960, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07908[] = {
     VTX(280, 50, 0, 8960, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(280, 0, 0, 8960, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(320, 0, 0, 10240, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(320, 50, 0, 10240, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07948[] = {
     VTX(320, 50, 0, 10240, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(320, 0, 0, 10240, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(360, 0, 0, 11520, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(360, 50, 0, 11520, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07988[] = {
     VTX(360, 50, 0, 11520, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(360, 0, 0, 11520, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(400, 0, 0, 12800, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(400, 50, 0, 12800, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D079C8[] = {
     VTX(400, 50, 0, 12800, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(400, 0, 0, 12800, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(440, 0, 0, 14080, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(440, 50, 0, 14080, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07A08[] = {
     VTX(440, 50, 0, 14080, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(440, 0, 0, 14080, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(480, 0, 0, 15360, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(480, 50, 0, 15360, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07A48[] = {
     VTX(480, 50, 0, 15360, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(480, 0, 0, 15360, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(520, 0, 0, 16640, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(520, 50, 0, 16640, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07A88[] = {
     VTX(520, 50, 0, 16640, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(520, 0, 0, 16640, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(538, 0, 0, 17216, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(538, 50, 0, 17216, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07AC8[] = {
     VTX(0, 0, 0, 0, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -50, 0, 0, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(40, -50, 0, 1280, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(40, 0, 0, 1280, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07B08[] = {
     VTX(40, 0, 0, 1280, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(40, -50, 0, 1280, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(80, -50, 0, 2560, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(80, 0, 0, 2560, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07B48[] = {
     VTX(80, 0, 0, 2560, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(80, -50, 0, 2560, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(120, -50, 0, 3840, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(120, 0, 0, 3840, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07B88[] = {
     VTX(120, 0, 0, 3840, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(120, -50, 0, 3840, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(160, -50, 0, 5120, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(160, 0, 0, 5120, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07BC8[] = {
     VTX(160, 0, 0, 5120, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(160, -50, 0, 5120, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(200, -50, 0, 6400, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(200, 0, 0, 6400, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07C08[] = {
     VTX(200, 0, 0, 6400, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(200, -50, 0, 6400, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(240, -50, 0, 7680, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(240, 0, 0, 7680, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07C48[] = {
     VTX(240, 0, 0, 7680, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(240, -50, 0, 7680, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(280, -50, 0, 8960, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(280, 0, 0, 8960, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07C88[] = {
     VTX(280, 0, 0, 8960, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(280, -50, 0, 8960, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(320, -50, 0, 10240, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(320, 0, 0, 10240, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07CC8[] = {
     VTX(320, 0, 0, 10240, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(320, -50, 0, 10240, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(360, -50, 0, 11520, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(360, 0, 0, 11520, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07D08[] = {
     VTX(360, 0, 0, 11520, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(360, -50, 0, 11520, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(400, -50, 0, 12800, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(400, 0, 0, 12800, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07D48[] = {
     VTX(400, 0, 0, 12800, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(400, -50, 0, 12800, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(440, -50, 0, 14080, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(440, 0, 0, 14080, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07D88[] = {
     VTX(440, 0, 0, 14080, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(440, -50, 0, 14080, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(480, -50, 0, 15360, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(480, 0, 0, 15360, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07DC8[] = {
     VTX(480, 0, 0, 15360, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(480, -50, 0, 15360, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(520, -50, 0, 16640, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(520, 0, 0, 16640, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D07E08[] = {
     VTX(520, 0, 0, 16640, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(520, -50, 0, 16640, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(538, -50, 0, 17216, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(538, 0, 0, 17216, 1600, 0xFF, 0xFF, 0xFF, 0xFF),
 };
+#define D_82D07788 (D_82D07748 + 4)
+#define D_82D077C8 (D_82D07748 + 8)
+#define D_82D07808 (D_82D07748 + 12)
+#define D_82D07848 (D_82D07748 + 16)
+#define D_82D07888 (D_82D07748 + 20)
+#define D_82D078C8 (D_82D07748 + 24)
+#define D_82D07908 (D_82D07748 + 28)
+#define D_82D07948 (D_82D07748 + 32)
+#define D_82D07988 (D_82D07748 + 36)
+#define D_82D079C8 (D_82D07748 + 40)
+#define D_82D07A08 (D_82D07748 + 44)
+#define D_82D07A48 (D_82D07748 + 48)
+#define D_82D07A88 (D_82D07748 + 52)
+#define D_82D07AC8 (D_82D07748 + 56)
+#define D_82D07B08 (D_82D07748 + 60)
+#define D_82D07B48 (D_82D07748 + 64)
+#define D_82D07B88 (D_82D07748 + 68)
+#define D_82D07BC8 (D_82D07748 + 72)
+#define D_82D07C08 (D_82D07748 + 76)
+#define D_82D07C48 (D_82D07748 + 80)
+#define D_82D07C88 (D_82D07748 + 84)
+#define D_82D07CC8 (D_82D07748 + 88)
+#define D_82D07D08 (D_82D07748 + 92)
+#define D_82D07D48 (D_82D07748 + 96)
+#define D_82D07D88 (D_82D07748 + 100)
+#define D_82D07DC8 (D_82D07748 + 104)
+#define D_82D07E08 (D_82D07748 + 108)
 static Gfx D_82D07E48[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_PASS2),
@@ -485,28 +448,27 @@ static Gfx D_82D07E48[] = {
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_82D08648[] = {
+static uintptr_t D_82D08648[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_82D07748, 0x05000000, 0x22040000,
     0x00000000, 0x08000000, PakUi_RenderIconPanelTexture, 0x00000000, 0x06000000, 0x01000000, 0x00000000,
 };
+// PORT: one array (the N64 layout): the game indexes across these symbols
 static Vtx D_82D08680[] = {
     VTX(0, 22, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 6, 0, 0, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(124, 6, 0, 3968, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(124, 22, 0, 3968, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D086C0[] = {
     VTX(0, 6, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -10, 0, 0, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(124, -10, 0, 3968, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(124, 6, 0, 3968, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D08700[] = {
     VTX(0, -10, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -22, 0, 0, 384, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(124, -22, 0, 3968, 384, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(124, -10, 0, 3968, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
+#define D_82D086C0 (D_82D08680 + 4)
+#define D_82D08700 (D_82D08680 + 8)
 static Gfx D_82D08740[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_PASS2),
@@ -525,106 +487,92 @@ static Gfx D_82D08740[] = {
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_82D08838[] = {
+static uintptr_t D_82D08838[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_82D08680, 0x05000000, 0x22040000,
     0x00000000, 0x08000000, PakUi_RenderBannerTexture, 0x00000000, 0x06000000, 0x01000000, 0x00000000,
 };
+// PORT: one array (the N64 layout): the game indexes across these symbols
 static Vtx D_82D08870[] = {
     VTX(0, 76, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 56, 0, 0, 640, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, 56, 0, 3200, 640, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, 76, 0, 3200, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D088B0[] = {
     VTX(0, 56, 0, 0, 640, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 36, 0, 0, 1280, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, 36, 0, 3200, 1280, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, 56, 0, 3200, 640, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D088F0[] = {
     VTX(0, 36, 0, 0, 1280, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 16, 0, 0, 1920, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, 16, 0, 3200, 1920, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, 36, 0, 3200, 1280, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D08930[] = {
     VTX(0, 16, 0, 0, 1920, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -4, 0, 0, 2560, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -4, 0, 3200, 2560, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, 16, 0, 3200, 1920, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D08970[] = {
     VTX(0, -4, 0, 0, 2560, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -24, 0, 0, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -24, 0, 3200, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -4, 0, 3200, 2560, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D089B0[] = {
     VTX(0, -24, 0, 0, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -44, 0, 0, 3840, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -44, 0, 3200, 3840, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -24, 0, 3200, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D089F0[] = {
     VTX(0, -44, 0, 0, 3840, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -64, 0, 0, 4480, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -64, 0, 3200, 4480, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -44, 0, 3200, 3840, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D08A30[] = {
     VTX(0, -64, 0, 0, 4480, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -76, 0, 0, 4864, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -76, 0, 3200, 4864, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -64, 0, 3200, 4480, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D08A70[] = {
     VTX(100, 76, 0, 3200, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, 56, 0, 3200, 640, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, 56, 0, 5504, 640, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, 76, 0, 5504, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D08AB0[] = {
     VTX(100, 56, 0, 3200, 640, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, 36, 0, 3200, 1280, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, 36, 0, 5504, 1280, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, 56, 0, 5504, 640, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D08AF0[] = {
     VTX(100, 36, 0, 3200, 1280, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, 16, 0, 3200, 1920, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, 16, 0, 5504, 1920, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, 36, 0, 5504, 1280, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D08B30[] = {
     VTX(100, 16, 0, 3200, 1920, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -4, 0, 3200, 2560, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, -4, 0, 5504, 2560, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, 16, 0, 5504, 1920, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D08B70[] = {
     VTX(100, -4, 0, 3200, 2560, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -24, 0, 3200, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, -24, 0, 5504, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, -4, 0, 5504, 2560, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D08BB0[] = {
     VTX(100, -24, 0, 3200, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -44, 0, 3200, 3840, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, -44, 0, 5504, 3840, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, -24, 0, 5504, 3200, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D08BF0[] = {
     VTX(100, -44, 0, 3200, 3840, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -64, 0, 3200, 4480, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, -64, 0, 5504, 4480, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, -44, 0, 5504, 3840, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D08C30[] = {
     VTX(100, -64, 0, 3200, 4480, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -76, 0, 3200, 4864, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, -76, 0, 5504, 4864, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, -64, 0, 5504, 4480, 0xFF, 0xFF, 0xFF, 0xFF),
 };
+#define D_82D088B0 (D_82D08870 + 4)
+#define D_82D088F0 (D_82D08870 + 8)
+#define D_82D08930 (D_82D08870 + 12)
+#define D_82D08970 (D_82D08870 + 16)
+#define D_82D089B0 (D_82D08870 + 20)
+#define D_82D089F0 (D_82D08870 + 24)
+#define D_82D08A30 (D_82D08870 + 28)
+#define D_82D08A70 (D_82D08870 + 32)
+#define D_82D08AB0 (D_82D08870 + 36)
+#define D_82D08AF0 (D_82D08870 + 40)
+#define D_82D08B30 (D_82D08870 + 44)
+#define D_82D08B70 (D_82D08870 + 48)
+#define D_82D08BB0 (D_82D08870 + 52)
+#define D_82D08BF0 (D_82D08870 + 56)
+#define D_82D08C30 (D_82D08870 + 60)
 static Gfx D_82D08C70[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -701,58 +649,52 @@ static Gfx D_82D08C70[] = {
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_82D09108[] = {
+static uintptr_t D_82D09108[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_82D08870, 0x05000000, 0x22040000,
     0x00000000, 0x08000000, PakUi_RenderMenuIconTexture, 0x00000000, 0x06000000, 0x01000000, 0x00000000,
 };
+// PORT: one array (the N64 layout): the game indexes across these symbols
 static Vtx D_82D09140[] = {
     VTX(0, 32, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 16, 0, 0, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, 16, 0, 3200, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, 32, 0, 3200, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D09180[] = {
     VTX(0, 16, 0, 0, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 0, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, 0, 0, 3200, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, 16, 0, 3200, 512, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D091C0[] = {
     VTX(0, 0, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -16, 0, 0, 1536, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -16, 0, 3200, 1536, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, 0, 0, 3200, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D09200[] = {
     VTX(0, -16, 0, 0, 1536, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -32, 0, 0, 2048, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -32, 0, 3200, 2048, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -16, 0, 3200, 1536, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D09240[] = {
     VTX(100, 32, 0, 3200, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, 16, 0, 3200, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, 16, 0, 5504, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, 32, 0, 5504, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D09280[] = {
     VTX(100, 16, 0, 3200, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, 0, 0, 3200, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, 0, 0, 5504, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, 16, 0, 5504, 512, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D092C0[] = {
     VTX(100, 0, 0, 3200, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -16, 0, 3200, 1536, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, -16, 0, 5504, 1536, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, 0, 0, 5504, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D09300[] = {
     VTX(100, -16, 0, 3200, 1536, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -32, 0, 3200, 2048, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, -32, 0, 5504, 2048, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, -16, 0, 5504, 1536, 0xFF, 0xFF, 0xFF, 0xFF),
 };
+#define D_82D09180 (D_82D09140 + 4)
+#define D_82D091C0 (D_82D09140 + 8)
+#define D_82D09200 (D_82D09140 + 12)
+#define D_82D09240 (D_82D09140 + 16)
+#define D_82D09280 (D_82D09140 + 20)
+#define D_82D092C0 (D_82D09140 + 24)
+#define D_82D09300 (D_82D09140 + 28)
 static Gfx D_82D09340[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -793,70 +735,62 @@ static Gfx D_82D09340[] = {
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_82D09598[] = {
+static uintptr_t D_82D09598[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_82D09140, 0x05000000, 0x22040000,
     0x00000000, 0x08000000, PakUi_RenderMenuIconTexture, 0x00000000, 0x06000000, 0x01000000, 0x00000000,
 };
+// PORT: one array (the N64 layout): the game indexes across these symbols
 static Vtx D_82D095D0[] = {
     VTX(0, 46, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 26, 0, 0, 640, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, 26, 0, 3200, 640, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, 46, 0, 3200, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D09610[] = {
     VTX(0, 26, 0, 0, 640, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 6, 0, 0, 1280, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, 6, 0, 3200, 1280, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, 26, 0, 3200, 640, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D09650[] = {
     VTX(0, 6, 0, 0, 1280, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -14, 0, 0, 1920, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -14, 0, 3200, 1920, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, 6, 0, 3200, 1280, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D09690[] = {
     VTX(0, -14, 0, 0, 1920, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -34, 0, 0, 2560, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -34, 0, 3200, 2560, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -14, 0, 3200, 1920, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D096D0[] = {
     VTX(0, -34, 0, 0, 2560, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -46, 0, 0, 2944, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -46, 0, 3200, 2944, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -34, 0, 3200, 2560, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D09710[] = {
     VTX(100, 46, 0, 3200, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, 26, 0, 3200, 640, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, 26, 0, 5504, 640, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, 46, 0, 5504, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D09750[] = {
     VTX(100, 26, 0, 3200, 640, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, 6, 0, 3200, 1280, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, 6, 0, 5504, 1280, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, 26, 0, 5504, 640, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D09790[] = {
     VTX(100, 6, 0, 3200, 1280, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -14, 0, 3200, 1920, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, -14, 0, 5504, 1920, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, 6, 0, 5504, 1280, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D097D0[] = {
     VTX(100, -14, 0, 3200, 1920, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -34, 0, 3200, 2560, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, -34, 0, 5504, 2560, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, -14, 0, 5504, 1920, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D09810[] = {
     VTX(100, -34, 0, 3200, 2560, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -46, 0, 3200, 2944, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, -46, 0, 5504, 2944, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, -34, 0, 5504, 2560, 0xFF, 0xFF, 0xFF, 0xFF),
 };
+#define D_82D09610 (D_82D095D0 + 4)
+#define D_82D09650 (D_82D095D0 + 8)
+#define D_82D09690 (D_82D095D0 + 12)
+#define D_82D096D0 (D_82D095D0 + 16)
+#define D_82D09710 (D_82D095D0 + 20)
+#define D_82D09750 (D_82D095D0 + 24)
+#define D_82D09790 (D_82D095D0 + 28)
+#define D_82D097D0 (D_82D095D0 + 32)
+#define D_82D09810 (D_82D095D0 + 36)
 static Gfx D_82D09850[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -906,46 +840,42 @@ static Gfx D_82D09850[] = {
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_82D09B38[] = {
+static uintptr_t D_82D09B38[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_82D095D0, 0x05000000, 0x22040000,
     0x00000000, 0x08000000, PakUi_RenderMenuIconTexture, 0x00000000, 0x06000000, 0x01000000, 0x00000000,
 };
+// PORT: one array (the N64 layout): the game indexes across these symbols
 static Vtx D_82D09B70[] = {
     VTX(0, 24, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 4, 0, 0, 640, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, 4, 0, 3200, 640, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, 24, 0, 3200, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D09BB0[] = {
     VTX(0, 4, 0, 0, 640, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -16, 0, 0, 1280, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -16, 0, 3200, 1280, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, 4, 0, 3200, 640, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D09BF0[] = {
     VTX(0, -16, 0, 0, 1280, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -24, 0, 0, 1536, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -24, 0, 3200, 1536, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -16, 0, 3200, 1280, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D09C30[] = {
     VTX(100, 24, 0, 3200, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, 4, 0, 3200, 640, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, 4, 0, 5504, 640, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, 24, 0, 5504, 0, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D09C70[] = {
     VTX(100, 4, 0, 3200, 640, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -16, 0, 3200, 1280, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, -16, 0, 5504, 1280, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, 4, 0, 5504, 640, 0xFF, 0xFF, 0xFF, 0xFF),
-};
-static Vtx D_82D09CB0[] = {
     VTX(100, -16, 0, 3200, 1280, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(100, -24, 0, 3200, 1536, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, -24, 0, 5504, 1536, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(172, -16, 0, 5504, 1280, 0xFF, 0xFF, 0xFF, 0xFF),
 };
+#define D_82D09BB0 (D_82D09B70 + 4)
+#define D_82D09BF0 (D_82D09B70 + 8)
+#define D_82D09C30 (D_82D09B70 + 12)
+#define D_82D09C70 (D_82D09B70 + 16)
+#define D_82D09CB0 (D_82D09B70 + 20)
 static Gfx D_82D09CF0[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -977,16 +907,17 @@ static Gfx D_82D09CF0[] = {
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_82D09EB8[] = {
+static uintptr_t D_82D09EB8[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_82D09B70, 0x05000000, 0x22040000,
     0x00000000, 0x08000000, PakUi_RenderMenuIconTexture, 0x00000000, 0x06000000, 0x01000000,
 };
 
+extern u32 port_rom_read_u32(u32 romOffset); // PORT: cartridge ROM is not memory-mapped on the host
 s32 Pak_CheckPiIntegrity(s32 arg0) {
     u32 temp_a0 = osSetIntMask(1);
 
     if (!(IO_READ(PI_STATUS_REG) & (PI_STATUS_DMA_BUSY | PI_STATUS_IO_BUSY)) &&
-        (((D_B0000504 & 0xFFFF) & 0xFFFF) != PHYS_TO_K1(PI_DRAM_ADDR_REG) >> 16)) {
+        ((port_rom_read_u32(0x504) & 0xFFFF) != PHYS_TO_K1(PI_DRAM_ADDR_REG) >> 16)) {
         arg0 = -0x20;
     }
     osSetIntMask(temp_a0);
@@ -1175,7 +1106,7 @@ s32 PakUi_RenderPartyCardTexture(s32 arg0, unk_func_80011B94* arg1) {
 
         gDPPipeSync(gDisplayListHead++);
 
-        gSPSegment(gDisplayListHead++, 0x0F, (u32)D_82D0ABB8[var_a3]->img_p & 0x1FFFFFFF);
+        gSPSegment(gDisplayListHead++, 0x0F, (uintptr_t)D_82D0ABB8[var_a3]->img_p);
         gSPDisplayList(gDisplayListHead++, D_82D07348);
 
         GeoRender_ApplyMaterialState();
@@ -1187,7 +1118,7 @@ s32 PakUi_RenderIconPanelTexture(s32 arg0, unk_func_80011B94* arg1) {
     if (arg0 == 5) {
         gDPPipeSync(gDisplayListHead++);
 
-        gSPSegment(gDisplayListHead++, 0x0F, (u32)D_82D0ABC8[0].img_p & 0x1FFFFFFF);
+        gSPSegment(gDisplayListHead++, 0x0F, (uintptr_t)D_82D0ABC8[0].img_p);
         gSPDisplayList(gDisplayListHead++, D_82D07E48);
 
         GeoRender_ApplyMaterialState();
@@ -1199,7 +1130,7 @@ s32 PakUi_RenderBannerTexture(s32 arg0, unk_func_80011B94* arg1) {
     if (arg0 == 5) {
         gDPPipeSync(gDisplayListHead++);
 
-        gSPSegment(gDisplayListHead++, 0x0F, (u32)D_82D0ABCC->img_p & 0x1FFFFFFF);
+        gSPSegment(gDisplayListHead++, 0x0F, (uintptr_t)D_82D0ABCC->img_p);
         gSPDisplayList(gDisplayListHead++, D_82D08740);
 
         GeoRender_ApplyMaterialState();
@@ -2034,7 +1965,7 @@ s32 PakUi_RenderMenuIconTexture(s32 arg0, UNUSED unk_func_80011B94* arg1) {
 
         gDPPipeSync(gDisplayListHead++);
 
-        gSPSegment(gDisplayListHead++, 0x0F, (u32)D_82D0ABE0[var_a2]->img_p & 0x1FFFFFFF);
+        gSPSegment(gDisplayListHead++, 0x0F, (uintptr_t)D_82D0ABE0[var_a2]->img_p);
 
         if (D_8006F09C->lodFraction < 0xFF) {
             gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, D_8006F09C->lodFraction);

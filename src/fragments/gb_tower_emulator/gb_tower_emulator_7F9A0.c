@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "global.h"
 #include "gb_tower_emulator.h"
 #include "src/game_state.h"
@@ -26,7 +27,7 @@ typedef struct unk_D_8122B1E8 {
   /* 0x28 */ void* unk_28;
   /* 0x2C */ s32 unk_2C;
   /* 0x30 */ char unk30[0x8];
-  /* 0x38 */ s32 unk_38;
+  /* 0x38 */ intptr_t unk_38; // PORT64: status-bar buffer address (was s32)
   /* 0x3C */ s32 unk_3C;
   /* 0x40 */ void* unk_40;
   /* 0x44 */ char unk44[0x4];
@@ -770,15 +771,16 @@ s32 D_8122B2BC;
 unk_D_8122B2C0* D_8122B2C0;
 s32 D_8122B2C4;
 unk_D_8122B2F8* D_8122B2C8[4];
-u8* D_8122B2D8[2];
-s32 D_8122B2E0;
+u8* D_8122B2D8[3]; // PORT: filled with 3 entries (was [2]; on the N64 the third overlapped the next variable)
+// PORT: D_8122B2E0 was the third element of D_8122B2D8 (adjacent on the N64): the status-bar buffer
+#define D_8122B2E0 ((intptr_t)D_8122B2D8[2])
 s32 D_8122B2E4;
 s32 D_8122B2E8;
 void* D_8122B2EC;
 s32 D_8122B2F0;
 u8* D_8122B2F4;
 unk_D_8122B2F8* D_8122B2F8;
-s32 D_8122B2FC;
+intptr_t D_8122B2FC;
 OSThread gGbPakServiceThread;
 u8 gGbPakServiceThreadStack[0x1000];
 OSMesg gGbPakServiceQueueMessages[4];
@@ -812,8 +814,8 @@ u8 D_8122C640[0x100];
 u8* gGbEmuFont1Data;
 u8* gGbEmuFont2Data;
 u8* D_8122C748;
-s32 D_8122C74C;
-s32 D_8122C750;
+intptr_t D_8122C74C;
+intptr_t D_8122C750;
 u8* D_8122C754;
 u8* D_8122C758[2];
 u32 D_8122C760;
@@ -1490,7 +1492,9 @@ void func_812011D0(u16* fb, u8* cmd) {
             for (row = 0; row != tileSize; row++) {
                 for (col = 0; col != width; col++) {
                     if (trans || (pal[*src & 0xF] != 0)) {
-                        *dst = pal[*src & 0xF];
+                        // PORT: frame buffers hold N64 byte order (written natively the menu colours came out
+                        // byte-swapped, e.g. lilac instead of yellow)
+                        *dst = (u16)(((u16)pal[*src & 0xF] >> 8) | ((u16)pal[*src & 0xF] << 8));
                     }
                     dst++;
                     src++;
@@ -1505,6 +1509,14 @@ void func_812011D0(u16* fb, u8* cmd) {
         ptr += 6;
     }
 }
+
+// PORT: frame buffers and the decompressed graphics hold pixels in N64 byte order (the renderer and the frame
+// presentation read them that way); the pixel code below works on numeric RGBA5551 values, so loads and stores swap.
+void Port_GbPresent(void* frameBuffer, const void* statusStrip, const void* frameImage, int ox, int oy, int sy,
+                    int brightness, int frameBrightness); // PORT: src/port/gb_core.c
+// PORT: these tables are byte arrays holding big-endian words
+#define GB_BE32_AT(tbl, i) ((u32)(((u8*)(tbl))[(i) * 4] << 24 | ((u8*)(tbl))[(i) * 4 + 1] << 16 | ((u8*)(tbl))[(i) * 4 + 2] << 8 | ((u8*)(tbl))[(i) * 4 + 3]))
+#define GB_PX(v) ((u16)((((u16)(v)) >> 8) | (((u16)(v)) << 8)))
 
 s32 GbEmu_PixelOpDitherA(s32 arg0, s32 arg1) {
   return (arg1 & 1) ? arg1 : arg0;
@@ -1536,7 +1548,7 @@ void GbEmu_BlitWithPixelOp(u16* dst, u16* src, s32 mode, s32 width, s32 height) 
 
   for (x = 0; x != height; x++) {
       for (y = 0; y != width; y++) {
-          *dst = operation(*dst, *src);
+          *dst = GB_PX(operation(GB_PX(*dst), GB_PX(*src)));
           dst++;
           src++;
       }
@@ -1565,7 +1577,7 @@ void GbEmu_DrawFramedPanel(u16* dst) {
     // 30x30 interior fill
     for (y = 0; y < 30; y++) {
         for (i = 0; i < 30; i++) {
-            dst[(y + 8) * 320 + (i + 8)] = 0xC14;
+            dst[(y + 8) * 320 + (i + 8)] = GB_PX(0xC14);
         }
     }
 }
@@ -1577,10 +1589,10 @@ void func_812018C0(u16* dst, u16* src, s32 color, s32 width, s32 height) {
 
     for (y = 0; y < height; y++) {
         for (x = 0; x < width; x++) {
-            intensity = (src[y * width + x] & 0x3E) >> 1;
-            dst[y * 320 + x] = ((((color & 0xF800) * intensity) / 31) & 0xF800) |
-                               ((((color & 0x7C0) * intensity) / 31) & 0x7C0) |
-                               ((((color & 0x3E) * intensity) / 31) & 0x3E);
+            intensity = (GB_PX(src[y * width + x]) & 0x3E) >> 1;
+            dst[y * 320 + x] = GB_PX(((((color & 0xF800) * intensity) / 31) & 0xF800) |
+                                     ((((color & 0x7C0) * intensity) / 31) & 0x7C0) |
+                                     ((((color & 0x3E) * intensity) / 31) & 0x3E));
         }
     }
 }
@@ -1596,20 +1608,20 @@ void func_81201DDC(u16* dst, u8* alpha_map, s32 color, s32 width, s32 height, u3
   for (y = 0; y < height; y++) {
       for (x = 0; x < width; x++) {
           var_a0 = alpha_map[y * alpha_stride + x] & 0xF;
-          var_t0 = (dst[y * 320 + x] & 0xF800) + (((color & 0xF800) * var_a0) / 15 & 0xF800);
+          var_t0 = (GB_PX(dst[y * 320 + x]) & 0xF800) + (((color & 0xF800) * var_a0) / 15 & 0xF800);
           if (var_t0 > 0xF800) var_t0 = 0xF800;
           var_t4 = var_t0;
-          var_t0 = (dst[y * 320 + x] & 0x07C0) + (((color & 0x07C0) * var_a0) / 15 & 0x07C0);
+          var_t0 = (GB_PX(dst[y * 320 + x]) & 0x07C0) + (((color & 0x07C0) * var_a0) / 15 & 0x07C0);
           if (var_t0 > 0x07C0) var_t0 = 0x07C0;
           var_t4 |= var_t0;
-          var_t0 = (dst[y * 320 + x] & 0x003E) + (((color & 0x003E) * var_a0) / 15 & 0x003E);
+          var_t0 = (GB_PX(dst[y * 320 + x]) & 0x003E) + (((color & 0x003E) * var_a0) / 15 & 0x003E);
           if (var_t0 > 0x003E) var_t0 = 0x003E;
-          dst[y * 320 + x] = (s16)(var_t4 | var_t0);
+          dst[y * 320 + x] = GB_PX(var_t4 | var_t0);
       }
   }
 }
 
-void GbEmu_DrawStretchedBorderRow(s32 arg0, s32 arg1, s32 arg2) {
+void GbEmu_DrawStretchedBorderRow(intptr_t arg0, s32 arg1, s32 arg2) {
   s32 var_s0;
   s32 var_s1;
   s32 i;
@@ -1639,9 +1651,9 @@ void func_812020C0(u16* dst, s32 arg1, s32 arg2) {
 
   for (row = 0; row < 11; row++) {
       for (col = 0; col < 12; col++) {
-          val = *src;
+          val = GB_PX(*src);
           if (val & 1) {
-              dst[row * 320 + col + 730] = val;
+              dst[row * 320 + col + 730] = GB_PX(val);
           }
           src += arg1;
       }
@@ -1695,10 +1707,10 @@ void func_81202210(s32 arg0, s32 arg1) {
 
 void func_8120241C(void) {
     u8* var_s2;
-    s32 temp_s0;
+    intptr_t temp_s0; // PORT64: buffer addresses (were s32)
     s32 var_s0;
     s32 var_s1;
-    s32 var_s4;
+    intptr_t var_s4;
     u16 temp_v1;
 
     temp_v1 = D_8122B2C0->unk_5DC5;
@@ -1732,7 +1744,8 @@ void func_8120241C(void) {
 
     var_s0 = 0;
     var_s4 -= 0x266;
-    for (var_s2 = (u8*)&D_8120D7F3, var_s1 = 0x37; var_s1 < 0x42; var_s1++, var_s2--) {
+    // PORT: D_8120D7F3 was an absolute N64 address 0x2D bytes before D_8120D820; only var_s2[0x116] is read (inside it)
+    for (var_s2 = D_8120D820 - 0x2D, var_s1 = 0x37; var_s1 < 0x42; var_s1++, var_s2--) {
         func_81201DDC((var_s0 * 2) + var_s4,
                       (D_8120E580[var_s2[0x116] - var_s1 + 0x80] * 0xC0) + gGbEmuFont2Data,
                       0xFFFE, 0xC, 0xC, 0x10);
@@ -1746,7 +1759,7 @@ void func_8120241C(void) {
     }
 }
 
-void func_81202758(s32 arg0, s32 arg1) {
+void func_81202758(intptr_t arg0, s32 arg1) {
     s32 temp_s4;
     s32 temp_s6;
     s32 i;
@@ -1815,12 +1828,12 @@ void func_812029B0(u16* dst, u16 (*arg1)[6][0x640], s32 arg2, s32 arg3) {
 
     if (D_8122C74C == 0) {
         xpos = 0;
-        D_8122C74C = (s32) D_8122B2F4;
+        D_8122C74C = (intptr_t) D_8122B2F4;
         D_8122B2F4 += 0x2580;
         j = 9;
         x = 8;
         _bcopy(dst + 0x10540, (void*) D_8122C74C, 0x2580);
-        D_8122C750 = (s32) D_8122B2F4;
+        D_8122C750 = (intptr_t) D_8122B2F4;
         D_8122B2F4 += 0x2580;
         bzero((void*) D_8122C750, 0x2580);
         x++;
@@ -1848,8 +1861,8 @@ void func_812029B0(u16* dst, u16 (*arg1)[6][0x640], s32 arg2, s32 arg3) {
 
     for (j = 0; j < 6; j++) {
         for (x = 0; x < 320; x++) {
-            dst[(j + 27) * 320 + x] = 0x25A;
-            dst[(j + 121) * 320 + x] = 0x25A;
+            dst[(j + 27) * 320 + x] = GB_PX(0x25A);
+            dst[(j + 121) * 320 + x] = GB_PX(0x25A);
         }
     }
 
@@ -1860,7 +1873,7 @@ void func_812029B0(u16* dst, u16 (*arg1)[6][0x640], s32 arg2, s32 arg3) {
 
     for (j = 0; j < 72; j++) {
         for (x = 0; x < 320; x++) {
-            dst[(j + 41) * 320 + x] = 0x2BA4;
+            dst[(j + 41) * 320 + x] = GB_PX(0x2BA4);
         }
     }
 
@@ -1897,7 +1910,7 @@ void func_812029B0(u16* dst, u16 (*arg1)[6][0x640], s32 arg2, s32 arg3) {
     }
 
     D_8122C771 = arg2;
-    func_81202758((s32) (D_8122C754 + 0x87BA), 0);
+    func_81202758((intptr_t) (D_8122C754 + 0x87BA), 0);
     D_8122C770 = 0;
     D_8122C768 = 0x800000;
     D_8122C764 = 0xA0;
@@ -1911,26 +1924,26 @@ void func_81202EA8(u16* arg0, u16* arg1, s16* arg2, s32 arg3, s32 arg4) {
 
     for (j = 0; j < arg3; j++) {
         for (i = 0; i < 320; i++) {
-            var_v1 = (arg0[(j * 320) + ((arg4 + i) % 320)] & 0xF800) + (arg1[(j * 320) + i] & 0xF800);
+            var_v1 = (GB_PX(arg0[(j * 320) + ((arg4 + i) % 320)]) & 0xF800) + (GB_PX(arg1[(j * 320) + i]) & 0xF800);
             if (var_v1 > 0xF800) {
                 var_v1 = 0xF800;
             }
             var_t4 = var_v1;
-            var_v1 = (arg0[(j * 320) + ((arg4 + i) % 320)] & 0x7C0) + (arg1[(j * 320) + i] & 0x7C0);
+            var_v1 = (GB_PX(arg0[(j * 320) + ((arg4 + i) % 320)]) & 0x7C0) + (GB_PX(arg1[(j * 320) + i]) & 0x7C0);
             if (var_v1 > 0x7C0) {
                 var_v1 = 0x7C0;
             }
             var_t4 |= var_v1;
-            var_v1 = (arg0[(j * 320) + ((arg4 + i) % 320)] & 0x3E) + (arg1[(j * 320) + i] & 0x3E);
+            var_v1 = (GB_PX(arg0[(j * 320) + ((arg4 + i) % 320)]) & 0x3E) + (GB_PX(arg1[(j * 320) + i]) & 0x3E);
             if (var_v1 > 0x3E) {
                 var_v1 = 0x3E;
             }
-            arg2[(j * 320) + i] = var_t4 | var_v1;
+            arg2[(j * 320) + i] = GB_PX(var_t4 | var_v1);
         }
     }
 }
 
-s32 func_81202FCC(s32 arg0, s32 arg1) {
+s32 func_81202FCC(intptr_t arg0, intptr_t arg1) { // PORT64: arg1 is an image address (was s32)
     s32 var_s0;
 
     var_s0 = 0;
@@ -2055,7 +2068,7 @@ void func_812033F4(s32 arg0, s32 arg1, OSId arg2, s32 arg3, OSMesgQueue* arg4, u
 
     D_8122B1E0 = GfxImage_Allocate(0, 2, 320, 288, 1);
     D_8122B1E4 = GfxImage_Allocate(0, 2, 320, 288, 1);
-    D_8122B2F8 = main_pool_alloc(0x1FEAE8, 0);
+    D_8122B2F8 = main_pool_alloc(0x1FEAE8 + 0x1000, 0); // PORT: host structs are a little larger
     if (D_8122B2F8 == NULL) {
         D_8122C4DC = 1;
         D_8122B2FC = 4;
@@ -2124,8 +2137,8 @@ void func_812033F4(s32 arg0, s32 arg1, OSId arg2, s32 arg3, OSMesgQueue* arg4, u
         }
     }
 
-    Dma_WriteChunks((u32)(D_8122B2F4 + 0xC5C0), (u32)D_102BA0, ((u32)fragment2_ROM_START + 1) & ~1, 0);
-    Yay0_Decompress((void*)((u32)D_8122B2F4 + 0xC5C0), D_8122B2F4);
+    Dma_WriteChunks((uintptr_t)(D_8122B2F4 + 0xC5C0), (uintptr_t)D_102BA0, ((uintptr_t)fragment2_ROM_START + 1) & ~1, 0);
+    Yay0_Decompress((void*)((uintptr_t)D_8122B2F4 + 0xC5C0), D_8122B2F4);
     D_8122C748 = D_8122B2F4;
     D_8122B2F4 += 0xC5C0;
     D_8122B2C0->unk_5C58 = D_8122C748;
@@ -2139,8 +2152,8 @@ void func_812033F4(s32 arg0, s32 arg1, OSId arg2, s32 arg3, OSMesgQueue* arg4, u
     }
 
     func_812070A0();
-    Dma_WriteChunks((u32)(D_8122B2F4 + 0x80000), (u32)fragment1_misc_yay0_ROM_START, ((u32)D_F4130 + 1) & ~1, 0);
-    Yay0_Decompress((void*)((u32)D_8122B2F4 + 0x80000), D_8122B2F4);
+    Dma_WriteChunks((uintptr_t)(D_8122B2F4 + 0x80000), (uintptr_t)fragment1_misc_yay0_ROM_START, ((uintptr_t)D_F4130 + 1) & ~1, 0);
+    Yay0_Decompress((void*)((uintptr_t)D_8122B2F4 + 0x80000), D_8122B2F4);
     GbApu_Reset((unk_D_8122B2F8*)D_8122B2F4);
     GbAudio_SetAlternateRendererEnabled(0);
     GbApu_SelectRegionClock(0);
@@ -2170,21 +2183,24 @@ void func_812033F4(s32 arg0, s32 arg1, OSId arg2, s32 arg3, OSMesgQueue* arg4, u
 
     switch (gGbEmuPresentationMode) {
         case 2:
-            Dma_WriteChunks((u32)D_8122B2C8[0], (u32)D_FDE40, ((u32)D_102BA0_END + 1) & ~1, 0);
+            Dma_WriteChunks((uintptr_t)D_8122B2C8[0], (uintptr_t)D_FDE40, ((uintptr_t)D_102BA0_END + 1) & ~1, 0);
             Yay0_Decompress(D_8122B2C8[0], D_8122B2C8[2]);
             /* fallthrough */
         case 1:
-            Dma_WriteChunks((u32)D_8122B2C8[0], (u32)D_F5450, ((u32)D_FDE40 + 1) & ~1, 0);
+            Dma_WriteChunks((uintptr_t)D_8122B2C8[0], (uintptr_t)D_F5450, ((uintptr_t)D_FDE40 + 1) & ~1, 0);
             Yay0_Decompress(D_8122B2C8[0], D_8122B2C8[1]);
             break;
         case 0:
         default:
-            Dma_WriteChunks((u32)D_8122B2C8[0], (u32)D_F4920, ((u32)D_F5450 + 1) & ~1, 0);
+            Dma_WriteChunks((uintptr_t)D_8122B2C8[0], (uintptr_t)D_F4920, ((uintptr_t)D_F5450 + 1) & ~1, 0);
             Yay0_Decompress(D_8122B2C8[0], D_8122B2C8[1]);
             break;
     }
 
-    while ((D_8122B2F4 - (u8*)D_8122B2F8) != 0x1FEAE8) {}
+    // PORT: the original spins forever unless exactly 0x1FEAE8 bytes were handed out; host struct sizes differ
+    if ((D_8122B2F4 - (u8*)D_8122B2F8) > 0x1FEAE8 + 0x1000) {
+        fprintf(stderr, "[gbemu] work area overflow: used 0x%lx of 0x1FEAE8\n", (long)(D_8122B2F4 - (u8*)D_8122B2F8));
+    }
 
     osWritebackDCacheAll();
 
@@ -2241,13 +2257,13 @@ void func_81203C58(unk_D_8122B2C0* arg0) {
         do {
             sp58 = *var_s4 & 0xFF;
             sp5C = *var_s4 / 0x100;
-            Dma_WriteChunks((u32)((u8*)arg0->unk_53BC + 0xEC000), var_s5, var_s4[1] + var_s5, 0);
+            Dma_WriteChunks((uintptr_t)((u8*)arg0->unk_53BC + 0xEC000), var_s5, var_s4[1] + var_s5, 0);
             var_s5 += var_s4[1];
             var_s4 += 2;
             Yay0_Decompress((u8*)arg0->unk_53BC + 0xEC000, (u8*)arg0->unk_53BC + (sp58 << 14));
             for (var_s2 = 0; var_s2 < sp5C; var_s2++) {
                 if ((var_s2 + 1) >= arg0->unk_5DC6) {
-                    Dma_WriteChunks((u32)((u8*)arg0->unk_53BC + 0xF0000), var_s5, var_s4[0] + var_s5, 0);
+                    Dma_WriteChunks((uintptr_t)((u8*)arg0->unk_53BC + 0xF0000), var_s5, var_s4[0] + var_s5, 0);
                     Yay0_Decompress((u8*)arg0->unk_53BC + 0xF0000, (u8*)arg0->unk_53BC + 0xEC000);
                     var_v1 = (u8*)arg0->unk_53BC + 0xEC000;
                     var_v0 = (u8*)arg0->unk_53BC + (sp58 << 14);
@@ -2634,7 +2650,7 @@ update_menu:
 #if defined(VERSION_US_REV2)
 #pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/gb_tower_emulator/gb_tower_emulator_7F9A0/func_81204A84.s")
 #else
-void func_81204A84(s32 arg0) {
+void func_81204A84(intptr_t arg0) { // PORT64: framebuffer address (was s32)
     s32 pad;
     s32 j;
     s32 i;
@@ -2672,7 +2688,7 @@ void func_81204A84(s32 arg0) {
         transition:
             func_812020C0((u16*)(D_8122B2D8[D_8122B2E8] + 0x9C), 1, D_8122C4E7);
             D_8122B1E8[D_8122B2B8].unk_3C = 0x1010;
-            D_8122B1E8[D_8122B2B8].unk_38 = (s32)D_8122B2D8[D_8122B2E8];
+            D_8122B1E8[D_8122B2B8].unk_38 = (intptr_t)D_8122B2D8[D_8122B2E8];
             D_8122B1E8[D_8122B2B8].unk_5C &= 0xFFFF;
             func_812011D0(base, D_8120E8D8);
             return;
@@ -2926,11 +2942,11 @@ void func_81204A84(s32 arg0) {
     x = j * 0x12 + 0x37;
     for (j = 1; j < 0x11; j++) {
         base[(row + j) * 320 + x] = base[(row + j) * 320 + x + 1] = base[(row + j) * 320 + x + 0x10] =
-            base[(row + j) * 320 + x + 0x11] = 0xE71C;
+            base[(row + j) * 320 + x + 0x11] = GB_PX(0xE71C);
     }
     for (i = 1; i < 0x10; i++) {
         base[row * 320 + x + i] = base[(row + 1) * 320 + x + i] = base[(row + 16) * 320 + x + i] =
-            base[(row + 17) * 320 + x + i] = 0xE71C;
+            base[(row + 17) * 320 + x + i] = GB_PX(0xE71C);
     }
 }
 #endif
@@ -3016,7 +3032,7 @@ s32 func_8120572C(s32 arg0) {
                     }
                     func_812020C0((u16*)(D_8122B2D8[D_8122B2E8] + 0x9C), emu->unk_5DD0, D_8122C4E7);
                     D_8122B1E8[D_8122B2B8].unk_3C = 0x1010;
-                    D_8122B1E8[D_8122B2B8].unk_38 = (s32)D_8122B2D8[D_8122B2E8];
+                    D_8122B1E8[D_8122B2B8].unk_38 = (intptr_t)D_8122B2D8[D_8122B2E8];
                 } else {
                     D_8122B2E8 ^= 1;
                     if (!(D_8122C4E8 & (1 << D_8122B2E8))) {
@@ -3075,14 +3091,14 @@ s32 func_8120572C(s32 arg0) {
                     } else {
                         emu->unk_5485 = 1;
                     }
-                    emu->unk_5390 = ((u32*)D_8120D90C)[GB_HEADER(emu, 0x147)];
+                    emu->unk_5390 = GB_BE32_AT(D_8120D90C, GB_HEADER(emu, 0x147));
                     if (GB_HEADER(emu, 0x148) < 8U) {
-                        emu->unk_5394 = ((u32*)D_8120DD0C)[GB_HEADER(emu, 0x148)];
+                        emu->unk_5394 = GB_BE32_AT(D_8120DD0C, GB_HEADER(emu, 0x148));
                     } else {
                         emu->unk_5394 = 0x8000;
                     }
                     if (GB_HEADER(emu, 0x149) < 5U) {
-                        emu->unk_5398 = ((u32*)D_8120DD2C)[GB_HEADER(emu, 0x149)];
+                        emu->unk_5398 = GB_BE32_AT(D_8120DD2C, GB_HEADER(emu, 0x149));
                     } else {
                         emu->unk_5398 = 0;
                     }
@@ -3125,7 +3141,7 @@ s32 func_8120572C(s32 arg0) {
                 goto shutdown;
             }
             if ((D_8122C4DC != 0) &&
-                (func_81202FCC((s32)D_8122C758[D_8122B2B8], (s32)(&D_8122B1E0)[D_8122B2B8]->img_p) != 0)) {
+                (func_81202FCC((intptr_t)D_8122C758[D_8122B2B8], (intptr_t)(&D_8122B1E0)[D_8122B2B8]->img_p) != 0)) {
                 osWritebackDCacheAll();
                 osViSwapBuffer((&D_8122B1E0)[D_8122B2B8]->img_p);
                 D_8122B2B8 ^= 1;
@@ -3155,9 +3171,9 @@ s32 func_8120572C(s32 arg0) {
                         (emu->unk_5DA4[2] != 0x7F) || (emu->unk_5DA4[3] != 0xAB) || (emu->unk_5DA4[4] != 0xA8)) {
                         goto start_transfer;
                     }
-                    emu->unk_5D70[1] = (u32)D_8120DD80;
+                    emu->unk_5D70[1] = (uintptr_t)D_8120DD80;
                     emu->unk_5D70[3] = 0;
-                    emu->unk_5D70[2] = (u32)D_8120E224;
+                    emu->unk_5D70[2] = (uintptr_t)D_8120E224;
                     emu->unk_5DC6 = 1;
                     bzero((u8*)emu->unk_53BC + 0xB4000, 0x4C000);
                     for (i = 0x2D; i < 0x40; i++) {
@@ -3169,9 +3185,9 @@ s32 func_8120572C(s32 arg0) {
                         (emu->unk_5DA4[2] != 0x7F) || (emu->unk_5DA4[3] != 0xAB) || (emu->unk_5DA4[4] != 0xA8)) {
                         goto start_transfer;
                     }
-                    emu->unk_5D70[1] = (u32)D_8120DF0C;
+                    emu->unk_5D70[1] = (uintptr_t)D_8120DF0C;
                     emu->unk_5D70[3] = 0;
-                    emu->unk_5D70[2] = (u32)D_8120E224;
+                    emu->unk_5D70[2] = (uintptr_t)D_8120E224;
                     emu->unk_5DC6 = 0;
                     bzero((u8*)emu->unk_53BC + 0xB4000, 0x4C000);
                     for (i = 0x2D; i < 0x40; i++) {
@@ -3183,9 +3199,9 @@ s32 func_8120572C(s32 arg0) {
                         (emu->unk_5DA4[2] != 0x91) || (emu->unk_5DA4[3] != 0x84) || (emu->unk_5DA4[4] != 0x92)) {
                         goto start_transfer;
                     }
-                    emu->unk_5D70[1] = (u32)D_8120E098;
+                    emu->unk_5D70[1] = (uintptr_t)D_8120E098;
                     emu->unk_5D70[3] = 0xD938;
-                    emu->unk_5D70[2] = (u32)D_8120E250;
+                    emu->unk_5D70[2] = (uintptr_t)D_8120E250;
                     emu->unk_5DC6 = 0;
                     bzero((u8*)emu->unk_53BC + 0xEC000, 0x4000);
                     emu->unk_549C[0x3B] = 0xFF;
@@ -3225,7 +3241,7 @@ s32 func_8120572C(s32 arg0) {
                     D_8122C4F9++;
                 }
                 D_8122B1E8[D_8122B2B8].unk_3C = (D_8122C4F9 / 2) | 0x1000;
-                D_8122B1E8[D_8122B2B8].unk_38 = (s32)D_8122B2D8[D_8122B2E8];
+                D_8122B1E8[D_8122B2B8].unk_38 = (intptr_t)D_8122B2D8[D_8122B2E8];
             } else {
                 D_8122B1E8[D_8122B2B8].unk_3C = 0x1010;
                 D_8122B1E8[D_8122B2B8].unk_38 = D_8122B2E0;
@@ -3250,7 +3266,7 @@ s32 func_8120572C(s32 arg0) {
                 } else {
                     emu->unk_5485 = 1;
                 }
-                emu->unk_5390 = ((u32*)D_8120D90C)[GB_HEADER(emu, 0x147)];
+                emu->unk_5390 = GB_BE32_AT(D_8120D90C, GB_HEADER(emu, 0x147));
                 emu->unk_5394 = 0x100000;
                 GbEmu_InitContext(emu);
             }
@@ -3285,8 +3301,7 @@ s32 func_8120572C(s32 arg0) {
     if (D_8122C4F7 == 0) {
         D_8122C4EC = GbCpu_Execute(emu, emu->unk_548E * 0x9A);
     } else if (D_8122B2F0 != 0) {
-        while (!(IO_READ(SP_STATUS_REG) & SP_STATUS_SIG3)) {}
-        IO_WRITE(SP_STATUS_REG, SP_CLR_SIG3);
+        // PORT: the wait for the frame task's SIG3 is gone; the host composes the frame synchronously (Port_GbPresent)
     }
 
     func_81203F3C(emu);
@@ -3367,10 +3382,10 @@ s32 func_8120572C(s32 arg0) {
 
     if ((D_8122C4DC == 0xFF) && (D_8122C4F6 == 0) && (emu->unk_53E8 == 0x100)) {
         D_8122C4F6 = 1;
-        emu->unk_5390 = ((u32*)D_8120D90C)[GB_HEADER(emu, 0x147)];
-        emu->unk_5394 = (GB_HEADER(emu, 0x148) < 8U) ? ((u32*)D_8120DD0C)[GB_HEADER(emu, 0x148)] : 0x8000;
+        emu->unk_5390 = GB_BE32_AT(D_8120D90C, GB_HEADER(emu, 0x147));
+        emu->unk_5394 = (GB_HEADER(emu, 0x148) < 8U) ? GB_BE32_AT(D_8120DD0C, GB_HEADER(emu, 0x148)) : 0x8000;
         if (GB_HEADER(emu, 0x149) < 5U) {
-            emu->unk_5398 = ((u32*)D_8120DD2C)[GB_HEADER(emu, 0x149)];
+            emu->unk_5398 = GB_BE32_AT(D_8120DD2C, GB_HEADER(emu, 0x149));
         } else {
             emu->unk_5398 = 0;
         }
@@ -3395,10 +3410,10 @@ s32 func_8120572C(s32 arg0) {
 
     if (emu->unk_5485 != 0) {
         D_8122B1E8[D_8122B2B8].unk_28 = D_8122A260;
-        D_8122B1E8[D_8122B2B8].unk_2C = (u32)D_8122ACA0 - (u32)D_8122A260;
+        D_8122B1E8[D_8122B2B8].unk_2C = (uintptr_t)D_8122ACA0 - (uintptr_t)D_8122A260;
     } else {
         D_8122B1E8[D_8122B2B8].unk_28 = D_812297C0;
-        D_8122B1E8[D_8122B2B8].unk_2C = (u32)D_8122A1A4 - (u32)D_812297C0;
+        D_8122B1E8[D_8122B2B8].unk_2C = (uintptr_t)D_8122A1A4 - (uintptr_t)D_812297C0;
     }
     D_8122B1E8[D_8122B2B8].unk_40 = emu->unk_53B4;
     D_8122B1E8[D_8122B2B8].unk_48 = (&D_8122B1E0)[D_8122B2B8]->img_p;
@@ -3410,13 +3425,20 @@ s32 func_8120572C(s32 arg0) {
 
     if (D_8122B2F0 != 0) {
         osRecvMesg(&D_8122B1E8[D_8122B2B8 ^ 1].queue, NULL, OS_MESG_BLOCK);
-        func_81204A84((s32)(&D_8122B1E0)[D_8122B2B8 ^ 1]->img_p);
+        func_81204A84((intptr_t)(&D_8122B1E0)[D_8122B2B8 ^ 1]->img_p);
     }
 
     if (D_800A62E0.unk_A38 == 0) {
         osWritebackDCacheAll();
         osViSwapBuffer((&D_8122B1E0)[D_8122B2B8 ^ 1]->img_p);
-        if (emu->unk_53A4 != 0) {
+        // PORT: the RSP task (custom microcode) that composed the Game Boy picture into this frame buffer is done on the
+        // host (src/port/gb_core.c); its completion message is what the next frame waits for
+        // layout 0 (D_8122C4E5) is the game's own border: D_8122B2C8[0] holds no frame image (decompression scratch)
+        Port_GbPresent(D_8122B1E8[D_8122B2B8].unk_48, (void*)D_8122B1E8[D_8122B2B8].unk_38,
+                       (D_8122C4E5 != 0) ? (void*)D_8122B1E8[D_8122B2B8].unk_58 : NULL, 14, 8, 208,
+                       (D_8122B1E8[D_8122B2B8].unk_5C >> 16) & 0xFF, (D_8122B1E8[D_8122B2B8].unk_5C >> 24) & 0xFF);
+        osSendMesg(&D_8122B1E8[D_8122B2B8].queue, NULL, OS_MESG_NOBLOCK);
+        if (0 && emu->unk_53A4 != 0) {
             emu->unk_5388 = 0;
             Sched_SubmitTask((UnkStruct80001380*)&D_8122B1E8[D_8122B2B8], 0);
         }
@@ -3428,6 +3450,17 @@ s32 func_8120572C(s32 arg0) {
     return 0;
 }
 #endif
+
+// PORT: the native Game Boy core (src/port/gb_core.c) replaces the hand-written MIPS emulator; it reaches the context
+// through these offsets: ROM pointer, save RAM (as the code above addresses it), save RAM size, buttons, the save RAM
+// page state and write-back delay tables, the cartridge variant (GbPak_DetectSupportedCartridgeVariant) and the UI
+// asset that starts with Pokémon Yellow's border.
+#include <stddef.h>
+const size_t Port_GbEmuOffsets[9] = {
+    offsetof(unk_D_8122B2C0, unk_53BC), 0x12DF0, offsetof(unk_D_8122B2C0, unk_5398), offsetof(unk_D_8122B2C0, unk_53F2),
+    offsetof(unk_D_8122B2C0, unk_5A2C), offsetof(unk_D_8122B2C0, unk_582C), offsetof(unk_D_8122B2C0, unk_5DC5),
+    offsetof(unk_D_8122B2C0, unk_5C58), offsetof(unk_D_8122B2C0, unk_5404),
+};
 
 void GbEmu_Init(unk_D_800AA660* arg0) {
   D_8122C4FC = 0;

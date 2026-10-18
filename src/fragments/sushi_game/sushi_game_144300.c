@@ -28,7 +28,7 @@ typedef struct unk_D_86806E20 {
     /* 0x04 */ s16 height;
 } unk_D_86806E20; // size = 0x8
 
-static u32 D_86806CD0[] = {
+static uintptr_t D_86806CD0[] = { // PORT64: holds addresses
     0x0C00FFFF, 0x05000000, 0x0B00001E, 0x00000000, 0x014000F0, 0x0000000F, 0x00000000, 0x00000000,
     0x05000000, 0x0D000000, 0x05000000, 0x14000000, 0x002B0012, 0xFFFFFF32, 0x16FFFFFF, 0x0F000003,
     0x05000000, 0x1F00FFFF, 0x00000000, 0x00000000, 0xFFFF0000, 0x00640064, 0x00640000, 0x05000000,
@@ -55,8 +55,10 @@ static unk_D_86806E20* D_86806DC0[] = { &D_86806D90, &D_86806D88, NULL };
 static unk_D_86806E20* D_86806DCC[] = { &D_86806DA0, &D_86806D98, &D_86806D88, NULL };
 static unk_D_86806E20* D_86806DDC[] = { &D_86806DA0, &D_86806DB0, &D_86806DA8, &D_86806D88, NULL };
 static unk_D_86806E20* D_86806DF0[] = { &D_86806DA0, &D_86806DB0, &D_86806DB8, &D_86806DA8, &D_86806D88, NULL };
+// PORT: NULL-terminated like the other stacks; on the N64 the terminator is the first word of D_86806E20 (NULL), which
+// follows in memory (SushiGame_DrawPlateStack read past the array on the host and crashed at 5+ plates)
 static unk_D_86806E20* D_86806E08[] = {
-    &D_86806DA0, &D_86806DB0, &D_86806DB8, &D_86806DB8, &D_86806DA8, &D_86806D88,
+    &D_86806DA0, &D_86806DB0, &D_86806DB8, &D_86806DB8, &D_86806DA8, &D_86806D88, NULL,
 };
 static unk_D_86806E20** D_86806E20[] = { NULL, D_86806DC0, D_86806DCC, D_86806DDC, D_86806DF0, D_86806E08 };
 static unk_func_87801684 D_86806E38[] = {
@@ -699,7 +701,7 @@ void SushiGame_LoadAssets(void) {
     SushiGame_BroadcastPlayerPhase(0xF, 2);
 }
 
-void SushiGame_Main(s32 arg0, UNUSED s32 arg1) {
+s32 SushiGame_Main(s32 arg0, UNUSED s32 arg1) {
     unk_func_80007444* sp24;
 
     if (arg0 == 1) {
@@ -719,7 +721,7 @@ void SushiGame_Main(s32 arg0, UNUSED s32 arg1) {
     ASSET_LOAD(D_04000000, sushi_go_round_sprites, 0);
 
     FRAGMENT_LOAD(fragment31);
-    Fragment_Load((((u32)D_87000000 & 0x0FF00000) >> 0x14) - 0x10, sushi_go_round_ROM_START, order_select_ui_ROM_START);
+    Fragment_Load((((uintptr_t)D_87000000 & 0x0FF00000) >> 0x14) - 0x10, sushi_go_round_ROM_START, order_select_ui_ROM_START);
 
     SushiGame_LoadAssets();
     StageContext_Activate(sp24);
@@ -730,5 +732,5 @@ void SushiGame_Main(s32 arg0, UNUSED s32 arg1) {
 
     main_pool_pop_state('MINI');
 
-    Widget_PauseMenuGetResult();
+    return Widget_PauseMenuGetResult(); // PORT: the caller uses this result (on the N64 it was left in v0)
 }

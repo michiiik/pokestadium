@@ -87,8 +87,8 @@ void MiniCam_SetActive(unk_D_86002F34_00C* arg0) {
 
 Gfx* MiniCam_ApplyProjection(Gfx* arg0) {
     gSPPerspNormalize(arg0++, D_87A01330->unk_24.perspNorm);
-    gSPMatrix(arg0++, (u32)D_87A01330->unk_24.mtx & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    gSPMatrix(arg0++, (u32)D_87A01330->unk_60.p_mtxf & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
+    gSPMatrix(arg0++, (uintptr_t)D_87A01330->unk_24.mtx, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(arg0++, (uintptr_t)D_87A01330->unk_60.p_mtxf, G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
 
     return arg0;
 }
@@ -184,7 +184,7 @@ void MiniGfx_DrawScaledSprite(u32* arg0, s16 arg1, s16 arg2, f32 arg3) {
     }
 }
 
-void MiniGfx_DrawBackgroundStrips(s32 arg0) {
+void MiniGfx_DrawBackgroundStrips(uintptr_t arg0) { // PORT64: picture address (was s32)
     s32 i;
     Gfx* gfx = gDisplayListHead;
 
@@ -210,7 +210,7 @@ void MiniGfx_DrawBackgroundStrips(s32 arg0) {
     gDisplayListHead = gfx;
 }
 
-void func_87A00DB8(s32 arg0) {
+void func_87A00DB8(uintptr_t arg0) { // PORT64: picture address (was s32)
     Gfx* gfx = gDisplayListHead;
     s32 i;
     s32 j;

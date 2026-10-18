@@ -1,6 +1,7 @@
 #ifndef MATH_H
 #define MATH_H
 
+#include_next <math.h>
 #include "PR/ultratypes.h"
 
 #define M_PI_F 3.14159265358979323846f
@@ -30,16 +31,8 @@ double sqrt(double d);
 #define SINS(x) gSineTable[(u16) (x) >> 4]
 #define COSS(x) gCosineTable[(u16) (x) >> 4]
 
-typedef float MtxF_t[4][4];
-typedef union {
-    MtxF_t mf;
-    struct {
-        float xx, yx, zx, wx,
-              xy, yy, zy, wy,
-              xz, yz, zz, wz,
-              xw, yw, zw, ww;
-    };
-} MtxF;
+// MtxF_t / MtxF are provided by libultraship (fast/types.h) with the same layout.
+
 
 typedef struct Vec3f {
     /* 0x0 */ f32 x;

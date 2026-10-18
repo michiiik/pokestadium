@@ -18,7 +18,7 @@ void DisplayList_InitRotationMatrixSegmentAlt2(s32 arg0, DisplayListState* state
     Gfx* gfx;
 
     if (arg0 == 2) {
-        gfx = (Gfx*)Gfx_AllocDisplayList(0x50);
+        gfx = (Gfx*)Gfx_AllocDisplayList(GFX_N64_BYTES(0x50));
         state->gfx = gfx;
         DisplayList_BuildRotationMatrixSegmentAlt2(gfx);
     }

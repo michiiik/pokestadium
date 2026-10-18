@@ -101,6 +101,9 @@ u8 pad_D_800FC718[0x80];
 u32* D_800FC798;
 
 s32 Audio_PlayCommand(u32 arg0, s32 arg1, s32 arg2) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     static s32 D_80077C7C = 0;
 
     UNUSED s32 pad;
@@ -431,6 +434,9 @@ s32 Audio_PlayCommand(u32 arg0, s32 arg1, s32 arg2) {
 }
 
 s32 Audio_FadeCommand(s32 arg0, u32 arg1) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     switch (arg0) {
         case 0x0:
             if (arg1 == 0) {
@@ -475,13 +481,22 @@ s32 Audio_FadeCommand(s32 arg0, u32 arg1) {
 }
 
 void func_8003733C(void) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
 }
 
 void Audio_CreateFrameTaskWrapper(void* arg0) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     Audio_CreateFrameTask(arg0);
 }
 
-void Audio_RelocateOffsets(u32* arg0, u32 arg1, s32 arg2) {
+void Audio_RelocateOffsets(u32* arg0, uintptr_t arg1, s32 arg2) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     u32 i;
 
     for (i = 0; i < arg2; i++, arg0++) {
@@ -492,6 +507,9 @@ void Audio_RelocateOffsets(u32* arg0, u32 arg1, s32 arg2) {
 #define AUDIO_HEAP_SIZE 300000
 
 s32 Audio_InitBanks(void) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     s32 i;
     FileHeaders* sp78;
     UNUSED s32 pad[3];

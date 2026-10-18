@@ -33,7 +33,7 @@ static  void _bnkfPatchWaveTable(ALWaveTable *w, s32 offset, s32 table);
 
 void alSeqFileNew(ALSeqFile *file, u8 *base)
 {
-    s32 offset = (s32) base;
+    s32 offset = (intptr_t) base;
     s32 i;
     
     /*
@@ -46,8 +46,8 @@ void alSeqFileNew(ALSeqFile *file, u8 *base)
 
 void alBnkfNew(ALBankFile *file, u8 *table)
 {
-    s32 offset = (s32) file;
-    s32 woffset = (s32) table;
+    s32 offset = (intptr_t) file;
+    s32 woffset = (intptr_t) table;
     
     s32 i;
     

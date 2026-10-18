@@ -19,6 +19,7 @@
 #include "src/fragments/minigame_shared_library/minigame_shared_library.h"
 #include "src/stage_loader.h"
 #include "src/controller.h"
+#include "src/display_object_textures.h"
 
 static DisplayObject D_865092E0;
 static DisplayObject D_86509448;
@@ -65,7 +66,7 @@ static unk_func_87801684 D_86502DBC[] = {
     { 0x03040580, 0x12 }, { 0x03040980, 2 }, { 0x03040D80, 8 }, { 0x03040980, 2 }, { NULL, 0 },
 };
 
-static u32 D_86502DE4[] = {
+static uintptr_t D_86502DE4[] = { // PORT64: holds addresses
     0x0C00FFFF, 0x05000000, 0x0B00001E, 0x00000000, 0x014000F0, 0x0000000F, 0x00000000, 0x00000000, 0x05000000,
     0x0D000000, 0x05000000, 0x14000000, 0x002B0012, 0xFFFFFF32, 0x16FFFFFF, 0x0F000003, 0x05000000, 0x1F00FFFF,
     0x00000000, 0x00000000, 0x00000000, 0x00640064, 0x00640000, 0x06000000, 0x05000000, 0x0A000000, &D_800AC840,
@@ -820,7 +821,7 @@ void DynamoGame_LoadAssets(void) {
     Widget_DrawAnimIcon16B(0, 0, NULL);
 }
 
-void DynamoGame_Main(UNUSED s32 arg0, UNUSED s32 arg1) {
+s32 DynamoGame_Main(UNUSED s32 arg0, UNUSED s32 arg1) {
     unk_func_80007444* sp24;
 
     main_pool_push_state('MINI');
@@ -843,7 +844,7 @@ void DynamoGame_Main(UNUSED s32 arg0, UNUSED s32 arg1) {
 
     main_pool_pop_state('MINI');
 
-    Widget_PauseMenuGetResult();
+    return Widget_PauseMenuGetResult(); // PORT: the caller uses this result (on the N64 it was left in v0)
 }
 
 static s32 pad_D_86502E98 = 0;

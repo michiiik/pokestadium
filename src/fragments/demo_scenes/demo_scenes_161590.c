@@ -41,7 +41,7 @@ void Diorama_DrawFullscreenTexture(u8* arg0, s32 arg1, s32 arg2, s32 arg3, s32 a
 
     Gfx_SetViewportDimensions(spC8, temp_s1->width, temp_s1->height);
 
-    gSPViewport(gDisplayListHead++, (u32)spC8 & 0x1FFFFFFF);
+    gSPViewport(gDisplayListHead++, (uintptr_t)spC8);
 
     guOrtho(spCC, 0.5f, temp_s1->width - 0.5f, temp_s1->height - 0.5f, 0.5f, -2.0f, 2.0f, 1.0f);
     Gfx_SetVertexAttributes(&temp_s2[0], arg1, arg2, -1, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF);
@@ -64,14 +64,14 @@ void Diorama_DrawFullscreenTexture(u8* arg0, s32 arg1, s32 arg2, s32 arg3, s32 a
     gDPSetTextureFilter(gDisplayListHead++, G_TF_BILERP);
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
     gSPPerspNormalize(gDisplayListHead++, 0xFFFF);
-    gSPMatrix(gDisplayListHead++, (u32)spCC & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    gSPMatrix(gDisplayListHead++, (u32)&D_8006F010 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)spCC, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)&D_8006F010, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     gDPLoadTextureTile(gDisplayListHead++, arg0, G_IM_FMT_RGBA, G_IM_SIZ_16b, arg5, arg6, 0, 0, arg5 - 1, arg6 - 1, 0,
                        G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                        G_TX_NOLOD);
 
-    gSPVertex(gDisplayListHead++, (u32)temp_s2 & 0x1FFFFFFF, 4, 0);
+    gSPVertex(gDisplayListHead++, (uintptr_t)temp_s2, 4, 0);
     gSP2Triangles(gDisplayListHead++, 0, 2, 3, 0, 0, 3, 1, 0);
 
     gSPDisplayList(gDisplayListHead++, D_8006F630);

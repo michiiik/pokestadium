@@ -11,6 +11,9 @@ s32 Audio_LoadWaveTablesAndMusic(u8* arg0) {
     UNUSED s32 pad[2];
     u8* sp1C;
 
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     Audio_FadeCategoriesAndStreams(1);
     D_800FF9C0 = arg0;
     sp1C = D_800FF9C0 + 0x4120;

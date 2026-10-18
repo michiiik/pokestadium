@@ -61,21 +61,10 @@ typedef struct BattlerState {
     /* 0xC8 */ Controller* unk_C8;
 } BattlerState; // size = 0xCC
 
-typedef struct PresentationLayout {
-    /* 0x00 */ DisplayNodeHeader node;
-    /* 0x18 */ char unk18[0x4];
-    /* 0x1C */ s16 unk_1C;
-    /* 0x1E */ s16 unk_1E;
-    /* 0x20 */ s16 unk_20;
-    /* 0x22 */ char unk22[0xA];
-    /* 0x2C */ f32 unk_2C;
-    /* 0x30 */ char unk30[0x4];
-    /* 0x34 */ f32 unk_34;
-    /* 0x38 */ f32 unk_38;
-    /* 0x3C */ char unk3C[0x6C];
-    /* 0xA8 */ Vec3f unk_A8;
-    /* 0xB4 */ Vec3f unk_B4;
-} PresentationLayout; // size >= 0xC0
+// PORT: this was a flat view of a camera node (unk_D_86002F34_00C): 0x1C/0x1E/0x20 = viewport x/y/width, 0x2C = fovy,
+// 0x34/0x38 = near/far, 0xA8/0xB4 = eye/at. Its viewport fields follow a pointer, so the flat view put them at the
+// wrong host offsets (the trainer panel slide-in then read the camera's Vp pointer); it is the camera type itself.
+typedef struct unk_D_86002F34_00C PresentationLayout;
 
 typedef struct PresentationState {
     /* 0x000 */ DisplayObject unk_000;
@@ -279,7 +268,7 @@ typedef struct unk_D_843C4DEC {
 } unk_D_843C4DEC; // size = 0x58
 
 typedef struct BattleSceneStateTickSlot {
-    /* 0x00 */ s32 unk_00;
+    /* 0x00 */ struct Battler* unk_00; // PORT: the callback's Battler argument (was s32)
     /* 0x04 */ BattleSceneStateCallback unk_04;
 } BattleSceneStateTickSlot; // size = 0x8
 
@@ -389,9 +378,10 @@ typedef struct unk_D_84385790 {
     /* 0x04 */ Color_RGBA8 unk_04;
 } unk_D_84385790; // size = 0x8
 
+// PORT: a display-list graph node (unk_D_86002F34_alt7): the flat view put unk_18 (the node's display list) on the
+// host GraphNode's callback field. unk_14 was the node's callback data: node.callbackArg.
 typedef struct arg1_func_84344CE8 {
-    /* 0x00 */ char unk00[0x14];
-    /* 0x14 */ u8* unk_14;
+    /* 0x00 */ GraphNode node;
     /* 0x18 */ Gfx* unk_18;
 } arg1_func_84344CE8; // size >= 0x1C
 
@@ -923,8 +913,8 @@ extern u8 D_843845F8;
 extern u8 D_843845FC[];
 extern s16 D_84384670[];
 extern unk_D_843847BC D_843847BC[2];
-extern unk_D_86B0C160 D_843847EC[3];
-extern unk_D_86B0C160 D_84384888[2];
+extern unk_D_86B0C160 D_843847EC[5];
+#define D_84384888 (&D_843847EC[3]) // PORT: tail of D_843847EC (see battle_engine_2F3CB0.c)
 extern unk_D_86B0C160 D_843848F0;
 extern unk_D_86B0C160 D_84384924;
 extern unk_D_86B0C160 D_84384958;
@@ -1045,7 +1035,7 @@ s32 Battle_StageLightAngleCallbackB(s32 arg0, unk_D_86002F34_alt18* arg1);
 s32 Battle_StageMaterialTintCallback(s32 arg0, DisplayObject* arg1);
 void Battle_SetStageTintColor(u8 arg0, u8 arg1, u8 arg2);
 void BattleScene_SetModelUniformScale(f32 arg0);
-u16 Battle_TintTexel16(u16 arg0);
+u16 Battle_TintTexel16(uintptr_t arg0);
 void Battle_DrawStageBackdrop(void);
 void Battle_RenderStageThumbnail(GraphNode* arg0, unk_D_80068BB0* arg1);
 void Battle_DrawClippedTextureRect(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
@@ -1090,7 +1080,7 @@ void BattleAnim_BeginSessionRequestForActiveMon(Battler* arg0);
 s32 BattleScene_FindU16InByteArray(u16 arg0, u8* arg1, s32 arg2);
 void Battle_FilterUnusableMoves(Battler* arg0, u16 arg1, SpeciesLearnsetBuffer* arg2, SpeciesLearnsetBuffer* arg3);
 void Battle_InitializeMoveUsabilityMask(Battler* arg0);
-void Battle_DmaLoadAnimRecord(u8 arg0, u32 arg1);
+void Battle_DmaLoadAnimRecord(u8 arg0, uintptr_t arg1);
 void Battle_DmaLoadAnimRecordPair(s32 arg0, SpeciesLearnsetBuffer* arg1, SpeciesLearnsetBuffer* arg2);
 void func_84302658(Battler* arg0, s32 arg1);
 void BattleScene_TickRow10CleanupAndEnterState18(Battler* arg0);
@@ -2339,7 +2329,7 @@ void BattleAnim_CallbackStartEffects12And129DelayedModelAnimWait(Particle* arg0)
 void BattleAnim_StartEffect12DelayedModelAnim(void);
 void BattleAnim_ApplySpeciesMotionOffset(Particle* arg0);
 void BattleAnim_StartEffect14ModelAnimAndMoveKeyedTintParticles(void);
-void BattleAnim_BuildReflectiveTextureDisplayList(Gfx* arg0, s32 arg1, u16 arg2);
+void BattleAnim_BuildReflectiveTextureDisplayList(Gfx* arg0, intptr_t arg1, u16 arg2);
 void BattleAnim_AllocateReflectiveTextureDisplayList(s32 arg0, arg1_func_84344CE8* arg1);
 void BattleAnim_ApplyEffect125ModelScaleOffset(Particle* arg0);
 void BattleAnim_InitEffect125Model(Particle* arg0, UNUSED s16 arg1);
@@ -2373,7 +2363,7 @@ void BattleAnim_CallbackEndEffect23Descriptor4AAnimatedFade_InitParticle(Particl
 void BattleAnim_CallbackEndEffect23Descriptor4AAnimatedFade(Particle* arg0);
 void func_84345038(void);
 void func_843450B4(void);
-void func_8434523C(Gfx* arg0, s32 arg1, u16 arg2);
+void func_8434523C(Gfx* arg0, intptr_t arg1, u16 arg2);
 void func_843452F0(s32 arg0, arg1_func_84344CE8* arg1);
 void func_84345338(Gfx* arg0, arg1_func_8434E21C* arg1, UNUSED u16 arg2);
 void func_8434539C(s32 arg0, arg1_func_84344CE8* arg1);
@@ -2387,7 +2377,7 @@ void func_8434575C(void);
 void BattleAnim_InitEffect49Model(Particle* arg0);
 void BattleAnim_CallbackEndEffect49Model33Anim34WaitCleanup(Particle* arg0);
 void BattleAnim_CallbackEndEffect21ModelAnimWait(Particle* arg0);
-void BattleAnim_BuildEffect49DisplayList(Gfx* arg0, UNUSED s32 arg1, UNUSED u16 arg2);
+void BattleAnim_BuildEffect49DisplayList(Gfx* arg0, UNUSED intptr_t arg1, UNUSED u16 arg2);
 void BattleAnim_AllocateEffect49DisplayList(s32 arg0, arg1_func_84344CE8* arg1);
 void func_84345B28(void);
 void func_84345B84(void);
@@ -2397,9 +2387,9 @@ void func_84345D74(void);
 void BattleAnim_InitEffect86Model(Particle* arg0);
 void BattleAnim_CallbackStartEffect86ModelFadeCycle(Particle* arg0);
 void func_84345EC0(void);
-void BattleAnim_BuildEffect63DisplayList(Gfx* arg0, s32 arg1, u16 arg2);
+void BattleAnim_BuildEffect63DisplayList(Gfx* arg0, intptr_t arg1, u16 arg2);
 void BattleAnim_AllocateEffect63DisplayList(s32 arg0, arg1_func_84344CE8* arg1);
-void BattleAnim_BuildEffect75DisplayList(Gfx* arg0, UNUSED s32 arg1, UNUSED u16 arg2);
+void BattleAnim_BuildEffect75DisplayList(Gfx* arg0, UNUSED intptr_t arg1, UNUSED u16 arg2);
 void BattleAnim_AllocateEffect75DisplayList(s32 arg0, arg1_func_84344CE8* arg1);
 void BattleAnim_InitEffects63And75Model(Particle* arg0);
 void BattleAnim_CallbackStartEffects63And75ModelAnimWait(Particle* arg0);
@@ -2408,7 +2398,7 @@ void BattleAnim_CallbackEndEffects10And50ModelAnimColorFade(Particle* arg0);
 void BattleAnim_ApplyEffects63And75SpeciesScaleOffset(Particle* arg0);
 void BattleAnim_InitEffects63And75Model38(Particle* arg0);
 void BattleAnim_CallbackStartEffects63And75Model38FadeIn(Particle* arg0);
-void func_843466EC(Gfx* arg0, s32 arg1, u16 arg2);
+void func_843466EC(Gfx* arg0, intptr_t arg1, u16 arg2);
 void func_843467B0(s32 arg0, arg1_func_84344CE8* arg1);
 void func_843467F8(Gfx* arg0, u8* arg1, UNUSED u16 arg2);
 void func_84346960(s32 arg0, arg1_func_84344CE8* arg1);
@@ -2451,7 +2441,7 @@ void func_84348C6C(UNUSED s32 arg0, UNUSED s32 arg1);
 void func_84348C78(UNUSED s32 arg0, UNUSED s32 arg1);
 void BattleAnim_CallbackStartEffects71And74And111SpecialModelColorCycle_InitParticle(Particle* arg0);
 void BattleAnim_CallbackStartEffects71And74And111SpecialModelColorCycle(Particle* arg0);
-void func_84348F24(Gfx* arg0, s32 arg1, u16 arg2);
+void func_84348F24(Gfx* arg0, intptr_t arg1, u16 arg2);
 void func_84349010(s32 arg0, arg1_func_84344CE8* arg1);
 void func_84349058(void);
 void func_843490A8(void);
@@ -3121,7 +3111,7 @@ void Battle_RunMoveEffect(void);
 void Battle_ExecuteMoveEffect(void);
 
 
-void BattleAI_LoadConfiguration(s32 arg0, u32 arg1);
+void BattleAI_LoadConfiguration(s32 arg0, uintptr_t arg1);
 void func_843767DC(void);
 s32 BattleAI_RandomBelowInclusive(s32 arg0);
 void BattleAI_SeedRandomState(u8 arg0);

@@ -35,7 +35,7 @@ static s32 D_838067E0;
 static s16 D_838067E4;
 static s16 D_838067E6;
 
-static u32 D_83804CC0[] = {
+static uintptr_t D_83804CC0[] = { // PORT64: holds addresses
     0x0C000000,  0x05000000, 0x0B00002D, 0x00000000, 0x028001E0, 0x00000000, 0xFDBD0000,
     0x00000243,  0x05000000, 0x0D000000, 0x05000000, 0x0F000002, 0x05000000, 0x0A000000,
     &D_800AC840, 0x06000000, 0x06000000, 0x06000000, 0x06000000, 0x01000000,
@@ -64,7 +64,7 @@ static Gfx D_83804DD0[] = {
     gsSP2Triangles(8, 9, 10, 0, 8, 10, 11, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_83804EB8[] = {
+static uintptr_t D_83804EB8[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_83804D10, 0x05000000, 0x22040000,
     0x00000000, 0x08000000, Gallery_RentalViewerNodePostCallback, D_83804DD0, 0x06000000, 0x01000000, 0x00000000,
 };
@@ -97,7 +97,7 @@ static Gfx D_83804FF0[] = {
     gsSP2Triangles(12, 13, 14, 0, 12, 14, 15, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_83805118[] = {
+static uintptr_t D_83805118[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_83804EF0, 0x05000000, 0x22050000,
     0x00000000, 0x08000000, Gallery_RentalViewerNodePostCallback, D_83804FF0, 0x06000000, 0x01000000, 0x00000000,
 };
@@ -130,7 +130,7 @@ static Gfx D_83805250[] = {
     gsSP2Triangles(12, 13, 14, 0, 12, 14, 15, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_83805378[] = {
+static uintptr_t D_83805378[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_83805150, 0x05000000, 0x22040000,
     0x00000000, 0x08000000, Gallery_RentalViewerNodePostCallback, D_83805250, 0x06000000, 0x01000000, 0x00000000,
 };
@@ -150,7 +150,7 @@ static Gfx D_838053F0[] = {
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_83805458[] = {
+static uintptr_t D_83805458[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_838053B0, 0x05000000, 0x22050000,
     0x00000000, 0x08000000, Gallery_RentalViewerNodePostCallback, D_838053F0, 0x06000000, 0x01000000,
 };

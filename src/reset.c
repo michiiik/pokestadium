@@ -1,6 +1,7 @@
 #include "global.h"
 #include "reset.h"
 #include "scheduler.h"
+#include "src/dp_intro.h"
 
 // this file handles the soft reset effect.
 typedef struct UnkStruct800A6D20 {
@@ -88,8 +89,7 @@ void func_8000559C(void) {
         Display_ClearFramebufferLine(((((gSoftResetRed * (15 - gSoftResetLineNum)) >> 4) << 11) |
                        (((gSoftResetGreen * (15 - gSoftResetLineNum)) >> 4) << 6) |
                        (((gSoftResetBlue * (15 - gSoftResetLineNum)) >> 4) << 1) | 1) &
-                          0xFFFF,
-                      gSoftResetLineNum);
+                          0xFFFF);
     }
 }
 

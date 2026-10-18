@@ -9,14 +9,22 @@
 #define UNUSED __attribute__((unused))
 #else
 #define UNUSED
+
+
 #endif
 
 #ifndef __sgi
 #define GLOBAL_ASM(...)
+
+
 #endif
 
 #ifdef _LANGUAGE_C
-#define HW_REG(reg, type) *(volatile type*)((reg) | 0xA0000000)
+// PORT: memory-mapped hardware registers have no host equivalent; they read/write a scratch page.
+extern void* port_hw_reg(unsigned long addr);
+#define HW_REG(reg, type) *(volatile type*)port_hw_reg((unsigned long)(reg))
+
+
 #endif
 
 #define assert
@@ -32,11 +40,12 @@
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
 
-#define ALIGN2(val) (((u32)(val) + 0x1) & ~0x1)
-#define ALIGN4(val) (((val) + 0x3) & ~0x3)
-#define ALIGN8(val) (((val) + 0x7) & ~0x7)
-#define ALIGN16(val) (((val) + 0xFu) & ~0xFu)
-#define ALIGN64(val) (((val) + 0x3F) & ~0x3F)
+// PORT: masks are pointer-width so these are safe on addresses.
+#define ALIGN2(val) (((uintptr_t)(val) + 0x1) & ~(uintptr_t)0x1)
+#define ALIGN4(val) (((uintptr_t)(val) + 0x3) & ~(uintptr_t)0x3)
+#define ALIGN8(val) (((uintptr_t)(val) + 0x7) & ~(uintptr_t)0x7)
+#define ALIGN16(val) (((uintptr_t)(val) + 0xF) & ~(uintptr_t)0xF)
+#define ALIGN64(val) (((uintptr_t)(val) + 0x3F) & ~(uintptr_t)0x3F)
 
 #define DECR(x) ((x) == 0 ? 0 : --(x))
 
@@ -76,5 +85,17 @@
 #define ASSET_LOAD2(rom, arg0, arg1) (\
     BinArchive_Open(rom##_ROM_START, rom##_ROM_END, arg0, arg1) \
 )
+
+
+
+// PORT: ROM-resident data is big-endian. Four-character tags and header words read from it as u32 must be byte
+// swapped before they are compared with numeric constants or used as sizes.
+static inline u32 Port_Swap32(u32 v) {
+    return (v >> 24) | ((v >> 8) & 0xFF00) | ((v << 8) & 0xFF0000) | (v << 24);
+}
+#define PORT_BE32(x) Port_Swap32((u32)(x))
+static inline u16 Port_Swap16(u16 v) {
+    return (u16)((v >> 8) | (v << 8));
+}
 
 #endif

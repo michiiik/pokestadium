@@ -14,11 +14,12 @@ typedef struct unk_D_810047E0 {
     /* 0x2A */ char unk2A[0x2];
 } unk_D_810047E0; // size = 0x2C
 
+// PORT: all words are addresses (display lists, textures); host addresses via Port_PdlWords
 typedef struct unk_arg2_func_81001D80 {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ s32 unk_04;
-    /* 0x08 */ s32 unk_08[1];
-} unk_arg2_func_81001D80; // size = 0xC
+    /* 0x00 */ uintptr_t unk_00;
+    /* 0x04 */ uintptr_t unk_04;
+    /* 0x08 */ uintptr_t unk_08[8];
+} unk_arg2_func_81001D80; // size = 0xC (N64: 2 + n words)
 
 typedef struct unk_D_81003FE0 {
     /* 0x00 */ s16 unk_00;
@@ -502,7 +503,7 @@ Gfx* Particle31_BuildDisplayList(Gfx* gfx, unk_D_810047E0* arg1, unk_arg2_func_8
 
 void func_81001E24(s32 arg0, DisplayListState* state) {
     s32 pad[2];
-    s32 sp5C;
+    intptr_t sp5C;
     unk_D_810047E0* sp1C;
     s32 sp18;
     unk_D_810047E0* temp_a1_3;
@@ -518,12 +519,12 @@ void func_81001E24(s32 arg0, DisplayListState* state) {
     u8 temp_v1;
     s32 pad2[1];
 
-    sp5C = state->addresses;
+    sp5C = (intptr_t)Port_PdlWords(state->addresses);
     if (arg0 == 2) {
         if (D_81004B54 == 0) {
-            state->gfx = Gfx_AllocDisplayList(0x500);
+            state->gfx = Gfx_AllocDisplayList(GFX_N64_BYTES(0x500));
         } else {
-            state->gfx = Gfx_AllocDisplayList(0x80);
+            state->gfx = Gfx_AllocDisplayList(GFX_N64_BYTES(0x80));
         }
         gfx = state->gfx;
         temp_v1 = D_8006F09C->effectSlot;

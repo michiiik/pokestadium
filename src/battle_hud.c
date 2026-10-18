@@ -128,11 +128,19 @@ s32 func_800325AC(void) {
 }
 
 u8 ModelRenderer_GetActiveMode(void) {
+    // PORT: callbacks also call this outside rendering (at installation, event 0) where no model part is current; the
+    // N64 then read low RDRAM (zero)
+    if (D_8006F09C == NULL) {
+        return 0;
+    }
     u8 ret = *(u8*)Memmap_GetSegmentVaddr(&D_8006F09C->effectSlot);
     return ret;
 }
 
 s16 ModelRenderer_GetObjectType(void) {
+    if (D_8006F09C == NULL) { // PORT: see ModelRenderer_GetActiveMode
+        return 0;
+    }
     s16 ret = *(s16*)Util_ConvertAddrToVirtAddr(&D_8006F09C->objectType);
     return ret;
 }

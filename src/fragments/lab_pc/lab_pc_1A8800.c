@@ -264,7 +264,7 @@ s32 LabPC_RunWidgetLoop(unk_func_88200FA0* arg0) {
 }
 
 void LabPC_MenuThreadEntry(unk_func_88200FA0* arg0) {
-    s32 sp24;
+    intptr_t sp24;
     s32 i;
 
     while (StageContext_GetFadeMode() != 0) {
@@ -308,7 +308,7 @@ s32 LabPC_ShowMenu(s32 arg0, UNUSED s32 arg1) {
     sp30 = mem_pool_alloc(sp34, sizeof(unk_func_88200FA0));
     LabPC_BuildMenuWidget(sp30, 0, 0, arg0, sp34);
 
-    sp28 = ALIGN16((u32)mem_pool_alloc(sp34, sizeof(func_88002628_sp38)));
+    sp28 = ALIGN16((uintptr_t)mem_pool_alloc(sp34, sizeof(func_88002628_sp38)));
     osCreateThread(&sp28->thread, 0x32, LabPC_MenuThreadEntry, sp30, sp2C + 0x1000, osGetThreadPri(NULL) - 1);
 
     Ui_InitInputMessageQueue();

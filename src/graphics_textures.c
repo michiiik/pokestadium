@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "global.h"
 #include "graphics_textures.h"
 #include "include/string.h"
@@ -8,7 +9,6 @@
 #include "src/matrix.h"
 #include "src/memory.h"
 #include "stdarg.h"
-#include "lib/ultralib/src/libc/xstdio.h"
 
 FontContext* font_context;
 
@@ -138,7 +138,7 @@ void Gfx_DrawTiledRgba16Image(u8* image) {
     }
 }
 
-void Gfx_DrawRgba16ImageRegion(u32 arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4) {
+void Gfx_DrawRgba16ImageRegion(uintptr_t arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4) {
     s32 div = 32;
     s16 sp9A;
     s16 sp98;
@@ -202,7 +202,7 @@ void Gfx_DrawRgba16ImageRegion(u32 arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4)
     }
 }
 
-void Gfx_DrawTiledImageMesh(s16 arg0, s16 arg1, s16 arg2, f32 arg3, Vtx* arg4, u32 arg5) {
+void Gfx_DrawTiledImageMesh(s16 arg0, s16 arg1, s16 arg2, f32 arg3, Vtx* arg4, uintptr_t arg5) {
     s16 j;
     s16 i;
     Vec3s spCC;
@@ -228,12 +228,12 @@ void Gfx_DrawTiledImageMesh(s16 arg0, s16 arg1, s16 arg2, f32 arg3, Vtx* arg4, u
     MtxF_ToFixed(temp_s3, temp_s0);
     Gfx_SetViewportDimensions(temp_s2, temp_s1->width, temp_s1->height);
 
-    gSPViewport(gDisplayListHead++, (u32)temp_s2 & 0x1FFFFFFF);
+    gSPViewport(gDisplayListHead++, (uintptr_t)temp_s2);
 
     guOrtho(temp_s4, 0.5f, temp_s1->width - 0.5f, temp_s1->height - 0.5f, 0.5f, -2.0f, 2.0f, 1.0f);
 
-    gSPMatrix(gDisplayListHead++, (u32)temp_s4 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    gSPMatrix(gDisplayListHead++, (u32)temp_s3 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)temp_s4, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)temp_s3, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     gDPPipeSync(gDisplayListHead++);
     gDPSetCycleType(gDisplayListHead++, G_CYC_1CYCLE);
     gDPSetTexturePersp(gDisplayListHead++, G_TP_PERSP);
@@ -305,10 +305,14 @@ void Gfx_SetViewportDimensions(Vp* arg0, s16 arg1, s16 arg2) {
 u8 Font_MapGlyphCode(u16 arg0) {
     u8 var_v1 = 0;
 
+    // PORT: the original indexes past the Gfx arrays D_8006F630/D_8006F608 into the byte table D_8006F650 that follows
+    // them in memory (0x8006F630 + 0x20 == 0x8006F650, 0x8006F608 + 8 + c == 0x8006F650 + (c - 0x40)). The host Gfx
+    // is twice as large, so index the table directly.
+    extern u8 D_8006F650[];
     if ((arg0 >= 0x20) && (arg0 < 0x80)) {
-        var_v1 = ((u8*)D_8006F630)[arg0];
+        var_v1 = D_8006F650[arg0 - 0x20];
     } else if ((arg0 >= 0xA0) && (arg0 < 0x100)) {
-        var_v1 = ((u8*)D_8006F608)[sizeof(Gfx) + arg0];
+        var_v1 = D_8006F650[arg0 - 0x40];
     }
 
     return var_v1;
@@ -475,19 +479,33 @@ s16 Font_DrawChar(s16 arg0, s16 arg1, s16 arg2) {
     temp_s0 = &font_context->unk_00[font_context->unk_50];
     sp88 = Font_MapGlyphCode(arg2) * temp_s0->unk_00 * temp_s0->unk_02;
     sp86 = Font_GetGlyphAdvance(temp_s0, arg2);
+    if (getenv("PORT_TRACE_FONT2")) { // PORT debug: every glyph drawn, with the set's data pointer and its first texels
+        const u8* g = (const u8*)temp_s0->unk_08 + sp88;
+        fprintf(stderr, "[glyph] set %d base %p char %c at %d,%d bytes %02x%02x%02x%02x%02x%02x%02x%02x\n", font_context->unk_50,
+                (const void*)temp_s0->unk_08, arg2 & 0xFF, arg0, arg1, g[0x20], g[0x21], g[0x22], g[0x23], g[0x40], g[0x41], g[0x42], g[0x43]);
+    }
+    if (getenv("PORT_TRACE_FONT")) {
+        static u8 seen[6][256];
+        if (!seen[font_context->unk_50][arg2 & 0xFF]++) {
+            const u8* g = (const u8*)temp_s0->unk_08 + sp88;
+            fprintf(stderr, "[font] set %d %dx%d char 0x%02x -> glyph %d adv %d data %p first bytes %02x %02x %02x %02x\n",
+                    font_context->unk_50, temp_s0->unk_00, temp_s0->unk_02, arg2 & 0xFF, Font_MapGlyphCode(arg2), sp86,
+                    (const void*)g, g[0], g[1], g[2], g[3]);
+        }
+    }
 
     if ((font_context->line_break_flag & 1) && !(font_context->line_break_flag & 2)) {
         font_context->line_break_flag |= 2;
 
-        gDPLoadMultiBlock(gDisplayListHead++, (u32)temp_s0->unk_08 + (temp_s0->unk_00 * 0x90 * temp_s0->unk_02), 0x0100,
+        gDPLoadMultiBlock(gDisplayListHead++, (uintptr_t)temp_s0->unk_08 + (temp_s0->unk_00 * 0x90 * temp_s0->unk_02), 0x0100,
                           1, G_IM_FMT_I, G_IM_SIZ_8b, temp_s0->unk_00, temp_s0->unk_02, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                           G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     }
 
-    if ((u32)temp_s0->unk_08 + sp88 != font_context->unk_4C) {
-        font_context->unk_4C = (u32)temp_s0->unk_08 + sp88;
+    if ((uintptr_t)temp_s0->unk_08 + sp88 != font_context->unk_4C) {
+        font_context->unk_4C = (uintptr_t)temp_s0->unk_08 + sp88;
 
-        gDPLoadTextureBlock(gDisplayListHead++, (u32)temp_s0->unk_08 + sp88, G_IM_FMT_IA, G_IM_SIZ_8b, temp_s0->unk_00,
+        gDPLoadTextureBlock(gDisplayListHead++, (uintptr_t)temp_s0->unk_08 + sp88, G_IM_FMT_IA, G_IM_SIZ_8b, temp_s0->unk_00,
                             temp_s0->unk_02, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK,
                             G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     }

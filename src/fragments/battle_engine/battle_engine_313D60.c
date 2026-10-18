@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "battle_engine.h"
 #include "src/geo_node.h"
 #include "src/model_animation.h"
@@ -102,13 +105,13 @@ void BattleScene_TickCameraSubstateDefault(unk_D_86002F34_00C* arg0) {
             break;
 
         case 2:
-            if (D_84390010[0]->unk_728.unk_168->unk_1C == -0x48) {
+            if (D_84390010[0]->unk_728.unk_168->unk_18.x == -0x48) {
                 gBattleScene.unk_00->unk_30++;
             }
             break;
 
         case 3:
-            GeoCamera_SetBackgroundTexture(arg0, 0x12C, 0xA, 2, Util_ConvertAddrToVirtAddr((u32)D_1000000));
+            GeoCamera_SetBackgroundTexture(arg0, 0x12C, 0xA, 2, Util_ConvertAddrToVirtAddr((uintptr_t)D_1000000));
             GeoCamera_SetBackground(arg0, 5, 0xA, 0, 0, 0);
             gBattleScene.unk_00->unk_18 = 0;
             gBattleScene.unk_00->unk_30 += 1;
@@ -133,7 +136,7 @@ void BattleScene_TickCameraSubstateDefault(unk_D_86002F34_00C* arg0) {
                 Battle_ResetCryEventIfStruggle(D_84390010[0]);
                 Battle_ResetCryEventIfStruggle(D_84390010[1]);
                 gBattleScene.unk_00->unk_18 = 2;
-                GeoCamera_SetBackgroundTexture(arg0, 0xA, 0x12C, 2, Util_ConvertAddrToVirtAddr((u32)D_1000000));
+                GeoCamera_SetBackgroundTexture(arg0, 0xA, 0x12C, 2, Util_ConvertAddrToVirtAddr((uintptr_t)D_1000000));
                 GeoCamera_SetBackground(arg0, 4, 0xA, 0, 0, 0);
                 arg0->unk_24.fovy = 30.0f;
                 gBattleScene.unk_00->unk_60 = 30.0f;
@@ -170,7 +173,7 @@ void BattleScene_TickCameraSubstateStripWipe(unk_D_86002F34_00C* arg0) {
             break;
 
         case 2:
-            if (D_84390010[0]->unk_728.unk_168->unk_1C == -0x48) {
+            if (D_84390010[0]->unk_728.unk_168->unk_18.x == -0x48) {
                 gBattleScene.unk_00->unk_30++;
             }
             break;
@@ -685,7 +688,17 @@ void BattleScene_UpdateOwnerVisibilityDouble(unk_D_86002F34_00C* arg0) {
     BattleScene_HideFaintedOwners();
 }
 
+unsigned long long Port_ViTick(void);
 void BattleScene_Update(unk_D_86002F34_00C* arg0) {
+    if (getenv("PORT_TRACE_BATTLE")) { // logs the scene director's phase fields whenever one changes
+        static int last[6] = { -99, -99, -99, -99, -99, -99 };
+        int now[6] = { (int)gBattleScene.unk_00->unk_1C, (int)gBattleScene.unk_00->unk_30, (int)gBattleScene.unk_00->unk_18,
+                       (int)gBattleScene.unk_00->unk_40, (int)gBattleScene.unk_00->unk_44, (int)gBattleScene.unk_00->unk_20 };
+        if (memcmp(now, last, sizeof now) != 0) {
+            fprintf(stderr, "[battle] frame %llu phase %d sub %d u18 %d u40 %d u44 %d step %d\n", Port_ViTick(), now[0], now[1], now[2], now[3], now[4], now[5]);
+            memcpy(last, now, sizeof now);
+        }
+    }
     BattleScene_TickCameraSubstate(arg0);
     BattleScene_ApplyCameraPhaseDefaults();
     BattleScene_UpdateOwnerVisibilitySingle(arg0);

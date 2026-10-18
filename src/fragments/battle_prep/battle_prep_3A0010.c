@@ -39,11 +39,11 @@ static Gfx D_84B16BA0[] = {
     gsSP2Triangles(12, 13, 14, 0, 12, 14, 15, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B16CC8[] = {
+static uintptr_t D_84B16CC8[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_84B16AA0, 0x05000000, 0x22050000,
     0x00000000, 0x08000000, BattlePrepStarBurst_DrawStarIcon, D_84B16BA0, 0x06000000, 0x01000000,
 };
-static u32 D_84B16CFC[] = {
+static uintptr_t D_84B16CFC[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_84B16AA0, 0x05000000, 0x22050000,
     0x00000000, 0x08000000, BattlePrepStarBurst_DrawTrailIcon, D_84B16BA0, 0x06000000, 0x01000000,
 };
@@ -63,7 +63,7 @@ static Gfx D_84B16D70[] = {
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B16DD8[] = {
+static uintptr_t D_84B16DD8[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_84B16D30, 0x05000000, 0x22050000,
     0x00000000, 0x08000000, BattlePrepStarBurst_DrawSparkParticle, D_84B16D70, 0x06000000, 0x01000000, 0x00000000,
 };
@@ -83,7 +83,7 @@ static Gfx D_84B16E50[] = {
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B16EB8[] = {
+static uintptr_t D_84B16EB8[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_84B16E10, 0x05000000, 0x22050000,
     0x00000000, 0x08000000, BattlePrepStarBurst_DrawRainbowParticle, D_84B16E50, 0x06000000, 0x01000000,
 };
@@ -131,7 +131,7 @@ s32 BattlePrepStarBurst_DrawStarIcon(s32 arg0, unk_func_80011B94* arg1) {
         }
 
         gDPPipeSync(gDisplayListHead++);
-        gSPSegment(gDisplayListHead++, 0x0F, (u32)Memmap_GetSegmentVaddr(var_a0) & 0x1FFFFFFF);
+        gSPSegment(gDisplayListHead++, 0x0F, (uintptr_t)Memmap_GetSegmentVaddr(var_a0));
         gSPDisplayList(gDisplayListHead++, arg1->display_node_header.callbackArg);
 
         GeoRender_ApplyMaterialState();
@@ -144,7 +144,7 @@ s32 BattlePrepStarBurst_DrawTrailIcon(s32 arg0, unk_func_80011B94* arg1) {
 
     if (arg0 == 5) {
         gDPPipeSync(gDisplayListHead++);
-        gSPSegment(gDisplayListHead++, 0x0F, (u32)Memmap_GetSegmentVaddr(D_3020800) & 0x1FFFFFFF);
+        gSPSegment(gDisplayListHead++, 0x0F, (uintptr_t)Memmap_GetSegmentVaddr(D_3020800));
         gSPDisplayList(gDisplayListHead++, arg1->display_node_header.callbackArg);
 
         GeoRender_ApplyMaterialState();
@@ -159,7 +159,7 @@ s32 BattlePrepStarBurst_DrawSparkParticle(s32 arg0, unk_func_80011B94* arg1) {
         temp_a0 = (unk_D_84B25AC0_000*)D_8006F09C->node.callbackArg;
 
         gDPPipeSync(gDisplayListHead++);
-        gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a0->unk_0C & 0x1FFFFFFF);
+        gSPSegment(gDisplayListHead++, 0x0F, (uintptr_t)temp_a0->unk_0C);
         gDPSetEnvColor(gDisplayListHead++, temp_a0->unk_08.r, temp_a0->unk_08.g, temp_a0->unk_08.b, 255);
         gSPDisplayList(gDisplayListHead++, arg1->display_node_header.callbackArg);
 

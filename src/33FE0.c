@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "global.h"
 #include "33FE0.h"
 #include "geo_render.h"
@@ -226,8 +227,8 @@ u32 D_80077790[6] = {
 };
 ModelSegment D_800777A8 = {
     0x000A, 0x0000, 0x000A, 0x0008,
-    (u32) D_80077708, (u32) D_80077738, (u32) D_80077790,
-    (u32) D_800776C0, (u32) D_80077620, (Gfx*) D_800776D8,
+    (uintptr_t) D_80077708, (uintptr_t) D_80077738, (uintptr_t) D_80077790,
+    (uintptr_t) D_800776C0, (uintptr_t) D_80077620, (Gfx*) D_800776D8,
 };
 
 u32 D_800777C8[40] = {
@@ -261,9 +262,50 @@ u32 D_80077938[6] = {
 };
 ModelSegment D_80077950 = {
     0x000B, 0x0000, 0x000A, 0x0008,
-    (u32) D_800778B0, (u32) D_800778E0, (u32) D_80077938,
-    (u32) D_80077868, (u32) D_800777C8, (Gfx*) D_80077880,
+    (uintptr_t) D_800778B0, (uintptr_t) D_800778E0, (uintptr_t) D_80077938,
+    (uintptr_t) D_80077868, (uintptr_t) D_800777C8, (Gfx*) D_80077880,
 };
+
+// PORT: the two slot-model templates above are N64 data kept as u32 words: s16 tables (index, adjacency, height
+// class, remap), Vtx arrays and F3DEX2 display lists. Converted once to host order/layout before first use.
+static void Port_FixSlotTemplate(ModelSegment* seg, u32* vtx, s32 vtxCount, u32* dl, s32 dlCmds, u32** halves,
+                                 const s32* halfCounts) {
+    s32 i, k;
+    Gfx* gfx;
+
+    for (k = 0; k < 4; k++) {
+        for (i = 0; i < halfCounts[k]; i++) {
+            halves[k][i] = (halves[k][i] << 16) | (halves[k][i] >> 16); // two s16, first one in the high half
+        }
+    }
+    for (i = 0; i < vtxCount; i++) {
+        u32* v = &vtx[i * 4];
+        v[0] = (v[0] << 16) | (v[0] >> 16); // ob[0], ob[1]
+        v[1] = (v[1] << 16) | (v[1] >> 16); // ob[2], flag
+        v[2] = (v[2] << 16) | (v[2] >> 16); // tc[0], tc[1]
+        v[3] = Port_Swap32(v[3]);           // colour bytes r, g, b, a
+    }
+    gfx = calloc(dlCmds, sizeof(Gfx));
+    for (i = 0; i < dlCmds; i++) {
+        gfx[i].words.w0 = dl[i * 2];
+        gfx[i].words.w1 = dl[i * 2 + 1];
+    }
+    seg->displayList = gfx;
+}
+
+static void Port_FixSlotTemplates(void) {
+    static s32 sDone;
+    static const s32 counts[4] = { 12, 22, 6, 6 };
+    u32* a[4] = { D_80077708, D_80077738, D_80077790, D_800776C0 };
+    u32* b[4] = { D_800778B0, D_800778E0, D_80077938, D_80077868 };
+
+    if (sDone) {
+        return;
+    }
+    sDone = 1;
+    Port_FixSlotTemplate(&D_800777A8, D_80077620, 10, D_800776D8, 6, a, counts);
+    Port_FixSlotTemplate(&D_80077950, D_800777C8, 10, D_80077880, 6, b, counts);
+}
 
 // .bss
 Vec3fCounter* D_800B2F50;
@@ -274,14 +316,14 @@ s32 func_800333E0(s32 arg0) {
     u8 stack[4];
     u8* ptr = stack;
 
-    return ((u8*)((s32)ptr + (arg0 * 0x94)) - ptr) + 0x170;
+    return ((u8*)((intptr_t)ptr + (arg0 * 0x94)) - ptr) + 0x170;
 }
 
 s32 func_80033410(s32 arg0) {
     u8 stack[4];
     u8* ptr = stack;
 
-    return ((u8*)(s32)ptr + (arg0 * 0x10)) - ptr;
+    return ((u8*)(intptr_t)ptr + (arg0 * 0x10)) - ptr;
 }
 
 f32 Math_FAbs(f32 value) {
@@ -547,6 +589,7 @@ void func_80033B2C(StadiumModel* model, void* arg1,  void* arg2, void* arg3) {
     ModelSegment* segment;
     ModelSegment* temp_v0;
 
+    Port_FixSlotTemplates();
     model = Memmap_GetSegmentVaddr(model);
     arg1 = Memmap_GetSegmentVaddr(arg1);
     temp_s0 = Memmap_GetSegmentVaddr(arg2);
@@ -913,7 +956,7 @@ void Model_ApplyVertexTransforms(StadiumModel* model) {
     Model_ApplyTransformCommands(segment, mvtx, model, 1.0f);
 }
 
-void func_80034BD4(u32 modelSegment, StadiumTransform* xf, s32 index, ModelVertex* vertices) {
+void func_80034BD4(uintptr_t modelSegment, StadiumTransform* xf, s32 index, ModelVertex* vertices) {
     ModelBlendWeight* wt;
     ModelVertex* vtx;
     s32 pad0[3];

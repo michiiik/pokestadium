@@ -77,6 +77,7 @@ static s32 D_8267E750;
 static s32 D_8267E754;
 static s32 D_8267E758;
 static char** D_8267E75C;
+char** D_8267E760; // PORT: was only declared (victory_palace.h), so it resolved to its N64 address
 
 static u32 D_82603E80[] = {
     0xA4CAA4DE, 0xA4A80000, 0xA5ECA5D9, 0xA5EB0000, 0xA4AAA4E4, 0x00000000, 0xA4C7A4F3, 0xA4C9A4A6, 0xA4A4A4EA,
@@ -1645,7 +1646,7 @@ static Gfx D_826071B8[] = {
     gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
     gsSPEndDisplayList(),
 };
-static u32 D_82607228[] = {
+static uintptr_t D_82607228[] = { // PORT64: holds addresses
     0x0C00FFFF,  0x05000000, 0x0B00001E, 0x00000000,    0x014000F0, 0x00000000, 0x00000005,    0x000003E8, 0x05000000,
     0x0D000000,  0x05000000, 0x14000000, 0x002D0019,    0xFFFFFF28, 0x08000000, VictoryPalace_UpdateLeftPillarGlow, 0x00000000, 0x14000000,
     0x002D0019,  0x96966428, 0x08000000, VictoryPalace_UpdateRightPillarGlow, 0x00000000, 0x16646464, 0x0F000003,    0x05000000, 0x0A000000,
@@ -1765,7 +1766,7 @@ s32 VictoryPalace_SpeciesObtained(s32 arg0) {
 s32 VictoryPalace_UpdateLeftPillarGlow(s32 arg0, unk_D_86002F34_alt18* arg1) {
     u8* ptr;
     s16 idx = 5;
-    s16 sp30; // purposely the wrong type to fix the stack, should be f32
+    f32 sp30; // PORT: f32, as written by Vec3f_CalculateDistanceAngles (the decomp used s16 to match the N64 stack)
     s16 sp2E;
     s16 sp2C;
 

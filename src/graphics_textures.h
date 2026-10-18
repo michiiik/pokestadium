@@ -18,8 +18,8 @@ void Gfx_DrawTextureI8(s16 x1, s16 y1, s16 draw_width, s16 height, u8* texture, 
 void Gfx_DrawTextureI16(s16 x1, s16 y1, s16 draw_width, s16 height, u8* texture, s16 load_width, s32 texture_spread_x_mode);
 void Gfx_DrawTextureRgba16Ia8(s16 x1, s16 y1, s16 draw_width, s16 height, u8* texture, u8* texture_multi, s16 load_width, s32 texture_x_spread_mode);
 void Gfx_DrawTiledRgba16Image(u8* image);
-void Gfx_DrawRgba16ImageRegion(u32 arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4);
-void Gfx_DrawTiledImageMesh(s16 arg0, s16 arg1, s16 arg2, f32 arg3, Vtx* arg4, u32 arg5);
+void Gfx_DrawRgba16ImageRegion(uintptr_t arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4);
+void Gfx_DrawTiledImageMesh(s16 arg0, s16 arg1, s16 arg2, f32 arg3, Vtx* arg4, uintptr_t arg5);
 Vtx* func_8001E490(void);
 void Gfx_SetVertexAttributes(Vtx* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, u8 arg6, u8 arg7, u8 arg8, u8 arg9);
 void Gfx_SetViewportDimensions(Vp* arg0, s16 arg1, s16 arg2);

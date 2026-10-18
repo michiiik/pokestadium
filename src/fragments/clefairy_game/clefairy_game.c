@@ -139,7 +139,7 @@ static unk_func_87801684 D_86104A1C[] = {
     { 0x00000000, 0x0000 },
 };
 
-static u32 D_86104AA4[] = {
+static uintptr_t D_86104AA4[] = { // PORT64: holds addresses
     0x0C00FFFF, 0x5000000,  0x0B00001E, 0x00000000, 0x014000F0, 0x0000000F, 0x00000000, 0x00000000,
     0x5000000,  0x0D000000, 0x5000000,  0x14000000, 0x002B0012, 0xFFFFFF32, 0x16FFFFFF, 0x0F000003,
     0x5000000,  0x1F00FFFF, 0x00000000, 0x00000000, 0x00000000, 0x03E803E8, 0x03E80000, 0x5000000,
@@ -397,7 +397,8 @@ void ClefairyGame_GeneratePattern(void) {
     var_s2 = 0;
     var_a0 = D_861047B8;
     var_a1 = 1;
-    var_a3 = var_a3;
+    var_a3 = 0; // PORT: was "var_a3 = var_a3" (uninitialised: the caller's a3 on the N64); a garbage total made
+                // ClefairyGame_ChoosePatternEntry run past the table and return an uninitialised pointer (crash)
     ptr = &D_86106450[0];
 
     while (var_a1 != 0) {
@@ -1880,7 +1881,7 @@ s32 ClefairyGame_DetermineWinner(void) {
     return var_s4;
 }
 
-void ClefairyGame_Main(UNUSED s32 arg0, UNUSED s32 arg1) {
+s32 ClefairyGame_Main(UNUSED s32 arg0, UNUSED s32 arg1) {
     unk_func_80007444* sp24;
 
     main_pool_push_state('MINI');
@@ -1892,7 +1893,7 @@ void ClefairyGame_Main(UNUSED s32 arg0, UNUSED s32 arg1) {
     ASSET_LOAD(D_1000000, common_menu1_ui, 0);
     FRAGMENT_LOAD(fragment31);
 
-    Fragment_Load((((u32)D_8D000000 & 0x0FF00000) >> 0x14) - 0x10, _5C7A70_ROM_START, _5C7A70_ROM_END);
+    Fragment_Load((((uintptr_t)D_8D000000 & 0x0FF00000) >> 0x14) - 0x10, _5C7A70_ROM_START, _5C7A70_ROM_END);
 
     ClefairyGame_LoadAssets();
     Widget_PauseMenuInit();
@@ -1922,5 +1923,5 @@ void ClefairyGame_Main(UNUSED s32 arg0, UNUSED s32 arg1) {
 
     main_pool_pop_state('MINI');
 
-    Widget_PauseMenuGetResult();
+    return Widget_PauseMenuGetResult(); // PORT: the caller uses this result (on the N64 it was left in v0)
 }

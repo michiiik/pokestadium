@@ -517,7 +517,7 @@ s32 LabPC_DrawTypeListWidget(unk_func_88205880_0098_008_048* arg0, s32 arg1, s32
         Font_Printf(Font_MeasureTextExtent(0, 0, tmp) + arg1 + var_s4, arg2 + 4, "????");
     } else {
         s32 i;
-        char sp50[4];
+        char sp50[8]; // PORT: was [4]; "%d/" of a 3-digit value needs 5 bytes
 
         for (i = 0; i < 2; i++) {
             tmp = Species_GetMoveSlot(arg0->unk_2C, i);

@@ -3,6 +3,47 @@
 #include "src/geo_render.h"
 #include "src/battle_hud.h"
 #include "src/model_renderer_callbacks.h"
+#include <stdlib.h>
+#include "src/util.h"
+
+extern int Port_IsRawData(const void* p);
+
+static uintptr_t Port_PdlAddr(u32 v) {
+    if (v < 0x10000000U) {
+        return v; // segmented address (or a plain value): resolved by the renderer
+    }
+    return Util_ConvertAddrToVirtAddr(v);
+}
+
+uintptr_t* Port_PdlWords(void* arg) {
+    static struct {
+        const u8* src;
+        uintptr_t* out;
+    } sCache[128];
+    static s32 sCount;
+    const u8* p = (const u8*)Util_ConvertAddrToVirtAddr((uintptr_t)arg);
+    uintptr_t* out;
+    s32 i;
+
+    if (p == NULL || !Port_IsRawData(p)) {
+        return (uintptr_t*)p;
+    }
+    for (i = 0; i < sCount; i++) {
+        if (sCache[i].src == p) {
+            return sCache[i].out;
+        }
+    }
+    out = calloc(10, sizeof(uintptr_t));
+    for (i = 0; i < 10; i++) {
+        out[i] = Port_PdlAddr(((u32)p[i * 4] << 24) | ((u32)p[i * 4 + 1] << 16) | ((u32)p[i * 4 + 2] << 8) | p[i * 4 + 3]);
+    }
+    if (sCount < 128) {
+        sCache[sCount].src = p;
+        sCache[sCount].out = out;
+        sCount++;
+    }
+    return out;
+}
 
 const char D_810041C0[0xC] = "DUMMY NAME";
 const char D_810041CC[0x4] = "";
@@ -43,8 +84,8 @@ void DisplayList_InitIndexedTextureSegment(s32 arg0, DisplayListState* state) {
     DisplayListAddresses* addresses;
 
     if (arg0 == 2) {
-        addresses = state->addresses;
-        gfx = Gfx_AllocDisplayList(0x50);
+        addresses = (DisplayListAddresses*)Port_PdlWords(state->addresses);
+        gfx = Gfx_AllocDisplayList(GFX_N64_BYTES(0x50));
         state->gfx = gfx;
         DisplayList_BuildIndexedTextureSegment(gfx, addresses, D_8006F084 & 7);
     }
@@ -69,8 +110,8 @@ void DisplayList_InitAnimatedModelTexture(s32 arg0, DisplayListState* state) {
 
     temp_v1 = ModelRenderer_GetActiveMode();
     if (arg0 == 2) {
-        addresses = state->addresses;
-        gfx = Gfx_AllocDisplayList(0x140);
+        addresses = (DisplayListAddresses*)Port_PdlWords(state->addresses);
+        gfx = Gfx_AllocDisplayList(GFX_N64_BYTES(0x140));
         state->gfx = gfx;
         DisplayList_BuildAnimatedModelTexture(gfx, addresses, ((D_800AF7B0[temp_v1 & 1] * 3) + D_81003FD0) % 8);
         D_81003FD0 += 1;

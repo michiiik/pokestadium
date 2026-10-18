@@ -6,6 +6,7 @@
 #include "src/gb_save.h"
 #include "src/hal_libc.h"
 #include "src/memory.h"
+#include "src/pokemon_stats.h"
 
 static Gfx D_883176D0[] = {
     gsSPEndDisplayList(),
@@ -343,7 +344,7 @@ u32 D_883198A0[] = {
     0x435F435E, 0x435E435E,
 };
 
-s32 LabPCList_CompareByPointer(unk_func_88316128* arg0, unk_func_88316128* arg1) {
+s32 LabPCList_CompareByPointer(void* arg0, void* arg1) {
     return (arg0 == arg1) ? 0 : (arg0 < arg1) ? -1 : 1;
 }
 
@@ -351,7 +352,7 @@ s32 LabPCList_CompareBySpeciesGroup(unk_func_8830867C_02C_0CC* arg0, unk_func_88
     s32 var_v1 = *(s32*)&arg0->unk_00[0]->unk_08.unk_00 - *(s32*)&arg1->unk_00[0]->unk_08.unk_00;
 
     if (var_v1 == 0) {
-        var_v1 = (s32)arg0->unk_00[1] - (s32)arg1->unk_00[1];
+        var_v1 = (intptr_t)arg0->unk_00[1] - (intptr_t)arg1->unk_00[1];
         if (var_v1 == 0) {
             var_v1 = arg0->unk_04 - arg1->unk_04;
         }
@@ -1036,7 +1037,7 @@ s32 LabPCList_IsSpecialTmItemId(s32* arg0) {
 }
 
 s32 LabPCList_CompareTmHmEntries(unk_func_88200FA0_030_038* arg0, unk_func_88200FA0_030_038* arg1) {
-    return (arg0->unk_08 - arg1->unk_08 != 0) ? arg0->unk_08 - arg1->unk_08 : (s32)arg0[1].unk_00 - (s32)arg1[1].unk_00;
+    return (arg0->unk_08 - arg1->unk_08 != 0) ? arg0->unk_08 - arg1->unk_08 : (intptr_t)arg0[1].unk_00 - (intptr_t)arg1[1].unk_00;
 }
 
 void LabPCList_BuildTmHmList(unk_func_88200FA0_030_038* arg0, unk_func_8830867C_02C_1A8* arg1, unk_func_8830867C_02C_154* arg2,
@@ -1095,7 +1096,7 @@ void LabPCList_BuildTmHmList(unk_func_88200FA0_030_038* arg0, unk_func_8830867C_
         }
     }
 
-    arg0->unk_08 = ((s32)var_s1 - (s32)arg1) >> 4;
+    arg0->unk_08 = ((intptr_t)var_s1 - (intptr_t)arg1) >> 4;
     PointerList_Sort(arg0, LabPCList_CompareTmHmEntries);
 }
 
@@ -1103,7 +1104,7 @@ void LabPCList_ConsumeUsedTmItem(unk_func_8830867C_04C_030_02C_000* arg0) {
     if ((LabItem_IsQuantitylessItemForOperation(arg0->unk_00[0]->unk_00) != 0) || (arg0->unk_00[0]->unk_01 < 2)) {
         s32 tmp = arg0->unk_00[1]->unk_0C.unk_00;
 
-        WordList_Remove(&arg0->unk_00[1]->unk_0C, ((s32)arg0->unk_00[0] - tmp) >> 1);
+        WordList_Remove(&arg0->unk_00[1]->unk_0C, ((intptr_t)arg0->unk_00[0] - tmp) >> 1);
     } else {
         arg0->unk_00[0]->unk_01--;
     }

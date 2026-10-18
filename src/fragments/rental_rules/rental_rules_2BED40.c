@@ -19,7 +19,7 @@ static void* D_83003C8C;
 static s16 D_83003C90;
 static s16 D_83003C92;
 static s16 D_83003C94;
-static s32 D_83003C98;
+static char* D_83003C98; // PORT64: the mode label (was s32)
 static char* D_83003C9C;
 static s16* D_83003CA0;
 static s16 D_83003CA4;

@@ -315,7 +315,7 @@ s32 LabPC_CheckBox_HandleInput(unk_func_88201DA0* arg0, Controller* arg1) {
 
 void LabPC_CheckBox_ModalLoop(unk_func_88201DA0* arg0, Controller* arg1) {
     s32 var_s0;
-    s32 var_s1 = NULL;
+    intptr_t var_s1 = NULL;
 
     ((func88502C98)Memmap_GetFragmentVaddr(WidgetTree_OpenAnimatedPanel))(arg0->unk_2C);
 
@@ -1655,7 +1655,7 @@ void LabPC_ShowBoxes(FontContext* arg0) {
     sp68 = mem_pool_alloc(sp6C, sizeof(unk_func_88205880));
     LabPC_BuildBoxScreenWidget(sp68, 0, 0, arg0, sp6C, sp5C, sp58, sp54, sp50, sp4C, sp48, sp44, sp40);
 
-    sp60 = ALIGN16((u32)mem_pool_alloc(sp6C, sizeof(func_88002628_sp38)));
+    sp60 = ALIGN16((uintptr_t)mem_pool_alloc(sp6C, sizeof(func_88002628_sp38)));
 
     osCreateThread(&sp60->thread, 0x32, LabPC_BoxScreen_InputThread, sp68, sp64 + 0x1000, osGetThreadPri(NULL) - 1);
 

@@ -18,7 +18,7 @@ typedef struct unk_func_8820BE14_02C_038_02C {
     /* 0x00 */ s32 unk_58;
 } unk_func_8820BE14_02C_038_02C; // size >= 0x5C
 
-void LabPC_InitTabWidget(unk_func_882149A0* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6,
+void LabPC_InitTabWidget(unk_func_882149A0* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, intptr_t arg5, s32 arg6,
                    Color_RGBA8 arg7, Color_RGBA8 arg8, Color_RGBA8 arg9) {
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(arg0, sizeof(unk_func_882149A0));
 

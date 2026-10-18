@@ -15,7 +15,7 @@ typedef struct UnkStruct80001380 {
 typedef struct unk_D_800A62E0 {
     /* 0x000 */ OSThread thread;
     /* 0x1B0 */ char unk1B0[0x800];
-    /* 0x9B0 */ u8 stack[64];
+    /* 0x9B0 */ OSMesg stack[16]; // PORT: the VI queue holds 16 messages (was u8[64]: 4-byte messages)
     /* 0x9F0 */ OSMesgQueue queue;
     /* 0xA08 */ u64 time;
     /* 0xA10 */ unk_D_800AA660* unk_A10;
@@ -39,17 +39,18 @@ typedef struct UnkArray4 {
     /* 0x01 */ u8 unk_01;
     /* 0x02 */ u8 unk_02;
     /* 0x03 */ u8 unk_03;
-    /* 0x04 */ u32 unk_04;
-    /* 0x08 */ u32 unk_08;
+    /* 0x04 */ uintptr_t unk_04; // PORT64: display list start (aliased by unk_D_800A7450 in stage_loader.h)
+    /* 0x08 */ uintptr_t unk_08; // display list size in bytes
     /* 0x0C */ struct unk_D_80068BB0* unk_0C;
 } UnkArray4; // size = 0x10
 
 typedef struct UnkStruct80083CA0_2 {
     /* 0x000 */ OSThread thread;
-    /* 0x1B0 */ OSMesg unk_1B0;
-    /* 0x1B4 */ char unk1B4[0xC];
+    /* 0x1B0 */ OSMesg unk_1B0[4]; // PORT: message buffer for up to 4 messages (8 bytes each on the host; was 0x10 bytes,
+                                   // which the 4-message intro client overran into unk_1C0); unk_D_800AA660 keeps the same size
+                                   // so its queue1 overlays unk_1C0
     /* 0x1C0 */ OSMesgQueue unk_1C0;
-    /* 0x1D8 */ s32 unk_1D8;
+    /* 0x1D8 */ struct UnkStruct80083CA0_2* unk_1D8; // PORT64: next client pointer (was s32)
     /* 0x1DC */ s32 unk_1DC;
     /* 0x1E0 */ u8 unk1E0[0x800];
     /* 0x9E0 */ struct unk_D_80068BB0* unk_9E0;
@@ -71,7 +72,7 @@ typedef struct UnkStruct80083CA0_2 {
 extern unk_D_800A62E0 D_800A62E0;
 
 void Sched_InitClientQueue(UnkStruct80083CA0_2*, s32, s32);
-s32 Sched_WaitClientQueue(UnkStruct80083CA0_2*);
+intptr_t Sched_WaitClientQueue(UnkStruct80083CA0_2*);
 s32 Sched_TryReceiveClientQueue(UnkStruct80083CA0_2*);
 void Sched_Init(void);
 void Sched_AddClient(unk_D_800AA660*);

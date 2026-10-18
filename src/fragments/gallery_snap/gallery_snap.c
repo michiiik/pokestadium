@@ -749,7 +749,7 @@ void Gallery_SnapDrawGradientQuad(s32 arg0, s32 arg1, s32 arg2, s32 arg3, Color_
 
     Gfx_SetViewportDimensions(sp80, temp_s1->width, temp_s1->height);
 
-    gSPViewport(gDisplayListHead++, (u32)sp80 & 0x1FFFFFFF);
+    gSPViewport(gDisplayListHead++, (uintptr_t)sp80);
 
     guOrtho(sp84, 0.5f, temp_s1->width - 0.5f, temp_s1->height - 0.5f, 0.5f, -2.0f, 2.0f, 1.0f);
     Gfx_SetVertexAttributes(&temp_s2[0], arg0, arg1, -1, 0, 0, arg4->r, arg4->g, arg4->b, arg4->a);
@@ -765,9 +765,9 @@ void Gallery_SnapDrawGradientQuad(s32 arg0, s32 arg1, s32 arg2, s32 arg3, Color_
     gDPSetCombineMode(gDisplayListHead++, G_CC_SHADE, G_CC_SHADE);
     gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
     gSPPerspNormalize(gDisplayListHead++, 0xFFFF);
-    gSPMatrix(gDisplayListHead++, (u32)sp84 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    gSPMatrix(gDisplayListHead++, (u32)&D_8006F010 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gSPVertex(gDisplayListHead++, (u32)temp_s2 & 0x1FFFFFFF, 4, 0);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)sp84, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)&D_8006F010, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPVertex(gDisplayListHead++, (uintptr_t)temp_s2, 4, 0);
     gSP2Triangles(gDisplayListHead++, 0, 2, 3, 0, 0, 3, 1, 0);
 }
 
@@ -1241,7 +1241,7 @@ s32 Gallery_SnapGetResult(void) {
     return sp1C;
 }
 
-void Gallery_SnapMain(s32 arg0, s32 arg1) {
+s32 Gallery_SnapMain(s32 arg0, s32 arg1) {
     unk_func_80007444* sp24;
 
     main_pool_push_state('SNAP');
@@ -1269,5 +1269,5 @@ void Gallery_SnapMain(s32 arg0, s32 arg1) {
 
     main_pool_pop_state('SNAP');
 
-    Gallery_SnapGetResult();
+    return Gallery_SnapGetResult(); // PORT: the caller uses this result (on the N64 it was left in v0)
 }

@@ -262,7 +262,9 @@ f32 BattleScene_GetParticipantModelRadiusScaled(Battler* arg0) {
 }
 
 ModelNodeView* Battle_GetMoveEffectListEntry(Battler* arg0, s32 arg1) {
-    return arg0->unk_720->unk_14->unk_00[2]->unk_00[arg1];
+    // PORT: unk_14 is a loaded model table (unk_D_86002F30: header, then the node list at N64 offset 8); read as a
+    // ModelNodeView, the list is word 2, which is a different host offset.
+    return ((unk_D_86002F30*)arg0->unk_720->unk_14)->unk_08->unk_00[arg1];
 }
 
 s32 Battle_GetTrainerId(Battler* arg0, UNUSED s32 arg1) {

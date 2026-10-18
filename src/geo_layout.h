@@ -12,20 +12,30 @@
 #define CMD_SIZE_SHIFT (sizeof(void *) >> 3)
 #define CMD_PROCESS_OFFSET(offset) (((offset) & 3) | (((offset) & ~3) << CMD_SIZE_SHIFT))
 
-#define cur_geo_cmd_u8(offset) \
-    (gGeoLayoutCommand[CMD_PROCESS_OFFSET(offset)])
+// PORT: layout arrays hold one pointer-sized slot per original 32-bit word, and each slot holds the word's numeric
+// value (a literal like 0x0C00FFFF), so fields are decoded by shifting - the first original byte is the word's
+// most significant byte on any host. Pointers occupy a whole slot.
+// A layout is either in "slot" form (arrays compiled into the executable: one pointer-sized slot per original word)
+// or "packed" form (ROM blobs: the original big-endian 32-bit words, pointers as 32-bit link addresses). The form
+// follows from where the command pointer lies; see GeoSetCmd in geo_layout.c.
+extern int gGeoPacked;
+#define GL_WORD(offset) \
+    (gGeoPacked ? PORT_BE32(*(u32 *) &gGeoLayoutCommand[(offset) & ~3]) \
+                : (*(u32 *) &gGeoLayoutCommand[CMD_PROCESS_OFFSET((offset) & ~3)]))
+#define GL_U8(offset) ((u8) ((GL_WORD(offset) >> (24 - 8 * ((offset) & 3))) & 0xFF))
+#define GL_S16(offset) ((s16) (GL_WORD(offset) >> (16 - 8 * ((offset) & 2))))
+#define GL_U32(offset) GL_WORD(offset)
+// Packed pointers are returned as the raw 32-bit link address; consumers translate (Util_ConvertAddrToVirtAddr for
+// data, Port_ResolveCode for code).
+#define GL_PTR(offset) \
+    (gGeoPacked ? (void *) (uintptr_t) GL_WORD(offset) : (*(void **) &gGeoLayoutCommand[CMD_PROCESS_OFFSET(offset)]))
+#define GL_CMDSIZE(origSize) (gGeoPacked ? (((origSize) + 3) & ~3) : CMD_PROCESS_OFFSET(((origSize) + 3) & ~3))
 
-#define cur_geo_cmd_s16(offset) \
-    (*(s16 *) &gGeoLayoutCommand[CMD_PROCESS_OFFSET(offset)])
-
-#define cur_geo_cmd_s32(offset) \
-    (*(s32 *) &gGeoLayoutCommand[CMD_PROCESS_OFFSET(offset)])
-
-#define cur_geo_cmd_u32(offset) \
-    (*(u32 *) &gGeoLayoutCommand[CMD_PROCESS_OFFSET(offset)])
-
-#define cur_geo_cmd_ptr(offset) \
-    (*(void **) &gGeoLayoutCommand[CMD_PROCESS_OFFSET(offset)])
+#define cur_geo_cmd_u8(offset) GL_U8(offset)
+#define cur_geo_cmd_s16(offset) GL_S16(offset)
+#define cur_geo_cmd_s32(offset) ((s32) GL_U32(offset))
+#define cur_geo_cmd_u32(offset) GL_U32(offset)
+#define cur_geo_cmd_ptr(offset) GL_PTR(offset)
 
 typedef void (*GeoLayoutCommandProc)(void);
 

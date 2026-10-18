@@ -21,18 +21,9 @@ typedef struct unk_D_8250A288 {
     /* 0x08 */ s16 unk_08;
 } unk_D_8250A288; // size >= 0xA
 
-typedef struct unk_D_82508B30_03C {
-    /* 0x00 */ char unk00[0x1];
-    /* 0x01 */ u8 unk_01;
-    /* 0x02 */ char unk02[0x12];
-    /* 0x14 */ s32 unk_14;
-    /* 0x18 */ char unk18[0x6];
-    /* 0x1E */ s16 unk_1E;
-    /* 0x20 */ s16 unk_20;
-    /* 0x22 */ s16 unk_22;
-    /* 0x24 */ Vec3f unk_24;
-    /* 0x30 */ Vec3f unk_30;
-} unk_D_82508B30_03C; // size >= 0x3C
+// PORT: this was a partial view of a DisplayObject (0x3C bytes plus 0x12C bytes of padding in the containing struct);
+// the renderer fills the whole host-sized DisplayObject, so it is the real type here.
+typedef DisplayObject unk_D_82508B30_03C;
 
 typedef struct unk_D_8250A228 {
     /* 0x00 */ s16 unk_00;
@@ -65,10 +56,9 @@ typedef struct unk_D_82508B30 {
     /* 0x020 */ Vec3f unk_020;
     /* 0x02C */ unk_D_8250A228* unk_02C;
     /* 0x030 */ unk_D_8250A228* unk_030;
-    /* 0x034 */ s32 unk_034;
-    /* 0x034 */ s32 unk_038;
-    /* 0x03C */ unk_D_82508B30_03C unk_03C;
-    /* 0x078 */ char unk078[0x12C];
+    /* 0x034 */ struct unk_D_8250A228* unk_034; // PORT: pointers, as in unk_D_8250A228 (the same slots); were s32
+    /* 0x038 */ unk_D_80068BB0* unk_038;
+    /* 0x03C */ unk_D_82508B30_03C unk_03C; // PORT: a full DisplayObject (was 0x3C bytes + unk078[0x12C])
 } unk_D_82508B30; // size = 0x1A4
 
 typedef struct unk_D_8250A308 {

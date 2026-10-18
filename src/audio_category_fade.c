@@ -6,10 +6,16 @@
 #ifdef VERSION_JP
 // The Japanese release stops no audio streams here: it only queues the category fade.
 void Audio_FadeCategories(s32 arg0, u32 arg1) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     Audio_QueueFadeCategoryCommand(arg0, arg1);
 }
 #else
 void Audio_FadeCategories(s32 arg0, u32 arg1) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     s32 i;
 
     if (arg0 & 4) {
@@ -23,6 +29,9 @@ void Audio_FadeCategories(s32 arg0, u32 arg1) {
 #endif
 
 void Audio_FadeCategoriesAndStreams(s32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     s32 i;
 
     D_8007840C = 0;
@@ -35,9 +44,15 @@ void Audio_FadeCategoriesAndStreams(s32 arg0) {
 }
 
 void Audio_FadeCategoriesAndStreamsDefault(void) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     Audio_FadeCategoriesAndStreams(1);
 }
 
 void Audio_FadeCategoriesAndStreamsWithDuration(s32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     Audio_FadeCategoriesAndStreams(arg0);
 }

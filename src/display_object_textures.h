@@ -21,19 +21,20 @@ typedef struct unk_func_80019600 {
 typedef struct sp18_func_800198E4 {
     /* 0x00 */ s16 unk_00;
     /* 0x02 */ u16 unk_02;
-    /* 0x04 */ s32 unk_04;
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ s32 unk_0C;
-    /* 0x10 */ s32 unk_10;
+    // PORT64: same layout as unk_func_80019600 (the request is received through that type), pointers kept pointer-wide
+    /* 0x04 */ OSMesgQueue* unk_04;
+    /* 0x08 */ uintptr_t unk_08;
+    /* 0x0C */ uintptr_t unk_0C;
+    /* 0x10 */ void* unk_10;
     /* 0x14 */ s32 unk_14;
     /* 0x18 */ arg1_func_80010CA8 unk_18;
-} sp18_func_800198E4; // size = 0x1C
+} sp18_func_800198E4;
 
 typedef struct unk_D_800ABE10_A04 {
     /* 0x00 */ BinArchive* unk_00;
-    /* 0x04 */ s32 unk_04;
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ s32 unk_0C;
+    /* 0x04 */ BinArchive* unk_04; // PORT64: pointers (were s32)
+    /* 0x08 */ void* unk_08;
+    /* 0x0C */ uintptr_t unk_0C;
     /* 0x10 */ BinArchive* unk_10;
 } unk_D_800ABE10_A04; // size >= 0x14
 
@@ -57,10 +58,10 @@ Fragment* Asset_AllocAndCopyFragment(MainPoolState* arg0, PERSSZP* arg1, s32 arg
 Fragment* Fragment_LoadFromRomRange(MainPoolState* arg0, s32 start, s32 end, PERSSZP* arg3, s32 arg4);
 Fragment* Fragment_LoadFromLbaRange(MainPoolState* arg0, unk_func_800041C0* arg1, PERSSZP* arg2, u32 arg3);
 void Fragment_RelocateAndCommit(MainPoolState* arg0, u32 arg1, Fragment* arg2);
-Fragment* BinArchive_LoadFileFromRomRange(MainPoolState* arg0, BinArchive* arg1, BinArchiveFile* arg2, u32 arg3, s32 arg4);
-Fragment* BinArchive_LoadFileFromLbaRange(MainPoolState* arg0, BinArchive* arg1, BinArchiveFile* arg2, u32 arg3, s32 arg4);
-Fragment* BinArchive_LoadFileToPool(MainPoolState* arg0, BinArchive* arg1, s32 arg2, u32 arg3, s32 arg4);
-s32 Fragment_ProcessGeoLayout(MemoryBlock* arg0, Fragment* arg1, arg1_func_80010CA8 arg2);
+Fragment* BinArchive_LoadFileFromRomRange(MainPoolState* arg0, BinArchive* arg1, BinArchiveFile* arg2, uintptr_t arg3, s32 arg4);
+Fragment* BinArchive_LoadFileFromLbaRange(MainPoolState* arg0, BinArchive* arg1, BinArchiveFile* arg2, uintptr_t arg3, s32 arg4);
+Fragment* BinArchive_LoadFileToPool(MainPoolState* arg0, BinArchive* arg1, s32 arg2, uintptr_t arg3, s32 arg4);
+intptr_t Fragment_ProcessGeoLayout(MemoryBlock* arg0, Fragment* arg1, arg1_func_80010CA8 arg2);
 void Fragment_ProcessGeoLayoutList(MemoryBlock* arg0, arg1_func_80019420* arg1);
 void PokeIcon_LoadModelArchive(unk_func_80019600* arg0);
 void PokeIcon_LoadMultipleModels(unk_func_80019600* arg0);
@@ -70,7 +71,7 @@ ModelLoadContext* PokeIcon_AllocFramebuffers(u32 arg0);
 void PokeIcon_OpenModelArchives(void);
 s32 PokeIcon_RequestFrameLoad(ModelLoadContext* arg0, u16 arg1, arg1_func_80010CA8 arg2);
 s32 PokeIcon_RequestFrameLoadWithVariant(ModelLoadContext* arg0, u16 arg1, arg1_func_80010CA8 arg2, s16 arg3);
-s32 PokeIcon_RequestBackgroundLoad(ModelLoadContext* arg0, s32 arg1, s32 arg2);
+s32 PokeIcon_RequestBackgroundLoad(ModelLoadContext* arg0, intptr_t arg1, intptr_t arg2);
 s32 PokeIcon_ApplyLoadResult(ModelLoadContext* arg0, sp18_func_800198E4* arg1);
 s32 PokeIcon_PollFrameLoad(ModelLoadContext* arg0);
 s32 PokeIcon_PollBackgroundLoad(ModelLoadContext* arg0);
@@ -78,9 +79,9 @@ s32 PokeIcon_WaitFrameLoad(ModelLoadContext* arg0);
 s32 PokeIcon_WaitBackgroundLoad(ModelLoadContext* arg0);
 unk_D_86002F30* Model_LoadByArchiveIndex(s32 arg0);
 unk_D_86002F30* Model_LoadForPokemon(BattleMon* arg0);
-s32 Model_LoadWithScale(s32 arg0, s32 arg1);
+intptr_t Model_LoadWithScale(s32 arg0, s32 arg1);
 arg1_func_80019420* BattleAnim_LoadResourceTable(s32 arg0);
-Fragment* Fragment_LoadAndRelocateFromRomRange(MainPoolState* arg0, u32 arg1, s32 arg2, s32 arg3, PERSSZP* arg4, s32 arg5);
+Fragment* Fragment_LoadAndRelocateFromRomRange(MainPoolState* arg0, u32 arg1, intptr_t arg2, intptr_t arg3, PERSSZP* arg4, s32 arg5);
 
 
 #endif // _19840_H_

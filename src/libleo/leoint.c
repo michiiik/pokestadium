@@ -18,7 +18,7 @@ void leosetup_BM(void);
 u32 leochk_err_reg(void);
 
 void leointerrupt(void* arg) {
-    u32 result;
+    uintptr_t result;
     u32 tg_blocks;
 
     osCreateMesgQueue(&LEOc2ctrl_que, (OSMesg)&LEOc2ctrl_que_buf, 1);

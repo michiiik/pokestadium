@@ -13,6 +13,9 @@ u8 D_80078A1C[4] = { 0 };
 u8 D_80078A20[16] = { 0 };
 
 s32 func_80048060(s32 arg0, u32 arg1, u32 arg2, u32 arg3) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     u32 i;
     u32 temp_v0;
     u32 slot;
@@ -74,7 +77,7 @@ s32 func_80048060(s32 arg0, u32 arg1, u32 arg2, u32 arg3) {
     if (size & 1) {
         size++;
     }
-    Rom_DmaRead((u32)D_800FC700->seqArray[arg2].offset, D_800FC6DC, size);
+    Rom_DmaRead((uintptr_t)D_800FC700->seqArray[arg2].offset, D_800FC6DC, size);
     Audio_CopyDataWithCacheSync(D_800FC6DC, D_800FC6C0[slot], 0x44C);
 
 found:
@@ -128,6 +131,9 @@ block_38:
 }
 
 void Audio_FadeStoredSound(void) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
   if (D_80078A1C[0] != 0) {
       Audio_QueueFadeSoundCommand(D_80078A18, (s32)D_80078A1C[0]);
   }

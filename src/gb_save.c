@@ -11,14 +11,14 @@
 #include "src/stage_loader.h"
 
 static OSMesgQueue D_800AF750;
-static s32 D_800AF768;
+static OSMesg D_800AF768; // PORT64: message buffer (was s32)
 
 static Color_RGBA8 D_800758A0[] = {
     { 0xF0, 0xF0, 0xF0, 0xFF },
     { 0xE1, 0xE1, 0xE1, 0xFF },
 };
 
-static u32 D_800758A8[] = {
+static uintptr_t D_800758A8[] = { // PORT64: holds addresses
     D_04001878, D_040018E0, D_04001948, D_040019B0, D_04001A18, D_04001A80, D_04001AF0,
     D_04001B58, D_04001BC0, D_04001C28, 0x10,       0x10,       0x10,       D_4001010,
 };
@@ -123,7 +123,7 @@ s32 Ui_AdjustVerticalSelection(unk_func_8002DCB8_arg0* arg0, s32 arg1) {
     return ret;
 }
 
-s32 Ui_HandleVerticalSelectionInput(s32 arg0) {
+s32 Ui_HandleVerticalSelectionInput(intptr_t arg0) {
     s32 sp1C = Input_GetRepeatedDPad() & 0xFFFF;
 
     Ui_AdjustVerticalSelection(arg0, sp1C);
@@ -432,7 +432,7 @@ s32 BattleMon_CountMoves(BattleMon* arg0) {
     return i;
 }
 
-ret_func_8002ED08* Move_GetDisplayInfo(s32 arg0) {
+ret_func_8002ED08* Move_GetDisplayInfo(intptr_t arg0) {
     if ((arg0 <= 0) || (arg0 > 165)) {
         return NULL;
     }
@@ -510,7 +510,7 @@ void Ui_SendNullMessage(void) {
     osSendMesg(&D_800AF750, NULL, 1);
 }
 
-void Ui_ReceiveMessage(OSMesg arg0) {
+void Ui_ReceiveMessage(s32* arg0) { // PORT64: callers pass an s32; an untyped pointer made the receive write 8 bytes
     osRecvMesg(&D_800AF750, arg0, 1);
 }
 

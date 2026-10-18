@@ -9,7 +9,7 @@ struct UnkStruct800006C4_2 {
     s32 unk1C;
     void* vaddr;
     s32 size;
-    s32 unk28;
+    OSMesgQueue* unk28; // reply queue, may be NULL
 };
 
 struct UnkStruct80000A80 {

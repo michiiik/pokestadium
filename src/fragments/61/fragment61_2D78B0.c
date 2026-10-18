@@ -23,6 +23,7 @@
 BinArchive* D_84211B30;
 void* D_84211B34;
 RentalRoster* D_84211B38;
+void Port_BattleMonFromBE(BattleMon* dst, const BattleMon* src);
 char** D_84211B3C;
 char** D_84211B40;
 char** D_84211B44;
@@ -42,11 +43,12 @@ u8 D_84210D4C[] = {
     0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0F,
 };
 
+extern u32 port_rom_read_u32(u32 romOffset); // PORT: cartridge ROM is not memory-mapped on the host
 s32 TeamSelection_CheckCartRemoved(s32 arg0) {
     u32 temp_a0 = osSetIntMask(1);
 
     if (!(IO_READ(PI_STATUS_REG) & (PI_STATUS_DMA_BUSY | PI_STATUS_IO_BUSY)) &&
-        (((D_B0000800 & 0xFFFF) & 0xFFFF) != 1)) {
+        ((port_rom_read_u32(0x800) & 0xFFFF) != 1)) {
         arg0 = -0x80;
     }
     osSetIntMask(temp_a0);
@@ -309,7 +311,7 @@ void TeamSelection_DrawTitleHeader(void) {
     Font_EndTexturedTextRendering();
 }
 
-void TeamSelection_DrawCategoryRow(s16 arg0, s16 arg1, s16 arg2, s32 arg3) {
+void TeamSelection_DrawCategoryRow(s16 arg0, s16 arg1, s16 arg2, intptr_t arg3) {
     if (arg2 == D_8423D3F8) {
         Gfx_SetEnvColor(0xFF, 0xFF, 0, 0xFF);
     } else {
@@ -1063,6 +1065,18 @@ void Rental_LoadRosterForMode(void) {
             var_a1 += 0x1F;
         }
         D_84211B38 = BinArchive_GetFile(temp_a0, var_a1);
+        // PORT: the roster is big-endian ROM data, swapped in place once. The archive may hand out the same buffer
+        // again, so whether it is already swapped is read from the count (small in host order, huge when not).
+        if ((D_84211B38 != NULL) && (D_84211B38->unk_00 > 0x1000)) {
+            u32 n = Port_Swap32(D_84211B38->unk_00);
+            u32 k;
+
+            D_84211B38->unk_00 = n;
+            for (k = 0; k < n; k++) {
+                BattleMon tmp = D_84211B38->unk_04[k];
+                Port_BattleMonFromBE(&D_84211B38->unk_04[k], &tmp);
+            }
+        }
     }
 }
 

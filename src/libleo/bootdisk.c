@@ -1,5 +1,6 @@
 #include <ultra64.h>
 #include "libleo/internal.h"
+#include "include/functions.h"
 
 void LeoBootGame(void* entry);
 void __LeoBootGame2(void* entry);
@@ -13,8 +14,8 @@ void LeoBootGame(void* entry) {
     // Descramble __LeoBootGame2
     ptr = (u8*)&__LeoBootGame2;
     // Define difference key (a sum of each byte of __LeoBootGame2 address)
-    key = ((((u32)ptr & 0xFF000000) >> 0x18) + (((u32)ptr & 0x00FF0000) >> 0x10) + (((u32)ptr & 0x0000FF00) >> 0x08) +
-           (((u32)ptr & 0x000000FF))) &
+    key = ((((uintptr_t)ptr & 0xFF000000) >> 0x18) + (((uintptr_t)ptr & 0x00FF0000) >> 0x10) + (((uintptr_t)ptr & 0x0000FF00) >> 0x08) +
+           (((uintptr_t)ptr & 0x000000FF))) &
           0xFF;
     for (i = 0; i < 0x324; i += 4) {
         ptr[0];

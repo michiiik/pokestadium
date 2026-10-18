@@ -13,8 +13,8 @@ void DisplayList_InitTwoSegmentChain(s32 arg0, DisplayListState* state) {
     DisplayListAddresses* addresses;
 
     if (arg0 == 2) {
-        addresses = state->addresses;
-        gfx = Gfx_AllocDisplayList(0x18);
+        addresses = (DisplayListAddresses*)Port_PdlWords(state->addresses);
+        gfx = Gfx_AllocDisplayList(GFX_N64_BYTES(0x18));
         state->gfx = gfx;
         DisplayList_BuildTwoSegmentChain(gfx, addresses);
     }
@@ -32,8 +32,8 @@ void DisplayList_InitConditionalSegment(s32 arg0, DisplayListState* state) {
     DisplayListAddresses* addresses;
 
     if (arg0 == 2) {
-        addresses = state->addresses;
-        gfx = Gfx_AllocDisplayList(0x50);
+        addresses = (DisplayListAddresses*)Port_PdlWords(state->addresses);
+        gfx = Gfx_AllocDisplayList(GFX_N64_BYTES(0x50));
         state->gfx = gfx;
         DisplayList_BuildConditionalSegment(gfx, addresses);
     }

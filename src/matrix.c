@@ -591,16 +591,18 @@ void MtxF_TransformVec3s(MtxF* matrix, Vec3s* dest) {
 #define GET_LOW_S16_OF_32(var) (((s16*)&(var))[1])
 
 void MtxF_ToFixed(MtxF* dest, MtxF* src) {
-    s32 asFixedPoint;
-    s32 i;
-    s16* a3 = (s16*)dest;      // all integer parts stored in first 16 bytes
-    s16* t0 = (s16*)dest + 16; // all fraction parts stored in last 16 bytes
+    // PORT: the N64 layout is 16 s16 integer parts then 16 s16 fractions in big-endian memory. Fast3D reads the matrix
+    // as 32-bit words (two packed 16-bit fields each), so build the words explicitly instead of storing s16 halves.
+    u32* words = (u32*)dest;
     f32* t1 = (f32*)src;
+    s32 i;
 
-    for (i = 0; i < 16; i++) {
-        asFixedPoint = *t1++ * (1 << 16);         //! float-to-integer conversion responsible for PU crashes
-        *a3++ = GET_HIGH_S16_OF_32(asFixedPoint); // integer part
-        *t0++ = GET_LOW_S16_OF_32(asFixedPoint);  // fraction part
+    for (i = 0; i < 16; i += 2) {
+        s32 e1 = (s32)(t1[i] * (1 << 16));
+        s32 e2 = (s32)(t1[i + 1] * (1 << 16));
+
+        words[i / 2] = ((u32)e1 & 0xFFFF0000) | (((u32)e2 >> 16) & 0xFFFF);
+        words[8 + i / 2] = (((u32)e1 << 16) & 0xFFFF0000) | ((u32)e2 & 0xFFFF);
     }
 }
 
@@ -935,7 +937,7 @@ u32 Color_AdjustRGBA8(u32 arg0, arg1_func_80010CA8 arg1) {
     s32 a;
     s32 b;
 
-    arg.rgba = arg0;
+    arg.rgba = PORT_BE32(arg0); /* PORT: .rgba holds the bytes r,g,b,a in memory order; the numeric 0xRRGGBBAA form needs a swap on this host */
 
     if (arg.a > 0) {
         Color_RGBA8ToHSV(arg, &sp2C);
@@ -967,5 +969,5 @@ u32 Color_AdjustRGBA8(u32 arg0, arg1_func_80010CA8 arg1) {
         Color_HSVToRGBA8(&arg, &sp2C, arg.a);
     }
 
-    return arg.rgba;
+    return PORT_BE32(arg.rgba);
 }

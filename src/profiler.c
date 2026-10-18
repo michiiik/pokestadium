@@ -1,6 +1,7 @@
 #include "global.h"
 #include "profiler.h"
 #include "scheduler.h"
+#include "src/stage_loader.h"
 
 struct Profiler gProfiler;
 

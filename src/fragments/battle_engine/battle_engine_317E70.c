@@ -102,7 +102,7 @@ void BattleAnim_EmitParticleBurst(Particle* arg0, ParticleUpdateCallback arg1, P
 
     for (i = 0; i < arg3; i++) {
         temp_v0 = Particle_New();
-        if ((u32)temp_v0 == -1) {
+        if ((uintptr_t)temp_v0 == -1) {
             break;
         }
         BattleAnim_CloneParticleState(temp_v0, arg0, arg1, arg2, i);
@@ -116,7 +116,7 @@ void BattleAnim_EmitParticleBurstWithMetadata(Particle* arg0, ParticleUpdateCall
 
     for (i = 0; i < arg3; i++) {
         temp_v0 = Particle_New();
-        if ((u32)temp_v0 == -1) {
+        if ((uintptr_t)temp_v0 == -1) {
             break;
         }
         BattleAnim_CloneParticleState(temp_v0, arg0, arg1, arg2, i);
@@ -128,7 +128,7 @@ void BattleAnim_EmitParticleBurstWithMetadata(Particle* arg0, ParticleUpdateCall
 Particle* BattleAnim_CreateProceduralParticle(s16 arg0, s16 arg1, s32 arg2, f32 arg3) {
     Particle* temp_v0 = Particle_New();
 
-    if ((u32)temp_v0 != -1) {
+    if ((uintptr_t)temp_v0 != -1) {
         Vec3f_SetComponentsDuplicate(&temp_v0->unk_38, arg0, arg1, 0.0f);
         Particle_UpdateWorldTransform(temp_v0);
         Vec3s_SetComponents(&temp_v0->unk_94, arg2, arg2, arg2);
@@ -345,7 +345,7 @@ void BattleAnim_UpdateParticlePool(void) {
 }
 
 void BattleAnim_InitializeParticleFromEffect(Particle* arg0, Battler* arg1, BattleAnimEffectSlot* arg2, s16 arg3) {
-    if ((u32)arg0 == -1) {
+    if ((uintptr_t)arg0 == -1) {
         return;
     }
 
@@ -640,7 +640,7 @@ BattleAnimEffectSlot* BattleAnim_CreateEffectSlot(s32 arg0, s32 arg1, s8 arg2, f
                               Battler* arg5, s16 arg6, s16 arg7, u8 arg8, u8 arg9, u8 argA, u8 argB) {
     BattleAnimEffectSlot* sp1C = BattleAnim_AllocEffectSlot();
 
-    if ((u32)sp1C != -1) {
+    if ((uintptr_t)sp1C != -1) {
         sp1C->unk_0E = arg0 + gBattleAnimSpawnDelay;
         sp1C->unk_0C = arg1;
         sp1C->unk_14 = arg2;
@@ -909,7 +909,7 @@ unk_D_86002F34_00C* BattleAnim_GetCameraContext(void) {
 Particle* BattleAnim_SpawnSecondaryOwnerParticle(Vec3f arg0, u8 arg1) {
     Particle* sp1C = Particle_New();
 
-    if ((u32)sp1C != -1) {
+    if ((uintptr_t)sp1C != -1) {
         ParticleMath_CopyVec3f(&sp1C->unk_68, &arg0);
         BattleAnim_ConfigureSecondaryOwnerParticleVariant(sp1C, arg1);
         sp1C->unk_10 = gBattleAnimSecondaryOwner;
@@ -922,7 +922,7 @@ Particle* BattleAnim_SpawnSecondaryOwnerParticle(Vec3f arg0, u8 arg1) {
 }
 
 void BattleAnim_SetParticlePosition(Particle* arg0, Vec3f arg1) {
-    if ((u32)arg0 != -1) {
+    if ((uintptr_t)arg0 != -1) {
         arg0->unk_68.x = arg1.x;
         arg0->unk_68.y = arg1.y;
         arg0->unk_68.z = arg1.z;

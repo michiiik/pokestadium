@@ -21,7 +21,7 @@ typedef struct unk_D_8423D3A8 {
     /* 0x0C */ s16 unk_0C;
     /* 0x0E */ unk_D_800A7440 unk_0E;
     /* 0x16 */ unk_D_800A7440 unk_16;
-    /* 0x20 */ s32 unk_20;
+    /* 0x20 */ u8* unk_20; // PORT64: the preview image (PokeIcon_RenderPreview), was s32
     /* 0x24 */ ModelLoadContext* unk_24;
     /* 0x28 */ unk_func_8001B1FC* unk_28;
     /* 0x2C */ unk_D_838067F0_0168_0000* unk_2C;
@@ -172,7 +172,7 @@ void TeamSelection_DrawRegistrationHeaderBackdrop(s16 arg0, s16 arg1);
 void TeamSelection_DrawCategoryBanner(s16 arg0, s16 arg1, s16 arg2);
 void TeamSelection_DrawGradientPanel(s16 arg0, s16 arg1, s16 arg2, Color_RGBA8* arg3, Color_RGBA8* arg4);
 void TeamSelection_DrawTitleHeader(void);
-void TeamSelection_DrawCategoryRow(s16 arg0, s16 arg1, s16 arg2, s32 arg3);
+void TeamSelection_DrawCategoryRow(s16 arg0, s16 arg1, s16 arg2, intptr_t arg3);
 void TeamSelection_DrawCategoryScreen(s16 arg0, s16 arg1, s16 arg2);
 void TeamSelection_WaitForConfirm(void);
 s32 TeamSelection_HandleConfirmInput(void);
@@ -278,7 +278,7 @@ s32 Rental_CarouselIsIdle(RentalCarouselState*);
 void TeamSelection_Preview_DrawOptionText(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s8* arg4);
 void TeamSelection_Preview_DrawHeader(s16 arg0, s16 arg1, s16 arg2, s16 arg3);
 void TeamSelection_Preview_DrawTypeIcon(s16 arg0, s16 arg1, s16 arg2);
-void TeamSelection_Preview_DrawMovePanel(s16 arg0, s16 arg1, s32 arg2);
+void TeamSelection_Preview_DrawMovePanel(s16 arg0, s16 arg1, u8* arg2);
 s16 TeamSelection_Preview_CenterMoveText(s16 arg0, s16 arg1, char* arg2);
 void TeamSelection_Preview_DrawPokemonDetails(unk_D_8423D3A8* arg0, s32 arg1);
 void func_8420C360(unk_D_8423D3A8* arg0);

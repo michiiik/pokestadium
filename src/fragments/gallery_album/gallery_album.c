@@ -1191,7 +1191,7 @@ s32 Gallery_AlbumGetResult(unk_D_83407B38* arg0) {
     return sp1C;
 }
 
-void Gallery_AlbumMain(s32 arg0, s32 arg1) {
+s32 Gallery_AlbumMain(s32 arg0, s32 arg1) {
     unk_func_80007444* sp24;
 
     main_pool_push_state('ALBM');
@@ -1220,5 +1220,5 @@ void Gallery_AlbumMain(s32 arg0, s32 arg1) {
 
     main_pool_pop_state('ALBM');
 
-    Gallery_AlbumGetResult(&D_83503FC8);
+    return Gallery_AlbumGetResult(&D_83503FC8); // PORT: the caller uses this result (on the N64 it was left in v0)
 }

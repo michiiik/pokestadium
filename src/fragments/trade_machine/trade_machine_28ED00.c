@@ -49,12 +49,12 @@ static Gfx D_82F13D70[] = {
     gsSPEndDisplayList(),
 };
 
-static u32 D_82F13E58[] = {
+static uintptr_t D_82F13E58[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_82F13CB0, 0x05000000, 0x22050000,
     0x00000000, 0x08000000, Trade_DrawBox3DModel, D_82F13D70, 0x06000000, 0x01000000,
 };
 
-static u32 D_82F13E8C[] = {
+static uintptr_t D_82F13E8C[] = { // PORT64: holds addresses
     0x0C000000, 0x05000000, 0x0B00002D,  0x00000000, 0x028001E0, 0x00000000, 0xFDBD0000, 0x00000243,
     0x05000000, 0x0D000000, 0x05000000,  0x14000000, 0x002D013B, 0xFFFFFF32, 0x16FFFFFF, 0x0F000002,
     0x05000000, 0x0A000000, &D_800AC840, 0x06000000, 0x06000000, 0x06000000, 0x06000000, 0x01000000,
@@ -243,7 +243,7 @@ void Trade_SetBoxSlotAnimState(unk_D_82F20A88* arg0, s16 arg1) {
             break;
 
         case 1:
-            if ((((s32)arg0 - (s32)D_82F20A88) / 400) == 0) {
+            if ((((intptr_t)arg0 - (intptr_t)D_82F20A88) / 400) == 0) {
                 arg0->unk_006 = 0xF8;
                 arg0->unk_008 = 0xB8;
             }
@@ -266,7 +266,7 @@ void Trade_SetBoxSlotAnimState(unk_D_82F20A88* arg0, s16 arg1) {
             break;
 
         case 2:
-            arg0->unk_006 = ((((s32)arg0 - (s32)D_82F20A88) / 400) * 0x88) + 0x30;
+            arg0->unk_006 = ((((intptr_t)arg0 - (intptr_t)D_82F20A88) / 400) * 0x88) + 0x30;
             arg0->unk_008 = 0x17C;
             arg0->unk_00A = arg0->unk_006;
             arg0->unk_010 = 0xA;
@@ -290,7 +290,7 @@ void Trade_SetBoxSlotAnimState(unk_D_82F20A88* arg0, s16 arg1) {
             arg0->unk_010 = 0;
             arg0->unk_00A = arg0->unk_006;
 
-            if ((((s32)arg0 - (s32)D_82F20A88) / 400) & 1) {
+            if ((((intptr_t)arg0 - (intptr_t)D_82F20A88) / 400) & 1) {
                 arg0->unk_00C = -0x8000;
             } else {
                 arg0->unk_00C = 0;
@@ -301,7 +301,7 @@ void Trade_SetBoxSlotAnimState(unk_D_82F20A88* arg0, s16 arg1) {
             break;
 
         case 3:
-            arg0->unk_006 = ((((s32)arg0 - (s32)D_82F20A88) / 400) * 0x88) + 0x30;
+            arg0->unk_006 = ((((intptr_t)arg0 - (intptr_t)D_82F20A88) / 400) * 0x88) + 0x30;
             arg0->unk_008 = 0x17C;
             arg0->unk_010 = 0xA;
             arg0->unk_00C = 0;

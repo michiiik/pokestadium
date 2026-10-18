@@ -1,8 +1,47 @@
+#include "src/util.h"
+#include <stdlib.h>
 #include "minigame_actor_framework.h"
 #include "src/gfx_buffer.h"
 #include "src/math_util.h"
 #include "src/memory.h"
 #include "src/geo_render.h"
+
+// PORT: the MiniFx geo callbacks are named by ROM model layouts (through fragment 31's jump table): their callback data
+// is big-endian with 32-bit addresses; converted once (cached by source address).
+extern int Port_IsRawData(const void* p);
+
+static u32 Port_MiniFxBE32(const u8* p) {
+    return ((u32)p[0] << 24) | ((u32)p[1] << 16) | ((u32)p[2] << 8) | p[3];
+}
+
+static unk_D_86002F34_000_014* Port_MiniFxTexPair(void* arg) {
+    static struct {
+        const u8* src;
+        unk_D_86002F34_000_014* out;
+    } sCache[16];
+    static s32 sCount;
+    const u8* p = (const u8*)Util_ConvertAddrToVirtAddr((uintptr_t)arg);
+    unk_D_86002F34_000_014* out;
+    s32 i;
+
+    if (p == NULL || !Port_IsRawData(p)) {
+        return (unk_D_86002F34_000_014*)p;
+    }
+    for (i = 0; i < sCount; i++) {
+        if (sCache[i].src == p) {
+            return sCache[i].out;
+        }
+    }
+    out = calloc(1, sizeof(*out));
+    out->unk_00 = (u8*)Util_ConvertAddrToVirtAddr(Port_MiniFxBE32(p));
+    out->unk_04 = (u8*)Util_ConvertAddrToVirtAddr(Port_MiniFxBE32(p + 4));
+    if (sCount < 16) {
+        sCache[sCount].src = p;
+        sCache[sCount].out = out;
+        sCount++;
+    }
+    return out;
+}
 
 void MiniFx_Init(void) {
     gParticlePool = main_pool_alloc(sizeof(Particle) * 300, 0);
@@ -14,7 +53,7 @@ void MiniFx_Init(void) {
     gMiniFxEmitterIndex = 0;
 }
 
-s32 MiniFx_AllocEmitter(void) {
+intptr_t MiniFx_AllocEmitter(void) {
     s32 i;
     s32 var_v0 = gMiniFxEmitterIndex;
     ParticleEmitter* var_v1 = &gMiniFxEmitters[var_v0];
@@ -57,7 +96,7 @@ s32 MiniFx_ConfigureEmitter(s32 arg0, s32 arg1, s8 arg2, f32 arg3, Vec3f arg4, V
                   ParticleDescriptor* argA, s32 argB, u8 argC, s16 argD, u8 argE, u8 argF, u8 arg10) {
     ParticleEmitter* temp_v0 = (ParticleEmitter*)MiniFx_AllocEmitter();
 
-    if ((s32)temp_v0 != -1) {
+    if ((intptr_t)temp_v0 != -1) {
         temp_v0->unk_28 = arg0;
         temp_v0->unk_26 = arg1;
         temp_v0->unk_2A = arg2;
@@ -82,7 +121,7 @@ s32 MiniFx_ConfigureEmitter(s32 arg0, s32 arg1, s8 arg2, f32 arg3, Vec3f arg4, V
         temp_v0->unk_2F = arg10;
     }
 
-    return (s32)temp_v0;
+    return (intptr_t)temp_v0;
 }
 
 void MiniFx_ConfigureOneShotEmitter(s32 arg0, f32 arg1, Vec3f arg2, ParticleUpdateCallback arg3, ParticleDescriptor* arg4, s16 arg5,
@@ -104,7 +143,7 @@ void MiniFx_ConfigureEmitterWithPeriodAndRepeat(s32 arg0, s32 arg1, s8 arg2, f32
 }
 
 void MiniFx_ApplyEmitterToParticle(Particle* arg0, ParticleEmitter* arg1, s16 arg2) {
-    if ((s32)arg0 != -1) {
+    if ((intptr_t)arg0 != -1) {
         while (arg0 != NULL) {
             arg0->unk_28 = arg1->unk_00;
 
@@ -591,7 +630,7 @@ void MiniFx_BuildParticleRenderListVariantA(Gfx* arg0, unk_D_86002F34_000_014* a
 void MiniFx_GraphNodeBuildParticleRenderListVariantA(s32 arg0, arg1_func_87902F80* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 30);
-        MiniFx_BuildParticleRenderListVariantA(arg1->unk_18, arg1->node.callbackArg, D_8006F084);
+        MiniFx_BuildParticleRenderListVariantA(arg1->unk_18, Port_MiniFxTexPair(arg1->node.callbackArg), D_8006F084);
     }
 }
 
@@ -619,6 +658,6 @@ void MiniFx_BuildParticleRenderListVariantB(Gfx* arg0, unk_D_86002F34_000_014* a
 void MiniFx_GraphNodeBuildParticleRenderListVariantB(s32 arg0, arg1_func_87902F80* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 30);
-        MiniFx_BuildParticleRenderListVariantB(arg1->unk_18, arg1->node.callbackArg, D_8006F084);
+        MiniFx_BuildParticleRenderListVariantB(arg1->unk_18, Port_MiniFxTexPair(arg1->node.callbackArg), D_8006F084);
     }
 }

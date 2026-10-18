@@ -11,6 +11,7 @@
 #include "src/gfx_rect.h"
 #include "src/memory.h"
 #include "src/stage_loader.h"
+#include "src/pokemon_stats.h"
 
 void N64Logo_DrawLogoTexture(void) {
     s32 var_t4;

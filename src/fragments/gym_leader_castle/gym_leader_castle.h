@@ -6,7 +6,7 @@
 typedef struct Glc_Trainer {
     /* 0x00 */ u8 loaded;
     /* 0x02 */ s16 portrait_x;
-    /* 0x04 */ s32 portrait;
+    /* 0x04 */ u8* portrait; // PORT64: the portrait image (was s32)
     /* 0x08 */ char* name;
 } Glc_Trainer; // size = 0xC
 

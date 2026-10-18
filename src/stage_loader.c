@@ -328,14 +328,14 @@ void StageLoader_SetupFrame(void) {
     Gfx_SetDefaultRenderState();
     Gfx_SetDefaultGeometryState();
 
-    gSPMatrix(gDisplayListHead++, (u32)&D_80068BC8 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gSPMatrix(gDisplayListHead++, (u32)&D_800A7468 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)&D_80068BC8, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, (uintptr_t)&D_800A7468, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     gSPPerspNormalize(gDisplayListHead++, 0xFFFF);
 
     if (stage->zoom == 1) {
-        gSPViewport(gDisplayListHead++, (u32)&D_80068C18 & 0x1FFFFFFF);
+        gSPViewport(gDisplayListHead++, (uintptr_t)&D_80068C18);
     } else {
-        gSPViewport(gDisplayListHead++, (u32)&D_80068C08 & 0x1FFFFFFF);
+        gSPViewport(gDisplayListHead++, (uintptr_t)&D_80068C08);
     }
 
     Gfx_SetScissorRect(&gDisplayListHead, 0, 0, stage->unk_00, stage->unk_02);
@@ -597,7 +597,7 @@ void TextRenderer_SetupGlyphState(void) {
     gDPSetPrimColor(D_800A74B0++, 0, 0, 255, 255, 255, 255);
     gDPSetRenderMode(D_800A74B0++, G_RM_TEX_EDGE, G_RM_TEX_EDGE2);
     gDPSetCombineMode(D_800A74B0++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
-    gDPLoadTextureBlock_4b(D_800A74B0++, (u32)D_80068CB0 & 0x1FFFFFFF, G_IM_FMT_IA, 96, 48, 0,
+    gDPLoadTextureBlock_4b(D_800A74B0++, (uintptr_t)D_80068CB0, G_IM_FMT_IA, 96, 48, 0,
                            G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 7, 6, G_TX_NOLOD, G_TX_NOLOD);
 }
 

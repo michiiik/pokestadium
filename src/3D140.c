@@ -1,5 +1,5 @@
 #include "3D140.h"
-#include "lib/ultralib/include/PR/leo.h"
+#include <PR/leo.h>
 #include "src/audio_commands.h"
 #include "src/libnumus/player.h"
 #include "src/3D140.h"
@@ -213,6 +213,9 @@ u8 D_80077DE8[8] = {
 void Audio_UpdateBattleAudioFrame(void);
 
 void amCreateAudioMgr(ALSynConfig* c, amConfig* amc, u32 num_dma_buffers, s32 arg3, s32 arg4) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     u32 i;
     f32 fsize;
 
@@ -274,7 +277,10 @@ void amCreateAudioMgr(ALSynConfig* c, amConfig* amc, u32 num_dma_buffers, s32 ar
     AudioStream_Init(c->heap, minFrameSize, maxFrameSize);
 }
 
-s32 __amDMA(s32 addr, s32 len, void* state) {
+s32 __amDMA(intptr_t addr, s32 len, void* state) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     void* foundBuffer;
     s32 delta;
     AMDMABuffer* sp34;
@@ -351,6 +357,9 @@ s32 __amDMA(s32 addr, s32 len, void* state) {
 }
 
 OSTask* Audio_CreateFrameTask(OSTask* arg0) {
+#ifdef PORT_NO_AUDIO
+    return NULL;
+#endif
     s16* audioPtr;
     Acmd* cmdp;
     s32 cmdLen;
@@ -388,7 +397,7 @@ OSTask* Audio_CreateFrameTask(OSTask* arg0) {
 
     sp38.t.type = M_AUDTASK;
     sp38.t.ucode_boot = &rspbootTextStart;
-    sp38.t.ucode_boot_size = (s32)_binary_assets_us_F3DEX2_bin_start - (s32)rspbootTextStart;
+    sp38.t.ucode_boot_size = (intptr_t)_binary_assets_us_F3DEX2_bin_start - (intptr_t)rspbootTextStart;
     sp38.t.flags = 0;
     sp38.t.ucode = &aspMainTextStart;
     sp38.t.ucode_data = &aspMainDataStart;
@@ -468,6 +477,9 @@ OSTask* Audio_CreateFrameTask(OSTask* arg0) {
 }
 
 ALDMAproc __amDmaNew(AMDMAState** state) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     if (!dmaState.initialized) {
         dmaState.firstUsed = NULL;
         dmaState.firstFree = &dmaBuffs[0];
@@ -482,6 +494,9 @@ ALDMAproc __amDmaNew(AMDMAState** state) {
 #define FRAME_LAG 1
 
 void __clearAudioDMA(void) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     s32 i;
     void* sp40;
     AMDMABuffer* var_s0_2;
@@ -519,6 +534,9 @@ void __clearAudioDMA(void) {
 
 
 void Cry_SetEnabled(s32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     const f32 D_8007C7C0 = 0.8000000119f;
     if (arg0 != 0) {
         func_800498A8(0x7D00, 0x78, 0x640);
@@ -530,6 +548,9 @@ void Cry_SetEnabled(s32 arg0) {
 }
 
 void Cry_PlayFromPokedex(s32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     if (D_80077D90[0] == 0) {
         func_800498A8(0x7D00, 0x78, 0x320);
         D_80077D90[0] = 1;
@@ -542,6 +563,9 @@ void Cry_PlayFromPokedex(s32 arg0) {
 }
 
 void func_8003D32C(void) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     switch (D_80077D9C[0]) {
         case 1:
             Audio_StartVolumeTransition(D_80078E70, 0x50, 0x18, 3);
@@ -587,10 +611,16 @@ void func_8003D32C(void) {
 }
 
 s32 Cry_IsPlaying(void) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     return D_80077D90[0];
 }
 
 s32 Audio_SetEnabled(s32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     if (arg0 == 0) {
         if (mus_free_voices_count != D_800FCAD8) {
             return 0;
@@ -606,6 +636,9 @@ s32 Audio_SetEnabled(s32 arg0) {
 }
 
 s32 Audio_GetDiskReadyStatus(u8* arg0) {
+#ifdef PORT_NO_AUDIO
+    return 0;
+#endif
     if (D_80077DAC == 0) {
         *arg0 = 7;
         return 8;
@@ -615,6 +648,9 @@ s32 Audio_GetDiskReadyStatus(u8* arg0) {
 }
 
 void Audio_SetDiskReadyPolling(s32 arg0) {
+#ifdef PORT_NO_AUDIO
+    return;
+#endif
     if (arg0 == 1) {
         D_80077DAC = 1;
         return;

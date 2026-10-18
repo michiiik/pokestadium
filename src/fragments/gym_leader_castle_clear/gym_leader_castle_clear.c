@@ -77,7 +77,7 @@ static Gfx D_83101C60[] = {
     gsSPEndDisplayList(),
 };
 
-static u32 D_83101D08[] = {
+static uintptr_t D_83101D08[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_83101BE0, 0x05000000, 0x22050000,
     0x00000000, 0x08000000, Glc_GeoBannerCallback, 0x00000000, 0x06000000, 0x01000000, 0x00000000,
 };
@@ -100,12 +100,12 @@ static Gfx D_83101D80[] = {
     gsSPEndDisplayList(),
 };
 
-static u32 D_83101DE8[] = {
+static uintptr_t D_83101DE8[] = { // PORT64: holds addresses
     0x17000000, 0x00000000, 0x00000000,    0x00000000, D_83101D40, 0x05000000, 0x22050000,
     0x00000000, 0x08000000, Glc_GeoSpriteCallback, 0x00000000, 0x06000000, 0x01000000,
 };
 
-static u32 D_83101E1C[] = {
+static uintptr_t D_83101E1C[] = { // PORT64: holds addresses
     0x0C000000,  0x05000000, 0x0B00002D, 0x00000000, 0x028001E0, 0x00000000, 0xFDBD0000,
     0x00000243,  0x05000000, 0x0D000000, 0x05000000, 0x0F000002, 0x05000000, 0x0A000000,
     &D_800AC840, 0x06000000, 0x06000000, 0x06000000, 0x06000000, 0x01000000,

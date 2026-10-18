@@ -106,7 +106,7 @@ typedef struct unk_D_86B0FA78 {
 
 typedef struct unk_D_86B0FA50 {
     /* 0x00 */ char unk00[0x80];
-    /* 0x80 */ s32 unk_80;
+    /* 0x80 */ u8* unk_80; // PORT64: the panel texture (was s32)
     /* 0x84 */ s32 unk_84;
     /* 0x88 */ s32 unk_88;
     /* 0x8C */ s32 unk_8C;

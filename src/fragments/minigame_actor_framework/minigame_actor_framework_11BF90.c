@@ -1,8 +1,53 @@
+#include "src/util.h"
+#include <stdlib.h>
 #include "minigame_actor_framework.h"
 #include "src/display_object_textures.h"
 #include "src/model_renderer.h"
 #include "src/geo_render.h"
 #include "src/memory.h"
+
+// PORT: the MiniFx geo callbacks are named by ROM model layouts (through fragment 31's jump table): their callback data
+// is big-endian with 32-bit addresses; converted once (cached by source address).
+extern int Port_IsRawData(const void* p);
+
+static u32 Port_MiniFxBE32(const u8* p) {
+    return ((u32)p[0] << 24) | ((u32)p[1] << 16) | ((u32)p[2] << 8) | p[3];
+}
+
+static arg1_func_87903D64_014* Port_MiniFxColorRamp(void* arg) {
+    static struct {
+        const u8* src;
+        arg1_func_87903D64_014* out;
+    } sCache[16];
+    static s32 sCount;
+    const u8* p = (const u8*)Util_ConvertAddrToVirtAddr((uintptr_t)arg);
+    arg1_func_87903D64_014* out;
+    s32 i;
+
+    if (p == NULL || !Port_IsRawData(p)) {
+        return (arg1_func_87903D64_014*)p;
+    }
+    for (i = 0; i < sCount; i++) {
+        if (sCache[i].src == p) {
+            return sCache[i].out;
+        }
+    }
+    out = calloc(1, sizeof(*out));
+    out->unk_00 = (s32)Port_MiniFxBE32(p);
+    // colour arrays (5-byte prim and 4-byte env entries) are bytes: used in place
+    out->unk_04 = (void*)Util_ConvertAddrToVirtAddr(Port_MiniFxBE32(p + 0x04));
+    out->unk_08 = (void*)Util_ConvertAddrToVirtAddr(Port_MiniFxBE32(p + 0x08));
+    out->unk_0C = (void*)Util_ConvertAddrToVirtAddr(Port_MiniFxBE32(p + 0x0C));
+    out->unk_10 = (void*)Util_ConvertAddrToVirtAddr(Port_MiniFxBE32(p + 0x10));
+    out->unk_14 = (void*)Util_ConvertAddrToVirtAddr(Port_MiniFxBE32(p + 0x14));
+    out->unk_18 = (void*)Util_ConvertAddrToVirtAddr(Port_MiniFxBE32(p + 0x18));
+    if (sCount < 16) {
+        sCache[sCount].src = p;
+        sCache[sCount].out = out;
+        sCount++;
+    }
+    return out;
+}
 
 static MiniActor* D_87906120;
 
@@ -193,7 +238,8 @@ Gfx* MiniFx_BuildNodeColorRampDisplayList(Gfx* gfx, arg1_func_87903D64_014* arg1
 
 void MiniFx_GraphNodeBuildColorRampList(s32 arg0, arg1_func_87903D64* arg1) {
     if (arg0 == 5) {
-        arg1_func_87903D64_014* tmp = arg1->unk_14;
+        // PORT: the data is the node's callbackArg (the flat view's 0x14 is the N64 offset)
+        arg1_func_87903D64_014* tmp = Port_MiniFxColorRamp(((GraphNode*)arg1)->callbackArg);
 
         gDisplayListHead = MiniFx_BuildNodeColorRampDisplayList(gDisplayListHead, tmp);
     }

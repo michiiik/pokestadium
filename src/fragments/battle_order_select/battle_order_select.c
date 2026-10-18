@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "battle_order_select.h"
 #include "src/geo_render.h"
 #include "src/poke_icon.h"
@@ -74,6 +76,8 @@ static Color_RGB8 D_84803680 = { 0x00, 0x00, 0xD2 };
 static u8* D_84803684[] = { D_3008FD0, D_3009720, D_3009E70 };
 static u8* D_84803690[] = { D_300A5C0, D_300AD10 };
 static u8* D_84803698[] = { D_300B9B8 };
+// PORT: [row][3] is read (BattleMenu_DrawSidebarRowTypeIcon); on the N64 that is the next row's first entry, and for
+// the last row D_848036D8, which follows in the ROM: kept as a sixth row.
 static u8* D_8480369C[][3] = {
     {
         D_300C660,
@@ -100,8 +104,9 @@ static u8* D_8480369C[][3] = {
         D_3007D40,
         D_3008100,
     },
+    { D_30084C0, NULL, NULL },
 };
-static u8* D_848036D8 = D_30084C0;
+#define D_848036D8 (D_8480369C[5][0])
 
 void BattleMenu_DrawBottomActionButtons(void) {
     Gfx_DrawTiledRgba16Image(D_84803784);
@@ -793,6 +798,11 @@ s32 BattleMenu_PicksExceedLevelCap(unk_D_848037A0* arg0) {
             var_v0 += arg0->unk_0018[arg0->unk_000C[i]].unk_24;
         }
 
+        if (getenv("PORT_TRACE_MENU")) {
+            fprintf(stderr, "[order] levelcap: rule %d picks %d sum %d levels", D_84816420->ruleCategory, arg0->unk_000B, var_v0);
+            for (i = 0; i < 6; i++) fprintf(stderr, " %d(sp %d)", arg0->unk_0018[i].unk_24, arg0->unk_0018[i].unk_00.unk_00);
+            fputc('\n', stderr);
+        }
         if (D_84816420->ruleCategory == 3) {
             if ((arg0->unk_000B == 2) && (var_v0 >= 0x6A)) {
                 return 1;
@@ -841,6 +851,7 @@ s32 BattleMenu_IsOrderSelectionComplete(unk_D_848037A0* arg0) {
 }
 
 void BattleMenu_SelectOrderSlot(unk_D_848037A0* arg0, s8 arg1, s32 arg2) {
+    if (getenv("PORT_TRACE_MENU")) fprintf(stderr, "[order] slot %d of %d, picked %d, sub %d, lvlcap %d, sel %d\n", arg1, arg0->unk_0017, arg0->unk_000B, arg0->unk_0005, (int)BattleMenu_PicksExceedLevelCap(arg0), (int)BattleMenu_IsSlotAlreadySelected(arg0, arg1));
     if (arg1 >= arg0->unk_0017) {
         Audio_PlaySoundEffectById(SFX_MENU_ERROR);
         return;
@@ -906,8 +917,10 @@ void BattleMenu_UndoLastOrderSelection(unk_D_848037A0* arg0) {
     }
 }
 
+unsigned long long Port_ViTick(void);
 void BattleMenu_HandleOrderSelectPanel_PartyInput(Controller* arg0, unk_D_848037A0* arg1) {
     s32 temp_a2 = BTN_IS_DOWN(arg0, BTN_R);
+    if (getenv("PORT_TRACE_MENU") && arg0->buttonPressed) fprintf(stderr, "[order] frame %llu panel %p pressed 0x%04x down 0x%04x\n", Port_ViTick(), (void*)arg1, arg0->buttonPressed, arg0->buttonDown);
 
     if (BTN_IS_PRESSED(arg0, BTN_R)) {
         // clang-format off
@@ -1049,6 +1062,24 @@ s32 BattleMenu_UpdateOrderSelectPanel(s32 arg0, unk_D_848037A0* arg1) {
         var_a0 = &gControllers[arg1->unk_0001];
     }
 
+    if (getenv("PORT_TRACE_MENU")) {
+        static s8 lastSub[8] = { -1, -1, -1, -1, -1, -1, -1, -1 };
+        int k = (int)(arg1 - D_848037A0) & 7;
+        if (lastSub[k] != arg1->unk_0005 || (var_a0->buttonPressed && arg1->unk_0005 != 0))
+            fprintf(stderr, "[order] frame %llu panel %d sub %d (arg0 %d) pressed 0x%04x\n", Port_ViTick(), k, arg1->unk_0005, arg0, var_a0->buttonPressed);
+        lastSub[k] = arg1->unk_0005;
+    }
+    // PORT debug boot (PORT_BOOT set): the player's picks are made automatically (first slots, then confirm) so a
+    // battle starts without input.
+    if (arg0 == 0 && getenv("PORT_BOOT") != NULL && !(arg1->unk_001C->unk_000 & 2)) {
+        if (arg1->unk_0005 == 0) {
+            BattleMenu_SelectOrderSlot(arg1, arg1->unk_000B, 0);
+        } else if (arg1->unk_0005 == 1) {
+            arg1->unk_0006 = 2;
+            arg1->unk_0005 = 3;
+            arg1->unk_0008 = 0;
+        }
+    }
     if (arg0 == 0) {
         switch (arg1->unk_0005) {
             case 0:
@@ -1205,6 +1236,11 @@ void BattleMenu_AddOrderSelectPanel(s16 arg0, s16 arg1, TeamRoster* arg2, s32 ar
 
     for (i = 0; i < arg2->unk_214->unk_002; i++) {
         temp_s0 = &arg2->unk_214->unk_028[i];
+        if (getenv("PORT_TRACE_MENU")) {
+            fprintf(stderr, "[order] roster %p mon %d before prepare:", (void*)arg2, i);
+            for (int k = 0; k < 0x30; k++) fprintf(stderr, " %02x", ((u8*)temp_s0)[k]);
+            fputc('\n', stderr);
+        }
         Pokemon_PrepareBattleMon(temp_s0);
         temp_s0->unk_06 = D_80070FA0[temp_s0->unk_00.unk_00 - 1].unk_06;
         temp_s0->unk_07 = D_80070FA0[temp_s0->unk_00.unk_00 - 1].unk_07;

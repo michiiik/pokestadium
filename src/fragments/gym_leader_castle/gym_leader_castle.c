@@ -630,7 +630,8 @@ void Glc_LoadTrainerPanels(void) {
     trainer_data = BinArchive_GetFile(trainer_data_archive, trainer_file_index);
 
     for (i = 0; i < trainer_count; i++) {
-        portrait_file_index = (trainer_data[i].gfx_file_index >> 8) & 0xFF;
+        // PORT: ROM data, big-endian: the high byte is the first one (a host u16 read gives the low byte here)
+        portrait_file_index = ((u8*)&trainer_data[i].gfx_file_index)[0];
         current_node_trainers[i].loaded = 1;
         current_node_trainers[i].portrait_x = 0x280;
         current_node_trainers[i].name = trainer_data[i].name1;

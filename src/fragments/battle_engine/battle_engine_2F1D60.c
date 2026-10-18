@@ -41,15 +41,15 @@ void BattleScene_LoadOwnerCameraFramingConstants(Battler* arg0) {
         var_v0 = 1;
     }
 
-    arg0->unk_728.unk_168->unk_20 = D_843847BC[var_v0].unk_04;
-    arg0->unk_728.unk_168->unk_1C = D_843847BC[var_v0].unk_00;
-    arg0->unk_728.unk_168->unk_1E = D_843847BC[var_v0].unk_02;
+    arg0->unk_728.unk_168->unk_18.width = D_843847BC[var_v0].unk_04;
+    arg0->unk_728.unk_168->unk_18.x = D_843847BC[var_v0].unk_00;
+    arg0->unk_728.unk_168->unk_18.y = D_843847BC[var_v0].unk_02;
 
     arg0->unk_728.unk_178 = D_843847BC[var_v0].unk_14;
 
-    arg0->unk_728.unk_168->unk_34 = D_843847BC[var_v0].unk_0C;
-    arg0->unk_728.unk_168->unk_38 = D_843847BC[var_v0].unk_10;
-    arg0->unk_728.unk_168->unk_2C = D_843847BC[var_v0].unk_08;
+    arg0->unk_728.unk_168->unk_24.near = D_843847BC[var_v0].unk_0C;
+    arg0->unk_728.unk_168->unk_24.far = D_843847BC[var_v0].unk_10;
+    arg0->unk_728.unk_168->unk_24.fovy = D_843847BC[var_v0].unk_08;
 }
 
 void BattleScene_SetupOwnerCameraFraming(Battler* arg0, Battler* arg1) {
@@ -113,7 +113,7 @@ void BattleScene_TickOwnerSlideIn(Battler* arg0, s32 arg1) {
     arg0->unk_728.unk_000.node.flags |= 1;
 
     if (arg0->unk_728.unk_178 == 1) {
-        if ((arg0->unk_728.unk_168->unk_1C == -0x48) && !(arg0->unk_654.unk_34 & 0x800)) {
+        if ((arg0->unk_728.unk_168->unk_18.x == -0x48) && !(arg0->unk_654.unk_34 & 0x800)) {
             BattleScene_TriggerOwnerModelAnimation(arg0);
         }
 
@@ -121,13 +121,13 @@ void BattleScene_TickOwnerSlideIn(Battler* arg0, s32 arg1) {
             arg0->unk_728.unk_18C = 2;
             ModelRenderer_OnSlotReady(0);
         }
-        arg0->unk_728.unk_168->unk_1C = Math_StepToS32(arg0->unk_728.unk_168->unk_1C, 0x17, arg1, arg1);
+        arg0->unk_728.unk_168->unk_18.x = Math_StepToS32(arg0->unk_728.unk_168->unk_18.x, 0x17, arg1, arg1);
     } else {
-        if ((arg0->unk_728.unk_168->unk_1C == 0x15F) && !(arg0->unk_654.unk_34 & 0x800)) {
+        if ((arg0->unk_728.unk_168->unk_18.x == 0x15F) && !(arg0->unk_654.unk_34 & 0x800)) {
             BattleScene_TriggerOwnerModelAnimation(arg0);
         }
 
-        arg0->unk_728.unk_168->unk_1C = Math_StepToS32(arg0->unk_728.unk_168->unk_1C, 0x103, arg1, arg1);
+        arg0->unk_728.unk_168->unk_18.x = Math_StepToS32(arg0->unk_728.unk_168->unk_18.x, 0x103, arg1, arg1);
 
         if ((ModelRenderer_IsReady(1) != 0) && (arg0->unk_728.unk_18C == 0)) {
             arg0->unk_728.unk_18C = 2;
@@ -139,15 +139,15 @@ void BattleScene_TickOwnerSlideIn(Battler* arg0, s32 arg1) {
 void BattleScene_TickOwnerSlideOut(Battler* arg0, s32 arg1) {
     if (arg0->unk_728.unk_178 == 1) {
         arg0->unk_728.unk_18C = 0;
-        arg0->unk_728.unk_168->unk_1C = Math_StepToS32(arg0->unk_728.unk_168->unk_1C, -0x48, arg1, arg1);
-        if (arg0->unk_728.unk_168->unk_1C == -0x48) {
+        arg0->unk_728.unk_168->unk_18.x = Math_StepToS32(arg0->unk_728.unk_168->unk_18.x, -0x48, arg1, arg1);
+        if (arg0->unk_728.unk_168->unk_18.x == -0x48) {
             arg0->unk_728.unk_168->node.flags &= ~1;
             arg0->unk_728.unk_000.node.flags &= ~1;
         }
     } else {
         arg0->unk_728.unk_18C = 0;
-        arg0->unk_728.unk_168->unk_1C = Math_StepToS32(arg0->unk_728.unk_168->unk_1C, 0x15F, arg1, arg1);
-        if (arg0->unk_728.unk_168->unk_1C == 0x15F) {
+        arg0->unk_728.unk_168->unk_18.x = Math_StepToS32(arg0->unk_728.unk_168->unk_18.x, 0x15F, arg1, arg1);
+        if (arg0->unk_728.unk_168->unk_18.x == 0x15F) {
             arg0->unk_728.unk_168->node.flags &= ~1;
             arg0->unk_728.unk_000.node.flags &= ~1;
         }
