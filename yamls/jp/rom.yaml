@@ -1709,7 +1709,7 @@
     - [0x378A90, rodata, fragment62_378A90]
     - [0x378DE0, rodata, fragments/battle_engine/battle_engine_35DF70]
     - [0x378F50, rodata, fragments/battle_engine/battle_engine_361050]
-    - {vram: 0x8438F730, type:  bss, name: fragments/battle_engine/battle_engine_main}
+    - {vram: 0x8438F730, type: .bss, name: fragments/battle_engine/battle_engine_main}
     - {vram: 0x8438FAA0, type:  bss, name: fragments/battle_engine/battle_engine_2EC3C0}
     - {vram: 0x843913A0, type:  .bss, name: fragments/battle_engine/battle_engine_2F6930}
     - {vram: 0x843913F0, type:  bss, name: fragments/battle_engine/battle_engine_2F74E0}
