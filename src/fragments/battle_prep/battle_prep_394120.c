@@ -19,7 +19,7 @@
 
 s32 BattlePrep_StarfieldGeoCallback(s32, unk_D_86002F34_alt8*);
 
-unk_D_84B19910 D_84B19910[400];
+unk_D_84B19910 D_84B19910[401]; // PORT: BattlePrep_InitStarfield writes element [400] (arg0[i + 1] for the last star)
 s32 pad_D_84B1A590[2];
 unk_D_84B1A598 D_84B1A598;
 unk_D_84B259A8 D_84B259A8;

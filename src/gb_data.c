@@ -659,8 +659,10 @@ char* Text_UntranscodeName(char* arg0, char* arg1) {
     char* sp34 = arg0;
     char* sp18;
     char* temp_s1 = Text_GetPlayerLabel(1);
+    char* end = arg1 + 11; // PORT: a Game Boy name field is 11 bytes (10 characters + 0x50); an empty Transfer Pak slot
+                           // has a zeroed field without the terminator, and the loop read and wrote past both buffers
 
-    while (*arg1 != 'P') {
+    while (*arg1 != 'P' && arg1 < end) {
         if (*arg1 == ']') {
             memcpy(arg0, temp_s1, strlen(temp_s1) + 1);
             arg0 += strlen(temp_s1);

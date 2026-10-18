@@ -30,7 +30,11 @@ Battler* D_8439001C;
 static MovePresentationCue* D_84390020;
 unk_D_84390028 D_84390028[2];
 static SwayLayoutConfig D_84390048;
-static BattleSceneStateTickSlot gBattleSceneStateTickSlots[7];
+// PORT: one spare slot. Row enter callbacks (e.g. BattleScene_Row13PlaySequences14And21) clear
+// gBattleSceneStateTickSlots[gBattleSceneStateTickSlotIndex] while the index is still 7 from the last tick loop; on the
+// N64 that writes the unused D_843900A4, on the host it overwrote other battle data (later called as a tick callback:
+// crash after several turns). The loops use slots 0..6 only.
+static BattleSceneStateTickSlot gBattleSceneStateTickSlots[8];
 static s32 gBattleSceneStateTickSlotIndex;
 static s32 D_843900A4;
 f32 D_843900A8[2];
