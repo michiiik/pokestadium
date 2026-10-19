@@ -2072,7 +2072,12 @@ void func_812033F4(s32 arg0, s32 arg1, OSId arg2, s32 arg3, OSMesgQueue* arg4, u
 
     D_8122B1E0 = GfxImage_Allocate(0, 2, 320, 288, 1);
     D_8122B1E4 = GfxImage_Allocate(0, 2, 320, 288, 1);
-    D_8122B2F8 = main_pool_alloc(0x1FEAE8 + 0x1000, 0); // PORT: host structs are a little larger
+    // PORT: host structs are a little larger, and the original decompresses fragment1's data from a staging copy placed
+    // after the carved area (D_8122B2F4 + 0x80000 below), about 0x14700 bytes past the end of its 0x1FEAE8 block. On the
+    // N64 that only overwrote free pool memory and the free-list header; the next main_pool_pop_state read that header
+    // as an address below every block and skipped it. On a 64-bit host the same garbage reads as a high address, the
+    // pop called through it, and leaving the GB Tower emulator crashed. The block now covers the staging copy.
+    D_8122B2F8 = main_pool_alloc(0x1FEAE8 + 0x20000, 0);
     if (D_8122B2F8 == NULL) {
         D_8122C4DC = 1;
         D_8122B2FC = 4;
