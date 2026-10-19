@@ -389,6 +389,7 @@ void Geo_ProcessNodeChildren(GraphNode* arg0) {
                 if (var_s0->callback != NULL) {
                     D_800AA6C0 = var_s0->callback(2, var_s0);
                 }
+                Port_InterpNode(var_s0); // PORT: frame interpolation identifies matrices by node
                 D_8006F0A4[var_s0->type](var_s0);
             }
             var_s0 = var_s0->nextSibling;
@@ -405,6 +406,7 @@ void Geo_NodeReference(GraphNode* arg0) {
         if (temp_a1->callback != NULL) {
             D_800AA6C0 = temp_a1->callback(2, temp_a1);
         }
+        Port_InterpNode(temp_a1); // PORT: frame interpolation identifies matrices by node
         D_8006F0A4[temp_a1->type](temp_a1);
     }
 
@@ -679,6 +681,7 @@ void Geo_NodeSwitchCase(GraphNode* arg0) {
     }
 
     if (var_a1->flags & 1) {
+        Port_InterpNode(var_a1); // PORT: frame interpolation identifies matrices by node
         D_8006F0A4[var_a1->type](var_a1);
     }
 }
