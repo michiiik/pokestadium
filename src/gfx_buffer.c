@@ -37,6 +37,7 @@ void Gfx_SwapDisplayListBuffer(void) {
     D_800A7428.unk10 ^= 1;
     D_800A7428.limit = D_800A7428.buf[D_800A7428.unk10] + D_800A7428.unkC * 2;
     gDisplayListHead = (Gfx*)D_800A7428.buf[D_800A7428.unk10];
+    Port_InterpBeginFrame(gDisplayListHead); // PORT: frame interpolation records this frame's matrices
 }
 
 void Gfx_GetDisplayListRange(uintptr_t* arg0, uintptr_t* arg1) {
