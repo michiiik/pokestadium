@@ -4,6 +4,10 @@
 #include "src/model_renderer_callbacks.h"
 #include "src/matrix.h"
 
+/*
+    Handles movement and display of Pokemon's thumbnail
+*/
+
 // seems to actually be idle state trigger after moves
 void BattleScene_TriggerOwnerModelAnimation(ActivePokemon* active_pokemon) {
     ModelAnim_SetFrame(&active_pokemon->presentationState.displayObject, active_pokemon->presentationState.idleTimer);
@@ -42,15 +46,15 @@ void BattleScene_LoadOwnerCameraFramingConstants(ActivePokemon* active_pokemon) 
         side = 1;
     }
 
-    active_pokemon->presentationState.thumbnailCamera->viewport.width = D_843847BC[side].unk_04;
-    active_pokemon->presentationState.thumbnailCamera->viewport.x = D_843847BC[side].unk_00;
-    active_pokemon->presentationState.thumbnailCamera->viewport.y = D_843847BC[side].unk_02;
+    active_pokemon->presentationState.thumbnailCamera->viewport.width = D_843847BC[side].width;
+    active_pokemon->presentationState.thumbnailCamera->viewport.x = D_843847BC[side].x;
+    active_pokemon->presentationState.thumbnailCamera->viewport.y = D_843847BC[side].y;
 
-    active_pokemon->presentationState.unk_178 = D_843847BC[side].unk_14;
+    active_pokemon->presentationState.side1ThumnailInPlace = D_843847BC[side].unk_14;
 
-    active_pokemon->presentationState.thumbnailCamera->perspective.nearPlane = D_843847BC[side].unk_0C;
-    active_pokemon->presentationState.thumbnailCamera->perspective.farPlane = D_843847BC[side].unk_10;
-    active_pokemon->presentationState.thumbnailCamera->perspective.verticalFieldOfView = D_843847BC[side].unk_08;
+    active_pokemon->presentationState.thumbnailCamera->perspective.nearPlane = D_843847BC[side].nearPlane;
+    active_pokemon->presentationState.thumbnailCamera->perspective.farPlane = D_843847BC[side].farPlane;
+    active_pokemon->presentationState.thumbnailCamera->perspective.verticalFieldOfView = D_843847BC[side].verticalFieldOfView;
 }
 
 void BattleScene_SetupOwnerCameraFraming(ActivePokemon* side1_pokemon, ActivePokemon* side2_pokemon) {
@@ -77,8 +81,8 @@ void BattleScene_ApplyOwnerCameraFraming(ActivePokemon* active_pokemon) {
 
     active_pokemon->presentationState.rotationX = sSidePresentationTransform[side]->unk_0C;
     if (sSidePresentationTransform[side]->unk_10 == 0xFF) {
-        active_pokemon->presentationState.rotationY = sSidePresentationTransform[side]->unk_0E * active_pokemon->presentationState.unk_178;
-        tmp_z = sSidePresentationTransform[side]->coordinates.z * active_pokemon->presentationState.unk_178;
+        active_pokemon->presentationState.rotationY = sSidePresentationTransform[side]->unk_0E * active_pokemon->presentationState.side1ThumnailInPlace;
+        tmp_z = sSidePresentationTransform[side]->coordinates.z * active_pokemon->presentationState.side1ThumnailInPlace;
     } else {
         active_pokemon->presentationState.rotationY = sSidePresentationTransform[side]->unk_0E;
         tmp_z = sSidePresentationTransform[side]->coordinates.z;
@@ -113,13 +117,13 @@ void BattleScene_TickOwnerSlideIn(ActivePokemon* arg0, s32 arg1) {
     arg0->presentationState.thumbnailCamera->node.flags |= 1;
     arg0->presentationState.displayObject.node.flags |= 1;
 
-    if (arg0->presentationState.unk_178 == 1) {
+    if (arg0->presentationState.side1ThumnailInPlace == 1) {
         if ((arg0->presentationState.thumbnailCamera->viewport.x == -0x48) && !(arg0->state.flags & 0x800)) {
             BattleScene_TriggerOwnerModelAnimation(arg0);
         }
 
-        if ((ModelRenderer_IsReady(0) != 0) && (arg0->presentationState.unk_18C == 0)) {
-            arg0->presentationState.unk_18C = 2;
+        if ((ModelRenderer_IsReady(0) != 0) && (arg0->presentationState.side2ThumbnailInPlace == 0)) {
+            arg0->presentationState.side2ThumbnailInPlace = 2;
             ModelRenderer_OnSlotReady(0);
         }
         arg0->presentationState.thumbnailCamera->viewport.x = Math_StepToS32(arg0->presentationState.thumbnailCamera->viewport.x, 0x17, arg1, arg1);
@@ -130,27 +134,27 @@ void BattleScene_TickOwnerSlideIn(ActivePokemon* arg0, s32 arg1) {
 
         arg0->presentationState.thumbnailCamera->viewport.x = Math_StepToS32(arg0->presentationState.thumbnailCamera->viewport.x, 0x103, arg1, arg1);
 
-        if ((ModelRenderer_IsReady(1) != 0) && (arg0->presentationState.unk_18C == 0)) {
-            arg0->presentationState.unk_18C = 2;
+        if ((ModelRenderer_IsReady(1) != 0) && (arg0->presentationState.side2ThumbnailInPlace == 0)) {
+            arg0->presentationState.side2ThumbnailInPlace = 2;
             ModelRenderer_OnSlotReady(1);
         }
     }
 }
 
-void BattleScene_TickOwnerSlideOut(ActivePokemon* arg0, s32 arg1) {
-    if (arg0->presentationState.unk_178 == 1) {
-        arg0->presentationState.unk_18C = 0;
-        arg0->presentationState.thumbnailCamera->viewport.x = Math_StepToS32(arg0->presentationState.thumbnailCamera->viewport.x, -0x48, arg1, arg1);
-        if (arg0->presentationState.thumbnailCamera->viewport.x == -0x48) {
-            arg0->presentationState.thumbnailCamera->node.flags &= ~1;
-            arg0->presentationState.displayObject.node.flags &= ~1;
+void BattleScene_TickOwnerSlideOut(ActivePokemon* active_pokemon, s32 delta) {
+    if (active_pokemon->presentationState.side1ThumnailInPlace == 1) {
+        active_pokemon->presentationState.side2ThumbnailInPlace = 0;
+        active_pokemon->presentationState.thumbnailCamera->viewport.x = Math_StepToS32(active_pokemon->presentationState.thumbnailCamera->viewport.x, -72, delta, delta);
+        if (active_pokemon->presentationState.thumbnailCamera->viewport.x == -72) {
+            active_pokemon->presentationState.thumbnailCamera->node.flags &= ~1;
+            active_pokemon->presentationState.displayObject.node.flags &= ~1;
         }
     } else {
-        arg0->presentationState.unk_18C = 0;
-        arg0->presentationState.thumbnailCamera->viewport.x = Math_StepToS32(arg0->presentationState.thumbnailCamera->viewport.x, 0x15F, arg1, arg1);
-        if (arg0->presentationState.thumbnailCamera->viewport.x == 0x15F) {
-            arg0->presentationState.thumbnailCamera->node.flags &= ~1;
-            arg0->presentationState.displayObject.node.flags &= ~1;
+        active_pokemon->presentationState.side2ThumbnailInPlace = 0;
+        active_pokemon->presentationState.thumbnailCamera->viewport.x = Math_StepToS32(active_pokemon->presentationState.thumbnailCamera->viewport.x, 351, delta, delta);
+        if (active_pokemon->presentationState.thumbnailCamera->viewport.x == 351) {
+            active_pokemon->presentationState.thumbnailCamera->node.flags &= ~1;
+            active_pokemon->presentationState.displayObject.node.flags &= ~1;
         }
     }
 }

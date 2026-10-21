@@ -82,11 +82,11 @@ void BattleScene_GetOwnerCameraAnchor(ActivePokemon* arg0, Vec3f* arg1) {
     }
 }
 
-void BattleScene_GetOwnerBoneOrDefaultAnchor(ActivePokemon* pokemon, Vec3f* arg1, s32 arg2) {
-    if (GeoRender_FindAnchorPosition(&pokemon->displayObject, arg2, arg1) == NULL) {
-        BattleAnim_GetOwnerDefaultAnchorPosition(pokemon, arg1);
-        arg1->x = BattleScene_GetParticipantModelXOffset(pokemon);
-        arg1->z = 0.0f;
+void BattleScene_GetOwnerBoneOrDefaultAnchor(ActivePokemon* pokemon, Vec3f* dest, s32 lookup_id) {
+    if (GeoRender_FindAnchorPosition(&pokemon->displayObject, lookup_id, dest) == NULL) {
+        BattleAnim_GetOwnerDefaultAnchorPosition(pokemon, dest);
+        dest->x = BattleScene_GetParticipantModelXOffset(pokemon);
+        dest->z = 0.0f;
     }
 }
 

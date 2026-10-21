@@ -648,7 +648,7 @@ s16 Math_StepToS(s16 current, s16 target, s16 delta) {
     return target - temp_v0;
 }
 
-s32 Math_StepToS32(s32 current, s32 target, s32 increase, s32 descrease) {
+s32 Math_StepToS32(s32 current, s32 target, s32 increase, s32 decrease) {
     //! If target is close to the max or min s32, then it's possible to overflow
     // past it without stopping.
 
@@ -658,7 +658,7 @@ s32 Math_StepToS32(s32 current, s32 target, s32 increase, s32 descrease) {
             current = target;
         }
     } else {
-        current -= descrease;
+        current -= decrease;
         if (current < target) {
             current = target;
         }

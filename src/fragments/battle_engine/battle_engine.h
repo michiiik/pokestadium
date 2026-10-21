@@ -67,13 +67,13 @@ typedef struct PresentationState {
     /* 0x16C */ s32 unk_16C;
     /* 0x170 */ s32 isIdle;
     /* 0x174 */ char unk174[0x4];
-    /* 0x178 */ s32 unk_178;
+    /* 0x178 */ s32 side1ThumnailInPlace;
     /* 0x17C */ s32 idleAnimation;
     /* 0x180 */ s32 idleTimer;
     /* 0x184 */ s16 rotationX;
     /* 0x186 */ s16 rotationY;
     /* 0x188 */ f32 x;
-    /* 0x18C */ s32 unk_18C;
+    /* 0x18C */ s32 side2ThumbnailInPlace;
     /* 0x190 */ f32 z;
     /* 0x194 */ f32 y;
     /* 0x198 */ char unk198[0x4];
@@ -311,12 +311,12 @@ typedef struct unk_D_84384608 {
 } unk_D_84384608; // size = 0x8
 
 typedef struct unk_D_843847BC {
-    /* 0x00 */ s16 unk_00;
-    /* 0x02 */ s16 unk_02;
-    /* 0x04 */ s16 unk_04;
-    /* 0x08 */ f32 unk_08;
-    /* 0x0C */ f32 unk_0C;
-    /* 0x10 */ f32 unk_10;
+    /* 0x00 */ s16 x;
+    /* 0x02 */ s16 y;
+    /* 0x04 */ s16 width;
+    /* 0x08 */ f32 verticalFieldOfView;
+    /* 0x0C */ f32 nearPlane;
+    /* 0x10 */ f32 farPlane;
     /* 0x14 */ s16 unk_14;
 } unk_D_843847BC; // size = 0x18
 
@@ -1549,7 +1549,7 @@ void BattleScene_ResetCameraFrameCounter(void);
 void BattleScene_ResetCameraSubstepCounter(void);
 void BattleScene_SetCameraAtAndEyeFromAngles(CameraNode* camera, f32 x, f32 y, f32 z, f32 distance, s16 rotation_x, s16 rotation_y);
 void BattleScene_GetOwnerCameraAnchor(ActivePokemon* arg0, Vec3f* arg1);
-void BattleScene_GetOwnerBoneOrDefaultAnchor(ActivePokemon* arg0, Vec3f* arg1, s32 arg2);
+void BattleScene_GetOwnerBoneOrDefaultAnchor(ActivePokemon* pokemon, Vec3f* dest, s32 lookup_id);
 void BattleScene_SetCameraModeAndStep(s32 camera_mode, s32 camera_step);
 void BattleScene_SetCameraClipPlanes(CameraNode* arg0, f32 arg1, f32 arg2);
 void BattleScene_SetCameraSubstate(s32 arg0, u16 arg1);
