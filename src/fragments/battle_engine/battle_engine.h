@@ -1078,7 +1078,7 @@ void BattleScene_Init(StageContext* stage_context);
 void func_84301A24(void);
 s32 Battle_Main(s32 arg0, SessionContext* arg1);
 
-//@src/fragments/battle_engine/battle_engine_2EC3C0.c
+//@src/fragments/battle_engine/battle_engine_move_animation.c
 void BattleScene_ClearStateTickCallbacks(void);
 void BattleScene_QueueRowEffectList3(ActivePokemon* actor, s32 effect_entry);
 void BattleAnim_PlayMoveEffectScript(ActivePokemon* user, s32 move_id);
