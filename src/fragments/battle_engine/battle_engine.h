@@ -61,25 +61,9 @@ typedef struct ActivePokemonState {
     /* 0xC8 */ Controller* unk_C8;
 } ActivePokemonState; // size = 0xCC
 
-typedef struct PresentationLayout {
-    /* 0x00 */ DisplayNodeHeader node;
-    /* 0x18 */ char unk18[0x4];
-    /* 0x1C */ s16 unk_1C;
-    /* 0x1E */ s16 unk_1E;
-    /* 0x20 */ s16 unk_20;
-    /* 0x22 */ char unk22[0xA];
-    /* 0x2C */ f32 unk_2C;
-    /* 0x30 */ char unk30[0x4];
-    /* 0x34 */ f32 unk_34;
-    /* 0x38 */ f32 unk_38;
-    /* 0x3C */ char unk3C[0x6C];
-    /* 0xA8 */ Vec3f unk_A8;
-    /* 0xB4 */ Vec3f unk_B4;
-} PresentationLayout; // size >= 0xC0
-
 typedef struct PresentationState {
     /* 0x000 */ DisplayObject displayObject;
-    /* 0x168 */ PresentationLayout* layout;
+    /* 0x168 */ CameraNode* thumbnailCamera;
     /* 0x16C */ s32 unk_16C;
     /* 0x170 */ s32 isIdle;
     /* 0x174 */ char unk174[0x4];
@@ -1208,7 +1192,7 @@ void BattleScene_ClearParticipantOwnerIdleFlags(ActivePokemon* active_pokemon);
 void BattleScene_SetParticipantOwnerIdleFlags(ActivePokemon* active_pokemon);
 void BattleScene_ClearBothOwnerIdleFlags(void);
 void BattleScene_SetBothOwnerIdleFlags(void);
-void BattleScene_SetFlagToUpdatePokemonThumbnail(PresentationLayout* arg0);
+void BattleScene_SetFlagToUpdatePokemonThumbnail(CameraNode* camera);
 void BattleScene_LoadOwnerCameraFramingConstants(ActivePokemon* active_pokemon);
 void BattleScene_SetupOwnerCameraFraming(ActivePokemon* arg0, ActivePokemon* arg1);
 void BattleScene_OwnerCameraLifecycleNop(void);

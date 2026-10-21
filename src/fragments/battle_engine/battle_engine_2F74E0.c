@@ -1122,16 +1122,16 @@ s32 BattleScene_HandlePlayerForcedActionState(ActivePokemon* arg0, ActivePokemon
 }
 
 void BattleScene_ShowParticipantOwnerAndSecondaryModels(void) {
-    sActivePokemon[0]->presentationState.layout->node.flags |= 1;
+    sActivePokemon[0]->presentationState.thumbnailCamera->node.flags |= 1;
     sActivePokemon[0]->presentationState.displayObject.node.flags |= 1;
-    sActivePokemon[1]->presentationState.layout->node.flags |= 1;
+    sActivePokemon[1]->presentationState.thumbnailCamera->node.flags |= 1;
     sActivePokemon[1]->presentationState.displayObject.node.flags |= 1;
 }
 
 void BattleScene_HideParticipantOwnerAndSecondaryModels(void) {
-    sActivePokemon[0]->presentationState.layout->node.flags &= ~1;
+    sActivePokemon[0]->presentationState.thumbnailCamera->node.flags &= ~1;
     sActivePokemon[0]->presentationState.displayObject.node.flags &= ~1;
-    sActivePokemon[1]->presentationState.layout->node.flags &= ~1;
+    sActivePokemon[1]->presentationState.thumbnailCamera->node.flags &= ~1;
     sActivePokemon[1]->presentationState.displayObject.node.flags &= ~1;
 }
 
