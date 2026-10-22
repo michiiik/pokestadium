@@ -248,9 +248,9 @@ void BattleScene_ComputeParticipantModelOffset(ActivePokemon* arg0, Vec3f* arg1)
 }
 
 void BattleScene_GetParticipantAuxiliaryModelPosition(ActivePokemon* arg0, Vec3f* arg1) {
-    arg1->x = arg0->unk_4EC.position.x;
-    arg1->y = arg0->unk_4EC.position.y + 2.5f;
-    arg1->z = arg0->unk_4EC.position.z;
+    arg1->x = arg0->pokeBall.position.x;
+    arg1->y = arg0->pokeBall.position.y + 2.5f;
+    arg1->z = arg0->pokeBall.position.z;
 }
 
 f32 BattleAnim_GetOwnerModelHeight(ActivePokemon* active_pokemon) {

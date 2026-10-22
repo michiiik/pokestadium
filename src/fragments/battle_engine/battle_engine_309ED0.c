@@ -3296,17 +3296,17 @@ void BattleScene_PhaseWithdrawFainted(CameraNode* arg0) {
             break;
 
         case 3:
-            if (temp_s0->unk_4EC.position.y == 2.5f) {
-                temp_s0->unk_4EC.node.renderFlags |= 0x20;
+            if (temp_s0->pokeBall.position.y == 2.5f) {
+                temp_s0->pokeBall.node.renderFlags |= 0x20;
             }
 
-            if (ModelAnim_IsAnimationDone(&temp_s0->unk_4EC) == 1) {
+            if (ModelAnim_IsAnimationDone(&temp_s0->pokeBall) == 1) {
                 sBattleScene.unk_00->unk_20 += 1;
             }
             break;
 
         case 4:
-            temp_s0->unk_4EC.node.flags &= ~1;
+            temp_s0->pokeBall.node.flags &= ~1;
             temp_s0->sessionTeams->unk_04 = &temp_s0->sessionTeams->teamMember[sp34->unk_2C]->pokemonPicked[sp34->unk_18];
             temp_s0->sessionTeams->uniqueStatusFlags |= 0x80;
             sBattleScene.unk_00->unk_20 += 1;
@@ -3395,17 +3395,17 @@ void BattleScene_PhaseWithdrawSwitch(CameraNode* arg0) {
             break;
 
         case 2:
-            if (temp_s0->unk_4EC.position.y == 2.5f) {
-                temp_s0->unk_4EC.node.renderFlags |= 0x20;
+            if (temp_s0->pokeBall.position.y == 2.5f) {
+                temp_s0->pokeBall.node.renderFlags |= 0x20;
             }
 
-            if (ModelAnim_IsAnimationDone(&temp_s0->unk_4EC) == 1) {
+            if (ModelAnim_IsAnimationDone(&temp_s0->pokeBall) == 1) {
                 sBattleScene.unk_00->unk_20 += 1;
             }
             break;
 
         case 3:
-            temp_s0->unk_4EC.node.flags &= ~1;
+            temp_s0->pokeBall.node.flags &= ~1;
             temp_s0->sessionTeams->uniqueStatusFlags |= 0x80;
             temp_s0->sessionTeams->unk_04 = &temp_s0->sessionTeams->teamMember[sp3C->unk_2C]->pokemonPicked[sp3C->unk_18];
             sBattleScene.unk_00->unk_20 += 1;

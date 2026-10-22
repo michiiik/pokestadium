@@ -2461,7 +2461,7 @@ void BattleScene_InitializeParticipantSecondaryModels(ActivePokemon* active_poke
  * Creates the participant's hidden auxiliary model (model 154).
  */
 void BattleScene_InitializeParticipantAuxiliaryModel(ActivePokemon* active_pokemon) {
-    DisplayObject* auxiliary_model = &active_pokemon->unk_4EC;
+    DisplayObject* auxiliary_model = &active_pokemon->pokeBall;
     ModelNodeView* model_view = active_pokemon->sessionTeams->unk_18;
 
     ModelRenderer_AttachDisplayObject(auxiliary_model);

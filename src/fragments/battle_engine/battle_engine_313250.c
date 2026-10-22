@@ -41,7 +41,7 @@ void BattleScene_IntroSendOutFirstMon(UNUSED CameraNode* arg0) {
 void BattleScene_IntroSendOutSecondMon(UNUSED CameraNode* arg0) {
     sActivePokemon[0]->displayObject.node.flags &= ~1;
     sActivePokemon[1]->displayObject.node.flags &= ~1;
-    if (sActivePokemon[0]->unk_4EC.position.y == 0.0f) {
+    if (sActivePokemon[0]->pokeBall.position.y == 0.0f) {
         BattleScene_SelectBattleMusic();
         Audio_PlayCommand(1, 1, 0);
         BattleScene_SetParticipantModelFlags(sActivePokemon[1], 1, 0);
@@ -56,7 +56,7 @@ void BattleScene_IntroNarrowFov(CameraNode* arg0) {
     sActivePokemon[0]->displayObject.node.flags &= ~1;
     sActivePokemon[1]->displayObject.node.flags &= ~1;
 
-    if (sActivePokemon[1]->unk_4EC.position.y == 0.0f) {
+    if (sActivePokemon[1]->pokeBall.position.y == 0.0f) {
         arg0->perspective.verticalFieldOfView = 30.0f;
         BattleScene_SetParticipantModelFlags(sActivePokemon[0], 2, 0);
         BattleAnim_QueueEffectList3(0xB, sActivePokemon[0], sActivePokemon[0], 0xFF, 0xFF);
@@ -77,9 +77,9 @@ void BattleScene_IntroPanCamera(CameraNode* arg0) {
     BattleAnim_StepToS16(&sBattleScene.unk_00->unk_56, 0xB6, 0x1E);
     BattleScene_SetCameraEyeFromPosition(arg0, sp2C, sBattleScene.unk_00->unk_56, 0x4000, sBattleScene.unk_00->unk_84, 0.0f);
 
-    if ((sBattleScene.unk_00->unk_56 >= 0x2E) && (sActivePokemon[0]->unk_4EC.position.y == 2.5f)) {
+    if ((sBattleScene.unk_00->unk_56 >= 0x2E) && (sActivePokemon[0]->pokeBall.position.y == 2.5f)) {
         Audio_PlayCommand(2, 0, 0);
-        sActivePokemon[0]->unk_4EC.node.renderFlags |= 0x20;
+        sActivePokemon[0]->pokeBall.node.renderFlags |= 0x20;
         sBattleScene.unk_00->unk_20 += 1;
     }
 }
@@ -87,7 +87,7 @@ void BattleScene_IntroPanCamera(CameraNode* arg0) {
 void BattleScene_IntroWaitFirstMonAnim(UNUSED CameraNode* arg0) {
     sActivePokemon[0]->displayObject.node.flags &= ~1;
     sActivePokemon[1]->displayObject.node.flags &= ~1;
-    if (ModelAnim_IsAnimationDone(&sActivePokemon[0]->unk_4EC) == 1) {
+    if (ModelAnim_IsAnimationDone(&sActivePokemon[0]->pokeBall) == 1) {
         sBattleScene.unk_00->unk_20 += 1;
     }
 }
@@ -103,7 +103,7 @@ void BattleScene_IntroRevealFirstMon(CameraNode* arg0) {
     sActivePokemon[1]->displayObject.node.flags &= ~1;
     BattleAnim_QueueEffectList3(3, sActivePokemon[0], sActivePokemon[0], 0xFF, 0xFF);
     sActivePokemon[0]->displayObject.node.flags |= 1;
-    sActivePokemon[0]->unk_4EC.node.flags &= ~1;
+    sActivePokemon[0]->pokeBall.node.flags &= ~1;
     BattleScene_SelectCameraFollowPreset(sActivePokemon[0], arg0, 3);
     BattleScene_EnterStateRow(sActivePokemon[0], 0x10);
     sBattleScene.unk_00->unk_2C = 0;

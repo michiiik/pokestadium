@@ -10,18 +10,18 @@ Please read the style guide in full before making a PR.
 
 Human and AI-made PRs are evaluated equally, but you must specify in your PR if it is:
 1. Majority Human-produced (0%-20% written by AI)
-2. Ai-assisted (20%-80% written by AI)
-3. Ai-generated (>80% written by AI)
+2. AI-assisted (20%-80% written by AI)
+3. AI-generated (>80% written by AI)
 
-Do **not** merge your PR until the CI-romgate check passes and confirms all versions still match. The only exception is if you PR only touches documenation
+Do **not** merge your PR until the CI-romgate check passes and confirms all versions still match. The only exception is if your PR touches only documentation.
 
 ### Matching PR
-Please see formatting for unknown tokens and Fakes section in the style guide and conform to them. Beyond that: if it matches, it matches
+Please see the sections on formatting unknown tokens and fakes in the style guide and follow their guidance. Beyond that, if it matches, it matches.
 
 ### Annotation PR
-Please specify broadly what evidence you have for your annotations: either Gameplay evidence, prior knowledge, or hints from the rest of the decomp.
+Please briefly describe the evidence for your annotations: gameplay evidence, prior knowledge, or clues from the rest of the decomp.
 
-## Documention
+## Documentation
 Please do not include excessively long AI-generated `.md` files in your PRs. They will go stale quickly and give other agents undo confidence.
 
 ## Respect for the ones who came before
@@ -50,7 +50,7 @@ analysis views, verification, and the limits of C-aware rename.
 # Team Hippodrome Decomp Style Guide
 
 ## Formatting
-IDO is NOT whitespace neutral: white space materially impacts matching code. Therefore: you should assume any changes to the spacing of the code can cause a matching function to not match.
+IDO is not whitespace-neutral: whitespace materially affects code matching. Therefore, assume that any change to code spacing can cause a function to stop matching.
 
 ## Naming
 ### N64 Type Aliases
@@ -76,11 +76,11 @@ IDO is NOT whitespace neutral: white space materially impacts matching code. The
 |Local Function Variables (including arguments)|`snake_case`|`selected_menu_item`,`cpu_pokemon`,`type_effectiveness`|
 |Functions|`{Domain}_{Purpose}`|`RentalHub_MenuLoop`,`Title_FadeOut`,`GraphNode_AppendChild`|
 |Macro Variables|`CAPITAL_CASE`|`PIKACHU_SPECIES`, `CONFIRM_SFX`, `GIOVANNI`|
-|External Library Functions (e.g. libultra)|Leave as is|`gSPDisplayList`,`gSPSprite2DBase`
+|External Library Functions (e.g., libultra)|Leave as is|`gSPDisplayList`,`gSPSprite2DBase`
 |Structs|`TitleCase`|`QualifyingPokemonDisplay`,`HallOfFameSlot`,`GymLeader`|
 
 ### Naming Known Tokens
-As the goal of a decomp is to be readable to a wide variety of people (recomp devs, romhackers, speedrunners, video essayists, AI assistants helping a confused player) our decomp repos tolerate more specific naming than most modern "good practice". Function names can go up to 50 characters, so names like `RentalRules_QualifyingSpeciesWindowDraw` are acceptable. 
+Because a decomp should be readable to a wide variety of people (recomp developers, romhackers, speedrunners, video essayists, and AI assistants helping confused players), our decomp repositories tolerate more specific naming than most modern "good practice." Function names can be up to 50 characters, so names like `RentalRules_QualifyingSpeciesWindowDraw` are acceptable.
 
 ### Naming Unknown Tokens
 |Object|Style|Examples|
@@ -92,23 +92,25 @@ As the goal of a decomp is to be readable to a wide variety of people (recomp de
 |Function Arguments|`arg{index}`|`arg0`,`arg4`|
 |Local variables|`var_{register}`|`var_v0`,`var_s1`|
 
-Leave functions without a body in the style of `func_{address}` since we can't make any claims about what their original purpose was.
+Keep functions without a body named in the style of `func_{address}`, since we cannot make claims about their original purpose.
 
 ### Spelling
-Use American English (color, mom, etc.) for all spelling.
+Use American English spelling (color, mom, etc.).
 
 ### Terminology
-#### Technical 
-Do not use yaw, pitch, and roll to describe rotations about an axis since those terms are body-relative, while most rotations in Pokemon Stadium are world-relative. use rotationX, rotationY, and rotationZ.
+#### Technical
+Do not use yaw, pitch, or roll to describe rotations about an axis. Those terms are body-relative, while most rotations in Pokemon Stadium are world-relative. Use `rotationX`, `rotationY`, and `rotationZ`.
 
 Prefer technically correct obscure language over ambiguous common language. For example: `alpha` instead of `fadeLevel`.
 
-Do not include non-alphanumeric or non-ASCII symbols in variable names even if lore accurate (Nidoran♂ should be `NIDORAN_MALE`)
+Do not include non-alphanumeric or non-ASCII symbols in variable names, even if they are accurate to the lore (Nidoran♂ should be `NIDORAN_MALE`).
 
-Consequently: Do not include é in Pokémon for variable names as IDO does not accept non-ASCII characters in indentifiers. The é is optional for documentation and comments.
+Therefore, do not include é in Pokémon names used as variable names, because IDO does not accept non-ASCII characters in identifiers. The é is optional in documentation and comments.
+
+Per [Bulbapedia](https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9_Ball): Poké Ball is two words; both when referring to the standard Poké Ball and when referring to the class of items called Poké Balls.
 
 #### Mechanics
-The format stadium uses is commonly called "bring 6, pick 3." To disambiguate between Pokemon in the party and Pokemon chosen to for a particular battle, we say "brought Pokemon" and "picked Pokemon".
+The format used in Stadium is commonly called "bring 6, pick 3." To distinguish Pokemon in the party from Pokemon chosen for a particular battle, use "brought Pokemon" and "picked Pokemon."
 
 As AI is now a term to refer to a technology, use the term "COM" to refer to the non-player trainers since that is the label in Free Battle. Battle AI procedures may still be called `BattleAi` as a function domain.
 
@@ -116,13 +118,13 @@ As AI is now a term to refer to a technology, use the term "COM" to refer to the
 
 Use English names for Pokemon and Characters.
 
-Never use the name Poke cup, all versions of the game still contain duplicate internal strings for Poke Cup as in the Japanese Version, Poke cup was five different versions called Nintendo Cup.
+Never use the name Poke Cup. All versions of the game contain duplicate internal strings for Poke Cup. In the Japanese version, the five different versions were called Nintendo Cup.
 
-The adopted term term for the creature in Kanghakhan's pouch is Kangaskid
+The adopted term for the creature in Kangaskhan's pouch is Kangaskid.
 
 ##### Area Names 
 
-Because the areas in Stadium are rather poorly named (and even have contradictory names between the game's dialogue and their label) this repo uses the more common names regardless of what the selection label is:
+Because the areas in Stadium are rather poorly named (the names in the game's dialogue can contradict the selection labels), this repository uses the more common names regardless of the selection label:
 
 |Area Label|Repo/Common Name|
 |---|---|
@@ -132,42 +134,42 @@ Because the areas in Stadium are rather poorly named (and even have contradictor
 
 
 #### Sensitive Language
-Using the term "blackface" and "purpleface" to describe Jynx's coloration in the Jp and US 1.0 versions is discouraged. Use the term "original color" and "purple color"/"new color". 
+Using the terms "blackface" and "purpleface" to describe Jynx's coloration in the JP and US 1.0 versions is discouraged. Use "original color" and "purple color" or "new color."
 
-Nidoqueen's animation did change between JP and US 1.0 so potentially we do in fact have to refer to Nidoqueen's breasts to document this change. Use the word breasts, not slang terms like boobs and not whatever the technical animal husbandry name for the breasts of whatever animal Nidoqueen is supposed to be is.
+Nidoqueen's animation changed between JP and US 1.0, so documenting this change may require referring to Nidoqueen's breasts. Use the word "breasts," not slang such as "boobs" or the technical term for the breasts of the animal Nidoqueen represents.
 
-That said: out of code use of these sensitives terms is none of our business.
+That said, use of these sensitive terms outside code is none of our business.
 
 ## Comments 
 ### Documentation
-All functions must have a `/**/` comment above them describing their function.
+All functions must have a `/**/` comment above them that describes their purpose.
 
 ### Fakes: Decomp Slop and Karodo 
-"Fakes" refer to a variety of coding anti-patterns that enable a function match through register coloring, but serve no other purpose. There are two types of fakes:
-- **Decomp Slop:** are fakes that no programmer would ever write, such as 
+"Fakes" are code anti-patterns that enable a function to match through register coloring but serve no other purpose. There are two types of fakes:
+- **Decomp Slop** consists of fakes that no programmer would write, such as:
 	- Type casting doom loops: `*((void **) (((u8 *) (*((void **) (((u8 *) arg0) + 0)))) + 4))`
-	- Arithmetic nops: `arg0 + 1 - 1`, `var++; var--;` 
-- **Karodo** (from 過労 + code, "overworked code") are debugging idioms that were left in the ROM but have since had their debugging functionality omitted:
+	- Arithmetic nops: `arg0 + 1 - 1`, `var++; var--;`
+- **Karodo** (from 過労 + code, "overworked code") refers to debugging idioms left in the ROM after their debugging functionality has been omitted:
 	- Empty if statements `if (1) {}`
 	- Empty enumeration: `for (i=0; i < n; i++) {}`
 	- Empty pause: `while (0) {}`
 
-It is our philosophy that even the worst, most disgusting match is better than the most beautiful non-match: thus, it is not legitimate to reject a new match simply because it contains fakes.
+Our philosophy is that even the worst, most disgusting match is better than the most beautiful non-match. Therefore, a new match should not be rejected simply because it contains fakes.
 
-That being said, fakes should always be marked as with a `// FAKE` comment when used or encountered so other maintainers can attempt to create matches that does. If you encounter fakes while annotating, please mark them as such even if the original committer didn't (we all sometimes don't fully read the agent's output).
+That said, fakes should always be marked with a `// FAKE` comment when used or encountered, so other maintainers can try to create matching code without them. If you encounter fakes while annotating, mark them as such even if the original committer did not; reviewers can miss details in generated changes.
 
-Karodo is acceptable to leave in with a `// karodo` comment if there appears to be no other way to get rid of it. Decomp slop should never have its `// FAKE` label changed. Never launder decomp slop as karodo.
+Karodo may be left in with a `// karodo` comment if there appears to be no other way to remove it. Decomp slop should never have its `// FAKE` label changed. Never disguise decomp slop as karodo.
 
 ### Bugs
-Bugs left in the original game code should be label `//!bug`
+Bugs in the original game code should be labeled `//!bug`.
 
 ### Cross References
 Reference other files with `//@{path}`
 
 ## Numbers
-Use Hex only for:
-- One off Powers of 2
-- One off (power of 2 - 1) (`0xFF` and such)
+Use hexadecimal only for:
+- One-off powers of 2
+- One-off values that are one less than a power of 2 (`0xFF` and similar values)
 - Colors
 - Addresses
 - Masks
