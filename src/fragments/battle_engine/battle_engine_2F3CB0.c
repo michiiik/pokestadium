@@ -14,6 +14,32 @@ static f32 D_84384600[] = { 1.0f, 2.0f };
     - Submission (rotation)
     - Fly (vertical displacement)
     - double team (after image)
+    - dig (rotation)
+    - bind (springy animation)
+    - seismic toss (screen rotation)
+    - meditate (body scale manipulation)
+    - surf (vertical displacement )
+    - agility (horizontal displacement)
+    - stomp (displacement on attack)
+    - body slam (displacement on attack)
+    - string shot (springy animation)
+    - wrap (springy animation)
+    - disable (springy animation)
+
+    unconfirmed:
+    - constrict
+    - roar
+    - whirlwind
+    - earthquake
+    - fissure
+
+confirmed to not be in this function:
+    - quick attack
+
+also seems to handle pokeball animations
+
+not confirmed to be involved in any pokemon animations and tested with pokemon with odd properties
+Kangaskhan, onix, porygon 
 */
 
 void BattleAnim_InitSwayOffset(ActivePokemon* arg0, f32 arg1, s16 arg2) {
@@ -295,6 +321,7 @@ void BattleAnim_StatusIdleCase2Sub1(ActivePokemon* arg0, ActivePokemon* arg1) {
     }
 }
 
+// triggers on pokeball sending pokemon out
 void BattleAnim_StatusIdleCase2(ActivePokemon* arg0, ActivePokemon* arg1) {
     switch (arg1->animationFlags2) {
         case 0:
