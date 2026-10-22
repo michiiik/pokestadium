@@ -624,10 +624,10 @@ void Vec3f_CalculateDistanceAngles(Vec3f* to, Vec3f* from, f32* euclidean, s16* 
     *angle_y = MathUtil_Atan2s(z_dist, x_dist);
 }
 
-void Camera_ComputeEyeFromAngles(Vec3f* from, Vec3f* to, f32 dist, s16 pitch, s16 yaw) {
-    to->x = from->x + (dist * COSS(pitch) * SINS(yaw));
-    to->y = from->y + (dist * SINS(pitch));
-    to->z = from->z + (dist * COSS(pitch) * COSS(yaw));
+void Camera_ComputeEyeFromAngles(Vec3f* from, Vec3f* to, f32 dist, s16 rotation_x, s16 rotation_y) {
+    to->x = from->x + (dist * COSS(rotation_x) * SINS(rotation_y));
+    to->y = from->y + (dist * SINS(rotation_x));
+    to->z = from->z + (dist * COSS(rotation_x) * COSS(rotation_y));
 }
 
 s16 Math_StepToS(s16 current, s16 target, s16 delta) {
@@ -648,7 +648,7 @@ s16 Math_StepToS(s16 current, s16 target, s16 delta) {
     return target - temp_v0;
 }
 
-s32 Math_StepToS32(s32 current, s32 target, s32 increase, s32 descrease) {
+s32 Math_StepToS32(s32 current, s32 target, s32 increase, s32 decrease) {
     //! If target is close to the max or min s32, then it's possible to overflow
     // past it without stopping.
 
@@ -658,7 +658,7 @@ s32 Math_StepToS32(s32 current, s32 target, s32 increase, s32 descrease) {
             current = target;
         }
     } else {
-        current -= descrease;
+        current -= decrease;
         if (current < target) {
             current = target;
         }

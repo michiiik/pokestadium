@@ -19,8 +19,8 @@
 
 static PokemonBattleCues sSide1BattleCues;
 static PokemonBattleCues sSide2BattleCues;
-static SpeciesModelTransform D_8438FF70;
-static SpeciesModelTransform D_8438FF90;
+static SpeciesModelTransform sSide1PresentationTransform;
+static SpeciesModelTransform sSide2PresentationTransform;
 static SpeciesModelTransform D_8438FFB0;
 static SpeciesModelTransform D_8438FFD0;
 static TagTeamPartners D_8438FFF0;
@@ -37,9 +37,9 @@ static s32 D_843900A4;
 f32 D_843900A8[2];
 
 PokemonBattleCues* sSideBattleCues[] = { &sSide1BattleCues, &sSide2BattleCues };
-SpeciesModelTransform* D_84384578[] = {
-    &D_8438FF70,
-    &D_8438FF90,
+SpeciesModelTransform* sSidePresentationTransform[] = {
+    &sSide1PresentationTransform,
+    &sSide2PresentationTransform,
 };
 SpeciesModelTransform* D_84384580[] = {
     &D_8438FFB0,
@@ -91,10 +91,10 @@ static u8 sMewLearnsNothingNewInYellow[] = {
 static u8* sPokemonYellowHmAdditions[] = {
     sCharizardLearnsFlyInYellow, sButterfreeLearnsFlashInYellow, sVenonatLearnsFlashInYellow, sVenomothLearnsFlashInYellow, sDiglettLearnsCutInYellow, sDugtrioLearnsCutInYellow, sKabutopsLearnsCutInYellow, sMewtwoLearnsNothingNewInYellow, sMewLearnsNothingNewInYellow,
 };
-u8 D_843845F0 = 0x8E;
-u8 D_843845F4 = 0x16;
-u8 D_843845F8 = 0x53;
-u8 D_843845FC[] = { 0x55, 0x54 };
+u8 sAerodactyl = AERODACTYL;
+u8 sFearow = FEAROW;
+u8 sFarfetchD = FARFETCH_D;
+u8 sDoduoEvoLine[] = { DODRIO, DODUO };
 
 char** sBattleMessagesTable;
 char** sPokemonNameTable;
@@ -510,9 +510,9 @@ void Battle_LoadAnimationAndMarkMoveIllegality(ActivePokemon* pokemon, s32 mark_
 
     if (side_index == 1) {
         rom_address = (u32)_70D3A0_ROM_START + ((u32)(D_6E910 + (species << 5)) & 0xFFFFFF);
-        Dma_WriteChunks(D_84384578[side_index], rom_address, rom_address + 0x20, 0);
+        Dma_WriteChunks(sSidePresentationTransform[side_index], rom_address, rom_address + 0x20, 0);
 
-        model_transform = D_84384578[side_index];
+        model_transform = sSidePresentationTransform[side_index];
         if (model_transform->unk_10 != 0xFF) {
             linked_record_id = model_transform->unk_10;
 
@@ -520,11 +520,11 @@ void Battle_LoadAnimationAndMarkMoveIllegality(ActivePokemon* pokemon, s32 mark_
             rom_address = ((u32)_70D3A0_ROM_START) + (((u32)(D_6E910 + ((model_transform->unk_10 - (transform_end = 2)) * 0x20))) & 0xFFFFFF);
             Dma_WriteChunks(model_transform, rom_address, rom_address + 0x20, 0);
 
-            D_84384578[side_index]->unk_10 = linked_record_id;
+            sSidePresentationTransform[side_index]->unk_10 = linked_record_id;
         }
     } else {
         rom_address = (u32)_70D3A0_ROM_START + ((u32)(D_6E910 + (species << 5)) & 0xFFFFFF);
-        Dma_WriteChunks(D_84384578[side_index], rom_address, rom_address + 0x20, 0);
+        Dma_WriteChunks(sSidePresentationTransform[side_index], rom_address, rom_address + 0x20, 0);
     }
 
     rom_address = (u32)_70D3A0_ROM_START + ((u32)(D_70B10 + (species * 0x20)) & 0xFFFFFF);
@@ -574,7 +574,7 @@ void BattleScene_TickRow10CleanupAndEnterState18(ActivePokemon* active_pokemon) 
     if (active_pokemon->sessionTeams->uniqueStatusFlags & 0x10) {
         active_pokemon->sessionTeams->uniqueStatusFlags &= ~0x90;
         Battle_LoadOwnerModelForSwitchIn(active_pokemon);
-        BattleScene_TickOwnerCameraFraming(active_pokemon);
+        BattleThumbnail_TickOwnerCameraFraming(active_pokemon);
         Audio_PlayCommand(2, 0, 0);
         sBattleSceneStateTickSlots[sBattleSceneStateTickSlotIndex].callback = sBattleSceneStateTickSentinel;
         BattleScene_EnterStateRow(active_pokemon, 18);
@@ -1296,7 +1296,7 @@ void BattleScene_TickRow20CleanupAndEnterState18(ActivePokemon* active_pokemon) 
         active_pokemon->sessionTeams->uniqueStatusFlags &= ~0x90;
 
         Battle_LoadOwnerModelForSwitchIn(active_pokemon);
-        BattleScene_TickOwnerCameraFraming(active_pokemon);
+        BattleThumbnail_TickOwnerCameraFraming(active_pokemon);
         Audio_PlayCommand(2, 0, 0);
 
         sBattleSceneStateTickSlots[sBattleSceneStateTickSlotIndex].callback = sBattleSceneStateTickSentinel;
@@ -2320,7 +2320,7 @@ void BattleScene_AllocateParticipantRecord(BattleSessionTeams* session_teams, s3
     bzero(active_pokemon, sizeof(ActivePokemon));
     bzero(&sActivePokemon[side_index]->state, sizeof(ActivePokemonState));
     bzero(&sActivePokemon[side_index]->state.runtime, sizeof(BattleMonRuntime));
-    bzero(&sActivePokemon[side_index]->presentationState, sizeof(PresentationState));
+    bzero(&sActivePokemon[side_index]->thumbnail, sizeof(ThumbnailState));
     bzero(&sActivePokemon[side_index]->state.runtime.moveCache, sizeof(CachedMoveData));
     bzero(&sActivePokemon[side_index]->state.unk_9C, sizeof(unk_D_84390010_654_09C));
     bzero(&sActivePokemon[side_index]->state.unk_AC, sizeof(unk_D_84390010_654_0AC));
@@ -2348,7 +2348,7 @@ void BattleScene_InitializeParticipantController(ActivePokemon* active_pokemon) 
     BattleScene_BindParticipantRosterForSide(active_pokemon, 0);
     BattleScene_SetParticipantSelectedSide(active_pokemon, 0);
     BattleScene_SetParticipantController(active_pokemon, controller);
-    active_pokemon->presentationState.unk_16C = 0;
+    active_pokemon->thumbnail.unk_16C = 0;
 }
 
 /**
@@ -2396,7 +2396,7 @@ void BattleScene_InitializeParticipantModel(ActivePokemon* active_pokemon) {
  * Creates the participant's owner (trainer) model.
  */
 void BattleScene_InitializeParticipantOwnerModel(ActivePokemon* active_pokemon) {
-    PresentationState* presentation = &active_pokemon->presentationState;
+    ThumbnailState* presentation = &active_pokemon->thumbnail;
     ModelNodeView* model_view;
     s16 model_id;
 

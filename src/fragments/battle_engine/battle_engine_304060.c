@@ -369,12 +369,12 @@ void BattleScene_IntroCameraStep22Or24(CameraNode* arg0, s32 arg1) {
             var_v1 = (temp_s0->displayObject.objectType - 1) & 0xFF;
         }
 
-        tmp2 = (D_84384580[arg1]->unk_00.y + temp_s0->displayObject.position.y) + D_84384C30[var_v1].z;
-        tmp1 = ((D_84384580[arg1]->unk_00.z + D_84384C30[var_v1].y) * temp_s0->cameraOffsetScaleFactor) + temp_s0->displayObject.position.x;
+        tmp2 = (D_84384580[arg1]->coordinates.y + temp_s0->displayObject.position.y) + D_84384C30[var_v1].z;
+        tmp1 = ((D_84384580[arg1]->coordinates.z + D_84384C30[var_v1].y) * temp_s0->cameraOffsetScaleFactor) + temp_s0->displayObject.position.x;
 
         Vec3f_SetComponentsDuplicate(&arg0->view.targetPosition, tmp1, tmp2, temp_s0->displayObject.position.z);
 
-        tmp1 = D_84384580[sBattleScene.unk_00->unk_2C]->unk_00.x * D_84384C30[var_v1].x;
+        tmp1 = D_84384580[sBattleScene.unk_00->unk_2C]->coordinates.x * D_84384C30[var_v1].x;
         tmp4 = D_84384580[sBattleScene.unk_00->unk_2C]->unk_0C;
         tmp3 = (temp_s0->cameraOffsetScaleFactor * D_84384580[sBattleScene.unk_00->unk_2C]->unk_0E) + BattleScene_GetParticipantFacingAngle(temp_s0);
 
@@ -557,11 +557,11 @@ void BattleScene_UpdateIntroCameraSequence(CameraNode* arg0) {
     if ((gSessionContext.mode == 0x10) && (sBattleScene.unk_00->unk_1C == 1)) {
         BattleScene_UpdateActionSelectPhase();
     } else if (sBattleScene.unk_00->unk_1C == 1) {
-        if ((sBattleScene.unk_00->unk_30 == 0) && (sActivePokemon[0]->presentationState.unk_168->unk_1C == 0x17) &&
-            (sActivePokemon[1]->presentationState.unk_168->unk_1C == 0x103)) {
+        if ((sBattleScene.unk_00->unk_30 == 0) && (sActivePokemon[0]->thumbnail.camera->viewport.x == 0x17) &&
+            (sActivePokemon[1]->thumbnail.camera->viewport.x == 0x103)) {
             BattleScene_UpdateActionSelectPhase();
-        } else if ((sBattleScene.unk_00->unk_30 == 0) && (sActivePokemon[0]->presentationState.unk_168->unk_1C < 0xE) &&
-                   (sActivePokemon[1]->presentationState.unk_168->unk_1C >= 0x10D)) {
+        } else if ((sBattleScene.unk_00->unk_30 == 0) && (sActivePokemon[0]->thumbnail.camera->viewport.x < 0xE) &&
+                   (sActivePokemon[1]->thumbnail.camera->viewport.x >= 0x10D)) {
             BattleScene_ResetActionSelectionTimers();
         }
     }

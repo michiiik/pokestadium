@@ -1122,17 +1122,17 @@ s32 BattleScene_HandlePlayerForcedActionState(ActivePokemon* arg0, ActivePokemon
 }
 
 void BattleScene_ShowParticipantOwnerAndSecondaryModels(void) {
-    sActivePokemon[0]->presentationState.unk_168->node.flags |= 1;
-    sActivePokemon[0]->presentationState.displayObject.node.flags |= 1;
-    sActivePokemon[1]->presentationState.unk_168->node.flags |= 1;
-    sActivePokemon[1]->presentationState.displayObject.node.flags |= 1;
+    sActivePokemon[0]->thumbnail.camera->node.flags |= 1;
+    sActivePokemon[0]->thumbnail.displayObject.node.flags |= 1;
+    sActivePokemon[1]->thumbnail.camera->node.flags |= 1;
+    sActivePokemon[1]->thumbnail.displayObject.node.flags |= 1;
 }
 
 void BattleScene_HideParticipantOwnerAndSecondaryModels(void) {
-    sActivePokemon[0]->presentationState.unk_168->node.flags &= ~1;
-    sActivePokemon[0]->presentationState.displayObject.node.flags &= ~1;
-    sActivePokemon[1]->presentationState.unk_168->node.flags &= ~1;
-    sActivePokemon[1]->presentationState.displayObject.node.flags &= ~1;
+    sActivePokemon[0]->thumbnail.camera->node.flags &= ~1;
+    sActivePokemon[0]->thumbnail.displayObject.node.flags &= ~1;
+    sActivePokemon[1]->thumbnail.camera->node.flags &= ~1;
+    sActivePokemon[1]->thumbnail.displayObject.node.flags &= ~1;
 }
 
 void BattleScene_AdvanceAttractInputScript(void) {
@@ -1186,8 +1186,8 @@ void BattleScene_TickAttractModeInput(void) {
 
     if (cont->buttonPressed & 0x20) {
         BattleScene_ShowParticipantOwnerAndSecondaryModels();
-        BattleScene_TriggerOwnerModelAnimation(sActivePokemon[0]);
-        BattleScene_TriggerOwnerModelAnimation(sActivePokemon[1]);
+        BattleThumbnail_TriggerOwnerModelAnimation(sActivePokemon[0]);
+        BattleThumbnail_TriggerOwnerModelAnimation(sActivePokemon[1]);
     }
 
     if (cont->buttonPressed & 0x10) {

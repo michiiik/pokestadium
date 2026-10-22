@@ -1086,7 +1086,7 @@ s16 sChargeMoveCues[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    0xAE, 0, 0,    0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0,    0, 0, 0, 0, 0, 0,    0, 0,
 };
 
-unk_D_843847BC D_843847BC[2] = {
+ThumbnailSettings sSideThumbnailSettings[2] = {
     {
         0xFFB8,
         0x0048,

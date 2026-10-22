@@ -5,6 +5,7 @@
 #include "src/text_system.h"
 #include "src/matrix.h"
 #include "pokemon.h"
+#include "status.h"
 
 s32 BattleScene_ByteArrayContains(u8 lookup, u8* array, s32 array_length) {
     while (array_length--) {
@@ -197,31 +198,32 @@ void BattleScene_GetParticipantModelPosition(ActivePokemon* arg0, Vec3f* arg1) {
     arg1->z = arg0->displayObject.position.z;
 }
 
-void BattleAnim_GetOwnerDefaultAnchorPosition(ActivePokemon* arg0, Vec3f* arg1) {
-    f32 var_fs0 = 0.0f;
+void BattleAnim_GetOwnerDefaultAnchorPosition(ActivePokemon* pokemon, Vec3f* anchor_position) {
+    f32 y_offset = 0.0f;
 
-    if (BattleScene_ByteArrayContains(arg0->displayObject.objectType, &D_843845F0, 1) != 0) {
-        var_fs0 = BattleAnim_GetOwnerModelHeight(arg0) / 1.5f;
-    } else if (BattleScene_ByteArrayContains(arg0->displayObject.objectType, &D_843845F4, 1) != 0) {
-        var_fs0 = BattleAnim_GetOwnerModelHeight(arg0) * 0.5f;
-    } else if ((BattleScene_ByteArrayContains(arg0->displayObject.objectType, &D_843845F8, 1) != 0) && (arg0->state.flags & 0x200)) {
-        var_fs0 = 2.0f * BattleAnim_GetOwnerModelHeight(arg0);
-    } else if ((BattleScene_ByteArrayContains(arg0->displayObject.objectType, D_843845FC, 2) != 0) && (arg0->state.flags & 0x200)) {
-        var_fs0 = BattleAnim_GetOwnerModelHeight(arg0) * 1.5f;
+    //guess: these are pokemon where their wins are higher than their head in their idle animation
+    if (BattleScene_ByteArrayContains(pokemon->displayObject.objectType, &sAerodactyl, 1) != 0) {
+        y_offset = BattleAnim_GetOwnerModelHeight(pokemon) / 1.5f;
+    } else if (BattleScene_ByteArrayContains(pokemon->displayObject.objectType, &sFearow, 1) != 0) {
+        y_offset = BattleAnim_GetOwnerModelHeight(pokemon) * 0.5f;
+    } else if ((BattleScene_ByteArrayContains(pokemon->displayObject.objectType, &sFarfetchD, 1) != 0) && (pokemon->state.flags & ACTIVE_AIRBORNE)) {
+        y_offset = 2.0f * BattleAnim_GetOwnerModelHeight(pokemon);
+    } else if ((BattleScene_ByteArrayContains(pokemon->displayObject.objectType, sDoduoEvoLine, 2) != 0) && (pokemon->state.flags & ACTIVE_AIRBORNE)) {
+        y_offset = BattleAnim_GetOwnerModelHeight(pokemon) * 1.5f;
     }
 
-    if (BattleScene_GetParticipantModelHeight(arg0) != 0.0f) {
-        arg1->x = arg0->displayObject.position.x;
-        arg1->y = arg0->displayObject.position.y + var_fs0;
-        arg1->z = arg0->displayObject.position.z;
+    if (BattleScene_GetParticipantModelHeight(pokemon) != 0.0f) {
+        anchor_position->x = pokemon->displayObject.position.x;
+        anchor_position->y = pokemon->displayObject.position.y + y_offset;
+        anchor_position->z = pokemon->displayObject.position.z;
     } else {
-        arg1->x = arg0->displayObject.position.x;
-        arg1->y = BattleAnim_GetOwnerModelHeight(arg0) + arg0->displayObject.position.y + var_fs0;
-        arg1->z = arg0->displayObject.position.z;
+        anchor_position->x = pokemon->displayObject.position.x;
+        anchor_position->y = BattleAnim_GetOwnerModelHeight(pokemon) + pokemon->displayObject.position.y + y_offset;
+        anchor_position->z = pokemon->displayObject.position.z;
     }
 
-    if (arg1->y < 0.0f) {
-        arg1->y = BattleAnim_GetOwnerModelHeight(arg0);
+    if (anchor_position->y < 0.0f) {
+        anchor_position->y = BattleAnim_GetOwnerModelHeight(pokemon);
     }
 }
 
@@ -384,7 +386,7 @@ void BattleScene_RebindParticipantToSide(ActivePokemon* arg0, s32 arg1) {
     BattleScene_BindParticipantRosterForSide(arg0, arg1);
     BattleScene_SetParticipantSelectedSide(arg0, arg1);
     temp_v0->rosterIndex = temp_v0->unk_18;
-    arg0->presentationState.unk_16C = temp_v0->unk_2B;
+    arg0->thumbnail.unk_16C = temp_v0->unk_2B;
 }
 
 s32 Battle_HasUsableSleepStatusTarget(ActivePokemon* active_pokemon) {
@@ -451,7 +453,7 @@ u8 BattleScene_GetRosterTeamSize(TeamRoster* arg0) {
 }
 
 s32 BattleScene_GetParticipantDisplayPlayerNumber(ActivePokemon* active_pokemon) {
-    return active_pokemon->sessionTeams->teamMember[active_pokemon->presentationState.unk_16C]->unk_001 + 1;
+    return active_pokemon->sessionTeams->teamMember[active_pokemon->thumbnail.unk_16C]->unk_001 + 1;
 }
 
 void BattleScene_ReinitParticipantBodyModel(ActivePokemon* arg0, ActivePokemon* arg1, s32 arg2, s32 arg3) {
@@ -489,7 +491,7 @@ void BattleScene_ReinitParticipantBodyModel(ActivePokemon* arg0, ActivePokemon* 
     }
 }
 
-void BattleScene_ReinitParticipantOwnerModel(ActivePokemon* arg0, PresentationState* arg1, s16 arg2) {
+void BattleScene_ReinitParticipantOwnerModel(ActivePokemon* arg0, ThumbnailState* arg1, s16 arg2) {
     ModelNodeView* sp24;
 
     sp24 = Battle_GetMoveEffectListEntry(arg0, 0);
@@ -565,7 +567,7 @@ void Battle_LoadOwnerModelForSpecies(ActivePokemon* active_pokemon) {
     Battle_GetMoveEffectListEntry(active_pokemon, 0);
     sp26 = Battle_GetDisplayModelId(active_pokemon, 0);
     BattleScene_ReinitParticipantBodyModel(active_pokemon, active_pokemon, sp26, 0);
-    BattleScene_ReinitParticipantOwnerModel(active_pokemon, &active_pokemon->presentationState, sp26);
+    BattleScene_ReinitParticipantOwnerModel(active_pokemon, &active_pokemon->thumbnail, sp26);
     BattleScene_ReinitParticipantSecondaryModels(active_pokemon, sp26);
     Battle_ResetEventTrack(active_pokemon);
     ptr->flags &= 0x1800;
@@ -580,7 +582,7 @@ void Battle_LoadOwnerModelForSwitchIn(ActivePokemon* active_pokemon) {
     Battle_GetMoveEffectListEntry(active_pokemon, 0);
     model_id = Battle_GetDisplayModelId(active_pokemon, 0);
     BattleScene_ReinitParticipantBodyModel(active_pokemon, active_pokemon, model_id, 1);
-    BattleScene_ReinitParticipantOwnerModel(active_pokemon, &active_pokemon->presentationState, model_id);
+    BattleScene_ReinitParticipantOwnerModel(active_pokemon, &active_pokemon->thumbnail, model_id);
     BattleScene_ReinitParticipantSecondaryModels(active_pokemon, model_id);
     Battle_ResetEventTrack(active_pokemon);
     pokemon_state->unk_2D = 0;

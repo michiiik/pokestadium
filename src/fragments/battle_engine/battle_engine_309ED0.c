@@ -1028,13 +1028,13 @@ void BattleScene_SetupSendOutOwnerShot(CameraNode* arg0) {
             sp3B = 0x97;
         }
 
-        sp44 = (D_84384580[sBattleScene.unk_00->unk_2C]->unk_00.y + temp_s0->displayObject.position.y) + D_84384C30[sp3B].z;
-        sp40 = ((D_84384580[sBattleScene.unk_00->unk_2C]->unk_00.z + D_84384C30[sp3B].y) * temp_s0->cameraOffsetScaleFactor) +
+        sp44 = (D_84384580[sBattleScene.unk_00->unk_2C]->coordinates.y + temp_s0->displayObject.position.y) + D_84384C30[sp3B].z;
+        sp40 = ((D_84384580[sBattleScene.unk_00->unk_2C]->coordinates.z + D_84384C30[sp3B].y) * temp_s0->cameraOffsetScaleFactor) +
                temp_s0->displayObject.position.x;
 
         Vec3f_SetComponentsDuplicate(&arg0->view.targetPosition, sp40, sp44, temp_s0->displayObject.position.z);
 
-        sp40 = D_84384580[sBattleScene.unk_00->unk_2C]->unk_00.x * D_84384C30[sp3B].x;
+        sp40 = D_84384580[sBattleScene.unk_00->unk_2C]->coordinates.x * D_84384C30[sp3B].x;
         sp3E = D_84384580[sBattleScene.unk_00->unk_2C]->unk_0C;
         tmp1 = (temp_s0->cameraOffsetScaleFactor * D_84384580[sBattleScene.unk_00->unk_2C]->unk_0E) + BattleScene_GetParticipantFacingAngle(temp_s0);
         Camera_ComputeEyeFromAngles(&arg0->view.targetPosition, &arg0->view.eyePosition, sp40, sp3E, tmp1);
@@ -2470,7 +2470,7 @@ void BattleScene_Phase15(CameraNode* arg0) {
             if (D_84390204->sessionTeams->uniqueStatusFlags & 0x10) {
                 D_84390204->sessionTeams->uniqueStatusFlags &= ~0x90;
                 Battle_LoadOwnerModelForSpecies(D_84390204);
-                BattleScene_TickOwnerCameraFraming(D_84390204);
+                BattleThumbnail_TickOwnerCameraFraming(D_84390204);
                 BattleAnim_PlayMoveEffectScript(D_84390204, sp30->usedMove);
                 BattleAnim_PlaySpeciesReactionSound(D_84390204, sp30, 0);
                 sBattleScene.unk_00->unk_20 += 1;
@@ -2486,9 +2486,9 @@ void BattleScene_Phase15(CameraNode* arg0) {
 
         case 3:
             BattleScene_RecenterCameraOnOwner(arg0, D_84390204);
-            D_84390204->presentationState.unk_168->node.flags |= 1;
-            D_84390204->presentationState.displayObject.node.flags |= 1;
-            BattleScene_TriggerOwnerModelAnimation(D_84390204);
+            D_84390204->thumbnail.camera->node.flags |= 1;
+            D_84390204->thumbnail.displayObject.node.flags |= 1;
+            BattleThumbnail_TriggerOwnerModelAnimation(D_84390204);
             if (BattleScene_IsRowWaitComplete(D_84390204, 0x32) != 0) {
                 BattleScene_ResetAnimationStep();
                 BattleScene_UpdateDisplayedHpAndTransition(arg0);
@@ -3316,7 +3316,7 @@ void BattleScene_PhaseWithdrawFainted(CameraNode* arg0) {
             if (temp_s0->sessionTeams->uniqueStatusFlags & 0x10) {
                 temp_s0->sessionTeams->uniqueStatusFlags &= ~0x90;
                 Battle_LoadOwnerModelForSwitchIn(temp_s0);
-                BattleScene_TickOwnerCameraFraming(temp_s0);
+                BattleThumbnail_TickOwnerCameraFraming(temp_s0);
                 D_843900A8[sBattleScene.unk_00->unk_2C] = temp_s0->state.runtime.unk_0C;
                 BattleAnim_QueueEffectList3(3, temp_s0, temp_s0, 0xFF, 0xFF);
                 Audio_PlayCommand(2, 0, 0);
@@ -3415,7 +3415,7 @@ void BattleScene_PhaseWithdrawSwitch(CameraNode* arg0) {
             if (temp_s0->sessionTeams->uniqueStatusFlags & 0x10) {
                 temp_s0->sessionTeams->uniqueStatusFlags &= ~0x90;
                 Battle_LoadOwnerModelForSwitchIn(temp_s0);
-                BattleScene_TickOwnerCameraFraming(temp_s0);
+                BattleThumbnail_TickOwnerCameraFraming(temp_s0);
                 D_843900A8[BattleScene_GetParticipantSideIndex(temp_s0)] = temp_s0->state.runtime.unk_0C;
                 Audio_PlayCommand(2, 0, 0);
                 BattleScene_RebindParticipantToSide(temp_s0, sp3C->unk_2C);
