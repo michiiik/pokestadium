@@ -336,16 +336,18 @@ void BattleAnim_StatusIdleCase2(ActivePokemon* owner, ActivePokemon* animated_po
     }
 }
 
-void BattleAnim_StatusIdleCase3Sub0(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+// fly start
+void BattleAnim_FlyStart(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     Vec3f_SetComponentsDuplicate(&animated_pokemon->modelTransform, 0.0f, 0.0f, 0.0f);
     Vec3f_SetComponentsDuplicate(&animated_pokemon->modelTransform.rotation, 0.0f, 0.0f, 0.0f);
-    BattleAnim_InitSwayOffset(animated_pokemon, sModelTransformConstants[0], 0x4000);
+    BattleAnim_InitSwayOffset(animated_pokemon, sModelTransformConstants[0], NINETY_DEGREES);
     BattleScene_ShowSecondaryModelsStaggeredFrame(animated_pokemon);
     animated_pokemon->modelTransformTimer++;
 }
 
-void BattleAnim_StatusIdleCase3Sub1(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
-    BattleAnim_UpdateTransform(owner, animated_pokemon, 1.45f, 0.015f, 0x4000);
+// fly continue
+void BattleAnim_FlyContinue(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+    BattleAnim_UpdateTransform(owner, animated_pokemon, 1.45f, 0.015f, NINETY_DEGREES);
     BattleScene_UpdateSecondaryModelTrailPosition(animated_pokemon, 0);
     if (owner->displayObject.position.y >= 200.0f) {
         animated_pokemon->modelTransform.rotation.y = 0.0f;
@@ -354,13 +356,14 @@ void BattleAnim_StatusIdleCase3Sub1(ActivePokemon* owner, ActivePokemon* animate
     }
 }
 
-void BattleAnim_StatusIdleCase3(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+// fly
+void BattleAnim_Fly(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     switch (animated_pokemon->modelTransformTimer) {
         case 0:
-            BattleAnim_StatusIdleCase3Sub0(owner, animated_pokemon);
+            BattleAnim_FlyStart(owner, animated_pokemon);
 
         case 1:
-            BattleAnim_StatusIdleCase3Sub1(owner, animated_pokemon);
+            BattleAnim_FlyContinue(owner, animated_pokemon);
             break;
     }
 }
@@ -417,20 +420,20 @@ s32 BattleAnim_ApproachAngleAndCheckThreshold(ActivePokemon* arg0, s16 arg1, s16
 
 void BattleAnim_StatusIdleCase4Sub0(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     BattleScene_ShowSecondaryModelsStaggeredFrame(animated_pokemon);
-    animated_pokemon->unk_4A6 = 0;
-    animated_pokemon->unk_4A4 = 0;
+    animated_pokemon->oscillationPhase = 0;
+    animated_pokemon->oscillationVelocityEasePhase = 0;
     animated_pokemon->animationState = 0;
     animated_pokemon->modelTransformTimer++;
 }
 
 void BattleAnim_StatusIdleCase4Sub1(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
-    animated_pokemon->unk_4A6 = Math_StepToS32(animated_pokemon->unk_4A6, 0x3330, 0x16C, 0x16C);
+    animated_pokemon->oscillationPhase = Math_StepToS32(animated_pokemon->oscillationPhase, 0x3330, 0x16C, 0x16C);
 
-    if (BattleAnim_ApproachAngleAndCheckThreshold(owner, animated_pokemon->unk_4A6, animated_pokemon->cameraOffsetScaleFactor << 0xE) != 0) {
+    if (BattleAnim_ApproachAngleAndCheckThreshold(owner, animated_pokemon->oscillationPhase, animated_pokemon->cameraOffsetScaleFactor << 0xE) != 0) {
         animated_pokemon->animationState += 1;
     }
 
-    BattleScene_UpdateSecondaryModelTrailPosition(animated_pokemon, animated_pokemon->unk_4A6);
+    BattleScene_UpdateSecondaryModelTrailPosition(animated_pokemon, animated_pokemon->oscillationPhase);
 
     if (animated_pokemon->animationState == 3) {
         animated_pokemon->modelTransformTimer += 1;
@@ -448,7 +451,7 @@ void BattleAnim_StatusIdleCase4Sub2(ActivePokemon* owner, ActivePokemon* animate
         var_fa1 -= 1.0f;
     }
 
-    sp26 = (animated_pokemon->unk_4A6 * var_fa1) * 0.8;
+    sp26 = (animated_pokemon->oscillationPhase * var_fa1) * 0.8;
     if (sp26 < 0xE38) {
         sp26 = 0xE38;
     }
@@ -478,16 +481,16 @@ void BattleAnim_StatusIdleCase4(ActivePokemon* owner, ActivePokemon* animated_po
 }
 
 void BattleAnim_StatusIdleCase5Sub0(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon) {
-    animated_pokemon->unk_4A6 = 0;
-    animated_pokemon->unk_4A4 = 0;
+    animated_pokemon->oscillationPhase = 0;
+    animated_pokemon->oscillationVelocityEasePhase = 0;
     animated_pokemon->animationState = 0;
     animated_pokemon->modelTransformTimer++;
 }
 
 void BattleAnim_StatusIdleCase5Sub1(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
-    animated_pokemon->unk_4A6 = Math_StepToS32(animated_pokemon->unk_4A6, 0x3FFC, 0x16C, 0x16C);
+    animated_pokemon->oscillationPhase = Math_StepToS32(animated_pokemon->oscillationPhase, 0x3FFC, 0x16C, 0x16C);
 
-    if (BattleAnim_ApproachAngleAndCheckThreshold(owner, animated_pokemon->unk_4A6, animated_pokemon->cameraOffsetScaleFactor << 0xE) != 0) {
+    if (BattleAnim_ApproachAngleAndCheckThreshold(owner, animated_pokemon->oscillationPhase, animated_pokemon->cameraOffsetScaleFactor << 0xE) != 0) {
         animated_pokemon->animationState += 1;
     }
 
@@ -504,7 +507,7 @@ void BattleAnim_StatusIdleCase5Sub2(ActivePokemon* owner, ActivePokemon* animate
     UNUSED s16 pad;
     u8 sp28[] = { ONIX, MOLTRES }; // D_84384650
 
-    BattleAnim_ApproachAngleAndCheckThreshold(owner, animated_pokemon->unk_4A6, animated_pokemon->cameraOffsetScaleFactor << 0xE);
+    BattleAnim_ApproachAngleAndCheckThreshold(owner, animated_pokemon->oscillationPhase, animated_pokemon->cameraOffsetScaleFactor << 0xE);
 
     if (BattleScene_ByteArrayContains(animated_pokemon->displayObject.objectType, sp28, sizeof(sp28)) != 0) {
         sp30 = 10.3f;
@@ -516,7 +519,7 @@ void BattleAnim_StatusIdleCase5Sub2(ActivePokemon* owner, ActivePokemon* animate
         sp2C = 0.045f;
     }
 
-    BattleScene_UpdateSecondaryModelTrailPosition(animated_pokemon, animated_pokemon->unk_4A6);
+    BattleScene_UpdateSecondaryModelTrailPosition(animated_pokemon, animated_pokemon->oscillationPhase);
     BattleAnim_ApproachF(&owner->displayObject.position.y, -(BattleAnim_GetOwnerModelHeight(animated_pokemon) * sp30), sp2C);
 
     if (owner->displayObject.position.y <= -(BattleAnim_GetOwnerModelHeight(animated_pokemon) * sp34)) {
@@ -542,10 +545,10 @@ void BattleAnim_StatusIdleCase5(ActivePokemon* owner, ActivePokemon* animated_po
 }
 
 void BattleAnim_StatusIdleCase6Sub0(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
-    animated_pokemon->unk_4A6 = 0;
-    animated_pokemon->unk_4A4 = 0;
+    animated_pokemon->oscillationPhase = 0;
+    animated_pokemon->oscillationVelocityEasePhase = 0;
     animated_pokemon->animationState = 0;
-    animated_pokemon->unk_4A0 = 0.0f;
+    animated_pokemon->oscillationAmplitude = 0.0f;
     BattleScene_PositionParticipantModel(animated_pokemon);
     Vec3s_SetComponents(&owner->displayObject.rotation, 0, animated_pokemon->cameraOffsetScaleFactor << 0xE, 0);
     BattleScene_ShowSecondaryModelsStaggeredFrame(animated_pokemon);
@@ -556,15 +559,15 @@ void BattleAnim_StatusIdleCase6Sub1(ActivePokemon* owner, ActivePokemon* animate
     f32 tmp;
     Vec3f sp20 = { 0.0f, 0.0f, 0.0f }; // D_84384654
 
-    BattleAnim_ApproachF(&animated_pokemon->unk_4A0, 50.0f, 0.1f);
-    animated_pokemon->unk_4A6 += 0xE38;
-    tmp = SINS(animated_pokemon->unk_4A6) * animated_pokemon->unk_4A0;
+    BattleAnim_ApproachF(&animated_pokemon->oscillationAmplitude, 50.0f, 0.1f);
+    animated_pokemon->oscillationPhase += 0xE38;
+    tmp = SINS(animated_pokemon->oscillationPhase) * animated_pokemon->oscillationAmplitude;
     BattleAnim_Vec3fSetPolarXZ(&sp20, tmp, owner->displayObject.rotation.y);
     BattleScene_PositionParticipantModel(animated_pokemon);
     Vec3f_AddInPlace(&owner->displayObject.position, &sp20);
     BattleScene_UpdateSecondaryModelTrailPosition(animated_pokemon, 0);
 
-    if (animated_pokemon->unk_4A0 > 49.0f) {
+    if (animated_pokemon->oscillationAmplitude > 49.0f) {
         animated_pokemon->modelTransformTimer++;
     }
 }
@@ -573,17 +576,17 @@ void BattleAnim_StatusIdleCase6Sub2(ActivePokemon* owner, ActivePokemon* animate
     f32 tmp;
     Vec3f sp20 = { 0.0f, 0.0f, 0.0f };
 
-    BattleAnim_ApproachF(&animated_pokemon->unk_4A0, 0.0f, 0.1f);
-    animated_pokemon->unk_4A6 += 0xE38;
+    BattleAnim_ApproachF(&animated_pokemon->oscillationAmplitude, 0.0f, 0.1f);
+    animated_pokemon->oscillationPhase += 0xE38;
 
-    tmp = SINS(animated_pokemon->unk_4A6) * animated_pokemon->unk_4A0;
+    tmp = SINS(animated_pokemon->oscillationPhase) * animated_pokemon->oscillationAmplitude;
     BattleAnim_Vec3fSetPolarXZ(&sp20, tmp, owner->displayObject.rotation.y);
 
     BattleScene_PositionParticipantModel(animated_pokemon);
     Vec3f_AddInPlace(&owner->displayObject.position, &sp20);
     BattleScene_UpdateSecondaryModelTrailPosition(animated_pokemon, 0);
 
-    if (animated_pokemon->unk_4A0 <= 0.5f) {
+    if (animated_pokemon->oscillationAmplitude <= 0.5f) {
         BattleScene_PositionParticipantModel(animated_pokemon);
         Vec3s_SetComponents(&owner->displayObject.rotation, 0, animated_pokemon->cameraOffsetScaleFactor << 0xE, 0);
         BattleScene_ResetParticipantModelFlags(animated_pokemon);
@@ -645,11 +648,11 @@ void BattleAnim_ResetOwnerFacingAndExitStatusIdle(ActivePokemon* arg0) {
 }
 
 void BattleAnim_StatusIdleCase8Sub0(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
-    animated_pokemon->unk_4A6 = 0;
-    animated_pokemon->unk_4A8 = 0;
-    animated_pokemon->unk_4A4 = 0;
+    animated_pokemon->oscillationPhase = 0;
+    animated_pokemon->oscillationAngularVelocity = 0;
+    animated_pokemon->oscillationVelocityEasePhase = 0;
     animated_pokemon->animationState = 0;
-    animated_pokemon->unk_4A0 = 0.0f;
+    animated_pokemon->oscillationAmplitude = 0.0f;
     BattleScene_PositionParticipantModel(animated_pokemon);
     Vec3s_SetComponents(&owner->displayObject.rotation, 0, animated_pokemon->cameraOffsetScaleFactor << 0xE, 0);
     animated_pokemon->modelTransformTimer++;
@@ -666,8 +669,8 @@ void BattleAnim_StatusIdleCase8Sub1(UNUSED ActivePokemon* owner, ActivePokemon* 
     f32 temp_fv0_2;
     f32 temp_fv1_2;
 
-    BattleAnim_StepToS16(&animated_pokemon->unk_4A4, 0x5B0, 0x3C);
-    BattleAnim_StepToS16(&animated_pokemon->unk_4A8, -0x8000, animated_pokemon->unk_4A4);
+    BattleAnim_StepToS16(&animated_pokemon->oscillationVelocityEasePhase, 0x5B0, 0x3C);
+    BattleAnim_StepToS16(&animated_pokemon->oscillationAngularVelocity, -0x8000, animated_pokemon->oscillationVelocityEasePhase);
 
     sp2C = temp_s0->view.targetPosition.x - temp_s0->view.eyePosition.x;
     sp28 = temp_s0->view.targetPosition.y - temp_s0->view.eyePosition.y;
@@ -679,11 +682,11 @@ void BattleAnim_StatusIdleCase8Sub1(UNUSED ActivePokemon* owner, ActivePokemon* 
     temp_fv1_2 = sp28 / temp_fv0_2;
     temp_fa1_2 = sp24 / temp_fv0_2;
 
-    temp_ft4 = 1.0 - COSS(animated_pokemon->unk_4A8);
+    temp_ft4 = 1.0 - COSS(animated_pokemon->oscillationAngularVelocity);
 
-    temp_s0->view.upDirection.x = (temp_ft4 * temp_fa0 * temp_fv1_2) - (SINS(animated_pokemon->unk_4A8) * temp_fa1_2);
-    temp_s0->view.upDirection.y = COSS(animated_pokemon->unk_4A8) + ((temp_ft4 * temp_fv1_2) * temp_fv1_2);
-    temp_s0->view.upDirection.z = (SINS(animated_pokemon->unk_4A8) * temp_fa0) + ((temp_ft4 * temp_fv1_2) * temp_fa1_2);
+    temp_s0->view.upDirection.x = (temp_ft4 * temp_fa0 * temp_fv1_2) - (SINS(animated_pokemon->oscillationAngularVelocity) * temp_fa1_2);
+    temp_s0->view.upDirection.y = COSS(animated_pokemon->oscillationAngularVelocity) + ((temp_ft4 * temp_fv1_2) * temp_fv1_2);
+    temp_s0->view.upDirection.z = (SINS(animated_pokemon->oscillationAngularVelocity) * temp_fa0) + ((temp_ft4 * temp_fv1_2) * temp_fa1_2);
 
     if (animated_pokemon->displayObject.position.y < 0.0f) {
         animated_pokemon->displayObject.position.y = 0.0f;
@@ -762,95 +765,96 @@ void BattleAnim_StatusIdleCase12(ActivePokemon* owner, ActivePokemon* animated_p
     }
 }
 
-void BattleAnim_StatusIdleCase13Sub0(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
-    animated_pokemon->unk_4A4 = 0x16C;
-    animated_pokemon->unk_4A6 = 0;
-    animated_pokemon->unk_4A8 = 0;
-    animated_pokemon->unk_4A0 = 0.4f;
+void BattleAnim_MeditateStart(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+    animated_pokemon->oscillationVelocityEasePhase = 364;
+    animated_pokemon->oscillationPhase = 0;
+    animated_pokemon->oscillationAngularVelocity = 0;
+    animated_pokemon->oscillationAmplitude = 0.4f;
     animated_pokemon->modelTransform.rotation.x = owner->displayObject.scale.x;
     animated_pokemon->modelTransform.rotation.y = owner->displayObject.scale.y;
     animated_pokemon->modelTransform.rotation.z = owner->displayObject.scale.z;
     animated_pokemon->modelTransformTimer++;
 }
 
-void BattleAnim_StatusIdleCase13Sub1(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
-    f32 var_fv0;
+void BattleAnim_MeditateContinue(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+    f32 scale_resize;
 
     // clang-format off
-    if ((animated_pokemon->unk_4A4 >= 0) && (animated_pokemon->unk_4A4 <= 0x8000)) { animated_pokemon->unk_4A4 += 0x2D; }
+    if ((animated_pokemon->oscillationVelocityEasePhase >= 0) && (animated_pokemon->oscillationVelocityEasePhase <= 0x8000)) { animated_pokemon->oscillationVelocityEasePhase += 45; }
     // clang-format on
 
-    animated_pokemon->unk_4A8 = SINS(animated_pokemon->unk_4A4) * 182.0f * 15.0f;
+    animated_pokemon->oscillationAngularVelocity = SINS(animated_pokemon->oscillationVelocityEasePhase) * 182.0f * 15.0f;
 
-    if ((animated_pokemon->unk_4A6 >= 0) && (animated_pokemon->unk_4A6 <= 0x4000)) {
-        animated_pokemon->unk_4A6 += animated_pokemon->unk_4A8;
+    if ((animated_pokemon->oscillationPhase >= 0) && (animated_pokemon->oscillationPhase <= NINETY_DEGREES)) {
+        animated_pokemon->oscillationPhase += animated_pokemon->oscillationAngularVelocity;
     }
 
-    if (animated_pokemon->state.runtime.unk_56 == 0) {
-        var_fv0 = 1.0f;
+    if (animated_pokemon->state.runtime.scaleResize == 0) {
+        scale_resize = 1.0f;
     } else {
-        var_fv0 = 0.8f;
+        scale_resize = 0.8f;
     }
 
-    owner->displayObject.scale.x = var_fv0 - (SINS(animated_pokemon->unk_4A6) * animated_pokemon->unk_4A0);
-    owner->displayObject.scale.y = (SINS(animated_pokemon->unk_4A6) * animated_pokemon->unk_4A0) + var_fv0;
-    owner->displayObject.scale.z = var_fv0 - (SINS(animated_pokemon->unk_4A6) * animated_pokemon->unk_4A0);
+    owner->displayObject.scale.x = scale_resize - (SINS(animated_pokemon->oscillationPhase) * animated_pokemon->oscillationAmplitude);
+    owner->displayObject.scale.y = (SINS(animated_pokemon->oscillationPhase) * animated_pokemon->oscillationAmplitude) + scale_resize;
+    owner->displayObject.scale.z = scale_resize - (SINS(animated_pokemon->oscillationPhase) * animated_pokemon->oscillationAmplitude);
 
-    if ((animated_pokemon->unk_4A6 >= 0x4000) && (animated_pokemon->unk_4A6 >= 0x4000)) {
-        animated_pokemon->unk_4A8 = 0x1554;
+    if ((animated_pokemon->oscillationPhase >= NINETY_DEGREES) && (animated_pokemon->oscillationPhase >= NINETY_DEGREES)) {
+        animated_pokemon->oscillationAngularVelocity = 5460;
         animated_pokemon->modelTransformTimer++;
     }
 }
 
-void BattleAnim_StatusIdleCase13Sub2(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
-    f32 var_fv0;
-    f32 var_fv1;
+void BattleAnim_MeditateEnd(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+    f32 scale_resize;
+    f32 sin_value;
 
-    animated_pokemon->unk_4A6 += animated_pokemon->unk_4A8;
-    var_fv1 = SINS(animated_pokemon->unk_4A6) * animated_pokemon->unk_4A0;
-    if (var_fv1 <= 0.01f) {
-        animated_pokemon->unk_4A8 += 0x444;
-        animated_pokemon->unk_4A0 *= 0.8f;
-        if (1) {}
-        var_fv1 = SINS(animated_pokemon->unk_4A6) * animated_pokemon->unk_4A0;
+    animated_pokemon->oscillationPhase += animated_pokemon->oscillationAngularVelocity;
+    sin_value = SINS(animated_pokemon->oscillationPhase) * animated_pokemon->oscillationAmplitude;
+    if (sin_value <= 0.01f) {
+        animated_pokemon->oscillationAngularVelocity += 1092;
+        animated_pokemon->oscillationAmplitude *= 0.8f;
+        if (1) {} //karodo
+        sin_value = SINS(animated_pokemon->oscillationPhase) * animated_pokemon->oscillationAmplitude;
     }
 
-    if (animated_pokemon->state.runtime.unk_56 == 0) {
-        var_fv0 = 1.0f;
+    if (animated_pokemon->state.runtime.scaleResize == 0) {
+        scale_resize = 1.0f;
     } else {
-        var_fv0 = 0.8f;
+        scale_resize = 0.8f;
     }
 
-    owner->displayObject.scale.x = var_fv0 - var_fv1;
-    owner->displayObject.scale.y = (SINS(animated_pokemon->unk_4A6) * animated_pokemon->unk_4A0) + var_fv0;
-    owner->displayObject.scale.z = var_fv0 - (SINS(animated_pokemon->unk_4A6) * animated_pokemon->unk_4A0);
+    owner->displayObject.scale.x = scale_resize - sin_value;
+    owner->displayObject.scale.y = (SINS(animated_pokemon->oscillationPhase) * animated_pokemon->oscillationAmplitude) + scale_resize;
+    owner->displayObject.scale.z = scale_resize - (SINS(animated_pokemon->oscillationPhase) * animated_pokemon->oscillationAmplitude);
 
-    if (animated_pokemon->unk_4A0 <= 0.01f) {
-        owner->displayObject.scale.x = var_fv0;
-        owner->displayObject.scale.y = var_fv0;
-        owner->displayObject.scale.z = var_fv0;
+    if (animated_pokemon->oscillationAmplitude <= 0.01f) {
+        owner->displayObject.scale.x = scale_resize;
+        owner->displayObject.scale.y = scale_resize;
+        owner->displayObject.scale.z = scale_resize;
         BattleScene_ResetParticipantModelFlags(animated_pokemon);
     }
 }
 
-void BattleAnim_StatusIdleCase13(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+// meditate
+void BattleAnim_Meditate(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     switch (animated_pokemon->modelTransformTimer) {
         case 0:
-            BattleAnim_StatusIdleCase13Sub0(owner, animated_pokemon);
+            BattleAnim_MeditateStart(owner, animated_pokemon);
 
         case 1:
-            BattleAnim_StatusIdleCase13Sub1(owner, animated_pokemon);
+            BattleAnim_MeditateContinue(owner, animated_pokemon);
             break;
 
         case 2:
-            BattleAnim_StatusIdleCase13Sub2(owner, animated_pokemon);
+            BattleAnim_MeditateEnd(owner, animated_pokemon);
             break;
     }
 }
 
 void BattleAnim_StatusIdleCase15Sub0(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
-    animated_pokemon->unk_4A8 = 0x71C;
-    animated_pokemon->unk_4A0 = 0.4f;
+    animated_pokemon->oscillationAngularVelocity = 0x71C;
+    animated_pokemon->oscillationAmplitude = 0.4f;
     animated_pokemon->modelTransform.rotation.x = owner->displayObject.scale.x;
     animated_pokemon->modelTransform.rotation.y = owner->displayObject.scale.y;
     animated_pokemon->modelTransform.rotation.z = owner->displayObject.scale.z;
@@ -861,27 +865,27 @@ void BattleAnim_StatusIdleCase15Sub1(ActivePokemon* owner, ActivePokemon* animat
     BattleMonRuntime* temp_a0 = &animated_pokemon->state.runtime;
     s16 sp22;
 
-    animated_pokemon->unk_4A8 += 0xCCC;
-    sp22 = animated_pokemon->unk_4A8;
+    animated_pokemon->oscillationAngularVelocity += 0xCCC;
+    sp22 = animated_pokemon->oscillationAngularVelocity;
 
-    animated_pokemon->unk_4A0 = Math_StepToF(animated_pokemon->unk_4A0, 0.0f, 0.02f, 0.02f);
+    animated_pokemon->oscillationAmplitude = Math_StepToF(animated_pokemon->oscillationAmplitude, 0.0f, 0.02f, 0.02f);
 
     if (sp22 > 0) {
         sp22 *= -1;
     }
 
-    if (temp_a0->unk_56 == 0) {
-        owner->displayObject.scale.x = 1.0f - (SINS(sp22) * animated_pokemon->unk_4A0);
-        owner->displayObject.scale.y = (SINS(sp22) * animated_pokemon->unk_4A0) + 1.0f;
-        owner->displayObject.scale.z = 1.0f - (SINS(sp22) * animated_pokemon->unk_4A0);
+    if (temp_a0->scaleResize == 0) {
+        owner->displayObject.scale.x = 1.0f - (SINS(sp22) * animated_pokemon->oscillationAmplitude);
+        owner->displayObject.scale.y = (SINS(sp22) * animated_pokemon->oscillationAmplitude) + 1.0f;
+        owner->displayObject.scale.z = 1.0f - (SINS(sp22) * animated_pokemon->oscillationAmplitude);
     } else {
-        owner->displayObject.scale.x = 0.8 - (SINS(sp22) * animated_pokemon->unk_4A0);
-        owner->displayObject.scale.y = (SINS(sp22) * animated_pokemon->unk_4A0) + 0.8;
-        owner->displayObject.scale.z = 0.8 - (SINS(sp22) * animated_pokemon->unk_4A0);
+        owner->displayObject.scale.x = 0.8 - (SINS(sp22) * animated_pokemon->oscillationAmplitude);
+        owner->displayObject.scale.y = (SINS(sp22) * animated_pokemon->oscillationAmplitude) + 0.8;
+        owner->displayObject.scale.z = 0.8 - (SINS(sp22) * animated_pokemon->oscillationAmplitude);
     }
 
-    if (animated_pokemon->unk_4A0 <= 0.01f) {
-        if (temp_a0->unk_56 == 0) {
+    if (animated_pokemon->oscillationAmplitude <= 0.01f) {
+        if (temp_a0->scaleResize == 0) {
             Vec3f_SetComponentsDuplicate(&owner->displayObject.scale, 1.0f, 1.0f, 1.0f);
         } else {
             Vec3f_SetComponentsDuplicate(&owner->displayObject.scale, 0.8f, 0.8f, 0.8f);
@@ -911,7 +915,7 @@ void BattleAnim_StatusIdleCase16Sub1(ActivePokemon* owner, ActivePokemon* animat
     UNUSED s32 pad;
     f32 temp_fs0;
 
-    if (ptr->unk_56 == 0) {
+    if (ptr->scaleResize == 0) {
         temp_fs0 = (1.0f - Strip400_GetTailFadeRatio()) * 0.6f;
         BattleAnim_ApproachF(&owner->displayObject.scale.x, 1.0f - temp_fs0, 0.5f);
         BattleAnim_ApproachF(&owner->displayObject.scale.y, 1.0f + temp_fs0, 0.5f);
@@ -992,7 +996,7 @@ void BattleAnim_UpdateOwnerStatusIdleAnimation(s32 side_index) {
             break;
 
         case 3:
-            BattleAnim_StatusIdleCase3(owner, animated_pokemon);
+            BattleAnim_Fly(owner, animated_pokemon);
             break;
 
         case 4:
@@ -1028,7 +1032,7 @@ void BattleAnim_UpdateOwnerStatusIdleAnimation(s32 side_index) {
             break;
 
         case 13:
-            BattleAnim_StatusIdleCase13(owner, animated_pokemon);
+            BattleAnim_Meditate(owner, animated_pokemon);
             break;
 
         case 14:

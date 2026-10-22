@@ -2198,7 +2198,7 @@ void BattleScene_CleanupParticipantEffectMode(ActivePokemon* active_pokemon) {
         case 15:
         case 16:
             BattleScene_SetParticipantModelFlags(active_pokemon, 0, 0);
-            if (active_pokemon->state.runtime.unk_56 == 0) {
+            if (active_pokemon->state.runtime.scaleResize == 0) {
                 Vec3f_SetComponentsDuplicate(&active_pokemon->displayObject.scale, 1.0f, 1.0f, 1.0f);
             } else {
                 Vec3f_SetComponentsDuplicate(&active_pokemon->displayObject.scale, 0.8f, 0.8f, 0.8f);
@@ -2207,7 +2207,7 @@ void BattleScene_CleanupParticipantEffectMode(ActivePokemon* active_pokemon) {
 
         case 12:
             BattleScene_SetParticipantModelFlags(active_pokemon, 0, 0);
-            if (active_pokemon->state.runtime.unk_56 == 0) {
+            if (active_pokemon->state.runtime.scaleResize == 0) {
                 Vec3f_SetComponentsDuplicate(&active_pokemon->displayObject.scale, 1.0f, 1.0f, 1.0f);
             } else {
                 Vec3f_SetComponentsDuplicate(&active_pokemon->displayObject.scale, 0.8f, 0.8f, 0.8f);

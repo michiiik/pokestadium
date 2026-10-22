@@ -236,7 +236,7 @@ void Battle_ResetTransientRuntimeState(s32 arg0, s32 arg1) {
     sp1C->unk_4E = 0;
     sp1C->unk_52 = 0;
     sp1C->unk_57 = 0;
-    sp1C->unk_56 = 0;
+    sp1C->scaleResize = 0;
     sp18->unk_4C &= ~0x20;
     D_843C4DA3 = 1;
 }
@@ -1624,7 +1624,7 @@ void Battle_HandleFaint(ActivePokemon* arg0) {
     temp_a11->unk_4E = 0;
     temp_a11->unk_52 = 0;
     temp_a11->unk_57 = 0;
-    temp_a11->unk_56 = 0;
+    temp_a11->scaleResize = 0;
     temp_a11->unk_58 = 0;
 
     if (temp_a10->unk_2D != 0xF) {

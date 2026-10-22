@@ -326,7 +326,7 @@ void Battle_ApplyRageStatBoost(void) {
         }
 
         if (sBattleUser->moveCache.lastMove == MINIMIZE) {
-            sBattleUser->unk_56 = 1;
+            sBattleUser->scaleResize = 1;
         }
 
         if (var_a3 == 2) {
@@ -417,7 +417,7 @@ void Battle_Effect_RaiseOwnStat(void) {
         }
 
         if (sBattleUser->moveCache.lastMove == MINIMIZE) {
-            sBattleUser->unk_56 = 1;
+            sBattleUser->scaleResize = 1;
         }
 
         if (var_a3 == 2) {
@@ -986,8 +986,8 @@ void Battle_Effect_Haze(void) {
     temp_a3->unk_4C &= ~0x80;
     temp_a3->unk_4D &= 0x78;
     temp_a3->unk_4E &= 8;
-    sBattleUser->unk_56 = 0;
-    sBattleTarget->unk_56 = 0;
+    sBattleUser->scaleResize = 0;
+    sBattleTarget->scaleResize = 0;
 
     Battle_QueueMessage(gBattleMessageQueues->unk_088, -0x36);
 }
