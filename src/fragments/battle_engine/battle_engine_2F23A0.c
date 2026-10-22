@@ -386,7 +386,7 @@ void BattleScene_RebindParticipantToSide(ActivePokemon* arg0, s32 arg1) {
     BattleScene_BindParticipantRosterForSide(arg0, arg1);
     BattleScene_SetParticipantSelectedSide(arg0, arg1);
     temp_v0->rosterIndex = temp_v0->unk_18;
-    arg0->presentationState.unk_16C = temp_v0->unk_2B;
+    arg0->thumbnail.unk_16C = temp_v0->unk_2B;
 }
 
 s32 Battle_HasUsableSleepStatusTarget(ActivePokemon* active_pokemon) {
@@ -453,7 +453,7 @@ u8 BattleScene_GetRosterTeamSize(TeamRoster* arg0) {
 }
 
 s32 BattleScene_GetParticipantDisplayPlayerNumber(ActivePokemon* active_pokemon) {
-    return active_pokemon->sessionTeams->teamMember[active_pokemon->presentationState.unk_16C]->unk_001 + 1;
+    return active_pokemon->sessionTeams->teamMember[active_pokemon->thumbnail.unk_16C]->unk_001 + 1;
 }
 
 void BattleScene_ReinitParticipantBodyModel(ActivePokemon* arg0, ActivePokemon* arg1, s32 arg2, s32 arg3) {
@@ -491,7 +491,7 @@ void BattleScene_ReinitParticipantBodyModel(ActivePokemon* arg0, ActivePokemon* 
     }
 }
 
-void BattleScene_ReinitParticipantOwnerModel(ActivePokemon* arg0, PresentationState* arg1, s16 arg2) {
+void BattleScene_ReinitParticipantOwnerModel(ActivePokemon* arg0, ThumbnailState* arg1, s16 arg2) {
     ModelNodeView* sp24;
 
     sp24 = Battle_GetMoveEffectListEntry(arg0, 0);
@@ -567,7 +567,7 @@ void Battle_LoadOwnerModelForSpecies(ActivePokemon* active_pokemon) {
     Battle_GetMoveEffectListEntry(active_pokemon, 0);
     sp26 = Battle_GetDisplayModelId(active_pokemon, 0);
     BattleScene_ReinitParticipantBodyModel(active_pokemon, active_pokemon, sp26, 0);
-    BattleScene_ReinitParticipantOwnerModel(active_pokemon, &active_pokemon->presentationState, sp26);
+    BattleScene_ReinitParticipantOwnerModel(active_pokemon, &active_pokemon->thumbnail, sp26);
     BattleScene_ReinitParticipantSecondaryModels(active_pokemon, sp26);
     Battle_ResetEventTrack(active_pokemon);
     ptr->flags &= 0x1800;
@@ -582,7 +582,7 @@ void Battle_LoadOwnerModelForSwitchIn(ActivePokemon* active_pokemon) {
     Battle_GetMoveEffectListEntry(active_pokemon, 0);
     model_id = Battle_GetDisplayModelId(active_pokemon, 0);
     BattleScene_ReinitParticipantBodyModel(active_pokemon, active_pokemon, model_id, 1);
-    BattleScene_ReinitParticipantOwnerModel(active_pokemon, &active_pokemon->presentationState, model_id);
+    BattleScene_ReinitParticipantOwnerModel(active_pokemon, &active_pokemon->thumbnail, model_id);
     BattleScene_ReinitParticipantSecondaryModels(active_pokemon, model_id);
     Battle_ResetEventTrack(active_pokemon);
     pokemon_state->unk_2D = 0;

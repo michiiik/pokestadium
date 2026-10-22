@@ -2320,7 +2320,7 @@ void BattleScene_AllocateParticipantRecord(BattleSessionTeams* session_teams, s3
     bzero(active_pokemon, sizeof(ActivePokemon));
     bzero(&sActivePokemon[side_index]->state, sizeof(ActivePokemonState));
     bzero(&sActivePokemon[side_index]->state.runtime, sizeof(BattleMonRuntime));
-    bzero(&sActivePokemon[side_index]->presentationState, sizeof(PresentationState));
+    bzero(&sActivePokemon[side_index]->thumbnail, sizeof(ThumbnailState));
     bzero(&sActivePokemon[side_index]->state.runtime.moveCache, sizeof(CachedMoveData));
     bzero(&sActivePokemon[side_index]->state.unk_9C, sizeof(unk_D_84390010_654_09C));
     bzero(&sActivePokemon[side_index]->state.unk_AC, sizeof(unk_D_84390010_654_0AC));
@@ -2348,7 +2348,7 @@ void BattleScene_InitializeParticipantController(ActivePokemon* active_pokemon) 
     BattleScene_BindParticipantRosterForSide(active_pokemon, 0);
     BattleScene_SetParticipantSelectedSide(active_pokemon, 0);
     BattleScene_SetParticipantController(active_pokemon, controller);
-    active_pokemon->presentationState.unk_16C = 0;
+    active_pokemon->thumbnail.unk_16C = 0;
 }
 
 /**
@@ -2396,7 +2396,7 @@ void BattleScene_InitializeParticipantModel(ActivePokemon* active_pokemon) {
  * Creates the participant's owner (trainer) model.
  */
 void BattleScene_InitializeParticipantOwnerModel(ActivePokemon* active_pokemon) {
-    PresentationState* presentation = &active_pokemon->presentationState;
+    ThumbnailState* presentation = &active_pokemon->thumbnail;
     ModelNodeView* model_view;
     s16 model_id;
 

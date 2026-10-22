@@ -129,8 +129,8 @@ void Battle_DrawCompactStatusBoxesIfVisible(void) {
     ActivePokemon* ptr2 = sActivePokemon[1];
 
     if ((gSessionContext.mode != 0x10) && (sBattleScene.unk_00->unk_30 == 0)) {
-        BattleHud_DrawCompactMonStatusBox(ptr1, 0x15, 0xF, ptr1->sessionTeams->teamMember[ptr1->presentationState.unk_16C]->unk_001);
-        BattleHud_DrawCompactMonStatusBox(ptr2, 0xE1, 0xF, ptr2->sessionTeams->teamMember[ptr2->presentationState.unk_16C]->unk_001);
+        BattleHud_DrawCompactMonStatusBox(ptr1, 0x15, 0xF, ptr1->sessionTeams->teamMember[ptr1->thumbnail.unk_16C]->unk_001);
+        BattleHud_DrawCompactMonStatusBox(ptr2, 0xE1, 0xF, ptr2->sessionTeams->teamMember[ptr2->thumbnail.unk_16C]->unk_001);
     }
 }
 
@@ -731,8 +731,8 @@ void BattleScene_TickHudTimers(void) {
     ActivePokemonState* sp1C = &sActivePokemon[0]->state;
     ActivePokemonState* sp18 = &sActivePokemon[1]->state;
 
-    if ((gSessionContext.timeLimitsEnabled != 0) && (sActivePokemon[1]->presentationState.thumbnailCamera->viewport.x == 0x103) &&
-        (sActivePokemon[0]->presentationState.thumbnailCamera->viewport.x == 0x17)) {
+    if ((gSessionContext.timeLimitsEnabled != 0) && (sActivePokemon[1]->thumbnail.thumbnailCamera->viewport.x == 0x103) &&
+        (sActivePokemon[0]->thumbnail.thumbnailCamera->viewport.x == 0x17)) {
         BattleHud_DrawBattleTimer(0x101, 0x64);
         if (D_84390134 == 0) {
             if (sp1C->unk_10 != 3) {

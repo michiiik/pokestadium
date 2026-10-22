@@ -61,11 +61,11 @@ typedef struct ActivePokemonState {
     /* 0xC8 */ Controller* unk_C8;
 } ActivePokemonState; // size = 0xCC
 
-typedef struct PresentationState {
+typedef struct ThumbnailState {
     /* 0x000 */ DisplayObject displayObject;
-    /* 0x168 */ CameraNode* thumbnailCamera;
+    /* 0x168 */ CameraNode* camera;
     /* 0x16C */ s32 unk_16C;
-    /* 0x170 */ s32 isIdle;
+    /* 0x170 */ s32 showing;
     /* 0x174 */ char unk174[0x4];
     /* 0x178 */ s32 side;
     /* 0x17C */ s32 idleAnimation;
@@ -73,11 +73,11 @@ typedef struct PresentationState {
     /* 0x184 */ s16 rotationX;
     /* 0x186 */ s16 rotationY;
     /* 0x188 */ f32 x;
-    /* 0x18C */ s32 thumbnailStatus;
+    /* 0x18C */ s32 status;
     /* 0x190 */ f32 z;
     /* 0x194 */ f32 y;
     /* 0x198 */ char unk198[0x4];
-} PresentationState; // size = 0x19C
+} ThumbnailState; // size = 0x19C
 
 typedef struct MonCaptionState {
     /* 0x00 */ s32 unk_00;
@@ -142,7 +142,7 @@ typedef struct ActivePokemon {
     /* 0x654 */ ActivePokemonState state;
     /* 0x720 */ BattleSessionTeams* sessionTeams;
     /* 0x724 */ TeamRoster* teamRoster;
-    /* 0x728 */ PresentationState presentationState;
+    /* 0x728 */ ThumbnailState thumbnail;
     /* 0x8C4 */ MonCaptionState captionState;
     /* 0x94C */ SpeciesLearnsetBuffer redBlueLearnsets[3];
     /* 0x9AC */ SpeciesLearnsetBuffer yellowLearnsets[3];
@@ -318,7 +318,7 @@ typedef struct unk_D_843847BC {
     /* 0x0C */ f32 nearPlane;
     /* 0x10 */ f32 farPlane;
     /* 0x14 */ s16 unk_14;
-} unk_D_843847BC; // size = 0x18
+} ThumbnailSettings; // size = 0x18
 
 typedef struct unk_D_843901B0 {
     /* 0x00 */Vec3f unk_00;
@@ -917,7 +917,7 @@ extern u8 sFearow;
 extern u8 sFarfetchD;
 extern u8 sDoduoEvoLine[];
 extern s16 sChargeMoveCues[];
-extern unk_D_843847BC D_843847BC[2];
+extern ThumbnailSettings sSideThumbnailSettings[2];
 extern unk_D_86B0C160 D_843847EC[3];
 extern unk_D_86B0C160 D_84384888[2];
 extern unk_D_86B0C160 D_843848F0;
@@ -1194,16 +1194,16 @@ void BattleThumbnail_ClearBothOwnerIdleFlags(void);
 void BattleThumbnail_SetBothOwnerIdleFlags(void);
 void BattleThumbnail_SetFlagToUpdatePokemonThumbnail(CameraNode* camera);
 void BattleThumbnail_LoadOwnerCameraFramingConstants(ActivePokemon* active_pokemon);
-void BattleThumbnail_SetupOwnerCameraFraming(ActivePokemon* arg0, ActivePokemon* arg1);
+void BattleThumbnail_SetupOwnerCameraFraming(ActivePokemon* side1_pokemon, ActivePokemon* side2_pokemon);
 void BattleThumbnail_OwnerCameraLifecycleNop(void);
 void BattleThumbnail_ApplyOwnerCameraFraming(ActivePokemon* active_pokemon);
 void BattleThumbnail_TickOwnerCameraFraming(ActivePokemon* active_pokemon);
-void BattleThumbnail_InitializeOwnerCameraFraming(CameraNode* arg0, ActivePokemon* arg1, CameraNode* arg2, ActivePokemon* arg3);
-void BattleThumbnail_TickOwnerSlideIn(ActivePokemon* arg0, s32 arg1);
-void BattleThumbnail_TickOwnerSlideOut(ActivePokemon* arg0, s32 arg1);
+void BattleThumbnail_InitializeOwnerCameraFraming(CameraNode* side1_camera_node, ActivePokemon* side1_pokemon, CameraNode* side2_camera_node, ActivePokemon* side2_pokemon);
+void BattleThumbnail_TickOwnerSlideIn(ActivePokemon* active_pokemon, s32 delta);
+void BattleThumbnail_TickOwnerSlideOut(ActivePokemon* active_pokemon, s32 delta);
 void BattleThumbnail_TickOwnerSlideAnimation(ActivePokemon* active_pokemon);
-void BattleThumbnail_TickBothOwnerSlideAnimations(ActivePokemon* arg0, ActivePokemon* arg1);
-s32 BattleThumbnail_DispatchOwnerCameraLifecycle(s32 arg0, CameraNode* arg1, CameraNode* arg2);
+void BattleThumbnail_TickBothOwnerSlideAnimations(ActivePokemon* side1_pokemon, ActivePokemon* side2_pokemon);
+s32 BattleThumbnail_DispatchOwnerCameraLifecycle(s32 state, CameraNode* side1_camera_node, CameraNode* side2_camera_node);
 
 //@src/fragments/battle_engine/battle_engine_2F23A0.c
 s32 BattleScene_ByteArrayContains(u8 lookup, u8* array, s32 array_length);
@@ -1257,7 +1257,7 @@ s32 BattleScene_GetCombinedTeamSize(ActivePokemon* active_pokemon);
 u8 BattleScene_GetRosterTeamSize(TeamRoster* arg0);
 s32 BattleScene_GetParticipantDisplayPlayerNumber(ActivePokemon* active_pokemon);
 void BattleScene_ReinitParticipantBodyModel(ActivePokemon* arg0, ActivePokemon* arg1, s32 arg2, s32 arg3);
-void BattleScene_ReinitParticipantOwnerModel(ActivePokemon* arg0, PresentationState* arg1, s16 arg2);
+void BattleScene_ReinitParticipantOwnerModel(ActivePokemon* arg0, ThumbnailState* arg1, s16 arg2);
 void BattleScene_ReinitParticipantSecondaryModels(ActivePokemon* arg0, s16 arg1);
 void Battle_ResetEventTrack(ActivePokemon* active_pokemon);
 void Battle_LoadOwnerModelForSpecies(ActivePokemon* active_pokemon);
