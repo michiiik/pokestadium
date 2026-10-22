@@ -1293,14 +1293,14 @@ void BattleAnim_WaterfallContinue(ActivePokemon* owner, ActivePokemon* animated_
 void BattleAnim_WaterfallEnd(UNUSED ActivePokemon* owner, UNUSED ActivePokemon* animated_pokemon);
 void BattleAnim_Waterfall(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 s32 BattleAnim_ApproachAngleAndCheckThreshold(ActivePokemon* arg0, s16 arg1, s16 arg2);
+void BattleAnim_StatusIdleCase4Sub0(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon);
+void BattleAnim_StatusIdleCase4Sub1(ActivePokemon* owner, ActivePokemon* animated_pokemon);
+void BattleAnim_StatusIdleCase4Sub2(ActivePokemon* owner, ActivePokemon* animated_pokemon);
+void BattleAnim_StatusIdleCase4(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_DigStart(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_DigContinue(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_DigEnd(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_Dig(ActivePokemon* owner, ActivePokemon* animated_pokemon);
-void BattleAnim_StatusIdleCase5Sub0(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon);
-void BattleAnim_StatusIdleCase5Sub1(ActivePokemon* owner, ActivePokemon* animated_pokemon);
-void BattleAnim_StatusIdleCase5Sub2(ActivePokemon* owner, ActivePokemon* animated_pokemon);
-void BattleAnim_StatusIdleCase5(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_StatusIdleCase6Sub0(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_StatusIdleCase6Sub1(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_StatusIdleCase6Sub2(ActivePokemon* owner, ActivePokemon* animated_pokemon);

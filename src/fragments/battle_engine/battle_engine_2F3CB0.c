@@ -418,7 +418,7 @@ s32 BattleAnim_ApproachAngleAndCheckThreshold(ActivePokemon* pokemon, s16 phase,
     return 0;
 }
 
-void BattleAnim_DigStart(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+void BattleAnim_StatusIdleCase4Sub0(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     BattleScene_ShowSecondaryModelsStaggeredFrame(animated_pokemon);
     animated_pokemon->oscillationPhase = 0;
     animated_pokemon->oscillationVelocityEasePhase = 0;
@@ -426,7 +426,7 @@ void BattleAnim_DigStart(UNUSED ActivePokemon* owner, ActivePokemon* animated_po
     animated_pokemon->modelTransformTimer++;
 }
 
-void BattleAnim_DigContinue(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+void BattleAnim_StatusIdleCase4Sub1(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     animated_pokemon->oscillationPhase = Math_StepToS32(animated_pokemon->oscillationPhase, 13104, 364, 364);
 
     if (BattleAnim_ApproachAngleAndCheckThreshold(owner, animated_pokemon->oscillationPhase, animated_pokemon->cameraOffsetScaleFactor << 14) != 0) {
@@ -440,7 +440,7 @@ void BattleAnim_DigContinue(ActivePokemon* owner, ActivePokemon* animated_pokemo
     }
 }
 
-void BattleAnim_DigEnd(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+void BattleAnim_StatusIdleCase4Sub2(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     f32 angle_offset = NINETY_DEGREES - owner->displayObject.rotation.y;
     f32 angle_offset_fractional;
     s16 new_phase;
@@ -465,29 +465,29 @@ void BattleAnim_DigEnd(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     }
 }
 
-void BattleAnim_Dig(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+void BattleAnim_StatusIdleCase4(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     switch (animated_pokemon->modelTransformTimer) {
         case 0:
-            BattleAnim_DigStart(owner, animated_pokemon);
+            BattleAnim_StatusIdleCase4Sub0(owner, animated_pokemon);
 
         case 1:
-            BattleAnim_DigContinue(owner, animated_pokemon);
+            BattleAnim_StatusIdleCase4Sub1(owner, animated_pokemon);
             break;
 
         case 2:
-            BattleAnim_DigEnd(owner, animated_pokemon);
+            BattleAnim_StatusIdleCase4Sub2(owner, animated_pokemon);
             break;
     }
 }
 
-void BattleAnim_StatusIdleCase5Sub0(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+void BattleAnim_DigStart(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     animated_pokemon->oscillationPhase = 0;
     animated_pokemon->oscillationVelocityEasePhase = 0;
     animated_pokemon->animationState = 0;
     animated_pokemon->modelTransformTimer++;
 }
 
-void BattleAnim_StatusIdleCase5Sub1(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+void BattleAnim_DigContinue(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     animated_pokemon->oscillationPhase = Math_StepToS32(animated_pokemon->oscillationPhase, 16380, 364, 364);
 
     if (BattleAnim_ApproachAngleAndCheckThreshold(owner, animated_pokemon->oscillationPhase, animated_pokemon->cameraOffsetScaleFactor << 14) != 0) {
@@ -500,7 +500,7 @@ void BattleAnim_StatusIdleCase5Sub1(ActivePokemon* owner, ActivePokemon* animate
     }
 }
 
-void BattleAnim_StatusIdleCase5Sub2(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+void BattleAnim_DigEnd(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     f32 sp34;
     f32 sp30;
     f32 sp2C;
@@ -530,17 +530,17 @@ void BattleAnim_StatusIdleCase5Sub2(ActivePokemon* owner, ActivePokemon* animate
 }
 
 // Dig
-void BattleAnim_StatusIdleCase5(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+void BattleAnim_Dig(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     switch (animated_pokemon->modelTransformTimer) {
         case 0:
-            BattleAnim_StatusIdleCase5Sub0(owner, animated_pokemon);
+            BattleAnim_DigStart(owner, animated_pokemon);
 
         case 1:
-            BattleAnim_StatusIdleCase5Sub1(owner, animated_pokemon);
+            BattleAnim_DigContinue(owner, animated_pokemon);
             break;
 
         case 2:
-            BattleAnim_StatusIdleCase5Sub2(owner, animated_pokemon);
+            BattleAnim_DigEnd(owner, animated_pokemon);
             break;
     }
 }
@@ -1002,11 +1002,11 @@ void BattleAnim_UpdateOwnerStatusIdleAnimation(s32 side_index) {
             break;
 
         case 4:
-            BattleAnim_Dig(owner, animated_pokemon);
+            BattleAnim_StatusIdleCase4(owner, animated_pokemon);
             break;
 
         case 5:
-            BattleAnim_StatusIdleCase5(owner, animated_pokemon);
+            BattleAnim_Dig(owner, animated_pokemon);
             break;
 
         case 6:
