@@ -366,7 +366,7 @@ void BattleAnim_StatusIdleCase3(ActivePokemon* arg0, ActivePokemon* arg1) {
 }
 
 // waterfall init
-void BattleAnim_StatusIdleCase14Sub0(UNUSED ActivePokemon* defender1, ActivePokemon* attacker) {
+void BattleAnim_WaterfallStart(UNUSED ActivePokemon* defender, ActivePokemon* attacker) {
     Vec3f_SetComponentsDuplicate(&attacker->modelTransform, 0.0f, 0.0f, 0.0f);
     Vec3f_SetComponentsDuplicate(&attacker->modelTransform.rotation, 0.0f, 0.0f, 0.0f);
     BattleAnim_InitSwayOffset(attacker, sModelTransformConstants[0], NINETY_DEGREES);
@@ -374,29 +374,29 @@ void BattleAnim_StatusIdleCase14Sub0(UNUSED ActivePokemon* defender1, ActivePoke
 }
 
 // waterfall continue
-void BattleAnim_StatusIdleCase14Sub1(ActivePokemon* defender1, ActivePokemon* attacker) {
-    BattleAnim_UpdateTransform(defender1, attacker, 2.0f, 0.002f, NINETY_DEGREES);
-    if ((defender1->displayObject.position.y - BattleScene_GetParticipantModelHeight(attacker)) >= 90.0f) {
+void BattleAnim_WaterfallContinue(ActivePokemon* defender, ActivePokemon* attacker) {
+    BattleAnim_UpdateTransform(defender, attacker, 2.0f, 0.002f, NINETY_DEGREES);
+    if ((defender->displayObject.position.y - BattleScene_GetParticipantModelHeight(attacker)) >= 90.0f) {
         attacker->modelTransformTimer++;
         attacker->modelTransform.rotation.y = 0.0f;
     }
 }
 
-void func_8430A4E0(UNUSED ActivePokemon* arg0, UNUSED ActivePokemon* arg1) {
+void BattleAnim_WaterfallEnd(UNUSED ActivePokemon* defender, UNUSED ActivePokemon* attacker) {
 }
 
 // Waterfall
-void BattleAnim_StatusIdleCase14(ActivePokemon* side1_pokemon, ActivePokemon* side2_pokemon) {
-    switch (side2_pokemon->modelTransformTimer) {
+void BattleAnim_Waterfall(ActivePokemon* defender, ActivePokemon* attacker) {
+    switch (attacker->modelTransformTimer) {
         case 0:
-            BattleAnim_StatusIdleCase14Sub0(side1_pokemon, side2_pokemon);
+            BattleAnim_WaterfallStart(defender, attacker);
 
         case 1:
-            BattleAnim_StatusIdleCase14Sub1(side1_pokemon, side2_pokemon);
+            BattleAnim_WaterfallContinue(defender, attacker);
             break;
 
         case 2:
-            func_8430A4E0(side1_pokemon, side2_pokemon);
+            BattleAnim_WaterfallEnd(defender, attacker);
             break;
     }
 }
@@ -935,18 +935,20 @@ void BattleAnim_StatusIdleCase16(ActivePokemon* arg0, ActivePokemon* arg1) {
     }
 }
 
+// surf init
 void BattleAnim_StatusIdleCase10Sub0(UNUSED ActivePokemon* arg0, ActivePokemon* arg1) {
     arg1->animationState = 0;
     arg1->modelTransformTimer++;
 }
 
+// surf continue
 void BattleAnim_StatusIdleCase10Sub1(ActivePokemon* arg0, ActivePokemon* arg1) {
     f32 sp24;
-    f32 sp20;
+    f32 water_grid;
 
     arg1->animationState++;
-    sp20 = TerrainGrid_SampleHeightAndSlope(arg0->displayObject.position.x, arg0->displayObject.position.z, &sp24);
-    arg0->displayObject.position.y = BattleScene_GetParticipantModelHeight(arg1) + sp20;
+    water_grid = TerrainGrid_SampleHeightAndSlope(arg0->displayObject.position.x, arg0->displayObject.position.z, &sp24);
+    arg0->displayObject.position.y = BattleScene_GetParticipantModelHeight(arg1) + water_grid;
     arg0->displayObject.rotation.x = (s16)sp24 * 0xB6;
 
     if (arg1->animationState == 0x12C) {
@@ -956,6 +958,7 @@ void BattleAnim_StatusIdleCase10Sub1(ActivePokemon* arg0, ActivePokemon* arg1) {
     }
 }
 
+// Surf
 void BattleAnim_StatusIdleCase10(ActivePokemon* arg0, ActivePokemon* arg1) {
     switch (arg1->modelTransformTimer) {
         case 0:
@@ -1029,7 +1032,7 @@ void BattleAnim_UpdateOwnerStatusIdleAnimation(s32 side_index) {
             break;
 
         case 14:
-            BattleAnim_StatusIdleCase14(owner, animated_pokemon);
+            BattleAnim_Waterfall(owner, animated_pokemon);
             break;
 
         case 15:
