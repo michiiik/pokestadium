@@ -1187,23 +1187,23 @@ void BattleScene_StateRow7Slot4Nop(ActivePokemon* active_pokemon);
 
 
 //@src/fragments/battle_engine/battle_engine_2F1D60.c
-void BattleScene_TriggerOwnerModelAnimation(ActivePokemon* active_pokemon);
-void BattleScene_ClearParticipantOwnerIdleFlags(ActivePokemon* active_pokemon);
-void BattleScene_SetParticipantOwnerIdleFlags(ActivePokemon* active_pokemon);
-void BattleScene_ClearBothOwnerIdleFlags(void);
-void BattleScene_SetBothOwnerIdleFlags(void);
-void BattleScene_SetFlagToUpdatePokemonThumbnail(CameraNode* camera);
-void BattleScene_LoadOwnerCameraFramingConstants(ActivePokemon* active_pokemon);
-void BattleScene_SetupOwnerCameraFraming(ActivePokemon* arg0, ActivePokemon* arg1);
-void BattleScene_OwnerCameraLifecycleNop(void);
-void BattleScene_ApplyOwnerCameraFraming(ActivePokemon* active_pokemon);
-void BattleScene_TickOwnerCameraFraming(ActivePokemon* active_pokemon);
-void BattleScene_InitializeOwnerCameraFraming(CameraNode* arg0, ActivePokemon* arg1, CameraNode* arg2, ActivePokemon* arg3);
-void BattleScene_TickOwnerSlideIn(ActivePokemon* arg0, s32 arg1);
-void BattleScene_TickOwnerSlideOut(ActivePokemon* arg0, s32 arg1);
-void BattleScene_TickOwnerSlideAnimation(ActivePokemon* active_pokemon);
-void BattleScene_TickBothOwnerSlideAnimations(ActivePokemon* arg0, ActivePokemon* arg1);
-s32 BattleScene_DispatchOwnerCameraLifecycle(s32 arg0, CameraNode* arg1, CameraNode* arg2);
+void BattleThumbnail_TriggerOwnerModelAnimation(ActivePokemon* active_pokemon);
+void BattleThumbnail_ClearParticipantOwnerIdleFlags(ActivePokemon* active_pokemon);
+void BattleThumbnail_SetParticipantOwnerIdleFlags(ActivePokemon* active_pokemon);
+void BattleThumbnail_ClearBothOwnerIdleFlags(void);
+void BattleThumbnail_SetBothOwnerIdleFlags(void);
+void BattleThumbnail_SetFlagToUpdatePokemonThumbnail(CameraNode* camera);
+void BattleThumbnail_LoadOwnerCameraFramingConstants(ActivePokemon* active_pokemon);
+void BattleThumbnail_SetupOwnerCameraFraming(ActivePokemon* arg0, ActivePokemon* arg1);
+void BattleThumbnail_OwnerCameraLifecycleNop(void);
+void BattleThumbnail_ApplyOwnerCameraFraming(ActivePokemon* active_pokemon);
+void BattleThumbnail_TickOwnerCameraFraming(ActivePokemon* active_pokemon);
+void BattleThumbnail_InitializeOwnerCameraFraming(CameraNode* arg0, ActivePokemon* arg1, CameraNode* arg2, ActivePokemon* arg3);
+void BattleThumbnail_TickOwnerSlideIn(ActivePokemon* arg0, s32 arg1);
+void BattleThumbnail_TickOwnerSlideOut(ActivePokemon* arg0, s32 arg1);
+void BattleThumbnail_TickOwnerSlideAnimation(ActivePokemon* active_pokemon);
+void BattleThumbnail_TickBothOwnerSlideAnimations(ActivePokemon* arg0, ActivePokemon* arg1);
+s32 BattleThumbnail_DispatchOwnerCameraLifecycle(s32 arg0, CameraNode* arg1, CameraNode* arg2);
 
 //@src/fragments/battle_engine/battle_engine_2F23A0.c
 s32 BattleScene_ByteArrayContains(u8 lookup, u8* array, s32 array_length);

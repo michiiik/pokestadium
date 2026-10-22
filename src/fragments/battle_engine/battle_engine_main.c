@@ -401,7 +401,7 @@ s32 BattleScene_UpdateFrame(s32 fade_mode) {
     GeoRender_AdvanceFrameCounter();
     ModelAnim_UpdateFrameChangeState();
     BattleScene_DispatchLifecycle(2, sBattleSides);
-    BattleScene_DispatchOwnerCameraLifecycle(2, &sSide1ThumbnailCamera, &sSide2ThumbnailCamera);
+    BattleThumbnail_DispatchOwnerCameraLifecycle(2, &sSide1ThumbnailCamera, &sSide2ThumbnailCamera);
     battle_result = BattleScene_Dispatch(2, &sStageCamera);
     BattleAnim_DispatchPresentation(2, &sStageCamera);
     Battle_RenderActivePokemonThumbnail(sSide1ThumbnailRoot, sSide1PokemonThumbnail);
@@ -659,7 +659,7 @@ void BattleScene_Init(unk_func_80007444* stage_context) {
     GeoCamera_SetPerspective(&sStageCamera, 30.0f, 192.0f, 24576.0f);
     ModelRenderer_InitDisplayRoots();
     BattleScene_DispatchLifecycle(0, sBattleSides);
-    BattleScene_DispatchOwnerCameraLifecycle(0, &sSide1ThumbnailCamera, &sSide2ThumbnailCamera);
+    BattleThumbnail_DispatchOwnerCameraLifecycle(0, &sSide1ThumbnailCamera, &sSide2ThumbnailCamera);
     BattleScene_Dispatch(0, &sStageCamera);
     BattleAnim_DispatchPresentation(0, &sStageCamera);
 
@@ -699,7 +699,7 @@ void BattleScene_Init(unk_func_80007444* stage_context) {
     }
 
     BattleScene_DispatchLifecycle(3, sBattleSides);
-    BattleScene_DispatchOwnerCameraLifecycle(3, &sSide1ThumbnailCamera, &sSide2ThumbnailCamera);
+    BattleThumbnail_DispatchOwnerCameraLifecycle(3, &sSide1ThumbnailCamera, &sSide2ThumbnailCamera);
     BattleScene_Dispatch(3, &sStageCamera);
     BattleAnim_DispatchPresentation(3, &sStageCamera);
 

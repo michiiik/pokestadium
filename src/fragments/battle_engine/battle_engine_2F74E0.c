@@ -1186,8 +1186,8 @@ void BattleScene_TickAttractModeInput(void) {
 
     if (cont->buttonPressed & 0x20) {
         BattleScene_ShowParticipantOwnerAndSecondaryModels();
-        BattleScene_TriggerOwnerModelAnimation(sActivePokemon[0]);
-        BattleScene_TriggerOwnerModelAnimation(sActivePokemon[1]);
+        BattleThumbnail_TriggerOwnerModelAnimation(sActivePokemon[0]);
+        BattleThumbnail_TriggerOwnerModelAnimation(sActivePokemon[1]);
     }
 
     if (cont->buttonPressed & 0x10) {

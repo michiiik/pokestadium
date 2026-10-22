@@ -98,7 +98,7 @@ void BattleScene_IntroRevealFirstMon(CameraNode* arg0) {
 
     sActivePokemon[0]->presentationState.thumbnailCamera->node.flags |= 1;
     sActivePokemon[0]->presentationState.displayObject.node.flags |= 1;
-    BattleScene_TriggerOwnerModelAnimation(sActivePokemon[0]);
+    BattleThumbnail_TriggerOwnerModelAnimation(sActivePokemon[0]);
     sActivePokemon[0]->displayObject.node.flags &= ~1;
     sActivePokemon[1]->displayObject.node.flags &= ~1;
     BattleAnim_QueueEffectList3(3, sActivePokemon[0], sActivePokemon[0], 0xFF, 0xFF);
@@ -141,7 +141,7 @@ void BattleScene_IntroRevealSecondMon(CameraNode* arg0) {
 
     sActivePokemon[1]->presentationState.thumbnailCamera->node.flags |= 1;
     sActivePokemon[1]->presentationState.displayObject.node.flags |= 1;
-    BattleScene_TriggerOwnerModelAnimation(sActivePokemon[1]);
+    BattleThumbnail_TriggerOwnerModelAnimation(sActivePokemon[1]);
     Audio_PlayCommand(2, 0, 0);
     BattleAnim_QueueEffectList3(3, sActivePokemon[1], sActivePokemon[1], 0xFF, 0xFF);
     BattleScene_ResetCameraFrameCounter();

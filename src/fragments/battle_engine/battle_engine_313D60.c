@@ -96,7 +96,7 @@ void BattleScene_TickCameraSubstateDefault(CameraNode* arg0) {
 
         case 1:
             if (sBattleScene.unk_00->unk_44 == 2) {
-                BattleScene_ClearBothOwnerIdleFlags();
+                BattleThumbnail_ClearBothOwnerIdleFlags();
             }
             sBattleScene.unk_00->unk_30++;
             break;
@@ -149,7 +149,7 @@ void BattleScene_TickCameraSubstateDefault(CameraNode* arg0) {
             if (arg0->overlay.stepIndex == 0xA) {
                 sBattleScene.unk_00->unk_30 = 0;
                 if (sBattleScene.unk_00->unk_44 == 1) {
-                    BattleScene_SetBothOwnerIdleFlags();
+                    BattleThumbnail_SetBothOwnerIdleFlags();
                 }
             }
             break;
@@ -164,7 +164,7 @@ void BattleScene_TickCameraSubstateStripWipe(CameraNode* arg0) {
 
         case 1:
             if (sBattleScene.unk_00->unk_44 == 2) {
-                BattleScene_ClearBothOwnerIdleFlags();
+                BattleThumbnail_ClearBothOwnerIdleFlags();
             }
             sBattleScene.unk_00->unk_30++;
             break;
@@ -234,7 +234,7 @@ void BattleScene_TickCameraSubstateStripWipe(CameraNode* arg0) {
             if (BattleScene_GetStripWipeState() == 0) {
                 sBattleScene.unk_00->unk_30 = 0;
                 if (sBattleScene.unk_00->unk_44 == 1) {
-                    BattleScene_SetBothOwnerIdleFlags();
+                    BattleThumbnail_SetBothOwnerIdleFlags();
                 }
             }
             break;

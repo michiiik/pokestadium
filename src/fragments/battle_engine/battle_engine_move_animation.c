@@ -574,7 +574,7 @@ void BattleScene_TickRow10CleanupAndEnterState18(ActivePokemon* active_pokemon) 
     if (active_pokemon->sessionTeams->uniqueStatusFlags & 0x10) {
         active_pokemon->sessionTeams->uniqueStatusFlags &= ~0x90;
         Battle_LoadOwnerModelForSwitchIn(active_pokemon);
-        BattleScene_TickOwnerCameraFraming(active_pokemon);
+        BattleThumbnail_TickOwnerCameraFraming(active_pokemon);
         Audio_PlayCommand(2, 0, 0);
         sBattleSceneStateTickSlots[sBattleSceneStateTickSlotIndex].callback = sBattleSceneStateTickSentinel;
         BattleScene_EnterStateRow(active_pokemon, 18);
@@ -1296,7 +1296,7 @@ void BattleScene_TickRow20CleanupAndEnterState18(ActivePokemon* active_pokemon) 
         active_pokemon->sessionTeams->uniqueStatusFlags &= ~0x90;
 
         Battle_LoadOwnerModelForSwitchIn(active_pokemon);
-        BattleScene_TickOwnerCameraFraming(active_pokemon);
+        BattleThumbnail_TickOwnerCameraFraming(active_pokemon);
         Audio_PlayCommand(2, 0, 0);
 
         sBattleSceneStateTickSlots[sBattleSceneStateTickSlotIndex].callback = sBattleSceneStateTickSentinel;
