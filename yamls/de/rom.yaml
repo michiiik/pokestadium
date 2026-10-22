@@ -1888,7 +1888,7 @@
     - [0x2DD320, textbin,   fragments/battle_engine/battle_engine_header]
     - [0x2DD340, c,      fragments/battle_engine/battle_engine_main]
     - [0x2DEE20, c,      fragments/battle_engine/battle_engine_move_animation]
-    - [0x2E47C0, c,      fragments/battle_engine/battle_engine_2F1D60]
+    - [0x2E47C0, c,      fragments/battle_engine/battle_engine_thumbnail]
     - [0x2E4E00, c,      fragments/battle_engine/battle_engine_2F23A0]
     - [0x2E6710, asm, fragments/battle_engine/battle_engine_2F3CB0]
     - [0x2E9390, c,      fragments/battle_engine/battle_engine_2F6930]

@@ -1658,7 +1658,7 @@
     subsegments:
     - [0x2E9E70, textbin,   fragments/battle_engine/battle_engine_header]
     - [0x2E9E90, asm, fragments/battle_engine/battle_engine_main]
-    - [0x2F1240, c,      fragments/battle_engine/battle_engine_2F1D60]
+    - [0x2F1240, c,      fragments/battle_engine/battle_engine_thumbnail]
     - [0x2F1880, asm, fragment62_2F1880]
     - [0x2F3140, c,      fragments/battle_engine/battle_engine_2F3CB0]
     - [0x2F5DC0, c,      fragments/battle_engine/battle_engine_2F6930]

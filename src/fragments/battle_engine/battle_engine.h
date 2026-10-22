@@ -1186,7 +1186,7 @@ void func_84307480(UNUSED ActivePokemon* active_pokemon, UNUSED s32 unused);
 void BattleScene_StateRow7Slot4Nop(ActivePokemon* active_pokemon);
 
 
-//@src/fragments/battle_engine/battle_engine_2F1D60.c
+//@src/fragments/battle_engine/battle_engine_thumbnail.c
 void BattleThumbnail_TriggerOwnerModelAnimation(ActivePokemon* active_pokemon);
 void BattleThumbnail_ClearParticipantOwnerIdleFlags(ActivePokemon* active_pokemon);
 void BattleThumbnail_SetParticipantOwnerIdleFlags(ActivePokemon* active_pokemon);
