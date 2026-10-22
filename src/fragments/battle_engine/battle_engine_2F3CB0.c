@@ -936,36 +936,36 @@ void BattleAnim_StatusIdleCase16(ActivePokemon* arg0, ActivePokemon* arg1) {
 }
 
 // surf init
-void BattleAnim_StatusIdleCase10Sub0(UNUSED ActivePokemon* arg0, ActivePokemon* arg1) {
-    arg1->animationState = 0;
-    arg1->modelTransformTimer++;
+void BattleAnim_SurfStart(UNUSED ActivePokemon* attacker, ActivePokemon* defender) {
+    defender->animationState = 0;
+    defender->modelTransformTimer++;
 }
 
 // surf continue
-void BattleAnim_StatusIdleCase10Sub1(ActivePokemon* arg0, ActivePokemon* arg1) {
-    f32 sp24;
-    f32 water_grid;
+void BattleAnim_SurfContinue(ActivePokemon* attacker, ActivePokemon* defender) {
+    f32 rotation_x;
+    f32 water_height;
 
-    arg1->animationState++;
-    water_grid = TerrainGrid_SampleHeightAndSlope(arg0->displayObject.position.x, arg0->displayObject.position.z, &sp24);
-    arg0->displayObject.position.y = BattleScene_GetParticipantModelHeight(arg1) + water_grid;
-    arg0->displayObject.rotation.x = (s16)sp24 * 0xB6;
+    defender->animationState++;
+    water_height = TerrainGrid_SampleHeightAndSlope(attacker->displayObject.position.x, attacker->displayObject.position.z, &rotation_x);
+    attacker->displayObject.position.y = BattleScene_GetParticipantModelHeight(defender) + water_height;
+    attacker->displayObject.rotation.x = (s16)rotation_x * 182;
 
-    if (arg1->animationState == 0x12C) {
-        arg0->displayObject.position.y = BattleScene_GetParticipantModelHeight(arg1);
-        arg0->displayObject.rotation.x = 0;
-        BattleScene_ResetParticipantModelFlags(arg1);
+    if (defender->animationState == 300) {
+        attacker->displayObject.position.y = BattleScene_GetParticipantModelHeight(defender);
+        attacker->displayObject.rotation.x = 0;
+        BattleScene_ResetParticipantModelFlags(defender);
     }
 }
 
 // Surf
-void BattleAnim_StatusIdleCase10(ActivePokemon* arg0, ActivePokemon* arg1) {
-    switch (arg1->modelTransformTimer) {
+void BattleAnim_Surf(ActivePokemon* attacker, ActivePokemon* defender) {
+    switch (defender->modelTransformTimer) {
         case 0:
-            BattleAnim_StatusIdleCase10Sub0(arg0, arg1);
+            BattleAnim_SurfStart(attacker, defender);
 
         case 1:
-            BattleAnim_StatusIdleCase10Sub1(arg0, arg1);
+            BattleAnim_SurfContinue(attacker, defender);
             break;
     }
 }
@@ -1020,7 +1020,7 @@ void BattleAnim_UpdateOwnerStatusIdleAnimation(s32 side_index) {
             break;
 
         case 10:
-            BattleAnim_StatusIdleCase10(owner, animated_pokemon);
+            BattleAnim_Surf(owner, animated_pokemon);
             break;
 
         case 12:

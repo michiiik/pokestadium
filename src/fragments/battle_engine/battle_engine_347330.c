@@ -19,7 +19,7 @@ typedef struct unk_D_843951D0 {
     /* 0x000A */ s16 unk_000A;
     /* 0x000C */ Vtx* unk_000C;
     /* 0x0010 */ char unk0010[0x1000];
-    /* 0x1010 */ unk_D_843951D0_1010 unk_1010[16][16];
+    /* 0x1010 */ unk_D_843951D0_1010 grid[16][16];
 } unk_D_843951D0; // size >= 0x2410
 
 static RibbonMesh D_843925E0[4];
@@ -732,101 +732,147 @@ void TerrainGrid_BuildCameraBounds(unk_D_843975E8* arg0, f32 arg1) {
     arg0->unk_20 = sp54 * var_fs0;
 }
 
-f32 TerrainGrid_SampleHeightAndSlope(f32 arg0, f32 arg1, f32* arg2) {
+/**
+ * Samples the Surf water surface (sWaterHeightMap) at world position (x, z).
+ *
+ * Returns the water height (world Y) at that point and writes the surface tilt
+ * in degrees, in the range [-90, 90], to *rotation_x. The surface is a 16x16
+ * grid of vertices, so the height is found by picking the grid cell under
+ * (x, z), picking one of the cell's two triangles, and evaluating that
+ * triangle's plane at (x, z).
+ *
+ * Called by BattleAnim_SurfContinue to keep the Surf rider on the wave:
+ * the return value is added to the model's base height and the tilt becomes its
+ * X rotation. Also called by TerrainGrid_Draw to compare the camera-aligned
+ * quad corners against the water surface.
+ * //@src/fragments/battle_engine/battle_engine_2F3CB0.c
+ * //@src/fragments/battle_engine/battle_engine_347330.c TerrainGrid_UpdateWaves
+ */
+f32 TerrainGrid_SampleHeightAndSlope(f32 x, f32 z, f32* rotation_x) {
     UNUSED s32 pad1[2];
-    f32 spC4;
-    f32 spC0;
-    f32 spBC;
-    f32 spB8;
-    f32 spB4;
-    f32 spB0;
-    f32 spAC;
-    f32 spA8;
-    f32 spA4;
-    f32 spA0;
-    f32 sp9C;
-    f32 sp98;
-    f32 sp94;
+    f32 height;
+    // Corner naming: c<i><j> is the grid vertex at (cell_x + i, cell_z + j).
+    // Each corner is read as world X, height (Y), world Z.
+    f32 c00_x;
+    f32 c00_y;
+    f32 c00_z;
+    f32 c10_x;
+    f32 c10_y;
+    f32 c10_z;
+    f32 c01_x;
+    f32 c01_y;
+    f32 c01_z;
+    f32 c11_x;
+    f32 c11_y;
+    f32 c11_z;
     UNUSED s32 pad2[8];
-    f32 temp_fa0;
-    f32 temp_fa1;
-    f32 temp_fv0;
-    f32 temp_fv0_2;
-    f32 temp_fv1;
-    s32 var_a0;
-    s32 var_v1;
-    f32 sp54;
-    f32 sp50;
-    f32 sp4C;
+    f32 dx_to_c11;
+    f32 dz_to_c11;
+    f32 dx_to_c10;
+    f32 angle_deg;
+    f32 dz_to_c10;
+    s32 cell_z;
+    s32 cell_x;
+    // Normal of the triangle's plane (not normalized; only ratios are used).
+    f32 normal_x;
+    f32 normal_y;
+    f32 normal_z;
 
-    var_v1 = ((arg0 + 440.0f) / 150.0f) + 8.0f;
-    var_a0 = (arg1 / 200.0f) + 8.0f;
+    // Convert world position to the index of the grid cell containing it.
+    // Grid vertex i sits at X = 150 * (i - 8) - 440 and vertex j at Z = 200 * (j - 8),
+    // matching the layout built by TerrainGrid_Init. Inverting that gives the indices below
+    // (truncated to an integer, so the cell is the one whose lower corner is at or before x/z).
+    cell_x = ((x + 440.0f) / 150.0f) + 8.0f;
+    cell_z = (z / 200.0f) + 8.0f;
 
-    if (var_v1 < 0) {
-        var_v1 = 0;
+    // Clamp to 0..14 so that cell + 1 stays inside the 16 vertices of an axis; positions
+    // outside the grid are sampled using the edge cell's plane extended outward.
+    if (cell_x < 0) {
+        cell_x = 0;
     }
 
-    if (var_v1 >= 0xF) {
-        var_v1 = 0xE;
+    if (cell_x >= 15) {
+        cell_x = 14;
     }
 
-    if (var_a0 < 0) {
-        var_a0 = 0;
+    if (cell_z < 0) {
+        cell_z = 0;
     }
 
-    if (var_a0 >= 0xF) {
-        var_a0 = 0xE;
+    if (cell_z >= 15) {
+        cell_z = 14;
     }
 
-    spC0 = sWaterHeightMap.unk_1010[var_v1][var_a0].unk_00;
-    spBC = sWaterHeightMap.unk_1010[var_v1][var_a0].unk_04;
-    spB8 = sWaterHeightMap.unk_1010[var_v1][var_a0].unk_08;
-    spB4 = sWaterHeightMap.unk_1010[var_v1 + 1][var_a0].unk_00;
-    spB0 = sWaterHeightMap.unk_1010[var_v1 + 1][var_a0].unk_04;
-    spAC = sWaterHeightMap.unk_1010[var_v1 + 1][var_a0].unk_08;
-    spA8 = sWaterHeightMap.unk_1010[var_v1][var_a0 + 1].unk_00;
-    spA4 = sWaterHeightMap.unk_1010[var_v1][var_a0 + 1].unk_04;
-    spA0 = sWaterHeightMap.unk_1010[var_v1][var_a0 + 1].unk_08;
-    sp9C = sWaterHeightMap.unk_1010[var_v1 + 1][var_a0 + 1].unk_00;
-    sp98 = sWaterHeightMap.unk_1010[var_v1 + 1][var_a0 + 1].unk_04;
-    sp94 = sWaterHeightMap.unk_1010[var_v1 + 1][var_a0 + 1].unk_08;
+    // Fetch the four corners of the cell as (X, height, Z) triples.
+    c00_x = sWaterHeightMap.grid[cell_x][cell_z].unk_00;
+    c00_y = sWaterHeightMap.grid[cell_x][cell_z].unk_04;
+    c00_z = sWaterHeightMap.grid[cell_x][cell_z].unk_08;
+    c10_x = sWaterHeightMap.grid[cell_x + 1][cell_z].unk_00;
+    c10_y = sWaterHeightMap.grid[cell_x + 1][cell_z].unk_04;
+    c10_z = sWaterHeightMap.grid[cell_x + 1][cell_z].unk_08;
+    c01_x = sWaterHeightMap.grid[cell_x][cell_z + 1].unk_00;
+    c01_y = sWaterHeightMap.grid[cell_x][cell_z + 1].unk_04;
+    c01_z = sWaterHeightMap.grid[cell_x][cell_z + 1].unk_08;
+    c11_x = sWaterHeightMap.grid[cell_x + 1][cell_z + 1].unk_00;
+    c11_y = sWaterHeightMap.grid[cell_x + 1][cell_z + 1].unk_04;
+    c11_z = sWaterHeightMap.grid[cell_x + 1][cell_z + 1].unk_08;
 
-    temp_fv0 = spB4 - arg0;
-    spBC = sWaterHeightMap.unk_1010[var_v1][var_a0].unk_04;
-    temp_fv1 = spAC - arg1;
-    temp_fa0 = sp9C - arg0;
-    temp_fa1 = sp94 - arg1;
+    // Horizontal offsets from the query point to the two far-side corners c10 and c11.
+    dx_to_c10 = c10_x - x;
+    // FAKE: repeats the c00_y load above.
+    c00_y = sWaterHeightMap.grid[cell_x][cell_z].unk_04;
+    dz_to_c10 = c10_z - z;
+    dx_to_c11 = c11_x - x;
+    dz_to_c11 = c11_z - z;
 
-    if ((SQ(temp_fv0) + SQ(temp_fv1)) <= (SQ(temp_fa0) + SQ(temp_fa1))) {
-        Vec3f_CrossProductComponents(spB4 - spC0, spB0 - spBC, spAC - spB8, spA8 - spC0, spA4 - spBC, spA0 - spB8, &sp54, &sp50,
-                      &sp4C);
-        if (sp50 != 0.0) {
-            spC4 = spBC - ((((arg0 - spC0) * sp54) + (sp4C * (arg1 - spB8))) / sp50);
+    // Choose which half of the cell to use. The cell is split into triangles
+    // (c00, c10, c01) and (c11, c10, c01), sharing the c10-c01 diagonal. c10 and c11 have the
+    // same X, so this comparison reduces to whether z is closer to the c10 row or the c11 row.
+    // It is a cheap approximation of "which side of the diagonal", not an exact point-in-triangle
+    // test, so near the diagonal the plane of the neighboring triangle may be used.
+    if ((SQ(dx_to_c10) + SQ(dz_to_c10)) <= (SQ(dx_to_c11) + SQ(dz_to_c11))) {
+        // Plane through c00, c10, c01: normal = (c10 - c00) x (c01 - c00).
+        Vec3f_CrossProductComponents(c10_x - c00_x, c10_y - c00_y, c10_z - c00_z, c01_x - c00_x, c01_y - c00_y, c01_z - c00_z,
+                      &normal_x, &normal_y, &normal_z);
+        if (normal_y != 0.0) {
+            // Plane equation n . (P - c00) = 0 solved for Y at (x, z).
+            height = c00_y - ((((x - c00_x) * normal_x) + (normal_z * (z - c00_z))) / normal_y);
         } else {
-            spC4 = (spBC + spB0 + spA4) / 3.0;
+            // Vertical plane: Y cannot be solved, so average the triangle's corner heights.
+            height = (c00_y + c10_y + c01_y) / 3.0;
         }
     } else {
-        Vec3f_CrossProductComponents(spB4 - sp9C, spB0 - sp98, spAC - sp94, spA8 - sp9C, spA4 - sp98, spA0 - sp94, &sp54, &sp50,
-                      &sp4C);
-        if (sp50 != 0.0) {
-            spC4 = sp98 - ((((arg0 - sp9C) * sp54) + (sp4C * (arg1 - sp94))) / sp50);
+        // Plane through c11, c10, c01: normal = (c10 - c11) x (c01 - c11).
+        Vec3f_CrossProductComponents(c10_x - c11_x, c10_y - c11_y, c10_z - c11_z, c01_x - c11_x, c01_y - c11_y, c01_z - c11_z,
+                      &normal_x, &normal_y, &normal_z);
+        if (normal_y != 0.0) {
+            height = c11_y - ((((x - c11_x) * normal_x) + (normal_z * (z - c11_z))) / normal_y);
         } else {
-            spC4 = (sp98 + spB0 + spA4) / 3.0;
+            height = (c11_y + c10_y + c01_y) / 3.0;
         }
     }
 
-    temp_fv0_2 = MathUtil_Atan2s(sp50, sp54);
-    temp_fv0_2 = (temp_fv0_2 * 360.0) / 65536.0;
-    if (temp_fv0_2 > 90.0f) {
-        temp_fv0_2 -= 180.0f;
+    // MathUtil_Atan2s(y, x) measures the angle from the +y argument toward +x, so this is the angle
+    // of the normal away from straight up in the X-Y plane: 0 on flat water, nonzero where the
+    // height changes along X (the direction the waves travel). The Z component of the normal
+    // is ignored, so side-to-side slope does not tilt the rider. The result is an s16 where
+    // 65536 = 360 degrees; convert to degrees.
+    angle_deg = MathUtil_Atan2s(normal_y, normal_x);
+    angle_deg = (angle_deg * 360.0) / 65536.0;
+
+    // The two triangles' cross products point in opposite vertical directions (one winds
+    // up, the other down), so the normal can be flipped by 180 degrees. Fold into [-90, 90]
+    // so both triangles give the same tilt for the same slope.
+    if (angle_deg > 90.0f) {
+        angle_deg -= 180.0f;
     }
 
-    if (temp_fv0_2 < -90.0f) {
-        temp_fv0_2 += 180.0f;
+    if (angle_deg < -90.0f) {
+        angle_deg += 180.0f;
     }
 
-    *arg2 = temp_fv0_2;
-    return spC4;
+    *rotation_x = angle_deg;
+    return height;
 }
 
 s32 TerrainGrid_UpdateWaves(void) {
@@ -843,7 +889,7 @@ s32 TerrainGrid_UpdateWaves(void) {
     }
 
     if (sWaterHeightMap.unk_0000 < 0x3C) {
-        ptr = &sWaterHeightMap.unk_1010[0][0];
+        ptr = &sWaterHeightMap.grid[0][0];
         for (j = 0; j < 16; j++) {
             ptr->unk_04 += (30.0 * __sinf((((sWaterHeightMap.unk_0000 + j) % 15) * TWO_PI_F) / 15.0f)) + 10.0;
             ptr++;
@@ -851,7 +897,7 @@ s32 TerrainGrid_UpdateWaves(void) {
         sWaterHeightMap.unk_0004 += 0.001;
     } else {
         if (((sWaterHeightMap.unk_0000 - 0x3C) % 90) < 0x46) {
-            ptr = &sWaterHeightMap.unk_1010[0][2];
+            ptr = &sWaterHeightMap.grid[0][2];
             for (j = 0; j < 13; j++) {
                 if (0) {}
                 if (ptr->unk_04 > 0.0) {
@@ -863,7 +909,7 @@ s32 TerrainGrid_UpdateWaves(void) {
                 ptr++;
             }
         } else {
-            ptr = &sWaterHeightMap.unk_1010[0][2];
+            ptr = &sWaterHeightMap.grid[0][2];
             for (j = 0; j < 13; j++) {
                 ptr->unk_04 += 30.0;
                 ptr++;
@@ -876,7 +922,7 @@ s32 TerrainGrid_UpdateWaves(void) {
         }
     }
 
-    ptr = &sWaterHeightMap.unk_1010[0][0];
+    ptr = &sWaterHeightMap.grid[0][0];
     for (i = 0; i < 16; i++) {
         for (j = 0; j < 16; j++) {
             temp_v0 = 1;
@@ -885,17 +931,17 @@ s32 TerrainGrid_UpdateWaves(void) {
             var_fv0 = 0.0f;
             if (i > 0) {
                 temp_v0 = 2;
-                var_fv0 += sWaterHeightMap.unk_1010[i - 1][j].unk_04 - tmp;
+                var_fv0 += sWaterHeightMap.grid[i - 1][j].unk_04 - tmp;
             }
 
             if ((!ptr) && (!ptr)) {}
 
             if (j > 0) {
-                var_fv0 += sWaterHeightMap.unk_1010[i][j - 1].unk_04 - tmp;
+                var_fv0 += sWaterHeightMap.grid[i][j - 1].unk_04 - tmp;
             }
 
             if (j < 0xF) {
-                var_fv0 += sWaterHeightMap.unk_1010[i][j + 1].unk_04 - tmp;
+                var_fv0 += sWaterHeightMap.grid[i][j + 1].unk_04 - tmp;
             }
 
             temp_v0++;
@@ -907,7 +953,7 @@ s32 TerrainGrid_UpdateWaves(void) {
         }
     }
 
-    ptr = &sWaterHeightMap.unk_1010[0][0];
+    ptr = &sWaterHeightMap.grid[0][0];
     for (i = 0; i < 16; i++) {
         for (j = 0; j < 16; j++, ptr++) {
             ptr->unk_04 = ptr->unk_0C;
@@ -930,7 +976,7 @@ void TerrainGrid_Init(s32 arg0, s16 arg1, s16 arg2) {
     sWaterHeightMap.unk_0004 = 0.0f;
     sWaterHeightMap.unk_0008 = arg1;
 
-    ptr = &sWaterHeightMap.unk_1010[0][0];
+    ptr = &sWaterHeightMap.grid[0][0];
 
     for (i = 0; i < 16; i++) {
         for (j = 0; j < 16; j++, ptr++) {
@@ -1039,7 +1085,7 @@ Gfx* TerrainGrid_Draw(Gfx* arg0) {
 
     sWaterHeightMap.unk_000C = Gfx_AllocDisplayList(sizeof(Vtx) * 16 * 16);
     vtx = sWaterHeightMap.unk_000C;
-    var_v1 = &sWaterHeightMap.unk_1010[0][0];
+    var_v1 = &sWaterHeightMap.grid[0][0];
 
     for (i = 0; i < 16; i++) {
         for (j = 0; j < 16; j++) {
