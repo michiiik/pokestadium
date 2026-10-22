@@ -25,9 +25,9 @@ Vec3f* BattleAnim_Vec3fOffsetByPolarXZ(Vec3f* arg0, Vec3f* arg1, f32 arg2, s16 a
     return arg0;
 }
 
-void BattleAnim_Vec3fSetPolarXZ(Vec3f* arg0, f32 arg1, s16 arg2) {
-    arg0->x = COSS(arg2) * arg1;
-    arg0->z = SINS(arg2) * arg1;
+void BattleAnim_Vec3fSetPolarXZ(Vec3f* dest_vector, f32 magnitude, s16 theta) {
+    dest_vector->x = COSS(theta) * magnitude;
+    dest_vector->z = SINS(theta) * magnitude;
 }
 
 Vec3f* BattleAnim_Vec3fCopy(Vec3f* dest, Vec3f* src) {

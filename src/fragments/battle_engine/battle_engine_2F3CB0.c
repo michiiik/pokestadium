@@ -4,7 +4,9 @@
 #include "src/matrix.h"
 #include "pokemon.h"
 
-static f32 D_84384600[] = { 1.0f, 2.0f };
+static f32 sModelTransformConstants[] = { 1.0f, 2.0f };
+
+#define NINETY_DEGREES 0x4000
 
 /*
     These Functions have to do with moves that alter the position, size, or rotation of the pokemon 
@@ -32,6 +34,7 @@ static f32 D_84384600[] = { 1.0f, 2.0f };
     - whirlwind
     - earthquake
     - fissure
+    - growl
 
 confirmed to not be in this function:
     - quick attack
@@ -42,50 +45,50 @@ not confirmed to be involved in any pokemon animations and tested with pokemon w
 Kangaskhan, onix, porygon 
 */
 
-void BattleAnim_InitSwayOffset(ActivePokemon* arg0, f32 arg1, s16 arg2) {
-    arg0->unk_498 = arg1;
-    arg0->swayState.rotation.z = COSS(arg2) * arg1;
-    arg0->swayState.rotation.y = SINS(arg2) * arg1;
-    arg0->unk_49C = 0.01f;
+void BattleAnim_InitSwayOffset(ActivePokemon* pokemon, f32 y, s16 theta) {
+    pokemon->y = y;
+    pokemon->modelTransform.rotation.z = COSS(theta) * y;
+    pokemon->modelTransform.rotation.y = SINS(theta) * y;
+    pokemon->rotationZ = 0.01f;
 }
 
 
-void BattleAnim_UpdateSwayPhysicsToOwner(ActivePokemon* arg0, ActivePokemon* arg1, f32 arg2, f32 arg3, s32 arg4) {
-    f32 sp54;
-    f32 sp50;
-    f32 sp4C;
+void BattleAnim_UpdateTransform(ActivePokemon* defender, ActivePokemon* attacker, f32 height, f32 delta_y, s32 delta_theta) {
+    f32 temp_attacker_rotation_z;
+    f32 temp_attacker_y1;
+    f32 base_y_rotation;
     UNUSED s32 pad;
-    Vec3f sp3C;
+    Vec3f rotation;
     UNUSED s32 pad2;
-    f32 temp_fa1;
-    f32 temp_fa2;
-    f32 var_fa0;
+    f32 z_rotation_factor;
+    f32 y_rotation_factor;
+    f32 temp_attacker_y2;
 
-    sp54 = arg1->unk_49C;
-    sp50 = arg1->unk_498;
-    sp4C = 18.0f;
-    arg1->unk_498 = Math_StepToF(sp50, arg2, arg3, arg3);
+    temp_attacker_rotation_z = attacker->rotationZ;
+    temp_attacker_y1 = attacker->y;
+    base_y_rotation = 18.0f;
+    attacker->y = Math_StepToF(temp_attacker_y1, height, delta_y, delta_y);
 
-    var_fa0 = arg1->unk_498;
-    if (arg2 <= var_fa0) {
-        if (&arg1->swayState.rotation) {}
-        var_fa0 = 0.0f;
+    temp_attacker_y2 = attacker->y;
+    if (height <= temp_attacker_y2) {
+        if (&attacker->modelTransform.rotation) {}
+        temp_attacker_y2 = 0.0f;
     }
 
-    sp3C.z = COSS(arg4) * var_fa0;
-    sp3C.y = SINS(arg4) * var_fa0;
+    rotation.z = COSS(delta_theta) * temp_attacker_y2;
+    rotation.y = SINS(delta_theta) * temp_attacker_y2;
 
-    temp_fa1 = -sp54 * ((sp50 * arg1->swayState.rotation.z) + sp3C.z);
-    temp_fa2 = -sp4C - (sp54 * ((sp50 * arg1->swayState.rotation.y) + sp3C.y));
+    z_rotation_factor = -temp_attacker_rotation_z * ((temp_attacker_y1 * attacker->modelTransform.rotation.z) + rotation.z);
+    y_rotation_factor = -base_y_rotation - (temp_attacker_rotation_z * ((temp_attacker_y1 * attacker->modelTransform.rotation.y) + rotation.y));
 
-    arg1->swayState.rotation.z = (arg1->swayState.rotation.z + sp3C.z + (temp_fa1 * 0.05f));
-    arg1->swayState.rotation.y = (arg1->swayState.rotation.y + sp3C.y + (temp_fa2 * 0.05f));
+    attacker->modelTransform.rotation.z = (attacker->modelTransform.rotation.z + rotation.z + (z_rotation_factor * 0.05f));
+    attacker->modelTransform.rotation.y = (attacker->modelTransform.rotation.y + rotation.y + (y_rotation_factor * 0.05f));
 
-    sp3C.y = arg1->swayState.rotation.y;
-    arg1->swayState.rotation.x = 0.0f;
+    rotation.y = attacker->modelTransform.rotation.y;
+    attacker->modelTransform.rotation.x = 0.0f;
 
-    BattleAnim_Vec3fSetPolarXZ(&sp3C, arg1->swayState.rotation.z, arg0->displayObject.rotation.y + 0x4000);
-    Vec3f_AddInPlace(&arg0->displayObject.position, &sp3C);
+    BattleAnim_Vec3fSetPolarXZ(&rotation, attacker->modelTransform.rotation.z, defender->displayObject.rotation.y + NINETY_DEGREES);
+    Vec3f_AddInPlace(&defender->displayObject.position, &rotation);
 }
 
 void BattleAnim_UpdateSwayPhysicsToTarget(UNUSED ActivePokemon* arg0, ActivePokemon* arg1, f32 arg2, f32 arg3, s32 arg4, s32 arg5) {
@@ -99,29 +102,29 @@ void BattleAnim_UpdateSwayPhysicsToTarget(UNUSED ActivePokemon* arg0, ActivePoke
     f32 temp_fa2;
     f32 var_fa0;
 
-    sp54 = arg1->unk_49C;
-    sp50 = arg1->unk_498;
+    sp54 = arg1->rotationZ;
+    sp50 = arg1->y;
     sp4C = 20.0f;
-    arg1->unk_498 = Math_StepToF(sp50, arg2, arg3, arg3);
+    arg1->y = Math_StepToF(sp50, arg2, arg3, arg3);
 
-    var_fa0 = arg1->unk_498;
+    var_fa0 = arg1->y;
     if (arg2 <= var_fa0) {
-        if (&arg1->swayState.rotation) {}
+        if (&arg1->modelTransform.rotation) {}
         var_fa0 = 0.0f;
     }
 
     sp3C.z = COSS(arg4) * var_fa0;
     sp3C.y = SINS(arg4) * var_fa0;
 
-    temp_fa1 = -sp54 * ((sp50 * arg1->swayState.rotation.z) + sp3C.z);
-    temp_fa2 = -sp4C - (sp54 * ((sp50 * arg1->swayState.rotation.y) + sp3C.y));
+    temp_fa1 = -sp54 * ((sp50 * arg1->modelTransform.rotation.z) + sp3C.z);
+    temp_fa2 = -sp4C - (sp54 * ((sp50 * arg1->modelTransform.rotation.y) + sp3C.y));
 
-    arg1->swayState.rotation.z = (arg1->swayState.rotation.z + sp3C.z + (temp_fa1 * 0.05f));
-    arg1->swayState.rotation.y = (arg1->swayState.rotation.y + sp3C.y + (temp_fa2 * 0.05f));
-    sp3C.y = arg1->swayState.rotation.y;
-    arg1->swayState.rotation.x = 0.0f;
+    arg1->modelTransform.rotation.z = (arg1->modelTransform.rotation.z + sp3C.z + (temp_fa1 * 0.05f));
+    arg1->modelTransform.rotation.y = (arg1->modelTransform.rotation.y + sp3C.y + (temp_fa2 * 0.05f));
+    sp3C.y = arg1->modelTransform.rotation.y;
+    arg1->modelTransform.rotation.x = 0.0f;
 
-    BattleAnim_Vec3fSetPolarXZ(&sp3C, arg1->swayState.rotation.z, arg5);
+    BattleAnim_Vec3fSetPolarXZ(&sp3C, arg1->modelTransform.rotation.z, arg5);
     Vec3f_AddInPlace(&arg1->unk_4EC.position, &sp3C);
 }
 
@@ -258,7 +261,7 @@ void BattleAnim_StatusIdleCase1Sub0(UNUSED ActivePokemon* arg0, ActivePokemon* a
         Vec3f_SetComponentsDuplicate(&arg1->unk_4EC.position, -35.0f, 50.0f, -250.0f);
     }
     BattleAnim_InitSwayOffset(arg1, 20.0f, 0x1FFE);
-    arg1->animationFlags2++;
+    arg1->modelTransformTimer++;
     arg1->unk_4EC.node.renderFlags &= ~0x20;
     ModelAnim_SetFrame(&arg1->unk_4EC, 0);
 }
@@ -276,13 +279,13 @@ void BattleAnim_StatusIdleCase1Sub1(ActivePokemon* arg0, ActivePokemon* arg1) {
     if (arg1->unk_4EC.position.y < 0) {
         arg1->unk_4EC.node.flags &= ~1;
         arg1->unk_4EC.position.y = 0.0f;
-        arg1->swayState.rotation.y = 0.0f;
+        arg1->modelTransform.rotation.y = 0.0f;
         BattleScene_ResetParticipantModelFlags(arg1);
     }
 }
 
 void BattleAnim_StatusIdleCase1(ActivePokemon* arg0, ActivePokemon* arg1) {
-    switch (arg1->animationFlags2) {
+    switch (arg1->modelTransformTimer) {
         case 0:
             BattleAnim_StatusIdleCase1Sub0(arg0, arg1);
 
@@ -294,7 +297,7 @@ void BattleAnim_StatusIdleCase1(ActivePokemon* arg0, ActivePokemon* arg1) {
 
 void BattleAnim_StatusIdleCase2Sub0(UNUSED ActivePokemon* arg0, ActivePokemon* arg1) {
     Vec3f_SetComponentsDuplicate(&arg1->unk_4EC.position, arg1->cameraOffsetScaleFactor * -150.0f, 100.0f, 0.0f);
-    arg1->animationFlags2++;
+    arg1->modelTransformTimer++;
     BattleAnim_InitSwayOffset(arg1, 0.0f, 0x3FFC);
     arg1->unk_4EC.node.flags |= 1;
     arg1->unk_4EC.node.renderFlags &= ~0x20;
@@ -315,7 +318,7 @@ void BattleAnim_StatusIdleCase2Sub1(ActivePokemon* arg0, ActivePokemon* arg1) {
         } else {
             arg1->unk_4EC.rotation.y = -0x4000;
         }
-        arg1->swayState.rotation.y = 0.0f;
+        arg1->modelTransform.rotation.y = 0.0f;
         arg1->unk_4EC.position.y = 2.5f;
         BattleScene_ResetParticipantModelFlags(arg1);
     }
@@ -323,7 +326,7 @@ void BattleAnim_StatusIdleCase2Sub1(ActivePokemon* arg0, ActivePokemon* arg1) {
 
 // triggers on pokeball sending pokemon out
 void BattleAnim_StatusIdleCase2(ActivePokemon* arg0, ActivePokemon* arg1) {
-    switch (arg1->animationFlags2) {
+    switch (arg1->modelTransformTimer) {
         case 0:
             BattleAnim_StatusIdleCase2Sub0(arg0, arg1);
 
@@ -334,25 +337,25 @@ void BattleAnim_StatusIdleCase2(ActivePokemon* arg0, ActivePokemon* arg1) {
 }
 
 void BattleAnim_StatusIdleCase3Sub0(UNUSED ActivePokemon* arg0, ActivePokemon* arg1) {
-    Vec3f_SetComponentsDuplicate(&arg1->swayState, 0.0f, 0.0f, 0.0f);
-    Vec3f_SetComponentsDuplicate(&arg1->swayState.rotation, 0.0f, 0.0f, 0.0f);
-    BattleAnim_InitSwayOffset(arg1, D_84384600[0], 0x4000);
+    Vec3f_SetComponentsDuplicate(&arg1->modelTransform, 0.0f, 0.0f, 0.0f);
+    Vec3f_SetComponentsDuplicate(&arg1->modelTransform.rotation, 0.0f, 0.0f, 0.0f);
+    BattleAnim_InitSwayOffset(arg1, sModelTransformConstants[0], 0x4000);
     BattleScene_ShowSecondaryModelsStaggeredFrame(arg1);
-    arg1->animationFlags2++;
+    arg1->modelTransformTimer++;
 }
 
 void BattleAnim_StatusIdleCase3Sub1(ActivePokemon* arg0, ActivePokemon* arg1) {
-    BattleAnim_UpdateSwayPhysicsToOwner(arg0, arg1, 1.45f, 0.015f, 0x4000);
+    BattleAnim_UpdateTransform(arg0, arg1, 1.45f, 0.015f, 0x4000);
     BattleScene_UpdateSecondaryModelTrailPosition(arg1, 0);
     if (arg0->displayObject.position.y >= 200.0f) {
-        arg1->swayState.rotation.y = 0.0f;
+        arg1->modelTransform.rotation.y = 0.0f;
         BattleScene_ResetParticipantModelFlags(arg1);
         BattleScene_HideParticipantSecondaryModels(arg1);
     }
 }
 
 void BattleAnim_StatusIdleCase3(ActivePokemon* arg0, ActivePokemon* arg1) {
-    switch (arg1->animationFlags2) {
+    switch (arg1->modelTransformTimer) {
         case 0:
             BattleAnim_StatusIdleCase3Sub0(arg0, arg1);
 
@@ -362,35 +365,38 @@ void BattleAnim_StatusIdleCase3(ActivePokemon* arg0, ActivePokemon* arg1) {
     }
 }
 
-void BattleAnim_StatusIdleCase14Sub0(UNUSED ActivePokemon* arg0, ActivePokemon* arg1) {
-    Vec3f_SetComponentsDuplicate(&arg1->swayState, 0.0f, 0.0f, 0.0f);
-    Vec3f_SetComponentsDuplicate(&arg1->swayState.rotation, 0.0f, 0.0f, 0.0f);
-    BattleAnim_InitSwayOffset(arg1, D_84384600[0], 0x4000);
-    arg1->animationFlags2++;
+// waterfall init
+void BattleAnim_StatusIdleCase14Sub0(UNUSED ActivePokemon* defender1, ActivePokemon* attacker) {
+    Vec3f_SetComponentsDuplicate(&attacker->modelTransform, 0.0f, 0.0f, 0.0f);
+    Vec3f_SetComponentsDuplicate(&attacker->modelTransform.rotation, 0.0f, 0.0f, 0.0f);
+    BattleAnim_InitSwayOffset(attacker, sModelTransformConstants[0], NINETY_DEGREES);
+    attacker->modelTransformTimer++;
 }
 
-void BattleAnim_StatusIdleCase14Sub1(ActivePokemon* arg0, ActivePokemon* arg1) {
-    BattleAnim_UpdateSwayPhysicsToOwner(arg0, arg1, 2.0f, 0.002f, 0x4000);
-    if ((arg0->displayObject.position.y - BattleScene_GetParticipantModelHeight(arg1)) >= 90.0f) {
-        arg1->animationFlags2++;
-        arg1->swayState.rotation.y = 0.0f;
+// waterfall continue
+void BattleAnim_StatusIdleCase14Sub1(ActivePokemon* defender1, ActivePokemon* attacker) {
+    BattleAnim_UpdateTransform(defender1, attacker, 2.0f, 0.002f, NINETY_DEGREES);
+    if ((defender1->displayObject.position.y - BattleScene_GetParticipantModelHeight(attacker)) >= 90.0f) {
+        attacker->modelTransformTimer++;
+        attacker->modelTransform.rotation.y = 0.0f;
     }
 }
 
 void func_8430A4E0(UNUSED ActivePokemon* arg0, UNUSED ActivePokemon* arg1) {
 }
 
-void BattleAnim_StatusIdleCase14(ActivePokemon* arg0, ActivePokemon* arg1) {
-    switch (arg1->animationFlags2) {
+// Waterfall
+void BattleAnim_StatusIdleCase14(ActivePokemon* side1_pokemon, ActivePokemon* side2_pokemon) {
+    switch (side2_pokemon->modelTransformTimer) {
         case 0:
-            BattleAnim_StatusIdleCase14Sub0(arg0, arg1);
+            BattleAnim_StatusIdleCase14Sub0(side1_pokemon, side2_pokemon);
 
         case 1:
-            BattleAnim_StatusIdleCase14Sub1(arg0, arg1);
+            BattleAnim_StatusIdleCase14Sub1(side1_pokemon, side2_pokemon);
             break;
 
         case 2:
-            func_8430A4E0(arg0, arg1);
+            func_8430A4E0(side1_pokemon, side2_pokemon);
             break;
     }
 }
@@ -414,7 +420,7 @@ void BattleAnim_StatusIdleCase4Sub0(UNUSED ActivePokemon* arg0, ActivePokemon* a
     arg1->unk_4A6 = 0;
     arg1->unk_4A4 = 0;
     arg1->animationState = 0;
-    arg1->animationFlags2++;
+    arg1->modelTransformTimer++;
 }
 
 void BattleAnim_StatusIdleCase4Sub1(ActivePokemon* arg0, ActivePokemon* arg1) {
@@ -427,7 +433,7 @@ void BattleAnim_StatusIdleCase4Sub1(ActivePokemon* arg0, ActivePokemon* arg1) {
     BattleScene_UpdateSecondaryModelTrailPosition(arg1, arg1->unk_4A6);
 
     if (arg1->animationState == 3) {
-        arg1->animationFlags2 += 1;
+        arg1->modelTransformTimer += 1;
     }
 }
 
@@ -457,7 +463,7 @@ void BattleAnim_StatusIdleCase4Sub2(ActivePokemon* arg0, ActivePokemon* arg1) {
 }
 
 void BattleAnim_StatusIdleCase4(ActivePokemon* arg0, ActivePokemon* arg1) {
-    switch (arg1->animationFlags2) {
+    switch (arg1->modelTransformTimer) {
         case 0:
             BattleAnim_StatusIdleCase4Sub0(arg0, arg1);
 
@@ -475,7 +481,7 @@ void BattleAnim_StatusIdleCase5Sub0(UNUSED ActivePokemon* arg0, ActivePokemon* a
     arg1->unk_4A6 = 0;
     arg1->unk_4A4 = 0;
     arg1->animationState = 0;
-    arg1->animationFlags2++;
+    arg1->modelTransformTimer++;
 }
 
 void BattleAnim_StatusIdleCase5Sub1(ActivePokemon* arg0, ActivePokemon* arg1) {
@@ -487,7 +493,7 @@ void BattleAnim_StatusIdleCase5Sub1(ActivePokemon* arg0, ActivePokemon* arg1) {
 
     if (arg1->animationState >= 3) {
         BattleScene_ShowSecondaryModelsStaggeredFrame(arg1);
-        arg1->animationFlags2 += 1;
+        arg1->modelTransformTimer += 1;
     }
 }
 
@@ -521,7 +527,7 @@ void BattleAnim_StatusIdleCase5Sub2(ActivePokemon* arg0, ActivePokemon* arg1) {
 }
 
 void BattleAnim_StatusIdleCase5(ActivePokemon* arg0, ActivePokemon* arg1) {
-    switch (arg1->animationFlags2) {
+    switch (arg1->modelTransformTimer) {
         case 0:
             BattleAnim_StatusIdleCase5Sub0(arg0, arg1);
 
@@ -543,7 +549,7 @@ void BattleAnim_StatusIdleCase6Sub0(ActivePokemon* arg0, ActivePokemon* arg1) {
     BattleScene_PositionParticipantModel(arg1);
     Vec3s_SetComponents(&arg0->displayObject.rotation, 0, arg1->cameraOffsetScaleFactor << 0xE, 0);
     BattleScene_ShowSecondaryModelsStaggeredFrame(arg1);
-    arg1->animationFlags2++;
+    arg1->modelTransformTimer++;
 }
 
 void BattleAnim_StatusIdleCase6Sub1(ActivePokemon* arg0, ActivePokemon* arg1) {
@@ -559,7 +565,7 @@ void BattleAnim_StatusIdleCase6Sub1(ActivePokemon* arg0, ActivePokemon* arg1) {
     BattleScene_UpdateSecondaryModelTrailPosition(arg1, 0);
 
     if (arg1->unk_4A0 > 49.0f) {
-        arg1->animationFlags2++;
+        arg1->modelTransformTimer++;
     }
 }
 
@@ -586,7 +592,7 @@ void BattleAnim_StatusIdleCase6Sub2(ActivePokemon* arg0, ActivePokemon* arg1) {
 }
 
 void BattleAnim_StatusIdleCase6(ActivePokemon* arg0, ActivePokemon* arg1) {
-    switch (arg1->animationFlags2) {
+    switch (arg1->modelTransformTimer) {
         case 0:
             BattleAnim_StatusIdleCase6Sub0(arg0, arg1);
 
@@ -605,7 +611,7 @@ void BattleAnim_StatusIdleCase7Sub0(ActivePokemon* arg0, ActivePokemon* arg1) {
     arg1->unk_4AC = 0;
     BattleScene_PositionParticipantModel(arg1);
     Vec3s_SetComponents(&arg0->displayObject.rotation, 0, arg1->cameraOffsetScaleFactor << 0xE, 0);
-    arg1->animationFlags2++;
+    arg1->modelTransformTimer++;
 }
 
 void BattleAnim_StatusIdleCase7Sub1(UNUSED ActivePokemon* arg0, ActivePokemon* arg1) {
@@ -618,7 +624,7 @@ void BattleAnim_StatusIdleCase7Sub1(UNUSED ActivePokemon* arg0, ActivePokemon* a
 }
 
 void BattleAnim_StatusIdleCase7(ActivePokemon* arg0, ActivePokemon* arg1) {
-    switch (arg1->animationFlags2) {
+    switch (arg1->modelTransformTimer) {
         case 0:
             BattleAnim_StatusIdleCase7Sub0(arg0, arg1);
 
@@ -646,7 +652,7 @@ void BattleAnim_StatusIdleCase8Sub0(ActivePokemon* arg0, ActivePokemon* arg1) {
     arg1->unk_4A0 = 0.0f;
     BattleScene_PositionParticipantModel(arg1);
     Vec3s_SetComponents(&arg0->displayObject.rotation, 0, arg1->cameraOffsetScaleFactor << 0xE, 0);
-    arg1->animationFlags2++;
+    arg1->modelTransformTimer++;
 }
 
 void BattleAnim_StatusIdleCase8Sub1(UNUSED ActivePokemon* arg0, ActivePokemon* arg1) {
@@ -685,7 +691,7 @@ void BattleAnim_StatusIdleCase8Sub1(UNUSED ActivePokemon* arg0, ActivePokemon* a
 }
 
 void BattleAnim_StatusIdleCase8(ActivePokemon* arg0, ActivePokemon* arg1) {
-    switch (arg1->animationFlags2) {
+    switch (arg1->modelTransformTimer) {
         case 0:
             BattleAnim_StatusIdleCase8Sub0(arg0, arg1);
 
@@ -700,7 +706,7 @@ void BattleAnim_StatusIdleCase9Sub0(ActivePokemon* arg0, ActivePokemon* arg1) {
         BattleScene_ResetParticipantModelFlags(arg1);
     } else {
         BattleScene_ShowSecondaryModelsAtMainPose(arg1);
-        arg1->animationFlags2++;
+        arg1->modelTransformTimer++;
     }
 }
 
@@ -721,7 +727,7 @@ void BattleAnim_StatusIdleCase9Sub1(ActivePokemon* arg0, ActivePokemon* arg1) {
 }
 
 void BattleAnim_StatusIdleCase9(ActivePokemon* arg0, ActivePokemon* arg1) {
-    switch (arg1->animationFlags2) {
+    switch (arg1->modelTransformTimer) {
         case 0:
             BattleAnim_StatusIdleCase9Sub0(arg0, arg1);
 
@@ -732,7 +738,7 @@ void BattleAnim_StatusIdleCase9(ActivePokemon* arg0, ActivePokemon* arg1) {
 }
 
 void BattleAnim_StatusIdleCase12Sub0(UNUSED ActivePokemon* arg0, ActivePokemon* arg1) {
-    arg1->animationFlags2++;
+    arg1->modelTransformTimer++;
 }
 
 void BattleAnim_StatusIdleCase12Sub1(ActivePokemon* arg0, UNUSED ActivePokemon* arg1) {
@@ -746,7 +752,7 @@ void BattleAnim_StatusIdleCase12Sub1(ActivePokemon* arg0, UNUSED ActivePokemon* 
 }
 
 void BattleAnim_StatusIdleCase12(ActivePokemon* arg0, ActivePokemon* arg1) {
-    switch (arg1->animationFlags2) {
+    switch (arg1->modelTransformTimer) {
         case 0:
             BattleAnim_StatusIdleCase12Sub0(arg0, arg1);
 
@@ -761,10 +767,10 @@ void BattleAnim_StatusIdleCase13Sub0(ActivePokemon* arg0, ActivePokemon* arg1) {
     arg1->unk_4A6 = 0;
     arg1->unk_4A8 = 0;
     arg1->unk_4A0 = 0.4f;
-    arg1->swayState.rotation.x = arg0->displayObject.scale.x;
-    arg1->swayState.rotation.y = arg0->displayObject.scale.y;
-    arg1->swayState.rotation.z = arg0->displayObject.scale.z;
-    arg1->animationFlags2++;
+    arg1->modelTransform.rotation.x = arg0->displayObject.scale.x;
+    arg1->modelTransform.rotation.y = arg0->displayObject.scale.y;
+    arg1->modelTransform.rotation.z = arg0->displayObject.scale.z;
+    arg1->modelTransformTimer++;
 }
 
 void BattleAnim_StatusIdleCase13Sub1(ActivePokemon* arg0, ActivePokemon* arg1) {
@@ -792,7 +798,7 @@ void BattleAnim_StatusIdleCase13Sub1(ActivePokemon* arg0, ActivePokemon* arg1) {
 
     if ((arg1->unk_4A6 >= 0x4000) && (arg1->unk_4A6 >= 0x4000)) {
         arg1->unk_4A8 = 0x1554;
-        arg1->animationFlags2++;
+        arg1->modelTransformTimer++;
     }
 }
 
@@ -828,7 +834,7 @@ void BattleAnim_StatusIdleCase13Sub2(ActivePokemon* arg0, ActivePokemon* arg1) {
 }
 
 void BattleAnim_StatusIdleCase13(ActivePokemon* arg0, ActivePokemon* arg1) {
-    switch (arg1->animationFlags2) {
+    switch (arg1->modelTransformTimer) {
         case 0:
             BattleAnim_StatusIdleCase13Sub0(arg0, arg1);
 
@@ -845,10 +851,10 @@ void BattleAnim_StatusIdleCase13(ActivePokemon* arg0, ActivePokemon* arg1) {
 void BattleAnim_StatusIdleCase15Sub0(ActivePokemon* arg0, ActivePokemon* arg1) {
     arg1->unk_4A8 = 0x71C;
     arg1->unk_4A0 = 0.4f;
-    arg1->swayState.rotation.x = arg0->displayObject.scale.x;
-    arg1->swayState.rotation.y = arg0->displayObject.scale.y;
-    arg1->swayState.rotation.z = arg0->displayObject.scale.z;
-    arg1->animationFlags2++;
+    arg1->modelTransform.rotation.x = arg0->displayObject.scale.x;
+    arg1->modelTransform.rotation.y = arg0->displayObject.scale.y;
+    arg1->modelTransform.rotation.z = arg0->displayObject.scale.z;
+    arg1->modelTransformTimer++;
 }
 
 void BattleAnim_StatusIdleCase15Sub1(ActivePokemon* arg0, ActivePokemon* arg1) {
@@ -885,7 +891,7 @@ void BattleAnim_StatusIdleCase15Sub1(ActivePokemon* arg0, ActivePokemon* arg1) {
 }
 
 void BattleAnim_StatusIdleCase15(ActivePokemon* arg0, ActivePokemon* arg1) {
-    switch (arg1->animationFlags2) {
+    switch (arg1->modelTransformTimer) {
         case 0:
             BattleAnim_StatusIdleCase15Sub0(arg0, arg1);
 
@@ -897,7 +903,7 @@ void BattleAnim_StatusIdleCase15(ActivePokemon* arg0, ActivePokemon* arg1) {
 
 void BattleAnim_StatusIdleCase16Sub0(UNUSED ActivePokemon* arg0, ActivePokemon* arg1) {
     arg1->unk_4AC = 0;
-    arg1->animationFlags2++;
+    arg1->modelTransformTimer++;
 }
 
 void BattleAnim_StatusIdleCase16Sub1(ActivePokemon* arg0, ActivePokemon* arg1) {
@@ -919,7 +925,7 @@ void BattleAnim_StatusIdleCase16Sub1(ActivePokemon* arg0, ActivePokemon* arg1) {
 }
 
 void BattleAnim_StatusIdleCase16(ActivePokemon* arg0, ActivePokemon* arg1) {
-    switch (arg1->animationFlags2) {
+    switch (arg1->modelTransformTimer) {
         case 0:
             BattleAnim_StatusIdleCase16Sub0(arg0, arg1);
 
@@ -931,7 +937,7 @@ void BattleAnim_StatusIdleCase16(ActivePokemon* arg0, ActivePokemon* arg1) {
 
 void BattleAnim_StatusIdleCase10Sub0(UNUSED ActivePokemon* arg0, ActivePokemon* arg1) {
     arg1->animationState = 0;
-    arg1->animationFlags2++;
+    arg1->modelTransformTimer++;
 }
 
 void BattleAnim_StatusIdleCase10Sub1(ActivePokemon* arg0, ActivePokemon* arg1) {
@@ -951,7 +957,7 @@ void BattleAnim_StatusIdleCase10Sub1(ActivePokemon* arg0, ActivePokemon* arg1) {
 }
 
 void BattleAnim_StatusIdleCase10(ActivePokemon* arg0, ActivePokemon* arg1) {
-    switch (arg1->animationFlags2) {
+    switch (arg1->modelTransformTimer) {
         case 0:
             BattleAnim_StatusIdleCase10Sub0(arg0, arg1);
 
@@ -963,6 +969,7 @@ void BattleAnim_StatusIdleCase10(ActivePokemon* arg0, ActivePokemon* arg1) {
 
 void BattleAnim_StatusIdleCase0(UNUSED ActivePokemon* arg0, UNUSED ActivePokemon* arg1) {
 }
+
 
 void BattleAnim_UpdateOwnerStatusIdleAnimation(s32 side_index) {
     ActivePokemon* owner = sActivePokemon[side_index];

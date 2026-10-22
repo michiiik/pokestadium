@@ -530,16 +530,16 @@ void Battle_LoadAnimationAndMarkMoveIllegality(ActivePokemon* pokemon, s32 mark_
     rom_address = (u32)_70D3A0_ROM_START + ((u32)(D_70B10 + (species * 0x20)) & 0xFFFFFF);
     Dma_WriteChunks(&sDefaultSwayLayout, rom_address, rom_address + 0x20, 0);
 
-    BattleAnim_Vec3fCopy(&pokemon->swayState.layoutConfig.frontCameraShotOffset, &sDefaultSwayLayout.frontCameraShotOffset);
-    BattleAnim_Vec3fCopy(&pokemon->swayState.layoutConfig.backCameraShotOffset, &sDefaultSwayLayout.backCameraShotOffset);
+    BattleAnim_Vec3fCopy(&pokemon->modelTransform.layoutConfig.frontCameraShotOffset, &sDefaultSwayLayout.frontCameraShotOffset);
+    BattleAnim_Vec3fCopy(&pokemon->modelTransform.layoutConfig.backCameraShotOffset, &sDefaultSwayLayout.backCameraShotOffset);
 
     // If you zero these 4 attributes out the game soft locks
-    pokemon->swayState.layoutConfig.unk_18 = sDefaultSwayLayout.unk_18;
-    pokemon->swayState.layoutConfig.unk_19 = sDefaultSwayLayout.unk_19;
-    pokemon->swayState.layoutConfig.unk_1A = sDefaultSwayLayout.unk_1A;
-    pokemon->swayState.layoutConfig.unk_1B = sDefaultSwayLayout.unk_1B;
-    pokemon->swayState.layoutConfig.frontCameraShotOffset.x *= pokemon->cameraOffsetScaleFactor;
-    pokemon->swayState.layoutConfig.backCameraShotOffset.x *= pokemon->cameraOffsetScaleFactor;
+    pokemon->modelTransform.layoutConfig.unk_18 = sDefaultSwayLayout.unk_18;
+    pokemon->modelTransform.layoutConfig.unk_19 = sDefaultSwayLayout.unk_19;
+    pokemon->modelTransform.layoutConfig.unk_1A = sDefaultSwayLayout.unk_1A;
+    pokemon->modelTransform.layoutConfig.unk_1B = sDefaultSwayLayout.unk_1B;
+    pokemon->modelTransform.layoutConfig.frontCameraShotOffset.x *= pokemon->cameraOffsetScaleFactor;
+    pokemon->modelTransform.layoutConfig.backCameraShotOffset.x *= pokemon->cameraOffsetScaleFactor;
 
     rom_address = (u32)_70D3A0_ROM_START + ((u32)(D_70110 + (species << 4)) & 0xFFFFFF);
     Dma_WriteChunks(&gPokemonModelDimensions[side_index], rom_address, rom_address + 0x10, 0);
@@ -2536,8 +2536,8 @@ void BattleScene_InitializePresentation(UNUSED BattleSessionTeams* session_teams
  * Zeroes the sway state and sets the facing direction (1 or -1).
  */
 void BattleScene_ResetParticipantAuxTransform(UNUSED ActivePokemon* owner, ActivePokemon* active_pokemon, s32 facing_direction) {
-    Vec3f_SetComponentsDuplicate(&active_pokemon->swayState, 0.0f, 0.0f, 0.0f);
-    Vec3f_SetComponentsDuplicate(&active_pokemon->swayState.rotation, 0.0f, 0.0f, 0.0f);
+    Vec3f_SetComponentsDuplicate(&active_pokemon->modelTransform, 0.0f, 0.0f, 0.0f);
+    Vec3f_SetComponentsDuplicate(&active_pokemon->modelTransform.rotation, 0.0f, 0.0f, 0.0f);
     active_pokemon->cameraOffsetScaleFactor = facing_direction;
 }
 

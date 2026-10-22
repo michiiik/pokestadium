@@ -118,9 +118,9 @@ typedef struct SwayState {
 typedef struct ActivePokemon {
     /* 0x000 */ DisplayObject displayObject;
     /* 0x168 */ unk_D_84390010_168 unk_168[2];
-    /* 0x448 */ SwayState swayState;
-    /* 0x498 */ f32 unk_498;
-    /* 0x49C */ f32 unk_49C;
+    /* 0x448 */ SwayState modelTransform;
+    /* 0x498 */ f32 y;
+    /* 0x49C */ f32 rotationZ;
     /* 0x4A0 */ f32 unk_4A0;
     /* 0x4A4 */ s16 unk_4A4;
     /* 0x4A6 */ s16 unk_4A6;
@@ -128,7 +128,7 @@ typedef struct ActivePokemon {
     /* 0x4AC */ s32 unk_4AC;
     /* 0x4B0 */ s32 cameraOffsetScaleFactor;
     /* 0x4B4 */ s32 animationFlags1;
-    /* 0x4B8 */ s32 animationFlags2;
+    /* 0x4B8 */ s32 modelTransformTimer;
     /* 0x4BC */ char unk4BC[0x4];
     /* 0x4C0 */ s32 animationState;
     /* 0x4C4 */ s32 animationTimer;
@@ -1268,12 +1268,12 @@ void Battle_ReloadModelForActiveMove(ActivePokemon* active_pokemon);
 
 
 //@src/fragments/battle_engine/battle_engine_2F3CB0.c
-void BattleAnim_InitSwayOffset(ActivePokemon* arg0, f32 arg1, s16 arg2);
-void BattleAnim_UpdateSwayPhysicsToOwner(ActivePokemon* arg0, ActivePokemon* arg1, f32 arg2, f32 arg3, s32 arg4);
+void BattleAnim_InitSwayOffset(ActivePokemon* pokemon, f32 y, s16 theta);
+void BattleAnim_UpdateTransform(ActivePokemon* defender, ActivePokemon* attacker, f32 height, f32 delta_y, s32 delta_theta);
 void BattleAnim_UpdateSwayPhysicsToTarget(UNUSED ActivePokemon* arg0, ActivePokemon* arg1, f32 arg2, f32 arg3, s32 arg4, s32 arg5);
 void BattleScene_HideParticipantSecondaryModels(ActivePokemon* active_pokemon);
-void BattleScene_ShowSecondaryModelsAtMainTransform(ActivePokemon* active_pokemon);
-void BattleScene_UpdateSecondaryModelOrbit(ActivePokemon* active_pokemon);
+void BattleScene_ShowSecondaryModelsAtMainTransform(ActivePokemon* arg0);
+void BattleScene_UpdateSecondaryModelOrbit(ActivePokemon* arg0);
 void BattleScene_ShowSecondaryModelsAtMainPose(ActivePokemon* active_pokemon);
 s32 BattleScene_ShrinkSecondaryModelsToScale(ActivePokemon* active_pokemon);
 void BattleScene_ShowSecondaryModelsStaggeredFrame(ActivePokemon* active_pokemon);
@@ -1288,10 +1288,10 @@ void BattleAnim_StatusIdleCase2(ActivePokemon* arg0, ActivePokemon* arg1);
 void BattleAnim_StatusIdleCase3Sub0(UNUSED ActivePokemon* arg0, ActivePokemon* arg1);
 void BattleAnim_StatusIdleCase3Sub1(ActivePokemon* arg0, ActivePokemon* arg1);
 void BattleAnim_StatusIdleCase3(ActivePokemon* arg0, ActivePokemon* arg1);
-void BattleAnim_StatusIdleCase14Sub0(UNUSED ActivePokemon* arg0, ActivePokemon* arg1);
-void BattleAnim_StatusIdleCase14Sub1(ActivePokemon* arg0, ActivePokemon* arg1);
+void BattleAnim_StatusIdleCase14Sub0(UNUSED ActivePokemon* defender1, ActivePokemon* attacker);
+void BattleAnim_StatusIdleCase14Sub1(ActivePokemon* defender1, ActivePokemon* attacker);
 void func_8430A4E0(UNUSED ActivePokemon* arg0, UNUSED ActivePokemon* arg1);
-void BattleAnim_StatusIdleCase14(ActivePokemon* arg0, ActivePokemon* arg1);
+void BattleAnim_StatusIdleCase14(ActivePokemon* side1_pokemon, ActivePokemon* side2_pokemon);
 s32 BattleAnim_ApproachAngleAndCheckThreshold(ActivePokemon* arg0, s16 arg1, s16 arg2);
 void BattleAnim_StatusIdleCase4Sub0(UNUSED ActivePokemon* arg0, ActivePokemon* arg1);
 void BattleAnim_StatusIdleCase4Sub1(ActivePokemon* arg0, ActivePokemon* arg1);
@@ -1308,7 +1308,7 @@ void BattleAnim_StatusIdleCase6(ActivePokemon* arg0, ActivePokemon* arg1);
 void BattleAnim_StatusIdleCase7Sub0(ActivePokemon* arg0, ActivePokemon* arg1);
 void BattleAnim_StatusIdleCase7Sub1(UNUSED ActivePokemon* arg0, ActivePokemon* arg1);
 void BattleAnim_StatusIdleCase7(ActivePokemon* arg0, ActivePokemon* arg1);
-void BattleAnim_ResetOwnerFacingAndExitStatusIdle(ActivePokemon* active_pokemon);
+void BattleAnim_ResetOwnerFacingAndExitStatusIdle(ActivePokemon* arg0);
 void BattleAnim_StatusIdleCase8Sub0(ActivePokemon* arg0, ActivePokemon* arg1);
 void BattleAnim_StatusIdleCase8Sub1(UNUSED ActivePokemon* arg0, ActivePokemon* arg1);
 void BattleAnim_StatusIdleCase8(ActivePokemon* arg0, ActivePokemon* arg1);
@@ -1334,13 +1334,13 @@ void BattleAnim_StatusIdleCase10(ActivePokemon* arg0, ActivePokemon* arg1);
 void BattleAnim_StatusIdleCase0(UNUSED ActivePokemon* arg0, UNUSED ActivePokemon* arg1);
 void BattleAnim_UpdateOwnerStatusIdleAnimation(s32 side_index);
 void BattleAnim_SetOwnerSecondaryStatusFlags(ActivePokemon* arg0, u8 arg1, u8 arg2);
-void BattleAnim_ClearOwnerSecondaryStatusFlags(ActivePokemon* active_pokemon);
+void BattleAnim_ClearOwnerSecondaryStatusFlags(ActivePokemon* arg0);
 void BattleAnim_InitSecondarySwayOffset(ActivePokemon* arg0, f32 arg1, s16 arg2);
-void BattleAnim_UpdateSecondarySwayPhysics(ActivePokemon* arg0, ActivePokemon* arg1, f32 arg2, f32 arg3, s32 arg4);
-void BattleAnim_SecondaryStatusCaseBSub0(ActivePokemon* arg0, ActivePokemon* arg1);
+void BattleAnim_UpdateSecondarySwayPhysics(ActivePokemon* arg0, ActivePokemon* arg1, UNUSED f32 arg2, UNUSED f32 arg3, UNUSED s32 arg4);
+void BattleAnim_SecondaryStatusCaseBSub0(UNUSED ActivePokemon* arg0, ActivePokemon* arg1);
 void BattleAnim_SecondaryStatusCaseBSub1(ActivePokemon* arg0, ActivePokemon* arg1);
 void BattleAnim_SecondaryStatusCaseB(ActivePokemon* arg0, ActivePokemon* arg1);
-void BattleAnim_SecondaryStatusDefault(ActivePokemon* arg0, ActivePokemon* arg1);
+void BattleAnim_SecondaryStatusDefault(UNUSED ActivePokemon* arg0, UNUSED ActivePokemon* arg1);
 void BattleAnim_UpdateOwnerSecondaryStatusAnimation(s32 arg0);
 
 
@@ -1348,7 +1348,7 @@ void BattleAnim_UpdateOwnerSecondaryStatusAnimation(s32 arg0);
 void BattleAnim_CalculateDistanceAngles(Vec3f* arg0, Vec3f* arg1, f32* arg2, s16* arg3, s16* arg4);
 Vec3f* BattleAnim_Vec3fSetZero(Vec3f* arg0);
 Vec3f* BattleAnim_Vec3fOffsetByPolarXZ(Vec3f* arg0, Vec3f* arg1, f32 arg2, s16 arg3);
-void BattleAnim_Vec3fSetPolarXZ(Vec3f* arg0, f32 arg1, s16 arg2);
+void BattleAnim_Vec3fSetPolarXZ(Vec3f* dest_vector, f32 magnitude, s16 theta);
 Vec3f* BattleAnim_Vec3fCopy(Vec3f* dest, Vec3f* src);
 Vec3s* BattleAnim_Vec3sCopy(Vec3s* arg0, Vec3s* arg1);
 Vec3f* BattleAnim_Vec3fScaleComponents(Vec3f* arg0, f32 arg1, f32 arg2, f32 arg3);

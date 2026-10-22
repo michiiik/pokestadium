@@ -2660,7 +2660,7 @@ void BattleScene_Phase13(CameraNode* arg0) {
             break;
 
         case 1:
-            if (D_84390204->animationFlags2 == 2) {
+            if (D_84390204->modelTransformTimer == 2) {
                 BattleScene_UpdateCameraVerticalFraming(arg0, D_84390204);
                 D_84390204->displayObject.node.renderFlags &= 0xFFBF;
             }

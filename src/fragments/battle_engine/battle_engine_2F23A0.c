@@ -282,7 +282,7 @@ u8* Battle_GetActiveMonNickname(ActivePokemon* active_pokemon) {
 
 void BattleScene_SetParticipantModelFlags(ActivePokemon* active_pokemon, s32 animation_flags1, s32 animation_flags2) {
     active_pokemon->animationFlags1 = animation_flags1;
-    active_pokemon->animationFlags2 = animation_flags2;
+    active_pokemon->modelTransformTimer = animation_flags2;
 }
 
 void Battle_AdvanceSecondaryModelAnimIfFinished(ActivePokemon* active_pokemon, ActivePokemon* animated_pokemon) {
