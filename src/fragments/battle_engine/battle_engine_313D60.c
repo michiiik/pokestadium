@@ -102,7 +102,7 @@ void BattleScene_TickCameraSubstateDefault(CameraNode* arg0) {
             break;
 
         case 2:
-            if (sActivePokemon[0]->thumbnail.thumbnailCamera->viewport.x == -0x48) {
+            if (sActivePokemon[0]->thumbnail.camera->viewport.x == -0x48) {
                 sBattleScene.unk_00->unk_30++;
             }
             break;
@@ -170,7 +170,7 @@ void BattleScene_TickCameraSubstateStripWipe(CameraNode* arg0) {
             break;
 
         case 2:
-            if (sActivePokemon[0]->thumbnail.thumbnailCamera->viewport.x == -0x48) {
+            if (sActivePokemon[0]->thumbnail.camera->viewport.x == -0x48) {
                 sBattleScene.unk_00->unk_30++;
             }
             break;

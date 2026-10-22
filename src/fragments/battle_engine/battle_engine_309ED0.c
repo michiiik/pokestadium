@@ -2486,7 +2486,7 @@ void BattleScene_Phase15(CameraNode* arg0) {
 
         case 3:
             BattleScene_RecenterCameraOnOwner(arg0, D_84390204);
-            D_84390204->thumbnail.thumbnailCamera->node.flags |= 1;
+            D_84390204->thumbnail.camera->node.flags |= 1;
             D_84390204->thumbnail.displayObject.node.flags |= 1;
             BattleThumbnail_TriggerOwnerModelAnimation(D_84390204);
             if (BattleScene_IsRowWaitComplete(D_84390204, 0x32) != 0) {

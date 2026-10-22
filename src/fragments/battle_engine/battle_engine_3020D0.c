@@ -731,8 +731,8 @@ void BattleScene_TickHudTimers(void) {
     ActivePokemonState* sp1C = &sActivePokemon[0]->state;
     ActivePokemonState* sp18 = &sActivePokemon[1]->state;
 
-    if ((gSessionContext.timeLimitsEnabled != 0) && (sActivePokemon[1]->thumbnail.thumbnailCamera->viewport.x == 0x103) &&
-        (sActivePokemon[0]->thumbnail.thumbnailCamera->viewport.x == 0x17)) {
+    if ((gSessionContext.timeLimitsEnabled != 0) && (sActivePokemon[1]->thumbnail.camera->viewport.x == 0x103) &&
+        (sActivePokemon[0]->thumbnail.camera->viewport.x == 0x17)) {
         BattleHud_DrawBattleTimer(0x101, 0x64);
         if (D_84390134 == 0) {
             if (sp1C->unk_10 != 3) {
