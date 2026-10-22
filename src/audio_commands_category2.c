@@ -7,19 +7,19 @@
 #include "src/audio_commands.h"
 #include "src/audio_category_fade.h"
 
-static s32 D_80078EE0[4] = {
+static s32 gPlayerVolumeDelta[4] = {
     0xFFFFFF9C,
     0xFFFFFFD8,
     0x00000028,
     0x00000064,
 };
-static s32 D_80078EF0[4] = {
+static s32 gPlayerPitchDelta[4] = {
     0xFFFFFFFD,
     0xFFFFFFFE,
     0xFFFFFFFE,
     0xFFFFFFFE,
 };
-static s32 D_80078F00[8] = {
+static s32 gPlayerSoundHandles[8] = {
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
 };
 
@@ -71,7 +71,7 @@ s32 Audio_PlayCategory2SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
             break;
     }
 
-    sp34 = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, arg0 & 0xFFFF, 0x80, var_v0, -1);
+    sp34 = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, arg0 & 0xFFFF, 0x80, var_v0, -1);
     Audio_QueueVoiceDetune(sp34, var_fv0);
 
     return sp34;
@@ -95,40 +95,40 @@ s32 Audio_PlayCategory3SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
         case 0x30003:
             sp38 = 0x50;
             if (arg2 >= 0) {
-                if (Audio_IsSoundPlaying(D_80078F00[arg1]) == 0) {
-                    var_fv0 += D_80078EF0[arg1];
-                    var_v0 += D_80078EE0[arg1];
+                if (Audio_IsSoundPlaying(gPlayerSoundHandles[arg1]) == 0) {
+                    var_fv0 += gPlayerPitchDelta[arg1];
+                    var_v0 += gPlayerVolumeDelta[arg1];
                     break;
                 }
 
                 if ((arg2 >= 0) && (arg2 < 0x14)) {
-                    var_fv0 += D_80078EF0[arg1];
+                    var_fv0 += gPlayerPitchDelta[arg1];
                     var_fv0 += 0.5f * arg2;
 
-                    Audio_QueueVoiceDetune(D_80078F00[arg1], var_fv0);
+                    Audio_QueueVoiceDetune(gPlayerSoundHandles[arg1], var_fv0);
                     return 0;
                 }
 
                 if (arg2 >= 0x14) {
-                    var_fv0 += D_80078EF0[arg1];
+                    var_fv0 += gPlayerPitchDelta[arg1];
                     var_fv0 += (0, 0.5f) * 22.5;
 
-                    Audio_QueueVoiceDetune(D_80078F00[arg1], var_fv0);
+                    Audio_QueueVoiceDetune(gPlayerSoundHandles[arg1], var_fv0);
                     return 0;
                 }
-            } else if (Audio_IsSoundPlaying(D_80078F00[arg1]) == 0) {
+            } else if (Audio_IsSoundPlaying(gPlayerSoundHandles[arg1]) == 0) {
                 return 0;
             } else {
-                Audio_QueueFadeSoundCommand(D_80078F00[arg1], 0xA);
+                Audio_QueueFadeSoundCommand(gPlayerSoundHandles[arg1], 0xA);
                 return 0;
             }
 
         case 0x30004:
-            Audio_QueueFadeSoundCommand(D_80078F00[0], 0x14);
-            Audio_QueueFadeSoundCommand(D_80078F00[1], 0x14);
-            Audio_QueueFadeSoundCommand(D_80078F00[2], 0x14);
-            Audio_QueueFadeSoundCommand(D_80078F00[3], 0x14);
-            var_v0 += D_80078EE0[arg1];
+            Audio_QueueFadeSoundCommand(gPlayerSoundHandles[0], 0x14);
+            Audio_QueueFadeSoundCommand(gPlayerSoundHandles[1], 0x14);
+            Audio_QueueFadeSoundCommand(gPlayerSoundHandles[2], 0x14);
+            Audio_QueueFadeSoundCommand(gPlayerSoundHandles[3], 0x14);
+            var_v0 += gPlayerVolumeDelta[arg1];
             break;
 
         case 0x30001:
@@ -139,10 +139,10 @@ s32 Audio_PlayCategory3SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
             return 0;
     }
 
-    sp44 = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, arg0 & 0xFFFF, sp38, var_v0, -1);
+    sp44 = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, arg0 & 0xFFFF, sp38, var_v0, -1);
     Audio_QueueVoiceDetune(sp44, var_fv0);
     if (arg0 == 0x30003) {
-        D_80078F00[arg1] = sp44;
+        gPlayerSoundHandles[arg1] = sp44;
     }
     return sp44;
 }
@@ -195,7 +195,7 @@ s32 Audio_PlayCategory4SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
                 var_a3 = 0x80;
                 arg1 = 1;
             }
-            Audio_QueueFadeSoundCommand(D_80078F00[arg1 + 3], 0x14);
+            Audio_QueueFadeSoundCommand(gPlayerSoundHandles[arg1 + 3], 0x14);
             var_v1 = Audio_ComputeIndexedVolume(arg1, arg2);
             var_fv0 = (4 - arg1) * 0.5f;
             break;
@@ -231,11 +231,11 @@ s32 Audio_PlayCategory4SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
             return 0;
     }
 
-    sp3C = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, arg0 & 0xFFFF, var_a3, var_v1, -1);
+    sp3C = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, arg0 & 0xFFFF, var_a3, var_v1, -1);
     Audio_QueueVoiceDetune(sp3C, var_fv0);
 
     if (arg0 == 0x40004) {
-        D_80078F00[arg1 + 3] = sp3C;
+        gPlayerSoundHandles[arg1 + 3] = sp3C;
     }
 
     return sp3C;
@@ -245,7 +245,7 @@ void Audio_StopCategory4SoundCommand(UNUSED s32 arg0, UNUSED s32 arg1, UNUSED s3
 }
 
 s32 Audio_PlayCategory5SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
-    static s32 D_80078F20 = 0x00000000;
+    static s32 gAmbientSoundHandle = 0x00000000;
 
     s32 sp34;
     UNUSED s32 pad;
@@ -277,7 +277,7 @@ s32 Audio_PlayCategory5SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
             break;
 
         case 0x5000B:
-            Audio_QueueFadeSoundCommand(D_80078F20, 1);
+            Audio_QueueFadeSoundCommand(gAmbientSoundHandle, 1);
             var_v0 = 0x80;
             var_a3 = 0x80;
             var_fv0 = 0.0f;
@@ -291,9 +291,9 @@ s32 Audio_PlayCategory5SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
             return 0;
     }
 
-    sp34 = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, arg0 & 0xFFFF, var_a3, var_v0, -1);
+    sp34 = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, arg0 & 0xFFFF, var_a3, var_v0, -1);
     Audio_QueueVoiceDetune(sp34, var_fv0);
-    D_80078F20 = sp34;
+    gAmbientSoundHandle = sp34;
     return sp34;
 }
 
@@ -301,20 +301,20 @@ void Audio_StopCategory5SoundCommand(UNUSED s32 arg0, UNUSED s32 arg1, UNUSED s3
 }
 
 s32 Audio_PlayCategory6SoundCommand(s32 arg0, s32 arg1, UNUSED s32 arg2) {
-    static s32 D_80078F24[4] = {
+    static s32 gMenuVolumeDelta[4] = {
         0xFFFFFF88,
         0xFFFFFFC4,
         0x0000003C,
         0x00000078,
     };
-    static f32 D_80078F34[4] = {
+    static f32 gMenuPitchDelta[4] = {
         -1,
         -0.5,
         0,
         0.5,
     };
-    static s32 D_80078F44 = 0x00000000;
-    static s32 D_80078F48 = 0x00000000;
+    static s32 gMenuLoopHandle = 0x00000000;
+    static s32 gMenuPrevHandle = 0x00000000;
 
     s32 sp34;
     UNUSED s32 pad;
@@ -333,8 +333,8 @@ s32 Audio_PlayCategory6SoundCommand(s32 arg0, s32 arg1, UNUSED s32 arg2) {
 
     switch (arg0) {
         case 0x60003:
-            sp20 += D_80078F34[arg1];
-            var_v1 = D_80078F24[arg1] + 0x7F;
+            sp20 += gMenuPitchDelta[arg1];
+            var_v1 = gMenuVolumeDelta[arg1] + 0x7F;
         case 0x60001:
         case 0x60002:
         case 0x60006:
@@ -345,23 +345,23 @@ s32 Audio_PlayCategory6SoundCommand(s32 arg0, s32 arg1, UNUSED s32 arg2) {
             break;
 
         case 0x60004:
-            var_v1 = D_80078F24[arg1] + 0x7F;
+            var_v1 = gMenuVolumeDelta[arg1] + 0x7F;
             sp28 = 0x70;
             break;
 
         case 0x60005:
-            if (Audio_IsSoundPlaying(D_80078F48) != 0) {
+            if (Audio_IsSoundPlaying(gMenuPrevHandle) != 0) {
                 return 0;
             }
             var_v1 = 0x7F;
-            if (Audio_IsSoundPlaying(D_80078F44) != 0) {
+            if (Audio_IsSoundPlaying(gMenuLoopHandle) != 0) {
                 return 0;
             }
             break;
 
         case 0x60007:
             var_v1 = 0x7F;
-            if (Audio_IsSoundPlaying(D_80078F48) != 0) {
+            if (Audio_IsSoundPlaying(gMenuPrevHandle) != 0) {
                 arg0 = 0x60008;
             }
             break;
@@ -370,13 +370,13 @@ s32 Audio_PlayCategory6SoundCommand(s32 arg0, s32 arg1, UNUSED s32 arg2) {
             return 0;
     }
 
-    sp34 = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, arg0 & 0xFFFF, sp28, var_v1, -1);
+    sp34 = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, arg0 & 0xFFFF, sp28, var_v1, -1);
     if (arg0 == 0x60005) {
-        if (Audio_IsSoundPlaying(D_80078F44) == 0) {
-            D_80078F44 = sp34;
+        if (Audio_IsSoundPlaying(gMenuLoopHandle) == 0) {
+            gMenuLoopHandle = sp34;
         }
     }
-    D_80078F48 = sp34;
+    gMenuPrevHandle = sp34;
     Audio_QueueVoiceDetune(sp34, sp20);
     return sp34;
 }
@@ -384,7 +384,7 @@ s32 Audio_PlayCategory6SoundCommand(s32 arg0, s32 arg1, UNUSED s32 arg2) {
 void Audio_StopCategory6SoundCommand(UNUSED s32 arg0, UNUSED s32 arg1, UNUSED s32 arg2) {
 }
 
-static u8 D_80078F4C = 0;
+static u8 gBattleCryCycle = 0;
 
 s32 Audio_PlayCategory7SoundCommand(s32 arg0, s32 arg1, UNUSED s32 arg2) {
     s32 sp44;
@@ -429,7 +429,7 @@ s32 Audio_PlayCategory7SoundCommand(s32 arg0, s32 arg1, UNUSED s32 arg2) {
             break;
 
         case 0x70001:
-            switch (D_80078F4C) {
+            switch (gBattleCryCycle) {
                 case 0:
                     var_a2 = 1;
                     break;
@@ -444,15 +444,15 @@ s32 Audio_PlayCategory7SoundCommand(s32 arg0, s32 arg1, UNUSED s32 arg2) {
             }
             var_a3 = 0x70;
 
-            D_80078F4C++;
-            if (D_80078F4C >= 3) {
-                D_80078F4C = 0;
+            gBattleCryCycle++;
+            if (gBattleCryCycle >= 3) {
+                gBattleCryCycle = 0;
             }
             var_v0 = 0x80;
             break;
 
         case 0x70002:
-            D_80078F4C = 0;
+            gBattleCryCycle = 0;
             var_a3 = 0x70;
             var_v0 = 0x80;
             break;
@@ -461,7 +461,7 @@ s32 Audio_PlayCategory7SoundCommand(s32 arg0, s32 arg1, UNUSED s32 arg2) {
             return 0;
     }
 
-    sp44 = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, var_a2, var_a3, var_t0, var_v0);
+    sp44 = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, var_a2, var_a3, var_t0, var_v0);
     Audio_QueueVoiceDetune(sp44, var_fv0);
     return sp44;
 }
@@ -469,56 +469,56 @@ s32 Audio_PlayCategory7SoundCommand(s32 arg0, s32 arg1, UNUSED s32 arg2) {
 void Audio_StopCategory7SoundCommand(UNUSED s32 arg0, UNUSED s32 arg1, UNUSED s32 arg2) {
 }
 
-static s32 D_80078F54[4] = {
+static s32 gCryVolumeDelta[4] = {
     0xFFFFFF88,
     0xFFFFFFC4,
     0x0000003C,
     0x00000078,
 };
 
-static f32 D_80078F64[4] = {
+static f32 gCryPitchDelta[4] = {
     0.0f,
     0.1000000015f,
     -0.1000000015f,
     0.200000003f,
 };
 
-static s32 D_80078F74[4] = {
+static s32 gCryHandles[4] = {
     0x00000000,
     0x00000000,
     0x00000000,
     0x00000000,
 };
 
-static s32 D_80078F84 = 0x00000000;
+static s32 gCrySpecialHandle1 = 0x00000000;
 
-static s32 D_80078F88 = 0x00000000;
+static s32 gCrySpecialHandle2 = 0x00000000;
 
-static s32 D_80078F8C[4] = {
+static s32 gCrySpecialHandles[4] = {
     0x00000000,
     0x00000000,
     0x00000000,
     0x00000000,
 };
 
-static s32 D_80078F9C = 0x00003039;
-static u32 D_80078FA0 = 0x00001A85;
+static s32 gRngSeedA = 0x00003039;
+static u32 gRngSeedB = 0x00001A85;
 
 void Audio_SeedRandom(s32 arg0, u32 arg1) {
-    D_80078F9C = arg0;
-    D_80078FA0 = arg1;
+    gRngSeedA = arg0;
+    gRngSeedB = arg1;
 }
 
 u32 Audio_NextRandom(void) {
-    D_80078F9C = (D_80078F9C * 0x41C64E6D) + 0x3039;
+    gRngSeedA = (gRngSeedA * 0x41C64E6D) + 0x3039;
 
-    if (D_80078FA0 & 1) {
-        D_80078FA0 ^= 0x11020;
+    if (gRngSeedB & 1) {
+        gRngSeedB ^= 0x11020;
     }
 
-    D_80078FA0 >>= 1;
+    gRngSeedB >>= 1;
 
-    return D_80078F9C ^ D_80078FA0;
+    return gRngSeedA ^ gRngSeedB;
 }
 
 f32 Audio_RandomFloat(void) {
@@ -526,7 +526,7 @@ f32 Audio_RandomFloat(void) {
 }
 
 s32 Audio_PlayCategory8SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
-    static u32 D_80078FA4 = 0;
+    static u32 gCryModCounter = 0;
 
     s32 sp44;
     UNUSED s32 pad;
@@ -549,9 +549,9 @@ s32 Audio_PlayCategory8SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
 
     switch (arg0) {
         case 0x80001:
-            sp3C += D_80078F54[arg1];
+            sp3C += gCryVolumeDelta[arg1];
             sp38 = 0x40;
-            var_fv1 += D_80078F64[arg1];
+            var_fv1 += gCryPitchDelta[arg1];
             switch (arg2) {
                 case 0:
                     break;
@@ -561,22 +561,22 @@ s32 Audio_PlayCategory8SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
 
                 case 2:
                     var_fv1 += 0.5;
-                    Audio_QueueVoiceDetune(D_80078F74[arg1], var_fv1);
+                    Audio_QueueVoiceDetune(gCryHandles[arg1], var_fv1);
                     return 0;
 
                 case 3:
                     var_fv1 += 1.0;
-                    Audio_QueueVoiceDetune(D_80078F74[arg1], var_fv1);
+                    Audio_QueueVoiceDetune(gCryHandles[arg1], var_fv1);
                     return 0;
 
                 case 4:
                     var_fv1 += 2.0;
-                    Audio_QueueVoiceDetune(D_80078F74[arg1], var_fv1);
-                    Audio_QueueVoiceVolumeScale(D_80078F74[arg1], 0x58);
+                    Audio_QueueVoiceDetune(gCryHandles[arg1], var_fv1);
+                    Audio_QueueVoiceVolumeScale(gCryHandles[arg1], 0x58);
                     return 0;
 
                 case 5:
-                    Audio_QueueFadeSoundCommand(D_80078F74[arg1], 3);
+                    Audio_QueueFadeSoundCommand(gCryHandles[arg1], 3);
 
                 default:
                     return 0;
@@ -584,12 +584,12 @@ s32 Audio_PlayCategory8SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
             break;
 
         case 0x80002:
-            if (Audio_IsSoundPlaying(D_80078F8C[arg1]) != 0) {
+            if (Audio_IsSoundPlaying(gCrySpecialHandles[arg1]) != 0) {
                 return 0;
             }
 
-            sp3C += D_80078F54[arg1];
-            var_fv1 += D_80078F64[arg1];
+            sp3C += gCryVolumeDelta[arg1];
+            var_fv1 += gCryPitchDelta[arg1];
 
             switch (arg2) {
                 case 1:
@@ -619,7 +619,7 @@ s32 Audio_PlayCategory8SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
             break;
 
         case 0x80003:
-            if (Audio_IsSoundPlaying(D_80078F84) != 0) {
+            if (Audio_IsSoundPlaying(gCrySpecialHandle1) != 0) {
                 return 0;
             }
             Audio_FadeCategories(1, 1);
@@ -630,11 +630,11 @@ s32 Audio_PlayCategory8SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
             break;
 
         case 0x80005:
-            var_fv1 += (f32)D_80078FA4 * 2.0;
-            if (D_80078FA4 < 2) {
-                D_80078FA4 += 1;
-            } else if (D_80078FA4 >= 2) {
-                D_80078FA4 = 0;
+            var_fv1 += (f32)gCryModCounter * 2.0;
+            if (gCryModCounter < 2) {
+                gCryModCounter += 1;
+            } else if (gCryModCounter >= 2) {
+                gCryModCounter = 0;
             }
             break;
 
@@ -650,22 +650,22 @@ s32 Audio_PlayCategory8SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
             return 0;
     }
 
-    sp44 = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, arg0 & 0xFFFF, sp38, sp3C, -1);
+    sp44 = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, arg0 & 0xFFFF, sp38, sp3C, -1);
 
     switch (arg0) {
         case 0x80001:
-            D_80078F74[arg1] = sp44;
+            gCryHandles[arg1] = sp44;
             break;
 
         case 0x80002:
-            D_80078F8C[arg1] = sp44;
+            gCrySpecialHandles[arg1] = sp44;
             break;
 
         case 0x80003:
-            D_80078F84 = sp44;
+            gCrySpecialHandle1 = sp44;
 
         case 0x80004:
-            D_80078F88 = sp44;
+            gCrySpecialHandle2 = sp44;
             break;
     }
 
@@ -675,14 +675,14 @@ s32 Audio_PlayCategory8SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
 
 void Audio_StopCategory8SoundCommand(s32 arg0, s32 arg1, UNUSED s32 arg2) {
     if (arg0 == 0x80001) {
-        Audio_QueueFadeSoundCommand(D_80078F74[arg1], 0xA);
+        Audio_QueueFadeSoundCommand(gCryHandles[arg1], 0xA);
     }
 }
 
-s32 D_80078FA8 = 0;
+s32 gBattleMusicHandle = 0;
 
 s32 Audio_PlayCategory9SoundCommand(s32 arg0, UNUSED s32 arg1, UNUSED s32 arg2) {
-    static s32 D_80078FAC = 0;
+    static s32 gBattleMusicSequenceState = 0;
 
     s32 sp3C;
     s32 sp38;
@@ -697,21 +697,21 @@ s32 Audio_PlayCategory9SoundCommand(s32 arg0, UNUSED s32 arg1, UNUSED s32 arg2) 
 
     switch (arg0) {
         case 0x90001:
-            if (D_80078FAC == 0) {
-                D_80078ED4 = 0;
-                D_80078ED8 = 0;
-                D_80078EDC = 0;
+            if (gBattleMusicSequenceState == 0) {
+                gSpecialSequenceState = 0;
+                gSequenceMusicHandle1 = 0;
+                gSequenceMusicHandle2 = 0;
                 sp38 = 2;
-                D_80078FAC++;
+                gBattleMusicSequenceState++;
                 Audio_UpdateSpecialSequence(0x1E, 0);
-            } else if (D_80078FAC == 1) {
-                D_80078FAC++;
+            } else if (gBattleMusicSequenceState == 1) {
+                gBattleMusicSequenceState++;
                 var_fv1 -= 4.0f;
-            } else if (D_80078FAC == 2) {
-                D_80078FAC++;
+            } else if (gBattleMusicSequenceState == 2) {
+                gBattleMusicSequenceState++;
                 var_fv1 -= 2.0f;
-            } else if (D_80078FAC == 3) {
-                D_80078FAC = 0;
+            } else if (gBattleMusicSequenceState == 3) {
+                gBattleMusicSequenceState = 0;
                 var_fv1 -= 9.0f;
             }
             break;
@@ -750,7 +750,7 @@ s32 Audio_PlayCategory9SoundCommand(s32 arg0, UNUSED s32 arg1, UNUSED s32 arg2) 
             return 0;
     }
 
-    sp3C = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, sp38, sp30, 0x7F, -1);
+    sp3C = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, sp38, sp30, 0x7F, -1);
     Audio_QueueVoiceDetune(sp3C, var_fv1);
 
     switch (arg0) {
@@ -759,7 +759,7 @@ s32 Audio_PlayCategory9SoundCommand(s32 arg0, UNUSED s32 arg1, UNUSED s32 arg2) 
         case 0x9000F:
         case 0x90010:
         case 0x90011:
-            D_80078FA8 = sp3C;
+            gBattleMusicHandle = sp3C;
             break;
     }
 
@@ -770,35 +770,35 @@ void Audio_StopCategory9SoundCommand(UNUSED s32 arg0, UNUSED s32 arg1, UNUSED s3
 }
 
 s32 Audio_PlayCategoryASoundCommand(s32 arg0, s32 arg1, s32 arg2) {
-    static s32 D_80078FB0[4] = {
+    static s32 gCatASoundVolumeDelta[4] = {
         0xFFFFFF88,
         0xFFFFFFD8,
         0x00000028,
         0x00000078,
     };
-    static s32 D_80078FC0[3] = {
+    static s32 gCatASoundVolMod[3] = {
         0xFFFFFF8D,
         0x00000000,
         0x00000073,
     };
-    static f32 D_80078FCC[3] = {
+    static f32 gCatASoundVolScale[3] = {
         1.0f,
         0.8000000119f,
         0.6000000238f,
     };
-    static f32 D_80078FD8[4] = {
+    static f32 gCatASoundPitchDelta[4] = {
         -0.6000000238f,
         1.0f,
         -1.0f,
         0.6000000238f,
     };
-    static f32 D_80078FE8[4] = {
+    static f32 gCatASoundPitchOffsetByVariant[4] = {
         0.0f,
         0.0f,
         2.0f,
         2.0f,
     };
-    static f32 D_80078FF8[4] = {
+    static f32 gCatASoundPriorityOffsetByVariant[4] = {
         0.0f,
         4.0f,
         8.0f,
@@ -844,11 +844,11 @@ s32 Audio_PlayCategoryASoundCommand(s32 arg0, s32 arg1, s32 arg2) {
                     break;
             }
 
-            var_fv0 += D_80078FD8[arg1];
-            var_fv0 += D_80078FE8[arg2];
-            var_t0 = D_80078FB0[arg1] + 0x7F;
+            var_fv0 += gCatASoundPitchDelta[arg1];
+            var_fv0 += gCatASoundPitchOffsetByVariant[arg2];
+            var_t0 = gCatASoundVolumeDelta[arg1] + 0x7F;
             var_a3 = 240.0f;
-            var_a3 += D_80078FF8[arg2];
+            var_a3 += gCatASoundPriorityOffsetByVariant[arg2];
 
             if (var_t0 >= 0x100) {
                 var_t0 = 0xFF;
@@ -885,7 +885,7 @@ s32 Audio_PlayCategoryASoundCommand(s32 arg0, s32 arg1, s32 arg2) {
             }
 
             var_t0 = arg2 + 0x7F;
-            var_fv0 += D_80078FD8[arg1];
+            var_fv0 += gCatASoundPitchDelta[arg1];
             break;
 
         case 0xA0008:
@@ -899,11 +899,11 @@ s32 Audio_PlayCategoryASoundCommand(s32 arg0, s32 arg1, s32 arg2) {
                 return 0;
             }
 
-            var_t0 = (s32)(D_80078FCC[(arg2 & 0xC) >> 2] * (f32)D_80078FC0[arg2 & 3]) + 0x7F;
+            var_t0 = (s32)(gCatASoundVolScale[(arg2 & 0xC) >> 2] * (f32)gCatASoundVolMod[arg2 & 3]) + 0x7F;
             break;
 
         case 0xA000A:
-            var_t0 = (s32)((0.8 * (f32)D_80078FC0[arg2 & 3]) * D_80078FCC[(arg2 & 0xC) >> 2]) + (0, 0x7F);
+            var_t0 = (s32)((0.8 * (f32)gCatASoundVolMod[arg2 & 3]) * gCatASoundVolScale[(arg2 & 0xC) >> 2]) + (0, 0x7F);
             break;
 
         case 0xA000B:
@@ -912,7 +912,7 @@ s32 Audio_PlayCategoryASoundCommand(s32 arg0, s32 arg1, s32 arg2) {
             } else if (arg1 != 0) {
                 return 0;
             }
-            var_t0 = (s32)(0.8 * (f32)D_80078FC0[arg2 & 3] * D_80078FCC[(arg2 & 0xC) >> 2]) + (0, 0x7F);
+            var_t0 = (s32)(0.8 * (f32)gCatASoundVolMod[arg2 & 3] * gCatASoundVolScale[(arg2 & 0xC) >> 2]) + (0, 0x7F);
             break;
 
         case 0xA000E:
@@ -931,7 +931,7 @@ s32 Audio_PlayCategoryASoundCommand(s32 arg0, s32 arg1, s32 arg2) {
             } else if (arg1 != 0) {
                 return 0;
             }
-            var_t0 = (s32)(0.8 * (f32)D_80078FC0[arg2 & 3] * D_80078FCC[(arg2 & 0xC) >> 2]) + (0, 0x7F);
+            var_t0 = (s32)(0.8 * (f32)gCatASoundVolMod[arg2 & 3] * gCatASoundVolScale[(arg2 & 0xC) >> 2]) + (0, 0x7F);
             break;
 
         default:
@@ -944,7 +944,7 @@ s32 Audio_PlayCategoryASoundCommand(s32 arg0, s32 arg1, s32 arg2) {
         var_t0 = 0xFF;
     }
 
-    sp34 = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, sp30, var_a3, var_t0, -1);
+    sp34 = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, sp30, var_a3, var_t0, -1);
     Audio_QueueVoiceDetune(sp34, var_fv0);
     return sp34;
 }
@@ -953,15 +953,15 @@ void Audio_StopCategoryASoundCommand(UNUSED s32 arg0, UNUSED s32 arg1, UNUSED s3
 }
 
 s32 Audio_PlayPersistentSoundCommand(s32 arg0, u32 arg1) {
-    static s32 D_80079008 = 0x00000000;
-    static s32 D_8007900C = 0x00000000;
-    static s32 D_80079010 = 0x00000000;
+    static s32 gPersistentSfxHandle1 = 0x00000000;
+    static s32 gPersistentSfxHandle2 = 0x00000000;
+    static s32 gPersistentSfxHandle3 = 0x00000000;
 
     s32 temp_v0;
 
     switch (arg0) {
         case 19:
-            Audio_QueueFadeSoundCommand(D_80079008, 1);
+            Audio_QueueFadeSoundCommand(gPersistentSfxHandle1, 1);
             break;
 
         case 18:
@@ -971,13 +971,13 @@ s32 Audio_PlayPersistentSoundCommand(s32 arg0, u32 arg1) {
         case 21:
             switch (arg1) {
                 case 0:
-                    if (Audio_IsSoundPlaying(D_80079010) != 0) {
+                    if (Audio_IsSoundPlaying(gPersistentSfxHandle3) != 0) {
                         return 0;
                     }
                     break;
 
                 case 1:
-                    Audio_QueueFadeSoundCommand(D_8007900C, 0x19);
+                    Audio_QueueFadeSoundCommand(gPersistentSfxHandle2, 0x19);
                     break;
             }
             break;
@@ -987,29 +987,29 @@ s32 Audio_PlayPersistentSoundCommand(s32 arg0, u32 arg1) {
     }
 
     if (arg0 == 0x15) {
-        Audio_QueueFadeSoundCommand(D_80079010, 0xA);
+        Audio_QueueFadeSoundCommand(gPersistentSfxHandle3, 0xA);
     }
 
-    temp_v0 = Audio_PlaySoundEffect(D_800FC68C, D_800FC688, arg0, 0x80, 0x80, -1);
+    temp_v0 = Audio_PlaySoundEffect(gSfxBankStandard, gSfxTable, arg0, 0x80, 0x80, -1);
     switch (arg0) {
         case 18:
-            D_80079008 = temp_v0;
+            gPersistentSfxHandle1 = temp_v0;
             break;
 
         case 20:
-            D_8007900C = temp_v0;
+            gPersistentSfxHandle2 = temp_v0;
             break;
 
         case 21:
-            D_80079010 = temp_v0;
+            gPersistentSfxHandle3 = temp_v0;
             break;
     }
 
     return temp_v0;
 }
 
-u32 D_80079014 = 0xFFFFFFFF;
-static s32 D_80079018 = 0x00000000;
+u32 gCurrentSfxBankId = 0xFFFFFFFF;
+static s32 gLastPlayedSfxHandle = 0x00000000;
 
 s32 Audio_DispatchSoundBankCommand(s32 arg0, s32 arg1, s32 arg2) {
     UNUSED s32 pad[5];
@@ -1035,20 +1035,20 @@ s32 Audio_DispatchSoundBankCommand(s32 arg0, s32 arg1, s32 arg2) {
             return 0;
     }
 
-    if (temp_v1 != D_80079014) {
-        sp24 = D_800FC6F8->seqArray[(temp_v1 >> 0x10) - 2].offset;
+    if (temp_v1 != gCurrentSfxBankId) {
+        sp24 = gAudioSeqHeaderNested->seqArray[(temp_v1 >> 0x10) - 2].offset;
 
-        Rom_DmaRead(sp24, (u32)D_800FC798, 0xC);
-        Audio_RelocateOffsets((u32)D_800FC798, sp24, 3);
-        Rom_DmaRead(D_800FC798[0], D_800FC6DC, D_800FC798[1] - D_800FC798[0]);
-        Audio_CopyDataWithCacheSync(D_800FC6DC, D_800FC6A8, 0xBB8);
-        Audio_RelocateSoundBankTable(D_800FC6A8);
-        Rom_DmaRead(D_800FC798[1], D_800FC6DC, D_800FC798[2] - D_800FC798[1]);
-        Audio_CopyDataWithCacheSync(D_800FC6DC, D_800FC6A4, 0x1388);
-        Audio_RelocateSoundBankWrapper(D_800FC6A4, D_800FC798[2]);
+        Rom_DmaRead(sp24, (u32)gAudioHeaderTemp, 0xC);
+        Audio_RelocateOffsets((u32)gAudioHeaderTemp, sp24, 3);
+        Rom_DmaRead(gAudioHeaderTemp[0], gMoveSoundTempBuffer, gAudioHeaderTemp[1] - gAudioHeaderTemp[0]);
+        Audio_CopyDataWithCacheSync(gMoveSoundTempBuffer, gAudioSfxInstBank, 0xBB8);
+        Audio_RelocateSoundBankTable(gAudioSfxInstBank);
+        Rom_DmaRead(gAudioHeaderTemp[1], gMoveSoundTempBuffer, gAudioHeaderTemp[2] - gAudioHeaderTemp[1]);
+        Audio_CopyDataWithCacheSync(gMoveSoundTempBuffer, gAudioSfxBank, 0x1388);
+        Audio_RelocateSoundBankWrapper(gAudioSfxBank, gAudioHeaderTemp[2]);
     }
 
-    D_80079014 = temp_v1;
+    gCurrentSfxBankId = temp_v1;
 
     switch (temp_v1) {
         case 0x20000:
@@ -1091,7 +1091,7 @@ s32 Audio_DispatchSoundBankCommand(s32 arg0, s32 arg1, s32 arg2) {
             return 0;
     }
 
-    D_80079018 = var_v0;
+    gLastPlayedSfxHandle = var_v0;
 }
 
 void Audio_DispatchSoundBankStopCommand(s32 arg0, s32 arg1, s32 arg2) {
@@ -1144,55 +1144,55 @@ s32 Audio_PlayDirectSoundCommand(s32 arg0, UNUSED s32 arg1, UNUSED s32 arg2) {
     sp28 = arg0 & 0xFFFF0000;
     sp2C = arg0 & 0xFFFF;
 
-    if (sp28 != D_80079014) {
-        sp34 = D_800FC6F4->seqArray[2].offset;
+    if (sp28 != gCurrentSfxBankId) {
+        sp34 = gAudioSfxBankSeqHeader->seqArray[2].offset;
 
-        Rom_DmaRead(sp34, &D_800FC798[0], 0xC);
-        Audio_RelocateOffsets(D_800FC798, sp34, 3);
-        sp34 = D_800FC798[1] - D_800FC798[0];
-        Rom_DmaRead(D_800FC798[0], D_800FC6DC, sp34);
-        Audio_CopyDataWithCacheSync(D_800FC6DC, D_800FC6A8, 0xBB8);
-        Audio_RelocateSoundBankTable(D_800FC6A8);
-        sp34 = D_800FC798[2] - D_800FC798[1];
-        Rom_DmaRead(D_800FC798[1], D_800FC6DC, sp34);
-        Audio_CopyDataWithCacheSync(D_800FC6DC, D_800FC6A4, 0x1388);
-        Audio_RelocateSoundBankWrapper(D_800FC6A4, D_800FC798[2]);
+        Rom_DmaRead(sp34, &gAudioHeaderTemp[0], 0xC);
+        Audio_RelocateOffsets(gAudioHeaderTemp, sp34, 3);
+        sp34 = gAudioHeaderTemp[1] - gAudioHeaderTemp[0];
+        Rom_DmaRead(gAudioHeaderTemp[0], gMoveSoundTempBuffer, sp34);
+        Audio_CopyDataWithCacheSync(gMoveSoundTempBuffer, gAudioSfxInstBank, 0xBB8);
+        Audio_RelocateSoundBankTable(gAudioSfxInstBank);
+        sp34 = gAudioHeaderTemp[2] - gAudioHeaderTemp[1];
+        Rom_DmaRead(gAudioHeaderTemp[1], gMoveSoundTempBuffer, sp34);
+        Audio_CopyDataWithCacheSync(gMoveSoundTempBuffer, gAudioSfxBank, 0x1388);
+        Audio_RelocateSoundBankWrapper(gAudioSfxBank, gAudioHeaderTemp[2]);
     }
 
-    D_80079014 = sp28;
+    gCurrentSfxBankId = sp28;
 
     switch (arg0) {
         case 0x1000001:
-            var_v0 = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, sp2C, 0x80, 0x80, -1);
+            var_v0 = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, sp2C, 0x80, 0x80, -1);
             break;
 
         case 0x1000002:
-            var_v0 = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, sp2C, 0xA0, 0x80, -1);
+            var_v0 = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, sp2C, 0xA0, 0x80, -1);
             break;
 
         case 0x1000003:
-            var_v0 = Audio_PlaySoundEffect(D_800FC684, D_800FC6A8, sp2C, 0xA0, 0x80, -1);
+            var_v0 = Audio_PlaySoundEffect(gSfxWaveTable, gAudioSfxInstBank, sp2C, 0xA0, 0x80, -1);
             break;
 
         default:
             return 0;
     }
 
-    D_80079018 = var_v0;
+    gLastPlayedSfxHandle = var_v0;
 }
 
 s32 Audio_PlayCategory11SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
-    static s32 D_8007901C = 0x00000000;
-    static s32 D_80079020 = 0x00000000;
-    static s32 D_80079024 = 0x00000000;
-    static s32 D_80079028 = 0;
-    static u8 D_8007902C[] = {
+    static s32 gCat11SfxHandle1 = 0x00000000;
+    static s32 gCat11SfxHandle2 = 0x00000000;
+    static s32 gCat11SfxHandle3 = 0x00000000;
+    static s32 gCat11SfxHandle4 = 0;
+    static u8 gSfxPitchTableSingleFaint[] = {
         0x60, 0xA0, 0xE0, 0x20, 0x60, 0xA0,
     };
-    static u8 D_80079034[] = {
+    static u8 gSfxPitchTableDoubleFaint[] = {
         0x60, 0xA0, 0xE0, 0x60, 0xA0, 0xE0, 0x20, 0x60, 0xA0, 0x20, 0x60, 0xA0,
     };
-    static u8 D_80079040[] = {
+    static u8 gSfxPitchTableBadge[] = {
         0x20, 0x60, 0xA0, 0xE0, 0x20, 0x60, 0xA0, 0xE0, 0x20, 0x60, 0xA0, 0xE0,
     };
 
@@ -1209,20 +1209,20 @@ s32 Audio_PlayCategory11SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
     sp38 = 0x80;
     sp34 = 0x80;
 
-    if (sp20 != D_80079014) {
-        sp2C = D_800FC6F4->seqArray[3].offset;
+    if (sp20 != gCurrentSfxBankId) {
+        sp2C = gAudioSfxBankSeqHeader->seqArray[3].offset;
 
-        Rom_DmaRead(sp2C, (u32)D_800FC798, 0xC);
-        Audio_RelocateOffsets((u32)D_800FC798, sp2C, 3);
-        Rom_DmaRead(D_800FC798[0], D_800FC6DC, D_800FC798[1] - D_800FC798[0]);
-        Audio_CopyDataWithCacheSync(D_800FC6DC, D_800FC6A8, 0xBB8);
-        Audio_RelocateSoundBankTable(D_800FC6A8);
-        Rom_DmaRead(D_800FC798[1], D_800FC6DC, D_800FC798[2] - D_800FC798[1]);
-        Audio_CopyDataWithCacheSync(D_800FC6DC, D_800FC6A4, 0x1388);
-        Audio_RelocateSoundBankWrapper(D_800FC6A4, D_800FC798[2]);
+        Rom_DmaRead(sp2C, (u32)gAudioHeaderTemp, 0xC);
+        Audio_RelocateOffsets((u32)gAudioHeaderTemp, sp2C, 3);
+        Rom_DmaRead(gAudioHeaderTemp[0], gMoveSoundTempBuffer, gAudioHeaderTemp[1] - gAudioHeaderTemp[0]);
+        Audio_CopyDataWithCacheSync(gMoveSoundTempBuffer, gAudioSfxInstBank, 0xBB8);
+        Audio_RelocateSoundBankTable(gAudioSfxInstBank);
+        Rom_DmaRead(gAudioHeaderTemp[1], gMoveSoundTempBuffer, gAudioHeaderTemp[2] - gAudioHeaderTemp[1]);
+        Audio_CopyDataWithCacheSync(gMoveSoundTempBuffer, gAudioSfxBank, 0x1388);
+        Audio_RelocateSoundBankWrapper(gAudioSfxBank, gAudioHeaderTemp[2]);
     }
 
-    D_80079014 = sp20;
+    gCurrentSfxBankId = sp20;
 
     sp40 = arg0 & 0xFFFF;
     switch (arg0) {
@@ -1258,12 +1258,12 @@ s32 Audio_PlayCategory11SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
             break;
 
         case 0x1100004:
-            Audio_QueueFadeSoundCommand(D_8007901C, 5);
+            Audio_QueueFadeSoundCommand(gCat11SfxHandle1, 5);
             break;
 
         case 0x1100008:
-            Audio_QueueFadeSoundCommand(D_80079020, 5);
-            Audio_QueueFadeSoundCommand(D_80079024, 5);
+            Audio_QueueFadeSoundCommand(gCat11SfxHandle2, 5);
+            Audio_QueueFadeSoundCommand(gCat11SfxHandle3, 5);
             break;
 
         case 0x110000B:
@@ -1271,14 +1271,14 @@ s32 Audio_PlayCategory11SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
                 if ((arg1 <= 0) || (arg1 >= 7)) {
                     return 0;
                 }
-                sp38 = D_8007902C[arg1 - 1];
+                sp38 = gSfxPitchTableSingleFaint[arg1 - 1];
             } else {
                 if ((arg1 <= 0) || (arg1 >= 0xD)) {
                     return 0;
                 }
-                sp38 = D_80079034[arg1 - 1];
+                sp38 = gSfxPitchTableDoubleFaint[arg1 - 1];
             }
-            Audio_QueueFadeSoundCommand(D_80079028, 0xA);
+            Audio_QueueFadeSoundCommand(gCat11SfxHandle4, 0xA);
             break;
 
         case 0x1100014:
@@ -1286,7 +1286,7 @@ s32 Audio_PlayCategory11SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
             if (arg2 == 1) {
                 sp38 = 0x7F;
             } else {
-                sp38 = D_80079040[(arg1 - 1) % 4];
+                sp38 = gSfxPitchTableBadge[(arg1 - 1) % 4];
             }
             break;
 
@@ -1294,42 +1294,42 @@ s32 Audio_PlayCategory11SoundCommand(s32 arg0, s32 arg1, s32 arg2) {
             if ((arg1 < 0) || (arg1 >= 9)) {
                 return 0;
             }
-            sp38 = D_80079040[3 + arg1];
+            sp38 = gSfxPitchTableBadge[3 + arg1];
             break;
 
         default:
             return 0;
     }
 
-    temp_v0_2 = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, sp40, sp34, sp38, -1);
+    temp_v0_2 = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, sp40, sp34, sp38, -1);
     switch (arg0) {
         case 0x1100003:
-            D_8007901C = temp_v0_2;
+            gCat11SfxHandle1 = temp_v0_2;
             break;
 
         case 0x1100006:
-            D_80079020 = temp_v0_2;
+            gCat11SfxHandle2 = temp_v0_2;
             break;
 
         case 0x1100007:
-            D_80079024 = temp_v0_2;
+            gCat11SfxHandle3 = temp_v0_2;
             break;
 
         case 0x110000B:
-            D_80079028 = temp_v0_2;
+            gCat11SfxHandle4 = temp_v0_2;
             break;
     }
-    D_80079018 = temp_v0_2;
+    gLastPlayedSfxHandle = temp_v0_2;
 }
 
 s32 Audio_PlayCategory12SoundCommand(s32 arg0, UNUSED s32 arg1, UNUSED s32 arg2) {
-    static s32 D_8007904C = 0x00000000;
-    static s32 D_80079050 = 0x00000000;
-    static s32 D_80079054 = 0x00000000;
-    static s32 D_80079058 = 0x00000000;
-    static s32 D_8007905C = 0x00000000;
-    static u8 D_80079060 = 0;
-    static u8 D_80079064 = 0;
+    static s32 gCat12SfxHandle1 = 0x00000000;
+    static s32 gCat12SfxHandle2 = 0x00000000;
+    static s32 gCat12SfxHandle3 = 0x00000000;
+    static s32 gCat12SfxHandle4 = 0x00000000;
+    static s32 gCat12SfxHandle5 = 0x00000000;
+    static u8 gCat12SfxFirstPlayFlag = 0;
+    static u8 gCat12MusicStoppedFlag = 0;
 
     UNUSED s32 pad[2];
     s32 sp4C;
@@ -1339,104 +1339,104 @@ s32 Audio_PlayCategory12SoundCommand(s32 arg0, UNUSED s32 arg1, UNUSED s32 arg2)
     u32 sp24;
 
     sp24 = arg0 & 0xFFFF0000;
-    if (sp24 != D_80079014) {
-        sp3C = D_800FC6F4->seqArray[4].offset;
+    if (sp24 != gCurrentSfxBankId) {
+        sp3C = gAudioSfxBankSeqHeader->seqArray[4].offset;
 
-        Rom_DmaRead(sp3C, (u32)D_800FC798, 0xC);
-        Audio_RelocateOffsets((u32)D_800FC798, sp3C, 3);
-        Rom_DmaRead(D_800FC798[0], D_800FC6DC, D_800FC798[1] - D_800FC798[0]);
-        Audio_CopyDataWithCacheSync(D_800FC6DC, D_800FC6A8, 0xBB8);
-        Audio_RelocateSoundBankTable(D_800FC6A8);
-        Rom_DmaRead(D_800FC798[1], D_800FC6DC, D_800FC798[2] - D_800FC798[1]);
-        Audio_CopyDataWithCacheSync(D_800FC6DC, D_800FC6A4, 0x1388);
-        Audio_RelocateSoundBankWrapper(D_800FC6A4, D_800FC798[2]);
+        Rom_DmaRead(sp3C, (u32)gAudioHeaderTemp, 0xC);
+        Audio_RelocateOffsets((u32)gAudioHeaderTemp, sp3C, 3);
+        Rom_DmaRead(gAudioHeaderTemp[0], gMoveSoundTempBuffer, gAudioHeaderTemp[1] - gAudioHeaderTemp[0]);
+        Audio_CopyDataWithCacheSync(gMoveSoundTempBuffer, gAudioSfxInstBank, 0xBB8);
+        Audio_RelocateSoundBankTable(gAudioSfxInstBank);
+        Rom_DmaRead(gAudioHeaderTemp[1], gMoveSoundTempBuffer, gAudioHeaderTemp[2] - gAudioHeaderTemp[1]);
+        Audio_CopyDataWithCacheSync(gMoveSoundTempBuffer, gAudioSfxBank, 0x1388);
+        Audio_RelocateSoundBankWrapper(gAudioSfxBank, gAudioHeaderTemp[2]);
     }
 
-    D_80079014 = sp24;
+    gCurrentSfxBankId = sp24;
 
     switch (arg0) {
         case SFX_TRADE_TEXT:
-            Audio_QueueFadeSoundCommand(D_8007904C, 1);
+            Audio_QueueFadeSoundCommand(gCat12SfxHandle1, 1);
             var_fv1 = __ull_to_f(__ull_rem(osGetTime(), 8)) - 4.0f;
-            sp4C = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, 7, 0x80, 0x80, -1);
+            sp4C = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, 7, 0x80, 0x80, -1);
             Audio_QueueVoiceDetune(sp4C, var_fv1);
-            D_8007904C = sp4C;
+            gCat12SfxHandle1 = sp4C;
             break;
 
         case SFX_TRADE_BEGIN:
-            sp4C = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, 1, 0x80, 0x80, -1);
-            D_80079050 = sp4C;
-            D_80079064 = 0;
+            sp4C = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, 1, 0x80, 0x80, -1);
+            gCat12SfxHandle2 = sp4C;
+            gCat12MusicStoppedFlag = 0;
             break;
 
         case SFX_TRADE_END:
-            Audio_QueueFadeSoundCommand(D_80079050, 0x3C);
-            Audio_QueueFadeSoundCommand(D_80079054, 0x3C);
-            D_80079060 = 0;
-            sp4C = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, 3, 0x80, 0x80, -1);
+            Audio_QueueFadeSoundCommand(gCat12SfxHandle2, 0x3C);
+            Audio_QueueFadeSoundCommand(gCat12SfxHandle3, 0x3C);
+            gCat12SfxFirstPlayFlag = 0;
+            sp4C = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, 3, 0x80, 0x80, -1);
             break;
 
         case SFX_TRADE_LIGHT_ON:
-            if (D_80079060 == 0) {
-                sp4C = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, 2, 0x80, 0x80, -1);
-                D_80079054 = sp4C;
+            if (gCat12SfxFirstPlayFlag == 0) {
+                sp4C = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, 2, 0x80, 0x80, -1);
+                gCat12SfxHandle3 = sp4C;
                 var_fv1 = 2.0f;
-                D_80079060 = 1;
+                gCat12SfxFirstPlayFlag = 1;
             } else {
                 var_fv1 = 4.0f;
             }
-            Audio_QueueVoiceDetune(D_80079054, var_fv1);
+            Audio_QueueVoiceDetune(gCat12SfxHandle3, var_fv1);
             break;
 
         case SFX_TRADE_BALL_APPEAR:
-            sp4C = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, 4, 0x80, 0x80, -1);
-            D_80079058 = sp4C;
+            sp4C = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, 4, 0x80, 0x80, -1);
+            gCat12SfxHandle4 = sp4C;
             break;
 
         case SFX_TRADE_BALL_READY:
-            Audio_QueueFadeSoundCommand(D_80079054, 0x5A);
-            Audio_QueueFadeSoundCommand(D_80079058, 1);
-            sp4C = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, 5, 0x80, 0x80, -1);
+            Audio_QueueFadeSoundCommand(gCat12SfxHandle3, 0x5A);
+            Audio_QueueFadeSoundCommand(gCat12SfxHandle4, 1);
+            sp4C = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, 5, 0x80, 0x80, -1);
             break;
 
         case SFX_EVOLUTION_START:
-            D_8007905C = sp4C = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, 6, 0x80, 0x80, -1);
+            gCat12SfxHandle5 = sp4C = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, 6, 0x80, 0x80, -1);
             Audio_FadeOutAll(0x78);
-            D_80079064 = 1;
+            gCat12MusicStoppedFlag = 1;
             break;
 
         case 0x1200008:
-            Audio_QueueFadeSoundCommand(D_8007905C, 6);
+            Audio_QueueFadeSoundCommand(gCat12SfxHandle5, 6);
             Audio_StartMusicTrack(0x13);
-            D_80079064 = 1;
+            gCat12MusicStoppedFlag = 1;
             break;
 
         case 0x1200009:
-            if (D_80079064 != 0) {
+            if (gCat12MusicStoppedFlag != 0) {
                 Audio_StartMusicTrack(0x10);
             }
             Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
-            D_80079064 = 0;
+            gCat12MusicStoppedFlag = 0;
             break;
 
         case 0x120000C:
-            sp4C = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, 8, 0x80, 0x80, -1);
+            sp4C = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, 8, 0x80, 0x80, -1);
             break;
 
         case 0x120000D:
-            sp4C = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, 9, 0x80, 0x80, -1);
+            sp4C = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, 9, 0x80, 0x80, -1);
             break;
 
         case 0x120000E:
-            Audio_QueueFadeSoundCommand(D_8007904C, 1);
-            sp4C = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, 7, 0x80, 0x80, -1);
+            Audio_QueueFadeSoundCommand(gCat12SfxHandle1, 1);
+            sp4C = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, 7, 0x80, 0x80, -1);
             Audio_QueueVoiceDetune(sp4C, -5.0f);
-            D_8007904C = sp4C;
+            gCat12SfxHandle1 = sp4C;
             break;
 
         default:
             return 0;
     }
 
-    D_80079018 = sp4C;
+    gLastPlayedSfxHandle = sp4C;
 }

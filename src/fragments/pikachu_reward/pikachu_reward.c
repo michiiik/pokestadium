@@ -22,31 +22,31 @@
 #include "src/stage_loader.h"
 #include "src/util.h"
 
-static GraphNode* D_83202010;
-static GraphNode* D_83202014;
-static unk_D_86002F30* D_83202018;
-static char** D_8320201C;
-static char** D_83202020;
-static DisplayObject D_83202028[4];
-static unk_D_832025C8 D_832025C8;
-static unk_D_832027C8 D_832027C8;
+static GraphNode* gCameraGraphNode;
+static GraphNode* gPikachuGeoNode;
+static ModelData* gPikachuModelData;
+static char** gMoveNameBank;
+static char** gPikachuRewardMsgBank;
+static DisplayObject gPikachuNodes[4];
+static TextFadeState gTextFadeState;
+static PikachuSession gPikachuSession;
 
-static s32 D_83201F50 = 0;
-static s32 D_83201F54 = -1;
-static char* D_83201F58 = NULL;
-static u32 D_83201F5C[] = {
+static s32 gPikachuActive = 0;
+static s32 gPikachuVisibilityState = -1;
+static char* gCurrentUIMessage = NULL;
+static u32 gPikachuGeoLayout[] = {
     0x0C000000,  0x05000000, 0x0B00001E,    0x00000000, 0x014000F0, 0x00000320, 0x00000000, 0x000005DC, 0x05000000,
     0x0D000000,  0x05000000, 0x0E000002,    0x05000000, 0x22010000, 0x8C200060, 0x06000000, 0x14000000, 0x002B0012,
     0xFFFFFF32,  0x16FFFFFF, 0x0F000003,    0x05000000, 0x1F000000, 0x00000000, 0x00000000, 0x003CFF06, 0x00640064,
     0x00640000,  0x08000000, PikachuReward_PositionSurfingPikachuModel, 0x00000000, 0x05000000, 0x00000000, D_8C200920, 0x06000000, 0x0A000000,
-    &D_800AC840, 0x06000000, 0x06000000,    0x06000000, 0x06000000, 0x01000000,
+    &gGraphRoot0, 0x06000000, 0x06000000,    0x06000000, 0x06000000, 0x01000000,
 };
 
 s32 PikachuReward_PositionSurfingPikachuModel(s32 arg0, DisplayObject* arg1) {
     if (arg0 == 2) {
         arg1->rotation.z -= 0x80;
-        arg1->position.x = D_83202028->position.x;
-        arg1->position.y = D_83202028->position.y + 70.0f;
+        arg1->position.x = gPikachuNodes->position.x;
+        arg1->position.y = gPikachuNodes->position.y + 70.0f;
     }
     return 0;
 }
@@ -72,7 +72,7 @@ s32 PikachuReward_CheckEligibleForSurf(BattleMon* arg0, s16 arg1, s16 arg2, s16 
     s32 sp1C = 0;
 
     if ((arg0->unk_00.unk_00 > 0) && (arg0->unk_00.unk_00 < 0x98)) {
-        if ((PikachuReward_CheckNoSpecialMove(arg0) != 0) && (D_8006FF00[arg0->unk_00.unk_00 - 1].unk_0C & arg3)) {
+        if ((PikachuReward_CheckNoSpecialMove(arg0) != 0) && (gSpeciesDisplayTable[arg0->unk_00.unk_00 - 1].unk_0C & arg3)) {
             if ((arg0->unk_24 >= arg1) && (arg2 >= arg0->unk_24)) {
                 sp1C = 1;
             }
@@ -86,7 +86,7 @@ s32 PikachuReward_SearchDeckForPikachu(s16 arg0, s16 arg1, s16 arg2) {
     s32 sp34;
     s16 var_s3;
     DeckHandle* var_v0;
-    BattleMon* ptr = &D_832027C8.unk_04;
+    BattleMon* ptr = &gPikachuSession.unk_04;
 
     sp34 = 0;
     var_s3 = 0;
@@ -126,12 +126,12 @@ s32 PikachuReward_FindPikachuOnCart(void) {
 
     for (i = 0; i < var_v1->numberOfPokemonBrought; i++) {
         if (var_v1->pokemonPicked[i].unk_00.unk_00 == 0x19) {
-            D_832027C8.unk_00 = (var_v1->pokemonPicked[i].unk_52 & 0x70) >> 4;
-            D_832027C8.unk_01 = var_v1->pokemonPicked[i].unk_52 & 0xF;
-            if ((D_832027C8.unk_00 < 4) && (D_832027C8.unk_01 < 0xD)) {
-                if (GbSave_LoadPort(D_832027C8.unk_00) != 0) {
-                    D_832027C8.unk_02 = PikachuReward_SearchDeckForPikachu(D_832027C8.unk_00, D_832027C8.unk_01, var_v1->pokemonPicked[i].unk_53);
-                    if (D_832027C8.unk_02 >= 0) {
+            gPikachuSession.unk_00 = (var_v1->pokemonPicked[i].unk_52 & 0x70) >> 4;
+            gPikachuSession.unk_01 = var_v1->pokemonPicked[i].unk_52 & 0xF;
+            if ((gPikachuSession.unk_00 < 4) && (gPikachuSession.unk_01 < 0xD)) {
+                if (GbSave_LoadPort(gPikachuSession.unk_00) != 0) {
+                    gPikachuSession.unk_02 = PikachuReward_SearchDeckForPikachu(gPikachuSession.unk_00, gPikachuSession.unk_01, var_v1->pokemonPicked[i].unk_53);
+                    if (gPikachuSession.unk_02 >= 0) {
                         return 1;
                     }
                 }
@@ -147,7 +147,7 @@ s32 PikachuReward_CountKnownMoves(void) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
-        if (D_832027C8.unk_04.unk_09[i] == 0) {
+        if (gPikachuSession.unk_04.unk_09[i] == 0) {
             break;
         }
     }
@@ -155,62 +155,62 @@ s32 PikachuReward_CountKnownMoves(void) {
 }
 
 void PikachuReward_UpdateLeadPikachuAnimation(void) {
-    static s32 D_83202004 = 0;
+    static s32 gPikachuAnimTimer = 0;
 
-    if ((D_83202028[0].transformAnim.animationId != 0xA) && (D_83202028[0].transformAnim.animationId != 5)) {
-        D_83202004++;
-        if (D_83202004 == 0x3C) {
-            D_83202004 = 0;
-            ModelAnim_SetEventTrack(&D_83202028[0], -1);
-            ModelAnim_SetEventTrack(&D_83202028[0], 0xA);
+    if ((gPikachuNodes[0].transformAnim.animationId != 0xA) && (gPikachuNodes[0].transformAnim.animationId != 5)) {
+        gPikachuAnimTimer++;
+        if (gPikachuAnimTimer == 0x3C) {
+            gPikachuAnimTimer = 0;
+            ModelAnim_SetEventTrack(&gPikachuNodes[0], -1);
+            ModelAnim_SetEventTrack(&gPikachuNodes[0], 0xA);
         }
     }
 
-    if ((D_83202028[0].transformAnim.animationId != 0) && (ModelAnim_IsFinished(&D_83202028[0]) != 0)) {
-        if (D_83201F50 != 0) {
-            D_83202028[0].node.flags &= ~1;
+    if ((gPikachuNodes[0].transformAnim.animationId != 0) && (ModelAnim_IsFinished(&gPikachuNodes[0]) != 0)) {
+        if (gPikachuActive != 0) {
+            gPikachuNodes[0].node.flags &= ~1;
         } else {
-            ModelAnim_SetAnimation(&D_83202028[0], 0);
+            ModelAnim_SetAnimation(&gPikachuNodes[0], 0);
         }
     }
 }
 
 void PikachuReward_UpdateFollowerVisibility(void) {
-    if (D_83201F54 == -1) {
-        D_83202028[1].node.flags &= ~1;
-        D_83202028[2].node.flags &= ~1;
-        D_83202028[3].node.flags &= ~1;
+    if (gPikachuVisibilityState == -1) {
+        gPikachuNodes[1].node.flags &= ~1;
+        gPikachuNodes[2].node.flags &= ~1;
+        gPikachuNodes[3].node.flags &= ~1;
         return;
     }
 
-    switch (D_83201F54) {
+    switch (gPikachuVisibilityState) {
         case 0x0:
-            D_83202028[1].node.flags |= 1;
+            gPikachuNodes[1].node.flags |= 1;
             break;
 
         case 0x8:
-            D_83202028[2].node.flags |= 1;
+            gPikachuNodes[2].node.flags |= 1;
             break;
 
         case 0x10:
-            D_83202028[3].node.flags |= 1;
+            gPikachuNodes[3].node.flags |= 1;
             break;
 
         case 0x46:
-            D_83202028[1].node.flags &= ~1;
+            gPikachuNodes[1].node.flags &= ~1;
             break;
 
         case 0x4E:
-            D_83202028[2].node.flags &= ~1;
+            gPikachuNodes[2].node.flags &= ~1;
             break;
 
         case 0x56:
-            D_83202028[3].node.flags &= ~1;
+            gPikachuNodes[3].node.flags &= ~1;
             break;
     }
 
-    if (D_83201F54 < 0x57) {
-        D_83201F54++;
+    if (gPikachuVisibilityState < 0x57) {
+        gPikachuVisibilityState++;
     }
 }
 
@@ -220,26 +220,26 @@ s32 PikachuReward_RenderFrame(u8 arg0) {
     PikachuReward_UpdateFollowerVisibility();
     BgStage_DrawFrame();
     GfxImage_FillCurrent(&gDisplayListHead, 1);
-    Geo_RenderRootNode(D_83202010);
+    Geo_RenderRootNode(gCameraGraphNode);
     return 0;
 }
 
 void PikachuReward_DrawBlinkingStarIcon(s16 arg0, s16 arg1) {
     s32 var_a3;
 
-    if (D_832025C8.unk_00 < 0x10) {
-        var_a3 = D_832025C8.unk_00 * 0x10;
-    } else if (D_832025C8.unk_00 < 0x23) {
+    if (gTextFadeState.unk_00 < 0x10) {
+        var_a3 = gTextFadeState.unk_00 * 0x10;
+    } else if (gTextFadeState.unk_00 < 0x23) {
         var_a3 = 0xFF;
-    } else if (D_832025C8.unk_00 < 0x32) {
-        var_a3 = (-D_832025C8.unk_00 * 0x10) + 0x320;
+    } else if (gTextFadeState.unk_00 < 0x32) {
+        var_a3 = (-gTextFadeState.unk_00 * 0x10) + 0x320;
     } else {
         var_a3 = 0;
     }
 
-    D_832025C8.unk_00++;
-    if (D_832025C8.unk_00 >= 0x3D) {
-        D_832025C8.unk_00 = 0;
+    gTextFadeState.unk_00++;
+    if (gTextFadeState.unk_00 >= 0x3D) {
+        gTextFadeState.unk_00 = 0;
     }
 
     Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, var_a3);
@@ -254,7 +254,7 @@ void PikachuReward_DrawTextBoxPanel(s16 arg0, s16 arg1, s16 arg2, s16 arg3) {
 }
 
 void PikachuReward_DrawSelectionCursor(s16 arg0, s16 arg1) {
-    gSPDisplayList(gDisplayListHead++, D_8006F4E0);
+    gSPDisplayList(gDisplayListHead++, gDL_CopyDecal);
 
     Gfx_DrawTextureRgba16(arg0, arg1, 0x18, 0xE, Util_ConvertAddrToVirtAddr(D_8C200090), 0x18, 0x200000);
 
@@ -274,11 +274,11 @@ void PikachuReward_ShowTextForFrames(char* arg0, s32 arg1) {
         BgStage_AdvanceFrame();
     }
 
-    D_83201F58 = arg0;
+    gCurrentUIMessage = arg0;
 }
 
 void PikachuReward_ShowTextWaitForA(char* arg0, s32 arg1) {
-    D_832025C8.unk_00 = 0x10;
+    gTextFadeState.unk_00 = 0x10;
 
     do {
         Controller_PollInputs();
@@ -297,7 +297,7 @@ void PikachuReward_ShowTextWaitForA(char* arg0, s32 arg1) {
     } while (!BTN_IS_PRESSED(gPlayer1Controller, BTN_A));
 
     Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
-    D_83201F58 = arg0;
+    gCurrentUIMessage = arg0;
 }
 
 void PikachuReward_ScrollTextIn(s8* arg0) {
@@ -317,13 +317,13 @@ void PikachuReward_ScrollTextIn(s8* arg0) {
         Font_BeginTranslucentTextRendering();
         Font_SetActive(2, 0);
         Font_SetLineHeight(0x10);
-        Font_Printf(0x2E, y1 - i * 4, D_83201F58);
+        Font_Printf(0x2E, y1 - i * 4, gCurrentUIMessage);
         Font_Printf(0x2E, y2 - i * 4, arg0);
         Font_EndTexturedTextRendering();
         BgStage_AdvanceFrame();
     }
 
-    D_83201F58 = arg0;
+    gCurrentUIMessage = arg0;
 }
 
 s32 PikachuReward_ConfirmYesNoPrompt(char* arg0) {
@@ -364,7 +364,7 @@ s32 PikachuReward_ConfirmYesNoPrompt(char* arg0) {
         }
 
         Gfx_SetEnvColor(0xFF, 0xFF, var_a2, 0xFF);
-        Font_Printf(0xF2, 0x5C, Text_GetString(NULL, 0, D_83202020, 0x10));
+        Font_Printf(0xF2, 0x5C, Text_GetString(NULL, 0, gPikachuRewardMsgBank, 0x10));
 
         if (var_s1 == 1) {
             var_a2 = 0;
@@ -373,7 +373,7 @@ s32 PikachuReward_ConfirmYesNoPrompt(char* arg0) {
         }
 
         Gfx_SetEnvColor(0xFF, 0xFF, var_a2, 0xFF);
-        Font_Printf(0xF2, 0x6C, Text_GetString(NULL, 0, D_83202020, 0x11));
+        Font_Printf(0xF2, 0x6C, Text_GetString(NULL, 0, gPikachuRewardMsgBank, 0x11));
         Font_EndTexturedTextRendering();
         BgStage_AdvanceFrame();
     }
@@ -412,8 +412,8 @@ s32 PikachuReward_SelectMoveToForget(char* arg0) {
                 var_s0 = 0;
             }
         } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_A)) {
-            if ((D_832027C8.unk_04.unk_09[var_s0] == 0xF) || (D_832027C8.unk_04.unk_09[var_s0] == 0x13) ||
-                (D_832027C8.unk_04.unk_09[var_s0] == 0x46) || (D_832027C8.unk_04.unk_09[var_s0] == 0x94)) {
+            if ((gPikachuSession.unk_04.unk_09[var_s0] == 0xF) || (gPikachuSession.unk_04.unk_09[var_s0] == 0x13) ||
+                (gPikachuSession.unk_04.unk_09[var_s0] == 0x46) || (gPikachuSession.unk_04.unk_09[var_s0] == 0x94)) {
                 Audio_PlaySoundEffectById(SFX_MENU_ERROR);
             } else {
                 var_s4 = 0;
@@ -445,7 +445,7 @@ s32 PikachuReward_SelectMoveToForget(char* arg0) {
         }
 
         Gfx_SetEnvColor(0xFF, 0xFF, var_a2, 0xFF);
-        Font_Printf(0xB6, 0x28, Text_GetString(NULL, 0, D_8320201C, D_832027C8.unk_04.unk_09[0] - 1));
+        Font_Printf(0xB6, 0x28, Text_GetString(NULL, 0, gMoveNameBank, gPikachuSession.unk_04.unk_09[0] - 1));
 
         if (var_s0 == 1) {
             var_a2 = 0;
@@ -454,7 +454,7 @@ s32 PikachuReward_SelectMoveToForget(char* arg0) {
         }
 
         Gfx_SetEnvColor(0xFF, 0xFF, var_a2, 0xFF);
-        Font_Printf(0xB6, 0x38, Text_GetString(NULL, 0, D_8320201C, D_832027C8.unk_04.unk_09[1] - 1));
+        Font_Printf(0xB6, 0x38, Text_GetString(NULL, 0, gMoveNameBank, gPikachuSession.unk_04.unk_09[1] - 1));
 
         if (var_s0 == 2) {
             var_a2 = 0;
@@ -463,7 +463,7 @@ s32 PikachuReward_SelectMoveToForget(char* arg0) {
         }
 
         Gfx_SetEnvColor(0xFF, 0xFF, var_a2, 0xFF);
-        Font_Printf(0xB6, 0x48, Text_GetString(NULL, 0, D_8320201C, D_832027C8.unk_04.unk_09[2] - 1));
+        Font_Printf(0xB6, 0x48, Text_GetString(NULL, 0, gMoveNameBank, gPikachuSession.unk_04.unk_09[2] - 1));
 
         if (var_s0 == 3) {
             var_a2 = 0;
@@ -472,7 +472,7 @@ s32 PikachuReward_SelectMoveToForget(char* arg0) {
         }
 
         Gfx_SetEnvColor(0xFF, 0xFF, var_a2, 0xFF);
-        Font_Printf(0xB6, 0x58, Text_GetString(NULL, 0, D_8320201C, D_832027C8.unk_04.unk_09[3] - 1));
+        Font_Printf(0xB6, 0x58, Text_GetString(NULL, 0, gMoveNameBank, gPikachuSession.unk_04.unk_09[3] - 1));
 
         Font_EndTexturedTextRendering();
         BgStage_AdvanceFrame();
@@ -482,40 +482,40 @@ s32 PikachuReward_SelectMoveToForget(char* arg0) {
 }
 
 void PikachuReward_ShowDeclinedEnding(void) {
-    PikachuReward_ScrollTextIn(Text_GetString(NULL, 0, D_83202020, 4));
-    D_83202028->rotation.y = -0x800;
-    ModelAnim_SetAnimation(D_83202028, 5);
-    ModelAnim_SetEventTrack(D_83202028, 0);
-    D_83201F50 = 1;
-    PikachuReward_ShowTextForFrames(Text_GetString(NULL, 0, D_83202020, 4), 0x46);
+    PikachuReward_ScrollTextIn(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 4));
+    gPikachuNodes->rotation.y = -0x800;
+    ModelAnim_SetAnimation(gPikachuNodes, 5);
+    ModelAnim_SetEventTrack(gPikachuNodes, 0);
+    gPikachuActive = 1;
+    PikachuReward_ShowTextForFrames(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 4), 0x46);
     StageFade_Start(0x1E);
     Audio_StopMusic(0x3C);
-    PikachuReward_ShowTextForFrames(Text_GetString(NULL, 0, D_83202020, 4), 0x1E);
+    PikachuReward_ShowTextForFrames(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 4), 0x1E);
 }
 
 void PikachuReward_ShowSuccessEnding(void) {
-    ModelAnim_SetAnimation(D_83202028, 0xA);
-    ModelAnim_SetEventTrack(D_83202028, 7);
+    ModelAnim_SetAnimation(gPikachuNodes, 0xA);
+    ModelAnim_SetEventTrack(gPikachuNodes, 7);
     PlayMoveSoundEffect(0, 0x39, 0x19, 0);
-    D_83201F50 = 1;
+    gPikachuActive = 1;
     Audio_PlayMusicIfChanged(0x4A);
-    PikachuReward_ScrollTextIn(Text_GetString(NULL, 0, D_83202020, 0xF));
-    PikachuReward_ShowTextForFrames(Text_GetString(NULL, 0, D_83202020, 0xF), 0x98);
+    PikachuReward_ScrollTextIn(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 0xF));
+    PikachuReward_ShowTextForFrames(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 0xF), 0x98);
     StageFade_Start(0x1E);
-    PikachuReward_ShowTextForFrames(Text_GetString(NULL, 0, D_83202020, 0xF), 0x1E);
+    PikachuReward_ShowTextForFrames(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 0xF), 0x1E);
 }
 
 void PikachuReward_PlayIntroCamera(void) {
     s32 i;
-    CameraNode* temp_s1 = D_83202010->children;
+    CameraNode* temp_s1 = gCameraGraphNode->children;
 
-    D_83202028->rotation.y = 0x1000;
+    gPikachuNodes->rotation.y = 0x1000;
 
     for (i = 0; i < 120; i++) {
         Controller_PollInputs();
         temp_s1->view.targetPosition.y = 0x320 - ((i * 0x1E0) / 120);
         temp_s1->view.eyePosition.y = 0x320 - ((i * 0x1E0) / 120);
-        D_83202028->rotation.y += 0x200;
+        gPikachuNodes->rotation.y += 0x200;
         PikachuReward_RenderFrame(0);
         BgStage_AdvanceFrame();
     }
@@ -526,7 +526,7 @@ s32 PikachuReward_ShowIntroAndConfirm(void) {
     s16 var_s1 = 0x10;
     s32 i;
 
-    ModelAnim_SetAnimation(D_83202028, 8);
+    ModelAnim_SetAnimation(gPikachuNodes, 8);
 
     for (i = 0; i < 8; i++) {
         Controller_PollInputs();
@@ -537,18 +537,18 @@ s32 PikachuReward_ShowIntroAndConfirm(void) {
         var_s1 += 4;
     }
 
-    PikachuReward_ShowTextWaitForA(Text_GetString(NULL, 0, D_83202020, 0), 1);
-    PikachuReward_ScrollTextIn(Text_GetString(NULL, 0, D_83202020, 1));
-    PikachuReward_ShowTextWaitForA(Text_GetString(NULL, 0, D_83202020, 1), 1);
+    PikachuReward_ShowTextWaitForA(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 0), 1);
+    PikachuReward_ScrollTextIn(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 1));
+    PikachuReward_ShowTextWaitForA(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 1), 1);
 
     while (true) {
-        PikachuReward_ScrollTextIn(Text_GetString(NULL, 0, D_83202020, 2));
-        if (PikachuReward_ConfirmYesNoPrompt(Text_GetString(NULL, 0, D_83202020, 2)) != 0) {
+        PikachuReward_ScrollTextIn(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 2));
+        if (PikachuReward_ConfirmYesNoPrompt(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 2)) != 0) {
             return 1;
         }
 
-        PikachuReward_ScrollTextIn(Text_GetString(NULL, 0, D_83202020, 3));
-        if (PikachuReward_ConfirmYesNoPrompt(Text_GetString(NULL, 0, D_83202020, 3)) != 0) {
+        PikachuReward_ScrollTextIn(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 3));
+        if (PikachuReward_ConfirmYesNoPrompt(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 3)) != 0) {
             PikachuReward_ShowDeclinedEnding();
             return 0;
         }
@@ -563,37 +563,37 @@ s32 PikachuReward_ResolveMoveSlot(void) {
     temp_v0 = PikachuReward_CountKnownMoves();
     if (temp_v0 == 4) {
         while (true) {
-            PikachuReward_ScrollTextIn(Text_GetString(NULL, 0, D_83202020, 5));
-            PikachuReward_ShowTextWaitForA(Text_GetString(NULL, 0, D_83202020, 5), 1);
-            PikachuReward_ScrollTextIn(Text_GetString(NULL, 0, D_83202020, 6));
-            PikachuReward_ShowTextWaitForA(Text_GetString(NULL, 0, D_83202020, 6), 1);
-            PikachuReward_ScrollTextIn(Text_GetString(NULL, 0, D_83202020, 7));
+            PikachuReward_ScrollTextIn(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 5));
+            PikachuReward_ShowTextWaitForA(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 5), 1);
+            PikachuReward_ScrollTextIn(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 6));
+            PikachuReward_ShowTextWaitForA(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 6), 1);
+            PikachuReward_ScrollTextIn(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 7));
 
-            if (PikachuReward_ConfirmYesNoPrompt(Text_GetString(NULL, 0, D_83202020, 7)) != 0) {
-                PikachuReward_ScrollTextIn(Text_GetString(NULL, 0, D_83202020, 9));
+            if (PikachuReward_ConfirmYesNoPrompt(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 7)) != 0) {
+                PikachuReward_ScrollTextIn(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 9));
 
-                spAC = PikachuReward_SelectMoveToForget(Text_GetString(NULL, 0, D_83202020, 9));
+                spAC = PikachuReward_SelectMoveToForget(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 9));
                 if (spAC >= 0) {
-                    PikachuReward_ShowTextForFrames(Text_GetString(NULL, 0, D_83202020, 0xA), 0x1E);
-                    ModelAnim_SetAnimation(D_83202028, 9);
-                    D_83201F54 = 0;
-                    Effect_TriggerMoveVisual(0x85, 0x19, 0);
-                    PikachuReward_ShowTextWaitForA(Text_GetString(NULL, 0, D_83202020, 0xB), 1);
-                    Text_SetStringToken(0x1D, Text_GetString(NULL, 0, D_8320201C, D_832027C8.unk_04.unk_09[spAC] - 1));
-                    Text_GetString(sp2C, sizeof(sp2C), D_83202020, 0xC);
+                    PikachuReward_ShowTextForFrames(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 0xA), 0x1E);
+                    ModelAnim_SetAnimation(gPikachuNodes, 9);
+                    gPikachuVisibilityState = 0;
+                    Audio_PlayMoveSoundEffect(0x85, 0x19, 0);
+                    PikachuReward_ShowTextWaitForA(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 0xB), 1);
+                    Text_SetStringToken(0x1D, Text_GetString(NULL, 0, gMoveNameBank, gPikachuSession.unk_04.unk_09[spAC] - 1));
+                    Text_GetString(sp2C, sizeof(sp2C), gPikachuRewardMsgBank, 0xC);
                     Audio_StopMusic(0x3C);
                     PikachuReward_ScrollTextIn(sp2C);
                     PikachuReward_ShowTextWaitForA(sp2C, 1);
-                    PikachuReward_ScrollTextIn(Text_GetString(NULL, 0, D_83202020, 0xD));
-                    PikachuReward_ShowTextWaitForA(Text_GetString(NULL, 0, D_83202020, 0xD), 1);
-                    D_83201F54 = -1;
+                    PikachuReward_ScrollTextIn(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 0xD));
+                    PikachuReward_ShowTextWaitForA(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 0xD), 1);
+                    gPikachuVisibilityState = -1;
                     return spAC;
                 }
             }
 
-            PikachuReward_ScrollTextIn(Text_GetString(NULL, 0, D_83202020, 8));
+            PikachuReward_ScrollTextIn(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 8));
 
-            if (PikachuReward_ConfirmYesNoPrompt(Text_GetString(NULL, 0, D_83202020, 8)) != 0) {
+            if (PikachuReward_ConfirmYesNoPrompt(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 8)) != 0) {
                 PikachuReward_ShowDeclinedEnding();
                 return -1;
             }
@@ -620,24 +620,24 @@ void PikachuReward_ShowSaveStatusScreen(s32 arg0) {
     Font_BeginTranslucentTextRendering();
     Font_SetActive(2, 0);
     Font_SetLineHeight(0x10);
-    Font_Printf(0x2E, 0x28, Text_GetString(NULL, 0, D_83202020, 0xE));
+    Font_Printf(0x2E, 0x28, Text_GetString(NULL, 0, gPikachuRewardMsgBank, 0xE));
 
     if (arg0 == 0) {
         Font_BeginTranslucentTextRendering();
         Font_SetActive(4, 0);
-        Font_Printf(0x5C, 0x70, Text_GetString(NULL, 0, D_83202020, 0x12));
+        Font_Printf(0x5C, 0x70, Text_GetString(NULL, 0, gPikachuRewardMsgBank, 0x12));
         Font_EndTexturedTextRendering();
     } else {
         Font_SetLineHeight(0x10);
-        Font_Printf(0x40, 0x84, Text_GetString(NULL, 0, D_83202020, 0x13));
+        Font_Printf(0x40, 0x84, Text_GetString(NULL, 0, gPikachuRewardMsgBank, 0x13));
         Gfx_SetEnvColor(0xFF, 0xFF, 0x64, 0xFF);
 
         if (arg0 == 2) {
             Font_SetActive(4, 0);
-            Font_Printf(0x4C, 0x64, Text_GetString(NULL, 0, D_83202020, 0x14));
+            Font_Printf(0x4C, 0x64, Text_GetString(NULL, 0, gPikachuRewardMsgBank, 0x14));
         } else if (arg0 == 3) {
             Font_SetLineHeight(0x10);
-            Font_Printf(0x40, 0x5C, Text_GetString(NULL, 0, D_83202020, 0x15));
+            Font_Printf(0x40, 0x5C, Text_GetString(NULL, 0, gPikachuRewardMsgBank, 0x15));
         }
     }
 
@@ -651,23 +651,23 @@ void PikachuReward_SaveToCartridge(void) {
     s32 temp_v0;
     DeckHandle* var_v0;
 
-    if (D_832027C8.unk_01 == 0) {
-        var_v0 = Deck_Open(0x20, D_832027C8.unk_00, 0, 2);
+    if (gPikachuSession.unk_01 == 0) {
+        var_v0 = Deck_Open(0x20, gPikachuSession.unk_00, 0, 2);
     } else {
-        var_v0 = Deck_Open(0x21, D_832027C8.unk_00, D_832027C8.unk_01 - 1, 2);
+        var_v0 = Deck_Open(0x21, gPikachuSession.unk_00, gPikachuSession.unk_01 - 1, 2);
     }
 
-    Deck_SetCursor(var_v0, D_832027C8.unk_02);
-    Deck_WriteEntries(&D_832027C8.unk_04, 1, var_v0);
+    Deck_SetCursor(var_v0, gPikachuSession.unk_02);
+    Deck_WriteEntries(&gPikachuSession.unk_04, 1, var_v0);
     Deck_CloseAndFlush(var_v0);
     PikachuReward_ShowSaveStatusScreen(0);
     PikachuReward_ShowSaveStatusScreen(0);
-    GbSave_ValidateBeforeWrite(D_832027C8.unk_00);
+    GbSave_ValidateBeforeWrite(gPikachuSession.unk_00);
 
-    while (GbSave_RebuildAndWriteSave(D_832027C8.unk_00) == 0) {
+    while (GbSave_RebuildAndWriteSave(gPikachuSession.unk_00) == 0) {
         var_s0 = 2;
         do {
-            temp_v0 = GbSave_PollCartRemoval(D_832027C8.unk_00);
+            temp_v0 = GbSave_PollCartRemoval(gPikachuSession.unk_00);
             if (temp_v0 == 1) {
                 var_s0 = 1;
             }
@@ -682,26 +682,26 @@ void PikachuReward_SaveToCartridge(void) {
         PikachuReward_ShowSaveStatusScreen(0);
         PikachuReward_ShowSaveStatusScreen(0);
     }
-    GbSave_RequirePakPresent(D_832027C8.unk_00);
+    GbSave_RequirePakPresent(gPikachuSession.unk_00);
 }
 
 void PikachuReward_TeachSurfToPikachu(s32 arg0) {
     s32 i;
 
     Cry_Play(0x19, 0);
-    PikachuReward_ScrollTextIn(Text_GetString(NULL, 0, D_83202020, 0xE));
-    PikachuReward_ShowTextForFrames(Text_GetString(NULL, 0, D_83202020, 0xE), 1);
+    PikachuReward_ScrollTextIn(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 0xE));
+    PikachuReward_ShowTextForFrames(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 0xE), 1);
 
     for (i = PikachuReward_CountKnownMoves(); i < 4; i++) {
-        D_832027C8.unk_04.unk_09[i] = 0;
-        D_832027C8.unk_04.unk_20[i] = 0;
+        gPikachuSession.unk_04.unk_09[i] = 0;
+        gPikachuSession.unk_04.unk_20[i] = 0;
     }
 
-    D_832027C8.unk_04.unk_09[arg0] = 0x39;
-    D_832027C8.unk_04.unk_20[arg0] = gMoveData[0x38].unk_05;
+    gPikachuSession.unk_04.unk_09[arg0] = 0x39;
+    gPikachuSession.unk_04.unk_20[arg0] = gMoveData[0x38].unk_05;
 
     PikachuReward_SaveToCartridge();
-    PikachuReward_ShowTextWaitForA(Text_GetString(NULL, 0, D_83202020, 0xE), 1);
+    PikachuReward_ShowTextWaitForA(Text_GetString(NULL, 0, gPikachuRewardMsgBank, 0xE), 1);
     PikachuReward_ShowSuccessEnding();
 }
 
@@ -723,7 +723,7 @@ void PikachuReward_RunSequence(void) {
 }
 
 void PikachuReward_SetupFollowerModel(DisplayObject* arg0, s16 arg1, s16 arg2, s16 arg3) {
-    Model_InitDisplayObject(arg0, 0, 0, D_83202014);
+    Model_InitDisplayObject(arg0, 0, 0, gPikachuGeoNode);
     ModelAnim_BindTransformCurve(arg0, 0, D_8C2011C4, 0x10000);
     arg0->node.flags &= ~1;
     Vec3f_SetComponentsDuplicate(&arg0->scale, 1.5f, 1.5f, 1.5f);
@@ -737,23 +737,23 @@ void PikachuReward_SetupScene(void) {
     s32 i;
 
     temp_v0 = MainPool_AllocState(main_pool_get_available(), 0);
-    D_83202010 = process_geo_layout(temp_v0, D_83201F5C);
-    D_83202014 = process_geo_layout(temp_v0, D_8C201070);
+    gCameraGraphNode = process_geo_layout(temp_v0, gPikachuGeoLayout);
+    gPikachuGeoNode = process_geo_layout(temp_v0, D_8C201070);
 
     MainPool_FinalizeAllocation(temp_v0);
     ModelRenderer_InitDisplayRoots();
 
     for (i = 0; i < 4; i++) {
-        ModelRenderer_AttachDisplayObject(&D_83202028[i]);
+        ModelRenderer_AttachDisplayObject(&gPikachuNodes[i]);
     }
 
-    Model_InitDisplayObject(&D_83202028[0], 0, 0, D_83202018->unk_08->unk_00[0]);
-    Vec3f_SetComponentsDuplicate(&D_83202028[0].scale, 16.0f, 16.0f, 16.0f);
-    ModelAnim_SetAnimation(&D_83202028[0], 0);
-    D_83202028->node.renderFlags &= ~0x40;
-    PikachuReward_SetupFollowerModel(&D_83202028[1], -0x50, 0x17C, 0x1800);
-    PikachuReward_SetupFollowerModel(&D_83202028[2], 0, 0x17C, 0);
-    PikachuReward_SetupFollowerModel(&D_83202028[3], 0x50, 0x17C, -0x1800);
+    Model_InitDisplayObject(&gPikachuNodes[0], 0, 0, gPikachuModelData->unk_08->unk_00[0]);
+    Vec3f_SetComponentsDuplicate(&gPikachuNodes[0].scale, 16.0f, 16.0f, 16.0f);
+    ModelAnim_SetAnimation(&gPikachuNodes[0], 0);
+    gPikachuNodes->node.renderFlags &= ~0x40;
+    PikachuReward_SetupFollowerModel(&gPikachuNodes[1], -0x50, 0x17C, 0x1800);
+    PikachuReward_SetupFollowerModel(&gPikachuNodes[2], 0, 0x17C, 0);
+    PikachuReward_SetupFollowerModel(&gPikachuNodes[3], 0x50, 0x17C, -0x1800);
 }
 
 s32 Stadium_BonusPikachuReward(UNUSED s32 arg0, UNUSED s32 arg1) {
@@ -772,10 +772,10 @@ s32 Stadium_BonusPikachuReward(UNUSED s32 arg0, UNUSED s32 arg1) {
         ASSET_LOAD(D_1000000, common_menu1_ui, 0);
 
         Text_InitStringTables();
-        D_8320201C = Text_GetStringTable(0x25);
-        D_83202020 = Text_GetStringTable(0x1C);
+        gMoveNameBank = Text_GetStringTable(0x25);
+        gPikachuRewardMsgBank = Text_GetStringTable(0x1C);
         PokeIcon_OpenModelArchives();
-        D_83202018 = Model_LoadForPokemon(&D_832027C8.unk_04);
+        gPikachuModelData = Model_LoadForPokemon(&gPikachuSession.unk_04);
         PikachuReward_SetupScene();
         StageContext_Activate(sp20);
         PikachuReward_RunSequence();

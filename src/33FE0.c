@@ -195,7 +195,7 @@ f32 D_800775D4[16] = {
 // Three zero words before the model tables at 0x80077620.
 u32 D_80077614[3] = { 0, 0, 0 };
 
-u32 D_80077620[40] = {
+u32 gNormalModelVertices[40] = {
     0xFFCE00AA, 0x00000000, 0x00000000, 0xFFFF00FF, 0xFFCE0078, 0x00000000,
     0x00000200, 0xFFFF00FF, 0x00320078, 0x00000000, 0x04000200, 0xFFFF00FF,
     0x003200AA, 0x00000000, 0x04000000, 0xFFFF00FF, 0xFFCE0046, 0x00000000,
@@ -204,33 +204,33 @@ u32 D_80077620[40] = {
     0x04000600, 0xFFFFC0FF, 0xFFCEFFE2, 0x00000000, 0x00000800, 0xFFFF80FF,
     0x0032FFE2, 0x00000000, 0x04000800, 0xFFFF80FF,
 };
-u32 D_800776C0[6] = {
+u32 gNormalModelIndexRemap[6] = {
     0x00000001, 0x00020003, 0x00040005, 0x00060007, 0x00080009, 0x00000000,
 };
-u32 D_800776D8[12] = {
+u32 gNormalModelDisplayList[12] = {
     0x0100A014, 0x0E000000, 0x06000204, 0x00000406, 0x0602080A, 0x00020A04,
     0x06080C0E, 0x00080E0A, 0x060C1012, 0x000C120E, 0xDF000000, 0x00000000,
 };
-u32 D_80077708[12] = {
+u32 gNormalModelIndices[12] = {
     0x00000001, 0x00020000, 0x00020003, 0x00010004, 0x00050001, 0x00050002,
     0x00040006, 0x00070004, 0x00070005, 0x00060008, 0x00090006, 0x00090007,
 };
-u32 D_80077738[22] = {
+u32 gNormalModelVertexLinkTable[22] = {
     0x00010002, 0x0003FFFF, 0x00000002, 0x00040005, 0xFFFF0000, 0x00010003,
     0x0005FFFF, 0x00000002, 0xFFFF0001, 0x00050006, 0x0007FFFF, 0x00010004,
     0x00020007, 0xFFFF0004, 0x00070008, 0x0009FFFF, 0x00040006, 0x00050009,
     0xFFFF0006, 0x0009FFFF, 0x00060008, 0x0007FFFF,
 };
-u32 D_80077790[6] = {
+u32 gNormalModelVertexClassTable[6] = {
     0x00CE00CB, 0x00CA00CD, 0x00980097, 0x00950094, 0x00920091, 0x00000000,
 };
-ModelSegment D_800777A8 = {
+ModelSegment gNormalModelSegment = {
     0x000A, 0x0000, 0x000A, 0x0008,
-    (u32) D_80077708, (u32) D_80077738, (u32) D_80077790,
-    (u32) D_800776C0, (u32) D_80077620, (Gfx*) D_800776D8,
+    (u32) gNormalModelIndices, (u32) gNormalModelVertexLinkTable, (u32) gNormalModelVertexClassTable,
+    (u32) gNormalModelIndexRemap, (u32) gNormalModelVertices, (Gfx*) gNormalModelDisplayList,
 };
 
-u32 D_800777C8[40] = {
+u32 gSpecialModelVertices[40] = {
     0xFFCE00C8, 0x00000000, 0x00000000, 0xFFFF00FF, 0xFFCE0096, 0x00000000,
     0x00000200, 0xFFFF00FF, 0x00320096, 0x00000000, 0x04000200, 0xFFFF00FF,
     0x003200C8, 0x00000000, 0x04000000, 0xFFFF00FF, 0xFFCE0064, 0x00000000,
@@ -239,45 +239,45 @@ u32 D_800777C8[40] = {
     0x04000600, 0xFFFFC0FF, 0xFFCE0000, 0x00000000, 0x00000800, 0xFFFF80FF,
     0x00320000, 0x00000000, 0x04000800, 0xFFFF80FF,
 };
-u32 D_80077868[6] = {
+u32 gSpecialModelIndexRemap[6] = {
     0x00000001, 0x00020003, 0x00040005, 0x00060007, 0x00080009, 0x00000000,
 };
-u32 D_80077880[12] = {
+u32 gSpecialModelDisplayList[12] = {
     0x0100A014, 0x0E000000, 0x06000204, 0x00000406, 0x0602080A, 0x00020A04,
     0x06080C0E, 0x00080E0A, 0x060C1012, 0x000C120E, 0xDF000000, 0x00000000,
 };
-u32 D_800778B0[12] = {
+u32 gSpecialModelIndices[12] = {
     0x00000001, 0x00020000, 0x00020003, 0x00010004, 0x00050001, 0x00050002,
     0x00040006, 0x00070004, 0x00070005, 0x00060008, 0x00090006, 0x00090007,
 };
-u32 D_800778E0[22] = {
+u32 gSpecialModelVertexLinkTable[22] = {
     0x00010002, 0x0003FFFF, 0x00000002, 0x00040005, 0xFFFF0000, 0x00010003,
     0x0005FFFF, 0x00000002, 0xFFFF0001, 0x00050006, 0x0007FFFF, 0x00010004,
     0x00020007, 0xFFFF0004, 0x00070008, 0x0009FFFF, 0x00040006, 0x00050009,
     0xFFFF0006, 0x0009FFFF, 0x00060008, 0x0007FFFF,
 };
-u32 D_80077938[6] = {
+u32 gSpecialModelVertexClassTable[6] = {
     0x00CE00CB, 0x00CA00CD, 0x00980097, 0x00950094, 0x00920091, 0x00000000,
 };
-ModelSegment D_80077950 = {
+ModelSegment gSpecialModelSegment = {
     0x000B, 0x0000, 0x000A, 0x0008,
-    (u32) D_800778B0, (u32) D_800778E0, (u32) D_80077938,
-    (u32) D_80077868, (u32) D_800777C8, (Gfx*) D_80077880,
+    (u32) gSpecialModelIndices, (u32) gSpecialModelVertexLinkTable, (u32) gSpecialModelVertexClassTable,
+    (u32) gSpecialModelIndexRemap, (u32) gSpecialModelVertices, (Gfx*) gSpecialModelDisplayList,
 };
 
 // .bss
-Vec3fCounter* D_800B2F50;
-PosBlend D_800B2F58[0x10];
-Mtx D_800B3258;
+Vec3fCounter* gVertexNormalAccumulators;
+PosBlend gVertexPositionBlendBuffers[0x10];
+Mtx gModelScaleMtx;
 
-s32 func_800333E0(s32 arg0) {
+s32 Model_GetVertexBufferOffset(s32 arg0) {
     u8 stack[4];
     u8* ptr = stack;
 
     return ((u8*)((s32)ptr + (arg0 * 0x94)) - ptr) + 0x170;
 }
 
-s32 func_80033410(s32 arg0) {
+s32 Model_GetBlendWeightOffset(s32 arg0) {
     u8 stack[4];
     u8* ptr = stack;
 
@@ -297,7 +297,7 @@ void Math_CrossProduct(f32 ax, f32 ay, f32 az, f32 bx, f32 by, f32 bz, f32* cx, 
     *cz = (ax * by) - (ay * bx);
 }
 
-f32 func_800334C0(
+f32 Math_ComputeProjectionParam(
     f32 px, f32 py, f32 pz,
     f32 ax, f32 ay, f32 az,
     f32 bx, f32 by, f32 bz
@@ -314,7 +314,7 @@ f32 func_800334C0(
     return (((bx - ax) * (px - ax)) + ((by - ay) * (py - ay)) + ((bz - az) * (pz - az))) / lenSq;
 }
 
-f32 func_80033568(
+f32 Math_ComputePointSegmentDistance(
     f32 px, f32 py, f32 pz,
     f32 ax, f32 ay, f32 az,
     f32 bx, f32 by, f32 bz,
@@ -530,7 +530,7 @@ void Model_BuildVertexRuntimeData(StadiumModel* model, MtxF* mtx) {
     }
 }
 
-void func_80033B2C(StadiumModel* model, void* arg1,  void* arg2, void* arg3) {
+void Model_DrawWithSegment(StadiumModel* model, void* arg1,  void* arg2, void* arg3) {
     f32 sp4C;
     f32 sp48;
     f32 sp44;
@@ -552,7 +552,7 @@ void func_80033B2C(StadiumModel* model, void* arg1,  void* arg2, void* arg3) {
     temp_s0 = Memmap_GetSegmentVaddr(arg2);
     temp_v0 = Memmap_GetSegmentVaddr(arg3);
     segment = &model->unkSegment;
-    D_800B2F50 = arg1;
+    gVertexNormalAccumulators = arg1;
     *segment = *temp_v0;
     model->unk_00 = 1;
     model->unk_02 = 0;
@@ -581,17 +581,17 @@ void func_80033B2C(StadiumModel* model, void* arg1,  void* arg2, void* arg3) {
     model->position.x = sp4C;
     model->position.y = sp48;
     model->position.z = sp44;
-    guScale(&D_800B3258, 0.1f, 0.1f, 0.1f);
+    guScale(&gModelScaleMtx, 0.1f, 0.1f, 0.1f);
     Model_BuildVertexRuntimeData(model, temp_s0);
-    func_800357F4(model);
+    Model_BuildTransformCommands(model);
 }
 
-void func_80033D1C(StadiumModel* model, MtxF* mtx) {
+void Model_BuildVertexDataAndCommands(StadiumModel* model, MtxF* mtx) {
     Model_BuildVertexRuntimeData(model, mtx);
-    func_800357F4(model);
+    Model_BuildTransformCommands(model);
 }
 
-void func_80033D44(StadiumModel* model, s16 maxDist, f32 radius, f32 ax, f32 ay, f32 az, f32 bx, f32 by, f32 bz, MtxF* mtx) {
+void Model_AddSegmentTransform(StadiumModel* model, s16 maxDist, f32 radius, f32 ax, f32 ay, f32 az, f32 bx, f32 by, f32 bz, MtxF* mtx) {
     ModelSegment* segment;
     f32 cx, cy, cz;
     f32 dx, dy, dz;
@@ -671,22 +671,22 @@ void func_80033D44(StadiumModel* model, s16 maxDist, f32 radius, f32 ax, f32 ay,
             x = mvtx->position.base.x;
             y = mvtx->position.base.y;
             z = mvtx->position.base.z;
-            dist = func_80033568(x, y, z, tax, tay, taz, tbx, tby, tbz, &nx, &ny, &nz);
+            dist = Math_ComputePointSegmentDistance(x, y, z, tax, tay, taz, tbx, tby, tbz, &nx, &ny, &nz);
             if (dist > 0.0f) {
                 x = (((x - nx) * radius) / dist) + nx;
                 y = (((y - ny) * radius) / dist) + ny;
                 z = (((z - nz) * radius) / dist) + nz;
             }
             w = &mvtx->cmd.weights[index];
-            w->w0 = func_800334C0(x, y, z, tax, tay, taz, tbx, tby, tbz);
-            w->w1 = func_800334C0(x, y, z, tax, tay, taz, tcx, tcy, tcz);
-            w->w2 = func_800334C0(x, y, z, tax, tay, taz, tdx, tdy, tdz);
+            w->w0 = Math_ComputeProjectionParam(x, y, z, tax, tay, taz, tbx, tby, tbz);
+            w->w1 = Math_ComputeProjectionParam(x, y, z, tax, tay, taz, tcx, tcy, tcz);
+            w->w2 = Math_ComputeProjectionParam(x, y, z, tax, tay, taz, tdx, tdy, tdz);
             w->dist = dist;
             mvtx++;
         }
     }
 }
-void func_80034254(StadiumModel* model) {
+void Model_SelectClosestTransform(StadiumModel* model) {
     u32 pad[2];
     ModelSegment* segment;
     s16* indexTable;
@@ -723,7 +723,7 @@ void func_80034254(StadiumModel* model) {
     }
 }
 
-void func_80034348(ModelSegment* segment, ModelVertex* vertices) {
+void SandshrewGame_Update(ModelSegment* segment, ModelVertex* vertices) {
     s32 i;
     f32 x0, y0, z0;
     f32 x1, y1, z1;
@@ -748,7 +748,7 @@ void func_80034348(ModelSegment* segment, ModelVertex* vertices) {
     vertexCount = segment->vertexCount;
     indices = Memmap_GetSegmentVaddr(segment->indexSegment);
     remap = Memmap_GetSegmentVaddr(segment->remapSegment);
-    counter = D_800B2F50;
+    counter = gVertexNormalAccumulators;
     for (i = 0; i < vertexCount; i++) {
         counter->x = 0.0f;
         counter->y = 0.0f;
@@ -783,23 +783,23 @@ void func_80034348(ModelSegment* segment, ModelVertex* vertices) {
             ny *= scale;
             nz *= scale;
         }
-        counter = &D_800B2F50[i0];
+        counter = &gVertexNormalAccumulators[i0];
         counter->x += nx;
         counter->y += ny;
         counter->z += nz;
         counter->count++;
-        counter = &D_800B2F50[i1];
+        counter = &gVertexNormalAccumulators[i1];
         counter->x += nx;
         counter->y += ny;
         counter->z += nz;
         counter->count++;
-        counter = &D_800B2F50[i2];
+        counter = &gVertexNormalAccumulators[i2];
         counter->x += nx;
         counter->y += ny;
         counter->z += nz;
         counter->count++;
     }
-    counter = D_800B2F50;
+    counter = gVertexNormalAccumulators;
     vtx = vertices;
     for (i = 0; i < vertexCount; i++) {
         if (counter->count > 0) {
@@ -813,7 +813,7 @@ void func_80034348(ModelSegment* segment, ModelVertex* vertices) {
     }
 }
 
-void func_80034824(ModelSegment* segment, StadiumTransform* xf, s32 index, ModelVertex* vertices) {
+void Model_ApplySelectedTransform(ModelSegment* segment, StadiumTransform* xf, s32 index, ModelVertex* vertices) {
     f32 x0, y0, z0;
     f32 x1, y1, z1;
     f32 x2, y2, z2;
@@ -906,14 +906,14 @@ void Model_ApplyVertexTransforms(StadiumModel* model) {
     count = model->unk_02;
 
     for (i = 0; i < count; i++) {
-        func_80034824(segment, &model->transforms[i], i, mvtx);
+        Model_ApplySelectedTransform(segment, &model->transforms[i], i, mvtx);
     }
 
-    func_80035FA8(segment, mvtx);
+    Model_IntegrateVertexOffsets(segment, mvtx);
     Model_ApplyTransformCommands(segment, mvtx, model, 1.0f);
 }
 
-void func_80034BD4(u32 modelSegment, StadiumTransform* xf, s32 index, ModelVertex* vertices) {
+void Model_ApplyTransformByDistance(u32 modelSegment, StadiumTransform* xf, s32 index, ModelVertex* vertices) {
     ModelBlendWeight* wt;
     ModelVertex* vtx;
     s32 pad0[3];
@@ -991,7 +991,7 @@ void func_80034BD4(u32 modelSegment, StadiumTransform* xf, s32 index, ModelVerte
             temp_fs1 = vtx->position.base.y;
             temp_fs2 = vtx->position.base.z;
             temp_s1_3 = 1 << index;
-            temp_fv0 = func_80033568(temp_fs0, temp_fs1, temp_fs2, sp180, sp17C, sp178, sp174, sp170, sp16C, &sp104, &sp100, &spFC);
+            temp_fv0 = Math_ComputePointSegmentDistance(temp_fs0, temp_fs1, temp_fs2, sp180, sp17C, sp178, sp174, sp170, sp16C, &sp104, &sp100, &spFC);
             temp_v0_2 = &vtx->position;
             if ((temp_fv0 > 0.0f) && (temp_fv0 < xf->maxDist)) {
                 wt = &vtx->cmd.weights[index];
@@ -1098,7 +1098,7 @@ void func_80035208_empty() {
 
 }
 
-void func_80035248(ModelSegment* segment, MtxF* mtx, ModelVertex* mvtx) {
+void Model_UpdateVertexPositions(ModelSegment* segment, MtxF* mtx, ModelVertex* mvtx) {
     ModelVertex* tmp;
     Vtx* vtx;
     PosBlend* position;
@@ -1125,11 +1125,11 @@ void func_80035248(ModelSegment* segment, MtxF* mtx, ModelVertex* mvtx) {
                 break;
             case 2:
                 Model_TransformPoint(mtx, &position->base, &vtx->v.ob);
-                Model_CopyPositionBuffer(position, &D_800B2F58[Model_GetVertexTargetClass(temp_s5, i)]);
+                Model_CopyPositionBuffer(position, &gVertexPositionBlendBuffers[Model_GetVertexTargetClass(temp_s5, i)]);
                 break;
             case 3:
                 Model_TransformPoint(mtx, &position->base, &vtx->v.ob);
-                Model_CopyPositionBuffer(position, &D_800B2F58[Model_GetVertexSourceClass(temp_s5, i)]);
+                Model_CopyPositionBuffer(position, &gVertexPositionBlendBuffers[Model_GetVertexSourceClass(temp_s5, i)]);
                 break;
             default:
                 break;
@@ -1196,7 +1196,7 @@ void Model_ExtrapolateVertexPosition(Vec3f* from, Vec3f* to, f32 currentTime, f3
     to->z += temp_ft5 * scale;
 }
 
-void func_80035660(PosBlend* src, PosBlend* dst, f32 totalTime, f32 elapsed, f32 stiffness) {
+void Model_ExtrapolateVertexPositionAndOffset(PosBlend* src, PosBlend* dst, f32 totalTime, f32 elapsed, f32 stiffness) {
     f32 sp3C;
     f32 sp38;
     f32 sp34;
@@ -1228,7 +1228,7 @@ void func_80035660(PosBlend* src, PosBlend* dst, f32 totalTime, f32 elapsed, f32
     }
 }
 
-void func_800357F4(StadiumModel* model) {
+void Model_BuildTransformCommands(StadiumModel* model) {
     s32 i;
     s32 pad1[4];
     s16* sp70;
@@ -1345,7 +1345,7 @@ void Model_ApplyTransformCommands(ModelSegment* segment, ModelVertex* vertices, 
     }
 }
 
-void func_80035B20(ModelSegment* segment, ModelVertex* vertices, StadiumModel* model, f32 deltaTime) {
+void Model_ApplyTransformCommandsWithOffset(ModelSegment* segment, ModelVertex* vertices, StadiumModel* model, f32 deltaTime) {
     f32 temp_fs0;
     s16 temp_v1;
     s16 var_a0;
@@ -1381,7 +1381,7 @@ void func_80035B20(ModelSegment* segment, ModelVertex* vertices, StadiumModel* m
             if ((var_a0 != 0) || (var_a2 != 0)) {
                 temp_s0 = &temp_a3->position;
                 temp_s1 = &temp_v0_2->position;
-                func_80035660(temp_s0, temp_s1, temp_fs0, Model_ComputeScaledDistance(&temp_s0->base, &temp_s1->base, &model->position), deltaTime);
+                Model_ExtrapolateVertexPositionAndOffset(temp_s0, temp_s1, temp_fs0, Model_ComputeScaledDistance(&temp_s0->base, &temp_s1->base, &model->position), deltaTime);
             }
             continue;
         }
@@ -1407,7 +1407,7 @@ void Model_OffsetVertexHeights(ModelSegment* segment, ModelVertex* vertices, f32
     }
 }
 
-void func_80035D08(ModelSegment* segment, ModelVertex* vertices, f32 yOffset) {
+void Model_OffsetVertexHeightsByClass(ModelSegment* segment, ModelVertex* vertices, f32 yOffset) {
     s16* indexTable;
     s16* var_s2;
     s32 temp_v0;
@@ -1436,7 +1436,7 @@ void func_80035D08(ModelSegment* segment, ModelVertex* vertices, f32 yOffset) {
     }
 }
 
-void func_80035E2C(ModelSegment* segment, ModelVertex* vertices, f32 arg2, StadiumModel* arg3) {
+void Model_OffsetVertexHeightsByClassDuplicate(ModelSegment* segment, ModelVertex* vertices, f32 arg2, StadiumModel* arg3) {
     s16* indexTable;
     s16* remap;
     s32 type;
@@ -1472,7 +1472,7 @@ void func_80035E2C(ModelSegment* segment, ModelVertex* vertices, f32 arg2, Stadi
     }
 }
 
-void func_80035FA8(ModelSegment* segment, ModelVertex* vertices) {
+void Model_IntegrateVertexOffsets(ModelSegment* segment, ModelVertex* vertices) {
     f32 drawGroup;
     s16* indexTable;
     s16* remap;
@@ -1518,7 +1518,7 @@ void func_80035FA8(ModelSegment* segment, ModelVertex* vertices) {
     }
 }
 
-void func_800361C4(StadiumModel* model, MtxF* mtx) {
+void Model_DrawPrepared(StadiumModel* model, MtxF* mtx) {
     s32 var_s0;
     s32 var_v1;
 
@@ -1526,58 +1526,58 @@ void func_800361C4(StadiumModel* model, MtxF* mtx) {
     ModelSegment* segment = Memmap_GetSegmentVaddr(model->modelSegment);
     switch (segment->type) {
     case 3:
-        func_80035248(segment, mtx, mvtx);
+        Model_UpdateVertexPositions(segment, mtx, mvtx);
         Model_OffsetVertexHeights(segment, mvtx, model->position.y * -10.0f);
-        func_80034348(segment, mvtx);
+        SandshrewGame_Update(segment, mvtx);
         for(var_s0 = 0; var_s0 < model->unk_02; var_s0++) {
-            func_80034BD4(segment, &model->transforms[var_s0], var_s0, mvtx);
+            Model_ApplyTransformByDistance(segment, &model->transforms[var_s0], var_s0, mvtx);
         }
-        func_80035FA8(segment, mvtx);
+        Model_IntegrateVertexOffsets(segment, mvtx);
         Model_ApplyTransformCommands(segment, mvtx, model, 0.7f);        
         break;
     case 4:
-        func_80035248(segment, mtx, mvtx);
+        Model_UpdateVertexPositions(segment, mtx, mvtx);
         Model_OffsetVertexHeights(segment, mvtx, model->position.y * -10.0f);
-        func_80034348(segment, mvtx);
-        func_80035FA8(segment, mvtx);
+        SandshrewGame_Update(segment, mvtx);
+        Model_IntegrateVertexOffsets(segment, mvtx);
         break;
     case 10:
-        func_80035248(segment, mtx, mvtx);
-        func_80035D08(segment, mvtx, model->position.y * 160.0f);
-        func_80035FA8(segment, mvtx);
-        func_80035B20(segment, mvtx, model, 1.0f);
+        Model_UpdateVertexPositions(segment, mtx, mvtx);
+        Model_OffsetVertexHeightsByClass(segment, mvtx, model->position.y * 160.0f);
+        Model_IntegrateVertexOffsets(segment, mvtx);
+        Model_ApplyTransformCommandsWithOffset(segment, mvtx, model, 1.0f);
         break;
     case 11:
-        func_80035248(segment, mtx, mvtx);
-        func_80035E2C(segment, mvtx, 160.0f, model);
-        func_80035FA8(segment, mvtx);
-        func_80035B20(segment, mvtx, model, 1.0f);
+        Model_UpdateVertexPositions(segment, mtx, mvtx);
+        Model_OffsetVertexHeightsByClassDuplicate(segment, mvtx, 160.0f, model);
+        Model_IntegrateVertexOffsets(segment, mvtx);
+        Model_ApplyTransformCommandsWithOffset(segment, mvtx, model, 1.0f);
         break;
     case 1:
-        func_80035248(segment, mtx, mvtx);
-        func_80034348(segment, mvtx);
-        func_80035FA8(segment, mvtx);
+        Model_UpdateVertexPositions(segment, mtx, mvtx);
+        SandshrewGame_Update(segment, mvtx);
+        Model_IntegrateVertexOffsets(segment, mvtx);
         break;
     case 2:
-        func_80035248(segment, mtx, mvtx);
+        Model_UpdateVertexPositions(segment, mtx, mvtx);
         Model_OffsetVertexHeights(segment, mvtx, model->position.y * -10.0f);
-        func_80034348(segment, mvtx);
-        func_80035FA8(segment, mvtx);
+        SandshrewGame_Update(segment, mvtx);
+        Model_IntegrateVertexOffsets(segment, mvtx);
         break;
     case 5:
-        func_80035248(segment, mtx, mvtx);
-        func_80034348(segment, mvtx);
-        func_80035FA8(segment, mvtx);
+        Model_UpdateVertexPositions(segment, mtx, mvtx);
+        SandshrewGame_Update(segment, mvtx);
+        Model_IntegrateVertexOffsets(segment, mvtx);
         break;
     case 6:
-        func_80035248(segment, mtx, mvtx);
-        func_80034348(segment, mvtx);
-        func_80035FA8(segment, mvtx);
+        Model_UpdateVertexPositions(segment, mtx, mvtx);
+        SandshrewGame_Update(segment, mvtx);
+        Model_IntegrateVertexOffsets(segment, mvtx);
         break;
     case 9:
-        func_80035248(segment, mtx, mvtx);
+        Model_UpdateVertexPositions(segment, mtx, mvtx);
         Model_ApplyVertexTransforms(model);
-        func_80034348(segment, mvtx);
+        SandshrewGame_Update(segment, mvtx);
         break;
     default:
         return;
@@ -1630,7 +1630,7 @@ Gfx* Model_Draw(Gfx* gfx, StadiumModel* model, Vtx* vtxBuf) {
     }
     Model_WriteVtxBuffer(model, vtxBuf);
     gSPSegment(gfx++, 0x0E, vtxBuf);
-    gSPMatrix(gfx++, &D_800B3258, G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
+    gSPMatrix(gfx++, &gModelScaleMtx, G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
     gSPDisplayList(gfx++, segment->displayList);
     gSPPopMatrixN(gfx++, G_MTX_MODELVIEW, 1);
     return gfx;

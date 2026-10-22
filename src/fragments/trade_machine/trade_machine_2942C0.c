@@ -13,11 +13,11 @@
 #include "src/memory.h"
 #include "src/stage_loader.h"
 
-static unk_D_82F21140 D_82F21140;
-static DepthBuffer* D_82F2115C;
-static unk_D_82F21160 D_82F21160[2];
-static unk_D_82F211A0 D_82F211A0[2];
-static unk_D_82F21238 D_82F21238;
+static TradeCableState gTradeCableState;
+static DepthBuffer* gTradeCableReflectionBuffer;
+static TradeCableLight gMenuPanels[2];
+static TradeBall gTradeBalls[2];
+static TradeEvoState gScreenTransition;
 
 void TradeCable_DrawScissoredTexRect(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, s16 arg6, s16 arg7, s32 arg8) {
     gSPScisTextureRectangle(gDisplayListHead++, arg0 << 2, arg1 << 2, (arg0 + arg2) << 2, (arg1 + arg3) << 2, 0, arg4,
@@ -25,17 +25,17 @@ void TradeCable_DrawScissoredTexRect(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s16
 }
 
 void TradeCable_ResetBalls(void) {
-    unk_D_82F211A0* var_v1;
+    TradeBall* var_v1;
     s32 i;
 
-    for (i = 0, var_v1 = &D_82F211A0[0]; i < 2; i++, var_v1++) {
+    for (i = 0, var_v1 = &gTradeBalls[0]; i < 2; i++, var_v1++) {
         var_v1->unk_00 = 0;
     }
 }
 
 void TradeCable_SetBallState(s32 arg0, s16 arg1) {
     s32 i;
-    unk_D_82F211A0* temp_v0 = &D_82F211A0[arg0];
+    TradeBall* temp_v0 = &gTradeBalls[arg0];
 
     temp_v0->unk_00 = arg1;
 
@@ -68,15 +68,15 @@ void TradeCable_SetBallState(s32 arg0, s16 arg1) {
     }
 }
 
-void TradeCable_UpdateBallFadeIn(unk_D_82F211A0* arg0) {
+void TradeCable_UpdateBallFadeIn(TradeBall* arg0) {
     arg0->unk_06--;
     arg0->unk_0C = 0xFF - ((arg0->unk_06 * 0xFF) / 40);
     if (arg0->unk_06 <= 0) {
-        TradeCable_SetBallState(arg0 - D_82F211A0, 2);
+        TradeCable_SetBallState(arg0 - gTradeBalls, 2);
     }
 }
 
-void TradeCable_UpdateBallSpinPulse(unk_D_82F211A0* arg0) {
+void TradeCable_UpdateBallSpinPulse(TradeBall* arg0) {
     s32 sp1C;
 
     if (arg0->unk_06 > 0) {
@@ -88,7 +88,7 @@ void TradeCable_UpdateBallSpinPulse(unk_D_82F211A0* arg0) {
     arg0->unk_0C = ROUND_MAX(((COSS(arg0->unk_0A) * 0.5f) + 0.5f) * 255.0f);
 
     if ((arg0->unk_06 <= 0) && (arg0->unk_0C >= 0xFF)) {
-        sp1C = arg0 - D_82F211A0;
+        sp1C = arg0 - gTradeBalls;
         TradeCable_SetBallState(sp1C, 3);
         if (sp1C == 0) {
             Audio_PlaySoundEffectById(SFX_TRADE_BALL_READY);
@@ -96,7 +96,7 @@ void TradeCable_UpdateBallSpinPulse(unk_D_82F211A0* arg0) {
     }
 }
 
-void TradeCable_SpawnBallTrailGhost(unk_D_82F211A0* arg0) {
+void TradeCable_SpawnBallTrailGhost(TradeBall* arg0) {
     s32 i;
     unk_D_82F211A0_010* var_v0 = NULL;
 
@@ -118,7 +118,7 @@ void TradeCable_SpawnBallTrailGhost(unk_D_82F211A0* arg0) {
     }
 }
 
-void TradeCable_UpdateBallTrailGhosts(unk_D_82F211A0* arg0) {
+void TradeCable_UpdateBallTrailGhosts(TradeBall* arg0) {
     s32 i;
     unk_D_82F211A0_010* ptr;
 
@@ -132,8 +132,8 @@ void TradeCable_UpdateBallTrailGhosts(unk_D_82F211A0* arg0) {
     }
 }
 
-void TradeCable_UpdateBallTravel(unk_D_82F211A0* arg0) {
-    s32 idx = arg0 - D_82F211A0;
+void TradeCable_UpdateBallTravel(TradeBall* arg0) {
+    s32 idx = arg0 - gTradeBalls;
 
     if (arg0->unk_0E > 0) {
         TradeCable_UpdateBallTrailGhosts(arg0);
@@ -166,7 +166,7 @@ void TradeCable_UpdateBallTravel(unk_D_82F211A0* arg0) {
 
 void TradeCable_UpdateBalls(void) {
     s32 i;
-    unk_D_82F211A0* var_s0 = &D_82F211A0[0];
+    TradeBall* var_s0 = &gTradeBalls[0];
 
     for (i = 0; i < 2; i++, var_s0++) {
         switch (var_s0->unk_00) {
@@ -191,11 +191,11 @@ void TradeCable_DrawBalls(void) {
     s32 sp84 = 0;
     s16 var_s0;
     u16* temp_s0;
-    unk_D_82F211A0* var_s4;
+    TradeBall* var_s4;
     s16 v;
     s16 tmp;
 
-    for (i = 0, var_s4 = &D_82F211A0[0]; i < 2; i++, var_s4++) {
+    for (i = 0, var_s4 = &gTradeBalls[0]; i < 2; i++, var_s4++) {
         if (var_s4->unk_00 != 0) {
             temp_s0 = Trade_GetPickBuffer(i);
 
@@ -251,10 +251,10 @@ void TradeCable_DrawBalls(void) {
 }
 
 void TradeEvo_ResetState(void) {
-    D_82F21238.unk_02 = 0;
+    gScreenTransition.unk_02 = 0;
 }
 
-void TradeEvo_CreatePreviewModel(unk_D_82F21238* arg0, s32 arg1) {
+void TradeEvo_CreatePreviewModel(TradeEvoState* arg0, s32 arg1) {
     arg0->unk_28 = PokeIcon_AllocFramebuffers(1);
     arg0->unk_2C = PokeIcon_CreateModelPreview(arg0->unk_28, 0xC0, 0xC0, 0, 0, 0xC0, 0xC0, NULL);
     arg0->unk_2C->unk_00 &= ~2;
@@ -272,15 +272,15 @@ void TradeEvo_CreatePreviewModel(unk_D_82F21238* arg0, s32 arg1) {
 
 void TradeEvo_BeginSequence(s16 arg0) {
     unk_func_82F00838_sp30 sp20;
-    unk_D_82F21238* ptr = &D_82F21238;
+    TradeEvoState* ptr = &gScreenTransition;
 
     main_pool_push_state('intr');
     Trade_GetPickScreenSnapshot(arg0, &sp20);
-    D_82F21238.unk_00 = arg0;
-    D_82F21238.unk_02 = 1;
-    D_82F21238.unk_04 = sp20.unk_02;
-    D_82F21238.unk_06 = 1;
-    D_82F21238.unk_08 = 0;
+    gScreenTransition.unk_00 = arg0;
+    gScreenTransition.unk_02 = 1;
+    gScreenTransition.unk_04 = sp20.unk_02;
+    gScreenTransition.unk_06 = 1;
+    gScreenTransition.unk_08 = 0;
     ptr->unk_0A = MathUtil_Random16() % 2;
     ptr->unk_0C = 0;
     ptr->unk_0E = 0x140;
@@ -290,7 +290,7 @@ void TradeEvo_BeginSequence(s16 arg0) {
     ptr->unk_16 = 0xFF;
     ptr->unk_20 = 0;
     ptr->unk_24 = &sp20.unk_0C[sp20.unk_06];
-    TradeEvo_CreatePreviewModel(&D_82F21238, 0);
+    TradeEvo_CreatePreviewModel(&gScreenTransition, 0);
     ptr->unk_30.unk_00 = ptr->unk_30.unk_02 = 0;
     ptr->unk_30.unk_04 = ptr->unk_30.unk_06 = -1;
 
@@ -298,7 +298,7 @@ void TradeEvo_BeginSequence(s16 arg0) {
     GbSave_SetSeenOwnedBits(ptr->unk_04, ptr->unk_24->unk_00.unk_00, 3);
 }
 
-void TradeEvo_UpdatePreviewModel(unk_D_82F21238* arg0) {
+void TradeEvo_UpdatePreviewModel(TradeEvoState* arg0) {
     DisplayObject* sp24 = arg0->unk_2C->unk_24;
 
     if ((ModelAnim_IsFinished(sp24) != 0) && (arg0->unk_06 == 2)) {
@@ -309,7 +309,7 @@ void TradeEvo_UpdatePreviewModel(unk_D_82F21238* arg0) {
     arg0->unk_20 = PokeIcon_RenderPreview(arg0->unk_2C);
 }
 
-void TradeEvo_UpdateOpenPreview(unk_D_82F21238* arg0) {
+void TradeEvo_UpdateOpenPreview(TradeEvoState* arg0) {
     if (arg0->unk_12 < 0xC0) {
         arg0->unk_12 += 0x20;
         if (arg0->unk_12 >= 0xC1) {
@@ -344,7 +344,7 @@ s32 Trade_SpeciesEvolvesOnTransfer(s32 arg0) {
     return var_v1;
 }
 
-void TradeEvo_UpdateWaitForConfirm(unk_D_82F21238* arg0) {
+void TradeEvo_UpdateWaitForConfirm(TradeEvoState* arg0) {
     TradeEvo_UpdatePreviewModel(arg0);
 
     if (arg0->unk_08 != 0) {
@@ -378,7 +378,7 @@ void TradeEvo_UpdateWaitForConfirm(unk_D_82F21238* arg0) {
     }
 }
 
-void TradeEvo_UpdateFlashIn(unk_D_82F21238* arg0) {
+void TradeEvo_UpdateFlashIn(TradeEvoState* arg0) {
     arg0->unk_0C--;
     TradeEvo_UpdatePreviewModel(arg0);
     arg0->unk_16 = (arg0->unk_0C * 0xFF) / 60;
@@ -440,7 +440,7 @@ void Trade_ApplyEvolution(s16 arg0, BattleMon* arg1) {
     }
 }
 
-void TradeEvo_UpdateApplyEvolution(unk_D_82F21238* arg0) {
+void TradeEvo_UpdateApplyEvolution(TradeEvoState* arg0) {
     arg0->unk_0C--;
     if (arg0->unk_0C <= 0) {
         main_pool_pop_state('intr');
@@ -464,9 +464,9 @@ void TradeEvo_UpdateApplyEvolution(unk_D_82F21238* arg0) {
     }
 }
 
-void TradeEvo_UpdateShowCaption(unk_D_82F21238* arg0) {
+void TradeEvo_UpdateShowCaption(TradeEvoState* arg0) {
     s16 var_v1;
-    unk_D_82F20A40_00E* ptr = &arg0->unk_30;
+    PanelRect* ptr = &arg0->unk_30;
 
     TradeEvo_UpdatePreviewModel(arg0);
     arg0->unk_0C--;
@@ -500,8 +500,8 @@ void TradeEvo_UpdateShowCaption(unk_D_82F21238* arg0) {
     }
 }
 
-void TradeEvo_UpdateClosePreview(unk_D_82F21238* arg0) {
-    unk_D_82F20A40_00E* temp_v0_2 = &arg0->unk_30;
+void TradeEvo_UpdateClosePreview(TradeEvoState* arg0) {
+    PanelRect* temp_v0_2 = &arg0->unk_30;
 
     if (arg0->unk_0C > 0) {
         arg0->unk_0C--;
@@ -545,38 +545,38 @@ void TradeEvo_UpdateClosePreview(unk_D_82F21238* arg0) {
 }
 
 void TradeEvo_Update(void) {
-    switch (D_82F21238.unk_02) {
+    switch (gScreenTransition.unk_02) {
         case 0:
             break;
 
         case 1:
-            TradeEvo_UpdateOpenPreview(&D_82F21238);
+            TradeEvo_UpdateOpenPreview(&gScreenTransition);
             break;
 
         case 2:
-            TradeEvo_UpdateWaitForConfirm(&D_82F21238);
+            TradeEvo_UpdateWaitForConfirm(&gScreenTransition);
             break;
 
         case 3:
-            TradeEvo_UpdateFlashIn(&D_82F21238);
+            TradeEvo_UpdateFlashIn(&gScreenTransition);
             break;
 
         case 4:
-            TradeEvo_UpdateApplyEvolution(&D_82F21238);
+            TradeEvo_UpdateApplyEvolution(&gScreenTransition);
             break;
 
         case 5:
-            TradeEvo_UpdateShowCaption(&D_82F21238);
+            TradeEvo_UpdateShowCaption(&gScreenTransition);
             break;
 
         case 6:
-            TradeEvo_UpdateClosePreview(&D_82F21238);
+            TradeEvo_UpdateClosePreview(&gScreenTransition);
             break;
     }
 }
 
 void TradeEvo_DrawGlowBackdrop(s16 arg0, s16 arg1, s16 arg2) {
-    static Gfx D_82F13F90[] = {
+    static Gfx gTradeEvoGlowDL[] = {
         gsDPPipeSync(),
         gsDPSetCycleType(G_CYC_2CYCLE),
         gsDPSetRenderMode(G_RM_PASS, G_RM_XLU_SURF2),
@@ -596,7 +596,7 @@ void TradeEvo_DrawGlowBackdrop(s16 arg0, s16 arg1, s16 arg2) {
     f32 temp_fa8;
     f32 temp_faC;
 
-    gSPDisplayList(gDisplayListHead++, D_82F13F90);
+    gSPDisplayList(gDisplayListHead++, gTradeEvoGlowDL);
     gDPSetEnvColor(gDisplayListHead++, 0, 0, 50, (arg2 << 7) / 255);
 
     gDPLoadMultiBlock_4b(gDisplayListHead++, D_3026368, 0x0100, 1, G_IM_FMT_I, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
@@ -660,7 +660,7 @@ void TradeEvo_DrawPreviewFrame(s16 arg0, s16 arg1, s16 arg2, s16 arg3) {
     gSPDisplayList(gDisplayListHead++, gUiRestoreTextureDL);
 }
 
-void TradeEvo_DrawPreviewStrips(unk_D_82F21238* arg0) {
+void TradeEvo_DrawPreviewStrips(TradeEvoState* arg0) {
     UNUSED s32 pad;
     s16 i;
     s32 sp5C;
@@ -706,10 +706,10 @@ void TradeEvo_DrawPreviewStrips(unk_D_82F21238* arg0) {
     }
 }
 
-void func_82F0ECA4(void) {
+void TradeCable_NullFunc(void) {
 }
 
-void TradeEvo_DrawEvolutionCaption(unk_D_82F20A40_00E* arg0, BattleMon* arg1) {
+void TradeEvo_DrawEvolutionCaption(PanelRect* arg0, BattleMon* arg1) {
     s16 spC6;
     s8 sp44[0x80];
     char* sp40;
@@ -747,7 +747,7 @@ void TradeEvo_DrawEvolutionCaption(unk_D_82F20A40_00E* arg0, BattleMon* arg1) {
 }
 
 void TradeEvo_Draw(void) {
-    unk_D_82F21238* ptr = &D_82F21238;
+    TradeEvoState* ptr = &gScreenTransition;
     UNUSED s32 pad;
     s32 sp24;
 
@@ -758,7 +758,7 @@ void TradeEvo_Draw(void) {
                 sp24 = 1;
                 Gfx_SetScissorRect(&gDisplayListHead, ptr->unk_0E, ptr->unk_10, ptr->unk_12, ptr->unk_14);
                 if (ptr->unk_20 != 0) {
-                    TradeEvo_DrawPreviewStrips(&D_82F21238);
+                    TradeEvo_DrawPreviewStrips(&gScreenTransition);
                 }
                 TradeEvo_DrawGlowBackdrop(0xE0, 0x64, ptr->unk_16);
             }
@@ -778,9 +778,9 @@ void TradeEvo_Draw(void) {
 
 void TradeCable_ResetLights(void) {
     s32 i;
-    unk_D_82F21160* var_v1;
+    TradeCableLight* var_v1;
 
-    for (i = 0, var_v1 = &D_82F21160[0]; i < 2; i++, var_v1++) {
+    for (i = 0, var_v1 = &gMenuPanels[0]; i < 2; i++, var_v1++) {
         var_v1->unk_00 = 0;
         var_v1->unk_02 = 0;
         var_v1->unk_04 = 0;
@@ -798,17 +798,17 @@ void TradeCable_ResetLights(void) {
 }
 
 void TradeCable_SetLightState(s32 arg0, s16 arg1) {
-    static s16 D_82F13FD0[] = { 0x64, 0x2C8 };
-    static s16 D_82F13FD4[] = { 0x50, 0x236, 0, 0, 0x3F80, 0 };
+    static s16 gTradeCableLightXPos[] = { 0x64, 0x2C8 };
+    static s16 gTradeCableLightYPos[] = { 0x50, 0x236, 0, 0, 0x3F80, 0 };
 
-    unk_D_82F21160* temp_v0 = &D_82F21160[arg0];
+    TradeCableLight* temp_v0 = &gMenuPanels[arg0];
 
     temp_v0->unk_00 = arg1;
 
     switch (arg1) {
         case 1:
-            temp_v0->unk_02 = D_82F13FD0[arg0];
-            temp_v0->unk_04 = D_82F21140.unk_02 + temp_v0->unk_02;
+            temp_v0->unk_02 = gTradeCableLightXPos[arg0];
+            temp_v0->unk_04 = gTradeCableState.unk_02 + temp_v0->unk_02;
             temp_v0->unk_06 = 0xFA;
             temp_v0->unk_08 = temp_v0->unk_04 - 0x40;
             temp_v0->unk_0A = 0xAE;
@@ -834,7 +834,7 @@ void TradeCable_SetLightState(s32 arg0, s16 arg1) {
             temp_v0->unk_0A = 0;
             temp_v0->unk_0C = 0;
             temp_v0->unk_0E = 0;
-            temp_v0->unk_10 = D_82F21140.unk_18;
+            temp_v0->unk_10 = gTradeCableState.unk_18;
             break;
 
         case 4:
@@ -843,7 +843,7 @@ void TradeCable_SetLightState(s32 arg0, s16 arg1) {
             } else {
                 temp_v0->unk_02 = 0x236;
             }
-            temp_v0->unk_04 = D_82F21140.unk_02 + temp_v0->unk_02;
+            temp_v0->unk_04 = gTradeCableState.unk_02 + temp_v0->unk_02;
             temp_v0->unk_14 = 0.75f;
             break;
 
@@ -859,8 +859,8 @@ void TradeCable_SetLightState(s32 arg0, s16 arg1) {
             break;
 
         case 6:
-            temp_v0->unk_02 = D_82F13FD4[arg0];
-            temp_v0->unk_04 = D_82F21140.unk_02 + temp_v0->unk_02;
+            temp_v0->unk_02 = gTradeCableLightYPos[arg0];
+            temp_v0->unk_04 = gTradeCableState.unk_02 + temp_v0->unk_02;
             temp_v0->unk_06 = 0xA0;
             temp_v0->unk_08 = temp_v0->unk_04 - 0x40;
             if (temp_v0->unk_08 < 0) {
@@ -877,8 +877,8 @@ void TradeCable_SetLightState(s32 arg0, s16 arg1) {
             break;
 
         case 8:
-            temp_v0->unk_02 = D_82F13FD4[arg0];
-            temp_v0->unk_04 = D_82F21140.unk_02 + temp_v0->unk_02;
+            temp_v0->unk_02 = gTradeCableLightYPos[arg0];
+            temp_v0->unk_04 = gTradeCableState.unk_02 + temp_v0->unk_02;
             temp_v0->unk_06 = 0xA0;
             temp_v0->unk_08 = temp_v0->unk_04 - 0x40;
             if (temp_v0->unk_08 < 0) {
@@ -896,15 +896,15 @@ void TradeCable_SetLightState(s32 arg0, s16 arg1) {
     }
 }
 
-void TradeCable_UpdateLightShrinkToIdle(unk_D_82F21160* arg0) {
+void TradeCable_UpdateLightShrinkToIdle(TradeCableLight* arg0) {
     arg0->unk_06 -= 2;
     if (arg0->unk_06 < 0xBF) {
-        TradeCable_SetLightState(arg0 - D_82F21160, 2);
+        TradeCable_SetLightState(arg0 - gMenuPanels, 2);
     }
 }
 
-void TradeCable_UpdateLightIdlePulse(unk_D_82F21160* arg0) {
-    arg0->unk_04 = D_82F21140.unk_02 + arg0->unk_02;
+void TradeCable_UpdateLightIdlePulse(TradeCableLight* arg0) {
+    arg0->unk_04 = gTradeCableState.unk_02 + arg0->unk_02;
     arg0->unk_06 = (s16)ROUND_MAX(SINS(arg0->unk_12) * 3.0f) + 0xBE;
 
     arg0->unk_12 += 0x800;
@@ -915,7 +915,7 @@ void TradeCable_UpdateLightIdlePulse(unk_D_82F21160* arg0) {
     }
 }
 
-void TradeCable_UpdateLightSlideIn(unk_D_82F21160* arg0) {
+void TradeCable_UpdateLightSlideIn(TradeCableLight* arg0) {
     f32 one = 1.0f;
     s16 var_v0;
     s16 tmp1;
@@ -923,20 +923,20 @@ void TradeCable_UpdateLightSlideIn(unk_D_82F21160* arg0) {
     s32 temp_a3;
     f32 tmpf1;
 
-    var_v0 = D_82F21140.unk_18;
+    var_v0 = gTradeCableState.unk_18;
     if (arg0->unk_10 < var_v0) {
         var_v0 = 0;
     }
     temp_a1 = (var_v0 * -0x14);
 
-    temp_a3 = arg0 - D_82F21160;
+    temp_a3 = arg0 - gMenuPanels;
     if (temp_a3 == 0) {
         arg0->unk_02 = ((var_v0 * 0x14) / arg0->unk_10) + 0x50;
     } else {
         arg0->unk_02 = ((var_v0 * 0x92) / arg0->unk_10) + 0x236;
     }
 
-    arg0->unk_04 = D_82F21140.unk_02 + arg0->unk_02;
+    arg0->unk_04 = gTradeCableState.unk_02 + arg0->unk_02;
 
     tmp1 = (temp_a1 / arg0->unk_10) + 0xD2;
     tmpf1 = (((var_v0 * one) / arg0->unk_10) + 2.0f);
@@ -951,14 +951,14 @@ void TradeCable_UpdateLightSlideIn(unk_D_82F21160* arg0) {
     }
 }
 
-void TradeCable_UpdateLightWaitPulse(unk_D_82F21160* arg0) {
-    arg0->unk_04 = D_82F21140.unk_02 + arg0->unk_02;
+void TradeCable_UpdateLightWaitPulse(TradeCableLight* arg0) {
+    arg0->unk_04 = gTradeCableState.unk_02 + arg0->unk_02;
     arg0->unk_06 = (s16)ROUND_MAX(2.0f * SINS(arg0->unk_12)) + 0xD2;
     arg0->unk_12 += 0x800;
 }
 
-void TradeCable_UpdateLightShrinkOut(unk_D_82F21160* arg0) {
-    arg0->unk_04 = D_82F21140.unk_02 + arg0->unk_02;
+void TradeCable_UpdateLightShrinkOut(TradeCableLight* arg0) {
+    arg0->unk_04 = gTradeCableState.unk_02 + arg0->unk_02;
     arg0->unk_12--;
     arg0->unk_06 += arg0->unk_12;
     if (arg0->unk_06 < 0x79) {
@@ -967,7 +967,7 @@ void TradeCable_UpdateLightShrinkOut(unk_D_82F21160* arg0) {
     }
 }
 
-void TradeCable_UpdateLightGrowFlash(unk_D_82F21160* arg0) {
+void TradeCable_UpdateLightGrowFlash(TradeCableLight* arg0) {
     s16 idx;
 
     arg0->unk_12++;
@@ -977,22 +977,22 @@ void TradeCable_UpdateLightGrowFlash(unk_D_82F21160* arg0) {
         arg0->unk_06 = 0xD2;
         arg0->unk_18 = MathUtil_Random16() % 16;
         arg0->unk_12 = MathUtil_Random16();
-        idx = arg0 - D_82F21160;
+        idx = arg0 - gMenuPanels;
         if (idx == 0) {
-            D_82F21140.unk_0C &= ~0x40;
+            gTradeCableState.unk_0C &= ~0x40;
         }
     }
 }
 
-void TradeCable_UpdateLightFlashPulse(unk_D_82F21160* arg0) {
-    arg0->unk_04 = D_82F21140.unk_02 + arg0->unk_02;
+void TradeCable_UpdateLightFlashPulse(TradeCableLight* arg0) {
+    arg0->unk_04 = gTradeCableState.unk_02 + arg0->unk_02;
     arg0->unk_06 = (s16)ROUND_MAX(2.0f * SINS(arg0->unk_12)) + 0xD2;
     arg0->unk_12 += 0x800;
 }
 
-void TradeCable_UpdateLightFadeInThenPulse(unk_D_82F21160* arg0) {
+void TradeCable_UpdateLightFadeInThenPulse(TradeCableLight* arg0) {
     if (arg0->unk_1C < 9.0f) {
-        arg0->unk_04 = D_82F21140.unk_02 + arg0->unk_02;
+        arg0->unk_04 = gTradeCableState.unk_02 + arg0->unk_02;
         arg0->unk_06 = (s16)ROUND_MAX(2.0f * SINS(arg0->unk_12)) + 0xD2;
         arg0->unk_12 += 0x800;
 
@@ -1012,10 +1012,10 @@ void TradeCable_UpdateLightFadeInThenPulse(unk_D_82F21160* arg0) {
 
 void TradeCable_UpdateLights(void) {
     s32 var_s1;
-    unk_D_82F21160* var_s0;
+    TradeCableLight* var_s0;
     s32 i;
 
-    var_s0 = D_82F21160;
+    var_s0 = gMenuPanels;
 
     for (i = 0; i < 2; i++, var_s0++) {
         var_s1 = 1;
@@ -1072,7 +1072,7 @@ void TradeCable_UpdateLights(void) {
 }
 
 void TradeCable_DrawLightSpark(s16 arg0, s16 arg1, f32 arg2, s16 arg3) {
-    static u8* D_82F13FE0[] = {
+    static u8* gTradeCableSparkTex[] = {
         D_300D868, D_300EA68, D_300FC68, D_3010E68, D_3012068, D_3013268, D_3013268, D_3013268,
         D_3013268, D_3013268, D_3013268, D_3013268, D_3012068, D_3010E68, D_300FC68, D_300EA68,
     };
@@ -1098,7 +1098,7 @@ void TradeCable_DrawLightSpark(s16 arg0, s16 arg1, f32 arg2, s16 arg3) {
             sp5C = ROUND_MAX(1024.0f / arg2);
             var_fv0_4 = ROUND_MAX(24.0f * arg2);
 
-            var_s2 = D_82F13FE0[arg3];
+            var_s2 = gTradeCableSparkTex[arg3];
             for (i = 0; i < 2; i++) {
                 gDPLoadTextureBlock(gDisplayListHead++, var_s2, G_IM_FMT_RGBA, G_IM_SIZ_16b, 48, 24, 0,
                                     G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
@@ -1114,9 +1114,9 @@ void TradeCable_DrawLightSpark(s16 arg0, s16 arg1, f32 arg2, s16 arg3) {
 void TradeCable_DrawLights(void) {
     s32 i;
     s32 var_s3 = 0;
-    unk_D_82F21160* var_s0;
+    TradeCableLight* var_s0;
 
-    for (i = 0, var_s0 = D_82F21160; i < 2; i++, var_s0++) {
+    for (i = 0, var_s0 = gMenuPanels; i < 2; i++, var_s0++) {
         if (var_s0->unk_00 == 0) {
             continue;
         }
@@ -1141,7 +1141,7 @@ void TradeCable_DrawLights(void) {
 s32 TradeCable_IsSequenceActive(void) {
     s32 var_v1 = 0;
 
-    if (D_82F21140.unk_0E != 0) {
+    if (gTradeCableState.unk_0E != 0) {
         var_v1 = 1;
     }
     return var_v1;
@@ -1149,8 +1149,8 @@ s32 TradeCable_IsSequenceActive(void) {
 
 void TradeCable_SetSequenceState(s16 arg0) {
     UNUSED s32 pad;
-    unk_D_82F21140* ptr = &D_82F21140;
-    unk_D_82F21160* ptr2;
+    TradeCableState* ptr = &gTradeCableState;
+    TradeCableLight* ptr2;
     s32 i;
     u16 tmp = 0;
 
@@ -1200,7 +1200,7 @@ void TradeCable_SetSequenceState(s16 arg0) {
         case 9:
             ptr->unk_18 = 0xA;
 
-            ptr2 = &D_82F21160[0];
+            ptr2 = &gMenuPanels[0];
             for (i = 0; i < 2; i++, ptr2++) {
                 if (ptr2->unk_00 != 0) {
                     TradeCable_SetLightState(i, 3);
@@ -1249,7 +1249,7 @@ void TradeCable_SetSequenceState(s16 arg0) {
     }
 }
 
-void TradeCable_UpdateSequenceIdle(unk_D_82F21140* arg0) {
+void TradeCable_UpdateSequenceIdle(TradeCableState* arg0) {
     if (Trade_GetBoxMachineFlowState() != 0) {
         switch (Trade_GetBoxMachineFlowState()) {
             case 1:
@@ -1280,7 +1280,7 @@ void TradeCable_UpdateSequenceIdle(unk_D_82F21140* arg0) {
     }
 }
 
-void TradeCable_UpdateSequenceOpen(unk_D_82F21140* arg0) {
+void TradeCable_UpdateSequenceOpen(TradeCableState* arg0) {
     arg0->unk_18--;
     arg0->unk_14 = ((arg0->unk_18 * 0x60) / 30) + 0x20;
     arg0->unk_16 = ((arg0->unk_18 * -0x40) / 30) + 0x80;
@@ -1289,7 +1289,7 @@ void TradeCable_UpdateSequenceOpen(unk_D_82F21140* arg0) {
     }
 }
 
-void TradeCable_UpdateSequenceSlideVertical(unk_D_82F21140* arg0) {
+void TradeCable_UpdateSequenceSlideVertical(TradeCableState* arg0) {
     s16 var_v0;
 
     arg0->unk_18--;
@@ -1312,7 +1312,7 @@ void TradeCable_UpdateSequenceSlideVertical(unk_D_82F21140* arg0) {
     }
 }
 
-void TradeCable_UpdateSequenceWaitLight0(unk_D_82F21140* arg0) {
+void TradeCable_UpdateSequenceWaitLight0(TradeCableState* arg0) {
     if (arg0->unk_18 > 0) {
         arg0->unk_18--;
     }
@@ -1344,7 +1344,7 @@ void TradeCable_UpdateSequenceWaitLight0(unk_D_82F21140* arg0) {
     }
 }
 
-void TradeCable_UpdateSequenceSlideHorizontal(unk_D_82F21140* arg0) {
+void TradeCable_UpdateSequenceSlideHorizontal(TradeCableState* arg0) {
     arg0->unk_18--;
     arg0->unk_02 = ((arg0->unk_18 * 0x1F8) / 10) - 0x15E;
     if (arg0->unk_18 <= 0) {
@@ -1352,7 +1352,7 @@ void TradeCable_UpdateSequenceSlideHorizontal(unk_D_82F21140* arg0) {
     }
 }
 
-void TradeCable_UpdateSequenceWaitLight1(unk_D_82F21140* arg0) {
+void TradeCable_UpdateSequenceWaitLight1(TradeCableState* arg0) {
     if (arg0->unk_18 > 0) {
         arg0->unk_18--;
     }
@@ -1384,7 +1384,7 @@ void TradeCable_UpdateSequenceWaitLight1(unk_D_82F21140* arg0) {
     }
 }
 
-void TradeCable_UpdateSequenceSlideBack(unk_D_82F21140* arg0) {
+void TradeCable_UpdateSequenceSlideBack(TradeCableState* arg0) {
     arg0->unk_18--;
     arg0->unk_02 = ((arg0->unk_18 * -0x14A) / 10) - 0x14;
     arg0->unk_04 = ((arg0->unk_18 * -0x43) / 10) + 0x18;
@@ -1400,7 +1400,7 @@ void TradeCable_UpdateSequenceSlideBack(unk_D_82F21140* arg0) {
     }
 }
 
-void TradeCable_UpdateSequenceLaunchBalls(unk_D_82F21140* arg0) {
+void TradeCable_UpdateSequenceLaunchBalls(TradeCableState* arg0) {
     if (Trade_GetSaveSeqState() == 2) {
         arg0->unk_0C &= ~0x10;
         arg0->unk_0C &= ~2;
@@ -1418,13 +1418,13 @@ void TradeCable_UpdateSequenceLaunchBalls(unk_D_82F21140* arg0) {
     }
 }
 
-void TradeCable_UpdateSequenceWaitBallsArrived(unk_D_82F21140* arg0) {
+void TradeCable_UpdateSequenceWaitBallsArrived(TradeCableState* arg0) {
     if (TradeCable_CheckSequenceCondition(7) != 0) {
         TradeCable_SetSequenceState(5);
     }
 }
 
-void TradeCable_UpdateSequenceSlideToEvoSlot0(unk_D_82F21140* arg0) {
+void TradeCable_UpdateSequenceSlideToEvoSlot0(TradeCableState* arg0) {
     s16 var_v1 = arg0->unk_18;
 
     arg0->unk_18--;
@@ -1440,13 +1440,13 @@ void TradeCable_UpdateSequenceSlideToEvoSlot0(unk_D_82F21140* arg0) {
     }
 }
 
-void TradeCable_UpdateSequenceWaitEvoSlot0(unk_D_82F21140* arg0) {
+void TradeCable_UpdateSequenceWaitEvoSlot0(TradeCableState* arg0) {
     if (TradeCable_CheckSequenceCondition(0xB) != 0) {
         TradeCable_SetSequenceState(0xE);
     }
 }
 
-void TradeCable_UpdateSequenceSlideToEvoSlot1(unk_D_82F21140* arg0) {
+void TradeCable_UpdateSequenceSlideToEvoSlot1(TradeCableState* arg0) {
     s16 var_v1 = arg0->unk_18;
 
     arg0->unk_18--;
@@ -1462,13 +1462,13 @@ void TradeCable_UpdateSequenceSlideToEvoSlot1(unk_D_82F21140* arg0) {
     }
 }
 
-void TradeCable_UpdateSequenceWaitEvoSlot1(unk_D_82F21140* arg0) {
+void TradeCable_UpdateSequenceWaitEvoSlot1(TradeCableState* arg0) {
     if (TradeCable_CheckSequenceCondition(0xB) != 0) {
         TradeCable_SetSequenceState(0x10);
     }
 }
 
-void TradeCable_UpdateSequenceFinishEvo(unk_D_82F21140* arg0) {
+void TradeCable_UpdateSequenceFinishEvo(TradeCableState* arg0) {
     arg0->unk_18--;
     arg0->unk_02 = ((arg0->unk_18 * -0x1BC) / 10) - 0x14;
     arg0->unk_04 = ((arg0->unk_18 * 0) / 10) + 0x18;
@@ -1479,17 +1479,17 @@ void TradeCable_UpdateSequenceFinishEvo(unk_D_82F21140* arg0) {
     }
 }
 
-void TradeCable_UpdateSequenceClose(unk_D_82F21140* arg0) {
+void TradeCable_UpdateSequenceClose(TradeCableState* arg0) {
     s32 i;
 
     if (arg0->unk_00 == 5) {
         for (i = 0; i < 2; i++) {
-            if (D_82F21160[i].unk_00 == 4) {
+            if (gMenuPanels[i].unk_00 == 4) {
                 TradeCable_SetLightState(i, 8);
             }
         }
 
-        if ((D_82F21160->unk_00 != 0) || (D_82F21160[1].unk_00 != 0)) {
+        if ((gMenuPanels->unk_00 != 0) || (gMenuPanels[1].unk_00 != 0)) {
             return;
         }
     } else if ((arg0->unk_00 == 0x11) && (TradeCable_CheckSequenceCondition(9) == 0)) {
@@ -1509,7 +1509,7 @@ void TradeCable_UpdateSequenceClose(unk_D_82F21140* arg0) {
     }
 }
 
-void func_82F10BB4(s16 arg0, s16 arg1, f32 arg2) {
+void TradeCable_DrawSequenceBG(s16 arg0, s16 arg1, f32 arg2) {
     s16 temp_ft3;
     s16 temp_ft1;
     s16 temp_ft2;
@@ -1645,7 +1645,7 @@ void TradeCable_DrawTubeSparkBandDim(s16 arg0, s16 arg1, f32 arg2, s16 arg3, s16
 }
 
 void TradeCable_DrawTubeSparkBandBright(s16 arg0, s16 arg1, f32 arg2, s16 arg3, s16 arg4, s16 arg5, s16 arg6) {
-    static Gfx D_82F14020[] = {
+    static Gfx gTradeCableSparkBandBrightDL[] = {
         gsDPPipeSync(),
         gsDPSetCycleType(G_CYC_2CYCLE),
         gsDPSetRenderMode(G_RM_PASS, G_RM_XLU_SURF2),
@@ -1681,7 +1681,7 @@ void TradeCable_DrawTubeSparkBandBright(s16 arg0, s16 arg1, f32 arg2, s16 arg3, 
     var_fp = D_300B768;
     i = 0x83;
 
-    gSPDisplayList(gDisplayListHead++, D_82F14020);
+    gSPDisplayList(gDisplayListHead++, gTradeCableSparkBandBrightDL);
     gDPSetPrimColor(gDisplayListHead++, 0, 0, 100, 100, 255, arg6);
 
     for (; i > 0;) {
@@ -1736,11 +1736,11 @@ void TradeCable_DrawTubeEndCap(s16 arg0, s16 arg1, f32 arg2, s16 arg3, s16 arg4,
 }
 
 void TradeCable_RenderReflectionTexture(void) {
-    static f32 D_82F14050 = 0.0f;
-    static f32 D_82F14054 = 0.0f;
-    static f32 D_82F14058 = 0.0f;
-    static f32 D_82F1405C = 0.0f;
-    static Gfx D_82F14060[] = {
+    static f32 gTradeCableReflectionScrollX = 0.0f;
+    static f32 gTradeCableReflectionScrollY = 0.0f;
+    static f32 gMenuPanelBGTex1ScrollX = 0.0f;
+    static f32 gMenuPanelBGTex1ScrollY = 0.0f;
+    static Gfx gTradeCableReflectionDL[] = {
         gsDPPipeSync(),
         gsDPSetCycleType(G_CYC_2CYCLE),
         gsDPSetRenderMode(G_RM_OPA_SURF, G_RM_OPA_SURF2),
@@ -1756,41 +1756,41 @@ void TradeCable_RenderReflectionTexture(void) {
     f32 temp_fa8;
     f32 temp_faC;
 
-    GfxImage_SetRenderTarget(&gDisplayListHead, D_82F2115C);
+    GfxImage_SetRenderTarget(&gDisplayListHead, gTradeCableReflectionBuffer);
 
-    gSPDisplayList(gDisplayListHead++, D_82F14060);
+    gSPDisplayList(gDisplayListHead++, gTradeCableReflectionDL);
 
     gDPLoadMultiBlock_4b(gDisplayListHead++, D_3009BC0, 0x0100, 1, G_IM_FMT_I, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
                          G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, 1);
 
-    temp_fa8 = D_82F14058 + 31.0f;
-    temp_faC = D_82F1405C + 31.0f;
+    temp_fa8 = gMenuPanelBGTex1ScrollX + 31.0f;
+    temp_faC = gMenuPanelBGTex1ScrollY + 31.0f;
     if (1) {}
-    gDPSetTileSize(gDisplayListHead++, 1, D_82F14058 * 4.0f, D_82F1405C * 4.0f, temp_fa8 * 4.0f, temp_faC * 4.0f);
+    gDPSetTileSize(gDisplayListHead++, 1, gMenuPanelBGTex1ScrollX * 4.0f, gMenuPanelBGTex1ScrollY * 4.0f, temp_fa8 * 4.0f, temp_faC * 4.0f);
 
     gDPLoadTextureBlock_4b(gDisplayListHead++, D_30099B8, G_IM_FMT_I, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
                            G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, 2);
 
-    temp_fa0 = D_82F14050 + 31.0f;
-    temp_fa4 = D_82F14054 + 31.0f;
-    gDPSetTileSize(gDisplayListHead++, G_TX_RENDERTILE, D_82F14050 * 4.0f, D_82F14054 * 4.0f, temp_fa0 * 4.0f,
+    temp_fa0 = gTradeCableReflectionScrollX + 31.0f;
+    temp_fa4 = gTradeCableReflectionScrollY + 31.0f;
+    gDPSetTileSize(gDisplayListHead++, G_TX_RENDERTILE, gTradeCableReflectionScrollX * 4.0f, gTradeCableReflectionScrollY * 4.0f, temp_fa0 * 4.0f,
                    temp_fa4 * 4.0f);
 
     Gfx_DrawTexturedRectClipped(0, 0, 0x20, 0x20, 0, 0, 0x400, 0x400, 0x100000);
 
-    D_82F14050 += 0.75f;
-    if (D_82F14050 >= 32.0f) {
-        D_82F14050 -= 32.0f;
+    gTradeCableReflectionScrollX += 0.75f;
+    if (gTradeCableReflectionScrollX >= 32.0f) {
+        gTradeCableReflectionScrollX -= 32.0f;
     }
 
-    D_82F14054 += 5.75f;
-    if (D_82F14054 >= 32.0f) {
-        D_82F14054 -= 32.0f;
+    gTradeCableReflectionScrollY += 5.75f;
+    if (gTradeCableReflectionScrollY >= 32.0f) {
+        gTradeCableReflectionScrollY -= 32.0f;
     }
 
-    D_82F1405C -= 2.5f;
-    if (D_82F1405C < 0.0f) {
-        D_82F1405C += 32.0f;
+    gMenuPanelBGTex1ScrollY -= 2.5f;
+    if (gMenuPanelBGTex1ScrollY < 0.0f) {
+        gMenuPanelBGTex1ScrollY += 32.0f;
     }
 
     gDPPipeSync(gDisplayListHead++);
@@ -1799,7 +1799,7 @@ void TradeCable_RenderReflectionTexture(void) {
 }
 
 void TradeCable_DrawTubeEndCapReflective(s16 arg0, s16 arg1, f32 arg2, s16 arg3, s16 arg4, s16 arg5) {
-    static Gfx D_82F14098[] = {
+    static Gfx gTradeCableEndCapReflectiveDL[] = {
         gsDPPipeSync(),
         gsDPSetCycleType(G_CYC_2CYCLE),
         gsDPSetRenderMode(G_RM_PASS, G_RM_XLU_SURF2),
@@ -1827,8 +1827,8 @@ void TradeCable_DrawTubeEndCapReflective(s16 arg0, s16 arg1, f32 arg2, s16 arg3,
     sp80 = ROUND_MAX(1024.0f / arg2);
     temp_fa0_3 = ROUND_MAX(-1024.0f / arg2);
 
-    gSPDisplayList(gDisplayListHead++, D_82F14098);
-    gDPLoadMultiBlock(gDisplayListHead++, D_82F2115C->img_p, 0x0100, 1, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0,
+    gSPDisplayList(gDisplayListHead++, gTradeCableEndCapReflectiveDL);
+    gDPLoadMultiBlock(gDisplayListHead++, gTradeCableReflectionBuffer->img_p, 0x0100, 1, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0,
                       G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, 1, 1);
     gDPLoadTextureBlock_4b(gDisplayListHead++, D_30081A8, G_IM_FMT_I, 64, 64, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                            G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
@@ -1842,72 +1842,72 @@ void TradeCable_InitSequence(void) {
     TradeCable_ResetLights();
     TradeCable_ResetBalls();
     TradeEvo_ResetState();
-    D_82F2115C = GfxImage_Allocate(0, 2, 0x20, 0x20, 1);
+    gTradeCableReflectionBuffer = GfxImage_Allocate(0, 2, 0x20, 0x20, 1);
 }
 
 void TradeCable_UpdateSequence(void) {
-    switch (D_82F21140.unk_00) {
+    switch (gTradeCableState.unk_00) {
         case 0:
-            TradeCable_UpdateSequenceIdle(&D_82F21140);
+            TradeCable_UpdateSequenceIdle(&gTradeCableState);
             break;
 
         case 1:
-            TradeCable_UpdateSequenceOpen(&D_82F21140);
+            TradeCable_UpdateSequenceOpen(&gTradeCableState);
             break;
 
         case 2:
         case 4:
-            TradeCable_UpdateSequenceSlideVertical(&D_82F21140);
+            TradeCable_UpdateSequenceSlideVertical(&gTradeCableState);
             break;
 
         case 3:
-            TradeCable_UpdateSequenceWaitLight0(&D_82F21140);
+            TradeCable_UpdateSequenceWaitLight0(&gTradeCableState);
             break;
 
         case 6:
-            TradeCable_UpdateSequenceSlideHorizontal(&D_82F21140);
+            TradeCable_UpdateSequenceSlideHorizontal(&gTradeCableState);
             break;
 
         case 7:
-            TradeCable_UpdateSequenceWaitLight1(&D_82F21140);
+            TradeCable_UpdateSequenceWaitLight1(&gTradeCableState);
             break;
 
         case 8:
         case 9:
-            TradeCable_UpdateSequenceSlideBack(&D_82F21140);
+            TradeCable_UpdateSequenceSlideBack(&gTradeCableState);
             break;
 
         case 10:
-            TradeCable_UpdateSequenceLaunchBalls(&D_82F21140);
+            TradeCable_UpdateSequenceLaunchBalls(&gTradeCableState);
             break;
 
         case 11:
-            TradeCable_UpdateSequenceWaitBallsArrived(&D_82F21140);
+            TradeCable_UpdateSequenceWaitBallsArrived(&gTradeCableState);
             break;
 
         case 12:
-            TradeCable_UpdateSequenceSlideToEvoSlot0(&D_82F21140);
+            TradeCable_UpdateSequenceSlideToEvoSlot0(&gTradeCableState);
             break;
 
         case 13:
-            TradeCable_UpdateSequenceWaitEvoSlot0(&D_82F21140);
+            TradeCable_UpdateSequenceWaitEvoSlot0(&gTradeCableState);
             break;
 
         case 14:
-            TradeCable_UpdateSequenceSlideToEvoSlot1(&D_82F21140);
+            TradeCable_UpdateSequenceSlideToEvoSlot1(&gTradeCableState);
             break;
 
         case 15:
-            TradeCable_UpdateSequenceWaitEvoSlot1(&D_82F21140);
+            TradeCable_UpdateSequenceWaitEvoSlot1(&gTradeCableState);
             break;
 
         case 16:
-            TradeCable_UpdateSequenceFinishEvo(&D_82F21140);
+            TradeCable_UpdateSequenceFinishEvo(&gTradeCableState);
             break;
 
         case 5:
         case 17:
-            TradeCable_UpdateSequenceClose(&D_82F21140);
+            TradeCable_UpdateSequenceClose(&gTradeCableState);
             break;
     }
     TradeCable_UpdateLights();
@@ -1916,7 +1916,7 @@ void TradeCable_UpdateSequence(void) {
 }
 
 void TradeCable_DrawSequence(void) {
-    unk_D_82F21140* ptr = &D_82F21140;
+    TradeCableState* ptr = &gTradeCableState;
     u8 sp83;
     s32 var_v0_2;
     s32 tmp1;
@@ -1929,18 +1929,18 @@ void TradeCable_DrawSequence(void) {
     gDPSetRenderMode(gDisplayListHead++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
     gDPSetEnvColor(gDisplayListHead++, ptr->unk_14, ptr->unk_14, ptr->unk_14, 255);
 
-    func_82F10BB4(ptr->unk_02, ptr->unk_04, ptr->unk_10);
-    tmp1 = D_82F14424 & 0x3F;
+    TradeCable_DrawSequenceBG(ptr->unk_02, ptr->unk_04, ptr->unk_10);
+    tmp1 = gFragment41FrameCounter & 0x3F;
     sp83 = (ptr->unk_16 * tmp1) / 63u;
-    if (D_82F14424 & 0x40) {
+    if (gFragment41FrameCounter & 0x40) {
         sp83 = ptr->unk_16 - sp83;
     }
 
     if (ptr->unk_0C & 1) {
         if (Trade_GetTextPrinterState() == 1) {
-            tmp1 = D_82F14424 & 3;
+            tmp1 = gFragment41FrameCounter & 3;
             sp83 = (tmp1 * 0xFF) / 3u;
-            if (D_82F14424 & 4) {
+            if (gFragment41FrameCounter & 4) {
                 sp83 = 0xFF - sp83;
             }
         }
@@ -1960,18 +1960,18 @@ void TradeCable_DrawSequence(void) {
     TradeCable_DrawLights();
     TradeCable_DrawBalls();
 
-    tmp1 = D_82F14424 & 0x3F;
+    tmp1 = gFragment41FrameCounter & 0x3F;
     sp83 = (tmp1 * 0xFF) / 63u;
-    if (D_82F14424 & 0x40) {
+    if (gFragment41FrameCounter & 0x40) {
         sp83 = 0xFF - sp83;
     }
 
     gDPPipeSync(gDisplayListHead++);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, sp83);
 
-    tmp1 = D_82F14424 & 0x3F;
+    tmp1 = gFragment41FrameCounter & 0x3F;
     sp83 = ((tmp1) << 7) / 63u;
-    if (D_82F14424 & 0x40) {
+    if (gFragment41FrameCounter & 0x40) {
         sp83 = 0x80 - sp83;
     }
 
@@ -2015,73 +2015,73 @@ void TradeCable_DrawSequence(void) {
 }
 
 s32 TradeCable_CheckSequenceCondition(s16 arg0) {
-    unk_D_82F21160* ptr = &D_82F21160[0];
+    TradeCableLight* ptr = &gMenuPanels[0];
     s32 var_v1 = 0;
 
     switch (arg0) {
         case 1:
-            if ((D_82F21140.unk_00 == 3) && (D_82F21140.unk_18 == 0)) {
+            if ((gTradeCableState.unk_00 == 3) && (gTradeCableState.unk_18 == 0)) {
                 var_v1 = 1;
             }
             break;
 
         case 2:
-            if ((D_82F21140.unk_00 == 7) && (D_82F21140.unk_18 == 0)) {
+            if ((gTradeCableState.unk_00 == 7) && (gTradeCableState.unk_18 == 0)) {
                 var_v1 = 1;
             }
             break;
 
         case 3:
-            if (D_82F21140.unk_00 == 0) {
+            if (gTradeCableState.unk_00 == 0) {
                 var_v1 = 1;
             }
             break;
 
         case 4:
-            if ((D_82F21160[0].unk_00 == 2) && (ptr[0].unk_1C <= 1.0f)) {
+            if ((gMenuPanels[0].unk_00 == 2) && (ptr[0].unk_1C <= 1.0f)) {
                 var_v1 = 1;
             }
             break;
 
         case 5:
-            if ((D_82F21160[1].unk_00 == 2) && (ptr[1].unk_1C <= 1.0f)) {
+            if ((gMenuPanels[1].unk_00 == 2) && (ptr[1].unk_1C <= 1.0f)) {
                 var_v1 = 1;
             }
             break;
 
         case 6:
-            if (D_82F21140.unk_00 == 0xA) {
+            if (gTradeCableState.unk_00 == 0xA) {
                 var_v1 = 1;
             }
             break;
 
         case 8:
-            if ((D_82F21160[0].unk_00 == 7) && (D_82F21160[1].unk_00 == 7)) {
+            if ((gMenuPanels[0].unk_00 == 7) && (gMenuPanels[1].unk_00 == 7)) {
                 var_v1 = 1;
             }
             break;
 
         case 7:
         case 9:
-            if ((D_82F21160[0].unk_00 == 0) && (D_82F21160[1].unk_00 == 0)) {
+            if ((gMenuPanels[0].unk_00 == 0) && (gMenuPanels[1].unk_00 == 0)) {
                 var_v1 = 1;
             }
             break;
 
         case 10:
-            if (D_82F21140.unk_00 == 0) {
+            if (gTradeCableState.unk_00 == 0) {
                 var_v1 = 1;
             }
             break;
 
         case 11:
-            if (D_82F21238.unk_02 == 0) {
+            if (gScreenTransition.unk_02 == 0) {
                 var_v1 = 1;
             }
             break;
 
         case 12:
-            if (D_82F21238.unk_02 == 2) {
+            if (gScreenTransition.unk_02 == 2) {
                 var_v1 = 1;
             }
             break;
@@ -2091,9 +2091,9 @@ s32 TradeCable_CheckSequenceCondition(s16 arg0) {
 }
 
 void TradeCable_SetSequenceTimer(s16 arg0) {
-    D_82F21140.unk_0E = arg0;
+    gTradeCableState.unk_0E = arg0;
 }
 
 s16 TradeCable_GetSequenceState(void) {
-    return D_82F21140.unk_00;
+    return gTradeCableState.unk_00;
 }

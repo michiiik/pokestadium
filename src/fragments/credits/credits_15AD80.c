@@ -1,7 +1,7 @@
 #include "credits.h"
 #include "src/fragments/widget_toolkit/widget_toolkit.h"
 
-u16 D_86A05B50 = 0;
+u16 gBorderFadeCycleCount = 0;
 
 s32 Credits_RandomRange(s32 arg0) {
     if (arg0 == 0) {
@@ -11,18 +11,18 @@ s32 Credits_RandomRange(s32 arg0) {
 }
 
 void Credits_DrawContinuePrompt(u8 arg0) {
-    static u8 D_86A05B54 = 0;
+    static u8 sBorderFadeStep = 0;
 
     gSPDisplayList(gDisplayListHead++, gUiEnvTintTextureDL);
 
     if (!arg0) {
         gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-    } else if (D_86A05B54 < 0x1E) {
-        gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, (s32)ROUND_MAX((D_86A05B54 * 255.0f) / 30.0f));
-        D_86A05B54++;
+    } else if (sBorderFadeStep < 0x1E) {
+        gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, (s32)ROUND_MAX((sBorderFadeStep * 255.0f) / 30.0f));
+        sBorderFadeStep++;
     } else {
         gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-        D_86A05B50++;
+        gBorderFadeCycleCount++;
     }
 
     Widget_DrawStripedBar(0x6E, 0x5C);
@@ -32,10 +32,10 @@ void Credits_DrawContinuePrompt(u8 arg0) {
 
 s32 pad_D_86A05B58[2] = { 0, 0 };
 
-char D_86A05B60 = '\x00';
-char D_86A05B64 = '\x00';
-char D_86A05B68 = '\x00';
-char D_86A05B6C = '\x00';
+char gCreditsString00 = '\x00';
+char gCreditsMessageTable = '\x00';
+char gCreditsString01 = '\x00';
+char gCreditsString01Len = '\x00';
 char D_86A05B70 = '\x00';
 char D_86A05B74 = '\x00';
 char D_86A05B78 = '\x00';

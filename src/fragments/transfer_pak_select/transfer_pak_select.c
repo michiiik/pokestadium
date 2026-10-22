@@ -23,24 +23,24 @@
 #include "src/memory.h"
 #include "src/stage_loader.h"
 
-static u8* D_81303FA0;
-static unk_D_81303FA8 D_81303FA8[4];
-static s16 D_81304000;
-static unk_D_81304008 D_81304008[4];
-static GraphNode* D_81304648;
-static GraphNode* D_8130464C;
-static s16 D_81304650;
-static s32 D_81304654;
+static u8* gMenuMiscAssets;
+static PortStatus gEntryStatus[4];
+static s16 gSelectedEntryIndex;
+static PortGraphNode gEntryGraphNodes[4];
+static GraphNode* gMenuGeoNode;
+static GraphNode* gPortSelectRootNode;
+static s16 gIsEntrySelectionActive;
+static s32 gPresentationMode;
 #if !defined(VERSION_JP)
-static char** D_81304658;
-static char D_81304660[0x400];
+static char** gEntryMessageBank;
+static char gEntryIdBuffer[0x400];
 #endif
-static s16 D_81304A60;
-static s16 D_81304A62;
-static s32 D_81304A64;
+static s16 gPulseAlpha;
+static s16 gPrevSelectedEntryIndex;
+static s32 gEntryConfirmState;
 
 #if !defined(VERSION_JP)
-static u32 D_81303C20[] = {
+static u32 gPortSelectErrMsgsJp[] = {
     0xA4B3A4CE, 0xA5ABA1BC, 0xA5C8A5EA, 0x0AA5C3A5, 0xB8A4CFA1, 0xA2A4C4A4, 0xAB0AA4A8, 0xA4DEA4BB, 0xA4F3A1A3,
     0x00000000, 0xA5ECA5DD, 0xA1BCA5C8, 0xA4ACA1A2, 0x0AA4DFA4, 0xC4A4ABA4, 0xEAA4DEA4, 0xBB0AA4F3, 0xA1A30000,
     0xA5DDA5B1, 0xA5E2A5F3, 0xA5BBA5F3, 0x0AA5BFA1, 0xBCA4C7A1, 0xA2A5ECA5, 0xDD0AA1BC, 0xA5C8A4B5, 0xA4ECA4C6,
@@ -49,18 +49,18 @@ static u32 D_81303C20[] = {
 #else
 // Port messages for TransferPak_GetPortMessageIndex results 1-4. The JP TransferPak_DrawPortBox prints these
 // directly; the other builds print entries 0x0E-0x11 of string table 0x1F and keep the raw blob above.
-static char D_81303C20[] = "このカートリ\nッジは、つか\nえません。";
+static char gPortSelectErrMsgsJp[] = "このカートリ\nッジは、つか\nえません。";
 static char D_81303C48[] = "レポートが、\nみつかりませ\nん。";
 static char D_81303C68[] = "ポケモンセン\nターで、レポ\nートされてい\nません。";
 static char D_81303C98[] = "ずかんが、\nありません。";
 #endif
 
-static s16 D_81303CB0 = 0;
+static s16 gMenuAnimTimer = 0;
 
-static u32 D_81303CB4[] = {
+static u32 gPortSelectGeoLayout[] = {
     0x0C000000,  0x05000000, 0x0B00002D, 0x00000000, 0x028001E0, 0x00000000, 0xFDBD0000, 0x00000243, 0x05000000,
     0x0D000000,  0x05000000, 0x14000000, 0x002D013B, 0xFFFFFF32, 0x16FFFFFF, 0x0F000002, 0x05000000, 0x0A000000,
-    &D_800AC840, 0x06000000, 0x06000000, 0x06000000, 0x06000000, 0x01000000,
+    &gGraphRoot0, 0x06000000, 0x06000000, 0x06000000, 0x06000000, 0x01000000,
 #if !defined(VERSION_JP)
     0x00000000,
 #endif
@@ -73,7 +73,7 @@ static char* D_81303B94_jp = "ゲームボーイのカートリッジをえら�
 static char* D_81303B98_jp = "ポケモンの カートリッジが セット\nされていません。 でんげんをきってから\nカートリッジを セットしてください。";
 #endif
 
-static Vtx D_81303D18[] = {
+static Vtx gPortSelectVertices[] = {
     VTX(-32, 64, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),      VTX(-32, 32, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(32, 32, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF), VTX(32, 64, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-32, 32, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),      VTX(-32, 0, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
@@ -82,11 +82,11 @@ static Vtx D_81303D18[] = {
     VTX(16, 15, 0, 1024, 768, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(16, 39, 0, 1024, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
 
-static Gfx D_81303DD8[] = {
+static Gfx gPortSelectDisplayList[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetCombineLERP(0, 0, 0, TEXEL0, TEXEL0, 0, ENVIRONMENT, 0, 0, 0, 0, COMBINED, 0, 0, 0, COMBINED),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
-    gsSPVertex(D_81303D18, 12, 0),
+    gsSPVertex(gPortSelectVertices, 12, 0),
     gsDPLoadTextureBlock(0x0F000000, G_IM_FMT_RGBA, G_IM_SIZ_16b, 64, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                          G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
@@ -99,30 +99,30 @@ static Gfx D_81303DD8[] = {
     gsSPEndDisplayList(),
 };
 
-static u32 D_81303EC0[] = {
-    0x17000000, 0x00000000, 0x00000000,    0x00000000, D_81303D18, 0x05000000, 0x22050000,
-    0x00000000, 0x08000000, TransferPak_RenderPortNodeCallback, D_81303DD8, 0x06000000, 0x01000000,
+static u32 gPortSelectNodeData[] = {
+    0x17000000, 0x00000000, 0x00000000,    0x00000000, gPortSelectVertices, 0x05000000, 0x22050000,
+    0x00000000, 0x08000000, TransferPak_RenderPortNodeCallback, gPortSelectDisplayList, 0x06000000, 0x01000000,
 };
 
-static u32 D_81303EF4[] = {
+static u32 gPortModelTextures[] = {
     D_201D820, D_201DB20, D_201DE20, D_201E120, NULL,
 };
 
-static u32 D_81303F08[] = {
+static u32 gPortGradientColors[] = {
     0x1E1E1E00,
     0x00006400,
     0x0000FF00,
 };
 
-static Color_RGB8 D_81303F14 = { 0x64, 0x1E, 0x1E };
+static Color_RGB8 gGradientColor = { 0x64, 0x1E, 0x1E };
 static s32 pad_D_81303F18 = 0;
-static u8* D_81303F1C[] = { D_3000008, D_03000FD0, D_03001F98, D_03002F60, D_03003F28 };
+static u8* gPakIconAnimFrames[] = { D_3000008, D_03000FD0, D_03001F98, D_03002F60, D_03003F28 };
 
 s32 TransferPak_RenderPortNodeCallback(s32 arg0, GraphNode* arg1) {
     s32 idx;
 
     if (arg0 == 5) {
-        idx = D_8006F09C->node.callbackArg;
+        idx = gDefaultGraphRoot->node.callbackArg;
 
         gDPPipeSync(gDisplayListHead++);
 
@@ -132,11 +132,11 @@ s32 TransferPak_RenderPortNodeCallback(s32 arg0, GraphNode* arg1) {
             gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, 639, 202);
         }
 
-        gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, D_8006F09C->lodFraction);
+        gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, gDefaultGraphRoot->lodFraction);
 
-        if (D_81304008[idx].unk_01C != NULL) {
-            gSPSegment(gDisplayListHead++, 0x0F, Memmap_GetSegmentVaddr(D_81304008[idx].unk_01C));
-            gSPSegment(gDisplayListHead++, 0x0E, Memmap_GetSegmentVaddr(D_81303EF4[D_81304008[idx].unk_002]));
+        if (gEntryGraphNodes[idx].unk_01C != NULL) {
+            gSPSegment(gDisplayListHead++, 0x0F, Memmap_GetSegmentVaddr(gEntryGraphNodes[idx].unk_01C));
+            gSPSegment(gDisplayListHead++, 0x0E, Memmap_GetSegmentVaddr(gPortModelTextures[gEntryGraphNodes[idx].unk_002]));
             gSPDisplayList(gDisplayListHead++, arg1->callbackArg);
         }
         GeoRender_ApplyMaterialState();
@@ -153,16 +153,16 @@ s32 TransferPak_GetPresentationMode(void) {
 }
 
 void TransferPak_LaunchSelectedPortAnim(void) {
-    if (D_81304000 >= 0) {
-        D_81304008[D_81304000].unk_000 = 1;
-        D_81304008[D_81304000].unk_020 = -D_81304008[D_81304000].unk_028.position.x / 20.0f;
-        D_81304008[D_81304000].unk_024 = 36.0f;
-        D_81304650 = 0;
+    if (gSelectedEntryIndex >= 0) {
+        gEntryGraphNodes[gSelectedEntryIndex].unk_000 = 1;
+        gEntryGraphNodes[gSelectedEntryIndex].unk_020 = -gEntryGraphNodes[gSelectedEntryIndex].unk_028.position.x / 20.0f;
+        gEntryGraphNodes[gSelectedEntryIndex].unk_024 = 36.0f;
+        gIsEntrySelectionActive = 0;
     }
 }
 
 s32 TransferPak_GetPortErrorCode(s32 arg0) {
-    unk_D_81303FA8* ptr = &D_81303FA8[arg0];
+    PortStatus* ptr = &gEntryStatus[arg0];
     s32 var_v1;
 
     if (ptr->unk_01 != 0) {
@@ -222,7 +222,7 @@ void TransferPak_DrawPortBox(s32 arg0, s32 arg1, s32 arg2) {
     s16 tmp2;
     s16 tmp1;
 
-    if (D_81303FA8[arg0].unk_00 == 1) {
+    if (gEntryStatus[arg0].unk_00 == 1) {
         tmp1 = 0x80;
     } else {
         tmp1 = 0xFF;
@@ -234,10 +234,10 @@ void TransferPak_DrawPortBox(s32 arg0, s32 arg1, s32 arg2) {
         TransferPak_DrawPromptPanel(arg1, arg2, 0x78, 0x38, 0x64, 0x1E, 0x1E, tmp1);
     }
 
-    if ((arg0 == D_81304000) && (D_81304650 == 1) && (TransferPak_GetPortMessageIndex(arg0) > 0)) {
-        Ui_DrawGradientPanel(arg1 - 4, arg2 + 0x9C, 0x80, 0x74, &D_81303F14, &D_81303F14);
+    if ((arg0 == gSelectedEntryIndex) && (gIsEntrySelectionActive == 1) && (TransferPak_GetPortMessageIndex(arg0) > 0)) {
+        Ui_DrawGradientPanel(arg1 - 4, arg2 + 0x9C, 0x80, 0x74, &gGradientColor, &gGradientColor);
         tmp1 = arg1 + 0x28;
-        tmp2 = (SINS(D_81303CB0 * 2) * 2) + (arg2 + 0x8C);
+        tmp2 = (SINS(gMenuAnimTimer * 2) * 2) + (arg2 + 0x8C);
         TransferPak_DrawSpinningPakIcon(D_3006060, tmp1, tmp2, 0x30, 0x10, 1.0f);
     }
 
@@ -250,11 +250,11 @@ void TransferPak_DrawPortBox(s32 arg0, s32 arg1, s32 arg2) {
 #endif
     Font_SetLineHeight(0x18);
 
-    if ((arg0 == D_81304000) && (D_81304650 == 1)) {
+    if ((arg0 == gSelectedEntryIndex) && (gIsEntrySelectionActive == 1)) {
         switch (TransferPak_GetPortMessageIndex(arg0)) {
 #if defined(VERSION_JP)
             case 1:
-                Font_Printf(arg1 + 5, arg2 + 0xAC, D_81303C20);
+                Font_Printf(arg1 + 5, arg2 + 0xAC, gPortSelectErrMsgsJp);
                 break;
 
             case 2:
@@ -270,19 +270,19 @@ void TransferPak_DrawPortBox(s32 arg0, s32 arg1, s32 arg2) {
                 break;
 #else
             case 1:
-                Font_Printf(arg1 + 5, arg2 + 0xAC, Text_GetString(NULL, 0, D_81304658, 0xE));
+                Font_Printf(arg1 + 5, arg2 + 0xAC, Text_GetString(NULL, 0, gEntryMessageBank, 0xE));
                 break;
 
             case 2:
-                Font_Printf(arg1 + 5, arg2 + 0xAC, Text_GetString(NULL, 0, D_81304658, 0xF));
+                Font_Printf(arg1 + 5, arg2 + 0xAC, Text_GetString(NULL, 0, gEntryMessageBank, 0xF));
                 break;
 
             case 3:
-                Font_Printf(arg1 + 5, arg2 + 0xAC, Text_GetString(NULL, 0, D_81304658, 0x10));
+                Font_Printf(arg1 + 5, arg2 + 0xAC, Text_GetString(NULL, 0, gEntryMessageBank, 0x10));
                 break;
 
             case 4:
-                Font_Printf(arg1 + 5, arg2 + 0xAC, Text_GetString(NULL, 0, D_81304658, 0x11));
+                Font_Printf(arg1 + 5, arg2 + 0xAC, Text_GetString(NULL, 0, gEntryMessageBank, 0x11));
                 break;
 #endif
         }
@@ -292,26 +292,26 @@ void TransferPak_DrawPortBox(s32 arg0, s32 arg1, s32 arg2) {
 
 #if defined(VERSION_JP)
     // Left-aligned name and ID; Font_Printf formats the ID itself, so no sprintf buffer is used.
-    if (D_81303FA8[arg0].unk_00 == 0) {
+    if (gEntryStatus[arg0].unk_00 == 0) {
         Font_SetActive(8, -2);
-        Font_Printf(arg1 + 0xA, arg2 + 0xA, D_81303FA8[arg0].unk_08);
+        Font_Printf(arg1 + 0xA, arg2 + 0xA, gEntryStatus[arg0].unk_08);
         Font_SetActive(4, -3);
-        Font_Printf(arg1 + 2, arg2 + 0x1E, "ID %05d", D_81303FA8[arg0].unk_06);
-    } else if (D_81303FA8[arg0].unk_00 != 1) {
+        Font_Printf(arg1 + 2, arg2 + 0x1E, "ID %05d", gEntryStatus[arg0].unk_06);
+    } else if (gEntryStatus[arg0].unk_00 != 1) {
         Font_SetActive(8, -2);
         Font_Printf(arg1 + 0xA, arg2 + 0xA, "？？？？？");
         Font_SetActive(4, -3);
         Font_Printf(arg1 + 2, arg2 + 0x1E, "ID ＊＊＊＊＊");
     }
 #else
-    if (D_81303FA8[arg0].unk_00 == 0) {
+    if (gEntryStatus[arg0].unk_00 == 0) {
         Font_SetActive(8, 0);
-        Font_Printf((arg1 - (Font_MeasureTextExtent(0, 0, D_81303FA8[arg0].unk_08) / 2)) + 0x3C, arg2 + 0xA,
-                      D_81303FA8[arg0].unk_08);
+        Font_Printf((arg1 - (Font_MeasureTextExtent(0, 0, gEntryStatus[arg0].unk_08) / 2)) + 0x3C, arg2 + 0xA,
+                      gEntryStatus[arg0].unk_08);
         Font_SetActive(4, 0);
-        sprintf(D_81304660, "ID %05d", D_81303FA8[arg0].unk_06);
-        Font_Printf((arg1 - (Font_MeasureTextExtent(0, 0, D_81304660) / 2)) + 0x3C, arg2 + 0x1E, D_81304660);
-    } else if (D_81303FA8[arg0].unk_00 != 1) {
+        sprintf(gEntryIdBuffer, "ID %05d", gEntryStatus[arg0].unk_06);
+        Font_Printf((arg1 - (Font_MeasureTextExtent(0, 0, gEntryIdBuffer) / 2)) + 0x3C, arg2 + 0x1E, gEntryIdBuffer);
+    } else if (gEntryStatus[arg0].unk_00 != 1) {
         Font_SetActive(8, 0);
         Font_Printf((arg1 - (Font_MeasureTextExtent(0, 0, "?????") / 2)) + 0x3C, arg2 + 0xA, "?????");
         Font_SetActive(4, 0);
@@ -363,19 +363,19 @@ void TransferPak_DrawSpinningPakIcon(u8* arg0, s16 arg1, s16 arg2, s16 arg3, s16
 }
 
 void TransferPak_UpdatePulseAlpha(void) {
-    static s16 D_81303F30 = 0;
-    static u16 D_81303F34[] = { 0, 0x6400, 0, 0xFF00 };
+    static s16 gPulseTimer = 0;
+    static u16 gPulseAlphaTable[] = { 0, 0x6400, 0, 0xFF00 };
 
-    s16 temp_v0 = (D_81303F30 + 0xA) & 0x1FF;
+    s16 temp_v0 = (gPulseTimer + 0xA) & 0x1FF;
 
-    D_81303F30 = 0x100;
+    gPulseTimer = 0x100;
 
-    if (temp_v0 < D_81303F30) {
-        D_81304A60 = temp_v0;
-        D_81303F30 = temp_v0;
+    if (temp_v0 < gPulseTimer) {
+        gPulseAlpha = temp_v0;
+        gPulseTimer = temp_v0;
     } else {
-        D_81304A60 = 0x1FF - temp_v0;
-        D_81303F30 = temp_v0;
+        gPulseAlpha = 0x1FF - temp_v0;
+        gPulseTimer = temp_v0;
     }
 }
 
@@ -397,7 +397,7 @@ void TransferPak_DrawPulsingGuideIcon(u8* arg0, s16 arg1, s16 arg2, s16 arg3, s1
         v = 1024.0f / arg5;
 
         gDPSetCycleType(gfx++, G_CYC_1CYCLE);
-        gDPSetPrimColor(gfx++, 0, 0, 255, 255, 230, D_81304A60 & 0xFF);
+        gDPSetPrimColor(gfx++, 0, 0, 255, 255, 230, gPulseAlpha & 0xFF);
         gDPSetEnvColor(gfx++, 0, 50, 255, 0);
         gDPSetRenderMode(gfx++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
         gDPSetCombineLERP(gfx++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, PRIMITIVE, 0, TEXEL0, 0, PRIMITIVE,
@@ -492,13 +492,13 @@ void TransferPak_DrawPromptPanel(s16 arg0, s16 arg1, s16 arg2, s16 arg3, u8 arg4
 }
 
 void TransferPak_DrawPortSelectOverlay(void) {
-    static s32 D_81303F3C = 0;
+    static s32 gBgTextureIndex = 0;
 
     TransferPak_UpdatePulseAlpha();
 
     if (gCurrentGameState == 0x25) {
-        TransferPak_DrawSpinningPakIcon(D_81303F1C[D_81303F3C], 0x112, 0x11A, 0x30, 0x2A, 2.0f);
-        D_81303F3C = (D_81303F3C + 1) % 5;
+        TransferPak_DrawSpinningPakIcon(gPakIconAnimFrames[gBgTextureIndex], 0x112, 0x11A, 0x30, 0x2A, 2.0f);
+        gBgTextureIndex = (gBgTextureIndex + 1) % 5;
         TransferPak_DrawPulsingGuideIcon(D_30055B0, 0x98, 0xEE, 0x20, 0x23, 2.0f, 1);
         TransferPak_DrawPulsingGuideIcon(D_3004EF0, 0xC2, 0x100, 0x28, 0x2B, 2.0f, 1);
         TransferPak_DrawPulsingGuideIcon(D_30055B0, 0x1AA, 0xEE, 0x20, 0x23, 2.0f, -1);
@@ -506,7 +506,7 @@ void TransferPak_DrawPortSelectOverlay(void) {
         TransferPak_DrawPulsingGuideIcon(D_3005A18, 0x102, 0xAC, 0x40, 0x19, 2.0f, 1);
     }
 
-    if (D_81304000 >= 0) {
+    if (gSelectedEntryIndex >= 0) {
         TransferPak_DrawPromptPanel(0x38, 0x19A, 0x210, 0x28, 0x1E, 0x1E, 0x82, 0x80);
         Font_BeginTranslucentTextRendering();
 #if defined(VERSION_JP)
@@ -514,16 +514,16 @@ void TransferPak_DrawPortSelectOverlay(void) {
         Font_Printf(0x3B, 0x1A1, D_81303B94_jp);
 #else
         Font_SetActive(0x10, 0);
-        Font_Printf(0x132 - (Font_MeasureTextExtent(0, 0, Text_GetString(NULL, 0, D_81304658, 0x12)) / 2), 0x1A1,
-                      Text_GetString(NULL, 0, D_81304658, 0x12));
+        Font_Printf(0x132 - (Font_MeasureTextExtent(0, 0, Text_GetString(NULL, 0, gEntryMessageBank, 0x12)) / 2), 0x1A1,
+                      Text_GetString(NULL, 0, gEntryMessageBank, 0x12));
 #endif
         Font_EndTexturedTextRendering();
         TransferPak_DrawPortBox(0, 0x38, 0x2E);
         TransferPak_DrawPortBox(1, 0xBC, 0x2E);
         TransferPak_DrawPortBox(2, 0x140, 0x2E);
         TransferPak_DrawPortBox(3, 0x1C4, 0x2E);
-        if (D_81304650 == 1) {
-            Ui_DrawTextureMarker((SINS(D_81303CB0) * 5.0f) + ((D_81304000 * 0x84) + 0x38), 0x7E);
+        if (gIsEntrySelectionActive == 1) {
+            Ui_DrawTextureMarker((SINS(gMenuAnimTimer) * 5.0f) + ((gSelectedEntryIndex * 0x84) + 0x38), 0x7E);
         }
     } else {
         TransferPak_DrawPromptPanel(0x46, 0x146, 0x1F4, 0x78, 0x82, 0x1E, 0x1E, 0x80);
@@ -535,40 +535,40 @@ void TransferPak_DrawPortSelectOverlay(void) {
 #else
         Font_SetActive(0x10, 0);
         Font_SetLineHeight(0x1C);
-        Font_Printf(0x5A, 0x15A, Text_GetString(NULL, 0, D_81304658, 0x13));
+        Font_Printf(0x5A, 0x15A, Text_GetString(NULL, 0, gEntryMessageBank, 0x13));
 #endif
         Font_EndTexturedTextRendering();
     }
-    D_81303CB0 += 0xB80;
+    gMenuAnimTimer += 0xB80;
 }
 
 void TransferPak_MovePortCursor(void) {
-    if (D_81304650 == 0) {
+    if (gIsEntrySelectionActive == 0) {
         return;
     }
 
-    D_81304A62 = D_81304000;
+    gPrevSelectedEntryIndex = gSelectedEntryIndex;
 
     if (gPlayer1Controller->buttonPressed & 0x200) {
         while (true) {
-            D_81304000 = (D_81304000 + 3) % 4;
+            gSelectedEntryIndex = (gSelectedEntryIndex + 3) % 4;
 
-            if (D_81303FA8[D_81304000].unk_01 != 0 || TransferPak_GetPortMessageIndex(D_81304000) > 0) {
+            if (gEntryStatus[gSelectedEntryIndex].unk_01 != 0 || TransferPak_GetPortMessageIndex(gSelectedEntryIndex) > 0) {
                 break;
             }
         }
     } else if (gPlayer1Controller->buttonPressed & 0x100) {
         while (true) {
-            D_81304000 = (D_81304000 + 1) % 4;
+            gSelectedEntryIndex = (gSelectedEntryIndex + 1) % 4;
 
-            if (D_81303FA8[D_81304000].unk_01 != 0 || TransferPak_GetPortMessageIndex(D_81304000) > 0) {
+            if (gEntryStatus[gSelectedEntryIndex].unk_01 != 0 || TransferPak_GetPortMessageIndex(gSelectedEntryIndex) > 0) {
                 break;
             }
         }
     }
 
-    if (D_81304000 != D_81304A62) {
-        D_81303CB0 = 0;
+    if (gSelectedEntryIndex != gPrevSelectedEntryIndex) {
+        gMenuAnimTimer = 0;
         Audio_PlaySoundEffectById(SFX_PAK_CURSOR);
     }
 }
@@ -576,28 +576,28 @@ void TransferPak_MovePortCursor(void) {
 void TransferPak_HandlePortSelectInput(void) {
     s32 var_v0;
 
-    if (D_81304650 > 0) {
-        if ((gPlayer1Controller->buttonPressed & 0x8000) && (D_81304A64 != 1)) {
+    if (gIsEntrySelectionActive > 0) {
+        if ((gPlayer1Controller->buttonPressed & 0x8000) && (gEntryConfirmState != 1)) {
             var_v0 = 0;
-            if (D_81304000 < 0) {
+            if (gSelectedEntryIndex < 0) {
                 var_v0 = 1;
             }
 
-            if ((var_v0 == 0) && (TransferPak_GetPortMessageIndex(D_81304000) != 1)) {
+            if ((var_v0 == 0) && (TransferPak_GetPortMessageIndex(gSelectedEntryIndex) != 1)) {
                 if (gCurrentGameState == 0x25) {
                     Audio_PlaySoundEffectById(SFX_PAK_LAB_SELECT);
                 } else {
                     Audio_PlaySoundEffectById(SFX_PAK_TOWER_SELECT);
                 }
-                D_81304A64 = 1;
+                gEntryConfirmState = 1;
                 TransferPak_LaunchSelectedPortAnim();
             } else {
                 Audio_PlaySoundEffectById(SFX_MENU_ERROR);
             }
-        } else if ((gPlayer1Controller->buttonPressed & 0x4000) && (D_81304A64 != 2)) {
+        } else if ((gPlayer1Controller->buttonPressed & 0x4000) && (gEntryConfirmState != 2)) {
             Audio_PlaySoundEffectById(SFX_MENU_BACK);
-            D_81304A64 = 2;
-        } else if (D_81304000 >= 0) {
+            gEntryConfirmState = 2;
+        } else if (gSelectedEntryIndex >= 0) {
             TransferPak_MovePortCursor();
         }
     }
@@ -612,9 +612,9 @@ void TransferPak_PollInput(void) {
 void TransferPak_DrawFrame(s32 arg0) {
     BgStage_DrawFrame();
     if (gCurrentGameState == 0x25) {
-        func_8130306C(D_81303FA0);
+        Gfx_DrawBackgroundGrid(gMenuMiscAssets);
     } else {
-        func_8130337C();
+        Gfx_DrawMenuBackground();
     }
 
     if (arg0 != 0) {
@@ -622,7 +622,7 @@ void TransferPak_DrawFrame(s32 arg0) {
     }
 
     TransferPak_DrawPortSelectOverlay();
-    Geo_RenderRootNode(D_8130464C);
+    Geo_RenderRootNode(gPortSelectRootNode);
     BgStage_AdvanceFrame();
 }
 
@@ -635,13 +635,13 @@ void TransferPak_ScanAllPorts(void) {
 
     for (i = 0; i < 4; i++) {
         GbSave_CopyPlayerIdentity(i, &sp48);
-        Text_UntranscodeNameWrapper(D_81303FA8[i].unk_08, sp48.unk_02);
-        D_81303FA8[i].unk_06 = sp48.unk_00;
-        D_81303FA8[i].unk_01 = GbSave_GetPortGame(i);
-        D_81303FA8[i].unk_00 = GbSave_GetSaveState(i);
-        D_81303FA8[i].unk_03 = GbSave_SavedAtPokemonCenter(i);
-        D_81303FA8[i].unk_04 = (temp_s3 & (1 << i)) != 0;
-        D_81303FA8[i].unk_02 = GbSave_GetPartyCount(i);
+        Text_UntranscodeNameWrapper(gEntryStatus[i].unk_08, sp48.unk_02);
+        gEntryStatus[i].unk_06 = sp48.unk_00;
+        gEntryStatus[i].unk_01 = GbSave_GetPortGame(i);
+        gEntryStatus[i].unk_00 = GbSave_GetSaveState(i);
+        gEntryStatus[i].unk_03 = GbSave_SavedAtPokemonCenter(i);
+        gEntryStatus[i].unk_04 = (temp_s3 & (1 << i)) != 0;
+        gEntryStatus[i].unk_02 = GbSave_GetPartyCount(i);
     }
 }
 
@@ -659,48 +659,48 @@ void TransferPak_AutoSelectPort(void) {
     }
 
     if ((sp28 == 0) && (var_s1 == 0)) {
-        D_81304000 = -1;
+        gSelectedEntryIndex = -1;
         return;
     }
 
-    D_81304000 = GbSave_GetActivePort();
+    gSelectedEntryIndex = GbSave_GetActivePort();
 
     if (sp28 == 0) {
-        D_81304000 = 0;
-        while (TransferPak_GetPortMessageIndex(D_81304000) != 1) {
-            D_81304000++;
+        gSelectedEntryIndex = 0;
+        while (TransferPak_GetPortMessageIndex(gSelectedEntryIndex) != 1) {
+            gSelectedEntryIndex++;
         }
-    } else if ((D_81304000 == -1) || (D_81303FA8[D_81304000].unk_01 == 0)) {
-        D_81304000 = 0;
-        while (D_81303FA8[D_81304000].unk_01 == 0) {
-            D_81304000++;
+    } else if ((gSelectedEntryIndex == -1) || (gEntryStatus[gSelectedEntryIndex].unk_01 == 0)) {
+        gSelectedEntryIndex = 0;
+        while (gEntryStatus[gSelectedEntryIndex].unk_01 == 0) {
+            gSelectedEntryIndex++;
         }
     }
 }
 
 void TransferPak_AnimatePortModels(void) {
-    static s16 D_81303F40[] = { 0x5C0, 0x680, 0x580, 0 };
+    static s16 gPortAnimSines[] = { 0x5C0, 0x680, 0x580, 0 };
 
     f32 var_fv0;
     f32 var_fv1;
     s16 var_a1;
     s32 var_s1;
-    unk_D_81304008* var_s0;
+    PortGraphNode* var_s0;
     DisplayObject* var_v0;
     s32 i;
 
-    for (i = 0, var_s0 = &D_81304008[0]; i < 4; i++, var_s0++) {
+    for (i = 0, var_s0 = &gEntryGraphNodes[0]; i < 4; i++, var_s0++) {
         switch (var_s0->unk_000) {
             case 0:
-                if (i == D_81304000) {
+                if (i == gSelectedEntryIndex) {
                     var_fv0 = 1.5f;
-                    var_s0->unk_00A = D_81303CB0 + 0x4000;
+                    var_s0->unk_00A = gMenuAnimTimer + 0x4000;
                     var_a1 = 0;
                     var_fv1 = 0.06f;
                     var_s1 = 0x3000;
                 } else {
                     var_fv0 = 1.0f;
-                    var_a1 = D_81303F40[0];
+                    var_a1 = gPortAnimSines[0];
                     var_fv1 = 0.02f;
                     var_s1 = 0x2000;
                 }
@@ -765,7 +765,7 @@ s32 TransferPak_PortSelectLoop(s32 arg0) {
         TransferPak_AnimatePortModels();
         TransferPak_DrawFrame(1);
 
-        if (D_81304A64 > 0) {
+        if (gEntryConfirmState > 0) {
             if (gPlayer1Controller->buttonPressed & 0x8000) {
                 var_s0 = 0;
             } else if (gPlayer1Controller->buttonPressed & 0x4000) {
@@ -796,57 +796,57 @@ s32 TransferPak_PortSelectLoop(s32 arg0) {
         TransferPak_DrawFrame(0);
     }
 
-    if ((var_s1 != -1) && (D_81304000 >= 0)) {
-        GbSave_SetActivePort(D_81304000);
+    if ((var_s1 != -1) && (gSelectedEntryIndex >= 0)) {
+        GbSave_SetActivePort(gSelectedEntryIndex);
     }
 
     return var_s1;
 }
 
 void TransferPak_InitPortModels(void) {
-    static s16 D_81303F48[] = { 1, 2, 0, 3 };
+    static s16 gPortModelOrder[] = { 1, 2, 0, 3 };
 
     DisplayObject* ptr;
     s32 temp_s1;
     s32 i;
 
-    D_81304A64 = 0;
+    gEntryConfirmState = 0;
 
     for (i = 0; i < 4; i++) {
-        temp_s1 = D_81303F48[i];
-        ptr = &D_81304008[temp_s1].unk_028;
+        temp_s1 = gPortModelOrder[i];
+        ptr = &gEntryGraphNodes[temp_s1].unk_028;
 
         ModelRenderer_AttachDisplayObject(ptr);
         Vec3f_SetComponentsDuplicate(&ptr->position, ((temp_s1 * 0x84) + 0x7A) - 320.0f, 64.0f, -579.0f);
-        D_81304008[temp_s1].unk_002 = temp_s1;
-        D_81304008[temp_s1].unk_000 = 0;
+        gEntryGraphNodes[temp_s1].unk_002 = temp_s1;
+        gEntryGraphNodes[temp_s1].unk_000 = 0;
 
         switch (GbSave_GetPortGame(temp_s1)) {
             case 1:
-                D_81304008[temp_s1].unk_01C = D_201E420;
+                gEntryGraphNodes[temp_s1].unk_01C = D_201E420;
                 break;
 
             case 2:
-                D_81304008[temp_s1].unk_01C = D_2020420;
+                gEntryGraphNodes[temp_s1].unk_01C = D_2020420;
                 break;
 
             case 3:
-                D_81304008[temp_s1].unk_01C = D_2022420;
+                gEntryGraphNodes[temp_s1].unk_01C = D_2022420;
                 break;
 
             case 7:
-                D_81304008[temp_s1].unk_01C = D_2024420;
+                gEntryGraphNodes[temp_s1].unk_01C = D_2024420;
                 break;
 
             default:
-                D_81304008[temp_s1].unk_01C = NULL;
+                gEntryGraphNodes[temp_s1].unk_01C = NULL;
                 if (TransferPak_GetPortMessageIndex(temp_s1) > 0) {
-                    D_81304008[temp_s1].unk_01C = D_3006668;
+                    gEntryGraphNodes[temp_s1].unk_01C = D_3006668;
                 }
                 break;
         }
 
-        Model_InitDisplayObject(ptr, 0, 0, D_81304648);
+        Model_InitDisplayObject(ptr, 0, 0, gMenuGeoNode);
         ptr->node.callbackArg = temp_s1;
     }
 }
@@ -854,12 +854,12 @@ void TransferPak_InitPortModels(void) {
 void TransferPak_InitScene(void) {
     MemoryBlock* sp1C = MainPool_AllocState(main_pool_get_available(), 0);
 
-    D_8130464C = process_geo_layout(sp1C, &D_81303CB4);
-    D_81304648 = process_geo_layout(sp1C, &D_81303EC0);
+    gPortSelectRootNode = process_geo_layout(sp1C, &gPortSelectGeoLayout);
+    gMenuGeoNode = process_geo_layout(sp1C, &gPortSelectNodeData);
     MainPool_FinalizeAllocation(sp1C);
     ModelRenderer_InitDisplayRoots();
     TransferPak_InitPortModels();
-    D_81304650 = 1;
+    gIsEntrySelectionActive = 1;
 }
 
 s32 TransferPak_SelectMain(s32 arg0, UNUSED s32 arg1) {
@@ -886,12 +886,12 @@ s32 TransferPak_SelectMain(s32 arg0, UNUSED s32 arg1) {
     TransferPak_AutoSelectPort();
 #if !defined(VERSION_JP)
     Text_InitStringTables();
-    D_81304658 = Text_GetStringTable(0x1F);
+    gEntryMessageBank = Text_GetStringTable(0x1F);
 #endif
     TransferPak_InitScene();
-    D_81304654 = TransferPak_GetPresentationMode();
+    gPresentationMode = TransferPak_GetPresentationMode();
 
-    D_81303FA0 = ASSET_LOAD(0, fragment33_misc, 0);
+    gMenuMiscAssets = ASSET_LOAD(0, fragment33_misc, 0);
 
     StageContext_Activate(sp24);
     sp20 = TransferPak_PortSelectLoop(arg0);
@@ -903,7 +903,7 @@ s32 TransferPak_SelectMain(s32 arg0, UNUSED s32 arg1) {
     return sp20;
 }
 
-void func_8130306C(u8* arg0) {
+void Gfx_DrawBackgroundGrid(u8* arg0) {
     Gfx* gfx = gDisplayListHead;
     s32 i;
     s32 j;
@@ -933,7 +933,7 @@ void func_8130306C(u8* arg0) {
     gDisplayListHead = gfx;
 }
 
-void func_8130337C(void) {
+void Gfx_DrawMenuBackground(void) {
     Gfx* gfx = gDisplayListHead;
     u8* sp30;
     s32 i;
@@ -965,7 +965,7 @@ void func_8130337C(void) {
                             0x0400);
     }
 
-    switch (D_81304654) {
+    switch (gPresentationMode) {
         default:
             sp30 = D_3009678;
             break;

@@ -1,9 +1,9 @@
 #include "battle_engine.h"
 #include "src/gfx_buffer.h"
 
-static Trail50Effect D_843B8340[50];
+static Trail50Effect gTrail50EffectAltInstances[50];
 
-static Gfx D_84389B60[] = {
+static Gfx gTrail50EffectAlt_GfxSetup[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_1CYCLE),
     gsSPClearGeometryMode(G_ZBUFFER | G_SHADE | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN |
@@ -16,13 +16,13 @@ static Gfx D_84389B60[] = {
     gsDPSetColorDither(G_CD_NOISE),
     gsSPEndDisplayList(),
 };
-static Vtx D_84389BB0[] = {
+static Vtx gWaterParticleVertices[] = {
     VTX(-6, 0, -6, 2048, 0, 0xFF, 0xFF, 0xFF, 0x14),
     VTX(6, 0, -6, 0, 0, 0xFF, 0xFF, 0xFF, 0x14),
     VTX(-6, 0, 6, 2048, 2048, 0xFF, 0xFF, 0xFF, 0x14),
     VTX(6, 0, 6, 0, 2048, 0xFF, 0xFF, 0xFF, 0x14),
 };
-static Gfx D_84389BF0[] = {
+static Gfx gTrail50AltQuadDL[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_1CYCLE),
     gsSPClearGeometryMode(G_ZBUFFER | G_SHADE | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN |
@@ -36,13 +36,13 @@ static Gfx D_84389BF0[] = {
     gsDPSetTextureLUT(G_TT_NONE),
     gsDPSetTextureFilter(G_TF_BILERP),
     gsDPPipeSync(),
-    gsSPVertex(D_84389BB0, 4, 0),
+    gsSPVertex(gWaterParticleVertices, 4, 0),
     gsSP2Triangles(0, 1, 2, 0, 1, 3, 2, 0),
     gsSPEndDisplayList(),
 };
 
 void Trail50EffectAlt_Init(void) {
-    Trail50Effect* var_v0 = &D_843B8340[0];
+    Trail50Effect* var_v0 = &gTrail50EffectAltInstances[0];
     Trail50EffectNode* var_a0;
     s32 i;
     s32 j;
@@ -94,7 +94,7 @@ void Trail50EffectAlt_Start(f32 arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f3
     sp64.y = temp_fv1 * -2.0;
     sp64.z = 0.0f;
 
-    var_v1 = &D_843B8340[0];
+    var_v1 = &gTrail50EffectAltInstances[0];
 
     for (i = 0; i < 50; i++, var_v1++) {
         if (var_v1->unk_000 == 0) {
@@ -204,7 +204,7 @@ void Trail50EffectAlt_AdvanceNodes(Trail50Effect* arg0) {
 
 s32 Trail50EffectAlt_IsComplete(void) {
     s32 i;
-    Trail50Effect* var_s0 = &D_843B8340[0];
+    Trail50Effect* var_s0 = &gTrail50EffectAltInstances[0];
 
     for (i = 0; i < 50; i++, var_s0++) {
         if (var_s0->unk_000 == 1) {
@@ -238,7 +238,7 @@ Gfx* Trail50EffectAlt_Draw(Gfx* arg0) {
     gDPLoadTextureBlock(arg0++, sBattleAnimAssetPointers[0x1C], G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
                         G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
 
-    var_s5 = &D_843B8340[0];
+    var_s5 = &gTrail50EffectAltInstances[0];
     for (i = 0; i < 50; i++, var_s5++) {
         if (var_s5->unk_000 == 1) {
             temp_s0 = &var_s5->unk_040[0];
@@ -253,7 +253,7 @@ Gfx* Trail50EffectAlt_Draw(Gfx* arg0) {
                 guMtxCatL(&spC0, temp_v0, temp_v0);
 
                 gSPMatrix(arg0++, temp_v0, G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
-                gSPDisplayList(arg0++, D_84389BF0);
+                gSPDisplayList(arg0++, gTrail50AltQuadDL);
                 gSPPopMatrix(arg0++, G_MTX_MODELVIEW);
             }
 
@@ -298,7 +298,7 @@ Gfx* Trail50EffectAlt_Draw(Gfx* arg0) {
 
             var_s0 = var_s5->unk_020;
 
-            gSPDisplayList(arg0++, D_84389B60);
+            gSPDisplayList(arg0++, gTrail50EffectAlt_GfxSetup);
 
             for (k = 0; k < 9; k++) {
                 gSPVertex(arg0++, var_s0, 4, 0);

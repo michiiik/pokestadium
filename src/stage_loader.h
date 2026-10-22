@@ -42,7 +42,7 @@ typedef struct StageContext {
     };
 } StageContext; // size = 0x24
 
-typedef StageContext unk_func_80007444;
+typedef StageContext Stage;
 
 void StageFade_Update(void);
 s32 StageFade_Start(s32 arg0);

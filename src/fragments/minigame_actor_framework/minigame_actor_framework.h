@@ -8,7 +8,7 @@
 
 typedef struct MiniActor {
     /* 0x000 */ DisplayObject unk_000;		// collider ? model ?
-    /* 0x168 */ unk_D_86002F30* unk_168;
+    /* 0x168 */ ModelData* unk_168;
     /* 0x16C */ Vec3f scale;
     /* 0x178 */ char unk178[0x18];	//	unused
     /* 0x190 */ Vec3f totalPos;		//	all positions
@@ -126,42 +126,42 @@ typedef struct arg1_func_87902F80 {
     /* 0x18 */ Gfx* unk_18;
 } arg1_func_87902F80; // size >= 0x1C
 
-typedef struct unk_D_87903E00 {
+typedef struct Gfx_TextureConfig {
     /* 0x00 */ u32 unk_00;
     /* 0x04 */ void* unk_04;
     /* 0x08 */ void* unk_08;
     /* 0x0C */ u32* unk_0C;
-} unk_D_87903E00; // size = 0x10
+} Gfx_TextureConfig; // size = 0x10
 
-typedef struct unk_D_87903E10 {
+typedef struct Gfx_TextureNode {
     /* 0x00 */ s32 unk_00;
-    /* 0x04 */ unk_D_87903E00* unk_04;
-} unk_D_87903E10; // size = 0x8
+    /* 0x04 */ Gfx_TextureConfig* unk_04;
+} Gfx_TextureNode; // size = 0x8
 
 extern s16 minigameState;
 extern s16 minigameInputLock;
-extern s16 D_87903DA8;
-extern s16 D_87903DAC;
-extern s16 D_87903DBC;
-extern s16 D_87903DC0;
+extern s16 gMiniGameTimer1;
+extern s16 gMiniGameTimer2;
+extern s16 gMiniGameSoundDispatchCount;
+extern s16 gMiniTutoScreenPhase;
 extern s16 miniTutoScreenState;
-extern s16 D_87903DC8;
-extern s16 D_87903DCC;
-extern s16 D_87903DD0;
-extern s16 D_87903DD4;
+extern s16 gMiniTutoTimer1;
+extern s16 gMiniTutoTimer2;
+extern s16 gMiniTutoTimer3;
+extern s16 gMiniResultIconRow;
 
-extern unk_D_87903E10 gMiniFxParticleDescriptorI4Frame;
-extern unk_D_87903E10 gMiniFxParticleDescriptorIa8;
-extern unk_D_87903E10 gMiniFxParticleDescriptorIa8Variant;
-extern unk_D_87903E10 gMiniFxParticleDescriptorI4FrameDiv2Mod4;
+extern Gfx_TextureNode gMiniFxParticleDescriptorI4Frame;
+extern Gfx_TextureNode gMiniFxParticleDescriptorIa8;
+extern Gfx_TextureNode gMiniFxParticleDescriptorIa8Variant;
+extern Gfx_TextureNode gMiniFxParticleDescriptorI4FrameDiv2Mod4;
 extern s16 miniInputLockTimer;
-extern s16 D_87906042;
+extern s16 gMiniGameIdleTimer;
 extern s16 miniShowHUB;
 extern s16 miniDifficulty;
-extern s16 D_87906048;
-extern s16 D_8790604A;
-extern CameraNode* D_87906050;      // geo layout
-extern CameraNode* D_87906054;
+extern s16 gMiniGameResetOnlyFlag;
+extern s16 gMetapodAudioMuted;
+extern CameraNode* gMiniCameraStruct;      // geo layout
+extern CameraNode* gMiniCameraPtr;
 extern s16 miniCameraXRot;
 extern s16 miniCameraYRot;
 extern s16 miniCameraDistance;
@@ -169,38 +169,38 @@ extern s16 miniCameraFov;
 extern s16 miniCameraNear;
 extern s16 miniCameraFar;
 extern Vec3s miniCameraCoords;
-extern s16 D_87906072;
-extern s16 D_87906076;
-extern s16 D_87906078;
-extern f32 D_8790607C;
-extern f32 D_87906080;
-extern Vec3f D_87906088;
-extern s16 D_87906094;
-extern s16 D_87906096;
-extern s16 D_87906098;
-extern s16 D_8790609A;
-extern Vec3s D_8790609C;
+extern s16 gMiniWinCamPhase;
+extern s16 gMiniCameraXRotBackup;
+extern s16 gMiniCameraYRotBackup;
+extern f32 gMiniCameraDistanceBackup;
+extern f32 gMiniCameraFovBackup;
+extern Vec3f gMiniCameraCoordsBackup;
+extern s16 gMiniCamRotXDelta;
+extern s16 gMiniCamRotYDelta;
+extern s16 gMiniCamDistDelta;
+extern s16 gMiniCamFovDelta;
+extern Vec3s gMiniCamPosDelta;
 
-extern s16 D_879060A2;
-extern s16 D_879060A4;
-extern s16 D_879060A6;
-extern s16 D_879060A8;
-extern Vec3s D_879060AC;
+extern s16 gMiniCamBaseRotX;
+extern s16 gMiniCamBaseRotY;
+extern s16 gMiniCamBaseDist;
+extern s16 gMiniCamBaseFov;
+extern Vec3s gMiniCamBasePos;
 
 extern s16 miniDebugMode;
-extern s16 D_87903DB8;
+extern s16 gMiniDebugCameraTranslateMode;
 extern Controller* miniControllerPtr;
-extern s16 D_879060C0;
+extern s16 gEkansGameCountdownFrames;
 extern s16 miniEkansCountdown;
-extern s8 D_879060C4[4];
+extern s8 gMiniHudColors[4];
 extern s16 miniHudTransparency;
-extern s16 D_879060CA;
+extern s16 gMiniDebugCameraMode;
 
-extern Vec3f D_879060E0;
-extern Vec3f D_87906100;
-extern Vec3f D_87906110;
+extern Vec3f gMiniDebugBasePos;
+extern Vec3f gMiniDebugCamVelocity;
+extern Vec3f gMiniDebugGravityVector;
 
-ret_func_80004454 func_87900020(void);
+ret_func_80004454 MiniGame_GetFragmentFunc(void);
 float MinigameGetVec3Distance_2d(MiniActor* arg0, MiniActor* arg1);
 void MinigameGetVec3Distance_3d(MiniActor* arg0, MiniActor* arg1);
 s32 miniActorCubeOverlapCheckUnused(MiniActor* arg0, MiniActor* arg1);
@@ -278,7 +278,7 @@ void miniRankingActorsUpdate(void);
 void miniRankingActorSetup1st(f32 arg0, f32 arg1, f32 arg2, f32 arg3, s16 arg4, s16 arg5, s16 arg6);
 void miniRankingActorSetup2nd(f32 arg0, f32 arg1, f32 arg2, f32 arg3, s16 arg4, s16 arg5, s16 arg6);
 void miniRankingActorSetup3rd(f32 arg0, f32 arg1, f32 arg2, f32 arg3, s16 arg4, s16 arg5, s16 arg6);
-Gfx* MiniFx_BuildNodeColorRampDisplayList(Gfx* arg0, arg1_func_87903D64_014* arg1);
-void MiniFx_GraphNodeBuildColorRampList(s32 arg0, arg1_func_87903D64* arg1);
+Gfx* MiniFx_BuildNodeColorRampDisplayList(Gfx* arg0, ColorLerpData* arg1);
+void MiniFx_GraphNodeBuildColorRampList(s32 arg0, ColorLerpHook* arg1);
 
 #endif // _FRAGMENT3_H_

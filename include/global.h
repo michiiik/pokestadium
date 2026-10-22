@@ -443,14 +443,14 @@ typedef void* (*func_unk_D_800ABE10)(s32, s32);
 #define unk_D_86002F34_018_GFX_TYPE_2 2 // 16-bit per texel
 #define unk_D_86002F34_018_GFX_TYPE_3 3 // 32-bit per texel
 
-typedef struct unk_D_86002F34_018 {
+typedef struct GfxTextureInfo {
     /* 0x00 */ u8 unk_00;
     /* 0x01 */ u8 type;
     /* 0x02 */ s16 width;
     /* 0x04 */ s16 height;
     /* 0x06 */ s16 num_texels;
     /* 0x08 */ u32* texture;
-} unk_D_86002F34_018; // size = 0xC
+} GfxTextureInfo; // size = 0xC
 
 typedef struct unk_D_86002F34_01C {
     /* 0x00 */ s32 unk_00;
@@ -458,22 +458,22 @@ typedef struct unk_D_86002F34_01C {
     /* 0x08 */ char unk08[0x4];
 } unk_D_86002F34_01C; // size = 0xC
 
-typedef struct unk_D_86002F34 {
+typedef struct ShadowContextNode {
     /* 0x00 */ GraphNode node;
-    /* 0x18 */ unk_D_86002F34_018* unk_18;
+    /* 0x18 */ GfxTextureInfo* unk_18;
     /* 0x1C */ unk_D_86002F34_01C* unk_1C;
     /* 0x20 */ Vtx* unk_20;
     /* 0x24 */ u8 unk_24;
     /* 0x25 */ u8 unk_25;
     /* 0x26 */ s16 unk_26;
     /* 0x28 */ func_unk_D_800ABE10 unk_28;
-} unk_D_86002F34; // size = 0x2C
+} ShadowContextNode; // size = 0x2C
 
-// Are unk_D_86002F30 and unk_D_800AC840 the same?
-typedef struct unk_D_86002F30 {
+// Are ModelData and unk_D_800AC840 the same?
+typedef struct ModelData {
     /* 0x00 */ char unk00[0x8];
     /* 0x08 */ ModelNodeView* unk_08;
-} unk_D_86002F30; // size = 0x18 ??
+} ModelData; // size = 0x18 ??
 
 typedef struct UnkInputStruct8000D738 {
     /* 0x00 */ s16 unk_00;
@@ -482,11 +482,11 @@ typedef struct UnkInputStruct8000D738 {
     /* 0x04 */ u16 (*unk_04)[6][0x640];
 } UnkInputStruct8000D738; // size = 0x8
 
-typedef struct unk_D_800AA660 {
+typedef struct GbEmuState {
     /* 0x0000 */ OSThread thread;
     /* 0x01B0 */ char unk01B0[0x10];
     /* 0x01C0 */ OSMesgQueue queue1;
-    /* 0x01D8 */ struct unk_D_800AA660* unk_01D8;
+    /* 0x01D8 */ struct GbEmuState* unk_01D8;
     /* 0x01DC */ s32 unk_01DC;
     /* 0x01E0 */ char unk01E0[0x2000];
     /* 0x21E0 */ OSMesg mesg;
@@ -495,7 +495,7 @@ typedef struct unk_D_800AA660 {
     /* 0x2200 */ u8* font2;
     /* 0x2204 */ UnkInputStruct8000D738 unk_2204;
     /* 0x220C */ char unk220C[4];
-} unk_D_800AA660; // size = 0x2210
+} GbEmuState; // size = 0x2210
 
 typedef struct unk_D_864027C0 {
     /* 0x00 */ f32 unk_00;
@@ -533,12 +533,12 @@ typedef struct func_88002628_sp38 {
     /* 0x1B0 */ char unk1B0[0x10];
 } func_88002628_sp38; // size = 0x1C0
 
-typedef struct unk_func_88500020 {
+typedef struct TiledTexture {
     /* 0x00 */ s32 unk_00;
     /* 0x04 */ s32 unk_04;
     /* 0x08 */ s32 unk_08;
     /* 0x0C */ u8* unk_0C;
-} unk_func_88500020; // size = 0x10
+} TiledTexture; // size = 0x10
 
 // offset 0x898000 in the rom
 typedef struct TrainerData {
@@ -550,7 +550,7 @@ typedef struct TrainerData {
 } TrainerData; // size = 0x230
 
 // GB Emulator State
-typedef struct unk_D_8122B2C0 {
+typedef struct GbPakDeviceState {
     /* 0x00000 */ u8 unk_00[0x208];
     /* 0x00208 */ u8 unk_208[0x40];
     /* 0x00248 */ u8 unk_248[0x40];
@@ -631,7 +631,7 @@ typedef struct unk_D_8122B2C0 {
     /* 0x05DCF */ u8 unk_5DCF;
     /* 0x05DD0 */ u8 unk_5DD0;
     /* 0x05DD1 */ u8 unk05DD1[0x15287];
-  } unk_D_8122B2C0; // size = 0x1B058
+  } GbPakDeviceState; // size = 0x1B058
 
 #define GB_HEADER(emu, offset) (((u8*)(emu)->unk_53BC)[offset])
 

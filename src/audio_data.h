@@ -3,7 +3,7 @@
 
 #include "global.h"
 
-extern u8* D_800FF9C0;
+extern u8* gSfxBankSpecial;
 
 s32 Audio_LoadWaveTablesAndMusic(u8*);
 void Audio_ClearWaveDataLoaded(void);

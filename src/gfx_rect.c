@@ -2,9 +2,9 @@
 #include "gfx_rect.h"
 #include "memory.h"
 
-static DepthBuffer* D_80068BB0 = NULL;
+static DepthBuffer* gCurrentFramebuffer = NULL;
 
-unk_D_800A7440* GfxRect_SetBounds(unk_D_800A7440* arg0, s16 x1, s16 y1, s16 x2, s16 y2) {
+ClipRect* GfxRect_SetBounds(ClipRect* arg0, s16 x1, s16 y1, s16 x2, s16 y2) {
     if (x2 >= x1) {
         arg0->x1 = x1;
         arg0->y1 = x2;
@@ -24,24 +24,24 @@ unk_D_800A7440* GfxRect_SetBounds(unk_D_800A7440* arg0, s16 x1, s16 y1, s16 x2, 
     return arg0;
 }
 
-s32 GfxRect_ClipToScissor(unk_D_800A7440* arg0) {
+s32 GfxRect_ClipToScissor(ClipRect* arg0) {
     s32 ret = 0;
 
-    if (D_80068BB0 != NULL) {
-        if (arg0->x1 < D_800A7440.x1) {
-            arg0->x1 = D_800A7440.x1;
+    if (gCurrentFramebuffer != NULL) {
+        if (arg0->x1 < gClipRect.x1) {
+            arg0->x1 = gClipRect.x1;
         }
 
-        if (D_800A7440.y1 < arg0->y1) {
-            arg0->y1 = D_800A7440.y1;
+        if (gClipRect.y1 < arg0->y1) {
+            arg0->y1 = gClipRect.y1;
         }
 
-        if (arg0->y2 < D_800A7440.y2) {
-            arg0->y2 = D_800A7440.y2;
+        if (arg0->y2 < gClipRect.y2) {
+            arg0->y2 = gClipRect.y2;
         }
 
-        if (D_800A7440.x2 < arg0->x2) {
-            arg0->x2 = D_800A7440.x2;
+        if (gClipRect.x2 < arg0->x2) {
+            arg0->x2 = gClipRect.x2;
         }
 
         ret = arg0->y1 >= arg0->x1 && arg0->x2 >= arg0->y2;
@@ -51,7 +51,7 @@ s32 GfxRect_ClipToScissor(unk_D_800A7440* arg0) {
 }
 
 void Gfx_SetScissorRect(Gfx** gfx_p, s16 x, s16 y, s16 width, s16 height) {
-    if (D_80068BB0 != NULL) {
+    if (gCurrentFramebuffer != NULL) {
         Gfx* gfx = *gfx_p;
 
         gDPPipeSync(gfx++);
@@ -59,17 +59,17 @@ void Gfx_SetScissorRect(Gfx** gfx_p, s16 x, s16 y, s16 width, s16 height) {
 
         *gfx_p = gfx;
 
-        GfxRect_SetBounds(&D_800A7440, x, y, x + width - 1, y + height - 1);
+        GfxRect_SetBounds(&gClipRect, x, y, x + width - 1, y + height - 1);
     }
 }
 
 void Gfx_ApplyScissorRect(Gfx** gfx_p) {
-    if (D_80068BB0 != NULL) {
+    if (gCurrentFramebuffer != NULL) {
         Gfx* gfx = *gfx_p;
 
         gDPPipeSync(gfx++);
-        gDPSetScissorFrac(gfx++, G_SC_NON_INTERLACE, D_800A7440.x1 * 4.0f, D_800A7440.y2 * 4.0f,
-                          (D_800A7440.y1 + 1) * 4.0f, (D_800A7440.x2 + 1) * 4.0f);
+        gDPSetScissorFrac(gfx++, G_SC_NON_INTERLACE, gClipRect.x1 * 4.0f, gClipRect.y2 * 4.0f,
+                          (gClipRect.y1 + 1) * 4.0f, (gClipRect.x2 + 1) * 4.0f);
 
         *gfx_p = gfx;
     }
@@ -124,12 +124,12 @@ void GfxImage_AttachDepthBuffer(DepthBuffer* img, DepthBuffer* depth) {
 }
 
 void GfxImage_ResetCurrent(void) {
-    D_80068BB0 = NULL;
-    GfxRect_SetBounds(&D_800A7440, 0, 0, 0, 0);
+    gCurrentFramebuffer = NULL;
+    GfxRect_SetBounds(&gClipRect, 0, 0, 0, 0);
 }
 
 DepthBuffer* GfxImage_GetCurrent(void) {
-    return D_80068BB0;
+    return gCurrentFramebuffer;
 }
 
 void GfxImage_SetRenderTarget(Gfx** gfx_p, DepthBuffer* arg1) {
@@ -144,29 +144,29 @@ void GfxImage_SetRenderTarget(Gfx** gfx_p, DepthBuffer* arg1) {
 
     gDPSetColorImage(gfx++, arg1->fmt, arg1->size, arg1->width, (u32)arg1->img_p & 0x1FFFFFFF);
 
-    D_80068BB0 = arg1;
+    gCurrentFramebuffer = arg1;
     Gfx_SetScissorRect(&gfx, 0, 0, arg1->width, arg1->height);
 
     *gfx_p = gfx;
 }
 
 void GfxImage_FillRectangle(Gfx** gfx_p, s32 arg1, s32 arg2, s32 arg3, s32 arg4, u16 fill_color) {
-    if (D_80068BB0 != NULL) {
+    if (gCurrentFramebuffer != NULL) {
         Gfx* gfx = *gfx_p;
 
         gDPPipeSync(gfx++);
         gDPSetRenderMode(gfx++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
         gDPSetCycleType(gfx++, G_CYC_FILL);
 
-        if (D_80068BB0->depth_p) {
-            DepthBuffer* depth = D_80068BB0->depth_p;
+        if (gCurrentFramebuffer->depth_p) {
+            DepthBuffer* depth = gCurrentFramebuffer->depth_p;
 
             gDPSetColorImage(gfx++, depth->fmt, depth->size, depth->width, (u32)depth->img_p & 0x1FFFFFFF);
             gDPSetFillColor(gfx++, 0xFFFCFFFC);
             gDPFillRectangle(gfx++, arg1, arg2, (arg1 + arg3) - 1, (arg2 + arg4) - 1);
             gDPPipeSync(gfx++);
-            gDPSetColorImage(gfx++, D_80068BB0->fmt, D_80068BB0->size, D_80068BB0->width,
-                             (u32)D_80068BB0->img_p & 0x1FFFFFFF);
+            gDPSetColorImage(gfx++, gCurrentFramebuffer->fmt, gCurrentFramebuffer->size, gCurrentFramebuffer->width,
+                             (u32)gCurrentFramebuffer->img_p & 0x1FFFFFFF);
         }
 
         gDPPipeSync(gfx++);
@@ -178,9 +178,9 @@ void GfxImage_FillRectangle(Gfx** gfx_p, s32 arg1, s32 arg2, s32 arg3, s32 arg4,
 }
 
 void GfxImage_ClearDepthRectangle(Gfx** gfx_p, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    if (D_80068BB0 != NULL && D_80068BB0->depth_p != NULL) {
+    if (gCurrentFramebuffer != NULL && gCurrentFramebuffer->depth_p != NULL) {
         Gfx* gfx = *gfx_p;
-        DepthBuffer* depth = D_80068BB0->depth_p;
+        DepthBuffer* depth = gCurrentFramebuffer->depth_p;
 
         gDPPipeSync(gfx++);
         gDPSetRenderMode(gfx++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
@@ -191,13 +191,13 @@ void GfxImage_ClearDepthRectangle(Gfx** gfx_p, s32 arg1, s32 arg2, s32 arg3, s32
         gDPFillRectangle(gfx++, arg1, arg2, (arg1 + arg3) - 1, (arg2 + arg4) - 1);
 
         gDPPipeSync(gfx++);
-        gDPSetColorImage(gfx++, D_80068BB0->fmt, D_80068BB0->size, D_80068BB0->width,
-                         (u32)D_80068BB0->img_p & 0x1FFFFFFF);
+        gDPSetColorImage(gfx++, gCurrentFramebuffer->fmt, gCurrentFramebuffer->size, gCurrentFramebuffer->width,
+                         (u32)gCurrentFramebuffer->img_p & 0x1FFFFFFF);
 
         *gfx_p = gfx;
     }
 }
 
 void GfxImage_FillCurrent(Gfx** gfx_p, u16 fill_color) {
-    GfxImage_FillRectangle(gfx_p, 0, 0, D_80068BB0->width, D_80068BB0->height, (fill_color << 0x10) | fill_color);
+    GfxImage_FillRectangle(gfx_p, 0, 0, gCurrentFramebuffer->width, gCurrentFramebuffer->height, (fill_color << 0x10) | fill_color);
 }

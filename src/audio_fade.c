@@ -7,7 +7,7 @@
 #include "rom_device.h"
 #include "libnumus/player.h"
 
-// D_800FC6F0 with its trailing per-file offset array.
+// gSfxSecondarySubHeader with its trailing per-file offset array.
 typedef struct unk_D_800FC6F0 {
     /* 0x00 */ u32 num_files;
     /* 0x04 */ u32 offset1;
@@ -16,7 +16,7 @@ typedef struct unk_D_800FC6F0 {
 } unk_D_800FC6F0; // size >= 0x10
 
 extern u8 D_800786FD[];
-extern u8 D_80078A20[16];
+extern u8 gSpecialMoveSoundFlag[16];
 
 // .data
 typedef struct {
@@ -25,10 +25,10 @@ typedef struct {
     /* 0x02 */ u8 unk_02;  // animation variant; only Charizard (6) sets it
     /* 0x03 */ u8 unk_03;
     /* 0x04 */ u8 unk_04;
-} unk_D_80078700;  // size = 0x05
+} SpeciesSoundConfigEntry;  // size = 0x05
 
-// Effect_TriggerMoveVisual reads unk_02 through the biased symbol D_800786FD (= D_80078700 - 3).
-unk_D_80078700 D_80078700[151] = {
+// Audio_PlayMoveSoundEffect reads unk_02 through the biased symbol D_800786FD (= gSpeciesSoundConfigTable - 3).
+SpeciesSoundConfigEntry gSpeciesSoundConfigTable[151] = {
     /*   1 */ { 0x01, 0x01, 0x00, 0x52, 0x04 },
     /*   2 */ { 0x01, 0x01, 0x00, 0x58, 0x36 },
     /*   3 */ { 0x02, 0x02, 0x00, 0x1A, 0x3C },
@@ -182,12 +182,12 @@ unk_D_80078700 D_80078700[151] = {
     /* 151 */ { 0x00, 0x00, 0x00, 0x82, 0x00 },
 };
 
-s32 D_800789F4 = 0;
-s32 D_800789F8 = 0;
-u8 D_800789FC[4] = { 0 };
-u8 D_80078A00[16] = { 0 };
+s32 gPrevSoundHandle = 0;
+s32 gActiveSoundHandle = 0;
+u8 gBankRemapIndex[4] = { 0 };
+u8 gSoundEffectFlag[16] = { 0 };
 
-s32 Effect_TriggerMoveVisual(u32 move_id, u32 species, u32 sound_kind) {
+s32 Audio_PlayMoveSoundEffect(u32 move_id, u32 species, u32 sound_kind) {
     s32 var;
     unk_D_800FC6F0* sp;
     s32 ret;
@@ -206,9 +206,9 @@ s32 Effect_TriggerMoveVisual(u32 move_id, u32 species, u32 sound_kind) {
 
     switch (sound_kind) {
         case 4:
-            if (Audio_IsSoundPlaying(D_800789F4) != 0) {
-                Audio_QueueFadeSoundCommand(D_800789F4, 0x14);
-                D_800789F4 = 0;
+            if (Audio_IsSoundPlaying(gPrevSoundHandle) != 0) {
+                Audio_QueueFadeSoundCommand(gPrevSoundHandle, 0x14);
+                gPrevSoundHandle = 0;
             }
             if ((move_id == 0xD) || (move_id == 0x13) || (move_id == 0x4C) || (move_id == 0x5B) || (move_id == 0x82) ||
                 (move_id == 0x8F)) {
@@ -218,9 +218,9 @@ s32 Effect_TriggerMoveVisual(u32 move_id, u32 species, u32 sound_kind) {
             return 0;
 
         case 0:
-            if (Audio_IsSoundPlaying(D_800789F4) != 0) {
-                Audio_QueueFadeSoundCommand(D_800789F4, 0x14);
-                D_800789F4 = 0;
+            if (Audio_IsSoundPlaying(gPrevSoundHandle) != 0) {
+                Audio_QueueFadeSoundCommand(gPrevSoundHandle, 0x14);
+                gPrevSoundHandle = 0;
             }
             switch (move_id) {
                 case 0x35:
@@ -241,7 +241,7 @@ s32 Effect_TriggerMoveVisual(u32 move_id, u32 species, u32 sound_kind) {
                 default:
                     var = 0;
             }
-            D_80078A00[0] = 0;
+            gSoundEffectFlag[0] = 0;
             break;
 
         case 1:
@@ -250,16 +250,16 @@ s32 Effect_TriggerMoveVisual(u32 move_id, u32 species, u32 sound_kind) {
                 case 0x3E: case 0x3F: case 0x47: case 0x48: case 0x4B: case 0x50: case 0x51: case 0x52:
                 case 0x66: case 0x6D: case 0x7E: case 0x84: case 0x86: case 0x89: case 0x8A: case 0x8D:
                 case 0xA0:
-                    if (Audio_IsSoundPlaying(D_800789F4) != 0) {
-                        Audio_QueueFadeSoundCommand(D_800789F4, 0x3C);
-                        D_800789F4 = 0;
+                    if (Audio_IsSoundPlaying(gPrevSoundHandle) != 0) {
+                        Audio_QueueFadeSoundCommand(gPrevSoundHandle, 0x3C);
+                        gPrevSoundHandle = 0;
                     }
                     break;
 
                 default:
-                    if (Audio_IsSoundPlaying(D_800789F4) != 0) {
-                        Audio_QueueFadeSoundCommand(D_800789F4, 2);
-                        D_800789F4 = 0;
+                    if (Audio_IsSoundPlaying(gPrevSoundHandle) != 0) {
+                        Audio_QueueFadeSoundCommand(gPrevSoundHandle, 2);
+                        gPrevSoundHandle = 0;
                     }
                     break;
 
@@ -273,9 +273,9 @@ s32 Effect_TriggerMoveVisual(u32 move_id, u32 species, u32 sound_kind) {
             break;
 
         case 2:
-            if (Audio_IsSoundPlaying(D_800789F4) != 0) {
-                Audio_QueueFadeSoundCommand(D_800789F4, 0x14);
-                D_800789F4 = 0;
+            if (Audio_IsSoundPlaying(gPrevSoundHandle) != 0) {
+                Audio_QueueFadeSoundCommand(gPrevSoundHandle, 0x14);
+                gPrevSoundHandle = 0;
             }
             switch (move_id) {
                 case 0xE: case 0x36: case 0x4A: case 0x60: case 0x61: case 0x66: case 0x68: case 0x69:
@@ -301,18 +301,18 @@ s32 Effect_TriggerMoveVisual(u32 move_id, u32 species, u32 sound_kind) {
                     var = 0;
                     break;
             }
-            D_80078A00[0] = 0;
+            gSoundEffectFlag[0] = 0;
             break;
 
         case 3:
-            if (Audio_IsSoundPlaying(D_800789F4) != 0) {
-                Audio_QueueFadeSoundCommand(D_800789F4, 0x14);
-                D_800789F4 = 0;
+            if (Audio_IsSoundPlaying(gPrevSoundHandle) != 0) {
+                Audio_QueueFadeSoundCommand(gPrevSoundHandle, 0x14);
+                gPrevSoundHandle = 0;
             }
             if (move_id == 0x9A) {
-                if (D_80078A00[0] == 0) {
+                if (gSoundEffectFlag[0] == 0) {
                     var = 3;
-                    D_80078A00[0] = 1;
+                    gSoundEffectFlag[0] = 1;
                 } else {
                     var = 0;
                 }
@@ -330,9 +330,9 @@ s32 Effect_TriggerMoveVisual(u32 move_id, u32 species, u32 sound_kind) {
                     return 0;
 
                 default:
-                    if (Audio_IsSoundPlaying(D_800789F4) != 0) {
-                        Audio_QueueFadeSoundCommand(D_800789F4, 0x3C);
-                        D_800789F4 = 0;
+                    if (Audio_IsSoundPlaying(gPrevSoundHandle) != 0) {
+                        Audio_QueueFadeSoundCommand(gPrevSoundHandle, 0x3C);
+                        gPrevSoundHandle = 0;
                     }
                     return 0;
             }
@@ -345,27 +345,27 @@ s32 Effect_TriggerMoveVisual(u32 move_id, u32 species, u32 sound_kind) {
             return 0;
     }
 
-    D_800789FC[0]++;
-    D_800789FC[0] %= 3;
+    gBankRemapIndex[0]++;
+    gBankRemapIndex[0] %= 3;
 
-    sp = (unk_D_800FC6F0*)D_800FC6F0;
+    sp = (unk_D_800FC6F0*)gSfxSecondarySubHeader;
     move_id--;
     if (move_id < sp->num_files - 1) {
         size = sp->files[move_id + 1] - sp->files[move_id];
     } else {
-        size = (u32)D_800FC6E8->seqArray[2].offset - sp->files[move_id];
+        size = (u32)gMoveSoundSeqInfo->seqArray[2].offset - sp->files[move_id];
     }
 
-    Rom_DmaRead(sp->files[move_id], D_800FC6DC, size);
-    Audio_CopyDataWithCacheSync(D_800FC6DC, D_800FC698[D_800789FC[0]], 0x258);
-    Audio_RelocateSoundBankTable(D_800FC698[D_800789FC[0]]);
-    ret = Audio_PlaySoundEffect(D_800FC690, D_800FC698[D_800789FC[0]], var + 1, 0x70, 0x80, -1);
+    Rom_DmaRead(sp->files[move_id], gMoveSoundTempBuffer, size);
+    Audio_CopyDataWithCacheSync(gMoveSoundTempBuffer, gSfxBankScratch[gBankRemapIndex[0]], 0x258);
+    Audio_RelocateSoundBankTable(gSfxBankScratch[gBankRemapIndex[0]]);
+    ret = Audio_PlaySoundEffect(gSfxBankSecondary, gSfxBankScratch[gBankRemapIndex[0]], var + 1, 0x70, 0x80, -1);
 
     if (sound_kind != 0xFF) {
-        D_800789F8 = ret;
+        gActiveSoundHandle = ret;
     }
     if ((sound_kind == 0) || (sound_kind == 2) || (sound_kind == 3) || (sound_kind == 4)) {
-        D_800789F4 = D_800789F8;
+        gPrevSoundHandle = gActiveSoundHandle;
     }
     if ((sound_kind == 0) || (sound_kind == 2)) {
         switch (move_id + 1) {
@@ -375,10 +375,10 @@ s32 Effect_TriggerMoveVisual(u32 move_id, u32 species, u32 sound_kind) {
 
             case 0x2D:
             case 0x2E:
-                if (D_80078A20[0] == 0) {
+                if (gSpecialMoveSoundFlag[0] == 0) {
                     Cry_Play(species, 0);
                 }
-                D_80078A20[0] = 0;
+                gSpecialMoveSoundFlag[0] = 0;
                 break;
 
             case 0x9C:
@@ -387,8 +387,8 @@ s32 Effect_TriggerMoveVisual(u32 move_id, u32 species, u32 sound_kind) {
     }
 }
 void Audio_FadeAndClearStoredSounds(void) {
-  Audio_QueueFadeSoundCommand(D_800789F8, 0x5A);
-  Audio_QueueFadeSoundCommand(D_800789F4, 0x5A);
-  D_800789F8 = 0;
-  D_800789F4 = 0;
+  Audio_QueueFadeSoundCommand(gActiveSoundHandle, 0x5A);
+  Audio_QueueFadeSoundCommand(gPrevSoundHandle, 0x5A);
+  gActiveSoundHandle = 0;
+  gPrevSoundHandle = 0;
 }

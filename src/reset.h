@@ -3,7 +3,7 @@
 
 void SoftReset_ClearLines320(u16 *buf);
 void SoftReset_ClearLines640(u16 *buf);
-void func_8000559C(void);
+void SoftReset_UpdateFadeColor(void);
 void SoftReset_Thread(void* unused);
 void SoftReset_CreateThread(void);
 

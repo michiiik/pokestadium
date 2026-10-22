@@ -5,7 +5,7 @@
 #include "src/fragments/widget_toolkit/widget_toolkit.h"
 #include "src/fragments/minigame_shared_library/minigame_shared_library.h"
 
-static u8 D_86502F50[0x3000] = {
+static u8 HealthBarTextureData[0x3000] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -655,7 +655,7 @@ static u8 D_86502F50[0x3000] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
-static u8 D_86505F50[0x800] = {
+static u8 HealthBarBackgroundTextureData[0x800] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10,
     0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x30, 0x00, 0x30, 0x20,
@@ -766,7 +766,7 @@ static u8 D_86505F50[0x800] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
-u32 D_86506750[] = {
+u32 HealthBarPalette0[] = {
     0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B, 0xA529AD6B, 0xBDEFC631, 0xD6B5DEF7, 0xE739EF39, 0xEFBDF77D,
     0xF7FDF7BD, 0xF77DD6F5, 0xAD29A56B, 0xAD6BAD2B, 0xA569AD6B, 0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B,
     0xAD6BA529, 0xAD6BAD6B, 0xB5ADC631, 0xCE73D6B5, 0xD6B5E739, 0xE739EF7B, 0xEF7BF7BD, 0xFFFFFFFF, 0xFFFFFFFF,
@@ -826,7 +826,7 @@ u32 D_86506750[] = {
     0x63176319, 0x63196B1B, 0x6B9B8423, 0xAD69AD6B, 0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B,
 };
 
-u32 D_86506F50[] = {
+u32 HealthBarPalette1[] = {
     0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B, 0xA529AD6B, 0xB5AFCE71, 0xD6B5DEF7, 0xE739E739, 0xF7BDF77D,
     0xF7BDF7FD, 0xF77DD6B5, 0xA569AD6B, 0xA52BAD6B, 0xAD29A56B, 0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B,
     0xAD6BA529, 0xAD6BAD6B, 0xB5ADC631, 0xCE73D6B5, 0xD6B5E739, 0xE739EF7B, 0xEF7BF7BD, 0xFFFFFFFF, 0xFFFFFFFF,
@@ -886,7 +886,7 @@ u32 D_86506F50[] = {
     0x63176319, 0x63196B1B, 0x6B9B8423, 0xAD69AD6B, 0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B,
 };
 
-u32 D_86507750[] = {
+u32 HealthBarPalette2[] = {
     0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B, 0xA529AD6B, 0xB5AFCE71, 0xD6B5DEF7, 0xE739E739, 0xF7BDF77D,
     0xF7BDF7FD, 0xF77DD6B5, 0xA569AD6B, 0xA52BAD6B, 0xAD29A56B, 0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B,
     0xAD6BA529, 0xAD6BAD6B, 0xB5ADC631, 0xCE73D6B5, 0xD6B5E739, 0xE739EF7B, 0xEF7BF7BD, 0xFFFFFFFF, 0xFFFFFFFF,
@@ -946,7 +946,7 @@ u32 D_86507750[] = {
     0x63176319, 0x63196B1B, 0x6B9B8423, 0xAD69AD6B, 0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B,
 };
 
-u32 D_86507F50[] = {
+u32 HealthBarPalette3[] = {
     0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B, 0xA529AD6B, 0xB5AFCE71, 0xD6B5DEF7, 0xE739E739, 0xF7BDF77D,
     0xF7BDF7FD, 0xF77DD6B5, 0xA569AD6B, 0xA52BAD6B, 0xAD29A56B, 0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B,
     0xAD6BA529, 0xAD6BAD6B, 0xB5ADC631, 0xCE73D6B5, 0xD6B5E739, 0xE739EF7B, 0xEF7BF7BD, 0xFFFFFFFF, 0xFFFFFFFF,
@@ -1006,7 +1006,7 @@ u32 D_86507F50[] = {
     0x63176319, 0x63196B1B, 0x6B9B8423, 0xAD69AD6B, 0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B,
 };
 
-u32 D_86508750[] = {
+u32 HealthBarPalette4[] = {
     0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B, 0xA529AD6B, 0xB5AFCE71, 0xD6B5DEF7, 0xE739E739, 0xF7BDF77D,
     0xF7BDF7FD, 0xF77DD6B5, 0xA569AD6B, 0xA52BAD6B, 0xAD29A56B, 0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B,
     0xAD6BA529, 0xAD6BAD6B, 0xB5ADC631, 0xCE73D6B5, 0xD6B5E739, 0xE739EF7B, 0xEF7BF7BD, 0xFFFFFFFF, 0xFFFFFFFF,
@@ -1066,7 +1066,7 @@ u32 D_86508750[] = {
     0x63176319, 0x63196B1B, 0x6B9B8423, 0xAD69AD6B, 0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B, 0xAD6BAD6B,
 };
 
-static Gfx D_86508F50[] = {
+static Gfx HealthBarDisplayList[] = {
     gsDPPipeSync(),
     gsDPSetTextureLUT(G_TT_NONE),
     gsDPSetPrimColor(0, 0, 255, 255, 255, 255),
@@ -1078,7 +1078,7 @@ static Gfx D_86508F50[] = {
     gsSPEndDisplayList(),
 };
 
-static Vtx D_86508F90[8][4] = {
+static Vtx HealthBarSegmentVertices[8][4] = {
     {
         VTX(-16, 12, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
         VTX(16, 12, 0, 1024, 0, 0xFF, 0xFF, 0xFF, 0xFF),
@@ -1129,7 +1129,7 @@ static Vtx D_86508F90[8][4] = {
     },
 };
 
-static Vtx D_86509190[] = {
+static Vtx HealthBarBackgroundVertices[] = {
     VTX(-48, 48, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(48, 48, 0, 1024, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-48, -48, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
@@ -1143,61 +1143,61 @@ void DynamoGame_DrawSparkEffects(s32 arg0) {
     Mtx* var_s4 = Gfx_AllocDisplayList(sizeof(Mtx) * 4 * 12);
 
     for (i = 0; i < 4; i++) {
-        D_8650AB28 = &D_8650A528[i];
-        D_8650AD70 = &D_8650AB30[i];
+        gCurrentHealthBar = &gDynamoChargeBarData[i];
+        gHealthBarEffectData = &gHealthBarEffects[i];
 
         var_s1 = Gfx_AllocDisplayList(sizeof(Gfx) * 256);
 
-        D_8650AB28->unk_17C->unk_18 = var_s1;
+        gCurrentHealthBar->unk_17C->unk_18 = var_s1;
 
-        gSPDisplayList(var_s1++, D_86508F50);
+        gSPDisplayList(var_s1++, HealthBarDisplayList);
 
-        if ((D_87B000C8 == 0) || ((D_8650AB28->unk_00C == 1) && (D_8650AB28->unk_008 != 6))) {
-            if (D_87B000C8 == 0) {
-                D_8650AB28->unk_17C->unk_28 =
-                    (s32)ROUND_MAX((D_8650AB28->unk_010 * 100.0f) / D_8650AB28->unk_012) / 250.0f;
+        if ((gDrowzeeGameIsOver == 0) || ((gCurrentHealthBar->unk_00C == 1) && (gCurrentHealthBar->unk_008 != 6))) {
+            if (gDrowzeeGameIsOver == 0) {
+                gCurrentHealthBar->unk_17C->unk_28 =
+                    (s32)ROUND_MAX((gCurrentHealthBar->unk_010 * 100.0f) / gCurrentHealthBar->unk_012) / 250.0f;
 
-                if (D_8650AB28->unk_004 == 0) {
-                    D_8650AB28->unk_17C->unk_1C = D_8650AB28->unk_014.anchors[4].position;
-                } else if (D_8650AB28->unk_004 == 1) {
-                    D_8650AB28->unk_17C->unk_28 *= 1.2f;
-                    D_8650AB28->unk_17C->unk_1C = D_8650AB28->unk_014.anchors[3].position;
+                if (gCurrentHealthBar->unk_004 == 0) {
+                    gCurrentHealthBar->unk_17C->unk_1C = gCurrentHealthBar->unk_014.anchors[4].position;
+                } else if (gCurrentHealthBar->unk_004 == 1) {
+                    gCurrentHealthBar->unk_17C->unk_28 *= 1.2f;
+                    gCurrentHealthBar->unk_17C->unk_1C = gCurrentHealthBar->unk_014.anchors[3].position;
                 }
             } else {
-                if (D_8650AB28->unk_004 == 0) {
-                    if (D_8780FC94 == 0) {
-                        if (D_8650AB28->unk_17C->unk_28 > 0.0f) {
-                            D_8650AB28->unk_17C->unk_28 -= 0.003f;
+                if (gCurrentHealthBar->unk_004 == 0) {
+                    if (gResultMenuVisible == 0) {
+                        if (gCurrentHealthBar->unk_17C->unk_28 > 0.0f) {
+                            gCurrentHealthBar->unk_17C->unk_28 -= 0.003f;
                         }
 
-                        if (D_8650AB28->unk_17C->unk_28 < 0.0f) {
-                            D_8650AB28->unk_17C->unk_28 = 0.0f;
-                        }
-                    }
-
-                    D_8650AB28->unk_17C->unk_1C = D_8650AB28->unk_014.anchors[4].position;
-                } else if (D_8650AB28->unk_004 == 1) {
-                    if (D_8780FC94 == 0) {
-                        if (D_8650AB28->unk_17C->unk_28 > 0.0f) {
-                            D_8650AB28->unk_17C->unk_28 -= 0.0036f;
-                        }
-
-                        if (D_8650AB28->unk_17C->unk_28 < 0.0f) {
-                            D_8650AB28->unk_17C->unk_28 = 0.0f;
+                        if (gCurrentHealthBar->unk_17C->unk_28 < 0.0f) {
+                            gCurrentHealthBar->unk_17C->unk_28 = 0.0f;
                         }
                     }
 
-                    D_8650AB28->unk_17C->unk_1C = D_8650AB28->unk_014.anchors[3].position;
+                    gCurrentHealthBar->unk_17C->unk_1C = gCurrentHealthBar->unk_014.anchors[4].position;
+                } else if (gCurrentHealthBar->unk_004 == 1) {
+                    if (gResultMenuVisible == 0) {
+                        if (gCurrentHealthBar->unk_17C->unk_28 > 0.0f) {
+                            gCurrentHealthBar->unk_17C->unk_28 -= 0.0036f;
+                        }
+
+                        if (gCurrentHealthBar->unk_17C->unk_28 < 0.0f) {
+                            gCurrentHealthBar->unk_17C->unk_28 = 0.0f;
+                        }
+                    }
+
+                    gCurrentHealthBar->unk_17C->unk_1C = gCurrentHealthBar->unk_014.anchors[3].position;
                 }
             }
 
-            if (D_8780FC94 == 0) {
+            if (gResultMenuVisible == 0) {
                 if (MiniGame_RandomRange(2) == 0) {
                     for (j = 0; j < 12; j++) {
-                        if (D_8650AD70->unk_00[j].unk_00 == -1) {
-                            D_8650AD70->unk_00[j].unk_00 = 0;
-                            D_8650AD70->unk_00[j].unk_04 = MiniGame_RandomRange(0x50);
-                            D_8650AD70->unk_00[j].unk_08 = MiniGame_RandomRange(0x168);
+                        if (gHealthBarEffectData->unk_00[j].unk_00 == -1) {
+                            gHealthBarEffectData->unk_00[j].unk_00 = 0;
+                            gHealthBarEffectData->unk_00[j].unk_04 = MiniGame_RandomRange(0x50);
+                            gHealthBarEffectData->unk_00[j].unk_08 = MiniGame_RandomRange(0x168);
                             break;
                         }
                     }
@@ -1205,34 +1205,34 @@ void DynamoGame_DrawSparkEffects(s32 arg0) {
             }
 
             for (j = 0; j < 12; j++) {
-                if (D_8650AD70->unk_00[j].unk_00 == -1) {
+                if (gHealthBarEffectData->unk_00[j].unk_00 == -1) {
                     continue;
                 }
 
-                gDPLoadTextureBlock_4b(var_s1++, &D_86502F50[(D_8650AD70->unk_00[j].unk_00 * 0xC00) / 2], G_IM_FMT_I,
+                gDPLoadTextureBlock_4b(var_s1++, &HealthBarTextureData[(gHealthBarEffectData->unk_00[j].unk_00 * 0xC00) / 2], G_IM_FMT_I,
                                        32, 96, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK,
                                        G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
 
-                guRotateRPY(var_s4, D_8650AD70->unk_00[j].unk_04, 0.0f, D_8650AD70->unk_00[j].unk_08);
+                guRotateRPY(var_s4, gHealthBarEffectData->unk_00[j].unk_04, 0.0f, gHealthBarEffectData->unk_00[j].unk_08);
 
                 gSPMatrix(var_s1++, var_s4++, G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
-                gSPVertex(var_s1++, D_86508F90[D_8650AD70->unk_00[j].unk_00], 4, 0);
+                gSPVertex(var_s1++, HealthBarSegmentVertices[gHealthBarEffectData->unk_00[j].unk_00], 4, 0);
                 gSP2Triangles(var_s1++, 0, 3, 1, 0, 0, 2, 3, 0);
                 gSPPopMatrix(var_s1++, G_MTX_MODELVIEW);
 
-                if (D_8780FC94 == 0) {
-                    if (D_8650AD70->unk_00[j].unk_00 == 7) {
-                        D_8650AD70->unk_00[j].unk_00 = -1;
+                if (gResultMenuVisible == 0) {
+                    if (gHealthBarEffectData->unk_00[j].unk_00 == 7) {
+                        gHealthBarEffectData->unk_00[j].unk_00 = -1;
                     } else {
-                        D_8650AD70->unk_00[j].unk_00++;
+                        gHealthBarEffectData->unk_00[j].unk_00++;
                     }
                 }
             }
 
-            gDPLoadTextureBlock_4b(var_s1++, &D_86505F50[((D_87B000C0 % 4) << 0xA) / 2], G_IM_FMT_I, 32, 32, 0,
+            gDPLoadTextureBlock_4b(var_s1++, &HealthBarBackgroundTextureData[((gDrowzeeFrameCounter % 4) << 0xA) / 2], G_IM_FMT_I, 32, 32, 0,
                                    G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
                                    G_TX_NOLOD, G_TX_NOLOD);
-            gSPVertex(var_s1++, D_86509190, 4, 0);
+            gSPVertex(var_s1++, HealthBarBackgroundVertices, 4, 0);
             gSP2Triangles(var_s1++, 0, 3, 1, 0, 0, 2, 3, 0);
         }
 
@@ -1248,21 +1248,21 @@ void DynamoGame_InitSparkEffects(void) {
     temp_s5 = MainPool_AllocState(main_pool_get_available(), 0);
 
     for (i = 0; i < 4; i++) {
-        D_8650AB28 = &D_8650A528[i];
+        gCurrentHealthBar = &gDynamoChargeBarData[i];
 
-        D_8650AB28->unk_17C = GeoNode_CreateScale(temp_s5, NULL, 4, NULL, &D_8006F050, 1.0f);
-        GraphNode_AppendChild(&D_800AC840, &D_8650AB28->unk_17C->node);
+        gCurrentHealthBar->unk_17C = GeoNode_CreateScale(temp_s5, NULL, 4, NULL, &gRootNodePosition, 1.0f);
+        GraphNode_AppendChild(&gGraphRoot0, &gCurrentHealthBar->unk_17C->node);
     }
 
     MainPool_FinalizeAllocation(temp_s5);
 
     for (i = 0; i < 4; i++) {
-        D_8650AD70 = &D_8650AB30[i];
+        gHealthBarEffectData = &gHealthBarEffects[i];
 
         for (j = 0; j < 12; j++) {
-            D_8650AD70->unk_00[j].unk_00 = -1;
-            D_8650AD70->unk_00[j].unk_04 = 0.0f;
-            D_8650AD70->unk_00[j].unk_08 = 0.0f;
+            gHealthBarEffectData->unk_00[j].unk_00 = -1;
+            gHealthBarEffectData->unk_00[j].unk_04 = 0.0f;
+            gHealthBarEffectData->unk_00[j].unk_08 = 0.0f;
         }
     }
 }

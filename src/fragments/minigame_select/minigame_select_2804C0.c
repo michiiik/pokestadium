@@ -3,22 +3,22 @@
 #include "src/text_system.h"
 #include "src/fragments/widget_toolkit/widget_toolkit.h"
 
-static unk_D_8250A480 D_8250A480;
-static unk_D_8250A498 D_8250A498;
-static char* D_8250A4B0[9];
+static MatchBanner gMatchBanner;
+static RoundBanner gRoundBanner;
+static char* gRoundBannerGameNames[9];
 
 void KidsClub_InitMatchBanner(char** arg0) {
-    D_8250A480.unk_00 = 0;
-    D_8250A480.unk_02 = 0;
-    D_8250A480.unk_14 = arg0;
+    gMatchBanner.unk_00 = 0;
+    gMatchBanner.unk_02 = 0;
+    gMatchBanner.unk_14 = arg0;
 }
 
 s32 KidsClub_GetMatchBannerState(void) {
-    return D_8250A480.unk_00;
+    return gMatchBanner.unk_00;
 }
 
 void KidsClub_SetMatchBannerState(s16 arg0) {
-    unk_D_8250A480* ptr = &D_8250A480;
+    MatchBanner* ptr = &gMatchBanner;
 
     ptr->unk_00 = arg0;
 
@@ -52,7 +52,7 @@ void KidsClub_SetMatchBannerState(s16 arg0) {
     }
 }
 
-void KidsClub_AdvanceMatchBannerOpen(unk_D_8250A480* arg0) {
+void KidsClub_AdvanceMatchBannerOpen(MatchBanner* arg0) {
     arg0->unk_02--;
     arg0->unk_04 = ((arg0->unk_02 * -0x1B4) / 10) + 0xBC;
     arg0->unk_08 = ((arg0->unk_02 * 0x224) / 10) + 0x5C;
@@ -61,7 +61,7 @@ void KidsClub_AdvanceMatchBannerOpen(unk_D_8250A480* arg0) {
     }
 }
 
-void KidsClub_UpdateMatchBannerIdle(unk_D_8250A480* arg0) {
+void KidsClub_UpdateMatchBannerIdle(MatchBanner* arg0) {
     arg0->unk_02 = 0x12C;
     arg0->unk_10 = 0.0f;
     if (arg0->unk_02 <= 0) {
@@ -73,7 +73,7 @@ void KidsClub_UpdateMatchBannerIdle(unk_D_8250A480* arg0) {
     }
 }
 
-void KidsClub_AdvanceMatchBannerClose(unk_D_8250A480* arg0) {
+void KidsClub_AdvanceMatchBannerClose(MatchBanner* arg0) {
     arg0->unk_02--;
     arg0->unk_04 = ((arg0->unk_02 * -0x1C4) / 10) + 0x280;
     arg0->unk_08 = ((arg0->unk_02 * 0x224) / 10) - 0x1C8;
@@ -83,7 +83,7 @@ void KidsClub_AdvanceMatchBannerClose(unk_D_8250A480* arg0) {
 }
 
 void KidsClub_UpdateMatchBanner(void) {
-    unk_D_8250A480* ptr = &D_8250A480;
+    MatchBanner* ptr = &gMatchBanner;
 
     if (ptr->unk_00 != 0) {
         switch (ptr->unk_00) {
@@ -188,7 +188,7 @@ void KidsClub_DrawWavyText(s16 arg0, s16 arg1, s8* arg2, f32 arg3, s16 arg4) {
 
 void KidsClub_DrawMatchBanner(void) {
     UNUSED s32 pad;
-    unk_D_8250A480* ptr = &D_8250A480;
+    MatchBanner* ptr = &gMatchBanner;
     char* sp2C = Text_GetString(NULL, 0, ptr->unk_14, 0);
     char* sp28 = Text_GetString(NULL, 0, ptr->unk_14, 1);
 
@@ -212,20 +212,20 @@ void KidsClub_DrawMatchBanner(void) {
 void KidsClub_InitRoundBanner(char** arg0) {
     s32 i;
 
-    D_8250A498.unk_00 = 0;
-    D_8250A498.unk_02 = 0;
-    D_8250A498.unk_14 = arg0;
+    gRoundBanner.unk_00 = 0;
+    gRoundBanner.unk_02 = 0;
+    gRoundBanner.unk_14 = arg0;
 
     for (i = 0; i < 9; i++) {
-        D_8250A4B0[i] = Text_GetString(NULL, 0, arg0, i + 7);
+        gRoundBannerGameNames[i] = Text_GetString(NULL, 0, arg0, i + 7);
     }
 }
 
-void func_825057A0(void) {
+void Minigames_NoOp(void) {
 }
 
 void KidsClub_SetRoundBannerLabel(s16 arg0) {
-    unk_D_8250A498* ptr = &D_8250A498;
+    RoundBanner* ptr = &gRoundBanner;
 
     if (ptr->unk_12 != ptr->unk_10) {
         ptr->unk_10 = ptr->unk_12;
@@ -233,13 +233,13 @@ void KidsClub_SetRoundBannerLabel(s16 arg0) {
         ptr->unk_04 = ptr->unk_06;
     }
     ptr->unk_12 = arg0;
-    ptr->unk_0E = Font_MeasureTextExtent(0, 0, D_8250A4B0[ptr->unk_12], arg0) + 0x30;
+    ptr->unk_0E = Font_MeasureTextExtent(0, 0, gRoundBannerGameNames[ptr->unk_12], arg0) + 0x30;
     ptr->unk_06 = (0x280 - ptr->unk_0E) / 2;
     ptr->unk_02 = 5;
 }
 
 void KidsClub_SetRoundBannerState(s16 arg0, s16 arg1) {
-    unk_D_8250A498* ptr = &D_8250A498;
+    RoundBanner* ptr = &gRoundBanner;
 
     ptr->unk_00 = arg0;
 
@@ -251,7 +251,7 @@ void KidsClub_SetRoundBannerState(s16 arg0, s16 arg1) {
         case 1:
             ptr->unk_02 = 0xA;
             ptr->unk_10 = ptr->unk_12 = arg1;
-            ptr->unk_0C = ptr->unk_0E = Font_MeasureTextExtent(0, 0, D_8250A4B0[ptr->unk_12], arg1) + 0x30;
+            ptr->unk_0C = ptr->unk_0E = Font_MeasureTextExtent(0, 0, gRoundBannerGameNames[ptr->unk_12], arg1) + 0x30;
             ptr->unk_04 = ptr->unk_06 = (0x280 - ptr->unk_0C) / 2;
             ptr->unk_08 = -0x2C;
             ptr->unk_0A = 0x1E0;
@@ -267,7 +267,7 @@ void KidsClub_SetRoundBannerState(s16 arg0, s16 arg1) {
     }
 }
 
-void KidsClub_AdvanceRoundBannerOpen(unk_D_8250A498* arg0) {
+void KidsClub_AdvanceRoundBannerOpen(RoundBanner* arg0) {
     arg0->unk_02--;
     arg0->unk_08 = ((arg0->unk_02 * -0x68) / 10) + 0x3C;
     arg0->unk_0A = ((arg0->unk_02 * 0x56) / 10) + 0x18A;
@@ -276,7 +276,7 @@ void KidsClub_AdvanceRoundBannerOpen(unk_D_8250A498* arg0) {
     }
 }
 
-void KidsClub_UpdateRoundBannerCrossfade(unk_D_8250A498* arg0) {
+void KidsClub_UpdateRoundBannerCrossfade(RoundBanner* arg0) {
     if (arg0->unk_10 != arg0->unk_12) {
         arg0->unk_02--;
         if (arg0->unk_02 <= 0) {
@@ -287,7 +287,7 @@ void KidsClub_UpdateRoundBannerCrossfade(unk_D_8250A498* arg0) {
     }
 }
 
-void KidsClub_AdvanceRoundBannerClose(unk_D_8250A498* arg0) {
+void KidsClub_AdvanceRoundBannerClose(RoundBanner* arg0) {
     arg0->unk_02--;
     arg0->unk_08 = ((arg0->unk_02 * 0x68) / 10) - 0x2C;
     arg0->unk_0A = ((arg0->unk_02 * -0x56) / 10) + 0x1E0;
@@ -297,7 +297,7 @@ void KidsClub_AdvanceRoundBannerClose(unk_D_8250A498* arg0) {
 }
 
 void KidsClub_UpdateRoundBanner(void) {
-    unk_D_8250A498* ptr = &D_8250A498;
+    RoundBanner* ptr = &gRoundBanner;
 
     if (ptr->unk_00 != 0) {
         switch (ptr->unk_00) {
@@ -318,7 +318,7 @@ void KidsClub_UpdateRoundBanner(void) {
 
 void KidsClub_DrawRoundBanner(void) {
     UNUSED s32 pad;
-    unk_D_8250A498* ptr = &D_8250A498;
+    RoundBanner* ptr = &gRoundBanner;
     char* sp3C;
     s16 tmp;
     char* sp34 = Text_GetString(NULL, 0, ptr->unk_14, 0x10);
@@ -333,13 +333,13 @@ void KidsClub_DrawRoundBanner(void) {
             KidsClub_DrawRoundedFrame(ptr->unk_06, ptr->unk_08, ptr->unk_0E, 0x2C, 0x1E, 0x1E, 0x82, tmp);
         }
 
-        if (D_8780FA48 == -1) {
+        if (gMenuSelectedOption == -1) {
             KidsClub_DrawRoundedFrame(0x98, ptr->unk_0A, 0x140, 0x2C, 0x64, 0, 0x50, 0x80);
         }
 
         Font_BeginTranslucentTextRendering();
         Font_SetActive(0x10, 0);
-        sp3C = D_8250A4B0[ptr->unk_10];
+        sp3C = gRoundBannerGameNames[ptr->unk_10];
         if (ptr->unk_10 == ptr->unk_12) {
             Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
             Font_Printf(ptr->unk_04 + 0x18, ptr->unk_08 + 0xA, sp3C);
@@ -347,15 +347,15 @@ void KidsClub_DrawRoundBanner(void) {
             tmp = (ptr->unk_02 * 0xFF) / 5;
             Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, tmp);
             Font_Printf(ptr->unk_04 + 0x18, ptr->unk_08 + 0xA, sp3C);
-            sp3C = D_8250A4B0[ptr->unk_12];
+            sp3C = gRoundBannerGameNames[ptr->unk_12];
             tmp = ((5 - ptr->unk_02) * 0xFF) / 5;
             Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, tmp);
             Font_Printf(ptr->unk_06 + 0x18, ptr->unk_08 + 0xA, sp3C);
         }
 
-        if (D_8780FA48 == -1) {
+        if (gMenuSelectedOption == -1) {
             Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
-            Font_Printf(0x140 - (Text_MeasureStringWidth(D_8250A304, sp34) / 2), ptr->unk_0A + 0xA, sp34);
+            Font_Printf(0x140 - (Text_MeasureStringWidth(gTextObjectHandle, sp34) / 2), ptr->unk_0A + 0xA, sp34);
         }
         Font_EndTexturedTextRendering();
     }

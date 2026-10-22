@@ -4,16 +4,16 @@
 #include "global.h"
 #include "src/controller.h"
 
-typedef struct unk_D_868084D8_038 {
+typedef struct SushiPlateNode {
     /* 0x000 */ s16 unk_000;
     /* 0x002 */ s16 unk_002;
     /* 0x004 */ char unk004[0x2];
     /* 0x006 */ s16 unk_006;
-    /* 0x008 */ struct unk_D_868084D8_038* unk_008;
+    /* 0x008 */ struct SushiPlateNode* unk_008;
     /* 0x00C */ Vec3f unk_00C;
     /* 0x018 */ char unk018[0x1B8];
     /* 0x1D0 */ Vec3f unk_1D0;
-} unk_D_868084D8_038; // size >= 0x1DC
+} SushiPlateNode; // size >= 0x1DC
 
 typedef struct unk_D_868084D8_040 {
     /* 0x00 */char unk00[0x1];
@@ -22,7 +22,7 @@ typedef struct unk_D_868084D8_040 {
     /* 0x03 */u8 unk_03;
 } unk_D_868084D8_040; // size >= 0x2
 
-typedef struct unk_D_868084D8 {
+typedef struct SushiPlate {
     /* 0x00 */ u16 unk_00;
     /* 0x02 */ u16 unk_02;
     /* 0x04 */ s16 unk_04;
@@ -35,12 +35,12 @@ typedef struct unk_D_868084D8 {
     /* 0x2C */ f32 unk_2C;
     /* 0x30 */ f32 unk_30;
     /* 0x34 */ f32 unk_34;
-    /* 0x38 */ unk_D_868084D8_038* unk_38;
+    /* 0x38 */ SushiPlateNode* unk_38;
     /* 0x3C */ Gfx* unk_3C;
     /* 0x40 */ unk_D_86002F34_alt9* unk_40;
-} unk_D_868084D8; // size = 0x44
+} SushiPlate; // size = 0x44
 
-typedef struct unk_D_86807558_040 {
+typedef struct SushiNameTag {
     /* 0x00 */ s16 unk_00;
     /* 0x02 */ s16 unk_02;
     /* 0x04 */ s16 unk_04;
@@ -49,7 +49,7 @@ typedef struct unk_D_86807558_040 {
     /* 0x10 */ f32 unk_10;
     /* 0x14 */ f32 unk_14;
     /* 0x18 */ s16 unk_18;
-} unk_D_86807558_040; // size >= 0x1C
+} SushiNameTag; // size >= 0x1C
 
 typedef struct unk_D_86807558_098 {
     /* 0x00 */ Vec3f unk_00;
@@ -57,14 +57,14 @@ typedef struct unk_D_86807558_098 {
     /* 0x18 */ Vec3f unk_18;
 } unk_D_86807558_098; // size = 0x24
 
-typedef struct unk_D_86807558 {
+typedef struct SushiPlayerEntity {
     /* 0x000 */ s16 unk_000;
     /* 0x002 */ u16 unk_002;
     /* 0x004 */ s16 unk_004;
     /* 0x004 */ s16 unk_006;
     /* 0x008 */ s32 unk_008;
     /* 0x00C */ s16 unk_00C;
-    /* 0x010 */ unk_D_868084D8* unk_010;
+    /* 0x010 */ SushiPlate* unk_010;
     /* 0x014 */ s16 unk_014;
     /* 0x016 */ u16 unk_016;
     /* 0x018 */ s32 unk_018;
@@ -75,7 +75,7 @@ typedef struct unk_D_86807558 {
     /* 0x02A */ s16 unk_02A;
     /* 0x02C */ s16 unk_02C[9];
     /* 0x03E */ s16 unk_03E;
-    /* 0x040 */ unk_D_86807558_040 unk_040;
+    /* 0x040 */ SushiNameTag unk_040;
     /* 0x05C */ s32 unk_05C;
     /* 0x060 */ s32 unk_060;
     /* 0x064 */ Controller* unk_064;
@@ -93,15 +93,15 @@ typedef struct unk_D_86807558 {
     /* 0x0D0 */ Color_RGBA8_u32 unk_0D0;
     /* 0x0D4 */ s16 unk_0D4;
     /* 0x0D8 */ f32 unk_0D8;
-    /* 0x0DC */ unk_D_868084D8* unk_0DC;
+    /* 0x0DC */ SushiPlate* unk_0DC;
     /* 0x0E0 */ s16 unk_0E0;
     /* 0x0E2 */ s16 unk_0E2;
     /* 0x0E4 */ DisplayObject unk_0E4;
     /* 0x24C */ DisplayObject unk_24C;
     /* 0x3B4 */ u32* unk_3B4;
-} unk_D_86807558; // size = 0x3B8
+} SushiPlayerEntity; // size = 0x3B8
 
-typedef struct unk_D_86808498 {
+typedef struct SushiWorldBasis {
     /* 0x00 */ Vec3f unk_00;
     /* 0x0C */ Vec3f unk_0C;
     /* 0x18 */ s16 unk_18;
@@ -109,27 +109,27 @@ typedef struct unk_D_86808498 {
     /* 0x1C */ f32 unk_1C;
     /* 0x20 */ Vec3f unk_20;
     /* 0x2C */ Vec3f unk_2C;
-} unk_D_86808498; // size >= 0x38
+} SushiWorldBasis; // size >= 0x38
 
-typedef struct unk_D_86808808_018 {
+typedef struct SushiSpawnerNode {
     /* 0x000 */ DisplayNodeHeader node;
     /* 0x018 */ char unk018[0xC];
     /* 0x024 */ Vec3f unk_024;
     /* 0x030 */ Vec3f unk_030;
-} unk_D_86808808_018; // size >= 0x3C
+} SushiSpawnerNode; // size >= 0x3C
 
-typedef struct unk_D_86808808 {
+typedef struct SushiSpawner {
     /* 0x000 */ s16 unk_000;
     /* 0x002 */ s16 unk_002;
     /* 0x004 */ u16 unk_004;
     /* 0x006 */ s16 unk_006;
     /* 0x008 */ s32 unk_008;
     /* 0x00C */ Vec3f unk_00C;
-    /* 0x018 */ unk_D_86808808_018 unk_018;
+    /* 0x018 */ SushiSpawnerNode unk_018;
     /* 0x054 */ char unk054[0x12C];
-} unk_D_86808808; // size = 0x180
+} SushiSpawner; // size = 0x180
 
-typedef struct unk_D_86807180 {
+typedef struct SushiItemDef {
     /* 0x00 */ s32 unk_00;
     /* 0x04 */ u8* unk_04;
     /* 0x08 */ u8* unk_08;
@@ -138,16 +138,16 @@ typedef struct unk_D_86807180 {
     /* 0x12 */ s16 unk_12;
     /* 0x14 */ s32 unk_14;
     /* 0x18 */ s16 unk_18;
-} unk_D_86807180; // size = 0x1C
+} SushiItemDef; // size = 0x1C
 
-extern s32 D_86807160[];
-extern unk_D_86807180 D_86807180[];
+extern s32 gSushiOrderIndices[];
+extern SushiItemDef gSushiItemDefs[];
 
-extern unk_D_86002F34* D_86807500;
-extern s32 D_86807510;
-extern unk_D_86807558 D_86807558[4];
+extern ShadowContextNode* gSushiGoRoundGraphNode;
+extern s32 gSushiGoRoundTimer;
+extern SushiPlayerEntity gSushiEntities[4];
 
-extern unk_D_868084D8 D_868084D8[12];
+extern SushiPlate gSushiInstances[12];
 
 void SushiGame_FadeAudio(s32 arg0);
 void SushiGame_PollInput(void);
@@ -155,11 +155,11 @@ Gfx* SushiGame_DrawPlateStack(Gfx* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4)
 void SushiGame_DrawAllPlateStacks(void);
 void SushiGame_InterpolateColorCycle(Color_RGB8* arg0, Color_RGB8* arg1, s32 arg2, s32 arg3, s32 arg4);
 void SushiGame_DrawDishIcon(s32 arg0, s16 arg1, s16 arg2, f32 arg3);
-void func_86800B38(void);
+void RenderSushiGoRoundUI(void);
 void SushiGame_DrawFrame(void);
 void SushiGame_UpdateWaitForStart(void);
 s32 SushiGame_IsRoundTimeUp(void);
-s32 func_86801884(void);
+s32 SushiGame_UpdateGoRoundState(void);
 void SushiGame_MainLoop(void);
 void SushiGame_LoadAssets(void);
 void SushiGame_Main(s32 arg0, UNUSED s32 arg1);
@@ -173,9 +173,9 @@ void SushiGame_UpdatePlayers(void);
 void SushiGame_InitCamera(void);
 void SushiGame_UpdateCamera(void);
 
-f32 SushiGame_ComputePlateDistance(unk_D_868084D8*, Vec3f*, Vec3f*);
-void SushiGame_SetPlateState(unk_D_868084D8*, s32, unk_D_86807558*);
-s32 SushiGame_GetPlateValue(unk_D_868084D8*);
+f32 SushiGame_ComputePlateDistance(SushiPlate*, Vec3f*, Vec3f*);
+void SushiGame_SetPlateState(SushiPlate*, s32, SushiPlayerEntity*);
+s32 SushiGame_GetPlateValue(SushiPlate*);
 s16 SushiGame_GetActivePlateCount(s32);
 void SushiGame_SetGamePhase(s32);
 void SushiGame_InitConveyorBelt(void);

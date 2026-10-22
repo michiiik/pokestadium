@@ -11,14 +11,14 @@
 #include "src/matrix.h"
 #include "src/math_util.h"
 
-typedef struct unk_D_84392040 {
+typedef struct WaterAnimParams {
     /* 0x00 */ char unk00[0xC];
     /* 0x0C */ f32 unk_0C;
     /* 0x10 */ f32 unk_10;
     /* 0x14 */ char unk14[0x4];
-} unk_D_84392040; // size = 0x18
+} WaterAnimParams; // size = 0x18
 
-s32 D_843902A0;
+s32 gBattleEngineState;
 #include "prevent_bss_reordering.h"
 s32 gBattleAnimFrameCounter;
 s32 gBattleAnimSpawnDelay;
@@ -45,14 +45,14 @@ static s16 sBattleAnimAlternateAnchor;
 ActivePokemon* gBattleAnimCurrentOwner;
 ActivePokemon* gBattleAnimSecondaryOwner;
 ActivePokemon* gBattleAnimTertiaryOwner;
-s32 D_843902F4;
-s32 D_843902F8;
+s32 gEffectStateFlag;
+s32 gBattleEngineStatus;
 static s8 sBattleAnimEffectCallbackIndex;
 func_D_84390300 gBattleAnimEffectUpdateFuncs[8];
 func_D_84390320 gBattleAnimEffectDrawFuncs[8];
-s32 D_84390340;
+s32 gBattleAnimMoveFailedFlag;
 static f32 sD_84390344;
-Vec3f D_84390348;
+Vec3f gCameraLookAtPos;
 static Vec3s sD_84390354;
 static Vec3f sD_84390360;
 static Vec3s sD_8439036C;
@@ -85,12 +85,12 @@ static DisplayObject sD_843903D0[16];
 static s32 sD_84391A50[16];
 static DisplayObject sD_84391A90[4];
 static s32 sD_84392030[4];
-static unk_D_84392040 sD_84392040;
-f32 D_84392058[26];
+static WaterAnimParams sD_84392040;
+f32 gWaterWaveTable[26];
 
 static s32 sD_84385BB0[] = { 0, 0, 0, 0 };
 
-u32 D_84385BC0[] = {
+u32 gMessageIdLookup[] = {
     0x00000005, 0x00000006, 0x00000007, 0x00000008, 0x00000009, 0x0000000A, 0x0000000B, 0x0000000C,
     0x0000000D, 0x0000000E, 0x0000000F, 0x00000010, 0x00000011, 0x00000012, 0x00000013, 0x00000014,
     0x00000015, 0x00000016, 0x00000017, 0x00000018, 0x00000019, 0x0000001A, 0x0000001B, 0x0000001C,
@@ -99,42 +99,42 @@ u32 D_84385BC0[] = {
     0x00000031, 0x00000032, 0x00000033, 0x00000034, 0x00000035, 0x00000036, 0x00000000, 0x00000000,
 };
 
-Vtx D_84385C80[] = {
+Vtx gPanelQuadVerts[] = {
     VTX(-64, -63, 0, 0, 2016, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(62, -63, 0, 2016, 2016, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(62, 0, 0, 2016, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, 0, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
 
-Vtx D_84385CC0[] = {
+Vtx gPanelBarVerts[] = {
     VTX(-16, 96, 0, 0, 3040, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(15, 96, 0, 992, 3040, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(15, 0, 0, 992, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-16, 0, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
 
-Vtx D_84385D00[] = {
+Vtx gPanelBarSmallVerts[] = {
     VTX(-8, 96, 0, 0, 3040, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(7, 96, 0, 992, 3040, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(7, 0, 0, 992, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-8, 0, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
 
-Vtx D_84385D40[] = {
+Vtx gPanelMiscVerts[] = {
     VTX(-4, 96, 0, 0, 3040, 0xFF, 0xFF, 0xFF, 0xFF),     VTX(3, 96, 0, 992, 3040, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(3, 0, 0, 992, 0, 0xFF, 0xFF, 0xFF, 0xFF),        VTX(-4, 0, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-160, -120, 0, 0, 2048, 0x00, 0x00, 0x78, 0xFF), VTX(160, -120, 0, 2048, 2048, 0x00, 0x00, 0x78, 0xFF),
     VTX(160, 120, 0, 2048, 0, 0x00, 0x00, 0x78, 0xFF),   VTX(-160, 120, 0, 0, 0, 0x00, 0x00, 0x78, 0xFF),
 };
 
-Vtx D_84385DC0[] = {
+Vtx gPanelBgVerts[] = {
     VTX(-160, -120, 0, 0, 4096, 0x00, 0x00, 0x78, 0xFF),
     VTX(160, -120, 0, 4096, 4096, 0x00, 0x00, 0x78, 0xFF),
     VTX(160, 120, 0, 4096, 0, 0x00, 0x00, 0x78, 0xFF),
     VTX(-160, 120, 0, 0, 0, 0x00, 0x00, 0x78, 0xFF),
 };
 
-Vtx D_84385E00[] = {
+Vtx gPanelBgLargeVerts[] = {
     VTX(-160, -120, 0, 0, 8192, 0x00, 0x00, 0x78, 0xFF),
     VTX(160, -120, 0, 8192, 8192, 0x00, 0x00, 0x78, 0xFF),
     VTX(160, 120, 0, 8192, 0, 0x00, 0x00, 0x78, 0xFF),
@@ -953,37 +953,37 @@ static func_D_84390320 sMoveAnimEffectStartInitFuncs[] = {
     BattleAnim_StartEffect14ModelAnimAndMoveKeyedTintParticles, BattleAnim_StartEffect15Descriptor08IndexedScaleDelayFade, BattleAnim_StartEffect16TintDescriptor34Sequence, BattleAnim_StartEffect17ModelAnimFinish, BattleAnim_StartEffect18ScatterRadialAndColumnSequence, BattleAnim_EffectStartNop, func_843378CC,
     ParticleEffect_WaterAnimBurst, ParticleEffect_InitSetRotatingPaletteNoTint, ParticleEffect_InitSmokeSetWithMarker, ParticleEffect_PaletteScriptBurst, BattleAnim_EffectStartNop, BattleAnim_StartEffect26TintDescriptor53ScalePulse, BattleAnim_EffectStartNop,
     ParticleEffect_RegisterEffectE0, ParticleEffect_GroupSetupTintAndDefaultBurst, ParticleEffect_FinalGroupSetup, ParticleEffect_ComplexNodeSetup, BattleAnim_EffectStartNop, BattleAnim_EffectStartNop, ParticleEffect_RegisterSparkle,
-    ParticleEffect_InitSmokeSetTexture1, ParticleEffect_BasicMultiBurstDelayedSprayOnly, ParticleEffect_SimpleBurstScript, ParticleEffect_RegisterExplosion, InitParticleEffectSet_WithFade, ParticleEffect_RegisterLargeExplosion, ParticleEffect_TextureSetup,
-    BattleAnim_EffectStartNop, BattleAnim_EffectStartNop, BattleAnim_EffectStartNop, ParticleEffect_SetMode, BattleAnim_EffectStartNop, BattleAnim_StartEffect47TintDescriptor53ScalePulseAndDescriptor4AFade, BattleAnim_SpawnTimedFireballEffect,
+    ParticleEffect_InitSmokeSetTexture1, ParticleEffect_BasicMultiBurstDelayedSprayOnly, ParticleEffect_SimpleBurstScript, ParticleEffect_RegisterExplosion, BattleAnim_StartEffect39TintRampAndModelAnimWait, ParticleEffect_RegisterLargeExplosion, ParticleEffect_TextureSetup,
+    BattleAnim_EffectStartNop, BattleAnim_EffectStartNop, BattleAnim_EffectStartNop, BattleAnim_StartEffect45GlobalTintFade, BattleAnim_EffectStartNop, BattleAnim_StartEffect47TintDescriptor53ScalePulseAndDescriptor4AFade, BattleAnim_SpawnTimedFireballEffect,
     ParticleEffect_SimpleNodeEntry, BattleAnim_StartEffects50And82TintRampAndModelScaleFade, BattleAnim_EffectStartNop, BattleAnim_StartEffect52ModelAnim, BattleAnim_StartEffect53Descriptor33FadeAndDescriptor47ScaleMotion, BattleAnim_EffectStartNop, BattleAnim_StartEffect55ModelAnimWaitMarkerSlotAndScaleFall,
-    ParticleEffect_AdditionalNodeSetup, ParticleEffect_SmallNodeSetupGlobalTintFade17, InitExplosionEffectSet, BattleAnim_CreateStreamSprayColumnEffect, ParticleEffect_GroupSetupTintAndDefaultBurst, ParticleEffect_HandleStateSetup, BattleAnim_EffectStartNop,
+    ParticleEffect_AdditionalNodeSetup, ParticleEffect_SmallNodeSetupGlobalTintFade17, BattleAnim_StartEffect58ScaleFadesAndBurstEmitter, BattleAnim_CreateStreamSprayColumnEffect, ParticleEffect_GroupSetupTintAndDefaultBurst, ParticleEffect_HandleStateSetup, BattleAnim_EffectStartNop,
     ParticleEffect_RegisterHandlers_Default, BattleAnim_StartEffect64ModelAnimWait, ParticleEffect_RegisterParticleNodes, ParticleEffect_RegisterMultipleHandlers, BattleAnim_EffectStartNop, BattleAnim_StartEffect68ModelAnimWaitAndDescriptor42ScaleFall, BattleAnim_StartEffect69ModelPhaseWaitAndFallingParticles,
-    InitParticleEffectSet_WithDifferentTiming, BattleAnim_StartEffect71SpecialModelColorCycle, BattleAnim_StartEffect72ModelAnimWait, BattleAnim_CreateCollisionRandomEffect, BattleAnim_StartEffect74SpecialModelColorCycle, ParticleEffect_RegisterHandlers_Alternate, BattleAnim_StartEffect76Descriptor33FadeAndDescriptor47ScaleMotion,
-    InitSmallGlowEffectSet, InitParticleEffectSet_Single, BattleAnim_StartEffect79ModelAnimWaitAndDescriptor25AlphaFade, ParticleEffect_RegisterDefaultTexture, ParticleEffect_AdvancedModeSetup, BattleAnim_StartEffects50And82TintRampAndModelScaleFade, ParticleEffect_SimpleBurst,
-    ParticleEffect_InitSmokeSetLongDuration, ParticleEffect_FinalSetupSpiralAndVerticalFade, ParticleEffect_RegisterLargeExplosionAndEffects, BattleAnim_StartEffect87ModelTintAlphaFadeAndVerticalFade, ParticleEffect_MultiNodeEffect88Palette7, ParticleEffect_MultiNodeD, ParticleEffect_PortraitBurst,
+    BattleAnim_StartEffect70TintDescriptor53ScalePulse, BattleAnim_StartEffect71SpecialModelColorCycle, BattleAnim_StartEffect72ModelAnimWait, BattleAnim_CreateCollisionRandomEffect, BattleAnim_StartEffect74SpecialModelColorCycle, ParticleEffect_RegisterHandlers_Alternate, BattleAnim_StartEffect76Descriptor33FadeAndDescriptor47ScaleMotion,
+    BattleAnim_StartEffects77And120SparkFades, BattleAnim_StartEffect78TintDescriptor53ScaleGrow, BattleAnim_StartEffect79ModelAnimWaitAndDescriptor25AlphaFade, ParticleEffect_RegisterDefaultTexture, ParticleEffect_AdvancedModeSetup, BattleAnim_StartEffects50And82TintRampAndModelScaleFade, ParticleEffect_SimpleBurst,
+    ParticleEffect_InitSmokeSetLongDuration, ParticleEffect_FinalSetupSpiralAndVerticalFade, ParticleEffect_RegisterLargeExplosionAndEffects, BattleAnim_StartEffect87ModelTintAlphaFadeAndVerticalFade, ParticleEffect_MultiNodeEffect88Palette7, BattleAnim_StartEffect89TintRampsAndDescriptor3DVerticalFadeSequence, ParticleEffect_PortraitBurst,
     ParticleEffect_PortraitBurstNode, ParticleEffect_PortraitBurstCheck, ParticleEffect_WaterAnimFirework, ParticleEffect_SimpleBurstAnimWaitDelayedTintFade, ParticleEffect_PaletteMultiBurstCleanupWithTintFade, ParticleEffect_PaletteBurstVariant4Model8D, ParticleEffect_PaletteBurstVariant2Model8EDelayedFadeOut,
     BattleAnim_EffectStartNop, ParticleEffect_BasicMultiBurst, ParticleEffect_SimpleBurstAnimWaitDelayedAlphaFadeOut, ParticleEffect_RotationEntry, BattleAnim_DisableEffectSpawningAlias, ParticleEffect_InitSmoke, ParticleEffect_InitFire,
-    ParticleEffect_TriggerSpecial, ParticleEffect_AlphaBurst, ParticleEffect_AlphaBurstPalette17, ParticleEffect_AdditionalSetupDualRiseFade, ParticleEffect_SimpleGroupSetup, ParticleEffect_ComplexGroupSetup, BattleAnim_StartEffect111GlobalTintAndSpecialModelColorCycle,
+    ParticleEffect_TriggerSpecial, ParticleEffect_AlphaBurst, ParticleEffect_AlphaBurstPalette17, ParticleEffect_AdditionalSetupDualRiseFade, BattleAnim_StartEffect109OwnerModelTintPulse, ParticleEffect_ComplexGroupSetup, BattleAnim_StartEffect111GlobalTintAndSpecialModelColorCycle,
     ParticleEffect_PortraitBurstInit, ParticleEffect_TriggerDefaultPalette1B, ParticleEffect_FinalSetupRiseAndVerticalFade, ParticleEffect_FinalSetupPortraitBurst, ParticleEffect_AdditionalNodeSingleRiseFade, ParticleEffect_StateCollisionSetupDesc29ScaleAnimFade, ParticleEffect_CreateWithCallback,
-    ParticleEffect_CreateCallback, InitSmallGlowEffectSet, ParticleEffect_TriggerDefaultPalette1BWithTintFade, BattleAnim_StartEffect122GlobalAndOwnerTintFade, ParticleEffect_ConditionalStateSetup, ParticleEffect_CollisionResponseSwitch, ParticleEffect_RegisterCallbacks,
+    ParticleEffect_CreateCallback, BattleAnim_StartEffects77And120SparkFades, ParticleEffect_TriggerDefaultPalette1BWithTintFade, BattleAnim_StartEffect122GlobalAndOwnerTintFade, ParticleEffect_ConditionalStateSetup, ParticleEffect_CollisionResponseSwitch, ParticleEffect_RegisterCallbacks,
     func_8433765C, BattleAnim_StartEffect127Descriptor39ScaleFade, BattleAnim_StartEffect128Descriptor39ScaleFade, ParticleEffect_CreateTypeX, ParticleEffect_CreateSmoke, ParticleEffect_CreateSmokeHighPriority, ParticleEffect_CreateDual,
     BattleAnim_StartEffect133ModeOrbitBurstAndEffect135Followup, BattleAnim_StartEffect134ModeOrbitAndMetadataBurst, BattleAnim_StartEffect135ExpandingFlashAndRisingScaleFade, BattleAnim_EffectStartNop, BattleAnim_StartEffect137Descriptor3FRisingFade, ParticleEffect_TextureNodeSetup, BattleAnim_StartEffect139DualRepeatingSparks,
     BattleAnim_StartEffect140StartEffect139Alias, BattleAnim_StartEffect141GridRiseAndFallingBurst, BattleAnim_StartEffect142StartEffect141Alias, BattleAnim_StartEffect143ModeOrbitAndMetadataBurst, BattleAnim_EffectStartNop,
 };
 static func_D_84390320 sMoveAnimEffectEndInitFuncs[] = {
-    BattleAnim_EffectEndNop, BattleAnim_EffectEndNop, InitComplexParticleSequence, ParticleEffect_SpecialCollisionSetup, ParticleEffect_MultiTextureSetup, ParticleEffect_DynamicCollisionSetup, ParticleEffect_RegisterPaletteVariants,
+    BattleAnim_EffectEndNop, BattleAnim_EffectEndNop, BattleAnim_EndEffect2AlphaFadesAndFallingSparks, ParticleEffect_SpecialCollisionSetup, ParticleEffect_MultiTextureSetup, ParticleEffect_DynamicCollisionSetup, ParticleEffect_RegisterPaletteVariants,
     ParticleEffect_PaletteMultiBurst, BattleAnim_CreateSprayColumnEffect, BattleAnim_EffectEndNop, ParticleEffect_RegisterAnimationCallbacks, BattleAnim_EffectEndNop, BattleAnim_EffectEndNop, ParticleEffect_RegisterSpecific,
-    ParticleEffect_InitializeGroup, ParticleEffect_InitExplosionSetTintPalette35, ParticleEffect_AdvancedMultiBurst, ParticleEffect_RegisterSmoke, ParticleEffect_ModeSpecificSetup, BattleAnim_EffectEndNop, InitParticleComboVariant,
-    ParticleEffect_RegisterModeSpecific, ParticleEffect_InitExplosionSet, ParticleEffect_RegisterAll, BattleAnim_EffectEndNop, ParticleEffect_PlaySoundAndReset, RegisterParticleEffect_ComplexMovement, InitAdvancedParticleCombo,
-    BattleAnim_CreateBurstStreamEffect, ParticleEffect_InitFireSet, ParticleEffect_HandleCollisionSetup, ParticleEffect_RegisterMultiple, BattleAnim_EffectEndNop, BattleAnim_EffectEndNop, InitParticleEffectGroup_Basic,
+    ParticleEffect_InitializeGroup, ParticleEffect_InitExplosionSetTintPalette35, ParticleEffect_AdvancedMultiBurst, ParticleEffect_RegisterSmoke, BattleAnim_EndEffect18MoveSpecificTintPulse, BattleAnim_EffectEndNop, BattleAnim_EndEffect20ParticleComboBasic,
+    ParticleEffect_RegisterModeSpecific, ParticleEffect_InitExplosionSet, ParticleEffect_RegisterAll, BattleAnim_EffectEndNop, ParticleEffect_InitModelAnimWaitAndDelegate, BattleAnim_EndEffect26GravityScatterFallSequence, BattleAnim_EndEffect27AdvancedParticleCombo,
+    BattleAnim_CreateBurstStreamEffect, ParticleEffect_InitFireSet, ParticleEffect_HandleCollisionSetup, ParticleEffect_RegisterMultiple, BattleAnim_EffectEndNop, BattleAnim_EffectEndNop, BattleAnim_EndEffect34DelayedRotatingBounceFades,
     ParticleEffect_ConfigTexture7Palette1, ParticleEffect_ConfigTexture9Palette2, ParticleEffect_SpecialSetupBurstPalette3, ParticleEffect_SpecialSetupBurstPalette4, ParticleEffect_AdditionalSetupBurstAndRiseFade, ParticleEffect_InitSparkleSet, BattleAnim_EndEffect41Descriptor34Burst,
-    ParticleEffect_ModeSetup, ParticleEffect_CollisionSetup, ParticleEffect_ConfigVariantMotion6, ParticleEffect_CombinedSetupBurst3DRandom, ParticleEffect_CombinedSetupBurstHorizontalRandom, ParticleEffect_SpecialSetupDelayedScatterPalette1, BattleAnim_EffectEndNop,
-    ParticleEffect_RegisterColorAnim, ParticleEffect_RegisterHandler_WithParticleData, ParticleEffect_WaterAnimBurstTintFadeOnly, ParticleEffect_MultiHandleSetup, InitParticleEffectSet_WithCustomCallback, ParticleEffect_InitSetTintRampDelayedColorFade, ParticleEffect_SimpleNodeSetup,
+    BattleAnim_EndEffect42GravityFadesAndScaleFall, ParticleEffect_CollisionSetup, ParticleEffect_ConfigVariantMotion6, ParticleEffect_CombinedSetupBurst3DRandom, ParticleEffect_CombinedSetupBurstHorizontalRandom, ParticleEffect_SpecialSetupDelayedScatterPalette1, BattleAnim_EffectEndNop,
+    ParticleEffect_RegisterColorAnim, ParticleEffect_RegisterHandler_WithParticleData, ParticleEffect_WaterAnimBurstTintFadeOnly, ParticleEffect_MultiHandleSetup, BattleAnim_EndEffect53GrowRecolorAndBounceFades, ParticleEffect_InitSetTintRampDelayedColorFade, ParticleEffect_SimpleNodeSetup,
     ParticleEffect_InitSetTintRampRisingSpread, ParticleEffect_FullSetupTintFadeOutAndRestore, BattleAnim_EndEffect58ModelAnimAndDescriptorSequence, ParticleEffect_InitCombinedSet, ParticleEffect_WaterAnimFireworkModel42RotationFollow, ParticleEffect_SimpleBurstTintPulseAnimWaitPaletteC, ParticleEffect_PaletteMultiBurstNoCleanupNoTintFade,
-    ParticleEffect_FireworkBurst, ParticleEffect_FireballBurst, ParticleEffect_FireworkEntry, ParticleEffect_SimpleNodeBurst, InitParticleEffectSet_WithMultiple, InitParticleEffectSet_WithTimedFireball, BattleAnim_EndEffect69PaletteRotateWithExpandingHoldFade,
-    InitParticleEffectSet_WithComplex, BattleAnim_EndEffect71PaletteApproachWithExpandingScaleFades, BattleAnim_CreateSprayColumnEffectTrigger, ParticleEffect_AlphaFireworkPalette17, ParticleEffect_AlphaFirework, ParticleEffect_MultiNodeAEntry, ParticleEffect_TriggerAnother,
-    ParticleEffect_TriggerDefaultPalette1C, BattleAnim_EndEffect78ModelAnimDelayedMotionAndFallingParticles, ParticleEffect_CreateColorVariant, ParticleEffect_ConfigVariantMotion16, BattleAnim_EndEffects81And82TintRampAndModelScaleFade, BattleAnim_EndEffects81And82TintRampAndModelScaleFade, BattleAnim_EndEffect83TintRampAndDescriptor34Burst,
-    ParticleEffect_TriggerDefaultPalette1CWithTintRamps, ParticleEffect_StateCollisionSetupDesc2BGravityFall, InitParticleEffectSet_ThreeInstances, RegisterParticleEffect_Burst, ParticleEffect_CollisionAndBurstSetup, BattleAnim_EffectEndNop,
+    ParticleEffect_FireworkBurst, ParticleEffect_FireballBurst, ParticleEffect_FireworkEntry, ParticleEffect_SimpleNodeBurst, BattleAnim_EndEffect67GravityAndScalePulseFades, BattleAnim_EndEffect68PaletteRotateAndFlickerFades, BattleAnim_EndEffect69PaletteRotateWithExpandingHoldFade,
+    BattleAnim_EndEffect70ScaleFadesAndSprayColumns, BattleAnim_EndEffect71PaletteApproachWithExpandingScaleFades, BattleAnim_CreateSprayColumnEffectTrigger, ParticleEffect_AlphaFireworkPalette17, ParticleEffect_AlphaFirework, ParticleEffect_MultiNodeAEntry, ParticleEffect_TriggerAnother,
+    ParticleEffect_TriggerDefaultPalette1C, BattleAnim_EndEffect78ModelAnimDelayedMotionAndFallingParticles, BattleAnim_EndEffect79ModelPaletteFade, ParticleEffect_ConfigVariantMotion16, BattleAnim_EndEffects81And82TintRampAndModelScaleFade, BattleAnim_EndEffects81And82TintRampAndModelScaleFade, BattleAnim_EndEffect83TintRampAndDescriptor34Burst,
+    ParticleEffect_TriggerDefaultPalette1CWithTintRamps, ParticleEffect_StateCollisionSetupDesc2BGravityFall, BattleAnim_EndEffect86ModePositionedAnimFades, BattleAnim_EndEffect87GravityFallDelay, ParticleEffect_CollisionAndBurstSetup, BattleAnim_EffectEndNop,
 };
 static u8 sD_8438682C[] = {
     0x3F, 0x00, 0x00, 0x00, 0x3F, 0x00, 0x00, 0x00, 0x3F, 0x00, 0x00, 0x00,
@@ -4218,12 +4218,12 @@ void BattleAnim_PlaySpeciesSequence33(ActivePokemon* active_pokemon) {
 }
 
 void Battle_TriggerTrainerPresentationCue(ActivePokemon* active_pokemon) {
-    ProcessAudioInfo(BattleScene_GetParticipantDisplayPlayerNumber(active_pokemon), &active_pokemon->state.runtime);
+    Audio_ProcessBattleInfo(BattleScene_GetParticipantDisplayPlayerNumber(active_pokemon), &active_pokemon->state.runtime);
 }
 
 void BattleAnim_PlaySpeciesReactionSound(ActivePokemon* active_pokemon, BattleMonRuntime* runtime, s32 reaction_kind) {
-    Effect_TriggerMoveVisual(runtime->usedMove, active_pokemon->displayObject.objectType, reaction_kind);
-    HandleMoveEvent(runtime, runtime->usedMove, active_pokemon->displayObject.objectType, reaction_kind);
+    Audio_PlayMoveSoundEffect(runtime->usedMove, active_pokemon->displayObject.objectType, reaction_kind);
+    Audio_HandleMoveEvent(runtime, runtime->usedMove, active_pokemon->displayObject.objectType, reaction_kind);
 }
 
 void BattleScene_ConfigureAudioChannelGroupsByTeam(void) {
@@ -5109,7 +5109,7 @@ void BattleAnim_Reset(void) {
     gParticleRenderContext.unk_00.x = 1.0f;
     gParticleRenderContext.unk_00.y = 1.0f;
     gParticleRenderContext.unk_00.z = 1.0f;
-    D_843902F4 = 0;
+    gEffectStateFlag = 0;
     sD_84392040.unk_0C = 1.0f;
     sD_84392040.unk_10 = 1.0f;
     sBattleAnimEffectCallbackIndex = 0;
@@ -5137,7 +5137,7 @@ void BattleAnim_Reset(void) {
     Vec3f_SetComponentsDuplicate(&sD_84390360, 0.0f, 0.0f, 0.0f);
     Vec3s_SetComponents(&sD_8439036C, 0, 0, 0);
     Vec3s_SetComponents(&sD_84390374, 0, 0, 0);
-    Vec3f_SetComponentsDuplicate(&D_84390348, 0.0f, 0.0f, 0.0f);
+    Vec3f_SetComponentsDuplicate(&gCameraLookAtPos, 0.0f, 0.0f, 0.0f);
     Vec3s_SetComponents(&sD_84390354, 0, 0, 0);
     BattleAnim_ResetAssetTable();
     BattleAnim_ResetDisplayContexts();

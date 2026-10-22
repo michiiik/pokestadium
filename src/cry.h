@@ -3,7 +3,7 @@
 
 #include "global.h"
 
-extern u8 D_80079364;
+extern u8 gAudioSeqLoadPending;
 
 void Cry_Play(u32 species, u32 cry_mode);
 void Cry_PlayVariant4(u32 arg0);

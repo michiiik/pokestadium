@@ -11,40 +11,40 @@
 #include "src/memory.h"
 #include "src/stage_loader.h"
 
-static s32 D_837004C0;
-static BinArchive* D_837004C4;
-static StageContext* D_837004C8;
+static s32 gFragment46_State;
+static BinArchive* gStadiumModelsArchive;
+static StageContext* gFragment46_Stage;
 
-static unk_func_80031270* D_837004B0 = NULL;
+static Camera* gFragment46_PhotoScene = NULL;
 
 void Gallery_EnlargeInit(void) {
     UNUSED s32 pad;
     ModelLoadContext* sp28;
 
-    D_837004C0 = 0;
+    gFragment46_State = 0;
     sp28 = PokeIcon_AllocFramebuffers(1);
     Gallery_ResetActiveScene();
-    D_837004B0 = Geo_CreateSceneInstance(0x280, 0x1E0, NULL, D_837004C8->renderTargets[0], sp28, D_837004C4, Gallery_GetEnlargeTarget(1));
+    gFragment46_PhotoScene = Geo_CreateSceneInstance(0x280, 0x1E0, NULL, gFragment46_Stage->renderTargets[0], sp28, gStadiumModelsArchive, Gallery_GetEnlargeTarget(1));
 }
 
-void func_83700090(void) {
+void Gallery_EnlargeEmptyHandler(void) {
 }
 
 void Gallery_EnlargeDraw(void) {
-    static s16 D_837004B4 = 0;
+    static s16 gFragment46_FrameCounter = 0;
 
     BgStage_DrawFrame();
-    if (D_837004B0->unk_00 == 2) {
-        Gallery_DrawPhotoThumbnail(D_837004B0->unk_08->img_p, 0, 0, D_837004B0->unk_04, D_837004B0->unk_06, 1, 0);
+    if (gFragment46_PhotoScene->unk_00 == 2) {
+        Gallery_DrawPhotoThumbnail(gFragment46_PhotoScene->unk_08->img_p, 0, 0, gFragment46_PhotoScene->unk_04, gFragment46_PhotoScene->unk_06, 1, 0);
     }
     BgStage_AdvanceFrame();
-    D_837004B4 += 0x1000;
+    gFragment46_FrameCounter += 0x1000;
 }
 
 s32 Gallery_EnlargeCheckExitInput(void) {
     s32 sp1C = 0;
 
-    if (Gallery_FindReadyScene(&D_837004B0, 1) != -1) {
+    if (Gallery_FindReadyScene(&gFragment46_PhotoScene, 1) != -1) {
         return 0;
     }
 
@@ -56,23 +56,23 @@ s32 Gallery_EnlargeCheckExitInput(void) {
 }
 
 s32 Gallery_EnlargeUpdate(void) {
-    static s32 D_837004B8 = 2;
+    static s32 gFragment46_FadeDelay = 2;
 
     s32 sp1C = 1;
 
-    switch (D_837004C0) {
+    switch (gFragment46_State) {
         case 0:
             if (StageContext_GetFadeMode() == 0) {
-                D_837004B8--;
-                if (D_837004B8 <= 0) {
-                    D_837004C0 = 1;
+                gFragment46_FadeDelay--;
+                if (gFragment46_FadeDelay <= 0) {
+                    gFragment46_State = 1;
                 }
             }
             break;
 
         case 1:
             if (Gallery_EnlargeCheckExitInput() != 0) {
-                D_837004C0 = 2;
+                gFragment46_State = 2;
                 Audio_PlaySoundEffectById(SFX_ZOOM_OUT);
                 StageFade_StartFromTransparent(1);
             }
@@ -95,8 +95,8 @@ void Gallery_EnlargeReadInput(void) {
 
 void Gallery_EnlargeLoop(void) {
     do {
-        Gallery_ProcessSceneInstance(D_837004B0);
-    } while (D_837004B0->unk_00 != 2);
+        Gallery_ProcessSceneInstance(gFragment46_PhotoScene);
+    } while (gFragment46_PhotoScene->unk_00 != 2);
 
     StageFade_StartFromOpaque(1);
 
@@ -114,20 +114,20 @@ s32 Gallery_EnlargeMain(UNUSED s32 arg0, UNUSED s32 arg1) {
     Gfx_InitDisplayListBuffers(0x10000, 0);
 
     sp24 = StageContext_Allocate(1, 0, 1, 0, 2, 1);
-    D_837004C8 = sp24;
+    gFragment46_Stage = sp24;
 
     Font_Init(0x18, 0);
 
     ASSET_LOAD(D_1000000, common_menu1_ui, 0);
     ASSET_LOAD(D_5000000, snap_mode_ui, 0);
     ASSET_LOAD(D_3000000, gallery_ui, 0);
-    ASSET_LOAD(D_04000000, album_ui, 0);
+    ASSET_LOAD(gRentalViewerIconTop, album_ui, 0);
 
     FRAGMENT_LOAD(FRAGMENT_PARTICLE_DATA_LIBRARY);
 
     PokeIcon_OpenModelArchives();
 
-    D_837004C4 = ASSET_LOAD2(stadium_models, 1, 1);
+    gStadiumModelsArchive = ASSET_LOAD2(stadium_models, 1, 1);
 
     Gallery_EnlargeInit();
     StageContext_Activate(sp24);

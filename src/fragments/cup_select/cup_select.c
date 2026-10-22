@@ -25,162 +25,162 @@ static GraphNode* sDivisionRender;
 static GraphNode* sArrowRender;
 static DisplayObject sDivisionListings[4];
 static DisplayObject sArrows[3];
-static ModeSettings D_82E023A0;
+static ModeSettings gCupSelectModeSettings;
 static s16 sHoveredDivision;
 static s16 sLatestUnlockedDivision;
 
 static u32 sRenderBlock[] = {
     0x0C000000, 0x05000000, 0x0B00002D,  0x00000000, 0x028001E0, 0x00000000, 0xFDBD0000, 0x00000243,
     0x05000000, 0x0D000000, 0x05000000,  0x14000000, 0x00000000, 0xFFFFFF32, 0x16FFFFFF, 0x0F000002,
-    0x05000000, 0x0A000000, &D_800AC840, 0x06000000, 0x06000000, 0x06000000, 0x06000000, 0x01000000,
+    0x05000000, 0x0A000000, &gGraphRoot0, 0x06000000, 0x06000000, 0x06000000, 0x06000000, 0x01000000,
 };
-static u8* D_82E01170[] = { D_3000000, D_3009000, D_3012000, D_301B000 };
-static Vtx D_82E01180[] = {
+static u8* gCupSelectBgTextures[] = { D_3000000, D_3009000, D_3012000, D_301B000 };
+static Vtx gCupSelectVtx0[] = {
     VTX(-128, 36, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-128, 12, 0, 0, 768, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, 12, 0, 2048, 768, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, 36, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Vtx D_82E011C0[] = {
+static Vtx gCupSelectVtx1[] = {
     VTX(-64, 36, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, 12, 0, 2048, 768, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 12, 0, 4096, 768, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 36, 0, 4096, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Vtx D_82E01200[] = {
+static Vtx gCupSelectVtx2[] = {
     VTX(0, 36, 0, 4096, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 12, 0, 4096, 768, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, 12, 0, 6144, 768, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, 36, 0, 6144, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Vtx D_82E01240[] = {
+static Vtx gCupSelectVtx3[] = {
     VTX(64, 36, 0, 6144, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, 12, 0, 6144, 768, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(128, 12, 0, 8192, 768, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(128, 36, 0, 8192, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Vtx D_82E01280[] = {
+static Vtx gCupSelectVtx4[] = {
     VTX(-128, 12, 0, 0, 768, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-128, -12, 0, 0, 1536, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, -12, 0, 2048, 1536, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, 12, 0, 2048, 768, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Vtx D_82E012C0[] = {
+static Vtx gCupSelectVtx5[] = {
     VTX(-64, 12, 0, 2048, 768, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, -12, 0, 2048, 1536, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -12, 0, 4096, 1536, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 12, 0, 4096, 768, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Vtx D_82E01300[] = {
+static Vtx gCupSelectVtx6[] = {
     VTX(0, 12, 0, 4096, 768, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -12, 0, 4096, 1536, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -12, 0, 6144, 1536, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, 12, 0, 6144, 768, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Vtx D_82E01340[] = {
+static Vtx gCupSelectVtx7[] = {
     VTX(64, 12, 0, 6144, 768, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -12, 0, 6144, 1536, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(128, -12, 0, 8192, 1536, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(128, 12, 0, 8192, 768, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Vtx D_82E01380[] = {
+static Vtx gCupSelectVtx8[] = {
     VTX(-128, -12, 0, 0, 1536, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-128, -36, 0, 0, 2304, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, -36, 0, 2048, 2304, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, -12, 0, 2048, 1536, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Vtx D_82E013C0[] = {
+static Vtx gCupSelectVtx9[] = {
     VTX(-64, -12, 0, 2048, 1536, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, -36, 0, 2048, 2304, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -36, 0, 4096, 2304, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -12, 0, 4096, 1536, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Vtx D_82E01400[] = {
+static Vtx gCupSelectVtx10[] = {
     VTX(0, -12, 0, 4096, 1536, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -36, 0, 4096, 2304, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -36, 0, 6144, 2304, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -12, 0, 6144, 1536, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Vtx D_82E01440[] = {
+static Vtx gCupSelectVtx11[] = {
     VTX(64, -12, 0, 6144, 1536, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -36, 0, 6144, 2304, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(128, -36, 0, 8192, 2304, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(128, -12, 0, 8192, 1536, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Gfx D_82E01480[] = {
+static Gfx gCupSelectBgDL[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetCombineLERP(0, 0, 0, TEXEL0, TEXEL0, 0, ENVIRONMENT, 0, 0, 0, 0, COMBINED, 0, 0, 0, COMBINED),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPLoadTextureTile(0x0F000000, G_IM_FMT_RGBA, G_IM_SIZ_16b, 256, 0, 0, 0, 63, 23, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
-    gsSPVertex(D_82E01180, 4, 0),
+    gsSPVertex(gCupSelectVtx0, 4, 0),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsDPLoadTextureTile(0x0F000000, G_IM_FMT_RGBA, G_IM_SIZ_16b, 256, 0, 64, 0, 127, 23, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
-    gsSPVertex(D_82E011C0, 4, 0),
+    gsSPVertex(gCupSelectVtx1, 4, 0),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsDPLoadTextureTile(0x0F000000, G_IM_FMT_RGBA, G_IM_SIZ_16b, 256, 0, 128, 0, 191, 23, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
-    gsSPVertex(D_82E01200, 4, 0),
+    gsSPVertex(gCupSelectVtx2, 4, 0),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsDPLoadTextureTile(0x0F000000, G_IM_FMT_RGBA, G_IM_SIZ_16b, 256, 0, 192, 0, 255, 23, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
-    gsSPVertex(D_82E01240, 4, 0),
+    gsSPVertex(gCupSelectVtx3, 4, 0),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsDPLoadTextureTile(0x0F000000, G_IM_FMT_RGBA, G_IM_SIZ_16b, 256, 0, 0, 24, 63, 47, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
-    gsSPVertex(D_82E01280, 4, 0),
+    gsSPVertex(gCupSelectVtx4, 4, 0),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsDPLoadTextureTile(0x0F000000, G_IM_FMT_RGBA, G_IM_SIZ_16b, 256, 0, 64, 24, 127, 47, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
-    gsSPVertex(D_82E012C0, 4, 0),
+    gsSPVertex(gCupSelectVtx5, 4, 0),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsDPLoadTextureTile(0x0F000000, G_IM_FMT_RGBA, G_IM_SIZ_16b, 256, 0, 128, 24, 191, 47, 0,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                         G_TX_NOLOD),
-    gsSPVertex(D_82E01300, 4, 0),
+    gsSPVertex(gCupSelectVtx6, 4, 0),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsDPLoadTextureTile(0x0F000000, G_IM_FMT_RGBA, G_IM_SIZ_16b, 256, 0, 192, 24, 255, 47, 0,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                         G_TX_NOLOD),
-    gsSPVertex(D_82E01340, 4, 0),
+    gsSPVertex(gCupSelectVtx7, 4, 0),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsDPLoadTextureTile(0x0F000000, G_IM_FMT_RGBA, G_IM_SIZ_16b, 256, 0, 0, 48, 63, 71, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
-    gsSPVertex(D_82E01380, 4, 0),
+    gsSPVertex(gCupSelectVtx8, 4, 0),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsDPLoadTextureTile(0x0F000000, G_IM_FMT_RGBA, G_IM_SIZ_16b, 256, 0, 64, 48, 127, 71, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
-    gsSPVertex(D_82E013C0, 4, 0),
+    gsSPVertex(gCupSelectVtx9, 4, 0),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsDPLoadTextureTile(0x0F000000, G_IM_FMT_RGBA, G_IM_SIZ_16b, 256, 0, 128, 48, 191, 71, 0,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                         G_TX_NOLOD),
-    gsSPVertex(D_82E01400, 4, 0),
+    gsSPVertex(gCupSelectVtx10, 4, 0),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsDPLoadTextureTile(0x0F000000, G_IM_FMT_RGBA, G_IM_SIZ_16b, 256, 0, 192, 48, 255, 71, 0,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                         G_TX_NOLOD),
-    gsSPVertex(D_82E01440, 4, 0),
+    gsSPVertex(gCupSelectVtx11, 4, 0),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
 static u32 sDivisionBlock[] = {
-    0x17000000, 0x00000000, 0x00000000, 0x00000000, D_82E01180,
+    0x17000000, 0x00000000, 0x00000000, 0x00000000, gCupSelectVtx0,
     0x05000000, 0x22050000, 0x00000000, 0x08000000, CupSelect_IconGeoPostCallback,
     0x00000000, 0x06000000, 0x01000000, 0x00000000,
 };
-static Vtx D_82E01838[] = {
+static Vtx gCupSelectOverlayVtx[] = {
     VTX(-38, 18, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),      VTX(-38, 0, 0, 0, 576, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(38, 0, 0, 2432, 576, 0xFF, 0xFF, 0xFF, 0xFF),   VTX(38, 18, 0, 2432, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-38, 0, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),       VTX(-38, -18, 0, 0, 576, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(38, -18, 0, 2432, 576, 0xFF, 0xFF, 0xFF, 0xFF), VTX(38, 0, 0, 2432, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Gfx D_82E018B8[] = {
+static Gfx gCupSelectOverlayDL[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetCombineLERP(0, 0, 0, TEXEL0, TEXEL0, 0, ENVIRONMENT, 0, 0, 0, 0, COMBINED, 0, 0, 0, COMBINED),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
-    gsSPVertex(D_82E01838, 8, 0),
+    gsSPVertex(gCupSelectOverlayVtx, 8, 0),
     gsDPLoadTextureBlock(0x0F000000, G_IM_FMT_RGBA, G_IM_SIZ_16b, 76, 18, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                          G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
@@ -190,7 +190,7 @@ static Gfx D_82E018B8[] = {
     gsSPEndDisplayList(),
 };
 static u32 sArrowBlock[] = {
-    0x17000000, 0x00000000, 0x00000000, 0x00000000, D_82E01838,
+    0x17000000, 0x00000000, 0x00000000, 0x00000000, gCupSelectOverlayVtx,
     0x05000000, 0x22050000, 0x00000000, 0x08000000, CupSelect_DividerGeoPostCallback,
     0x00000000, 0x06000000, 0x01000000,
 };
@@ -201,7 +201,7 @@ void CupSelect_PollController(void) {
     Input_ResetRepeatState();
 }
 
-void func_82E00050(void) {
+void CupSelect_EmptyFunc(void) {
 }
 
 void CupSelect_DrawSelectionCorners(s16 left, s16 bottom, s16 right, s16 top, u8 r, u8 g, u8 b, u8 alpha) {
@@ -225,12 +225,12 @@ void CupSelect_DrawSelectionCorners(s16 left, s16 bottom, s16 right, s16 top, u8
     pulsing_timer += 0x2000;
 }
 
-s32 CupSelect_IconGeoPostCallback(s32 arg0, UNUSED unk_func_80011B94* arg1) {
+s32 CupSelect_IconGeoPostCallback(s32 arg0, UNUSED SimpleGfxNode* arg1) {
     s32 var_a3_2;
     s32 var_t0;
 
     if (arg0 == 5) {
-        var_a3_2 = D_8006F09C->node.callbackArg;
+        var_a3_2 = gDefaultGraphRoot->node.callbackArg;
         if (sLatestUnlockedDivision >= var_a3_2) {
             var_t0 = 0xFF;
         } else {
@@ -239,19 +239,19 @@ s32 CupSelect_IconGeoPostCallback(s32 arg0, UNUSED unk_func_80011B94* arg1) {
 
         gDPPipeSync(gDisplayListHead++);
         gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, var_t0);
-        gSPSegment(gDisplayListHead++, 0x0F, Memmap_GetSegmentVaddr(D_82E01170[var_a3_2]));
-        gSPDisplayList(gDisplayListHead++, D_82E01480);
+        gSPSegment(gDisplayListHead++, 0x0F, Memmap_GetSegmentVaddr(gCupSelectBgTextures[var_a3_2]));
+        gSPDisplayList(gDisplayListHead++, gCupSelectBgDL);
 
         GeoRender_ApplyMaterialState();
     }
     return 0;
 }
 
-s32 CupSelect_DividerGeoPostCallback(s32 arg0, UNUSED unk_func_80011B94* arg1) {
+s32 CupSelect_DividerGeoPostCallback(s32 arg0, UNUSED SimpleGfxNode* arg1) {
     s32 var_a3;
 
     if (arg0 == 5) {
-        s32 tmp = D_8006F09C->node.callbackArg;
+        s32 tmp = gDefaultGraphRoot->node.callbackArg;
 
         if (tmp < sLatestUnlockedDivision) {
             var_a3 = 0xFF;
@@ -262,7 +262,7 @@ s32 CupSelect_DividerGeoPostCallback(s32 arg0, UNUSED unk_func_80011B94* arg1) {
         gDPPipeSync(gDisplayListHead++);
         gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, var_a3);
         gSPSegment(gDisplayListHead++, 0x0F, Memmap_GetSegmentVaddr(D_3024000));
-        gSPDisplayList(gDisplayListHead++, D_82E018B8);
+        gSPDisplayList(gDisplayListHead++, gCupSelectOverlayDL);
 
         GeoRender_ApplyMaterialState();
     }
@@ -466,11 +466,11 @@ s32 CupSelect_Main(UNUSED s32 arg0, UNUSED s32 arg1) {
 
         Font_Init(0x10, 0);
         Save_EnsureBankLoaded(2);
-        Save_GetModeSettings(&D_82E023A0, gSessionContext.inRound2);
+        Save_GetModeSettings(&gCupSelectModeSettings, gSessionContext.inRound2);
         if (gSessionContext.mode == 3) {
-            sLatestUnlockedDivision = D_82E023A0.nintendoCupClears;
+            sLatestUnlockedDivision = gCupSelectModeSettings.nintendoCupClears;
         } else {
-            sLatestUnlockedDivision = D_82E023A0.primeCupClears;
+            sLatestUnlockedDivision = gCupSelectModeSettings.primeCupClears;
         }
         if (sLatestUnlockedDivision == 4) {
             sLatestUnlockedDivision -= 1;

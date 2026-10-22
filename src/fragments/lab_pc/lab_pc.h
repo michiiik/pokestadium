@@ -10,24 +10,24 @@
 
 struct unk_func_8821421C_038_04C_000;
 struct unk_func_8820B12C_02C;
-struct unk_func_8821421C_034;
+struct YesNoPanel;
 struct unk_func_8821421C_038;
 struct unk_func_8821421C_03C;
-struct unk_func_8821421C_07C;
-struct unk_func_8820E99C;
+struct ItemBlockInfo;
+struct QuantityEntry;
 struct unk_func_8821421C_02C;
 
-typedef struct unk_func_8820EFD8 {
+typedef struct ItemBlockHeader {
     /* 0x00 */ char unk00[0x4];
     /* 0x04 */ s32 unk_04;
     /* 0x08 */ char* unk_08;
-} unk_func_8820EFD8; // size >= 0xC
+} ItemBlockHeader; // size >= 0xC
 
 typedef struct unk_func_88200FA0_030 {
     /* 0x00 */ WidgetNode unk_00;
     /* 0x2C */ WidgetAnimatedPanel* unk_2C;
     /* 0x30 */ unk_func_88200FA0_030_030* unk_30;
-    /* 0x34 */ unk_func_88503298* unk_34;
+    /* 0x34 */ WidgetVisibilityGate* unk_34;
     /* 0x38 */ unk_func_88200FA0_030_038 unk_38;
 } unk_func_88200FA0_030; // size = 0x44
 
@@ -42,7 +42,7 @@ typedef struct unk_func_88205880 {
     /* 0x002C */ unk_func_88203ED8* unk_002C;
     /* 0x0030 */ char unk0030[0x64];
     /* 0x0094 */ unk_func_88201DA0* unk_0094;
-    /* 0x0098 */ unk_func_88205880_0098 unk_0098;
+    /* 0x0098 */ LabPC_DetailPanelParams unk_0098;
     /* 0x00D0 */ unk_func_88205880_00D0 unk_00D0[12];
     /* 0x5050 */ unk_func_88205880_00D0 unk_5050[12];
     /* 0x9FD0 */ unk_func_88205880_00D0* unk_9FD0[12];
@@ -116,8 +116,8 @@ typedef struct unk_func_8820B12C_02C {
     /* 0x30 */ s32 unk_30;
     /* 0x34 */ s32 unk_34;
     /* 0x38 */ unk_func_88217740* unk_38;
-    /* 0x3C */ unk_func_88509F48* unk_3C;
-    /* 0x40 */ unk_func_8850CD44* unk_40;
+    /* 0x3C */ WidgetTree_MessagePanel* unk_3C;
+    /* 0x40 */ ChildWidgetGroup* unk_40;
     /* 0x44 */ FragmentEntry unk_44;
     /* 0x48 */ unk_func_8820BE14_030* unk_48;
     /* 0x4C */ unk_func_882173EC* unk_4C[2];
@@ -136,7 +136,7 @@ typedef struct unk_func_8820B12C_000 {
     /* 0x18 */ char unk18[0x4];
     /* 0x1C */ s32 unk_1C;
     /* 0x20 */ s32 unk_20;
-    /* 0x24 */ struct unk_func_8820BE14_02C* unk_24;
+    /* 0x24 */ struct LabPC_SwapScreen* unk_24;
 } unk_func_8820B12C_000; // size = 0x28
 
 typedef struct unk_func_8820B12C {
@@ -173,7 +173,7 @@ typedef struct unk_func_8820BE14_02C_078 {
     /* 0x5C */ s32 unk_5C;
 } unk_func_8820BE14_02C_078; // size = 0x60
 
-typedef struct unk_func_8820BE14_02C {
+typedef struct LabPC_SwapScreen {
     /* 0x00 */ WidgetNode unk_00;
     /* 0x2C */ WidgetAnimatedPanel* unk_2C;
     /* 0x30 */ unk_func_88208C5C* unk_30[2];
@@ -186,16 +186,16 @@ typedef struct unk_func_8820BE14_02C {
     /* 0x70 */ unk_func_8820BE14_02C_070* unk_70;
     /* 0x74 */ unk_func_8820B12C* unk_74;
     /* 0x78 */ unk_func_8820BE14_02C_078* unk_78[2];
-    /* 0x80 */ unk_func_88509F48* unk_80;
+    /* 0x80 */ WidgetTree_MessagePanel* unk_80;
     /* 0x84 */ unk_func_889000C4* unk_84;
     /* 0x88 */ unk_func_8850878C* unk_88;
     /* 0x8C */ unk_func_8820BE14_06C* unk_8C;
     /* 0x90 */ char unk90[0x10];
-} unk_func_8820BE14_02C; // size = 0xA0
+} LabPC_SwapScreen; // size = 0xA0
 
-typedef struct unk_func_8820BE14 {
+typedef struct LabPC_ScreenContext {
     /* 0x00 */ WidgetNode unk_00;
-    /* 0x2C */ unk_func_8820BE14_02C* unk_2C;
+    /* 0x2C */ LabPC_SwapScreen* unk_2C;
     /* 0x30 */ unk_func_8820BE14_030 unk_30;
     /* 0x4C */ char** unk_4C;
     /* 0x50 */ char** unk_50;
@@ -204,11 +204,11 @@ typedef struct unk_func_8820BE14 {
     /* 0x5C */ char** unk_5C;
     /* 0x60 */ char** unk_60;
     /* 0x64 */ char** unk_64;
-    /* 0x68 */ unk_func_88509F48* unk_68;
+    /* 0x68 */ WidgetTree_MessagePanel* unk_68;
     /* 0x6C */ unk_func_8820BE14_06C unk_6C;
     /* 0x7C */ unk_func_8820BE14_06C unk_7C;
     /* 0x8C */ unk_func_8820BE14_06C unk_8C;
-} unk_func_8820BE14; // size = 0x9C
+} LabPC_ScreenContext; // size = 0x9C
 
 typedef struct unk_func_882170A8 {
     /* 0x00 */ WidgetNode unk_00;
@@ -239,19 +239,19 @@ typedef struct unk_func_8820E99C_030 {
     /* 0x44 */ unk_func_8820E99C_030_044* unk_44;
 } unk_func_8820E99C_030; // size = 0x48
 
-typedef struct unk_func_8820E99C {
+typedef struct QuantityEntry {
     /* 0x00 */ WidgetNode unk_00;
     /* 0x2C */ WidgetAnimatedPanel* unk_2C;
     /* 0x30 */ unk_func_8820E99C_030* unk_30;
     /* 0x34 */ s32 unk_34;
-} unk_func_8820E99C; // size = 0x38
+} QuantityEntry; // size = 0x38
 
-typedef struct unk_func_8821421C_034 {
+typedef struct YesNoPanel {
     /* 0x00 */ WidgetNode unk_00;
     /* 0x2C */ WidgetAnimatedPanel* unk_2C;
     /* 0x30 */ WidgetGridMenu* unk_30;
     /* 0x34 */ unk_func_8850878C* unk_34;
-} unk_func_8821421C_034; // size = 0x38
+} YesNoPanel; // size = 0x38
 
 typedef struct unk_func_8821421C_038_02C {
     /* 0x00 */ WidgetNode unk_00;
@@ -293,16 +293,16 @@ typedef struct unk_func_8821421C_02C_06C_02C {
     /* 0x18 */ s32 unk_18;
     /* 0x1C */ s32 unk_1C;
     /* 0x20 */ unk_func_8820BE14_02C_038* unk_20[2];
-    /* 0x28 */ struct unk_func_8820E99C* unk_28;
+    /* 0x28 */ struct QuantityEntry* unk_28;
     /* 0x2C */ unk_func_8820BE14_02C_038* unk_2C[2];
-    /* 0x34 */ struct unk_func_8820E99C* unk_34;
+    /* 0x34 */ struct QuantityEntry* unk_34;
     /* 0x38 */ s32 unk_38;
     /* 0x3C */ s32 unk_3C;
     /* 0x40 */ s32 unk_40;
     /* 0x44 */ s32 unk_44;
     /* 0x48 */ unk_func_88217740* unk_48;
-    /* 0x4C */ unk_func_88509F48* unk_4C;
-    /* 0x50 */ unk_func_8850CD44* unk_50;
+    /* 0x4C */ WidgetTree_MessagePanel* unk_4C;
+    /* 0x50 */ ChildWidgetGroup* unk_50;
     /* 0x54 */ char unk54[0x4];
     /* 0x58 */ unk_func_882173EC* unk_58[2];
     /* 0x60 */ unk_func_8821421C_02C_06C_02C_060* unk_60[2];
@@ -357,9 +357,9 @@ typedef struct unk_func_8821421C_02C {
     /* 0x78 */ struct unk_func_8821421C_03C* unk_7C;
     /* 0x80 */ s32 unk_80;
     /* 0x84 */ struct unk_func_8821421C_038* unk_84;
-    /* 0x88 */ struct unk_func_8821421C_034* unk_88;
-    /* 0x8C */ unk_func_88509F48* unk_8C;
-    /* 0x90 */ struct unk_func_8821421C_07C* unk_90;
+    /* 0x88 */ struct YesNoPanel* unk_88;
+    /* 0x8C */ WidgetTree_MessagePanel* unk_8C;
+    /* 0x90 */ struct ItemBlockInfo* unk_90;
     /* 0x94 */ unk_func_882025E0_03C unk_94[1];
     /* 0xA0 */ unk_func_889000C4* unk_A0;
 } unk_func_8821421C_02C; // size = 0xA4
@@ -389,12 +389,12 @@ typedef struct unk_func_8821421C_03C {
     /* 0x04 */ unk_func_8820BE14_06C unk_04;
 } unk_func_8821421C_03C; // size = 0x14
 
-typedef struct unk_func_8821421C_07C {
+typedef struct ItemBlockInfo {
     /* 0x00 */ s32 unk_00;
     /* 0x04 */ s32 unk_04;
     /* 0x08 */ char unk_08[4]; // unk size
     /* 0x0C */ char unk0C[0x8];
-} unk_func_8821421C_07C; // size = 0x14
+} ItemBlockInfo; // size = 0x14
 
 typedef struct unk_func_8821421C_038 {
     /* 0x00 */ WidgetNode unk_00;
@@ -405,7 +405,7 @@ typedef struct unk_func_8821421C_038 {
     /* 0x3C */ unk_func_88500994* unk_3C;
     /* 0x40 */ unk_func_8850878C* unk_40;
     /* 0x44 */ WidgetAnimatedPanel* unk_44;
-    /* 0x48 */ unk_func_8821421C_034* unk_48;
+    /* 0x48 */ YesNoPanel* unk_48;
     /* 0x4C */ unk_func_8821421C_038_04C* unk_4C;
     /* 0x50 */ unk_func_8821421C_038_050* unk_50[1];
     /* 0x54 */ char unk54[0xC];
@@ -414,61 +414,61 @@ typedef struct unk_func_8821421C_038 {
     /* 0x74 */ char unk74[0x4];
 } unk_func_8821421C_038; // size = 0x78
 
-typedef struct unk_func_8821421C {
+typedef struct ItemPCScreen {
     /* 0x00 */ WidgetNode unk_00;
     /* 0x2C */ unk_func_8821421C_02C* unk_2C;
-    /* 0x34 */ unk_func_88509F48* unk_30;
-    /* 0x34 */ unk_func_8821421C_034* unk_34;
+    /* 0x34 */ WidgetTree_MessagePanel* unk_30;
+    /* 0x34 */ YesNoPanel* unk_34;
     /* 0x38 */ unk_func_8821421C_038* unk_38;
     /* 0x3C */ unk_func_8821421C_03C unk_3C[3];
     /* 0x78 */ s32 unk_78;
-    /* 0x7C */ unk_func_8821421C_07C unk_7C[4];
-} unk_func_8821421C; // size = 0xCC
+    /* 0x7C */ ItemBlockInfo unk_7C[4];
+} ItemPCScreen; // size = 0xCC
 
-extern Color_RGBA8 D_882181B0[2];
-extern u32 D_88220CD0[];
-extern Color_RGBA8 D_882181B8[2];
-extern Color_RGBA8 D_882181C0[2];
-extern Color_RGBA8 D_882181C8[2];
-extern Color_RGBA8 D_882181D0[2];
-extern Color_RGBA8 D_882181D8[2];
-extern Color_RGBA8 D_882181E0[2];
-extern Color_RGBA8 D_882181E8[2];
-extern Color_RGBA8 D_882181F0[2];
-extern Color_RGBA8 D_882181F8[2];
-extern Color_RGBA8 D_88218200[2];
-extern Color_RGBA8 D_88218208[2];
-extern Color_RGBA8 D_88218210[2];
-extern Color_RGBA8 D_88218218[2];
-extern Color_RGBA8 D_88218220[2];
-extern Color_RGBA8 D_88218228[2];
-extern Color_RGBA8 D_88218230[2];
-extern Color_RGBA8 D_88218238[2];
+extern Color_RGBA8 gPanelAccentColorWhiteGray[2];
+extern u32 gItemInfoShadowTexture[];
+extern Color_RGBA8 gPanelAccentColorCyan[2];
+extern Color_RGBA8 gPanelAccentColorGreen[2];
+extern Color_RGBA8 gPanelAccentColorYellow[2];
+extern Color_RGBA8 gPanelColorA[2];
+extern Color_RGBA8 gPanelColorB[2];
+extern Color_RGBA8 gPanelAccentPink[2];
+extern Color_RGBA8 gPanelOverlayColor[2];
+extern Color_RGBA8 gPanelColorCyan[2];
+extern Color_RGBA8 gPanelColorWhite[2];
+extern Color_RGBA8 gPanelColorYellow[2];
+extern Color_RGBA8 gPanelColorGreen[2];
+extern Color_RGBA8 gBoxMenuColorCheckItems[2];
+extern Color_RGBA8 gBoxMenuColorDeleteBox[2];
+extern Color_RGBA8 gPanelColorPink[2];
+extern Color_RGBA8 gPanelColorDefault[2];
+extern Color_RGBA8 gGridBorderColors[2];
+extern Color_RGBA8 gModeToggleColors[2];
 
-extern u32 D_8821E100[];
-extern u32 D_88218FD0[];
-extern u32 D_8821B868[];
-extern u32 D_8821AAE0[];
-extern u32 D_88219D58[];
-extern u32 D_88218248[];
-extern u32 D_8821C5F0[];
-extern u32 D_8821D378[];
-extern u32 D_8821EE88[];
-extern u32 D_882220D8[];
-extern u32 D_882225C0[];
-extern u32 D_88222AA8[];
-extern u32 D_88222F90[];
-extern u32* D_88223470[];
-extern u32 D_88223488[];
-extern u32 D_88223E48[];
+extern u32 gPanelIconTexture[];
+extern u32 gPanelBackgroundTexture1[];
+extern u32 gItemBoxTabCheckItemsTex[];
+extern u32 gPanelBackgroundTexture3[];
+extern u32 gPanelBackgroundTexture2[];
+extern u32 gPanelBackgroundTexture4[];
+extern u32 gItemBoxTabDeleteBoxTex[];
+extern u32 gPanelTexturePink[];
+extern u32 gSwapArrowsTexture[];
+extern u32 gTexture_GbGamePak_0[];
+extern u32 gTexture_GbGamePak_1[];
+extern u32 gTexture_GbGamePak_2[];
+extern u32 gTexture_GbGamePak_3[];
+extern u32* gTexture_GbPakIcons[];
+extern u32 gTexture_N64PakIcon[];
+extern u32 gPcBackdropTile[];
 
 FontContext* LabPC_Enter(void);
 void LabPC_Exit(void);
 s32 LabPC_ExitToLabMain(UNUSED s32 arg0, UNUSED s32 arg1);
 s32 LabPC_Dispatch(s32 arg0, s32 arg1);
 
-void LabPC_BuildMenuTitleLabel(unk_func_88503298* arg0, s32 arg1, s32 arg2, MemoryPool* arg3);
-void LabPC_MenuTitleLabel_SetText(unk_func_88503298* arg0, s8* arg1);
+void LabPC_BuildMenuTitleLabel(WidgetVisibilityGate* arg0, s32 arg1, s32 arg2, MemoryPool* arg3);
+void LabPC_MenuTitleLabel_SetText(WidgetVisibilityGate* arg0, s8* arg1);
 void LabPC_BuildMenuGridWidget(unk_func_88200FA0_030* arg0, s32 arg1, s32 arg2, WidgetNode* arg3, MemoryPool* arg4);
 void LabPC_MenuGridWidget_RefreshTitle(unk_func_88200FA0_030* arg0, s32 arg1);
 void LabPC_DrawMenuGridCell(s32 arg0, s32 arg1, char* arg2, s32 arg3);
@@ -525,13 +525,13 @@ u32 LabPC_BoxHasUnsavedChanges(unk_func_88205880_00D0* arg0, s32 arg1, s32 arg2,
 s32 LabPC_GetDirtyBoxMask(unk_func_88203ED8* arg0);
 void LabPC_SaveModifiedBoxes(unk_func_88203ED8* arg0, s32 arg1);
 s32 LabPC_ConfirmSaveAndExit(unk_func_88203ED8* arg0, Controller* arg1);
-s32 func_882052F4(unk_func_88203ED8_064* arg0, Controller* arg1);
+s32 BoxPCMenuCursor_HandleInput(unk_func_88203ED8_064* arg0, Controller* arg1);
 void LabPC_BoxMenu_ModalLoop(unk_func_88203ED8* arg0, Controller* arg1);
 s32 LabPC_BoxScreen_HandleInput(unk_func_88205880* arg0, Controller* arg1);
 void LabPC_BoxScreen_DrawLoop(unk_func_88205880* arg0);
 void LabPC_BoxScreen_InputThread(unk_func_88205880* arg0);
 
-void func_88206110(BattleMon* arg0);
+void LabPC_InitMonData(BattleMon* arg0);
 s32 LabPC_ReadDeckEntries(unk_func_882062E4* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 s32 LabPC_BoxNumberSelectorInput(unk_func_8820BE14_02C_078_034* arg0, Controller* arg1);
 s32 LabPC_RunBoxNumberSelectorModal(WidgetTextList* arg0, Controller* arg1);
@@ -576,38 +576,38 @@ void LabPC_DrawMoveName(s32 arg0, s32 arg1, ret_func_8002ED08* arg2, s32 arg3);
 s32 LabPC_DrawPokemonInfoCard(unk_func_8820BE14_02C_070* arg0, s32 arg1, s32 arg2);
 void LabPC_InfoCard_SetMon(unk_func_8820BE14_02C_070* arg0, unk_func_88205880_00D0* arg1);
 s32 LabPC_FindDirtyDeck(unk_func_8820BE14_06C* arg0);
-s32 LabPC_SwapScreen_UpdatePageSelection(unk_func_8820BE14_02C* arg0);
-s32 LabPC_HandleInput(unk_func_8820BE14_02C* arg0, Controller* arg1);
-s32 LabPC_RunSwapScreenModal(unk_func_8820BE14_02C* arg0, Controller* arg1);
-void LabPC_SwapScreen_SetMenuState(unk_func_8820BE14_02C* arg0, s32 arg1);
+s32 LabPC_SwapScreen_UpdatePageSelection(LabPC_SwapScreen* arg0);
+s32 LabPC_HandleInput(LabPC_SwapScreen* arg0, Controller* arg1);
+s32 LabPC_RunSwapScreenModal(LabPC_SwapScreen* arg0, Controller* arg1);
+void LabPC_SwapScreen_SetMenuState(LabPC_SwapScreen* arg0, s32 arg1);
 void LabPC_ReleaseSwapWidgets(unk_func_8820B12C_02C* arg0);
-void LabPC_InitSwapController(unk_func_8820B12C* arg0, unk_func_8820BE14_02C* arg1);
+void LabPC_InitSwapController(unk_func_8820B12C* arg0, LabPC_SwapScreen* arg1);
 s32 LabPC_DeckHasChanged(unk_func_8820BE14_06C_000* arg0, s32 arg1, s32 arg2, s32 arg3);
-s32 LabPC_CheckDirtyDecks(unk_func_8820BE14_02C* arg0);
-s32 LabPC_IsPrizeDeckEmpty(unk_func_8820BE14_02C* arg0);
+s32 LabPC_CheckDirtyDecks(LabPC_SwapScreen* arg0);
+s32 LabPC_IsPrizeDeckEmpty(LabPC_SwapScreen* arg0);
 void LabPC_WriteDeckBack(s32 arg0, s32 arg1, s32 arg2, unk_func_88200FA0_030_038* arg3);
 void LabPC_MarkSeenOwned(unk_func_88200FA0_030_038* arg0, s32 arg1);
-void LabPC_CommitChanges(unk_func_8820BE14_02C* arg0, s32 arg1);
-s32 LabPC_RunConfirmSaveFlow(unk_func_8820BE14_02C* arg0, Controller* arg1);
+void LabPC_CommitChanges(LabPC_SwapScreen* arg0, s32 arg1);
+s32 LabPC_RunConfirmSaveFlow(LabPC_SwapScreen* arg0, Controller* arg1);
 s32 LabPC_SwapControllerInput(unk_func_8820B12C* arg0, Controller* arg1);
-void LabPC_RunSwapScreenLoop(unk_func_8820BE14* arg0);
-void LabPC_PokemonSessionThread(unk_func_8820BE14* arg0);
-void LabPC_PrizePokemonThread(unk_func_8820BE14* arg0);
+void LabPC_RunSwapScreenLoop(LabPC_ScreenContext* arg0);
+void LabPC_PokemonSessionThread(LabPC_ScreenContext* arg0);
+void LabPC_PrizePokemonThread(LabPC_ScreenContext* arg0);
 void LabPC_ShowPokemon(FontContext* arg0, s32 arg1);
 
 void LabItem_ReadDeckEntries(s32 arg0, s32 arg1, s32 arg2, unk_func_8820BE14_06C* arg3);
 void LabItem_WriteDeckBack(s32 arg0, s32 arg1, s32 arg2, unk_func_8820BE14_06C* arg3, s32 arg4, char* arg5, s32 arg6);
-void LabItem_LoadGamePakBoxSlots(unk_func_8821421C_07C* arg0);
-s32 LabItem_FindOrAllocateGamePakBoxSlot(unk_func_8821421C_07C* arg0, s32 arg1, char* arg2);
+void LabItem_LoadGamePakBoxSlots(ItemBlockInfo* arg0);
+s32 LabItem_FindOrAllocateGamePakBoxSlot(ItemBlockInfo* arg0, s32 arg1, char* arg2);
 void LabItem_InitBoxLocationWidget(unk_func_8821421C_02C_030* arg0, unk_func_8850143C* arg1, spE8_func_882121E0* arg2);
 s32 LabItem_DrawBoxLocationLabel(unk_func_8821421C_02C_030* arg0, s32 arg1, s32 arg2);
 s32 LabItem_BoxLocationWidget_GetSelection(unk_func_8821421C_02C_030* arg0);
 void LabItem_BoxLocationWidget_SetSelection(unk_func_8821421C_02C_030* arg0, s32 arg1);
-void LabItem_InitConfirmDialog(unk_func_8821421C_034* arg0, s32 arg1, s32 arg2, MemoryPool* arg3);
-s32 LabItem_ConfirmDialog_HandleInput(unk_func_8821421C_034* arg0, Controller* arg1);
-void LabItem_ConfirmDialog_SetSelectedIndex(unk_func_8821421C_034* arg0, s32 arg1);
-void LabItem_SetConfirmDialogText(unk_func_8821421C_034* arg0, char* arg1);
-s32 LabItem_RunConfirmDialog(unk_func_8821421C_034* arg0, Controller* arg1);
+void LabItem_InitConfirmDialog(YesNoPanel* arg0, s32 arg1, s32 arg2, MemoryPool* arg3);
+s32 LabItem_ConfirmDialog_HandleInput(YesNoPanel* arg0, Controller* arg1);
+void LabItem_ConfirmDialog_SetSelectedIndex(YesNoPanel* arg0, s32 arg1);
+void LabItem_SetConfirmDialogText(YesNoPanel* arg0, char* arg1);
+s32 LabItem_RunConfirmDialog(YesNoPanel* arg0, Controller* arg1);
 s32 LabItem_MeasureMenuWidth(spE8_func_882121E0* arg0, s32 arg1);
 void LabItem_DrawMenuCell(s32 arg0, s32 arg1, s8* arg2, s32 arg3, s32 arg4, unk_func_88200FA0_030_030* arg5);
 s32 LabItem_DropdownMenu_HandleInput(unk_func_8821421C_02C_070* arg0, Controller* arg1);
@@ -629,24 +629,24 @@ void LabItem_QuantitySpinnerDigits_SetSelected(unk_func_8820E99C_030* arg0, s32 
 s32 LabItem_QuantitySpinnerDigits_PositionArrow(unk_func_8820E99C_030* arg0);
 s32 LabItem_DrawQuantitySpinnerDigits(unk_func_8820E99C_030* arg0, s32 arg1, s32 arg2);
 s32 LabItem_QuantitySpinnerInput(unk_func_8820E99C_030* arg0, Controller* arg1);
-void LabItem_QuantitySpinner_SetMax(unk_func_8820E99C* arg0, s32 arg1, s32 arg2);
-void LabItem_InitQuantitySpinner(unk_func_8820E99C* arg0, s32 arg1, s32 arg2, MemoryPool* arg3);
-void LabItem_QuantitySpinner_SetSelected(unk_func_8820E99C* arg0, s32 arg1);
-s32 LabItem_QuantitySpinner_HandleInput(unk_func_8820E99C* arg0, Controller* arg1);
-void LabItem_QuantitySpinner_Open(unk_func_8820E99C* arg0);
-void LabItem_QuantitySpinner_Close(unk_func_8820E99C* arg0);
+void LabItem_QuantitySpinner_SetMax(QuantityEntry* arg0, s32 arg1, s32 arg2);
+void LabItem_InitQuantitySpinner(QuantityEntry* arg0, s32 arg1, s32 arg2, MemoryPool* arg3);
+void LabItem_QuantitySpinner_SetSelected(QuantityEntry* arg0, s32 arg1);
+s32 LabItem_QuantitySpinner_HandleInput(QuantityEntry* arg0, Controller* arg1);
+void LabItem_QuantitySpinner_Open(QuantityEntry* arg0);
+void LabItem_QuantitySpinner_Close(QuantityEntry* arg0);
 void LabItem_InitGamePakLabelWidget(unk_func_8821421C_038_02C* arg0, unk_func_8850143C* arg1);
 s32 LabItem_DrawGamePakLabel(unk_func_8821421C_038_02C* arg0, s32 arg1, s32 arg2);
 void LabItem_GamePakLabelWidget_SetSlot(unk_func_8821421C_038_02C* arg0, unk_func_8821421C_038_050* arg1);
-void LabItem_DrawGamePakInfoCard(s32 arg0, s32 arg1, unk_func_8820EFD8* arg2, s32 arg3, s32 arg4, unk_func_8821421C_038_034* arg5);
-void LabItem_BindBoxScreenSlot(unk_func_8821421C_038* arg0, unk_func_8821421C_07C* arg1);
+void LabItem_DrawGamePakInfoCard(s32 arg0, s32 arg1, ItemBlockHeader* arg2, s32 arg3, s32 arg4, unk_func_8821421C_038_034* arg5);
+void LabItem_BindBoxScreenSlot(unk_func_8821421C_038* arg0, ItemBlockInfo* arg1);
 s32 LabItem_BoxScreen_UpdatePageSelection(unk_func_8821421C_038* arg0);
 s32 LabItem_BoxScreen_HandleInput(unk_func_8821421C_038* arg0, Controller* arg1);
 void LabItem_BoxScreen_SetMenuState(unk_func_8821421C_038* arg0, s32 arg1);
 void LabItem_LoadBoxScreenSlotItems(unk_func_8821421C_038* arg0, s32 arg1);
 s32 LabItem_RunBoxScreenModal(unk_func_8821421C_038* arg0, Controller* arg1);
 void LabItem_InitBoxScreenMenu(unk_func_8821421C_038_04C* arg0, unk_func_8821421C_038* arg1);
-s32 func_88210380(unk_func_8821421C_038_04C* arg0, Controller* arg1);
+s32 Fragment_InputHandler(unk_func_8821421C_038_04C* arg0, Controller* arg1);
 void LabItem_OperationController_SetSelectMode(unk_func_8821421C_02C_06C_02C* arg0, s32 arg1);
 void LabItem_OperationController_RefreshHighlight(unk_func_8821421C_02C_06C_02C* arg0);
 void LabItem_OperationController_SetActiveSide(unk_func_8821421C_02C_06C_02C* arg0, s32 arg1);
@@ -656,17 +656,17 @@ void LabItem_SetOperationState(unk_func_8821421C_02C_06C_02C* arg0, s32 arg1);
 void LabItem_SetOperationMode(unk_func_8821421C_02C_06C_02C* arg0, s32 arg1);
 void LabItem_ResetOperation(unk_func_8821421C_02C_06C_02C* arg0);
 s32 LabItem_IsOperationIdle(unk_func_8821421C_02C_06C_02C* arg0);
-void func_88210DA8(void);
+void LabItem_OperationDummy(void);
 s32 LabItem_ComputeRemainingCapacity(s32 arg0, unk_func_8820BE14_06C* arg1);
 s32 LabItem_ComputeMaxTransferQuantity(s32 arg0, unk_func_8820BE14_06C* arg1);
 void LabItem_InsertGridEntry(unk_func_8820BE14_02C_038* arg0, u8* arg1);
 void LabItem_RemoveGridEntryAt(unk_func_8820BE14_02C_038* arg0, s32 arg1);
 void LabItem_RemoveSelectedGridEntry(unk_func_8820BE14_02C_038* arg0);
-void func_88210F74(unk_func_8820BE14_02C_038* arg0, s32 arg1, s32 arg2);
+void List_AdjustCounts(unk_func_8820BE14_02C_038* arg0, s32 arg1, s32 arg2);
 void LabItem_SubtractSelectedItemQuantity(unk_func_8820BE14_02C_038* arg0, s32 arg1);
-void LabItem_MoveSelectedItem(unk_func_8820BE14_02C_038* arg0, unk_func_8820BE14_02C_038* arg1, unk_func_8820E99C* arg2);
+void LabItem_MoveSelectedItem(unk_func_8820BE14_02C_038* arg0, unk_func_8820BE14_02C_038* arg1, QuantityEntry* arg2);
 s32 LabItem_CombineStackQuantities(unk_func_8821421C_02C_06C_02C_060_02C_000* arg0, unk_func_8821421C_02C_06C_02C_060_02C_000* arg1);
-void func_882111F8(unk_func_8820BE14_02C_038* arg0, s32 arg1, s32 arg2);
+void List_SwapEntries(unk_func_8820BE14_02C_038* arg0, s32 arg1, s32 arg2);
 void LabItem_SwapEntries(unk_func_8820BE14_02C_038* arg0, unk_func_8820BE14_02C_038* arg1);
 void LabItem_CommitMove(unk_func_8821421C_02C_06C_02C* arg0, Controller* arg1);
 void LabItem_CommitReorder(unk_func_8821421C_02C_06C_02C* arg0, Controller* arg1);
@@ -684,9 +684,9 @@ s32 LabItem_CheckDirtyDecks(unk_func_8821421C_02C* arg0);
 void LabItem_CommitChanges(unk_func_8821421C_02C* arg0, s32 arg1);
 s32 LabItem_RunConfirmSaveFlow(unk_func_8821421C_02C* arg0, Controller* arg1);
 s32 LabItem_BoxPairMenu_HandleInput(unk_func_8821421C_02C_06C* arg0, Controller* arg1);
-void LabPC_BuildItemScreenWidget(unk_func_8821421C* arg0, s32 arg1, s32 arg2, MemoryPool* arg3, s32 arg4, char** arg5);
-void LabPC_ItemScreen_DrawLoop(unk_func_8821421C* arg0);
-void LabPC_ItemScreen_InputThread(unk_func_8821421C* arg0);
+void LabPC_BuildItemScreenWidget(ItemPCScreen* arg0, s32 arg1, s32 arg2, MemoryPool* arg3, s32 arg4, char** arg5);
+void LabPC_ItemScreen_DrawLoop(ItemPCScreen* arg0);
+void LabPC_ItemScreen_InputThread(ItemPCScreen* arg0);
 void LabPC_ShowItems(FontContext* arg0);
 
 void LabPC_InitTabWidget(unk_func_882149A0* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, Color_RGBA8 arg7, Color_RGBA8 arg8, Color_RGBA8 arg9);
@@ -697,8 +697,8 @@ void LabPC_SetGridBorderActive(unk_func_88200FA0_030_030* arg0, s32 arg1);
 void LabPC_BoxGrid_BindMessagePanel(unk_func_8820BE14_02C_038* arg0, unk_func_88507D4C* arg1);
 s32 LabPC_ScrollableGrid_UpdateScroll(unk_func_8820BE14_02C_038* arg0);
 s32 LabPC_ScrollableGrid_DrawCells(unk_func_8820BE14_02C_038* arg0, s32 arg1, s32 arg2, s32 arg3);
-s32 func_88216000(unk_func_8820BE14_02C_038* arg0, s32 arg1, s32 arg2);
-s32 func_882169D4(unk_func_8820BE14_02C_038* arg0, Controller* arg1);
+s32 StatBar_Draw(unk_func_8820BE14_02C_038* arg0, s32 arg1, s32 arg2);
+s32 ScrollableList_HandleInput(unk_func_8820BE14_02C_038* arg0, Controller* arg1);
 void LabPC_ScrollableGrid_SetSwapMode(unk_func_8820BE14_02C_038* arg0, s32 arg1);
 void LabPC_BindGridDeckData(unk_func_8820BE14_02C_038* arg0, unk_func_8820BE14_06C_000* arg1, u32 arg2);
 void LabPC_BindGridStridedData(unk_func_8820BE14_02C_038*, s32*, s32);

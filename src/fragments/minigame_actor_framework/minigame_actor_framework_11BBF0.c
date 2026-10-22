@@ -7,10 +7,10 @@ void ParticleGfx_DrawBillboardPrimEnvQuad();
 void ParticleGfx_LoadTextureCallbackIa8_32x32();
 void ParticleGfx_LoadTextureCallbackI4FrameDiv2Mod4_32x32();
 
-extern u32 D_87903E80[];
-extern u32 D_87904E80[];
-extern u32 D_87905280[];
-extern u32 D_87905680[];
+extern u32 gMiniTutoScreenFrames[];
+extern u32 gMiniTutoScreenPalette[];
+extern u32 gMiniParticleSparkTex[];
+extern u32 gMiniTutoScreenGraphics[];
 
 #if defined(VERSION_JP)
 // Entry 26 of the 30-entry string pointer table at 0x87903CE0 in the Japanese
@@ -20,62 +20,62 @@ extern u32 D_87905680[];
 extern char* D_87903D48_jp;
 #endif
 
-unk_D_87903E00 MiniFxParticleDescriptorPayloadI4Frame = {
+Gfx_TextureConfig MiniFxParticleDescriptorPayloadI4Frame = {
     0x00000001,
     ParticleGfx_LoadTextureCallbackI4ParticleFrame_32x32,
     ParticleGfx_DrawBillboardPrimEnvQuad,
-    D_87903E80,
+    gMiniTutoScreenFrames,
 };
 
-unk_D_87903E10 gMiniFxParticleDescriptorI4Frame = {
+Gfx_TextureNode gMiniFxParticleDescriptorI4Frame = {
     0x00000001,
     &MiniFxParticleDescriptorPayloadI4Frame,
 };
 
-unk_D_87903E00 MiniFxParticleDescriptorPayloadIa8 = {
+Gfx_TextureConfig MiniFxParticleDescriptorPayloadIa8 = {
     0x01000001,
     ParticleGfx_LoadTextureCallbackIa8_32x32,
     ParticleGfx_DrawBillboardPrimEnvQuad,
-    D_87904E80,
+    gMiniTutoScreenPalette,
 };
 
-unk_D_87903E10 gMiniFxParticleDescriptorIa8 = {
+Gfx_TextureNode gMiniFxParticleDescriptorIa8 = {
     0x00000001,
     &MiniFxParticleDescriptorPayloadIa8,
 };
 
-unk_D_87903E00 MiniFxParticleDescriptorPayloadIa8Variant = {
+Gfx_TextureConfig MiniFxParticleDescriptorPayloadIa8Variant = {
     0x01000002,
     ParticleGfx_LoadTextureCallbackIa8_32x32,
     ParticleGfx_DrawBillboardPrimEnvQuad,
-    D_87905280,
+    gMiniParticleSparkTex,
 };
 
-unk_D_87903E10 gMiniFxParticleDescriptorIa8Variant = {
+Gfx_TextureNode gMiniFxParticleDescriptorIa8Variant = {
     0x00000001,
     &MiniFxParticleDescriptorPayloadIa8Variant,
 };
 
-unk_D_87903E00 MiniFxParticleDescriptorPayloadI4FrameDiv2Mod4 = {
+Gfx_TextureConfig MiniFxParticleDescriptorPayloadI4FrameDiv2Mod4 = {
     0x00000001,
     ParticleGfx_LoadTextureCallbackI4FrameDiv2Mod4_32x32,
     ParticleGfx_DrawBillboardPrimEnvQuad,
-    D_87905680,
+    gMiniTutoScreenGraphics,
 };
 
-unk_D_87903E10 gMiniFxParticleDescriptorI4FrameDiv2Mod4 = {
+Gfx_TextureNode gMiniFxParticleDescriptorI4FrameDiv2Mod4 = {
     0x00000001,
     &MiniFxParticleDescriptorPayloadI4FrameDiv2Mod4,
 };
 
-s16 D_87903E60[4][4] = {
+s16 gMiniActorPosOffsets[4][4] = {
     { 0x006E, 0x006E, 0x006E, 0x006E },
     { 0x0060, 0x007C, 0x006E, 0x006E },
     { 0x0054, 0x006E, 0x0088, 0x006E },
     { 0x0046, 0x0060, 0x007C, 0x0096 },
 };
 
-u32 D_87903E80[] = {
+u32 gMiniTutoScreenFrames[] = {
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
@@ -192,7 +192,7 @@ u32 D_87903E80[] = {
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
 };
 
-u32 D_87904E80[] = {
+u32 gMiniTutoScreenPalette[] = {
     0xF0F0F0F0, 0xF0F0F0F0, 0xF0F0F0F0, 0xF0F0F0F0, 0xF0F0F0F0, 0xF0F0F0F0, 0xF0F0F0F0, 0xF0F0F0F0, 0xF0F0F0F0,
     0xF0F0F0F0, 0xF0F0F0F0, 0xF0F0F0F0, 0xF0F0F0F0, 0xF0F0F0F0, 0xF0F0F0F0, 0xF0F0F0F0, 0xF0F0F0F0, 0xF0F0F0F0,
     0xF0F0F0F0, 0xF0F0F0F0, 0xF0F0F0F0, 0xE0E0D0C0, 0xE0F0F0F0, 0xF0F0F0F0, 0xF0F0F0F0, 0xF0F0F0F0, 0xF0F0F0F0,
@@ -224,7 +224,7 @@ u32 D_87904E80[] = {
     0xF0F0F0F0, 0xF0F0F0F0, 0xF0F0F0F0, 0xF0F0F0F0,
 };
 
-u32 D_87905280[] = {
+u32 gMiniParticleSparkTex[] = {
     0x00000000, 0x00000000, 0x00000000, 0x00000001, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000001, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000002, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
@@ -256,7 +256,7 @@ u32 D_87905280[] = {
     0x00000000, 0x00000000, 0x00000000, 0x00000000,
 };
 
-u32 D_87905680[] = {
+u32 gMiniTutoScreenGraphics[] = {
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00013000, 0x00000000, 0x00000000, 0x00000000, 0x0012A000, 0x00000000, 0x00000000, 0x00000000, 0x00284000,
@@ -318,30 +318,30 @@ u32 D_87905680[] = {
 
 void miniTutoScreenBegin(void) {
     if (miniTutoScreenState > 0) {
-        D_87903DCC = miniTutoScreenState;
+        gMiniTutoTimer2 = miniTutoScreenState;
         miniTutoScreenState = -2;
-        D_87903DC0 = 1;
+        gMiniTutoScreenPhase = 1;
     }
 }
 
 void miniTutoScreenEnd(void) {
     miniTutoScreenState = -1;
-    D_87903DC0 = 0;
-    D_87903DCC = 0;
-    D_87903DD0 = 0;
+    gMiniTutoScreenPhase = 0;
+    gMiniTutoTimer2 = 0;
+    gMiniTutoTimer3 = 0;
 }
 
 void miniTutoScreenShow(s16 arg0) {
-    switch (D_87903DC0) {
+    switch (gMiniTutoScreenPhase) {
         case 1:
-            D_87903DD0 = 0x18;
-            D_87903DC8 = arg0;
-            D_87903DC0++;
+            gMiniTutoTimer3 = 0x18;
+            gMiniTutoTimer1 = arg0;
+            gMiniTutoScreenPhase++;
             break;
 
         case 2:
-            D_87903DC8--;
-            if (D_87903DC8 == 0) {
+            gMiniTutoTimer1--;
+            if (gMiniTutoTimer1 == 0) {
                 miniTutoScreenEnd();
             }
             break;
@@ -349,16 +349,16 @@ void miniTutoScreenShow(s16 arg0) {
 }
 
 void miniTutoScreenShowTimed(s16 arg0, s16 arg1) {
-    switch (D_87903DC0) {
+    switch (gMiniTutoScreenPhase) {
         case 1:
-            D_87903DD0 = arg0; // 0x11
-            D_87903DC8 = arg1;
-            D_87903DC0++;
+            gMiniTutoTimer3 = arg0; // 0x11
+            gMiniTutoTimer1 = arg1;
+            gMiniTutoScreenPhase++;
             break;
 
         case 2:
-            D_87903DC8--;
-            if (D_87903DC8 == 0) {
+            gMiniTutoTimer1--;
+            if (gMiniTutoTimer1 == 0) {
                 miniTutoScreenEnd();
             }
             break;
@@ -381,7 +381,7 @@ void miniDrawResultIcons(MiniActor* arg0) {
 
     for (i = 0; i < 4; i++, arg0++) {
         if (arg0->isWinner != 0) {
-            temp_a2 = D_87903E60[D_87903DD4][var_s2];
+            temp_a2 = gMiniActorPosOffsets[gMiniResultIconRow][var_s2];
             if (arg0->isComp != 0) {
                 Widget_DrawPlayerIcon(-1 - i, 0x78, temp_a2, 1.0f);
             } else {

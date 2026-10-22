@@ -16,20 +16,20 @@
 #include "src/memory.h"
 #include "src/stage_loader.h"
 
-static u32 D_86600850[] = {
+static u32 gMiniGameGeoLayoutCommands[] = {
     0x0C00FFFF, 0x05000000, 0x0B00001E, 0x00000000, 0x014000F0, 0x0000000F, 0x00000000, 0x00000000,
     0x05000000, 0x0D000000, 0x05000000, 0x0F000002, 0x05000000, 0x1F00FFFF, 0x00000000, 0x00000000,
     0x00000000, 0x00640064, 0x00640000, 0x05000000, 0x00000000, &D_8D000000[0x20], 0x06000000, 0x06000000,
-    0x14000000, 0x002B0012, 0xFFFFFF32, 0x16FFFFFF, 0x0F000003, 0x05000000, 0x0A000000, &D_800AC840,
+    0x14000000, 0x002B0012, 0xFFFFFF32, 0x16FFFFFF, 0x0F000003, 0x05000000, 0x0A000000, &gGraphRoot0,
     0x06000000, 0x06000000, 0x06000000, 0x06000000, 0x01000000,
 };
 
-static unk_D_86002F30* D_86600940;
+static ModelData* gMiniGameSample7ModelData;
 static GraphNode* D_86600944;
-static CameraNode* D_86600948;
-static DisplayObject D_86600950;
-static s16 D_86600AB8;
-static s16 D_86600ABA;
+static CameraNode* gMiniGameCamera;
+static DisplayObject gMiniGameAnimNode;
+static s16 gMiniGameCamRotationY;
+static s16 gMiniGameCamRotationX;
 static s16 D_86600ABC;
 
 void Minigame_Sample7Viewer_PollInput(void) {
@@ -39,33 +39,33 @@ void Minigame_Sample7Viewer_PollInput(void) {
 }
 
 void Minigame_Sample7Viewer_InitCamera(void) {
-    D_86600948 = D_86600944->children;
+    gMiniGameCamera = D_86600944->children;
 
-    D_86600AB8 = 0x100;
-    D_86600ABA = 0;
+    gMiniGameCamRotationY = 0x100;
+    gMiniGameCamRotationX = 0;
     D_86600ABC = 0x78;
 
-    D_86600948->perspective.nearPlane = 10.0f;
-    D_86600948->perspective.farPlane = 6400.0f;
+    gMiniGameCamera->perspective.nearPlane = 10.0f;
+    gMiniGameCamera->perspective.farPlane = 6400.0f;
 
-    Camera_ComputeEyeFromAngles(&D_86600948->view.targetPosition, &D_86600948->view.eyePosition, D_86600ABC, D_86600AB8, D_86600ABA);
+    Camera_ComputeEyeFromAngles(&gMiniGameCamera->view.targetPosition, &gMiniGameCamera->view.eyePosition, D_86600ABC, gMiniGameCamRotationY, gMiniGameCamRotationX);
 }
 
 void Minigame_Sample7Viewer_UpdateCameraControls(void) {
     if (gPlayer1Controller->buttonDown & 0x800) {
-        D_86600AB8 += 256;
+        gMiniGameCamRotationY += 256;
     }
 
     if (gPlayer1Controller->buttonDown & 0x400) {
-        D_86600AB8 -= 256;
+        gMiniGameCamRotationY -= 256;
     }
 
     if (gPlayer1Controller->buttonDown & 0x200) {
-        D_86600ABA += 256;
+        gMiniGameCamRotationX += 256;
     }
 
     if (gPlayer1Controller->buttonDown & 0x100) {
-        D_86600ABA -= 256;
+        gMiniGameCamRotationX -= 256;
     }
 
     if (gPlayer1Controller->buttonDown & 8) {
@@ -76,12 +76,12 @@ void Minigame_Sample7Viewer_UpdateCameraControls(void) {
         D_86600ABC += 10;
     }
 
-    if (D_86600AB8 > 16128) {
-        D_86600AB8 = 16128;
+    if (gMiniGameCamRotationY > 16128) {
+        gMiniGameCamRotationY = 16128;
     }
 
-    if (D_86600AB8 < 0) {
-        D_86600AB8 = 0;
+    if (gMiniGameCamRotationY < 0) {
+        gMiniGameCamRotationY = 0;
     }
 
     if (D_86600ABC < 50) {
@@ -92,7 +92,7 @@ void Minigame_Sample7Viewer_UpdateCameraControls(void) {
         D_86600ABC = 2000;
     }
 
-    Camera_ComputeEyeFromAngles(&D_86600948->view.targetPosition, &D_86600948->view.eyePosition, D_86600ABC, D_86600AB8, D_86600ABA);
+    Camera_ComputeEyeFromAngles(&gMiniGameCamera->view.targetPosition, &gMiniGameCamera->view.eyePosition, D_86600ABC, gMiniGameCamRotationY, gMiniGameCamRotationX);
 }
 
 void Minigame_Sample7Viewer_DrawDebugText(s32 arg0) {
@@ -128,7 +128,7 @@ void Minigame_Sample7Viewer_DrawDebugText(s32 arg0) {
     if (arg0 == 2) {
         Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
         Font_Printf(0x23, 0xC2, "CAMERA D:%d", D_86600ABC);
-        Font_Printf(0x23, 0xCE, "X:%04hX Y:%04hX", D_86600AB8, D_86600ABA);
+        Font_Printf(0x23, 0xCE, "X:%04hX Y:%04hX", gMiniGameCamRotationY, gMiniGameCamRotationX);
     }
 
     Font_EndTexturedTextRendering();
@@ -145,12 +145,12 @@ void Minigame_Sample7Viewer_DrawFrame(s32 arg0) {
 
 void Minigame_Sample7Viewer_OpeningLoop(void) {
     StageFade_StartFromOpaque(0x10);
-    ModelAnim_SetAnimation(&D_86600950, 8);
-    if (ModelAnim_IsFinished(&D_86600950) == 0) {
+    ModelAnim_SetAnimation(&gMiniGameAnimNode, 8);
+    if (ModelAnim_IsFinished(&gMiniGameAnimNode) == 0) {
         do {
             Minigame_Sample7Viewer_PollInput();
             Minigame_Sample7Viewer_DrawFrame(0);
-        } while (ModelAnim_IsFinished(&D_86600950) == 0);
+        } while (ModelAnim_IsFinished(&gMiniGameAnimNode) == 0);
     }
 }
 
@@ -158,7 +158,7 @@ void Minigame_Sample7Viewer_PlayingLoop(void) {
     s32 var_s1 = 1;
     s32 var_s0 = 0;
 
-    ModelAnim_SetAnimation(&D_86600950, 0);
+    ModelAnim_SetAnimation(&gMiniGameAnimNode, 0);
 
     while (var_s1 != 0) {
         Minigame_Sample7Viewer_PollInput();
@@ -172,8 +172,8 @@ void Minigame_Sample7Viewer_PlayingLoop(void) {
 
         if (var_s0 == 60) {
             var_s0 = 0;
-            ModelAnim_ClearEventTrack(&D_86600950);
-            ModelAnim_SetEventTrack(&D_86600950, 0xA);
+            ModelAnim_ClearEventTrack(&gMiniGameAnimNode);
+            ModelAnim_SetEventTrack(&gMiniGameAnimNode, 0xA);
         }
 
         Minigame_Sample7Viewer_DrawFrame(2);
@@ -183,10 +183,10 @@ void Minigame_Sample7Viewer_PlayingLoop(void) {
 void Minigame_Sample7Viewer_EndingLoop(void) {
     s32 i;
 
-    ModelAnim_SetAnimation(&D_86600950, 0xB);
-    ModelAnim_SetEventTrack(&D_86600950, 0xB);
+    ModelAnim_SetAnimation(&gMiniGameAnimNode, 0xB);
+    ModelAnim_SetEventTrack(&gMiniGameAnimNode, 0xB);
 
-    while (ModelAnim_IsFinished(&D_86600950) == 0) {
+    while (ModelAnim_IsFinished(&gMiniGameAnimNode) == 0) {
         Minigame_Sample7Viewer_PollInput();
         Minigame_Sample7Viewer_DrawFrame(3);
     }
@@ -202,14 +202,14 @@ void Minigame_Sample7Viewer_EndingLoop(void) {
 void Minigame_Sample7Viewer_Init(void) {
     MemoryBlock* sp1C = MainPool_AllocState(main_pool_get_available(), 0);
 
-    D_86600944 = process_geo_layout(sp1C, &D_86600850);
+    D_86600944 = process_geo_layout(sp1C, &gMiniGameGeoLayoutCommands);
     MainPool_FinalizeAllocation(sp1C);
     ModelRenderer_InitDisplayRoots();
-    ModelRenderer_AttachDisplayObject(&D_86600950);
+    ModelRenderer_AttachDisplayObject(&gMiniGameAnimNode);
     PokeIcon_OpenModelArchives();
-    D_86600940 = Model_LoadByArchiveIndex(0x19);
-    Model_InitDisplayObject(&D_86600950, 0, 0x19, D_86600940->unk_08->unk_00[0]);
-    ModelAnim_SetAnimation(&D_86600950, 0);
+    gMiniGameSample7ModelData = Model_LoadByArchiveIndex(0x19);
+    Model_InitDisplayObject(&gMiniGameAnimNode, 0, 0x19, gMiniGameSample7ModelData->unk_08->unk_00[0]);
+    ModelAnim_SetAnimation(&gMiniGameAnimNode, 0);
     Minigame_Sample7Viewer_InitCamera();
 }
 

@@ -25,8 +25,8 @@ typedef struct unk_func_88201488_arg2 {
 
 extern s32 D_4006A08;
 
-static char** D_88224FA0;
-static char** D_88224FA4;
+static char** gMessageBankBoxMenuGbSaveIdLabel;
+static char** gBoxScreenMessageBank;
 
 void LabPC_MarkBoxSeen(unk_func_88205880_00D0* arg0) {
     s32 i;
@@ -106,11 +106,11 @@ s32 LabPC_AllBoxesEmpty(unk_func_88205880_A030* arg0) {
     return 1;
 }
 
-void func_88201488(s32 arg0, s32 arg1, unk_func_88201488_arg2** arg2, s32 arg3, s32 arg4, unk_func_88200FA0_030_030* arg5) {
-    static Color_RGBA8 D_88217C20 = { 0xF0, 0xF0, 0xF0, 0xFF };
-    static Color_RGBA8 D_88217C24 = { 0x28, 0x28, 0x64, 0xFF };
-    static Color_RGBA8 D_88217C28 = { 0x3C, 0x3C, 0x82, 0xFF };
-    static Color_RGBA8 D_88217C2C = { 0x78, 0x78, 0x96, 0xFF };
+void LabPC_DrawSlot(s32 arg0, s32 arg1, unk_func_88201488_arg2** arg2, s32 arg3, s32 arg4, unk_func_88200FA0_030_030* arg5) {
+    static Color_RGBA8 gSlotTextColor = { 0xF0, 0xF0, 0xF0, 0xFF };
+    static Color_RGBA8 gSlotBgColorUpper = { 0x28, 0x28, 0x64, 0xFF };
+    static Color_RGBA8 gSlotBgColorLower = { 0x3C, 0x3C, 0x82, 0xFF };
+    static Color_RGBA8 gSlotBorderColor = { 0x78, 0x78, 0x96, 0xFF };
     s32 pad;
 
     gDPPipeSync(gDisplayListHead++);
@@ -118,38 +118,38 @@ void func_88201488(s32 arg0, s32 arg1, unk_func_88201488_arg2** arg2, s32 arg3, 
     gDPSetRenderMode(gDisplayListHead++, G_RM_NOOP, G_RM_NOOP2);
 
     {
-        s32 color = GPACK_RGBA5551(D_88217C24.r, D_88217C24.g, D_88217C24.b, 1);
+        s32 color = GPACK_RGBA5551(gSlotBgColorUpper.r, gSlotBgColorUpper.g, gSlotBgColorUpper.b, 1);
         gDPPipeSync(gDisplayListHead++);
         gDPSetFillColor(gDisplayListHead++, (color << 16) | color);
         gDPFillRectangle(gDisplayListHead++, arg0 + 1, arg1 + 1, ((0, arg0) + arg5->unk_3C) - 2, arg1 + 0x31);
     }
     {
-        s32 color = GPACK_RGBA5551(D_88217C28.r, D_88217C28.g, D_88217C28.b, 1);
+        s32 color = GPACK_RGBA5551(gSlotBgColorLower.r, gSlotBgColorLower.g, gSlotBgColorLower.b, 1);
         gDPPipeSync(gDisplayListHead++);
         gDPSetFillColor(gDisplayListHead++, (color << 16) | color);
         gDPFillRectangle(gDisplayListHead++, arg0 + 1, arg1 + 0x32, ((0, arg0) + arg5->unk_3C) - 2, arg1 + 0x49);
     }
     {
-        s32 color = GPACK_RGBA5551(D_88217C2C.r, D_88217C2C.g, D_88217C2C.b, 1);
+        s32 color = GPACK_RGBA5551(gSlotBorderColor.r, gSlotBorderColor.g, gSlotBorderColor.b, 1);
         gDPPipeSync(gDisplayListHead++);
         gDPSetFillColor(gDisplayListHead++, (color << 16) | color);
         gDPFillRectangle(gDisplayListHead++, arg0, arg1, (arg5->unk_3C + arg0) - 1, arg1);
     }
     {
-        s32 color = GPACK_RGBA5551(D_88217C2C.r, D_88217C2C.g, D_88217C2C.b, 1);
+        s32 color = GPACK_RGBA5551(gSlotBorderColor.r, gSlotBorderColor.g, gSlotBorderColor.b, 1);
         gDPPipeSync(gDisplayListHead++);
         gDPSetFillColor(gDisplayListHead++, (color << 16) | color);
         gDPFillRectangle(gDisplayListHead++, arg0, (arg1 + arg5->unk_3E) - 1, (arg5->unk_3C + arg0) - 1,
                          (arg1 + arg5->unk_3E) - 1);
     }
     {
-        s32 color = GPACK_RGBA5551(D_88217C2C.r, D_88217C2C.g, D_88217C2C.b, 1);
+        s32 color = GPACK_RGBA5551(gSlotBorderColor.r, gSlotBorderColor.g, gSlotBorderColor.b, 1);
         gDPPipeSync(gDisplayListHead++);
         gDPSetFillColor(gDisplayListHead++, (color << 16) | color);
         gDPFillRectangle(gDisplayListHead++, arg0, arg1 + 1, arg0, (arg1 + arg5->unk_3E) - 2);
     }
     {
-        s32 color = GPACK_RGBA5551(D_88217C2C.r, D_88217C2C.g, D_88217C2C.b, 1);
+        s32 color = GPACK_RGBA5551(gSlotBorderColor.r, gSlotBorderColor.g, gSlotBorderColor.b, 1);
         gDPPipeSync(gDisplayListHead++);
         gDPSetFillColor(gDisplayListHead++, (color << 16) | color);
         gDPFillRectangle(gDisplayListHead++, (arg5->unk_3C + arg0) - 1, arg1 + 1, (arg5->unk_3C + arg0) - 1,
@@ -186,7 +186,7 @@ void func_88201488(s32 arg0, s32 arg1, unk_func_88201488_arg2** arg2, s32 arg3, 
         }
 
         Font_BeginTranslucentTextRendering();
-        Gfx_SetEnvColor(D_88217C20.r, D_88217C20.g, D_88217C20.b, D_88217C20.a);
+        Gfx_SetEnvColor(gSlotTextColor.r, gSlotTextColor.g, gSlotTextColor.b, gSlotTextColor.a);
         Font_SetActive(8, 0);
         Font_Printf(((arg5->unk_3C - Font_MeasureTextExtent(0, 0, (char*)*arg2 + 0x30)) / 2) + arg0, arg1 + 0x34,
                     (char*)*arg2 + 0x30);
@@ -194,12 +194,12 @@ void func_88201488(s32 arg0, s32 arg1, unk_func_88201488_arg2** arg2, s32 arg3, 
     }
 }
 
-void func_88201DA0(unk_func_88201DA0* arg0, s32 arg1, s32 arg2, WidgetNode* arg3, FragmentEntry arg4,
-                   unk_func_88205880_0098* arg5, MemoryPool* arg6) {
-    static Color_RGBA8 D_88217C30 = { 0x32, 0x64, 0x64, 0xFF };
+void BoxList_Init(unk_func_88201DA0* arg0, s32 arg1, s32 arg2, WidgetNode* arg3, FragmentEntry arg4,
+                   LabPC_DetailPanelParams* arg5, MemoryPool* arg6) {
+    static Color_RGBA8 gBoxListHeaderColor = { 0x32, 0x64, 0x64, 0xFF };
 
     UNUSED s32 pad[2];
-    unk_func_88503298* sp44;
+    WidgetVisibilityGate* sp44;
 
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(arg0, sizeof(unk_func_88201DA0));
 
@@ -221,7 +221,7 @@ void func_88201DA0(unk_func_88201DA0* arg0, s32 arg1, s32 arg2, WidgetNode* arg3
 
     arg0->unk_58 = mem_pool_alloc(arg6, sizeof(unk_func_8850182C));
     ((func8850182C)Memmap_GetFragmentVaddr(WidgetTree_InitCornerFrame))(arg0->unk_58, 0, 0, arg0->unk_2C->unk_00.unk_14.unk_00, 0x1C,
-                                                           D_88217C30);
+                                                           gBoxListHeaderColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, arg0->unk_58);
 
     arg0->unk_50 = mem_pool_alloc(arg6, sizeof(unk_func_8850878C));
@@ -231,12 +231,12 @@ void func_88201DA0(unk_func_88201DA0* arg0, s32 arg1, s32 arg2, WidgetNode* arg3
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_58, arg0->unk_50);
 
     arg0->unk_30 = mem_pool_alloc(arg6, sizeof(unk_func_88200FA0_030_030));
-    ((func885060BC)Memmap_GetFragmentVaddr(WidgetTree_InitPagedGrid))(arg0->unk_30, 0, 0x1C, func_88201488, 0x6A, 0x4B, 4, 5,
+    ((func885060BC)Memmap_GetFragmentVaddr(WidgetTree_InitPagedGrid))(arg0->unk_30, 0, 0x1C, LabPC_DrawSlot, 0x6A, 0x4B, 4, 5,
                                                            arg6);
     ((func88506238)Memmap_GetFragmentVaddr(WidgetTree_AllocateEntryFlags))(arg0->unk_30, 0x14, arg6);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, arg0->unk_30);
 
-    sp44 = mem_pool_alloc(arg6, sizeof(unk_func_88503298));
+    sp44 = mem_pool_alloc(arg6, sizeof(WidgetVisibilityGate));
     ((func88503298)Memmap_GetFragmentVaddr(WidgetTree_InitVisibilityGateBridge))(sp44, arg0->unk_2C, arg3);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, sp44);
 
@@ -244,19 +244,19 @@ void func_88201DA0(unk_func_88201DA0* arg0, s32 arg1, s32 arg2, WidgetNode* arg3
 }
 
 void LabPC_CheckBox_SetTitle(unk_func_88201DA0* arg0, u32 arg1, u32 arg2) {
-    static u16 D_88217C34[] = { 0x32, 0x33 };
-    static Color_RGBA8 D_88217C38[] = {
+    static u16 gBoxTitleMessageIds[] = { 0x32, 0x33 };
+    static Color_RGBA8 gBoxTitleColors[] = {
         { 0x96, 0x64, 0x1E, 0xFF },
         { 0x32, 0x64, 0x64, 0xFF },
     };
 
-    HAL_Strcpy(arg0->unk_54, Text_GetString(NULL, 0, D_88224FA4, D_88217C34[arg1 - 1]));
+    HAL_Strcpy(arg0->unk_54, Text_GetString(NULL, 0, gBoxScreenMessageBank, gBoxTitleMessageIds[arg1 - 1]));
     sprintf(&arg0->unk_54[strlen(arg0->unk_54)], " No.%d", arg2 + 1);
 
     arg0->unk_50->unk_00.unk_10.unk_00 =
         (arg0->unk_2C->unk_00.unk_14.unk_00 - Font_MeasureTextExtent(arg0->unk_50->unk_2C, arg0->unk_50->unk_38, arg0->unk_54)) /
         2;
-    arg0->unk_58->unk_2C = D_88217C38[arg1 - 1];
+    arg0->unk_58->unk_2C = gBoxTitleColors[arg1 - 1];
 }
 
 void LabPC_CheckBox_ShowBox(unk_func_88201DA0* arg0, unk_func_88205880_00D0* arg1, u32 arg2) {
@@ -332,7 +332,7 @@ void LabPC_CheckBox_ModalLoop(unk_func_88201DA0* arg0, Controller* arg1) {
 }
 
 void LabPC_DrawBoxCount(unk_func_88205880_00D0* arg0, s32 arg1, s32 arg2) {
-    static Color_RGBA8 D_88217C40 = { 0xF0, 0xF0, 0xF0, 0xFF };
+    static Color_RGBA8 gBoxCountTextColor = { 0xF0, 0xF0, 0xF0, 0xFF };
 
     char sp28[8];
     s32 sp24 = Font_MeasureTextExtent(4, 0, "00");
@@ -340,12 +340,12 @@ void LabPC_DrawBoxCount(unk_func_88205880_00D0* arg0, s32 arg1, s32 arg2) {
 
     Font_BeginTranslucentTextRendering();
     Font_SetActive(4, 0);
-    Gfx_SetEnvColor(D_88217C40.r, D_88217C40.g, D_88217C40.b, D_88217C40.a);
+    Gfx_SetEnvColor(gBoxCountTextColor.r, gBoxCountTextColor.g, gBoxCountTextColor.b, gBoxCountTextColor.a);
     sprintf(sp28, "%d", arg0->unk_690);
     Font_Printf(((arg1 + sp24) - Font_MeasureTextExtent(0, 0, sp28)) + 0x1C, arg2 + 4, sp28);
     Font_EndTexturedTextRendering();
     if (arg0->unk_690 > 0) {
-        Gfx_DrawTiledTextureStrip(&D_800758E0, arg1, arg2 + 2);
+        Gfx_DrawTiledTextureStrip(&gMenuTextureInfo_Default, arg1, arg2 + 2);
     }
 }
 
@@ -371,7 +371,7 @@ s32 LabPC_BoxCountLabel_Draw(unk_func_8820253C* arg0, s32 arg1, s32 arg2) {
 
 void LabPC_BuildBoxPairSelector(unk_func_882025E0_1A9780* arg0, unk_func_88200FA0_030_030* arg1, unk_func_88200FA0_030_030* arg2,
                    unk_func_88203ED8* arg3, MemoryPool* arg4) {
-    static Color_RGBA8 D_88217C44 = { 0xF0, 0xF0, 0xF0, 0xFF };
+    static Color_RGBA8 gMenuTextColor = { 0xF0, 0xF0, 0xF0, 0xFF };
 
     s32 i;
     char* temp_s2;
@@ -389,11 +389,11 @@ void LabPC_BuildBoxPairSelector(unk_func_882025E0_1A9780* arg0, unk_func_88200FA
     arg0->unk_2C = 0;
 
     for (i = 0; i < 5; i++) {
-        temp_s2 = Text_GetString(NULL, 0, D_88224FA4, i + 6);
+        temp_s2 = Text_GetString(NULL, 0, gBoxScreenMessageBank, i + 6);
 
         arg0->unk_3C[i].unk_00 = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
         ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(arg0->unk_3C[i].unk_00, 0, 0, temp_s2, 0x10);
-        arg0->unk_3C[i].unk_00->unk_30 = D_88217C44;
+        arg0->unk_3C[i].unk_00->unk_30 = gMenuTextColor;
         arg0->unk_3C[i].unk_00->unk_44 = arg0->unk_3C[i].unk_00->unk_44;
         arg0->unk_3C[i].unk_08 = 0;
         arg0->unk_3C[i].unk_04 = 0;
@@ -728,15 +728,15 @@ s32 LabPC_BoxPairSelector_HandleInput(unk_func_882025E0_1A9780* arg0, Controller
     return var_a2;
 }
 
-static Color_RGBA8 D_88217C48 = { 0xF0, 0xF0, 0xF0, 0xFF };
-static Color_RGBA8 D_88217C4C = { 0x5A, 0x5A, 0xA6, 0xFF };
-static Color_RGBA8 D_88217C50 = { 0x40, 0x40, 0x74, 0xFF };
-static Color_RGBA8 D_88217C54[] = {
+static Color_RGBA8 gBoxPanelTextColor = { 0xF0, 0xF0, 0xF0, 0xFF };
+static Color_RGBA8 gBoxPanelAccentColor = { 0x5A, 0x5A, 0xA6, 0xFF };
+static Color_RGBA8 gPanelBackgroundColor = { 0x40, 0x40, 0x74, 0xFF };
+static Color_RGBA8 gPanelGradientColors[] = {
     { 0x78, 0x78, 0xF1, 0xFF },
     { 0x5E, 0x5E, 0xBE, 0xFF },
 };
 
-void func_88203538(s32 arg0, s32 arg1, char* arg2, s32 arg3, s32 arg4, unk_func_88200FA0_030_030* arg5) {
+void DrawBoxPanel(s32 arg0, s32 arg1, char* arg2, s32 arg3, s32 arg4, unk_func_88200FA0_030_030* arg5) {
     Color_RGBA8 sp8C;
     Color_RGBA8 sp88;
     s32 pad[1];
@@ -748,9 +748,9 @@ void func_88203538(s32 arg0, s32 arg1, char* arg2, s32 arg3, s32 arg4, unk_func_
     s32 pad2[2];
 
     if (arg4 & 2) {
-        sp8C = Color_ScaleRgb(D_88217C50, 1.4f);
+        sp8C = Color_ScaleRgb(gPanelBackgroundColor, 1.4f);
     } else {
-        sp8C = *(Color_RGBA8 *)&D_88217C50;
+        sp8C = *(Color_RGBA8 *)&gPanelBackgroundColor;
     }
 
     gDPPipeSync(gDisplayListHead++);
@@ -765,23 +765,23 @@ void func_88203538(s32 arg0, s32 arg1, char* arg2, s32 arg3, s32 arg4, unk_func_
     }
 
     {
-        u32 color = GPACK_RGBA5551(D_88217C54[1].r, D_88217C54[1].g, D_88217C54[1].b, 1); gDPPipeSync(gDisplayListHead++);
+        u32 color = GPACK_RGBA5551(gPanelGradientColors[1].r, gPanelGradientColors[1].g, gPanelGradientColors[1].b, 1); gDPPipeSync(gDisplayListHead++);
         gDPSetFillColor(gDisplayListHead++, (color << 16) | color);
         gDPFillRectangle(gDisplayListHead++, arg0, arg1, ((arg5->unk_3C + arg0) - 1), arg1);
     }
     
     {
-        u32 color = GPACK_RGBA5551(D_88217C54[1].r, D_88217C54[1].g, D_88217C54[1].b, 1); gDPPipeSync(gDisplayListHead++);
+        u32 color = GPACK_RGBA5551(gPanelGradientColors[1].r, gPanelGradientColors[1].g, gPanelGradientColors[1].b, 1); gDPPipeSync(gDisplayListHead++);
         gDPSetFillColor(gDisplayListHead++, (color << 16) | color);
         gDPFillRectangle(gDisplayListHead++, arg0, ((arg1 + arg5->unk_3E) - 1), ((arg5->unk_3C + arg0) - 1), ((arg1 + arg5->unk_3E) - 1));
     }
 
 
-    sp88 = D_88217C48;
+    sp88 = gBoxPanelTextColor;
     if (arg4 & 4) {
         sp88.a = 0x4C;
     }
-    sp80 = Text_GetString(0, 0, D_88224FA4, 0x31);
+    sp80 = Text_GetString(0, 0, gBoxScreenMessageBank, 0x31);
     sp78 = Font_MeasureTextExtent(8, 0, sp80);
     sp74 = Font_MeasureTextExtent(8, 0, " 00");
     sp70 = Font_MeasureTextExtent(4, 0, "00");
@@ -808,16 +808,16 @@ void LabPC_BuildBoxLabelTab(unk_func_8820399C* arg0, s32 arg1, unk_func_8850143C
 }
 
 s32 LabPC_DrawBoxLabelTab(unk_func_8820399C* arg0, s32 arg1, s32 arg2) {
-    static Color_RGBA8 D_88217C5C = { 0xF0, 0xF0, 0xF0, 0xFF };
+    static Color_RGBA8 gHeaderTextColor = { 0xF0, 0xF0, 0xF0, 0xFF };
 
     char* sp2C;
     s32 temp_v0;
     s32 var_s0;
 
     if (arg0->unk_30 == 0) {
-        sp2C = Text_GetString(NULL, 0, D_88224FA4, 0xB);
+        sp2C = Text_GetString(NULL, 0, gBoxScreenMessageBank, 0xB);
     } else {
-        sp2C = Text_GetString(NULL, 0, D_88224FA4, 0xC);
+        sp2C = Text_GetString(NULL, 0, gBoxScreenMessageBank, 0xC);
     }
     temp_v0 = Font_MeasureTextExtent(8, 0, sp2C);
 
@@ -831,7 +831,7 @@ s32 LabPC_DrawBoxLabelTab(unk_func_8820399C* arg0, s32 arg1, s32 arg2) {
     if (arg0->unk_30 == 0) {
         var_s0 = (((arg0->unk_00.unk_14.unk_00 - temp_v0) - 0x20) / 2) + arg1 + 0x20;
 
-        gDPLoadTextureBlock(gDisplayListHead++, D_88223470[arg0->unk_2C], G_IM_FMT_RGBA, G_IM_SIZ_16b, 24, 26, 0,
+        gDPLoadTextureBlock(gDisplayListHead++, gTexture_GbPakIcons[arg0->unk_2C], G_IM_FMT_RGBA, G_IM_SIZ_16b, 24, 26, 0,
                             G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                             G_TX_NOLOD);
         gSPTextureRectangle(gDisplayListHead++, (var_s0 - 0x20) << 2, (arg2 + 2) << 2, (var_s0 - 9) << 2,
@@ -839,7 +839,7 @@ s32 LabPC_DrawBoxLabelTab(unk_func_8820399C* arg0, s32 arg1, s32 arg2) {
     } else {
         var_s0 = (((arg0->unk_00.unk_14.unk_00 - temp_v0) - 0x30) / 2) + arg1 + 0x30;
 
-        gDPLoadTextureBlock(gDisplayListHead++, D_88223488, G_IM_FMT_RGBA, G_IM_SIZ_16b, 48, 26, 0,
+        gDPLoadTextureBlock(gDisplayListHead++, gTexture_N64PakIcon, G_IM_FMT_RGBA, G_IM_SIZ_16b, 48, 26, 0,
                             G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                             G_TX_NOLOD);
         gSPTextureRectangle(gDisplayListHead++, (var_s0 - 0x30) << 2, (arg2 + 2) << 2, (var_s0 - 9) << 2,
@@ -851,7 +851,7 @@ s32 LabPC_DrawBoxLabelTab(unk_func_8820399C* arg0, s32 arg1, s32 arg2) {
     gDPSetAlphaCompare(gDisplayListHead++, G_AC_NONE);
 
     Font_BeginTranslucentTextRendering();
-    Gfx_SetEnvColor(D_88217C5C.r, D_88217C5C.g, D_88217C5C.b, D_88217C5C.a);
+    Gfx_SetEnvColor(gHeaderTextColor.r, gHeaderTextColor.g, gHeaderTextColor.b, gHeaderTextColor.a);
     Font_SetActive(8, 0);
     Font_Printf(var_s0, arg2 + 5, sp2C);
     Font_EndTexturedTextRendering();
@@ -859,21 +859,21 @@ s32 LabPC_DrawBoxLabelTab(unk_func_8820399C* arg0, s32 arg1, s32 arg2) {
     return 0;
 }
 
-void func_88203ED8(unk_func_88203ED8* arg0, s32 arg1, s32 arg2, unk_func_88205880_A030* arg3,
+void BoxPCMenu_Init(unk_func_88203ED8* arg0, s32 arg1, s32 arg2, unk_func_88205880_A030* arg3,
                    WidgetNode* arg4, unk_func_88201DA0* arg5, FontContext* arg6, char** arg7,
                    MemoryPool* arg8) {
-    static Color_RGBA8 D_88217C60 = { 0x6C, 0x6C, 0x7E, 0xFF };
-    static Color_RGBA8 D_88217C64 = { 0x50, 0x50, 0x86, 0xFF };
-    static Color_RGBA8 D_88217C68 = { 0x79, 0x79, 0xCB, 0xFF };
-    static unk_D_88217C6C D_88217C6C[] = {
+    static Color_RGBA8 gMenuBackgroundColor = { 0x6C, 0x6C, 0x7E, 0xFF };
+    static Color_RGBA8 gButtonBaseColor = { 0x50, 0x50, 0x86, 0xFF };
+    static Color_RGBA8 gButtonHighlightColor = { 0x79, 0x79, 0xCB, 0xFF };
+    static unk_D_88217C6C gMenuItemDefs[] = {
         {
             249,
             36,
             54,
             42,
-            D_88218FD0,
+            gPanelBackgroundTexture1,
             48,
-            D_882181B8,
+            gPanelAccentColorCyan,
             0,
         },
         {
@@ -881,9 +881,9 @@ void func_88203ED8(unk_func_88203ED8* arg0, s32 arg1, s32 arg2, unk_func_8820588
             84,
             54,
             42,
-            D_88219D58,
+            gPanelBackgroundTexture2,
             48,
-            D_882181C0,
+            gPanelAccentColorGreen,
             1,
         },
         {
@@ -891,9 +891,9 @@ void func_88203ED8(unk_func_88203ED8* arg0, s32 arg1, s32 arg2, unk_func_8820588
             132,
             54,
             42,
-            D_8821AAE0,
+            gPanelBackgroundTexture3,
             48,
-            D_882181C8,
+            gPanelAccentColorYellow,
             0,
         },
         {
@@ -901,9 +901,9 @@ void func_88203ED8(unk_func_88203ED8* arg0, s32 arg1, s32 arg2, unk_func_8820588
             180,
             54,
             42,
-            D_8821B868,
+            gItemBoxTabCheckItemsTex,
             48,
-            D_882181D0,
+            gPanelColorA,
             1,
         },
         {
@@ -911,16 +911,16 @@ void func_88203ED8(unk_func_88203ED8* arg0, s32 arg1, s32 arg2, unk_func_8820588
             228,
             54,
             42,
-            D_88218248,
+            gPanelBackgroundTexture4,
             48,
-            D_882181B0,
+            gPanelAccentColorWhiteGray,
             0,
         },
     };
-    static Color_RGBA8 D_88217CE4 = { 0xFF, 0xFF, 0x00, 0xFF };
-    static Color_RGBA8 D_88217CE8 = { 0x2D, 0x1A, 0x41, 0xFF };
-    static Color_RGBA8 D_88217CEC = { 0x6F, 0x5F, 0x7F, 0xFF };
-    static Color_RGBA8* D_88217CF0[5] = { D_882181F0, D_88218208, D_88218200, D_88218210, D_882181F8 };
+    static Color_RGBA8 gFlashingElementColor = { 0xFF, 0xFF, 0x00, 0xFF };
+    static Color_RGBA8 gBottomPanelBaseColor = { 0x2D, 0x1A, 0x41, 0xFF };
+    static Color_RGBA8 gBottomPanelPatternColor = { 0x6F, 0x5F, 0x7F, 0xFF };
+    static Color_RGBA8* gMenuItemTextColors[5] = { gPanelColorCyan, gPanelColorGreen, gPanelColorYellow, gBoxMenuColorCheckItems, gPanelColorWhite };
 
     s32 pad[7];
     s32 x;
@@ -940,7 +940,7 @@ void func_88203ED8(unk_func_88203ED8* arg0, s32 arg1, s32 arg2, unk_func_8820588
     WidgetAnimatedFrame* temp_s0;
     unk_func_8850143C* temp_s0_2;
     unk_func_8850878C* temp_s0_3;
-    unk_func_88503298* temp_s0_4;
+    WidgetVisibilityGate* temp_s0_4;
     s32 pad2[3];
 
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(arg0, sizeof(unk_func_88203ED8));
@@ -961,23 +961,23 @@ void func_88203ED8(unk_func_88203ED8* arg0, s32 arg1, s32 arg2, unk_func_8820588
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_2C);
 
     sp98 = mem_pool_alloc(arg8, sizeof(unk_func_885012A4));
-    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(sp98, 0, 0, 0x228, 6, D_88217C60);
+    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(sp98, 0, 0, 0x228, 6, gMenuBackgroundColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, sp98);
 
     sp9C = mem_pool_alloc(arg8, sizeof(unk_func_885012A4));
-    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(sp9C, 0, 0x138, 0x228, 6, D_88217C60);
+    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(sp9C, 0, 0x138, 0x228, 6, gMenuBackgroundColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, sp9C);
 
     spA0 = mem_pool_alloc(arg8, sizeof(unk_func_885012A4));
-    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(spA0, 0, 6, 0xA, 0x132, D_88217C60);
+    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(spA0, 0, 6, 0xA, 0x132, gMenuBackgroundColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, spA0);
 
     spA4 = mem_pool_alloc(arg8, sizeof(unk_func_885012A4));
-    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(spA4, 0x21E, 6, 0xA, 0x132, D_88217C60);
+    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(spA4, 0x21E, 6, 0xA, 0x132, gMenuBackgroundColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, spA4);
 
     spA8 = mem_pool_alloc(arg8, sizeof(unk_func_885012A4));
-    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(spA8, 0xF3, 6, 0x42, 0x132, D_88217C60);
+    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(spA8, 0xF3, 6, 0x42, 0x132, gMenuBackgroundColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, spA8);
 
     sp90 = mem_pool_alloc(arg8, sizeof(WidgetNode));
@@ -989,11 +989,11 @@ void func_88203ED8(unk_func_88203ED8* arg0, s32 arg1, s32 arg2, unk_func_8820588
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, sp94);
 
     sp88 = mem_pool_alloc(arg8, sizeof(unk_func_8850143C));
-    ((func8850143C)Memmap_GetFragmentVaddr(WidgetTree_InitPatternTexture))(sp88, 0xA, 6, 0xE9, 0x1E, D_88217C64, D_88217C68);
+    ((func8850143C)Memmap_GetFragmentVaddr(WidgetTree_InitPatternTexture))(sp88, 0xA, 6, 0xE9, 0x1E, gButtonBaseColor, gButtonHighlightColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, sp88);
 
     sp8C = mem_pool_alloc(arg8, sizeof(unk_func_8850143C));
-    ((func8850143C)Memmap_GetFragmentVaddr(WidgetTree_InitPatternTexture))(sp8C, 0x135, 6, 0xE9, 0x1E, D_88217C64, D_88217C68);
+    ((func8850143C)Memmap_GetFragmentVaddr(WidgetTree_InitPatternTexture))(sp8C, 0x135, 6, 0xE9, 0x1E, gButtonBaseColor, gButtonHighlightColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, sp8C);
 
     arg0->unk_30 = mem_pool_alloc(arg8, sizeof(unk_func_8820399C));
@@ -1008,12 +1008,12 @@ void func_88203ED8(unk_func_88203ED8* arg0, s32 arg1, s32 arg2, unk_func_8820588
     LabPC_InitModeToggleIcon(arg0->unk_40, 0xF4, 0xA);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, arg0->unk_40);
 
-    for (i = 0; i < sizeof(D_88217C6C) / sizeof(D_88217C6C[0]); i++) {
+    for (i = 0; i < sizeof(gMenuItemDefs) / sizeof(gMenuItemDefs[0]); i++) {
         arg0->unk_44[i] = mem_pool_alloc(arg8, sizeof(unk_func_882149A0));
-        LabPC_InitTabWidget(arg0->unk_44[i], D_88217C6C[i].unk_00, D_88217C6C[i].unk_02, D_88217C6C[i].unk_04,
-                            D_88217C6C[i].unk_06, D_88217C6C[i].unk_08, D_88217C6C[i].unk_0C, D_88217C6C[i].unk_10[0],
-                            D_88217C6C[i].unk_10[1], D_88217C60);
-        if (D_88217C6C[i].unk_14 != 0) {
+        LabPC_InitTabWidget(arg0->unk_44[i], gMenuItemDefs[i].unk_00, gMenuItemDefs[i].unk_02, gMenuItemDefs[i].unk_04,
+                            gMenuItemDefs[i].unk_06, gMenuItemDefs[i].unk_08, gMenuItemDefs[i].unk_0C, gMenuItemDefs[i].unk_10[0],
+                            gMenuItemDefs[i].unk_10[1], gMenuBackgroundColor);
+        if (gMenuItemDefs[i].unk_14 != 0) {
             LabPC_TabWidget_ToggleFlip(arg0->unk_44[i]);
         }
         ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, arg0->unk_44[i]);
@@ -1030,12 +1030,12 @@ void func_88203ED8(unk_func_88203ED8* arg0, s32 arg1, s32 arg2, unk_func_8820588
     ((func8850CB48)Memmap_GetFragmentVaddr(WidgetTree_SetGridMenuSelection))(arg0->unk_68, 0);
 
     temp_s0 = mem_pool_alloc(arg8, sizeof(WidgetAnimatedFrame));
-    ((func88503340)Memmap_GetFragmentVaddr(WidgetTree_InitAnimatedFrameVariantA))(temp_s0, 0, 0, 0x10, 0x10, D_88217CE4);
+    ((func88503340)Memmap_GetFragmentVaddr(WidgetTree_InitAnimatedFrameVariantA))(temp_s0, 0, 0, 0x10, 0x10, gFlashingElementColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, temp_s0);
     arg0->unk_68->unk_1C = temp_s0;
 
     temp_s0_2 = mem_pool_alloc(arg8, sizeof(unk_func_8850143C));
-    ((func8850143C)Memmap_GetFragmentVaddr(WidgetTree_InitPatternTexture))(temp_s0_2, 0, 0x13E, 0x228, 0x34, D_88217CE8, D_88217CEC);
+    ((func8850143C)Memmap_GetFragmentVaddr(WidgetTree_InitPatternTexture))(temp_s0_2, 0, 0x13E, 0x228, 0x34, gBottomPanelBaseColor, gBottomPanelPatternColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, temp_s0_2);
 
     arg0->unk_58 = mem_pool_alloc(arg8, sizeof(unk_func_88500994));
@@ -1043,31 +1043,31 @@ void func_88203ED8(unk_func_88203ED8* arg0, s32 arg1, s32 arg2, unk_func_8820588
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(temp_s0_2, arg0->unk_58);
 
     for (j = 0; j < 5; j++) {
-        temp_s1_2 = Text_GetString(NULL, 0, D_88224FA4, j + 1);
+        temp_s1_2 = Text_GetString(NULL, 0, gBoxScreenMessageBank, j + 1);
 
         temp_s0_3 = mem_pool_alloc(arg8, sizeof(unk_func_8850878C));
         ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(temp_s0_3, (0x228 - Font_MeasureTextExtent(0, 0, temp_s1_2)) / 2,
                                                                0xE, temp_s1_2, 0x10);
-        temp_s0_3->unk_30 = D_88217CF0[j][0];
+        temp_s0_3->unk_30 = gMenuItemTextColors[j][0];
         temp_s0_3->unk_44 = temp_s0_3->unk_44;
-        temp_s0_3->unk_34 = D_88217CF0[j][1];
+        temp_s0_3->unk_34 = gMenuItemTextColors[j][1];
         temp_s0_3->unk_44 = 1;
         ((func88500A3C)Memmap_GetFragmentVaddr(WidgetTree_AddPage))(arg0->unk_58, temp_s0_3);
     }
 
-    Font_MeasureTextExtent(8, 0, Text_GetString(NULL, 0, D_88224FA4, 0x31));
+    Font_MeasureTextExtent(8, 0, Text_GetString(NULL, 0, gBoxScreenMessageBank, 0x31));
     Font_MeasureTextExtent(8, 0, " 00");
     spB4 = Font_MeasureTextExtent(4, 0, "00");
 
     arg0->unk_38 = mem_pool_alloc(arg8, sizeof(unk_func_88200FA0_030_030));
-    ((func885060BC)Memmap_GetFragmentVaddr(WidgetTree_InitPagedGrid))(arg0->unk_38, 0xA, 0x24, func_88203538, 0xE9, 0x17, 0xC, 1,
+    ((func885060BC)Memmap_GetFragmentVaddr(WidgetTree_InitPagedGrid))(arg0->unk_38, 0xA, 0x24, DrawBoxPanel, 0xE9, 0x17, 0xC, 1,
                                                            arg8);
     ((func88506384)Memmap_GetFragmentVaddr(WidgetTree_BindPagedGridPage))(arg0->unk_38, &arg3[0], arg8);
     arg0->unk_38->unk_44->unk_00.unk_28 |= 0x100;
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, arg0->unk_38);
 
     arg0->unk_3C = mem_pool_alloc(arg8, sizeof(unk_func_88200FA0_030_030));
-    ((func885060BC)Memmap_GetFragmentVaddr(WidgetTree_InitPagedGrid))(arg0->unk_3C, 0x135, 0x24, func_88203538, 0xE9, 0x17, 0xC, 1,
+    ((func885060BC)Memmap_GetFragmentVaddr(WidgetTree_InitPagedGrid))(arg0->unk_3C, 0x135, 0x24, DrawBoxPanel, 0xE9, 0x17, 0xC, 1,
                                                            arg8);
     ((func88506384)Memmap_GetFragmentVaddr(WidgetTree_BindPagedGridPage))(arg0->unk_3C, &arg3[1], arg8);
     arg0->unk_3C->unk_44->unk_00.unk_28 |= 0x100;
@@ -1077,7 +1077,7 @@ void func_88203ED8(unk_func_88203ED8* arg0, s32 arg1, s32 arg2, unk_func_8820588
     LabPC_BuildBoxPairSelector(arg0->unk_6C, arg0->unk_38, arg0->unk_3C, arg0, arg8);
     ((func8850BF80)Memmap_GetFragmentVaddr(WidgetTree_AppendVerticalMenuItem))(arg0->unk_64, arg0->unk_6C);
 
-    arg0->unk_70 = mem_pool_alloc(arg8, sizeof(unk_func_8850CD44));
+    arg0->unk_70 = mem_pool_alloc(arg8, sizeof(ChildWidgetGroup));
     ((func8850CD44)Memmap_GetFragmentVaddr(WidgetTree_InitChildWidgetGroup))(arg0->unk_70, 2, arg8);
     ((func8850CC74)Memmap_GetFragmentVaddr(WidgetTree_AppendChildSelectionProxyItem))(arg0->unk_64, arg0->unk_70);
 
@@ -1093,11 +1093,11 @@ void func_88203ED8(unk_func_88203ED8* arg0, s32 arg1, s32 arg2, unk_func_8820588
         arg0->unk_70->unk_1C[x] = arg0->unk_74[x];
     }
 
-    temp_s0_4 = mem_pool_alloc(arg8, sizeof(unk_func_88503298));
+    temp_s0_4 = mem_pool_alloc(arg8, sizeof(WidgetVisibilityGate));
     ((func88503298)Memmap_GetFragmentVaddr(WidgetTree_InitVisibilityGateBridge))(temp_s0_4, arg0->unk_2C, arg4);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, temp_s0_4);
 
-    arg0->unk_60 = mem_pool_alloc(arg8, sizeof(unk_func_88509F48));
+    arg0->unk_60 = mem_pool_alloc(arg8, sizeof(WidgetTree_MessagePanel));
     ((func88509F48)Memmap_GetFragmentVaddr(WidgetTree_InitMessagePanel))(arg0->unk_60, 0, 0, 0x228, 0x172, arg8, arg6);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_60);
 
@@ -1173,7 +1173,7 @@ void LabPC_BoxMenu_RefreshBoxLabels(unk_func_88203ED8* arg0) {
 void LabPC_BoxMenu_InitFocusNode(unk_func_88203ED8_064* arg0, unk_func_88203ED8* arg1) {
     ((func8850BDF0)Memmap_GetFragmentVaddr(WidgetTree_InitVerticalMenu))(arg0);
 
-    arg0->unk_00.unk_10 = func_882052F4;
+    arg0->unk_00.unk_10 = BoxPCMenuCursor_HandleInput;
     arg0->unk_24 = arg1;
 }
 
@@ -1312,7 +1312,7 @@ s32 LabPC_ConfirmSaveAndExit(unk_func_88203ED8* arg0, Controller* arg1) {
     return sp24;
 }
 
-s32 func_882052F4(unk_func_88203ED8_064* arg0, Controller* arg1) {
+s32 BoxPCMenuCursor_HandleInput(unk_func_88203ED8_064* arg0, Controller* arg1) {
     s32 sp34;
     s32 tmp;
     s32 i;
@@ -1490,8 +1490,8 @@ void LabPC_BoxMenu_ModalLoop(unk_func_88203ED8* arg0, Controller* arg1) {
 
 void LabPC_BuildBoxScreenWidget(unk_func_88205880* arg0, s32 arg1, s32 arg2, FontContext* arg3, MemoryPool* arg4, char** arg5,
                    char** arg6, char** arg7, char** arg8, char** arg9, char** argA, char** argB, char** argC) {
-    static Color_RGBA8 D_88217D04 = { 0x1E, 0x50, 0x50, 0xFF };
-    static Color_RGBA8 D_88217D08 = { 0x00, 0x0A, 0x0A, 0xFF };
+    static Color_RGBA8 gPcBackdropColorLight = { 0x1E, 0x50, 0x50, 0xFF };
+    static Color_RGBA8 gPcBackdropColorDark = { 0x00, 0x0A, 0x0A, 0xFF };
 
     WidgetNode* sp7C;
     WidgetNode* sp78;
@@ -1534,8 +1534,8 @@ void LabPC_BuildBoxScreenWidget(unk_func_88205880* arg0, s32 arg1, s32 arg2, Fon
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, sp7C);
 
     sp5C = mem_pool_alloc(arg4, sizeof(unk_func_88500EE4));
-    ((func88500EE4)Memmap_GetFragmentVaddr(WidgetTree_InitTintedTexture))(sp5C, 0, 0, 0x280, 0x1E0, D_88223E48, D_88217D04,
-                                                           D_88217D08);
+    ((func88500EE4)Memmap_GetFragmentVaddr(WidgetTree_InitTintedTexture))(sp5C, 0, 0, 0x280, 0x1E0, gPcBackdropTile, gPcBackdropColorLight,
+                                                           gPcBackdropColorDark);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(sp7C, sp5C);
 
     sp58 = mem_pool_alloc(arg4, sizeof(unk_func_885088F4));
@@ -1545,11 +1545,11 @@ void LabPC_BuildBoxScreenWidget(unk_func_88205880* arg0, s32 arg1, s32 arg2, Fon
 
     sp54 = mem_pool_alloc(arg4, sizeof(unk_func_88509A2C));
     ((func88509A2C)Memmap_GetFragmentVaddr(WidgetTree_InitSaveSlotLabel))(sp54, 0x38, 0x22, GbSave_GetActivePort(),
-                                                           Text_GetString(NULL, 0, D_88224FA0, 0));
+                                                           Text_GetString(NULL, 0, gMessageBankBoxMenuGbSaveIdLabel, 0));
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(sp58, sp54);
 
     sp50 = mem_pool_alloc(arg4, sizeof(unk_func_88509E34));
-    ((func88509E34)Memmap_GetFragmentVaddr(WidgetTree_InitTextMessage))(sp50, 0, 0, Text_GetString(NULL, 0, D_88224FA4, 0));
+    ((func88509E34)Memmap_GetFragmentVaddr(WidgetTree_InitTextMessage))(sp50, 0, 0, Text_GetString(NULL, 0, gBoxScreenMessageBank, 0));
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(sp58, sp50);
 
     sp78 = mem_pool_alloc(arg4, sizeof(WidgetNode));
@@ -1579,10 +1579,10 @@ void LabPC_BuildBoxScreenWidget(unk_func_88205880* arg0, s32 arg1, s32 arg2, Fon
     sp70(0, &arg0->unk_0098);
 
     arg0->unk_0094 = mem_pool_alloc(arg4, sizeof(unk_func_88201DA0));
-    func_88201DA0(arg0->unk_0094, 0x37, 0x52, sp78, sp70, &arg0->unk_0098, arg4);
+    BoxList_Init(arg0->unk_0094, 0x37, 0x52, sp78, sp70, &arg0->unk_0098, arg4);
 
     arg0->unk_002C = mem_pool_alloc(arg4, sizeof(unk_func_88203ED8));
-    func_88203ED8(arg0->unk_002C, 0x2C, 0x4C, &arg0->unk_A030, sp7C, arg0->unk_0094, arg3, arg5, arg4);
+    BoxPCMenu_Init(arg0->unk_002C, 0x2C, 0x4C, &arg0->unk_A030, sp7C, arg0->unk_0094, arg3, arg5, arg4);
 
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(sp78, arg0->unk_002C);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(sp74, arg0->unk_0094);
@@ -1641,8 +1641,8 @@ void LabPC_ShowBoxes(FontContext* arg0) {
     sp64 = main_pool_alloc(0x1000, 0);
     sp6C = mem_pool_try_init(0x10000, 0);
     Text_InitStringTables();
-    D_88224FA0 = Text_GetStringTable(0x2A);
-    D_88224FA4 = Text_GetStringTable(4);
+    gMessageBankBoxMenuGbSaveIdLabel = Text_GetStringTable(0x2A);
+    gBoxScreenMessageBank = Text_GetStringTable(4);
     sp5C = Text_GetStringTable(7);
     sp58 = Text_GetStringTable(6);
     sp54 = Text_GetStringTable(0x24);

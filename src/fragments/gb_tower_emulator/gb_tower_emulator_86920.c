@@ -24,7 +24,7 @@ typedef struct unk_D_81234650 {
     /* 0x04 */ s32 unk_04;
 } unk_D_81234650;// size = 0x8
 
-typedef struct unk_D_81234690 {
+typedef struct GbApuConfig {
     /* 0x00 */ u8  pad0[2];
     /* 0x02 */ u16 unk_02;
     /* 0x04 */ s16 unk_04;
@@ -33,30 +33,30 @@ typedef struct unk_D_81234690 {
     /* 0x0A */ s16 unk_0A;
     /* 0x0C */ s16 unk_0C;
     /* 0x0E */ u8 pad0E[0x2A];
-} unk_D_81234690; // size = 0x38
+} GbApuConfig; // size = 0x38
 
 // .data
 extern s32 D_812286EC;
 extern s32 D_812286F0;
 
 // .bss
-u64 D_81231450[0x640];
-u64 D_81234650[0x6];
-unk_func_81206FA0 D_81234680;
-unk_D_81234690 D_81234690;
-volatile s32 D_812346C8;
+u64 gAudioArenaBuffer[0x640];
+u64 gAudioWorkBuffer[0x6];
+unk_func_81206FA0 gAudioArena;
+GbApuConfig gAudioConfig;
+volatile s32 gAudioTaskPending;
 s32 D_812346CC;
 s32 D_812346D0;
-s32 D_812346D4;
-f32 D_812346D8;
-s32 D_812346DC;
-s16* D_812346E0[3];
-s16 D_812346EC[3];
-s16 D_812346F2;
+s32 gAudioTaskId;
+f32 gAudioTimer;
+s32 gAudioFramesPerSec;
+s16* gApuSampleBuffers[3];
+s16 gApuInitValues[3];
+s16 gApuInitValuesEnd;
 u32 D_812346F4;
 s32 D_812346F8;
-volatile s32 D_812346FC;
-s32 D_81234700;
+volatile s32 gAudioInitFlag;
+s32 gAudioWorkBufferEnd;
 s32 D_81234704;
 s32 D_81234708;
 s32 D_8123470C;
@@ -103,7 +103,7 @@ void GbApu_InitAllocator(unk_func_81206FA0* arg0, s32 arg1, s32 arg2) {
   arg0->unk_0C = 0;
 }
 
-void func_812070A0(void) {
+void GbAudio_Init(void) {
     u64* var_v0_2;
     s16* var_v1_2;
     s32 var_a0;
@@ -111,12 +111,12 @@ void func_812070A0(void) {
     s16* var_v1_3;
     s32 i;
 
-    D_812346FC = 0;
+    gAudioInitFlag = 0;
     for (i = 0; i < D_812286EC / 8; i++) {
-        D_81231450[i] = 0;
+        gAudioArenaBuffer[i] = 0;
     }
-    var_v0_2 = D_81234650;
-    var_v1 = (u32) ((s32) &D_81234700 - (s32) D_81234650) >> 3;
+    var_v0_2 = gAudioWorkBuffer;
+    var_v1 = (u32) ((s32) &gAudioWorkBufferEnd - (s32) gAudioWorkBuffer) >> 3;
     if ((s32) var_v1 >= 0) {
         do {
             var_v1--;
@@ -124,25 +124,25 @@ void func_812070A0(void) {
             ++var_v0_2;
         } while ((s32) var_v1 >= 0);
     }
-    D_812346D8 = 16.713f;
-    D_812346DC = 0x3C;
+    gAudioTimer = 16.713f;
+    gAudioFramesPerSec = 0x3C;
     do {} while (0);
-    D_81234690.unk_02 = 0xBB80;
-    D_81234690.unk_04 = osAiSetFrequency(D_81234690.unk_02);
-    D_81234690.unk_06 = (s16) (((D_81234690.unk_02 / D_812346DC) + 0xF) & ~0xF);
-    var_v1_2 = (s16*) &D_812346EC;
-    D_81234690.unk_0A = (s16) (D_81234690.unk_06 - 0x10);
-    D_81234690.unk_08 = (s16) (D_81234690.unk_06 + 0x10);
+    gAudioConfig.unk_02 = 0xBB80;
+    gAudioConfig.unk_04 = osAiSetFrequency(gAudioConfig.unk_02);
+    gAudioConfig.unk_06 = (s16) (((gAudioConfig.unk_02 / gAudioFramesPerSec) + 0xF) & ~0xF);
+    var_v1_2 = (s16*) &gApuInitValues;
+    gAudioConfig.unk_0A = (s16) (gAudioConfig.unk_06 - 0x10);
+    gAudioConfig.unk_08 = (s16) (gAudioConfig.unk_06 + 0x10);
     do {
         *var_v1_2 = 0xA0;
         var_v1_2++;
-    } while (var_v1_2 < (s16*) &D_812346F2);
-    D_812346C8 = 0;
-    D_812346D4 = 0;
-    GbApu_InitAllocator(&D_81234680, (s32) D_81231450, D_812286F0);
+    } while (var_v1_2 < (s16*) &gApuInitValuesEnd);
+    gAudioTaskPending = 0;
+    gAudioTaskId = 0;
+    GbApu_InitAllocator(&gAudioArena, (s32) gAudioArenaBuffer, D_812286F0);
     for (i = 0; i < 3; i++) {
-        D_812346E0[i] = (s16*) GbApu_Alloc(&D_81234680, 0xFC0);
-        var_v1_3 = D_812346E0[i];
+        gApuSampleBuffers[i] = (s16*) GbApu_Alloc(&gAudioArena, 0xFC0);
+        var_v1_3 = gApuSampleBuffers[i];
         for (var_a0 = 0; var_a0 != 0xFC0 / 2; var_a0++) {
             *var_v1_3 = 0;
             var_v1_3++;

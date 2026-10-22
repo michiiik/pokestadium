@@ -1,6 +1,6 @@
 #include "drowzee_game.h"
 
-u16 D_864029F0[4][14][8] = {
+u16 gGaugeSegmentLengths[4][14][8] = {
     {
         { 0x0005, 0x0014, 0x0046, 0x0046, 0x0046, 0x000A, 0x0000, 0x0003 },
         { 0x0002, 0x000F, 0x0041, 0x0041, 0x0041, 0x000A, 0x0000, 0x0003 },
@@ -67,7 +67,7 @@ u16 D_864029F0[4][14][8] = {
     },
 };
 
-static u32 D_86402D70[] = {
+static u32 gHealthBarTexture[] = {
     0xD6B5D6B5, 0xD6B5D6B5, 0xD6B5D6B5, 0xD6B5D6B5, 0xD6B5D6B5, 0xD6B5D6B5, 0xD6B5CE73, 0xD6B5D6B5, 0xD6B5D6B5,
     0xD6B5D6B5, 0xCE73D6B5, 0xD6B5D6B5, 0xD6B5D6B5, 0xD6B5D6B5, 0xD6B5D6B5, 0xD6B5D6B5, 0xD6B5D6B5, 0xD6B5D6B5,
     0xD6B5D6B5, 0xD6B5D6B5, 0xD6B5D6B5, 0xCE73D6B5, 0xCE73D6B5, 0xD6B5D6B5, 0xD6B5D6B5, 0xD6B5D6B5, 0xCE73D6B5,
@@ -127,7 +127,7 @@ static u32 D_86402D70[] = {
     0xD6B5D6B5, 0xD6B5D6B5, 0xD6B5D6B5, 0xD6B5D6B5, 0xD6B5D6B5, 0xD6B5D6B5, 0xD6B5D6B5, 0xD6B5D6B5,
 };
 
-static u32 D_86403570[] = {
+static u32 gHealthBarMaskTexture[] = {
     0x00000000, 0x00001111, 0x11110000, 0x00000000, 0x00000000, 0x012579AA, 0xAA975210, 0x00000000, 0x00000001,
     0x48BEEFFF, 0xFFFEEB84, 0x10000000, 0x00000038, 0xCEFFFFFF, 0xFFFFFFEC, 0x83000000, 0x000005AE, 0xFFFFFFFF,
     0xFFFFFFFF, 0xEA500000, 0x00005CFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFC50000, 0x0004BFFF, 0xFFFFFFFF, 0xFFFFFFFF,
@@ -145,7 +145,7 @@ static u32 D_86403570[] = {
     0x20000000, 0x00000000,
 };
 
-static u32 D_86403770[] = {
+static u32 gDamageOverlayTexture[] = {
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00444444,
     0x44444444, 0x44444444, 0x44444300, 0x00EFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFD00, 0x00EFFFFF, 0xFFFFFFFF,
     0xFFFFFFFF, 0xFFFFFD00, 0x00EFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFD00, 0x00FFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
@@ -177,14 +177,14 @@ static u32 D_86403770[] = {
     0x00000000, 0x00000000, 0x00000000, 0x00000000,
 };
 
-static Vtx D_86403B70[] = {
+static Vtx gHealthBarQuadVertices[] = {
     VTX(-16, 32, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(16, 32, 0, 1024, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-16, 0, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(16, 0, 0, 1024, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
 };
 
-Gfx D_86403BB0[] = {
+Gfx gHealthBarQuadDL[] = {
     gsDPPipeSync(),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTextureLUT(G_TT_NONE),
@@ -192,16 +192,16 @@ Gfx D_86403BB0[] = {
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPSetCombineLERP(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL1, 0, 0, 0, COMBINED, 0, 0, 0, COMBINED),
     gsDPSetRenderMode(G_RM_PASS, G_RM_AA_ZB_TEX_EDGE2),
-    gsDPLoadTextureTile(D_86402D70, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 0, 0, 0, 31, 31, 0, G_TX_NOMIRROR | G_TX_WRAP,
+    gsDPLoadTextureTile(gHealthBarTexture, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 0, 0, 0, 31, 31, 0, G_TX_NOMIRROR | G_TX_WRAP,
                         G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
-    gsDPLoadMultiTile_4b(D_86403570, 0x0100, 1, G_IM_FMT_I, 32, 0, 0, 0, 31, 31, 0, G_TX_NOMIRROR | G_TX_WRAP,
+    gsDPLoadMultiTile_4b(gHealthBarMaskTexture, 0x0100, 1, G_IM_FMT_I, 32, 0, 0, 0, 31, 31, 0, G_TX_NOMIRROR | G_TX_WRAP,
                          G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
-    gsSPVertex(D_86403B70, 4, 0),
+    gsSPVertex(gHealthBarQuadVertices, 4, 0),
     gsSP2Triangles(0, 3, 1, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
 
-static Vtx D_86403C70[] = {
+static Vtx gHealthBarShapeVertices[] = {
     VTX(-152, 676, 0, 0, -1146, 0xFF, 0x96, 0x96, 0x40), VTX(-158, 594, 0, 0, -655, 0xFF, 0x96, 0x96, 0x40),
     VTX(12, 583, 0, 1024, -655, 0xFF, 0x96, 0x96, 0x40), VTX(62, 683, 0, 1024, -1146, 0xFF, 0x96, 0x96, 0x40),
     VTX(-181, 553, 0, 0, -163, 0xFF, 0x96, 0x96, 0x53),  VTX(-30, 527, 0, 1024, -163, 0xFF, 0x96, 0x96, 0x53),
@@ -220,7 +220,7 @@ static Vtx D_86403C70[] = {
     VTX(-64, 113, 0, 0, 6225, 0x96, 0xFF, 0x96, 0xC5),   VTX(-21, 102, 0, 1024, 6225, 0x96, 0xFF, 0x96, 0xC5),
 };
 
-static Vtx D_86403E70[] = {
+static Vtx gHealthBarCapVertices[] = {
     VTX(-64, 113, 0, 0, 6225, 0xFF, 0xFF, 0x96, 0xD8),   VTX(-69, 94, 0, 0, 6717, 0xFF, 0xFF, 0x96, 0xD8),
     VTX(-20, 86, 0, 1024, 6717, 0xFF, 0xFF, 0x96, 0xD8), VTX(-21, 102, 0, 1024, 6225, 0xFF, 0xFF, 0x96, 0xD8),
     VTX(-65, 55, 0, 0, 7208, 0xFF, 0xFF, 0x96, 0xEB),    VTX(-22, 53, 0, 1024, 7208, 0xFF, 0xFF, 0x96, 0xEB),
@@ -229,21 +229,21 @@ static Vtx D_86403E70[] = {
     VTX(-2, 0, 0, 0, 8683, 0xFF, 0xFF, 0xFF, 0xFE),      VTX(4, 0, 0, 1024, 8683, 0xFF, 0xFF, 0xFF, 0xFE),
 };
 
-Gfx D_86403F30[] = {
+Gfx gDamageOverlayDL[] = {
     gsDPPipeSync(),
     gsDPSetTextureLUT(G_TT_NONE),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetCombineMode(G_CC_MODULATEIA, G_CC_PASS2),
     gsDPSetRenderMode(G_RM_PASS, G_RM_ZB_CLD_SURF2),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
-    gsDPLoadTextureBlock_4b(D_86403770, G_IM_FMT_I, 32, 64, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5,
+    gsDPLoadTextureBlock_4b(gDamageOverlayTexture, G_IM_FMT_I, 32, 64, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5,
                             6, G_TX_NOLOD, G_TX_NOLOD),
     gsSPEndDisplayList(),
 };
 
-Gfx D_86403FA0[] = {
+Gfx gHealthBarDL[] = {
     gsDPPipeSync(),
-    gsSPVertex(D_86403C70, 32, 0),
+    gsSPVertex(gHealthBarShapeVertices, 32, 0),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSP2Triangles(1, 4, 5, 0, 1, 5, 2, 0),
     gsSP2Triangles(4, 6, 7, 0, 4, 7, 5, 0),
@@ -259,7 +259,7 @@ Gfx D_86403FA0[] = {
     gsSP2Triangles(24, 26, 27, 0, 24, 27, 25, 0),
     gsSP2Triangles(26, 28, 29, 0, 26, 29, 27, 0),
     gsSP2Triangles(28, 30, 31, 0, 28, 31, 29, 0),
-    gsSPVertex(D_86403E70, 12, 0),
+    gsSPVertex(gHealthBarCapVertices, 12, 0),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSP2Triangles(1, 4, 5, 0, 1, 5, 2, 0),
     gsSP2Triangles(4, 6, 7, 0, 4, 7, 5, 0),
@@ -275,16 +275,16 @@ s8 DrowzeeGame_ComputeAITimingBias(u8 arg0, s32 arg1) {
     u16 temp_a1;
 
     for (var_a0 = 0, i = 0; i < 8; i++) {
-        var_a0 += D_864029F0[arg1][arg0][i];
+        var_a0 += gGaugeSegmentLengths[arg1][arg0][i];
     }
 
     temp_a1 = MiniGame_RandomRange(var_a0);
 
     for (var_a1 = 0, i = 0; i < 7; i++) {
-        if ((temp_a1 >= var_a1) && (temp_a1 < (D_864029F0[arg1][arg0][i] + var_a1))) {
+        if ((temp_a1 >= var_a1) && (temp_a1 < (gGaugeSegmentLengths[arg1][arg0][i] + var_a1))) {
             return i - 3;
         }
-        var_a1 += D_864029F0[arg1][arg0][i];
+        var_a1 += gGaugeSegmentLengths[arg1][arg0][i];
     }
 
     return 0x64;

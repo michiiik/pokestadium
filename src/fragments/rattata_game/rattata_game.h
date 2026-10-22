@@ -47,16 +47,16 @@ typedef struct RattataRacer {
     /* 0x1CA */ char pad1CA[6];
 } RattataRacer; // size = 0x1D0
 
-extern u32 D_862082A0[4];
+extern u32 gRacePlayerScreenY[4];
 
 void RattataGame_InitAIDifficulty(RattataRacer* arg0);
 void RattataGame_DrawRankBanners(void);
-void func_862002EC(void);
+void Race_Stub(void);
 void RattataGame_UpdateAIInput(void);
 void RattataGame_PollInput(void);
 void RattataGame_InitCamera(void);
 void RattataGame_UpdateCamera(void);
-void func_86200938(void);
+void RattataGame_Stub(void);
 void RattataGame_DrawTutorialScreen(s32 arg0);
 void RattataGame_DrawFrame(s32 arg0);
 s32 RattataGame_WaitForStart(void);

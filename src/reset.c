@@ -20,7 +20,7 @@ typedef struct UnkStruct4 {
     /* 0x08 */ s32 unk_08;
 } UnkStruct4; // size >= 0xC
 
-UnkStruct800A6D20 D_800A6D20;
+UnkStruct800A6D20 gSoftResetThread;
 extern u32 gSoftResetLineNum;
 extern s32 gSoftResetRed;
 extern s32 gSoftResetGreen;
@@ -74,7 +74,7 @@ void SoftReset_ClearLines640(u16* buf) {
 
 // not enough information to name this function. seems to get some unknown
 // color from dp_intro.c and then only writes a single line to the framebuffer???
-void func_8000559C(void) {
+void SoftReset_UpdateFadeColor(void) {
     if (gSoftResetLineNum <= 15) {
         if (gSoftResetLineNum == 0) {
             u16 color = Display_GetFramebufferClearColor();
@@ -100,16 +100,16 @@ void func_8000559C(void) {
  */
 void SoftReset_Thread(void* unused) {
     __osSetFpcCsr(0x01000C01);
-    Sched_AddClient(&D_800A6D20);
+    Sched_AddClient(&gSoftResetThread);
 
     // thread loop
     while (1) {
-        Sched_WaitClientQueue(&D_800A6D20.thread); // hangs here until gets a soft reset.
-        if (D_800A62E0.unk_A38 == 0) {
+        Sched_WaitClientQueue(&gSoftResetThread.thread); // hangs here until gets a soft reset.
+        if (gRspTaskManager.unk_A38 == 0) {
             continue;
         }
 
-        if (D_800A6D20.gSoftResetLineNum < 0x10U) {
+        if (gSoftResetThread.gSoftResetLineNum < 0x10U) {
             UnkStruct4* temp_v0 = Display_GetWorkerStatus();
             if (temp_v0 != NULL) {
                 if (temp_v0->unk_04 == 320) {
@@ -118,21 +118,21 @@ void SoftReset_Thread(void* unused) {
                     SoftReset_ClearLines640(temp_v0->unk_08);
                 }
             } else if (Display_IsCurrentFramebuffer() != 0) {
-                func_8000559C();
+                SoftReset_UpdateFadeColor();
             } else {
                 SoftReset_ClearLines320(osViGetCurrentFramebuffer());
             }
-            D_800A6D20.gSoftResetLineNum++;
+            gSoftResetThread.gSoftResetLineNum++;
             continue;
         }
 
-        if (D_800A6D20.gSoftResetLineNum != 0x10) {
+        if (gSoftResetThread.gSoftResetLineNum != 0x10) {
             continue;
         }
 
         osViBlack(1U);
         osViSetYScale(1.0f);
-        D_800A6D20.gSoftResetLineNum++;
+        gSoftResetThread.gSoftResetLineNum++;
     }
 }
 
@@ -140,8 +140,8 @@ void SoftReset_Thread(void* unused) {
  * Create the soft reset effect thread.
  */
 void SoftReset_CreateThread(void) {
-    Sched_InitClientQueue(&D_800A6D20.thread, 2, 1);
-    D_800A6D20.gSoftResetLineNum = 0;
-    osCreateThread(&D_800A6D20.thread, THREAD_ID_RESET, SoftReset_Thread, NULL, &gSoftResetLineNum, THREAD_PRI_RESET);
-    osStartThread(&D_800A6D20.thread);
+    Sched_InitClientQueue(&gSoftResetThread.thread, 2, 1);
+    gSoftResetThread.gSoftResetLineNum = 0;
+    osCreateThread(&gSoftResetThread.thread, THREAD_ID_RESET, SoftReset_Thread, NULL, &gSoftResetLineNum, THREAD_PRI_RESET);
+    osStartThread(&gSoftResetThread.thread);
 }

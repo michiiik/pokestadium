@@ -4,33 +4,33 @@
 #include "src/math_util.h"
 #include "include/math.h"
 
-typedef struct unk_D_843951D0_1010 {
+typedef struct WaterHeightNode {
     /* 0x00 */ f32 unk_00;
     /* 0x04 */ f32 unk_04;
     /* 0x08 */ f32 unk_08;
     /* 0x0C */ f32 unk_0C;
     /* 0x10 */ s16 unk_10;
-} unk_D_843951D0_1010; // size = 0x14
+} WaterHeightNode; // size = 0x14
 
-typedef struct unk_D_843951D0 {
+typedef struct WaterHeightMap {
     /* 0x0000 */ s16 unk_0000;
     /* 0x0004 */ f32 unk_0004;
     /* 0x0008 */ s16 unk_0008;
     /* 0x000A */ s16 unk_000A;
     /* 0x000C */ Vtx* unk_000C;
     /* 0x0010 */ char unk0010[0x1000];
-    /* 0x1010 */ unk_D_843951D0_1010 unk_1010[16][16];
-} unk_D_843951D0; // size >= 0x2410
+    /* 0x1010 */ WaterHeightNode unk_1010[16][16];
+} WaterHeightMap; // size >= 0x2410
 
-static RibbonMesh D_843925E0[4];
-static s16 D_843951C0;
-static s16 D_843951C2;
+static RibbonMesh gRibbonEmitters[4];
+static s16 gWaterTexOffsetForward;
+static s16 gWaterTexOffsetReverse;
 static s32 pad_D_843951C8[2];
-static unk_D_843951D0 sWaterHeightMap;
-static s16 D_843975E0;
-static s16 D_843975E2;
-static s16 D_843975E4;
-static unk_D_843975E8 D_843975E8;
+static WaterHeightMap sWaterHeightMap;
+static s16 gWaterSurfaceMainTexOffset;
+static s16 gWaterSurfaceOverlayTexOffset;
+static s16 gWaterEdgeTexOffset;
+static WaterCameraBounds gWaterCameraBounds;
 
 func_D_84390320 gMoveAnimEffectStartFuncs[] = {
     BattleAnim_DefaultStartEffect_Init, BattleAnim_DefaultStartEffect_Init, BattleAnim_DefaultStartEffect_Init, BattleAnim_DefaultStartEffect_Init, BattleAnim_StartEffect4DoubleTextureTrail_Init, BattleAnim_Effect5RibbonMesh_Init, BattleAnim_DefaultStartEffect_Init,
@@ -163,7 +163,7 @@ func_D_84390320 gMoveAnimEffectEndDrawFuncs[] = {
 
 static s32 pad_D_84388E38[2] = { 0, 0 };
 
-static Gfx D_84388E40[] = {
+static Gfx gWaterGfxSetup[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_1CYCLE),
     gsDPSetRenderMode(G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2),
@@ -177,7 +177,7 @@ static Gfx D_84388E40[] = {
 };
 
 void RibbonMesh_Init(void) {
-    RibbonMesh* ptr = &D_843925E0[0];
+    RibbonMesh* ptr = &gRibbonEmitters[0];
     s32 i;
 
     for (i = 0; i < 4; i++) {
@@ -216,7 +216,7 @@ void RibbonMesh_Spawn(f32 arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, s32 arg5
     var_v1 = -1;
 
     for (i = 0; i < 4; i++) {
-        if (D_843925E0[i].unk_000 == 0) {
+        if (gRibbonEmitters[i].unk_000 == 0) {
             var_v1 = i;
             break;
         }
@@ -226,7 +226,7 @@ void RibbonMesh_Spawn(f32 arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, s32 arg5
         return;
     }
 
-    ptr = &D_843925E0[var_v1];
+    ptr = &gRibbonEmitters[var_v1];
 
     ptr->unk_000 = 1;
     ptr->unk_018 = 0;
@@ -242,7 +242,7 @@ void RibbonMesh_Spawn(f32 arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, s32 arg5
             ptr->unk_008 = (arg4 * 0.0) + arg1;
             ptr->unk_01A = 0x3C;
             ptr->unk_020 = 1.5f;
-            RibbonMesh_Configure(&D_843925E0[var_v1], 0xFF, 0xFF, 0xC8, 0x20, 0x20, 0xFF, 0x80, 0x80, 0xFF);
+            RibbonMesh_Configure(&gRibbonEmitters[var_v1], 0xFF, 0xFF, 0xC8, 0x20, 0x20, 0xFF, 0x80, 0x80, 0xFF);
             ptr->unk_01E = AuxiliaryEffect_Alloc();
             break;
 
@@ -251,7 +251,7 @@ void RibbonMesh_Spawn(f32 arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, s32 arg5
             ptr->unk_01A = 0x78;
             ptr->unk_008 = (arg4 * 100.0) + arg1;
             ptr->unk_020 = 1.5f;
-            RibbonMesh_Configure(&D_843925E0[var_v1], 0xFF, 0xFF, 0xC8, 0xFF, 0x20, 0x20, 0x80, 0x80, 0);
+            RibbonMesh_Configure(&gRibbonEmitters[var_v1], 0xFF, 0xFF, 0xC8, 0xFF, 0x20, 0x20, 0x80, 0x80, 0);
             break;
 
         default:
@@ -527,10 +527,10 @@ s32 RibbonMesh_Update(RibbonMesh* arg0) {
 s32 RibbonMesh_UpdatePool(void) {
     s32 i;
     s32 var_s2;
-    RibbonMesh* ptr = &D_843925E0[0];
+    RibbonMesh* ptr = &gRibbonEmitters[0];
 
-    D_843951C0 = (D_843951C0 + 1) & 0x3FFF;
-    D_843951C2 = (D_843951C2 - 1) & 0x3FFF;
+    gWaterTexOffsetForward = (gWaterTexOffsetForward + 1) & 0x3FFF;
+    gWaterTexOffsetReverse = (gWaterTexOffsetReverse - 1) & 0x3FFF;
     var_s2 = -1;
 
     for (i = 0; i < 4; i++, ptr++) {
@@ -568,7 +568,7 @@ Gfx* RibbonMesh_Draw(Gfx* arg0, RibbonMesh* arg1) {
 }
 
 Gfx* RibbonMesh_DrawPool(Gfx* arg0) {
-    static Gfx D_84388E88[] = {
+    static Gfx gWaterGfxParticleBase[] = {
         gsDPPipeSync(),
         gsDPSetCycleType(G_CYC_2CYCLE),
         gsSPClearGeometryMode(G_ZBUFFER | G_SHADE | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN |
@@ -588,7 +588,7 @@ Gfx* RibbonMesh_DrawPool(Gfx* arg0) {
         gsSPEndDisplayList(),
     };
 
-    static Gfx D_84388F00[] = {
+    static Gfx gWaterGfxParticleMod[] = {
         gsDPPipeSync(),
         gsDPSetCycleType(G_CYC_1CYCLE),
         gsSPClearGeometryMode(G_ZBUFFER | G_SHADE | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN |
@@ -610,17 +610,17 @@ Gfx* RibbonMesh_DrawPool(Gfx* arg0) {
         gsSPEndDisplayList(),
     };
 
-    RibbonMesh* ptr = &D_843925E0[0];
+    RibbonMesh* ptr = &gRibbonEmitters[0];
     s32 i;
 
-    gSPDisplayList(arg0++, D_84388E88);
+    gSPDisplayList(arg0++, gWaterGfxParticleBase);
     gDPPipeSync(arg0++);
     gDPLoadTextureTile_4b(arg0++, sBattleAnimAssetPointers[0x43], G_IM_FMT_I, 32, 0, 0, 0, 31, 31, 0, G_TX_NOMIRROR | G_TX_WRAP,
                           G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
-    gDPSetTileSize(arg0++, G_TX_RENDERTILE, D_843951C0, 0, (D_843951C0 + 0x1F), 0x001F);
+    gDPSetTileSize(arg0++, G_TX_RENDERTILE, gWaterTexOffsetForward, 0, (gWaterTexOffsetForward + 0x1F), 0x001F);
     gDPLoadMultiTile_4b(arg0++, sBattleAnimAssetPointers[0x44], 0x0100, 1, G_IM_FMT_I, 32, 0, 0, 0, 31, 31, 0,
                         G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
-    gDPSetTileSize(arg0++, 1, D_843951C2, 0, (D_843951C2 + 0x1F), 0x001F);
+    gDPSetTileSize(arg0++, 1, gWaterTexOffsetReverse, 0, (gWaterTexOffsetReverse + 0x1F), 0x001F);
 
     for (i = 0; i < 4; i++, ptr++) {
         if (ptr->unk_000 == 1) {
@@ -639,7 +639,7 @@ Gfx* RibbonMesh_DrawPool(Gfx* arg0) {
         }
     }
 
-    ptr = &D_843925E0[0];
+    ptr = &gRibbonEmitters[0];
     for (i = 0; i < 4; i++, ptr++) {
         if (ptr->unk_000 == 1) {
             arg0 = AuxiliaryEffect_Draw(ptr->unk_01E, arg0);
@@ -649,7 +649,7 @@ Gfx* RibbonMesh_DrawPool(Gfx* arg0) {
     return arg0;
 }
 
-void TerrainGrid_BuildCameraBounds(unk_D_843975E8* arg0, f32 arg1) {
+void TerrainGrid_BuildCameraBounds(WaterCameraBounds* arg0, f32 arg1) {
     CameraNode* spB4 = BattleAnim_GetCameraContext();
     f32 spB0;
     f32 spAC;
@@ -832,7 +832,7 @@ f32 TerrainGrid_SampleHeightAndSlope(f32 arg0, f32 arg1, f32* arg2) {
 s32 TerrainGrid_UpdateWaves(void) {
     s32 i;
     s32 j;
-    unk_D_843951D0_1010* ptr;
+    WaterHeightNode* ptr;
     f32 var_fv0;
     s32 temp_v0;
     f32 tmp;
@@ -923,7 +923,7 @@ s32 TerrainGrid_UpdateWaves(void) {
 void TerrainGrid_Init(s32 arg0, s16 arg1, s16 arg2) {
     s32 i;
     s32 j;
-    unk_D_843951D0_1010* ptr;
+    WaterHeightNode* ptr;
 
     sWaterHeightMap.unk_000A = arg2;
     sWaterHeightMap.unk_0000 = 0;
@@ -954,16 +954,16 @@ void TerrainGrid_Init(s32 arg0, s16 arg1, s16 arg2) {
         }
     }
 
-    D_843975E0 = 0;
-    D_843975E2 = 8;
-    D_843975E4 = 0;
+    gWaterSurfaceMainTexOffset = 0;
+    gWaterSurfaceOverlayTexOffset = 8;
+    gWaterEdgeTexOffset = 0;
 
     if (arg1 > 0) {
         for (i = 0; i < arg1; i++) {
             TerrainGrid_UpdateWaves();
         }
 
-        TerrainGrid_BuildCameraBounds(&D_843975E8, 50.0f);
+        TerrainGrid_BuildCameraBounds(&gWaterCameraBounds, 50.0f);
     }
 }
 
@@ -971,10 +971,10 @@ s32 TerrainGrid_Update(void) {
     UNUSED s32 pad[2];
     s32 sp1C = TerrainGrid_UpdateWaves();
 
-    D_843975E0 = (D_843975E0 - 1) & 0x3FFF;
-    D_843975E2 = (D_843975E2 - 1) & 0x3FFF;
-    D_843975E4 = (D_843975E4 - 1) & 0x3FFF;
-    TerrainGrid_BuildCameraBounds(&D_843975E8, 50.0f);
+    gWaterSurfaceMainTexOffset = (gWaterSurfaceMainTexOffset - 1) & 0x3FFF;
+    gWaterSurfaceOverlayTexOffset = (gWaterSurfaceOverlayTexOffset - 1) & 0x3FFF;
+    gWaterEdgeTexOffset = (gWaterEdgeTexOffset - 1) & 0x3FFF;
+    TerrainGrid_BuildCameraBounds(&gWaterCameraBounds, 50.0f);
 
     return sp1C;
 }
@@ -982,7 +982,7 @@ s32 TerrainGrid_Update(void) {
 static s32 pad_D_84388F78[2] = { 0, 0 };
 
 Gfx* TerrainGrid_Draw(Gfx* arg0) {
-    static Gfx D_84388F80[] = {
+    static Gfx gWaterGfxSurfaceBase[] = {
         gsDPPipeSync(),
         gsDPSetCycleType(G_CYC_2CYCLE),
         gsSPClearGeometryMode(G_ZBUFFER | G_SHADE | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN |
@@ -1001,7 +1001,7 @@ Gfx* TerrainGrid_Draw(Gfx* arg0) {
                            ENVIRONMENT, COMBINED, 0, SHADE, 0),
         gsSPEndDisplayList(),
     };
-    static Gfx D_84388FF8[] = {
+    static Gfx gWaterGfxSurfaceEdge[] = {
         gsDPPipeSync(),
         gsDPSetCycleType(G_CYC_2CYCLE),
         gsSPClearGeometryMode(G_ZBUFFER | G_SHADE | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN |
@@ -1018,7 +1018,7 @@ Gfx* TerrainGrid_Draw(Gfx* arg0) {
         gsSPEndDisplayList(),
     };
 
-    unk_D_843951D0_1010* var_v1;
+    WaterHeightNode* var_v1;
     Vtx* vtx;
     s32 i;
     s32 j;
@@ -1054,7 +1054,7 @@ Gfx* TerrainGrid_Draw(Gfx* arg0) {
         }
     }
 
-    gSPDisplayList(arg0++, D_84388F80);
+    gSPDisplayList(arg0++, gWaterGfxSurfaceBase);
     gDPPipeSync(arg0++);
 
     if (sWaterHeightMap.unk_0000 < 0xA) {
@@ -1074,11 +1074,11 @@ Gfx* TerrainGrid_Draw(Gfx* arg0) {
 
     gDPLoadTextureTile_4b(arg0++, sBattleAnimAssetPointers[0xB8], G_IM_FMT_I, 32, 0, 0, 0, 31, 31, 0, G_TX_NOMIRROR | G_TX_WRAP,
                           G_TX_NOMIRROR | G_TX_WRAP, 5, 5, 1, 1);
-    gDPSetTileSize(arg0++, G_TX_RENDERTILE, D_843975E0, -D_843975E0, D_843975E0 + 0x1F, 0x1F - D_843975E0);
+    gDPSetTileSize(arg0++, G_TX_RENDERTILE, gWaterSurfaceMainTexOffset, -gWaterSurfaceMainTexOffset, gWaterSurfaceMainTexOffset + 0x1F, 0x1F - gWaterSurfaceMainTexOffset);
 
     gDPLoadMultiTile_4b(arg0++, sBattleAnimAssetPointers[0xB9], 0x0100, 1, G_IM_FMT_I, 32, 0, 0, 0, 31, 31, 0,
                         G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, 1, 1);
-    gDPSetTileSize(arg0++, 1, D_843975E2, D_843975E2, D_843975E2 + 0x1F, D_843975E2 + 0x1F);
+    gDPSetTileSize(arg0++, 1, gWaterSurfaceOverlayTexOffset, gWaterSurfaceOverlayTexOffset, gWaterSurfaceOverlayTexOffset + 0x1F, gWaterSurfaceOverlayTexOffset + 0x1F);
 
     vtx = sWaterHeightMap.unk_000C;
     for (i = 0; i < 15; i++) {
@@ -1093,28 +1093,28 @@ Gfx* TerrainGrid_Draw(Gfx* arg0) {
         }
     }
 
-    sp12C = (D_843975E8.unk_00 - D_843975E8.unk_0C) + D_843975E8.unk_18;
-    sp130 = (D_843975E8.unk_04 - D_843975E8.unk_10) + D_843975E8.unk_1C;
-    sp134 = (D_843975E8.unk_08 - D_843975E8.unk_14) + D_843975E8.unk_20;
+    sp12C = (gWaterCameraBounds.unk_00 - gWaterCameraBounds.unk_0C) + gWaterCameraBounds.unk_18;
+    sp130 = (gWaterCameraBounds.unk_04 - gWaterCameraBounds.unk_10) + gWaterCameraBounds.unk_1C;
+    sp134 = (gWaterCameraBounds.unk_08 - gWaterCameraBounds.unk_14) + gWaterCameraBounds.unk_20;
     sp11C = TerrainGrid_SampleHeightAndSlope(sp12C, sp134, &sp110);
 
-    sp120 = D_843975E8.unk_00 + D_843975E8.unk_0C + D_843975E8.unk_18;
-    sp124 = D_843975E8.unk_04 + D_843975E8.unk_10 + D_843975E8.unk_1C;
-    sp128 = D_843975E8.unk_08 + D_843975E8.unk_14 + D_843975E8.unk_20;
+    sp120 = gWaterCameraBounds.unk_00 + gWaterCameraBounds.unk_0C + gWaterCameraBounds.unk_18;
+    sp124 = gWaterCameraBounds.unk_04 + gWaterCameraBounds.unk_10 + gWaterCameraBounds.unk_1C;
+    sp128 = gWaterCameraBounds.unk_08 + gWaterCameraBounds.unk_14 + gWaterCameraBounds.unk_20;
     temp_fv0 = TerrainGrid_SampleHeightAndSlope(sp120, sp128, &sp110);
 
     if ((sp130 < sp11C) || (sp124 < temp_fv0)) {
         temp_v0 = Gfx_AllocDisplayList(sizeof(Vtx) * 4);
 
-        temp_v0[0].v.ob[0] = (D_843975E8.unk_00 - D_843975E8.unk_0C) - D_843975E8.unk_18;
+        temp_v0[0].v.ob[0] = (gWaterCameraBounds.unk_00 - gWaterCameraBounds.unk_0C) - gWaterCameraBounds.unk_18;
         temp_v0[0].v.ob[1] = sp11C;
-        temp_v0[0].v.ob[2] = (D_843975E8.unk_08 - D_843975E8.unk_14) - D_843975E8.unk_20;
+        temp_v0[0].v.ob[2] = (gWaterCameraBounds.unk_08 - gWaterCameraBounds.unk_14) - gWaterCameraBounds.unk_20;
         temp_v0[0].v.tc[0] = 0;
         temp_v0[0].v.tc[1] = 0;
 
-        temp_v0[1].v.ob[0] = (D_843975E8.unk_00 + D_843975E8.unk_0C) - D_843975E8.unk_18;
+        temp_v0[1].v.ob[0] = (gWaterCameraBounds.unk_00 + gWaterCameraBounds.unk_0C) - gWaterCameraBounds.unk_18;
         temp_v0[1].v.ob[1] = sp11C;
-        temp_v0[1].v.ob[2] = (D_843975E8.unk_08 + D_843975E8.unk_14) - D_843975E8.unk_20;
+        temp_v0[1].v.ob[2] = (gWaterCameraBounds.unk_08 + gWaterCameraBounds.unk_14) - gWaterCameraBounds.unk_20;
         temp_v0[1].v.tc[0] = 0x3E0;
         temp_v0[1].v.tc[1] = 0;
 
@@ -1130,13 +1130,13 @@ Gfx* TerrainGrid_Draw(Gfx* arg0) {
         temp_v0[3].v.tc[0] = 0x3E0;
         temp_v0[3].v.tc[1] = 0x3E0;
 
-        gSPDisplayList(arg0++, D_84388FF8);
+        gSPDisplayList(arg0++, gWaterGfxSurfaceEdge);
         gDPLoadTextureTile_4b(arg0++, sBattleAnimAssetPointers[0xBA], G_IM_FMT_I, 32, 0, 0, 0, 31, 31, 0, G_TX_NOMIRROR | G_TX_WRAP,
                               G_TX_NOMIRROR | G_TX_WRAP, 5, 5, 15, G_TX_NOLOD);
-        gDPSetTileSize(arg0++, G_TX_RENDERTILE, D_843975E4, 0, D_843975E4 + 0x1F, 0x001F);
+        gDPSetTileSize(arg0++, G_TX_RENDERTILE, gWaterEdgeTexOffset, 0, gWaterEdgeTexOffset + 0x1F, 0x001F);
         gDPLoadMultiTile_4b(arg0++, sBattleAnimAssetPointers[0xBA], 0x0100, 1, G_IM_FMT_I, 32, 0, 0, 0, 31, 31, 0,
                             G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, 14, G_TX_NOLOD);
-        gDPSetTileSize(arg0++, 1, -D_843975E4, 0, 0x1F - D_843975E4, 0x001F);
+        gDPSetTileSize(arg0++, 1, -gWaterEdgeTexOffset, 0, 0x1F - gWaterEdgeTexOffset, 0x001F);
         gSPVertex(arg0++, temp_v0, 4, 0);
         gSP2Triangles(arg0++, 0, 2, 1, 0, 2, 3, 1, 0);
     }

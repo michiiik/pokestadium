@@ -16,31 +16,31 @@
 #include "src/memory.h"
 #include "src/stage_loader.h"
 
-static u32 D_86B0E250[] = {
+static u32 gStageGeoLayoutCommands[] = {
     0x0C00FFFF, 0x05000000, 0x0B00001E,  0x00000000, 0x014000F0, 0x00000032, 0x00000000, 0x00000118,
     0x05000000, 0x0D000000, 0x05000000,  0x14000000, 0x002B0012, 0xFFFFFF32, 0x16FFFFFF, 0x0F000003,
-    0x05000000, 0x0A000000, &D_800AC840, 0x06000000, 0x06000000, 0x06000000, 0x06000000, 0x01000000,
+    0x05000000, 0x0A000000, &gGraphRoot0, 0x06000000, 0x06000000, 0x06000000, 0x06000000, 0x01000000,
 };
 
-static unk_D_86002F30* D_86B106B0;
-static GraphNode* D_86B106B4;
-static DisplayObject D_86B106B8;
-static CameraNode* D_86B10820;
-static BinArchive* D_86B10824;
-static u8* D_86B10828;
-static u8 D_86B1082C;
-static ModeSettings D_86B10830;
+static ModelData* gStageGeoLayout;
+static GraphNode* gStageRootGraphNode;
+static DisplayObject gStageRootFragmentNode;
+static CameraNode* gStageCamera;
+static BinArchive* gMewtwoIntroBgArchive;
+static u8* gBackgroundTextureData;
+static u8 gStageFadeAlpha;
+static ModeSettings gSessionModeSettings;
 
 void MewtwoIntro_DrawOverlay(void) {
 }
 
 void MewtwoIntro_InitCamera(void) {
-    D_86B10820 = D_86B106B4->children;
-    Vec3f_SetComponentsDuplicate(&D_86B10820->view.targetPosition, 0.0f, 0.0f, 0.0f);
-    Vec3f_SetComponentsDuplicate(&D_86B10820->view.eyePosition, 0.0f, 0.0f, 200.0f);
-    D_86B10820->perspective.nearPlane = 16.0f;
-    D_86B10820->perspective.farPlane = 32768.0f;
-    D_86B10820->perspective.verticalFieldOfView = 45.0f;
+    gStageCamera = gStageRootGraphNode->children;
+    Vec3f_SetComponentsDuplicate(&gStageCamera->view.targetPosition, 0.0f, 0.0f, 0.0f);
+    Vec3f_SetComponentsDuplicate(&gStageCamera->view.eyePosition, 0.0f, 0.0f, 200.0f);
+    gStageCamera->perspective.nearPlane = 16.0f;
+    gStageCamera->perspective.farPlane = 32768.0f;
+    gStageCamera->perspective.verticalFieldOfView = 45.0f;
 }
 
 void MewtwoIntro_ReadControllerInput(void) {
@@ -75,10 +75,10 @@ void MewtwoIntro_DrawBackgroundTiles(u8* arg0) {
 
 void MewtwoIntro_RenderFrame(void) {
     BgStage_DrawFrame();
-    MewtwoIntro_DrawBackgroundTiles(D_86B10828);
+    MewtwoIntro_DrawBackgroundTiles(gBackgroundTextureData);
     GfxImage_ClearDepthRectangle(&gDisplayListHead, 0, 0, 0x140, 0xF0);
     GeoRender_AdvanceFrameCounter();
-    Geo_RenderRootNode(D_86B106B4);
+    Geo_RenderRootNode(gStageRootGraphNode);
     MewtwoIntro_DrawOverlay();
     BgStage_AdvanceFrame();
 }
@@ -86,16 +86,16 @@ void MewtwoIntro_RenderFrame(void) {
 s32 MewtwoIntro_UpdateFade(void) {
     s32 var_v0;
 
-    if ((D_86B106B8.transformAnim.frameFixed >> 0x10) >= 0x5F) {
-        Model_SetMaterialColor(&D_86B106B8, 0, 0, 0, D_86B1082C += 0x14);
+    if ((gStageRootFragmentNode.transformAnim.frameFixed >> 0x10) >= 0x5F) {
+        Model_SetMaterialColor(&gStageRootFragmentNode, 0, 0, 0, gStageFadeAlpha += 0x14);
     }
 
-    if ((D_86B106B8.transformAnim.frameFixed >> 0x10) == 0x64) {
+    if ((gStageRootFragmentNode.transformAnim.frameFixed >> 0x10) == 0x64) {
         StageContext_SetClearColor(1);
         StageFade_StartFromTransparent(3);
     }
 
-    var_v0 = ModelAnim_IsAnimationDone(&D_86B106B8) != 0;
+    var_v0 = ModelAnim_IsAnimationDone(&gStageRootFragmentNode) != 0;
     if (var_v0) {
         return 1;
     }
@@ -121,19 +121,19 @@ void MewtwoIntro_RunLoop(void) {
 void MewtwoIntro_InitScene(void) {
     MemoryBlock* sp1C = MainPool_AllocState(main_pool_get_available(), 0);
 
-    D_86B106B4 = process_geo_layout(sp1C, &D_86B0E250);
+    gStageRootGraphNode = process_geo_layout(sp1C, &gStageGeoLayoutCommands);
 
     MainPool_FinalizeAllocation(sp1C);
     ModelRenderer_InitDisplayRoots();
     MewtwoIntro_InitCamera();
-    ModelRenderer_AttachDisplayObject(&D_86B106B8);
+    ModelRenderer_AttachDisplayObject(&gStageRootFragmentNode);
     PokeIcon_OpenModelArchives();
 
-    D_86B106B0 = Model_LoadByArchiveIndex(0xD6);
-    Model_InitDisplayObject(&D_86B106B8, 0, 0xD6, D_86B106B0->unk_08->unk_00[0]);
-    ModelAnim_SetAnimation(&D_86B106B8, 1);
-    Vec3f_SetComponentsDuplicate(&D_86B106B8.position, 0.0f, 0.0f, 0.0f);
-    D_86B1082C = 0;
+    gStageGeoLayout = Model_LoadByArchiveIndex(0xD6);
+    Model_InitDisplayObject(&gStageRootFragmentNode, 0, 0xD6, gStageGeoLayout->unk_08->unk_00[0]);
+    ModelAnim_SetAnimation(&gStageRootFragmentNode, 1);
+    Vec3f_SetComponentsDuplicate(&gStageRootFragmentNode.position, 0.0f, 0.0f, 0.0f);
+    gStageFadeAlpha = 0;
 }
 
 s32 Stage_ShowMewtwoIntro(void) {
@@ -149,17 +149,17 @@ s32 Stage_ShowMewtwoIntro(void) {
     FRAGMENT_LOAD(FRAGMENT_PARTICLE_DATA_LIBRARY);
 
     Save_EnsureBankLoaded(2);
-    Save_GetModeSettings(&D_86B10830, gSessionContext.inRound2);
+    Save_GetModeSettings(&gSessionModeSettings, gSessionContext.inRound2);
 
     if (gSessionContext.inRound2 == 1) {
-        D_86B10824 = ASSET_LOAD2(backgrounds, 1, 1);
-        D_86B10828 = BinArchive_GetFile(D_86B10824, 2);
-    } else if (D_86B10830.clearedModes & 0x100) {
-        D_86B10824 = ASSET_LOAD2(backgrounds, 1, 1);
-        D_86B10828 = BinArchive_GetFile(D_86B10824, 1);
+        gMewtwoIntroBgArchive = ASSET_LOAD2(backgrounds, 1, 1);
+        gBackgroundTextureData = BinArchive_GetFile(gMewtwoIntroBgArchive, 2);
+    } else if (gSessionModeSettings.clearedModes & 0x100) {
+        gMewtwoIntroBgArchive = ASSET_LOAD2(backgrounds, 1, 1);
+        gBackgroundTextureData = BinArchive_GetFile(gMewtwoIntroBgArchive, 1);
     } else {
-        D_86B10824 = ASSET_LOAD2(backgrounds, 1, 1);
-        D_86B10828 = BinArchive_GetFile(D_86B10824, 2);
+        gMewtwoIntroBgArchive = ASSET_LOAD2(backgrounds, 1, 1);
+        gBackgroundTextureData = BinArchive_GetFile(gMewtwoIntroBgArchive, 2);
     }
 
     MewtwoIntro_InitScene();

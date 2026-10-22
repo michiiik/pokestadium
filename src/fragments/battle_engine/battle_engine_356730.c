@@ -4,7 +4,7 @@
 
 static DoubleTextureTrail D_843C2C00[4];
 
-static Gfx D_84389C70[] = {
+static Gfx gWaterParticleDisplayList[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_2CYCLE),
     gsSPClearGeometryMode(G_ZBUFFER | G_SHADE | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN |
@@ -26,7 +26,7 @@ void DoubleTextureTrail_InitPool(void) {
     s32 i;
     s32 j;
     DoubleTextureTrail* var_v0 = &D_843C2C00[0];
-    unk_D_843C2C00_0B0* var_a0;
+    DoubleTextureTrailVertex* var_a0;
 
     for (i = 0; i < 4; i++, var_v0++) {
         var_v0->unk_000 = 0;
@@ -51,11 +51,11 @@ void DoubleTextureTrail_InitPool(void) {
 
 void DoubleTextureTrail_Spawn(f32 arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7, f32 arg8, f32 arg9,
                    f32 argA, s16 argB, s32 argC, s32 argD, s16 argE, s16 argF, s16 arg10, s16 arg11, s16 arg12,
-                   s16 arg13, s16 arg14, s16 arg15, unk_D_843C2C00_024* arg16, unk_D_843C2C00_024* arg17, u8 arg18,
+                   s16 arg13, s16 arg14, s16 arg15, CombineParams* arg16, CombineParams* arg17, u8 arg18,
                    u8 arg19, u8 arg1A, u8 arg1B, u8 arg1C, u8 arg1D, u8 arg1E, u8 arg1F, u8 arg20, u8 arg21, u8 arg22,
                    u8 arg23, u8 arg24) {
     DoubleTextureTrail* var_v0;
-    unk_D_843C2C00_0B0* var_a0;
+    DoubleTextureTrailVertex* var_a0;
     s32 i;
     s32 j;
     Vec3f sp3C;
@@ -147,7 +147,7 @@ void DoubleTextureTrail_RotateVertexOffset(f32 arg0, Vec3f* arg1, f32 arg2) {
 }
 
 void DoubleTextureTrail_Update(DoubleTextureTrail* arg0) {
-    unk_D_843C2C00_0B0* var_v0;
+    DoubleTextureTrailVertex* var_v0;
     UNUSED s32 pad;
     s32 i;
     Vec3f sp58;
@@ -241,8 +241,8 @@ Gfx* WaterParticle_DrawPass(Gfx* arg0, DoubleTextureTrail* arg1, s16 arg2, s16 a
     s32 j;
     Vtx* sp44;
     UNUSED s32 k;
-    unk_D_84389CE0* temp_v0;
-    unk_D_84389CE0* temp_v1;
+    ColorBlendInfo* temp_v0;
+    ColorBlendInfo* temp_v1;
     u8 a1;
     u8 a2;
     s16 tmp;
@@ -292,7 +292,7 @@ Gfx* WaterParticle_DrawPass(Gfx* arg0, DoubleTextureTrail* arg1, s16 arg2, s16 a
 }
 
 Gfx* DoubleTextureTrail_LoadTextures(Gfx* arg0, DoubleTextureTrail* arg1) {
-    unk_D_843C2C00_064* ptr;
+    TextureTileInfo* ptr;
 
     ptr = &arg1->unk_064;
     gDPLoadTextureTile_4b(arg0++, sBattleAnimAssetPointers[arg1->unk_01C], G_IM_FMT_I, 32, 0, 0, 0, 31, 31, 0,
@@ -312,7 +312,7 @@ Gfx* DoubleTextureTrail_DrawAll(Gfx* arg0) {
     s32 j;
     s32 k;
     DoubleTextureTrail* var_fp;
-    unk_D_843C2C00_0B0* var_s2;
+    DoubleTextureTrailVertex* var_s2;
     Vec3f sp100;
     Vec3f spF4;
     Vec3f spE8;
@@ -367,7 +367,7 @@ Gfx* DoubleTextureTrail_DrawAll(Gfx* arg0) {
                                      var_fp->unk_086.b, var_fp->unk_086.a * var_fp->unk_08C);
             }
 
-            gSPDisplayList(arg0++, D_84389C70);
+            gSPDisplayList(arg0++, gWaterParticleDisplayList);
 
             Gfx_SetCombineMode(
                 arg0++, var_fp->unk_024.unk_00, var_fp->unk_024.unk_04, var_fp->unk_024.unk_08, var_fp->unk_024.unk_0C,

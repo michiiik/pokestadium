@@ -22,7 +22,7 @@ void BattleAnim_RenderEffectsFrame(CameraNode* arg0) {
     gParticleMatrixPoolIndex = 0;
     gBattleAnimFrameCounter += 1;
 
-    gSPDisplayList(gDisplayListHead++, D_8140DB30);
+    gSPDisplayList(gDisplayListHead++, gDL_Begin3D);
 
     ParticleGfx_SetPrimColor(gPrimColorR, gPrimColorG, gPrimColorB, gPrimColorA);
     ParticleGfx_SetFogColor(gFogColorR, gFogColorG, gFogColorB, gFogColorA);
@@ -39,5 +39,5 @@ void BattleAnim_RenderEffectsFrame(CameraNode* arg0) {
     ParticleGfx_PipeSync();
     Particle_RenderOrthoParticles(arg0);
 
-    gSPDisplayList(gDisplayListHead++, D_8140DAE0);
+    gSPDisplayList(gDisplayListHead++, gDL_End3D);
 }

@@ -7,14 +7,14 @@
 // gb_tower.c
 // dont forget to pass -signed when compiling
 
-OSPfs D_800A8100[4];
-u8 D_800A82A0[4];
-u8 D_800A82A4;
-u8 D_800A82A5;
-u8 D_800A82A6;
-u8 D_800A82A7;
-s32 D_800A82A8;
-u8 D_800A82AC[4];
+OSPfs gGbPakPfs[4];
+u8 gGbPakReady[4];
+u8 gGbPakPresentMask;
+u8 gGbPakValidMask;
+u8 gGbPakPlugMask;
+u8 gGbPakReadMask;
+s32 gGbPakReadErrorFlag;
+u8 gGbPakReadErrorCount[4];
 
 // these first 4 funcs might be part of a hal_libc file or something instead of GB Tower.
 
@@ -30,7 +30,7 @@ s32 GbPak_VerifyPattern(s32 arg0, void* arg1) {
     UNUSED u8 padding[8];
 
     if ((GbPak_MbcWrite(arg0, arg1, 0, 0x20) == 0) && (GbPak_MbcRead(arg0, (uintptr_t)&sp24, 0, 0x20) == 0) &&
-        (bcmp(&sp24, arg1, 0x20) == 0) && (osGbpakGetStatus(&D_800A8100[arg0], &sp47) == 0)) {
+        (bcmp(&sp24, arg1, 0x20) == 0) && (osGbpakGetStatus(&gGbPakPfs[arg0], &sp47) == 0)) {
         sp20 = ((sp47 & 4) != 0) == 0;
     }
     return sp20;
@@ -63,21 +63,21 @@ s32 GbTower_ProbePak(s32 arg0, u8* arg1, u8* arg2) {
     s32 sp28 = 0;
 
     if (arg1 != NULL) {
-        *arg1 = D_800A82A0[arg0];
+        *arg1 = gGbPakReady[arg0];
     }
 
-    if (D_800A82A0[arg0] == 1) {
+    if (gGbPakReady[arg0] == 1) {
         return 1;
     }
 
-    if (osGbpakReadId(&D_800A8100[arg0], &gbpakId, &status) != 0) {
+    if (osGbpakReadId(&gGbPakPfs[arg0], &gbpakId, &status) != 0) {
         Game_ShutdownAndLoadFragment(arg0, 1);
     }
-    if ((status & OS_GBPAK_RSTB_STATUS) && (osGbpakCheckConnector(&D_800A8100[arg0], &status) == 0)) {
-        osGbmbcRamEnable(&D_800A8100[arg0]);
+    if ((status & OS_GBPAK_RSTB_STATUS) && (osGbpakCheckConnector(&gGbPakPfs[arg0], &status) == 0)) {
+        osGbmbcRamEnable(&gGbPakPfs[arg0]);
         sp28 = GbPak_DetectRam(arg0, arg2);
     }
-    D_800A82A0[arg0] = 1;
+    gGbPakReady[arg0] = 1;
     return sp28;
 }
 
@@ -85,14 +85,14 @@ s32 GbTower_CheckPakRemoved(s32 arg0, u8 arg1) {
     u8 status;
     s32 temp_v1;
 
-    if (osGbpakGetStatus(&D_800A8100[arg0], &status) != 0) {
+    if (osGbpakGetStatus(&gGbPakPfs[arg0], &status) != 0) {
         Game_ShutdownAndLoadFragment(arg0, 1);
     }
 
     temp_v1 = !((status & OS_GBPAK_RSTB_DETECTION) != 0);
     if (arg1 == 0) {
-        osGbpakPower(&D_800A8100[arg0], 0);
-        D_800A82A0[arg0] = 0;
+        osGbpakPower(&gGbPakPfs[arg0], 0);
+        gGbPakReady[arg0] = 0;
     }
     return temp_v1;
 }
@@ -101,9 +101,9 @@ void GbTower_PowerOffAllPaks(void) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
-        if (D_800A82A4 & (1 << i)) {
-            osGbpakPower(&D_800A8100[i], 0);
-            D_800A82A0[i] = 0;
+        if (gGbPakPresentMask & (1 << i)) {
+            osGbpakPower(&gGbPakPfs[i], 0);
+            gGbPakReady[i] = 0;
         }
     }
 }
@@ -147,22 +147,22 @@ s32 GbTower_ScanPaks(void) {
     u8 status;
     OSGbpakId sp4C;
 
-    D_800A82A5 = 0;
-    D_800A82A4 = 0;
-    D_800A82A7 = 0;
-    D_800A82A8 = 0;
-    osPfsIsPlug(&gSIEventMesgQueue, &D_800A82A6);
+    gGbPakValidMask = 0;
+    gGbPakPresentMask = 0;
+    gGbPakReadMask = 0;
+    gGbPakReadErrorFlag = 0;
+    osPfsIsPlug(&gSIEventMesgQueue, &gGbPakPlugMask);
 
     for (i = 0; i < 4; i++) {
 #if defined(VERSION_JP)
         // Port 3 is probed like the others; there is no Controller_CheckAccessoryEeprom gate.
-        if (D_800A82A6 & (1 << i)) {
+        if (gGbPakPlugMask & (1 << i)) {
 #else
-        if ((D_800A82A6 & (1 << i)) && ((i != 3) || (Controller_CheckAccessoryEeprom() == 0))) {
+        if ((gGbPakPlugMask & (1 << i)) && ((i != 3) || (Controller_CheckAccessoryEeprom() == 0))) {
 #endif
-            if (osGbpakInit(&gSIEventMesgQueue, &D_800A8100[i], i) == 0) {
-                D_800A82A4 |= (1 << i);
-                temp_v0 = osGbpakReadId(&D_800A8100[i], &sp4C, &status);
+            if (osGbpakInit(&gSIEventMesgQueue, &gGbPakPfs[i], i) == 0) {
+                gGbPakPresentMask |= (1 << i);
+                temp_v0 = osGbpakReadId(&gGbPakPfs[i], &sp4C, &status);
                 if (temp_v0 == 0) {
                     if (!(status & 8)) {
                         Game_ShutdownAndLoadFragment(i, 2);
@@ -173,19 +173,19 @@ s32 GbTower_ScanPaks(void) {
                             // what. the redundant temp_v0 functionless check is apparently needed to match.
                         }
 #endif
-                        if (osGbpakCheckConnector(&D_800A8100[i], &status) == 0) {
-                            osGbmbcRamEnable(&D_800A8100[i]);
-                            D_800A82A0[i] = 1;
-                            D_800A82A5 |= (1 << i);
+                        if (osGbpakCheckConnector(&gGbPakPfs[i], &status) == 0) {
+                            osGbmbcRamEnable(&gGbPakPfs[i]);
+                            gGbPakReady[i] = 1;
+                            gGbPakValidMask |= (1 << i);
                         } else {
                             Game_ShutdownAndLoadFragment(i, 2);
                         }
                     } else {
-                        D_800A82A5 |= (1 << i);
-                        D_800A82A0[i] = 1;
+                        gGbPakValidMask |= (1 << i);
+                        gGbPakReady[i] = 1;
                     }
                 } else {
-                    D_800A82A0[i] = 0;
+                    gGbPakReady[i] = 0;
                     if (temp_v0 == 4) {
                         Game_ShutdownAndLoadFragment(i, 2);
                     }
@@ -193,12 +193,12 @@ s32 GbTower_ScanPaks(void) {
             }
         }
     }
-    return (D_800A82A5 << 0x10) | D_800A82A4;
+    return (gGbPakValidMask << 0x10) | gGbPakPresentMask;
 }
 
 s32 GbPak_IsCartOff(s32 arg0) {
     u8 status;
-    s32 ret = osGbpakGetStatus(&D_800A8100[arg0], &status);
+    s32 ret = osGbpakGetStatus(&gGbPakPfs[arg0], &status);
     UNUSED u8 filler;
 
     // check the error code returned (if applicable) by the osGbpakGetStatus
@@ -211,7 +211,7 @@ s32 GbPak_IsCartOff(s32 arg0) {
 
 s32 GbPak_IsCartOn(s32 arg0) {
     u8 status;
-    s32 ret = osGbpakGetStatus(&D_800A8100[arg0], &status);
+    s32 ret = osGbpakGetStatus(&gGbPakPfs[arg0], &status);
 
     if ((ret == PFS_ERR_NOPACK) || (ret == PFS_ERR_DEVICE) || (ret == PFS_ERR_CONTRFAIL)) {
         Game_ShutdownAndLoadFragment(arg0, 1);
@@ -224,16 +224,16 @@ s32 GbTower_ReinitPak(s32 arg0) {
     u8 status;
     OSGbpakId sp28;
 
-    D_800A82A0[arg0] = 0;
-    if ((osGbpakInit(&gSIEventMesgQueue, &D_800A8100[arg0], arg0) == 0) &&
-        (osGbpakReadId(&D_800A8100[arg0], &sp28, &status) == 0) && (status & OS_GBPAK_RSTB_STATUS) &&
-        (osGbpakCheckConnector(&D_800A8100[arg0], &status) == 0)) {
+    gGbPakReady[arg0] = 0;
+    if ((osGbpakInit(&gSIEventMesgQueue, &gGbPakPfs[arg0], arg0) == 0) &&
+        (osGbpakReadId(&gGbPakPfs[arg0], &sp28, &status) == 0) && (status & OS_GBPAK_RSTB_STATUS) &&
+        (osGbpakCheckConnector(&gGbPakPfs[arg0], &status) == 0)) {
 
-        osGbmbcRamEnable(&D_800A8100[arg0]);
-        D_800A82A0[arg0] = 1;
+        osGbmbcRamEnable(&gGbPakPfs[arg0]);
+        gGbPakReady[arg0] = 1;
     }
 
-    return D_800A82A0[arg0] == 1;
+    return gGbPakReady[arg0] == 1;
 }
 
 s32 GbTower_VerifyPakStillInserted(s32 arg0, void* arg1) {
@@ -243,7 +243,7 @@ s32 GbTower_VerifyPakStillInserted(s32 arg0, void* arg1) {
 
     sp18 = 0;
     if ((GbPak_MbcRead(arg0, (uintptr_t)&sp1C, 0, 0x20) == 0) && (bcmp(&sp1C, arg1, 0x20) == 0) &&
-        (osGbpakGetStatus(&D_800A8100[arg0], &status) == 0) && !(status & OS_GBPAK_RSTB_DETECTION)) {
+        (osGbpakGetStatus(&gGbPakPfs[arg0], &status) == 0) && !(status & OS_GBPAK_RSTB_DETECTION)) {
         sp18 = 1;
     }
     return sp18;
@@ -253,8 +253,8 @@ s32 GbPak_MbcRead(s32 arg0, void* arg1, u16 arg2, u16 arg3) {
     s32 var_v1;
 
     var_v1 = 1;
-    if (D_800A82A5 & (1 << arg0)) {
-        var_v1 = osGbmbcReadWrite(&D_800A8100[arg0], 0, arg2, arg1, arg3);
+    if (gGbPakValidMask & (1 << arg0)) {
+        var_v1 = osGbmbcReadWrite(&gGbPakPfs[arg0], 0, arg2, arg1, arg3);
     }
     return var_v1;
 }
@@ -263,8 +263,8 @@ s32 GbPak_MbcWrite(s32 arg0, void* arg1, u16 arg2, u16 arg3) {
     s32 var_v1;
 
     var_v1 = 1;
-    if (D_800A82A5 & (1 << arg0)) {
-        var_v1 = osGbmbcReadWrite(&D_800A8100[arg0], 1, arg2, (uintptr_t)arg1, arg3);
+    if (gGbPakValidMask & (1 << arg0)) {
+        var_v1 = osGbmbcReadWrite(&gGbPakPfs[arg0], 1, arg2, (uintptr_t)arg1, arg3);
     }
     return var_v1;
 }
@@ -273,8 +273,8 @@ s32 GbPak_RawRead(s32 arg0, u8* arg1, u16 arg2, u16 arg3) {
     s32 var_v1;
 
     var_v1 = 1;
-    if (D_800A82A5 & (1 << arg0)) {
-        var_v1 = osGbpakReadWrite(&D_800A8100[arg0], 0, arg2, arg1, arg3);
+    if (gGbPakValidMask & (1 << arg0)) {
+        var_v1 = osGbpakReadWrite(&gGbPakPfs[arg0], 0, arg2, arg1, arg3);
     }
     return var_v1;
 }
@@ -283,8 +283,8 @@ s32 GbPak_RawWrite(s32 arg0, u8* arg1, u16 arg2, u16 arg3) {
     s32 var_v1;
 
     var_v1 = 1;
-    if (D_800A82A5 & (1 << arg0)) {
-        var_v1 = osGbpakReadWrite(&D_800A8100[arg0], 1, arg2, arg1, arg3);
+    if (gGbPakValidMask & (1 << arg0)) {
+        var_v1 = osGbpakReadWrite(&gGbPakPfs[arg0], 1, arg2, arg1, arg3);
     }
     return var_v1;
 }
@@ -361,29 +361,29 @@ s32 GbPak_ReadRom(s32 arg0, u8* arg1, s32 arg2, s32 arg3) {
 }
 
 u8 GbTower_SetPollMask(u8 arg0) {
-    u8 temp_v0 = D_800A82A7;
+    u8 temp_v0 = gGbPakReadMask;
 
-    D_800A82A7 = arg0;
+    gGbPakReadMask = arg0;
     return temp_v0;
 }
 
 #if defined(VERSION_JP)
 // Polls one Game Boy pak per call, rotating through ports 0-3. The first
 // osGbpakGetStatus failure on a port enabled by GbTower_SetPollMask latches
-// D_800A82A8 and calls Game_ShutdownAndLoadFragment(port, 1); the per-port
-// failure counter D_800A82AC is not used.
+// gGbPakReadErrorFlag and calls Game_ShutdownAndLoadFragment(port, 1); the per-port
+// failure counter gGbPakReadErrorCount is not used.
 void GbTower_PollPakConnection(void) {
     u8 sp1F;
-    static s32 D_800697D0 = 0; // .data
+    static s32 gGbPakPollIndex = 0; // .data
 
-    if (D_800A82A8 == 0) {
-        if (D_800A82A7 & (1 << D_800697D0)) {
-            if (osGbpakGetStatus(&D_800A8100[D_800697D0], &sp1F) != 0) {
-                D_800A82A8 = 1;
-                Game_ShutdownAndLoadFragment(D_800697D0, 1);
+    if (gGbPakReadErrorFlag == 0) {
+        if (gGbPakReadMask & (1 << gGbPakPollIndex)) {
+            if (osGbpakGetStatus(&gGbPakPfs[gGbPakPollIndex], &sp1F) != 0) {
+                gGbPakReadErrorFlag = 1;
+                Game_ShutdownAndLoadFragment(gGbPakPollIndex, 1);
             }
         }
-        D_800697D0 = (D_800697D0 + 1) & 3;
+        gGbPakPollIndex = (gGbPakPollIndex + 1) & 3;
     }
 }
 
@@ -394,9 +394,9 @@ void func_8000B340_jp(void) {
     u8 status;
 
     for (i = 0; i < 4; i++) {
-        if (D_800A82A7 & (1 << i)) {
-            if (osGbpakGetStatus(&D_800A8100[i], &status) != 0) {
-                D_800A82A8 = 1;
+        if (gGbPakReadMask & (1 << i)) {
+            if (osGbpakGetStatus(&gGbPakPfs[i], &status) != 0) {
+                gGbPakReadErrorFlag = 1;
                 Game_ShutdownAndLoadFragment(i, 1);
             }
         }
@@ -405,21 +405,21 @@ void func_8000B340_jp(void) {
 #else
 void GbTower_PollPakConnection(void) {
     u8 sp1F;
-    static s32 D_800697D0 = 0; // .data
+    static s32 gGbPakPollIndex = 0; // .data
 
-    if (D_800A82A8 == 0) {
-        if (D_800A82A7 & (1 << D_800697D0)) {
-            if (osGbpakGetStatus(&D_800A8100[D_800697D0], &sp1F) == 0) {
-                D_800A82AC[D_800697D0] = 0;
+    if (gGbPakReadErrorFlag == 0) {
+        if (gGbPakReadMask & (1 << gGbPakPollIndex)) {
+            if (osGbpakGetStatus(&gGbPakPfs[gGbPakPollIndex], &sp1F) == 0) {
+                gGbPakReadErrorCount[gGbPakPollIndex] = 0;
             } else {
-                D_800A82AC[D_800697D0]++;
-                if (D_800A82AC[D_800697D0] == 3) {
-                    D_800A82A8 = 1;
-                    Game_ShutdownAndLoadFragment(D_800697D0, 1);
+                gGbPakReadErrorCount[gGbPakPollIndex]++;
+                if (gGbPakReadErrorCount[gGbPakPollIndex] == 3) {
+                    gGbPakReadErrorFlag = 1;
+                    Game_ShutdownAndLoadFragment(gGbPakPollIndex, 1);
                 }
             }
         }
-        D_800697D0 = (D_800697D0 + 1) & 3;
+        gGbPakPollIndex = (gGbPakPollIndex + 1) & 3;
     }
 }
 #endif

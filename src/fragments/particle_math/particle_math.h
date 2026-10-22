@@ -136,7 +136,7 @@ typedef struct BattleAnimEffectSlot {
     /* 0x1B */ u8 unk_1B;
 } BattleAnimEffectSlot; // size = 0x1C
 
-typedef struct arg1_func_87903D64_014 {
+typedef struct ColorLerpData {
     /* 0x00 */ s32 unk_00;
     /* 0x04 */ unk_D_86002F34_000_014_004* unk_04;
     /* 0x08 */ unk_D_86002F34_000_014_004* unk_08;
@@ -144,15 +144,15 @@ typedef struct arg1_func_87903D64_014 {
     /* 0x10 */ unk_D_86002F34_000_014_010* unk_10;
     /* 0x14 */ unk_D_86002F34_000_014_010* unk_14;
     /* 0x18 */ unk_D_86002F34_000_014_010* unk_18;
-} arg1_func_87903D64_014; // size = 0x1C
+} ColorLerpData; // size = 0x1C
 
 // Possibly unk_D_86002F34_alt7, unk_D_86002F34_alt8,
 // unk_D_86002F34_alt9 or unk_D_86002F34_alt2
-typedef struct arg1_func_87903D64 {
+typedef struct ColorLerpHook {
     /* 0x00 */ char unk00[0x14];
-    /* 0x14 */ arg1_func_87903D64_014* unk_14;
+    /* 0x14 */ ColorLerpData* unk_14;
     /* 0x18 */ Gfx* unk_18;
-} arg1_func_87903D64; // size >= 0x1C
+} ColorLerpHook; // size >= 0x1C
 
 typedef struct arg1_func_81407874_014_000_014_000_000 {
     /* 0x00 */ Color_RGBA8 color;
@@ -255,43 +255,43 @@ typedef struct ParticleMatrixPool {
     /* 0x5BC0 */ char unk5BC0[0x20];
 } ParticleMatrixPool; // size = 0x5BE0
 
-extern Gfx D_8140DAE0[];
-extern Gfx D_8140DB30[];
+extern Gfx gDL_End3D[];
+extern Gfx gDL_Begin3D[];
 extern Gfx gDL_ItemIcon[];
-extern Gfx D_8140DC00[];
-extern Gfx D_8140DC58[];
-extern Gfx D_8140DC78[];
-extern Gfx D_8140DC98[];
-extern Gfx D_8140DCB8[];
-extern Gfx D_8140DCD8[];
-extern Gfx D_8140DCF8[];
-extern Gfx D_8140DD18[];
-extern Gfx D_8140DD38[];
-extern Gfx D_8140DD58[];
+extern Gfx gDL_UI_DecalBilerpTexEdge[];
+extern Gfx gDL_UI_ModulatePoint[];
+extern Gfx gDL_UI_ModulateBilerpXlu[];
+extern Gfx gDL_UI_ModulateBilerpCld[];
+extern Gfx gDL_UI_ModulatePointAA[];
+extern Gfx gDL_BaseUI[];
+extern Gfx gDL_UI_ModulatePointZB[];
+extern Gfx gDL_UI_ModulateBilerpZB[];
+extern Gfx gDL_UI_ModulateBilerpZbCld[];
+extern Gfx gDL_OverlayUI[];
 extern Gfx gDL_BeginUIOverlay[];
 extern Gfx gDL_EndColorFill[];
 extern Gfx gDL_BeginColorFill[];
-extern Vtx D_8140DE78[];
-extern Vtx D_8140DEF8[];
+extern Vtx gVtx_UI_SmallQuad[];
+extern Vtx gVtx_UI_LargeQuad[];
 extern Vtx gVtx_UI_TriangleSmall[];
 extern Vtx gVtx_UI_TriangleLarge[];
-extern Vtx D_8140DFD8[];
-extern Vtx D_8140E018[];
-extern Vtx D_8140E058[];
+extern Vtx gVtx_UI_MediumQuad[];
+extern Vtx gMatrix_UITransform[];
+extern Vtx gVtx_UI_RectHorizontal[];
 extern Vtx gVtx_UI_RectVertical[];
-extern Vtx D_8140E0D8[];
-extern Vtx D_8140E108[];
-extern Vtx D_8140E148[];
-extern Vtx D_8140E178[];
-extern Vtx D_8140E1B8[];
-extern Vtx D_8140E1F8[];
+extern Vtx gVtx_UI_TriangleDown[];
+extern Vtx gVtx_UI_ColorQuad[];
+extern Vtx gVtx_UI_PanelTriangle[];
+extern Vtx gVtx_UI_RectTall[];
+extern Vtx gVtx_UI_RectTallAnchoredTop[];
+extern Vtx gVtx_UI_Square[];
 extern Vtx gVtx_UI_ComplexQuad[];
-extern Vtx D_8140E2B8[];
-extern Vtx D_8140E378[];
+extern Vtx gVtx_UI_GridQuad[];
+extern Vtx gGroundQuadVtx[];
 extern Vtx gFullscreenQuadVtx[];
 extern Gfx gDL_PanelBackground[];
-extern Gfx D_8140E430[];
-extern Gfx D_8140E448[];
+extern Gfx gDL_PanelQuad[];
+extern Gfx gDL_UITransformQuad[];
 extern ParticleDescriptor gDefaultParticleDescriptor;
 
 extern u8 gParticlePaletteSetA[];
@@ -513,8 +513,8 @@ Gfx* ParticleGfx_LoadDescriptorTextureAndTile(Gfx* arg0, arg1_func_81407874_014_
 Gfx* ParticleGfx_LoadPrimaryDescriptorTexture(Gfx* arg0, arg1_func_81407874_014* arg1);
 Gfx* ParticleGfx_LoadSecondaryDescriptorTexture(Gfx* arg0, arg1_func_81407874_014* arg1);
 void ParticleGfx_SetCombineModeFromDescriptor(Gfx* arg0, arg1_func_81407874_014_000_010* arg1);
-Gfx* func_81407590(Gfx* arg0, arg1_func_81407874_014* arg1);
-void ParticleGfx_GraphNodeBuildDescriptorMaterialList(s32 arg0, arg1_func_87903D64* arg1);
+Gfx* Gfx_ApplyTextureState(Gfx* arg0, arg1_func_81407874_014* arg1);
+void ParticleGfx_GraphNodeBuildDescriptorMaterialList(s32 arg0, ColorLerpHook* arg1);
 
 
 void Particle_ResetDefaults(Particle* arg0);
@@ -579,23 +579,23 @@ void Particle_Field38_AddXZFromField94Y_08ED0(Particle* arg0, f32 arg1);
 void Particle_Field38_AddXZFromField94YOffset180_08F38(Particle* arg0, f32 arg1);
 void Particle_Field38_AddXZFromField94YOffset90_08FAC(Particle* arg0, f32 arg1);
 void Particle_Field38_AddXZFromField94YOffsetMinus90_0901C(Particle* arg0, f32 arg1);
-void Particle_AddVelocityFromDirVector(Particle* arg0, f32 arg1);
+void Particle_AddPositionFromRotationY(Particle* arg0, f32 arg1);
 void Particle_AddPositionFromRotationTemplate1(Particle* arg0, f32 arg1);
 void Particle_AddPositionFromRotationTemplate2(Particle* arg0, f32 arg1);
 void Particle_AddPositionRotatedVectorByYaw(Particle* arg0, Vec3f arg1);
-void Particle_SetRandomVelocityX(Particle* arg0, s32 arg1);
-void func_81409288(Particle* arg0, s32 arg1);
-void Particle_SetRandomVelocityZ(Particle* arg0, s32 arg1);
-void func_81409308(Particle* arg0, s32 arg1, s32 arg2);
-void Particle_SetRandomVelocityYOffset(Particle* arg0, s32 arg1, s32 arg2);
-void func_814093B0(Particle* arg0, s32 arg1, s32 arg2);
-void Particle_SetRandomVelocityXSymmetric(Particle* arg0, s32 arg1, s32 arg2);
-void func_8140948C(Particle* arg0, s32 arg1, s32 arg2);
-void Particle_SetRandomVelocityZSymmetric(Particle* arg0, s32 arg1, s32 arg2);
-void Particle_SetRandomVelocityXYZ(Particle* arg0, s32 arg1, s32 arg2, s32 arg3);
-void func_81409634(Particle* arg0, s32 arg1, s32 arg2, s32 arg3);
-void Particle_SetRandomRotatedVelocityXY(Particle* arg0, s32 arg1, s32 arg2);
-void func_814097D8(Particle* arg0, s32 arg1, s32 arg2, s32 arg3);
+void Particle_SetRandomPositionX(Particle* arg0, s32 arg1);
+void Particle_SetRandomPositionY(Particle* arg0, s32 arg1);
+void Particle_SetRandomPositionZ(Particle* arg0, s32 arg1);
+void Particle_SetRandomPositionXOffset(Particle* arg0, s32 arg1, s32 arg2);
+void Particle_SetRandomPositionYOffset(Particle* arg0, s32 arg1, s32 arg2);
+void Particle_SetRandomPositionZOffset(Particle* arg0, s32 arg1, s32 arg2);
+void Particle_SetRandomPositionXSymmetric(Particle* arg0, s32 arg1, s32 arg2);
+void Particle_SetRandomPositionYSymmetric(Particle* arg0, s32 arg1, s32 arg2);
+void Particle_SetRandomPositionZSymmetric(Particle* arg0, s32 arg1, s32 arg2);
+void Particle_SetRandomPositionXYZ(Particle* arg0, s32 arg1, s32 arg2, s32 arg3);
+void Particle_SetRandomModPositionXYZ(Particle* arg0, s32 arg1, s32 arg2, s32 arg3);
+void Particle_SetRandomRotatedPositionXY(Particle* arg0, s32 arg1, s32 arg2);
+void Particle_AddRandomPositionXYZ(Particle* arg0, s32 arg1, s32 arg2, s32 arg3);
 void Particle_SetOrigin(Particle* arg0, f32 arg1, f32 arg2, f32 arg3);
 void Particle_SetVelocity(Particle* arg0, f32 arg1, f32 arg2, f32 arg3);
 void Particle_Field50_SetXScaled_098E8(Particle* arg0, f32 arg1);

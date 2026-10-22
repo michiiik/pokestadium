@@ -54,12 +54,12 @@ typedef struct unk_D_86B0EBD8 {
     /* 0x0C */ s32 unk_0C;
     /* 0x10 */ char unk10[0x8];
     /* 0x18 */ s32 unk_18;
-    /* 0x30 */ unk_D_86B0DAE0 unk_1C;
+    /* 0x30 */ GfxTileParams unk_1C;
 } unk_D_86B0EBD8; // size = 0x4C
 
-typedef struct unk_D_86B0EBDC {
-    /* 0x000 */ unk_D_86002F30* unk_000;
-    /* 0x004 */ unk_D_86002F30* unk_004;
+typedef struct CompletionSceneState {
+    /* 0x000 */ ModelData* unk_000;
+    /* 0x004 */ ModelData* unk_004;
     /* 0x008 */ DisplayObject unk_008;
     /* 0x170 */ DisplayObject unk_170;
     /* 0x2D8 */ s32 unk_2D8;
@@ -75,7 +75,7 @@ typedef struct unk_D_86B0EBDC {
     /* 0x300 */ f32 unk_300;
     /* 0x304 */ s32 unk_304;
     /* 0x308 */ s32 unk_308;
-} unk_D_86B0EBDC; // size = 0x30C
+} CompletionSceneState; // size = 0x30C
 
 typedef struct unk_D_86B0EBE0 {
     /* 0x00 */ s32 unk_00;
@@ -90,7 +90,7 @@ typedef struct unk_D_86B0EBE0 {
     /* 0x1C */ s16 unk_1C;
 } unk_D_86B0EBE0; // size = 0x20
 
-u32 D_86B0BD60[] = {
+u32 gFragment17TransitionGradientTex[] = {
     0xCFFFCFFF, 0xCFFFCFFF, 0xCFFFCFFF, 0xCFFFCFFF, 0xCFFFCFFF, 0xCFFFCFFF, 0xCFFFCFFF, 0xCFFFCFFF, 0xC7FFC7FF,
     0xC7FFC7FF, 0xC7FFC7FF, 0xC7FFC7FF, 0xC7FFC7FF, 0xC7FFC7FF, 0xC7FFC7FF, 0xC7FFC7FF, 0xC7FFC7FF, 0xC7FFC7FF,
     0xC7FFC7FF, 0xC7FFC7FF, 0xC7FFC7FF, 0xC7FFC7FF, 0xC7FFC7FF, 0xC7FFC7FF, 0xC7FFC7FF, 0xC7FFC7FF, 0xC7FFC7FF,
@@ -121,7 +121,7 @@ u32 D_86B0BD60[] = {
     0x53FF53FF, 0x53FF53FF, 0x53FF53FF, 0x53FF53FF, 0x53FF53FF, 0x53FF53FF, 0x53FF53FF, 0x53FF53FF, 0x53FF53FF,
     0x53FF53FF, 0x53FF53FF, 0x53FF53FF, 0x53FF53FF,
 };
-unk_D_86B0C160 D_86B0C160[] = {
+DioramaAnimData gFragment17AnimData[] = {
     {
         0,
         16384,
@@ -218,7 +218,7 @@ unk_D_86B0C160 D_86B0C160[] = {
         255.0f,
     },
 };
-unk_D_86B0C264 D_86B0C264[] = {
+DioramaPresetData gFragment17PresetData[] = {
     {
         { 0.0f, 60.0f, 0.0f },
         -12743,
@@ -275,27 +275,27 @@ unk_D_86B0C264 D_86B0C264[] = {
         0,
     },
 };
-static unk_D_86B0C4C8 D_86B0C2F0[] = {
+static DioramaObjectDef gFragment17ObjDef0[] = {
     { { 240.0f, 0.0f, 0.0f }, 9, 2, 0, 0 },    { { 160.0f, 0.0f, 0.0f }, 112, 2, 0, 0 },
     { { 80.0f, 0.0f, 0.0f }, 115, 2, 0, 0 },   { { 10.0f, 0.0f, 10.0f }, 67, 2, 0, 0 },
     { { -140.0f, 0.0f, 0.0f }, 152, 2, 0, 0 },
 };
-static unk_D_86B0C4C8 D_86B0C354[] = {
+static DioramaObjectDef gFragment17ObjDef1[] = {
     { { -10.0f, 0.0f, 10.0f }, 34, 2, 0, 0 },     { { -60.0f, 0.0f, 20.0f }, 28, 2, 0, 0 },
     { { -120.0f, 10.0f, -30.0f }, 123, 2, 0, 0 }, { { -180.0f, 0.0f, 0.0f }, 141, 2, 0, 0 },
     { { -140.0f, 0.0f, 0.0f }, 152, 2, 0, 0 },
 };
-static unk_D_86B0C4C8 D_86B0C3B8[] = {
+static DioramaObjectDef gFragment17ObjDefFlyingGroup[] = {
     { { 0.0f, -100.0f, -750.0f }, 18, 2, 0, 0 },  { { -35.0f, 40.0f, -350.0f }, 22, 2, 0, 0 },
     { { 78.0f, -50.0f, -150.0f }, 142, 2, 0, 0 }, { { -18.0f, -30.0f, 450.0f }, 6, 2, 10, 0 },
     { { -140.0f, 0.0f, 0.0f }, 152, 2, 0, 0 },
 };
-static unk_D_86B0C4C8 D_86B0C41C[] = {
+static DioramaObjectDef gFragment17ObjDefWaterGroup[] = {
     { { 0.0f, 30.0f, -900.0f }, 119, 2, 0, 0 },   { { 15.0f, 10.0f, -250.0f }, 87, 2, 0, 0 },
     { { -38.0f, 20.0f, -550.0f }, 118, 2, 0, 0 }, { { 18.0f, 30.0f, 150.0f }, 73, 2, 0, 0 },
     { { -140.0f, 0.0f, 0.0f }, 152, 2, 0, 0 },
 };
-static unk_D_86B0C4C8 D_86B0C480[] = {
+static DioramaObjectDef gFragment17ObjDefFinaleGroup[] = {
     {
         { 0.0f, 0.0f, 0.0f },
         0xD7,
@@ -321,11 +321,11 @@ static unk_D_86B0C4C8 D_86B0C480[] = {
 
 static s32 pad_D_86B0C4BC[3] = { 0, 0, 0 };
 
-unk_D_86B0C4C8* D_86B0C4C8[] = {
-    D_86B0C2F0, D_86B0C354, D_86B0C3B8, D_86B0C41C, D_86B0C480, NULL,
+DioramaObjectDef* gFragment17ObjectDefs[] = {
+    gFragment17ObjDef0, gFragment17ObjDef1, gFragment17ObjDefFlyingGroup, gFragment17ObjDefWaterGroup, gFragment17ObjDefFinaleGroup, NULL,
 };
 
-static u32 D_86B0C4E0[] = {
+static u32 gFragment17LandTileData[] = {
     0xE4FFE4FF, 0xE4FFE4FF, 0xE4FFE4FF, 0xE4FFE4FF, 0xE4FFE4FF, 0xE4FFE4FF, 0xE4FFE4FF, 0xE4FFE4FF, 0xE4FFE4FF,
     0xE6FFEEFF, 0xF8FEFFFB, 0xFFD3FB4D, 0xF309E701, 0xD405C12D, 0xBAA1C5E9, 0xD7F9E2FF, 0xE4FFE4FF, 0xE4FFE4FF,
     0xE5FFE5FF, 0xE5FFE4FF, 0xE4FFE4FF, 0xE4FFE4FF, 0xE4FFE4FF, 0xE4FFE4FF, 0xE5FFE6FF, 0xEAFFF2FF, 0xFCFFFFFC,
@@ -385,11 +385,11 @@ static u32 D_86B0C4E0[] = {
     0xE4FFE4FF, 0xE5FFECFF, 0xF6FEFDFB, 0xFFDCFC6C, 0xF11DE50A, 0xD611C849, 0xC2A3C5DD, 0xCDF7D9FE,
 };
 
-static unk_D_86002F34_018 D_86B0CCE0 = {
-    0x03, unk_D_86002F34_018_GFX_TYPE_2, 32, 32, 0x0400, D_86B0C4E0,
+static GfxTextureInfo gFragment17LandGfxTileParams = {
+    0x03, unk_D_86002F34_018_GFX_TYPE_2, 32, 32, 0x0400, gFragment17LandTileData,
 };
 
-static Gfx D_86B0CCF0[] = {
+static Gfx gFragment17LandGfxSetupDL[] = {
     gsDPSetTile(G_IM_FMT_IA, G_IM_SIZ_16b, 0, 0x0000, G_TX_LOADTILE, 0, G_TX_MIRROR | G_TX_WRAP, 5, G_TX_NOLOD,
                 G_TX_MIRROR | G_TX_WRAP, 5, G_TX_NOLOD),
     gsDPLoadSync(),
@@ -400,7 +400,7 @@ static Gfx D_86B0CCF0[] = {
     gsDPSetTileSize(G_TX_RENDERTILE, 0, 0, 0x007C, 0x007C),
     gsSPEndDisplayList(),
 };
-static Vtx D_86B0CD28[] = {
+static Vtx gFragment17LandTileVerts[] = {
     VTX(-3000, -9000, 0, 1024, -2048, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-3000, -3000, 0, 1024, -1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-9000, -3000, 0, 0, -1024, 0xFF, 0xFF, 0xFF, 0xFF),
@@ -418,14 +418,14 @@ static Vtx D_86B0CD28[] = {
     VTX(3000, -9000, 0, 2048, -2048, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(9000, -9000, 0, 3072, -2048, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Gfx D_86B0CE28[] = {
+static Gfx gFragment17LandTileDrawDL[] = {
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetCombineLERP(TEXEL1, TEXEL0, ENV_ALPHA, TEXEL0, TEXEL1, TEXEL0, ENVIRONMENT, TEXEL0, COMBINED, 0, SHADE, 0,
                        COMBINED, 0, PRIMITIVE, 0),
     gsDPSetEnvColor(255, 255, 255, 125),
     gsDPSetFogColor(191, 248, 255, 255),
     gsSPFogPosition(995, 1000),
-    gsSPVertex(D_86B0CD28, 16, 0),
+    gsSPVertex(gFragment17LandTileVerts, 16, 0),
     gsSPSetGeometryMode(G_CULL_BACK | G_FOG),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSP2Triangles(1, 4, 5, 0, 1, 5, 2, 0),
@@ -439,43 +439,43 @@ static Gfx D_86B0CE28[] = {
     gsSPSetGeometryMode(G_FOG | G_LIGHTING),
     gsSPEndDisplayList(),
 };
-static u8 D_86B0CEB8[] = {
+static u8 gFragment17TileAttr0[] = {
     0x00, 0x03, 0x00, 0x02, 0x00, 0x20, 0x00, 0x20, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x05, 0x00, 0x05, 0x00, 0x0F, 0x00, 0x0F,
 };
-static u8 D_86B0CECC[] = {
+static u8 gFragment17TileAttr1[] = {
     0x00, 0x03, 0x00, 0x02, 0x00, 0x20, 0x00, 0x20, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x05, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00,
 };
-static u8 D_86B0CEE0[] = {
+static u8 gFragment17TileMisc0[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFC, 0x00, 0x01, 0x00, 0x00,
 };
-static u8 D_86B0CEEC[] = {
+static u8 gFragment17TileMisc1[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFC, 0x00, 0x01, 0x00, 0x00,
 };
-static u8* D_86B0CEF8[] = {
-    D_86B0C4E0, D_86B0CEB8, D_86B0CEE0, NULL, NULL, NULL, NULL, NULL,
+static u8* gFragment17TileAttrTable0[] = {
+    gFragment17LandTileData, gFragment17TileAttr0, gFragment17TileMisc0, NULL, NULL, NULL, NULL, NULL,
 };
-static u8* D_86B0CF18[] = {
-    D_86B0C4E0, D_86B0CECC, D_86B0CEEC, NULL, NULL, NULL, NULL, NULL,
+static u8* gFragment17TileAttrTable1[] = {
+    gFragment17LandTileData, gFragment17TileAttr1, gFragment17TileMisc1, NULL, NULL, NULL, NULL, NULL,
 };
-static unk_D_86002F34_000_014 D_86B0CF38 = {
-    D_86B0CEF8,
-    D_86B0CF18,
+static unk_D_86002F34_000_014 gFragment17TileAttrSet = {
+    gFragment17TileAttrTable0,
+    gFragment17TileAttrTable1,
 };
 
-static u32 D_86B0CF40[] = {
+static u32 gFragment17LandTileLayout[] = {
     0x09000000, 0x05000000, 0x09000000, 0x05000000, 0x09000000, 0x05000000, 0x13000005, 0x03E303E8,
-    0x2309FFFF, (u32)D_86B0CCF0, 0x0000FFFF, 0xFFFFFFFF, 0x22050000, 0x00000000, 0x08000000, 0x810001D0,
-    (u32)&D_86B0CF38, 0x22050000, (u32)D_86B0CE28, 0x06000000, 0x06000000, 0x06000000, 0x04000000,
+    0x2309FFFF, (u32)gFragment17LandGfxSetupDL, 0x0000FFFF, 0xFFFFFFFF, 0x22050000, 0x00000000, 0x08000000, 0x810001D0,
+    (u32)&gFragment17TileAttrSet, 0x22050000, (u32)gFragment17LandTileDrawDL, 0x06000000, 0x06000000, 0x06000000, 0x04000000,
 };
 
-u32 D_86B0CF9C[] = {
-    0x17000001, 0x00000010, &D_86B0CCE0, 0x00000000, D_86B0CD28, 0x05000000, 0x1C000000, 0x00008000, 0x00008000,
-    0x00008000, 0x05000000, 0x03000000,  D_86B0CF40, 0x06000000, 0x06000000, 0x01000000, 0x00000000,
+u32 gFragment17LandStageLayout[] = {
+    0x17000001, 0x00000010, &gFragment17LandGfxTileParams, 0x00000000, gFragment17LandTileVerts, 0x05000000, 0x1C000000, 0x00008000, 0x00008000,
+    0x00008000, 0x05000000, 0x03000000,  gFragment17LandTileLayout, 0x06000000, 0x06000000, 0x01000000, 0x00000000,
 };
 
-static u32 D_86B0CFE0[] = {
+static u32 gFragment17SeaTileData[] = {
     0x322B3AB3, 0x63B77C77, 0x5B73322F, 0x21ED21ED, 0x21EB21AB, 0x21A919A9, 0x19A921A9, 0x19A51963, 0x29E93A71,
     0x42F16BF1, 0x84735B2B, 0x3A2729E5, 0x2161215F, 0x21A52A2D, 0x29E7191B, 0x191B29E1, 0x32335B79, 0x747963B7,
     0x2A2F116D, 0x19AD21AD, 0x21AB1167, 0x112508E3, 0x09231123, 0x08DF08DD, 0x196729ED, 0x3A29636B, 0x63AD4269,
@@ -534,10 +534,10 @@ static u32 D_86B0CFE0[] = {
     0x10D71919, 0x29E129ED, 0x32334AF5, 0x6BF763B3, 0x42AF29ED, 0x21AD21AB, 0x196721A7, 0x19A921A9, 0x21E929EB,
     0x29EB3A71, 0x4B357439, 0x6BF7532F, 0x532B4AA9, 0x3A273229, 0x326F3AB3, 0x2A2B195D, 0x1919299D,
 };
-static unk_D_86002F34_018 D_86B0D7E0 = {
-    0x00, unk_D_86002F34_018_GFX_TYPE_2, 32, 32, 0x0400, D_86B0CFE0,
+static GfxTextureInfo gFragment17SeaGfxTileParams = {
+    0x00, unk_D_86002F34_018_GFX_TYPE_2, 32, 32, 0x0400, gFragment17SeaTileData,
 };
-static Gfx D_86B0D7F0[] = {
+static Gfx gFragment17SeaGfxSetupDL[] = {
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0x0000, G_TX_LOADTILE, 0, G_TX_MIRROR | G_TX_WRAP, 5, G_TX_NOLOD,
                 G_TX_MIRROR | G_TX_WRAP, 5, G_TX_NOLOD),
     gsDPLoadSync(),
@@ -548,7 +548,7 @@ static Gfx D_86B0D7F0[] = {
     gsDPSetTileSize(G_TX_RENDERTILE, 0, 0, 0x007C, 0x007C),
     gsSPEndDisplayList(),
 };
-static Vtx D_86B0D828[] = {
+static Vtx gFragment17SeaTileVerts[] = {
     VTX(-18000, 0, 9000, 0, 4710, 0xFF, 0xFF, 0xFF, 0xFF),    VTX(-18000, 0, 3000, 0, 3482, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-6000, 0, 3000, 2458, 3482, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(-6000, 0, 9000, 2458, 4710, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-18000, 0, -3000, 0, 2253, 0xFF, 0xFF, 0xFF, 0xFF),   VTX(-6000, 0, -3000, 2458, 2253, 0xFF, 0xFF, 0xFF, 0xFF),
@@ -558,14 +558,14 @@ static Vtx D_86B0D828[] = {
     VTX(18000, 0, 3000, 7373, 3482, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(6000, 0, 3000, 4915, 3482, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(18000, 0, 9000, 7373, 4710, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(6000, 0, 9000, 4915, 4710, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Gfx D_86B0D928[] = {
+static Gfx gFragment17SeaTileDrawDL[] = {
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetCombineLERP(TEXEL1, TEXEL0, ENV_ALPHA, TEXEL0, TEXEL1, TEXEL0, ENVIRONMENT, TEXEL0, COMBINED, 0, SHADE, 0,
                        COMBINED, 0, PRIMITIVE, 0),
     gsDPSetEnvColor(255, 255, 255, 115),
     gsDPSetFogColor(0, 0, 0, 255),
     gsSPFogPosition(987, 1000),
-    gsSPVertex(D_86B0D828, 16, 0),
+    gsSPVertex(gFragment17SeaTileVerts, 16, 0),
     gsSPSetGeometryMode(G_CULL_BACK),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSP2Triangles(1, 4, 5, 0, 1, 5, 2, 0),
@@ -579,40 +579,40 @@ static Gfx D_86B0D928[] = {
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
 };
-static u8 D_86B0D9B8[] = {
+static u8 gFragment17TileAttr2[] = {
     0x00, 0x00, 0x00, 0x02, 0x00, 0x20, 0x00, 0x20, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x05, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00,
 };
-static u8 D_86B0D9CC[] = {
+static u8 gFragment17TileAttr3[] = {
     0x00, 0x00, 0x00, 0x02, 0x00, 0x20, 0x00, 0x20, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x05, 0x00, 0x05, 0x00, 0x0F, 0x00, 0x0F,
 };
-static u8 D_86B0D9E0[] = {
+static u8 gFragment17TileMisc2[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0x00, 0x01, 0x00, 0x00,
 };
-static u8 D_86B0D9EC[] = {
+static u8 gFragment17TileMisc3[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x01, 0x00, 0x00,
 };
-static u8* D_86B0D9F8[] = {
-    D_86B0CFE0, D_86B0D9B8, D_86B0D9E0, NULL, NULL, NULL, NULL, NULL,
+static u8* gFragment17TileAttrTable2[] = {
+    gFragment17SeaTileData, gFragment17TileAttr2, gFragment17TileMisc2, NULL, NULL, NULL, NULL, NULL,
 };
-static u8* D_86B0DA18[] = {
-    D_86B0CFE0, D_86B0D9CC, D_86B0D9EC, NULL, NULL, NULL, NULL, NULL,
+static u8* gFragment17TileAttrTable3[] = {
+    gFragment17SeaTileData, gFragment17TileAttr3, gFragment17TileMisc3, NULL, NULL, NULL, NULL, NULL,
 };
-static unk_D_86002F34_000_014 D_86B0DA38 = {
-    D_86B0D9F8,
-    D_86B0DA18,
+static unk_D_86002F34_000_014 gFragment17SeaTileAttrSet = {
+    gFragment17TileAttrTable2,
+    gFragment17TileAttrTable3,
 };
-static u32 D_86B0DA40[] = {
+static u32 gFragment17SeaTileLayout[] = {
     0x09000000,  0x05000000, 0x09000000, 0x05000000, 0x09000000, 0x05000000, 0x13000005, 0x03E303E8,
-    0x2306FFFF,  D_86B0D7F0, 0x0000FFFF, 0xFFFFFFFF, 0x22010000, 0x00000000, 0x08000000, 0x810001D0,
-    &D_86B0DA38, 0x22010000, D_86B0D928, 0x06000000, 0x06000000, 0x06000000, 0x04000000,
+    0x2306FFFF,  gFragment17SeaGfxSetupDL, 0x0000FFFF, 0xFFFFFFFF, 0x22010000, 0x00000000, 0x08000000, 0x810001D0,
+    &gFragment17SeaTileAttrSet, 0x22010000, gFragment17SeaTileDrawDL, 0x06000000, 0x06000000, 0x06000000, 0x04000000,
 };
-u32 D_86B0DA9C[] = {
-    0x17000001, 0x00000010, &D_86B0D7E0, 0x00000000, D_86B0D828, 0x05000000, 0x1C000000, 0x00008000, 0x00008000,
-    0x00008000, 0x05000000, 0x03000000,  D_86B0DA40, 0x06000000, 0x06000000, 0x01000000, 0x00000000,
+u32 gFragment17SeaStageLayout[] = {
+    0x17000001, 0x00000010, &gFragment17SeaGfxTileParams, 0x00000000, gFragment17SeaTileVerts, 0x05000000, 0x1C000000, 0x00008000, 0x00008000,
+    0x00008000, 0x05000000, 0x03000000,  gFragment17SeaTileLayout, 0x06000000, 0x06000000, 0x01000000, 0x00000000,
 };
-static unk_D_86B0DAE0 D_86B0DAE0[] = {
+static GfxTileParams gFragment17TileParams[] = {
     { {
           0x00FF,
           0x00FF,
@@ -699,26 +699,26 @@ static unk_D_86B0DAE0 D_86B0DAE0[] = {
       } },
 };
 
-static u32 D_86B0DB70 = 0x95;
-static u32 D_86B0DB74 = 0x97;
-static u32 D_86B0DB78 = 0x98;
-static u32 D_86B0DB7C = 0x95;
-static u32 D_86B0DB80 = 0x99;
-static u32 D_86B0DB84 = 0x9A;
-static u32 D_86B0DB88 = 0x9B;
-static u32 D_86B0DB8C = 0x9C;
-static u32 D_86B0DB90 = 0x98;
-static u32 D_86B0DB94 = 0x9D;
+static u32 gFragment17MsgId_Intro = 0x95;
+static u32 gFragment17MsgId_Confirm = 0x97;
+static u32 gFragment17MsgId_Success = 0x98;
+static u32 gFragment17MsgId_IntroWithExisting = 0x95;
+static u32 gFragment17MsgId_ConfirmWithExisting = 0x99;
+static u32 gFragment17MsgId_SuccessWithExisting = 0x9A;
+static u32 gFragment17MsgId_Failure = 0x9B;
+static u32 gFragment17MsgId_Timeout = 0x9C;
+static u32 gFragment17MsgId_Complete = 0x98;
+static u32 gFragment17MsgId_Extra = 0x9D;
 
-static unk_D_86B0DB98 D_86B0DB98[] = {
+static unk_D_86B0DB98 gFragment17CursorIconAnimTable[] = {
     { D_300BAD0, 14 }, { D_300BED0, 2 }, { D_300C2D0, 6 }, { D_300BED0, 2 }, { NULL, 0 },
 };
 
-static u8 D_86B0DBC0[] = {
+static u8 gFragment17RandomTable[] = {
     0x01, 0x04, 0x07, 0x6A, 0x6B, 0x85, 0x8A, 0x8C, 0x36,
 };
 
-static unk_D_86B0DBCC D_86B0DBCC[] = {
+static unk_D_86B0DBCC gFragment17ObjPresetTable[] = {
     { 1270.0f, 0.0f, 27.0f, 0.0f },
     { 1783.0f, 0.0f, 27.0f, 0.0f },
     { 2120.0f, 0.0f, 25.799999237060547f, 0.0f },
@@ -730,28 +730,28 @@ static unk_D_86B0DBCC D_86B0DBCC[] = {
     { 1200.0f, 0.0f, 27.0f, 0.0f },
 };
 
-static u32 D_86B0DC5C[] = {
+static u32 gFragment17GeoLayout[] = {
     0x0C00FFFF,  0x05000000, 0x0B00001E, 0x00000000,    0x014000F0, 0x0000000F, 0x00000000,    0x00000000, 0x05000000,
     0x0D000000,  0x05000000, 0x14000000, 0x002D0019,    0xFFFFFF28, 0x08000000, Completion_LightAngleCallbackA, 0x00000000, 0x14000000,
     0x002D0019,  0x80808028, 0x08000000, Completion_LightAngleCallbackB, 0x00000000, 0x16646464, 0x0F000003,    0x05000000, 0x0A000000,
-    &D_800AC840, 0x06000000, 0x06000000, 0x06000000,    0x06000000, 0x01000000,
+    &gGraphRoot0, 0x06000000, 0x06000000, 0x06000000,    0x06000000, 0x01000000,
 };
 
-static GraphNode* D_86B0EBC0;
-static CameraNode* D_86B0EBC4;
-static s16 D_86B0EBC8;
-static s16 D_86B0EBCA;
-static f32 D_86B0EBCC;
-static char** D_86B0EBD0;
-static char** D_86B0EBD4;
-static unk_D_86B0EBD8* D_86B0EBD8;
-static unk_D_86B0EBDC* D_86B0EBDC;
-static unk_D_86B0EBE0* D_86B0EBE0;
-static u8 D_86B0EBE8[0xA60];
-static u8 D_86B0F648[0x180];
-static s8 D_86B0F7C8[0x100];
-static s8 D_86B0F8C8[0x100];
-static s32 D_86B0F9C8;
+static GraphNode* gFragment17GraphRoot;
+static CameraNode* gFragment17Camera;
+static s16 gFragment17CameraAngleY;
+static s16 gFragment17CameraAngleX;
+static f32 gFragment17CameraDist;
+static char** gFragment17MsgBank0;
+static char** gFragment17MsgBank1;
+static unk_D_86B0EBD8* gFragment17TileStruct;
+static CompletionSceneState* gCompletionSceneState;
+static unk_D_86B0EBE0* gFragment17TextState;
+static u8 gFragment17StageBuffer[0xA60];
+static u8 gFragment17ActionTable[0x180];
+static s8 gFragment17TextBuffer[0x100];
+static s8 gFragment17TextBuffer2[0x100];
+static s32 gFragment17RandomIdx;
 
 s32 Completion_LightAngleCallbackA(s32 arg0, GraphNode* arg1) {
     unk_D_86002F34_alt18* ptr = (unk_D_86002F34_alt18*)arg1;
@@ -760,7 +760,7 @@ s32 Completion_LightAngleCallbackA(s32 arg0, GraphNode* arg1) {
     s16 sp24;
 
     if (arg0 == 2) {
-        Vec3f_CalculateDistanceAngles(&D_8006F088->view.targetPosition, &D_8006F088->view.eyePosition, &sp28, &sp26, &sp24);
+        Vec3f_CalculateDistanceAngles(&gCurrentCameraNode->view.targetPosition, &gCurrentCameraNode->view.eyePosition, &sp28, &sp26, &sp24);
         ptr->unk_1C = sp26 + 0x2000;
         ptr->unk_1E = sp24 - 0x2000;
     }
@@ -774,7 +774,7 @@ s32 Completion_LightAngleCallbackB(s32 arg0, GraphNode* arg1) {
     s16 sp24;
 
     if (arg0 == 2) {
-        Vec3f_CalculateDistanceAngles(&D_8006F088->view.targetPosition, &D_8006F088->view.eyePosition, &sp28, &sp26, &sp24);
+        Vec3f_CalculateDistanceAngles(&gCurrentCameraNode->view.targetPosition, &gCurrentCameraNode->view.eyePosition, &sp28, &sp26, &sp24);
         ptr->unk_1C = -0x2000 - sp26;
         ptr->unk_1E = sp24 + 0x6000;
     }
@@ -785,16 +785,16 @@ void Completion_SelectBonusPokemon(void) {
     s32 temp_s0 = osGetCount() & 0xFF;
     s32 var_v0;
 
-    D_86B0EBDC->unk_2F0 = 0;
+    gCompletionSceneState->unk_2F0 = 0;
     Save_EnsureBankLoaded(2);
     var_v0 = Save_GetSelectedPokemonId() & 0xFF;
 
-    D_86B0EBDC->unk_2E8 = var_v0;
+    gCompletionSceneState->unk_2E8 = var_v0;
 
     if (var_v0 == 0) {
-        D_86B0EBDC->unk_2D8 = 0;
+        gCompletionSceneState->unk_2D8 = 0;
     } else {
-        D_86B0EBDC->unk_2D8 = 1;
+        gCompletionSceneState->unk_2D8 = 1;
     }
 
     while (temp_s0-- > 0) {
@@ -802,14 +802,14 @@ void Completion_SelectBonusPokemon(void) {
     }
 
     if (gSessionContext.mode == 0x1A) {
-        D_86B0F9C8 = 8;
-        D_86B0EBDC->unk_2EC = D_86B0DBC0[D_86B0F9C8];
+        gFragment17RandomIdx = 8;
+        gCompletionSceneState->unk_2EC = gFragment17RandomTable[gFragment17RandomIdx];
     } else {
-        D_86B0F9C8 = MathUtil_Random_ZeroOne() * 8.0f;
-        if (D_86B0F9C8 >= 8) {
-            D_86B0F9C8 = 1;
+        gFragment17RandomIdx = MathUtil_Random_ZeroOne() * 8.0f;
+        if (gFragment17RandomIdx >= 8) {
+            gFragment17RandomIdx = 1;
         }
-        D_86B0EBDC->unk_2EC = D_86B0DBC0[D_86B0F9C8];
+        gCompletionSceneState->unk_2EC = gFragment17RandomTable[gFragment17RandomIdx];
     }
 }
 
@@ -818,121 +818,121 @@ void Completion_LoadModels(void) {
 
     main_pool_push_state('MONS');
 
-    ModelRenderer_AttachDisplayObject(&D_86B0EBDC->unk_008);
+    ModelRenderer_AttachDisplayObject(&gCompletionSceneState->unk_008);
     PokeIcon_OpenModelArchives();
 
-    D_86B0EBDC->unk_000 = Model_LoadByArchiveIndex(0xD3);
-    D_86B0EBDC->unk_008.effectSlot = 0xFF;
+    gCompletionSceneState->unk_000 = Model_LoadByArchiveIndex(0xD3);
+    gCompletionSceneState->unk_008.effectSlot = 0xFF;
 
-    Model_InitDisplayObject(&D_86B0EBDC->unk_008, 0, 0xD3, D_86B0EBDC->unk_000->unk_08->unk_00[0]);
-    ModelAnim_SetAnimation(&D_86B0EBDC->unk_008, 0);
-    ModelRenderer_AttachDisplayObject(&D_86B0EBDC->unk_170);
+    Model_InitDisplayObject(&gCompletionSceneState->unk_008, 0, 0xD3, gCompletionSceneState->unk_000->unk_08->unk_00[0]);
+    ModelAnim_SetAnimation(&gCompletionSceneState->unk_008, 0);
+    ModelRenderer_AttachDisplayObject(&gCompletionSceneState->unk_170);
     PokeIcon_OpenModelArchives();
 
-    D_86B0EBDC->unk_004 = Model_LoadByArchiveIndex(D_86B0EBDC->unk_2EC);
-    D_86B0EBDC->unk_170.effectSlot = 0;
-    Model_InitDisplayObject(&D_86B0EBDC->unk_170, 0, D_86B0EBDC->unk_2EC, D_86B0EBDC->unk_004->unk_08->unk_00[0]);
-    ModelAnim_SetAnimation(&D_86B0EBDC->unk_170, 0);
-    D_86B0EBDC->unk_170.node.renderFlags &= ~0x40;
+    gCompletionSceneState->unk_004 = Model_LoadByArchiveIndex(gCompletionSceneState->unk_2EC);
+    gCompletionSceneState->unk_170.effectSlot = 0;
+    Model_InitDisplayObject(&gCompletionSceneState->unk_170, 0, gCompletionSceneState->unk_2EC, gCompletionSceneState->unk_004->unk_08->unk_00[0]);
+    ModelAnim_SetAnimation(&gCompletionSceneState->unk_170, 0);
+    gCompletionSceneState->unk_170.node.renderFlags &= ~0x40;
 
-    D_86B0EBDC->unk_170.scale.x = D_86B0EBDC->unk_2F4 = D_86B0DBCC[D_86B0F9C8].unk_00 / 1000.0f;
-    D_86B0EBDC->unk_170.scale.y = D_86B0EBDC->unk_2F4 = D_86B0DBCC[D_86B0F9C8].unk_00 / 1000.0f;
-    D_86B0EBDC->unk_170.scale.z = D_86B0EBDC->unk_2F4 = D_86B0DBCC[D_86B0F9C8].unk_00 / 1000.0f;
+    gCompletionSceneState->unk_170.scale.x = gCompletionSceneState->unk_2F4 = gFragment17ObjPresetTable[gFragment17RandomIdx].unk_00 / 1000.0f;
+    gCompletionSceneState->unk_170.scale.y = gCompletionSceneState->unk_2F4 = gFragment17ObjPresetTable[gFragment17RandomIdx].unk_00 / 1000.0f;
+    gCompletionSceneState->unk_170.scale.z = gCompletionSceneState->unk_2F4 = gFragment17ObjPresetTable[gFragment17RandomIdx].unk_00 / 1000.0f;
 
-    D_86B0EBDC->unk_2FC = D_86B0DBCC[D_86B0F9C8].unk_08;
-    D_86B0EBDC->unk_300 = D_86B0DBCC[D_86B0F9C8].unk_0C;
-    D_86B0EBDC->unk_170.position.y = -100.0f;
-    D_86B0EBDC->unk_008.node.renderFlags &= ~0x20;
-    D_86B0EBDC->unk_170.node.flags &= ~1;
+    gCompletionSceneState->unk_2FC = gFragment17ObjPresetTable[gFragment17RandomIdx].unk_08;
+    gCompletionSceneState->unk_300 = gFragment17ObjPresetTable[gFragment17RandomIdx].unk_0C;
+    gCompletionSceneState->unk_170.position.y = -100.0f;
+    gCompletionSceneState->unk_008.node.renderFlags &= ~0x20;
+    gCompletionSceneState->unk_170.node.flags &= ~1;
 
-    temp_a1 = _70D3A0_ROM_START + (D_80075BD0[D_86B0EBDC->unk_2EC - 1] & 0xFFFFFF);
-    Dma_WriteChunks(D_86B0EBE8, temp_a1, temp_a1 + 0xBC0, 0);
-    D_86B0EBDC->unk_308 = 0;
+    temp_a1 = _70D3A0_ROM_START + (gStageRomOffsets[gCompletionSceneState->unk_2EC - 1] & 0xFFFFFF);
+    Dma_WriteChunks(gFragment17StageBuffer, temp_a1, temp_a1 + 0xBC0, 0);
+    gCompletionSceneState->unk_308 = 0;
     miniRankingActorsInit();
 }
 
 void Completion_ResetSceneStep(void) {
-    D_86B0EBDC->unk_2DC = 0;
+    gCompletionSceneState->unk_2DC = 0;
 }
 
 void Completion_ResetDialogToIdle(void) {
-    D_86B0EBE0->unk_00 = 0xB;
-    D_86B0EBE0->unk_18 = 0;
+    gFragment17TextState->unk_00 = 0xB;
+    gFragment17TextState->unk_18 = 0;
 }
 
 void Completion_PositionBonusModel(void) {
     Vec3f sp1C;
 
-    if (GeoRender_FindAnchorPosition(&D_86B0EBDC->unk_008, 1, &sp1C) != NULL) {
-        D_86B0EBDC->unk_170.position.x = sp1C.x;
-        D_86B0EBDC->unk_170.position.y = D_86B0EBDC->unk_2FC + sp1C.y;
-        D_86B0EBDC->unk_170.position.z = D_86B0EBDC->unk_300 + sp1C.z;
+    if (GeoRender_FindAnchorPosition(&gCompletionSceneState->unk_008, 1, &sp1C) != NULL) {
+        gCompletionSceneState->unk_170.position.x = sp1C.x;
+        gCompletionSceneState->unk_170.position.y = gCompletionSceneState->unk_2FC + sp1C.y;
+        gCompletionSceneState->unk_170.position.z = gCompletionSceneState->unk_300 + sp1C.z;
     }
 }
 
 void Completion_InitDialogBoxParams(void) {
-    D_86B0EBD8->unk_1C.unk_00.unk_00 = D_86B0DAE0[0].unk_00.unk_00;
-    D_86B0EBD8->unk_1C.unk_00.unk_02 = D_86B0DAE0[0].unk_00.unk_02;
-    D_86B0EBD8->unk_1C.unk_00.unk_04 = D_86B0DAE0[0].unk_00.unk_04;
-    D_86B0EBD8->unk_1C.unk_00.unk_06 = D_86B0DAE0[0].unk_00.unk_06;
-    D_86B0EBD8->unk_1C.unk_00.unk_08 = D_86B0DAE0[0].unk_00.unk_08;
-    D_86B0EBD8->unk_1C.unk_00.unk_0A = D_86B0DAE0[0].unk_00.unk_0A;
-    D_86B0EBD8->unk_1C.unk_00.unk_0C = D_86B0DAE0[0].unk_00.unk_0C;
-    D_86B0EBD8->unk_1C.unk_00.unk_0E = D_86B0DAE0[0].unk_00.unk_0E;
-    D_86B0EBD8->unk_1C.unk_00.unk_10 = D_86B0DAE0[0].unk_00.unk_10;
-    D_86B0EBD8->unk_1C.unk_00.unk_12 = D_86B0DAE0[0].unk_00.unk_12;
-    D_86B0EBD8->unk_1C.unk_00.unk_14 = D_86B0DAE0[0].unk_00.unk_14;
-    D_86B0EBD8->unk_1C.unk_00.unk_16 = D_86B0DAE0[0].unk_00.unk_16;
+    gFragment17TileStruct->unk_1C.unk_00.unk_00 = gFragment17TileParams[0].unk_00.unk_00;
+    gFragment17TileStruct->unk_1C.unk_00.unk_02 = gFragment17TileParams[0].unk_00.unk_02;
+    gFragment17TileStruct->unk_1C.unk_00.unk_04 = gFragment17TileParams[0].unk_00.unk_04;
+    gFragment17TileStruct->unk_1C.unk_00.unk_06 = gFragment17TileParams[0].unk_00.unk_06;
+    gFragment17TileStruct->unk_1C.unk_00.unk_08 = gFragment17TileParams[0].unk_00.unk_08;
+    gFragment17TileStruct->unk_1C.unk_00.unk_0A = gFragment17TileParams[0].unk_00.unk_0A;
+    gFragment17TileStruct->unk_1C.unk_00.unk_0C = gFragment17TileParams[0].unk_00.unk_0C;
+    gFragment17TileStruct->unk_1C.unk_00.unk_0E = gFragment17TileParams[0].unk_00.unk_0E;
+    gFragment17TileStruct->unk_1C.unk_00.unk_10 = gFragment17TileParams[0].unk_00.unk_10;
+    gFragment17TileStruct->unk_1C.unk_00.unk_12 = gFragment17TileParams[0].unk_00.unk_12;
+    gFragment17TileStruct->unk_1C.unk_00.unk_14 = gFragment17TileParams[0].unk_00.unk_14;
+    gFragment17TileStruct->unk_1C.unk_00.unk_16 = gFragment17TileParams[0].unk_00.unk_16;
 
-    D_86B0EBD8->unk_00 = 0x50;
-    D_86B0EBD8->unk_04 = -0x32;
-    D_86B0EBD8->unk_08 = 0x40;
-    D_86B0EBD8->unk_0C = 0xF2;
-    D_86B0EBD8->unk_18 = 0;
+    gFragment17TileStruct->unk_00 = 0x50;
+    gFragment17TileStruct->unk_04 = -0x32;
+    gFragment17TileStruct->unk_08 = 0x40;
+    gFragment17TileStruct->unk_0C = 0xF2;
+    gFragment17TileStruct->unk_18 = 0;
 }
 
 void Completion_InitCamera(void) {
-    D_86B0EBC4 = D_86B0EBC0->children;
-    D_86B0EBC8 = 0;
-    D_86B0EBCA = 0;
-    D_86B0EBCC = 120.0f;
+    gFragment17Camera = gFragment17GraphRoot->children;
+    gFragment17CameraAngleY = 0;
+    gFragment17CameraAngleX = 0;
+    gFragment17CameraDist = 120.0f;
 
-    Vec3f_SetComponentsDuplicate(&D_86B0EBC4->view.targetPosition, 0.0f, 132.5f, -225.0f);
-    Camera_ComputeEyeFromAngles(&D_86B0EBC4->view.targetPosition, &D_86B0EBC4->view.eyePosition, D_86B0EBCC, D_86B0EBC8, D_86B0EBCA);
+    Vec3f_SetComponentsDuplicate(&gFragment17Camera->view.targetPosition, 0.0f, 132.5f, -225.0f);
+    Camera_ComputeEyeFromAngles(&gFragment17Camera->view.targetPosition, &gFragment17Camera->view.eyePosition, gFragment17CameraDist, gFragment17CameraAngleY, gFragment17CameraAngleX);
 
-    D_86B0EBC4->perspective.nearPlane = 10.0f;
-    D_86B0EBC4->perspective.farPlane = 6400.0f;
-    D_86B0EBC4->perspective.verticalFieldOfView = 41.5f;
+    gFragment17Camera->perspective.nearPlane = 10.0f;
+    gFragment17Camera->perspective.farPlane = 6400.0f;
+    gFragment17Camera->perspective.verticalFieldOfView = 41.5f;
 }
 
 s32 Completion_WrapDialogText(void) {
-    if (D_86B0F7C8[D_86B0EBE0->unk_04] == 0) {
+    if (gFragment17TextBuffer[gFragment17TextState->unk_04] == 0) {
         return 1;
     }
 
-    if ((D_86B0F7C8[D_86B0EBE0->unk_04] == 0xA) || (D_86B0F7C8[D_86B0EBE0->unk_04] == 0x20)) {
-        D_86B0F8C8[D_86B0EBE0->unk_04] = D_86B0F7C8[D_86B0EBE0->unk_04];
-        D_86B0EBE0->unk_04++;
+    if ((gFragment17TextBuffer[gFragment17TextState->unk_04] == 0xA) || (gFragment17TextBuffer[gFragment17TextState->unk_04] == 0x20)) {
+        gFragment17TextBuffer2[gFragment17TextState->unk_04] = gFragment17TextBuffer[gFragment17TextState->unk_04];
+        gFragment17TextState->unk_04++;
     }
 
-    if ((D_86B0F7C8[D_86B0EBE0->unk_04] >= 0x21) && (D_86B0F7C8[D_86B0EBE0->unk_04] < 0x40)) {
-        D_86B0F8C8[D_86B0EBE0->unk_04] = D_86B0F7C8[D_86B0EBE0->unk_04];
-        D_86B0EBE0->unk_04++;
+    if ((gFragment17TextBuffer[gFragment17TextState->unk_04] >= 0x21) && (gFragment17TextBuffer[gFragment17TextState->unk_04] < 0x40)) {
+        gFragment17TextBuffer2[gFragment17TextState->unk_04] = gFragment17TextBuffer[gFragment17TextState->unk_04];
+        gFragment17TextState->unk_04++;
     } else {
-        if ((D_86B0F7C8[D_86B0EBE0->unk_04] == 0xA) || (D_86B0F7C8[D_86B0EBE0->unk_04] == 0x20)) {
-            D_86B0F8C8[D_86B0EBE0->unk_04] = D_86B0F7C8[D_86B0EBE0->unk_04];
-            D_86B0EBE0->unk_04++;
+        if ((gFragment17TextBuffer[gFragment17TextState->unk_04] == 0xA) || (gFragment17TextBuffer[gFragment17TextState->unk_04] == 0x20)) {
+            gFragment17TextBuffer2[gFragment17TextState->unk_04] = gFragment17TextBuffer[gFragment17TextState->unk_04];
+            gFragment17TextState->unk_04++;
         }
-        D_86B0F8C8[D_86B0EBE0->unk_04] = D_86B0F7C8[D_86B0EBE0->unk_04];
-        D_86B0F8C8[D_86B0EBE0->unk_04 + 1] = D_86B0F7C8[D_86B0EBE0->unk_04 + 1];
-        D_86B0EBE0->unk_04++;
+        gFragment17TextBuffer2[gFragment17TextState->unk_04] = gFragment17TextBuffer[gFragment17TextState->unk_04];
+        gFragment17TextBuffer2[gFragment17TextState->unk_04 + 1] = gFragment17TextBuffer[gFragment17TextState->unk_04 + 1];
+        gFragment17TextState->unk_04++;
     }
 
-    D_86B0EBE0->unk_18 = 0;
-    if (D_86B0F7C8[D_86B0EBE0->unk_04] == 0) {
-        D_86B0EBE0->unk_18 = 1;
-        D_86B0EBE0->unk_1C = 0;
-        D_86B0EBE0->unk_1A = D_86B0DB98[D_86B0EBE0->unk_1C].unk_04;
+    gFragment17TextState->unk_18 = 0;
+    if (gFragment17TextBuffer[gFragment17TextState->unk_04] == 0) {
+        gFragment17TextState->unk_18 = 1;
+        gFragment17TextState->unk_1C = 0;
+        gFragment17TextState->unk_1A = gFragment17CursorIconAnimTable[gFragment17TextState->unk_1C].unk_04;
     }
 
     return 0;
@@ -942,16 +942,16 @@ void Completion_DrawSpeciesRewardText(s16 arg0, s16 arg1) {
     Font_BeginTranslucentTextRendering();
     Font_SetActive(2, 0);
     Font_SetLineHeight(0x10);
-    Text_SetStringToken(0x1F, Text_GetString(NULL, 0, D_86B0EBD4, D_86B0EBDC->unk_2EC - 1));
-    Text_GetString(D_86B0F7C8, 0xFF, D_86B0EBD0, 0xA5);
-    Font_Printf((arg0 - (Font_MeasureTextExtent(2, 0, D_86B0F7C8) / 2)) + 0x5A, arg1 + 5, D_86B0F7C8);
-    Font_Printf(arg0 + 0x28, arg1 + 0x19, Text_GetString(NULL, 0, D_86B0EBD0, 0xA2));
-    Font_Printf(arg0 + 0x69, arg1 + 0x19, Text_GetString(NULL, 0, D_86B0EBD0, 0xA3));
+    Text_SetStringToken(0x1F, Text_GetString(NULL, 0, gFragment17MsgBank1, gCompletionSceneState->unk_2EC - 1));
+    Text_GetString(gFragment17TextBuffer, 0xFF, gFragment17MsgBank0, 0xA5);
+    Font_Printf((arg0 - (Font_MeasureTextExtent(2, 0, gFragment17TextBuffer) / 2)) + 0x5A, arg1 + 5, gFragment17TextBuffer);
+    Font_Printf(arg0 + 0x28, arg1 + 0x19, Text_GetString(NULL, 0, gFragment17MsgBank0, 0xA2));
+    Font_Printf(arg0 + 0x69, arg1 + 0x19, Text_GetString(NULL, 0, gFragment17MsgBank0, 0xA3));
     Font_EndTexturedTextRendering();
 
-    gSPDisplayList(gDisplayListHead++, D_8006F5A0);
+    gSPDisplayList(gDisplayListHead++, gDL_PalettedIcon);
 
-    if (D_86B0EBDC->unk_2F0 == 1) {
+    if (gCompletionSceneState->unk_2F0 == 1) {
         Gfx_DrawTextureRgba16Ia8(arg0 + 0x14, arg1 + 0x19, 0x18, 0xE, D_300B6E0, D_300B980, 0x18, 0x100000);
     } else {
         Gfx_DrawTextureRgba16Ia8(arg0 + 0x55, arg1 + 0x19, 0x18, 0xE, D_300B6E0, D_300B980, 0x18, 0x100000);
@@ -964,114 +964,114 @@ void Completion_DrawWrappedDialogText(s16 arg0, s16 arg1) {
     Font_BeginTranslucentTextRendering();
     Font_SetActive(2, 0);
     Font_SetLineHeight(0x10);
-    Font_Printf(arg0 + 0x10, arg1 + 5, "%s", D_86B0F8C8);
+    Font_Printf(arg0 + 0x10, arg1 + 5, "%s", gFragment17TextBuffer2);
     Font_EndTexturedTextRendering();
 }
 
 void Completion_ResetDialogText(void) {
     s32 i;
 
-    D_86B0EBE0->unk_10 = 0;
-    D_86B0EBE0->unk_04 = 0;
+    gFragment17TextState->unk_10 = 0;
+    gFragment17TextState->unk_04 = 0;
 
     // clang-format off
-    for (i = 0; i < 255; i++) { D_86B0F8C8[i] = 0; }
+    for (i = 0; i < 255; i++) { gFragment17TextBuffer2[i] = 0; }
     // clang-format on
 }
 
 void Completion_DrawDialogBox(void) {
-    FirstClearBonus_DrawDialogFrame(D_86B0EBE0->unk_16, D_86B0EBE0->unk_14 - (D_86B0EBE0->unk_0C / 2), D_86B0EBE0->unk_08,
-                  D_86B0EBE0->unk_0C, 0x14, 0x14, 0xB4, 0x80);
-    UI_DrawAlphaQuad(D_86B0EBE0->unk_16 - 2, (D_86B0EBE0->unk_14 - (D_86B0EBE0->unk_0C / 2)) - 2, D_86B0EBE0->unk_08 + 4,
-                  D_86B0EBE0->unk_0C + 4, 0);
+    FirstClearBonus_DrawDialogFrame(gFragment17TextState->unk_16, gFragment17TextState->unk_14 - (gFragment17TextState->unk_0C / 2), gFragment17TextState->unk_08,
+                  gFragment17TextState->unk_0C, 0x14, 0x14, 0xB4, 0x80);
+    UI_DrawAlphaQuad(gFragment17TextState->unk_16 - 2, (gFragment17TextState->unk_14 - (gFragment17TextState->unk_0C / 2)) - 2, gFragment17TextState->unk_08 + 4,
+                  gFragment17TextState->unk_0C + 4, 0);
 }
 
 void Completion_UpdateGiftDialogFirstTime(void) {
     s32 i;
     s32 temp_v0;
 
-    switch (D_86B0EBE0->unk_00) {
+    switch (gFragment17TextState->unk_00) {
         case 0:
             if (gSessionContext.mode == 0x1A) {
-                sprintf(D_86B0F7C8, Text_GetString(NULL, 0, D_86B0EBD0, 0x96));
+                sprintf(gFragment17TextBuffer, Text_GetString(NULL, 0, gFragment17MsgBank0, 0x96));
             } else {
-                Text_SetStringToken(0x1F, Text_GetString(NULL, 0, D_86B0EBD4, D_86B0EBDC->unk_2EC - 1));
-                Text_GetString(D_86B0F7C8, 0xFF, D_86B0EBD0, D_86B0DB70);
+                Text_SetStringToken(0x1F, Text_GetString(NULL, 0, gFragment17MsgBank1, gCompletionSceneState->unk_2EC - 1));
+                Text_GetString(gFragment17TextBuffer, 0xFF, gFragment17MsgBank0, gFragment17MsgId_Intro);
             }
 
-            D_86B0EBE0->unk_04 = 0;
-            D_86B0EBE0->unk_08 = 0xB4;
-            D_86B0EBE0->unk_0C = 0xA;
-            D_86B0EBE0->unk_16 = 0x46;
-            D_86B0EBE0->unk_14 = 0xC8;
+            gFragment17TextState->unk_04 = 0;
+            gFragment17TextState->unk_08 = 0xB4;
+            gFragment17TextState->unk_0C = 0xA;
+            gFragment17TextState->unk_16 = 0x46;
+            gFragment17TextState->unk_14 = 0xC8;
 
             // clang-format off
-            for (i = 0; i < 255; i++) { D_86B0F8C8[i] = 0; }
+            for (i = 0; i < 255; i++) { gFragment17TextBuffer2[i] = 0; }
             // clang-format on
 
             Completion_DrawDialogBox();
-            D_86B0EBE0->unk_00++;
+            gFragment17TextState->unk_00++;
             break;
 
         case 1:
-            temp_v0 = Math_StepToS32(D_86B0EBE0->unk_0C, 0x37, 0xA, 0xA);
-            D_86B0EBE0->unk_0C = temp_v0;
+            temp_v0 = Math_StepToS32(gFragment17TextState->unk_0C, 0x37, 0xA, 0xA);
+            gFragment17TextState->unk_0C = temp_v0;
             if (temp_v0 == 0x37) {
-                D_86B0EBE0->unk_00++;
+                gFragment17TextState->unk_00++;
             }
             Completion_DrawDialogBox();
-            D_86B0EBE0->unk_10 = 0;
+            gFragment17TextState->unk_10 = 0;
             break;
 
         case 2:
             Completion_DrawDialogBox();
-            Completion_DrawWrappedDialogText(D_86B0EBE0->unk_16, D_86B0EBE0->unk_14 - (D_86B0EBE0->unk_0C / 2));
+            Completion_DrawWrappedDialogText(gFragment17TextState->unk_16, gFragment17TextState->unk_14 - (gFragment17TextState->unk_0C / 2));
             if (Completion_WrapDialogText() != 0) {
-                if (D_86B0EBE0->unk_18 == 0) {
-                    D_86B0EBE0->unk_10 = 0;
-                    D_86B0EBE0->unk_04 = 0;
+                if (gFragment17TextState->unk_18 == 0) {
+                    gFragment17TextState->unk_10 = 0;
+                    gFragment17TextState->unk_04 = 0;
 
                     // clang-format off
-                    for (i = 0; i < 255; i++) { D_86B0F8C8[i] = 0; }
+                    for (i = 0; i < 255; i++) { gFragment17TextBuffer2[i] = 0; }
                     // clang-format on
 
-                    Text_SetStringToken(0x1F, Text_GetString(NULL, 0, D_86B0EBD4, D_86B0EBDC->unk_2EC - 1));
-                    Text_GetString(D_86B0F7C8, 0xFF, D_86B0EBD0, D_86B0DB74);
-                    D_86B0EBE0->unk_00++;
+                    Text_SetStringToken(0x1F, Text_GetString(NULL, 0, gFragment17MsgBank1, gCompletionSceneState->unk_2EC - 1));
+                    Text_GetString(gFragment17TextBuffer, 0xFF, gFragment17MsgBank0, gFragment17MsgId_Confirm);
+                    gFragment17TextState->unk_00++;
                 }
             }
             break;
 
         case 3:
             Completion_DrawDialogBox();
-            Completion_DrawWrappedDialogText(D_86B0EBE0->unk_16, D_86B0EBE0->unk_14 - (D_86B0EBE0->unk_0C / 2));
-            if ((Completion_WrapDialogText() != 0) && (D_86B0EBE0->unk_18 == 0)) {
-                D_86B0EBDC->unk_2F0 = 1;
-                D_86B0EBE0->unk_10 = 0;
-                D_86B0EBE0->unk_04 = 0;
+            Completion_DrawWrappedDialogText(gFragment17TextState->unk_16, gFragment17TextState->unk_14 - (gFragment17TextState->unk_0C / 2));
+            if ((Completion_WrapDialogText() != 0) && (gFragment17TextState->unk_18 == 0)) {
+                gCompletionSceneState->unk_2F0 = 1;
+                gFragment17TextState->unk_10 = 0;
+                gFragment17TextState->unk_04 = 0;
 
                 // clang-format off
-                for (i = 0; i < 255; i++) { D_86B0F8C8[i] = 0; }
+                for (i = 0; i < 255; i++) { gFragment17TextBuffer2[i] = 0; }
                 // clang-format on
 
-                sprintf(D_86B0F7C8, Text_GetString(NULL, 0, D_86B0EBD0, D_86B0DB78));
-                Cry_Play(D_86B0EBDC->unk_2EC, 2);
-                ModelAnim_SetAnimation(&D_86B0EBDC->unk_170, *D_86B0F648);
-                D_86B0EBE0->unk_00++;
+                sprintf(gFragment17TextBuffer, Text_GetString(NULL, 0, gFragment17MsgBank0, gFragment17MsgId_Success));
+                Cry_Play(gCompletionSceneState->unk_2EC, 2);
+                ModelAnim_SetAnimation(&gCompletionSceneState->unk_170, *gFragment17ActionTable);
+                gFragment17TextState->unk_00++;
             }
             break;
 
         case 4:
             Completion_DrawDialogBox();
-            Completion_DrawWrappedDialogText(D_86B0EBE0->unk_16, D_86B0EBE0->unk_14 - (D_86B0EBE0->unk_0C / 2));
-            if ((Completion_WrapDialogText() != 0) && (D_86B0EBE0->unk_18 == 0)) {
-                D_86B0EBE0->unk_00 = 0xC;
+            Completion_DrawWrappedDialogText(gFragment17TextState->unk_16, gFragment17TextState->unk_14 - (gFragment17TextState->unk_0C / 2));
+            if ((Completion_WrapDialogText() != 0) && (gFragment17TextState->unk_18 == 0)) {
+                gFragment17TextState->unk_00 = 0xC;
             }
             break;
 
         case 12:
             Completion_DrawDialogBox();
-            Completion_DrawWrappedDialogText(D_86B0EBE0->unk_16, D_86B0EBE0->unk_14 - (D_86B0EBE0->unk_0C / 2));
+            Completion_DrawWrappedDialogText(gFragment17TextState->unk_16, gFragment17TextState->unk_14 - (gFragment17TextState->unk_0C / 2));
             break;
     }
 }
@@ -1080,203 +1080,203 @@ void Completion_UpdateGiftDialogWithExisting(void) {
     s32 i;
     s32 temp_v0;
 
-    switch (D_86B0EBE0->unk_00) {
+    switch (gFragment17TextState->unk_00) {
         case 0:
             if (gSessionContext.mode == 0x1A) {
-                sprintf(D_86B0F7C8, Text_GetString(NULL, 0, D_86B0EBD0, 0x96));
+                sprintf(gFragment17TextBuffer, Text_GetString(NULL, 0, gFragment17MsgBank0, 0x96));
             } else {
-                Text_SetStringToken(0x1F, Text_GetString(NULL, 0, D_86B0EBD4, D_86B0EBDC->unk_2EC - 1));
-                Text_GetString(D_86B0F7C8, 0xFF, D_86B0EBD0, D_86B0DB7C);
+                Text_SetStringToken(0x1F, Text_GetString(NULL, 0, gFragment17MsgBank1, gCompletionSceneState->unk_2EC - 1));
+                Text_GetString(gFragment17TextBuffer, 0xFF, gFragment17MsgBank0, gFragment17MsgId_IntroWithExisting);
             }
-            D_86B0EBE0->unk_04 = 0;
-            D_86B0EBE0->unk_08 = 0xB4;
-            D_86B0EBE0->unk_0C = 0xA;
-            D_86B0EBE0->unk_16 = 0x46;
-            D_86B0EBE0->unk_14 = 0xC8;
+            gFragment17TextState->unk_04 = 0;
+            gFragment17TextState->unk_08 = 0xB4;
+            gFragment17TextState->unk_0C = 0xA;
+            gFragment17TextState->unk_16 = 0x46;
+            gFragment17TextState->unk_14 = 0xC8;
 
             // clang-format off
-            for (i = 0; i < 255; i++) { D_86B0F8C8[i] = 0; }
+            for (i = 0; i < 255; i++) { gFragment17TextBuffer2[i] = 0; }
             // clang-format on
 
             Completion_DrawDialogBox();
-            D_86B0EBE0->unk_00++;
+            gFragment17TextState->unk_00++;
             break;
 
         case 1:
-            temp_v0 = Math_StepToS32(D_86B0EBE0->unk_0C, 0x37, 0xA, 0xA);
-            D_86B0EBE0->unk_0C = temp_v0;
+            temp_v0 = Math_StepToS32(gFragment17TextState->unk_0C, 0x37, 0xA, 0xA);
+            gFragment17TextState->unk_0C = temp_v0;
             if (temp_v0 == 0x37) {
-                D_86B0EBE0->unk_00++;
+                gFragment17TextState->unk_00++;
             }
             Completion_DrawDialogBox();
-            D_86B0EBE0->unk_10 = 0;
+            gFragment17TextState->unk_10 = 0;
             break;
 
         case 2:
             Completion_DrawDialogBox();
-            Completion_DrawWrappedDialogText(D_86B0EBE0->unk_16, D_86B0EBE0->unk_14 - (D_86B0EBE0->unk_0C / 2));
+            Completion_DrawWrappedDialogText(gFragment17TextState->unk_16, gFragment17TextState->unk_14 - (gFragment17TextState->unk_0C / 2));
             if (Completion_WrapDialogText() != 0) {
-                if (D_86B0EBE0->unk_18 == 0) {
-                    D_86B0EBE0->unk_10 = 0;
-                    D_86B0EBE0->unk_04 = 0;
+                if (gFragment17TextState->unk_18 == 0) {
+                    gFragment17TextState->unk_10 = 0;
+                    gFragment17TextState->unk_04 = 0;
 
                     // clang-format off
-                    for (i = 0; i < 255; i++) { D_86B0F8C8[i] = 0; }
+                    for (i = 0; i < 255; i++) { gFragment17TextBuffer2[i] = 0; }
                     // clang-format on
 
-                    sprintf(D_86B0F7C8, Text_GetString(NULL, 0, D_86B0EBD0, D_86B0DB80));
-                    D_86B0EBE0->unk_00++;
+                    sprintf(gFragment17TextBuffer, Text_GetString(NULL, 0, gFragment17MsgBank0, gFragment17MsgId_ConfirmWithExisting));
+                    gFragment17TextState->unk_00++;
                 }
             }
             break;
 
         case 3:
             Completion_DrawDialogBox();
-            Completion_DrawWrappedDialogText(D_86B0EBE0->unk_16, D_86B0EBE0->unk_14 - (D_86B0EBE0->unk_0C / 2));
+            Completion_DrawWrappedDialogText(gFragment17TextState->unk_16, gFragment17TextState->unk_14 - (gFragment17TextState->unk_0C / 2));
             if (Completion_WrapDialogText() != 0) {
-                if (D_86B0EBE0->unk_18 == 0) {
-                    D_86B0EBE0->unk_10 = 0;
-                    D_86B0EBE0->unk_04 = 0;
+                if (gFragment17TextState->unk_18 == 0) {
+                    gFragment17TextState->unk_10 = 0;
+                    gFragment17TextState->unk_04 = 0;
 
                     // clang-format off
-                    for (i = 0; i < 255; i++) { D_86B0F8C8[i] = 0; }
+                    for (i = 0; i < 255; i++) { gFragment17TextBuffer2[i] = 0; }
                     // clang-format on
 
-                    sprintf(D_86B0F7C8, Text_GetString(NULL, 0, D_86B0EBD0, D_86B0DB84));
-                    D_86B0EBE0->unk_00++;
+                    sprintf(gFragment17TextBuffer, Text_GetString(NULL, 0, gFragment17MsgBank0, gFragment17MsgId_SuccessWithExisting));
+                    gFragment17TextState->unk_00++;
                 }
             }
             break;
 
         case 4:
             Completion_DrawDialogBox();
-            Completion_DrawWrappedDialogText(D_86B0EBE0->unk_16, D_86B0EBE0->unk_14 - (D_86B0EBE0->unk_0C / 2));
+            Completion_DrawWrappedDialogText(gFragment17TextState->unk_16, gFragment17TextState->unk_14 - (gFragment17TextState->unk_0C / 2));
             if (Completion_WrapDialogText() != 0) {
-                if (D_86B0EBE0->unk_18 == 0) {
-                    D_86B0EBE0->unk_10 = 0;
-                    D_86B0EBE0->unk_04 = 0;
+                if (gFragment17TextState->unk_18 == 0) {
+                    gFragment17TextState->unk_10 = 0;
+                    gFragment17TextState->unk_04 = 0;
 
                     // clang-format off
-                    for (i = 0; i < 255; i++) { D_86B0F8C8[i] = 0; }
+                    for (i = 0; i < 255; i++) { gFragment17TextBuffer2[i] = 0; }
                     // clang-format on
 
-                    Text_SetStringToken(0x20, Text_GetString(NULL, 0, D_86B0EBD4, D_86B0EBDC->unk_2E8 - 1));
-                    Text_SetStringToken(0x1F, Text_GetString(NULL, 0, D_86B0EBD4, D_86B0EBDC->unk_2EC - 1));
-                    Text_GetString(D_86B0F7C8, 0xFF, D_86B0EBD0, D_86B0DB88);
-                    D_86B0EBE0->unk_00++;
+                    Text_SetStringToken(0x20, Text_GetString(NULL, 0, gFragment17MsgBank1, gCompletionSceneState->unk_2E8 - 1));
+                    Text_SetStringToken(0x1F, Text_GetString(NULL, 0, gFragment17MsgBank1, gCompletionSceneState->unk_2EC - 1));
+                    Text_GetString(gFragment17TextBuffer, 0xFF, gFragment17MsgBank0, gFragment17MsgId_Failure);
+                    gFragment17TextState->unk_00++;
                 }
             }
             break;
 
         case 5:
             Completion_DrawDialogBox();
-            Completion_DrawWrappedDialogText(D_86B0EBE0->unk_16, D_86B0EBE0->unk_14 - (D_86B0EBE0->unk_0C / 2));
+            Completion_DrawWrappedDialogText(gFragment17TextState->unk_16, gFragment17TextState->unk_14 - (gFragment17TextState->unk_0C / 2));
             if (Completion_WrapDialogText() != 0) {
-                if (D_86B0EBE0->unk_18 == 0) {
-                    D_86B0EBE0->unk_10 = 0;
-                    D_86B0EBE0->unk_04 = 0;
+                if (gFragment17TextState->unk_18 == 0) {
+                    gFragment17TextState->unk_10 = 0;
+                    gFragment17TextState->unk_04 = 0;
 
                     // clang-format off
-                    for (i = 0; i < 255; i++) { D_86B0F8C8[i] = 0; }
+                    for (i = 0; i < 255; i++) { gFragment17TextBuffer2[i] = 0; }
                     // clang-format on
 
-                    D_86B0EBE0->unk_00 = 0xD;
+                    gFragment17TextState->unk_00 = 0xD;
                 }
             }
             break;
 
         case 6:
             Completion_DrawDialogBox();
-            Completion_DrawWrappedDialogText(D_86B0EBE0->unk_16, D_86B0EBE0->unk_14 - (D_86B0EBE0->unk_0C / 2));
+            Completion_DrawWrappedDialogText(gFragment17TextState->unk_16, gFragment17TextState->unk_14 - (gFragment17TextState->unk_0C / 2));
             if (Completion_WrapDialogText() != 0) {
-                if (D_86B0EBE0->unk_18 == 0) {
-                    D_86B0EBE0->unk_10 = 0;
-                    D_86B0EBE0->unk_04 = 0;
+                if (gFragment17TextState->unk_18 == 0) {
+                    gFragment17TextState->unk_10 = 0;
+                    gFragment17TextState->unk_04 = 0;
 
                     // clang-format off
-                    for (i = 0; i < 255; i++) { D_86B0F8C8[i] = 0; }
+                    for (i = 0; i < 255; i++) { gFragment17TextBuffer2[i] = 0; }
                     // clang-format on
 
-                    sprintf(D_86B0F7C8, Text_GetString(NULL, 0, D_86B0EBD0, D_86B0DB90));
-                    D_86B0EBE0->unk_00++;
+                    sprintf(gFragment17TextBuffer, Text_GetString(NULL, 0, gFragment17MsgBank0, gFragment17MsgId_Complete));
+                    gFragment17TextState->unk_00++;
                 }
             }
             break;
 
         case 7:
             Completion_DrawDialogBox();
-            Completion_DrawWrappedDialogText(D_86B0EBE0->unk_16, D_86B0EBE0->unk_14 - (D_86B0EBE0->unk_0C / 2));
-            if ((Completion_WrapDialogText() != 0) && (D_86B0EBE0->unk_18 == 0)) {
-                D_86B0EBE0->unk_00 = 0xC;
+            Completion_DrawWrappedDialogText(gFragment17TextState->unk_16, gFragment17TextState->unk_14 - (gFragment17TextState->unk_0C / 2));
+            if ((Completion_WrapDialogText() != 0) && (gFragment17TextState->unk_18 == 0)) {
+                gFragment17TextState->unk_00 = 0xC;
             }
             break;
 
         case 13:
-            D_86B0EBE0->unk_18 = 0;
+            gFragment17TextState->unk_18 = 0;
             Completion_DrawDialogBox();
-            Completion_DrawSpeciesRewardText(D_86B0EBE0->unk_16, D_86B0EBE0->unk_14 - (D_86B0EBE0->unk_0C / 2));
+            Completion_DrawSpeciesRewardText(gFragment17TextState->unk_16, gFragment17TextState->unk_14 - (gFragment17TextState->unk_0C / 2));
             break;
 
         case 12:
             Completion_DrawDialogBox();
-            Completion_DrawWrappedDialogText(D_86B0EBE0->unk_16, D_86B0EBE0->unk_14 - (D_86B0EBE0->unk_0C / 2));
+            Completion_DrawWrappedDialogText(gFragment17TextState->unk_16, gFragment17TextState->unk_14 - (gFragment17TextState->unk_0C / 2));
             break;
     }
 }
 
 void Completion_DrawLogoBanner(void) {
-    UI_DrawSplitGradientPanel(D_30074E0, D_86B0EBD8->unk_00, D_86B0EBD8->unk_04, 0x50, 0x30, 0xA0, 0x30, 0, 0, 0x50, 0x30, 0x4F, 0,
-                  &D_86B0EBD8->unk_1C, 0);
-    UI_DrawSplitGradientPanel(D_30074E0, D_86B0EBD8->unk_00 + 0x50, D_86B0EBD8->unk_04, 0x50, 0x30, 0xA0, 0x30, 0x50, 0, 0xA0, 0x30,
-                  0x9F, 0x50, &D_86B0EBD8->unk_1C, 0);
-    UI_DrawSplitGradientPanel(D_30092E0, D_86B0EBD8->unk_08, D_86B0EBD8->unk_0C, 0x40, 0x30, 0xC0, 0x30, 0, 0, 0x40, 0x30, 0x3F, 0,
-                  &D_86B0EBD8->unk_1C, 1);
-    UI_DrawSplitGradientPanel(D_30092E0, D_86B0EBD8->unk_08 + 0x40, D_86B0EBD8->unk_0C, 0x40, 0x30, 0xC0, 0x30, 0x40, 0, 0x80, 0x30,
-                  0x7F, 0x40, &D_86B0EBD8->unk_1C, 1);
-    UI_DrawSplitGradientPanel(D_30092E0, D_86B0EBD8->unk_08 + 0x80, D_86B0EBD8->unk_0C, 0x40, 0x30, 0xC0, 0x30, 0x80, 0, 0xC0, 0x30,
-                  0xBF, 0x80, &D_86B0EBD8->unk_1C, 1);
+    UI_DrawSplitGradientPanel(D_30074E0, gFragment17TileStruct->unk_00, gFragment17TileStruct->unk_04, 0x50, 0x30, 0xA0, 0x30, 0, 0, 0x50, 0x30, 0x4F, 0,
+                  &gFragment17TileStruct->unk_1C, 0);
+    UI_DrawSplitGradientPanel(D_30074E0, gFragment17TileStruct->unk_00 + 0x50, gFragment17TileStruct->unk_04, 0x50, 0x30, 0xA0, 0x30, 0x50, 0, 0xA0, 0x30,
+                  0x9F, 0x50, &gFragment17TileStruct->unk_1C, 0);
+    UI_DrawSplitGradientPanel(D_30092E0, gFragment17TileStruct->unk_08, gFragment17TileStruct->unk_0C, 0x40, 0x30, 0xC0, 0x30, 0, 0, 0x40, 0x30, 0x3F, 0,
+                  &gFragment17TileStruct->unk_1C, 1);
+    UI_DrawSplitGradientPanel(D_30092E0, gFragment17TileStruct->unk_08 + 0x40, gFragment17TileStruct->unk_0C, 0x40, 0x30, 0xC0, 0x30, 0x40, 0, 0x80, 0x30,
+                  0x7F, 0x40, &gFragment17TileStruct->unk_1C, 1);
+    UI_DrawSplitGradientPanel(D_30092E0, gFragment17TileStruct->unk_08 + 0x80, gFragment17TileStruct->unk_0C, 0x40, 0x30, 0xC0, 0x30, 0x80, 0, 0xC0, 0x30,
+                  0xBF, 0x80, &gFragment17TileStruct->unk_1C, 1);
 }
 
 s32 Completion_AnimateLogoBannerColor(void) {
-    D_86B0EBD8->unk_1C.unk_00.unk_00 = Math_StepToS32(
-        D_86B0EBD8->unk_1C.unk_00.unk_00, D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_00.unk_00,
-        D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_18.unk_00, D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_18.unk_00);
-    D_86B0EBD8->unk_1C.unk_00.unk_02 = Math_StepToS32(
-        D_86B0EBD8->unk_1C.unk_00.unk_02, D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_00.unk_02,
-        D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_18.unk_02, D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_18.unk_02);
-    D_86B0EBD8->unk_1C.unk_00.unk_04 = Math_StepToS32(
-        D_86B0EBD8->unk_1C.unk_00.unk_04, D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_00.unk_04,
-        D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_18.unk_04, D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_18.unk_04);
-    D_86B0EBD8->unk_1C.unk_00.unk_06 = Math_StepToS32(
-        D_86B0EBD8->unk_1C.unk_00.unk_06, D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_00.unk_06,
-        D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_18.unk_06, D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_18.unk_06);
-    D_86B0EBD8->unk_1C.unk_00.unk_08 = Math_StepToS32(
-        D_86B0EBD8->unk_1C.unk_00.unk_08, D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_00.unk_08,
-        D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_18.unk_08, D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_18.unk_08);
-    D_86B0EBD8->unk_1C.unk_00.unk_0A = Math_StepToS32(
-        D_86B0EBD8->unk_1C.unk_00.unk_0A, D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_00.unk_0A,
-        D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_18.unk_0A, D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_18.unk_0A);
-    D_86B0EBD8->unk_1C.unk_00.unk_0C = Math_StepToS32(
-        D_86B0EBD8->unk_1C.unk_00.unk_0C, D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_00.unk_0C,
-        D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_18.unk_0C, D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_18.unk_0C);
-    D_86B0EBD8->unk_1C.unk_00.unk_0E = Math_StepToS32(
-        D_86B0EBD8->unk_1C.unk_00.unk_0E, D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_00.unk_0E,
-        D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_18.unk_0E, D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_18.unk_0E);
-    D_86B0EBD8->unk_1C.unk_00.unk_10 = Math_StepToS32(
-        D_86B0EBD8->unk_1C.unk_00.unk_10, D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_00.unk_10,
-        D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_18.unk_10, D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_18.unk_10);
+    gFragment17TileStruct->unk_1C.unk_00.unk_00 = Math_StepToS32(
+        gFragment17TileStruct->unk_1C.unk_00.unk_00, gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_00.unk_00,
+        gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_18.unk_00, gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_18.unk_00);
+    gFragment17TileStruct->unk_1C.unk_00.unk_02 = Math_StepToS32(
+        gFragment17TileStruct->unk_1C.unk_00.unk_02, gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_00.unk_02,
+        gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_18.unk_02, gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_18.unk_02);
+    gFragment17TileStruct->unk_1C.unk_00.unk_04 = Math_StepToS32(
+        gFragment17TileStruct->unk_1C.unk_00.unk_04, gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_00.unk_04,
+        gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_18.unk_04, gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_18.unk_04);
+    gFragment17TileStruct->unk_1C.unk_00.unk_06 = Math_StepToS32(
+        gFragment17TileStruct->unk_1C.unk_00.unk_06, gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_00.unk_06,
+        gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_18.unk_06, gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_18.unk_06);
+    gFragment17TileStruct->unk_1C.unk_00.unk_08 = Math_StepToS32(
+        gFragment17TileStruct->unk_1C.unk_00.unk_08, gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_00.unk_08,
+        gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_18.unk_08, gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_18.unk_08);
+    gFragment17TileStruct->unk_1C.unk_00.unk_0A = Math_StepToS32(
+        gFragment17TileStruct->unk_1C.unk_00.unk_0A, gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_00.unk_0A,
+        gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_18.unk_0A, gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_18.unk_0A);
+    gFragment17TileStruct->unk_1C.unk_00.unk_0C = Math_StepToS32(
+        gFragment17TileStruct->unk_1C.unk_00.unk_0C, gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_00.unk_0C,
+        gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_18.unk_0C, gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_18.unk_0C);
+    gFragment17TileStruct->unk_1C.unk_00.unk_0E = Math_StepToS32(
+        gFragment17TileStruct->unk_1C.unk_00.unk_0E, gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_00.unk_0E,
+        gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_18.unk_0E, gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_18.unk_0E);
+    gFragment17TileStruct->unk_1C.unk_00.unk_10 = Math_StepToS32(
+        gFragment17TileStruct->unk_1C.unk_00.unk_10, gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_00.unk_10,
+        gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_18.unk_10, gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_18.unk_10);
 
-    if ((D_86B0EBD8->unk_1C.unk_00.unk_00 == D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_00.unk_00) &&
-        (D_86B0EBD8->unk_1C.unk_00.unk_02 == D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_00.unk_02) &&
-        (D_86B0EBD8->unk_1C.unk_00.unk_04 == D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_00.unk_04) &&
-        (D_86B0EBD8->unk_1C.unk_00.unk_06 == D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_00.unk_06) &&
-        (D_86B0EBD8->unk_1C.unk_00.unk_08 == D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_00.unk_08) &&
-        (D_86B0EBD8->unk_1C.unk_00.unk_0A == D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_00.unk_0A) &&
-        (D_86B0EBD8->unk_1C.unk_00.unk_0C == D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_00.unk_0C) &&
-        (D_86B0EBD8->unk_1C.unk_00.unk_0E == D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_00.unk_0E) &&
-        (D_86B0EBD8->unk_1C.unk_00.unk_10 == D_86B0DAE0[D_86B0EBD8->unk_18 + 1].unk_00.unk_10)) {
-        D_86B0EBD8->unk_18++;
-        if (D_86B0EBD8->unk_18 == 2) {
+    if ((gFragment17TileStruct->unk_1C.unk_00.unk_00 == gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_00.unk_00) &&
+        (gFragment17TileStruct->unk_1C.unk_00.unk_02 == gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_00.unk_02) &&
+        (gFragment17TileStruct->unk_1C.unk_00.unk_04 == gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_00.unk_04) &&
+        (gFragment17TileStruct->unk_1C.unk_00.unk_06 == gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_00.unk_06) &&
+        (gFragment17TileStruct->unk_1C.unk_00.unk_08 == gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_00.unk_08) &&
+        (gFragment17TileStruct->unk_1C.unk_00.unk_0A == gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_00.unk_0A) &&
+        (gFragment17TileStruct->unk_1C.unk_00.unk_0C == gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_00.unk_0C) &&
+        (gFragment17TileStruct->unk_1C.unk_00.unk_0E == gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_00.unk_0E) &&
+        (gFragment17TileStruct->unk_1C.unk_00.unk_10 == gFragment17TileParams[gFragment17TileStruct->unk_18 + 1].unk_00.unk_10)) {
+        gFragment17TileStruct->unk_18++;
+        if (gFragment17TileStruct->unk_18 == 2) {
             return 1;
         }
     }
@@ -1285,43 +1285,43 @@ s32 Completion_AnimateLogoBannerColor(void) {
 }
 
 Gfx* Completion_DrawBlinkingCursorIcon(void) {
-    if (D_86B0EBE0->unk_18 == 1) {
-        if (!D_86B0EBE0->unk_1A--) {
-            D_86B0EBE0->unk_1C++;
-            if (D_86B0DB98[D_86B0EBE0->unk_1C].unk_00 == 0) {
-                D_86B0EBE0->unk_1C = 0;
+    if (gFragment17TextState->unk_18 == 1) {
+        if (!gFragment17TextState->unk_1A--) {
+            gFragment17TextState->unk_1C++;
+            if (gFragment17CursorIconAnimTable[gFragment17TextState->unk_1C].unk_00 == 0) {
+                gFragment17TextState->unk_1C = 0;
             }
-            D_86B0EBE0->unk_1A = D_86B0DB98[D_86B0EBE0->unk_1C].unk_04;
+            gFragment17TextState->unk_1A = gFragment17CursorIconAnimTable[gFragment17TextState->unk_1C].unk_04;
         }
 
         gSPDisplayList(gDisplayListHead++, gUiEnvTintTextureDL);
 
-        Gfx_DrawTextureRgba32(D_86B0EBE0->unk_16 + 0x9E, D_86B0EBE0->unk_14 + 9, 0x10, 0x10,
-                      D_86B0DB98[D_86B0EBE0->unk_1C].unk_00, 0x10, 0);
+        Gfx_DrawTextureRgba32(gFragment17TextState->unk_16 + 0x9E, gFragment17TextState->unk_14 + 9, 0x10, 0x10,
+                      gFragment17CursorIconAnimTable[gFragment17TextState->unk_1C].unk_00, 0x10, 0);
 
         gSPDisplayList(gDisplayListHead++, gUiRestoreTextureDL);
     }
 }
 
 s32 Completion_SlideLogoBannerIn(void) {
-    if (D_86B0EBD8->unk_04 == 0) {
+    if (gFragment17TileStruct->unk_04 == 0) {
         Audio_StartMusicTrack(0x3A);
     }
 
-    D_86B0EBD8->unk_04 = Math_StepToS32(D_86B0EBD8->unk_04, 0x3E, 0x19, 0x19);
-    D_86B0EBD8->unk_0C = Math_StepToS32(D_86B0EBD8->unk_0C, 0x82, 0x19, 0x19);
+    gFragment17TileStruct->unk_04 = Math_StepToS32(gFragment17TileStruct->unk_04, 0x3E, 0x19, 0x19);
+    gFragment17TileStruct->unk_0C = Math_StepToS32(gFragment17TileStruct->unk_0C, 0x82, 0x19, 0x19);
 
-    if ((D_86B0EBD8->unk_04 == 0x3E) && (D_86B0EBD8->unk_0C == 0x82)) {
+    if ((gFragment17TileStruct->unk_04 == 0x3E) && (gFragment17TileStruct->unk_0C == 0x82)) {
         return 1;
     }
     return 0;
 }
 
 s32 Completion_SlideLogoBannerOut(void) {
-    D_86B0EBD8->unk_04 = Math_StepToS32(D_86B0EBD8->unk_04, -0x32, 0x19, 0x19);
-    D_86B0EBD8->unk_0C = Math_StepToS32(D_86B0EBD8->unk_0C, 0x122, 0x19, 0x19);
+    gFragment17TileStruct->unk_04 = Math_StepToS32(gFragment17TileStruct->unk_04, -0x32, 0x19, 0x19);
+    gFragment17TileStruct->unk_0C = Math_StepToS32(gFragment17TileStruct->unk_0C, 0x122, 0x19, 0x19);
 
-    if ((D_86B0EBD8->unk_04 == -0x32) && (D_86B0EBD8->unk_0C == 0x122)) {
+    if ((gFragment17TileStruct->unk_04 == -0x32) && (gFragment17TileStruct->unk_0C == 0x122)) {
         return 1;
     }
     return 0;
@@ -1334,103 +1334,103 @@ s32 Completion_MoveCameraToFront(void) {
     tmp.y = 30.0f;
     tmp.z = 100.0f;
 
-    D_86B0EBC4->view.targetPosition.y = Math_StepToF(D_86B0EBC4->view.targetPosition.y, 45.0f, tmp.x / 65.0f, tmp.x / 65.0f);
-    D_86B0EBC4->view.eyePosition.y = Math_StepToF(D_86B0EBC4->view.eyePosition.y, 50.0f, tmp.y / 65.0f, tmp.y / 65.0f);
-    D_86B0EBC4->view.eyePosition.z = Math_StepToF(D_86B0EBC4->view.eyePosition.z, 190.0f, tmp.z / 60.0f, tmp.z / 60.0f);
+    gFragment17Camera->view.targetPosition.y = Math_StepToF(gFragment17Camera->view.targetPosition.y, 45.0f, tmp.x / 65.0f, tmp.x / 65.0f);
+    gFragment17Camera->view.eyePosition.y = Math_StepToF(gFragment17Camera->view.eyePosition.y, 50.0f, tmp.y / 65.0f, tmp.y / 65.0f);
+    gFragment17Camera->view.eyePosition.z = Math_StepToF(gFragment17Camera->view.eyePosition.z, 190.0f, tmp.z / 60.0f, tmp.z / 60.0f);
 
-    if (D_86B0EBC4->view.eyePosition.z >= 85.0f) {
-        D_86B0EBDC->unk_008.node.renderFlags |= 0x20;
-        D_86B0EBDC->unk_170.node.flags |= 1;
+    if (gFragment17Camera->view.eyePosition.z >= 85.0f) {
+        gCompletionSceneState->unk_008.node.renderFlags |= 0x20;
+        gCompletionSceneState->unk_170.node.flags |= 1;
         Completion_PositionBonusModel();
     }
 
-    if (D_86B0EBC4->view.eyePosition.z >= 190.0f) {
+    if (gFragment17Camera->view.eyePosition.z >= 190.0f) {
         return 1;
     }
     return 0;
 }
 
 void Completion_StartGiftDialog(void) {
-    D_86B0EBE0->unk_00 = 0;
+    gFragment17TextState->unk_00 = 0;
 }
 
 void Completion_AbortDialogToIdle(void) {
     s32 i;
 
-    D_86B0EBE0->unk_00 = 0xB;
+    gFragment17TextState->unk_00 = 0xB;
 
     // clang-format off
-    for (i = 0; i < 255; i++) { D_86B0F8C8[i] = 0; }
+    for (i = 0; i < 255; i++) { gFragment17TextBuffer2[i] = 0; }
     // clang-format on
 }
 
 void Completion_HandleAcceptDeclineInput(void) {
-    if (D_86B0EBE0->unk_00 == 0xD) {
+    if (gFragment17TextState->unk_00 == 0xD) {
         if (gPlayer1Controller->buttonPressed & 0x200) {
-            D_86B0EBDC->unk_2F0 = 1;
+            gCompletionSceneState->unk_2F0 = 1;
         }
 
         if (gPlayer1Controller->buttonPressed & 0x100) {
-            D_86B0EBDC->unk_2F0 = 0;
+            gCompletionSceneState->unk_2F0 = 0;
         }
 
         if ((gPlayer1Controller->buttonPressed & 0x200) || (gPlayer1Controller->buttonPressed & 0x100)) {
             Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
         }
 
-        if ((gPlayer1Controller->buttonPressed & 0x8000) && (D_86B0EBDC->unk_2F0 == 1)) {
+        if ((gPlayer1Controller->buttonPressed & 0x8000) && (gCompletionSceneState->unk_2F0 == 1)) {
             Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
-            D_86B0EBE0->unk_00 = 6;
+            gFragment17TextState->unk_00 = 6;
             Completion_ResetDialogText();
-            Text_SetStringToken(0x20, Text_GetString(NULL, 0, D_86B0EBD4, D_86B0EBDC->unk_2E8 - 1));
-            Text_SetStringToken(0x1F, Text_GetString(NULL, 0, D_86B0EBD4, D_86B0EBDC->unk_2EC - 1));
-            Text_GetString(D_86B0F7C8, 0xFF, D_86B0EBD0, D_86B0DB8C);
-            ModelAnim_SetAnimation(&D_86B0EBDC->unk_170, *D_86B0F648);
-            Cry_Play(D_86B0EBDC->unk_2EC, 2);
+            Text_SetStringToken(0x20, Text_GetString(NULL, 0, gFragment17MsgBank1, gCompletionSceneState->unk_2E8 - 1));
+            Text_SetStringToken(0x1F, Text_GetString(NULL, 0, gFragment17MsgBank1, gCompletionSceneState->unk_2EC - 1));
+            Text_GetString(gFragment17TextBuffer, 0xFF, gFragment17MsgBank0, gFragment17MsgId_Timeout);
+            ModelAnim_SetAnimation(&gCompletionSceneState->unk_170, *gFragment17ActionTable);
+            Cry_Play(gCompletionSceneState->unk_2EC, 2);
         }
 
-        if ((gPlayer1Controller->buttonPressed & 0x8000) && (D_86B0EBDC->unk_2F0 == 0)) {
+        if ((gPlayer1Controller->buttonPressed & 0x8000) && (gCompletionSceneState->unk_2F0 == 0)) {
             Audio_PlaySoundEffectById(SFX_MENU_BACK);
-            D_86B0EBE0->unk_00 = 7;
+            gFragment17TextState->unk_00 = 7;
             Completion_ResetDialogText();
-            Text_SetStringToken(0x1F, Text_GetString(NULL, 0, D_86B0EBD4, D_86B0EBDC->unk_2EC - 1));
-            Text_GetString(D_86B0F7C8, 0xFF, D_86B0EBD0, D_86B0DB94);
-            ModelAnim_SetSpeed(&D_86B0EBDC->unk_008, -1);
+            Text_SetStringToken(0x1F, Text_GetString(NULL, 0, gFragment17MsgBank1, gCompletionSceneState->unk_2EC - 1));
+            Text_GetString(gFragment17TextBuffer, 0xFF, gFragment17MsgBank0, gFragment17MsgId_Extra);
+            ModelAnim_SetSpeed(&gCompletionSceneState->unk_008, -1);
         }
     }
 }
 
 void Completion_HandleContinuePrompt(void) {
-    if ((D_86B0EBE0->unk_18 == 1) && (gPlayer1Controller->buttonPressed & 0x8000)) {
-        D_86B0EBE0->unk_18 = 0;
+    if ((gFragment17TextState->unk_18 == 1) && (gPlayer1Controller->buttonPressed & 0x8000)) {
+        gFragment17TextState->unk_18 = 0;
         Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
     }
 }
 
 void Completion_UpdateCryEventTrack(void) {
-    D_86B0EBDC->unk_304++;
-    if (((D_86B0EBDC->unk_304 % 60) == 0) && (D_86B0EBDC->unk_308 == 0) && (D_86B0EBE8[2641] != 0xFF)) {
-        ModelAnim_ClearEventTrack(&D_86B0EBDC->unk_170);
-        ModelAnim_SetEventTrack(&D_86B0EBDC->unk_170, D_86B0EBE8[2641]);
-        D_86B0EBDC->unk_308 = 1;
-    } else if ((D_86B0EBDC->unk_308 == 1) && (ModelAnim_IsEventTrackNearEnd(&D_86B0EBDC->unk_170) == 1)) {
-        D_86B0EBDC->unk_308 = 0;
-        ModelAnim_SetEventFrame(&D_86B0EBDC->unk_170, 0);
-        ModelAnim_SetEventTrack(&D_86B0EBDC->unk_170, -1);
+    gCompletionSceneState->unk_304++;
+    if (((gCompletionSceneState->unk_304 % 60) == 0) && (gCompletionSceneState->unk_308 == 0) && (gFragment17StageBuffer[2641] != 0xFF)) {
+        ModelAnim_ClearEventTrack(&gCompletionSceneState->unk_170);
+        ModelAnim_SetEventTrack(&gCompletionSceneState->unk_170, gFragment17StageBuffer[2641]);
+        gCompletionSceneState->unk_308 = 1;
+    } else if ((gCompletionSceneState->unk_308 == 1) && (ModelAnim_IsEventTrackNearEnd(&gCompletionSceneState->unk_170) == 1)) {
+        gCompletionSceneState->unk_308 = 0;
+        ModelAnim_SetEventFrame(&gCompletionSceneState->unk_170, 0);
+        ModelAnim_SetEventTrack(&gCompletionSceneState->unk_170, -1);
     }
 }
 
 void Completion_LoopBonusModelIdleAnim(void) {
-    if (ModelAnim_IsAnimationDone(&D_86B0EBDC->unk_170) == 1) {
-        ModelAnim_SetFrame(&D_86B0EBDC->unk_170, 0);
-        ModelAnim_SetAnimation(&D_86B0EBDC->unk_170, 0);
+    if (ModelAnim_IsAnimationDone(&gCompletionSceneState->unk_170) == 1) {
+        ModelAnim_SetFrame(&gCompletionSceneState->unk_170, 0);
+        ModelAnim_SetAnimation(&gCompletionSceneState->unk_170, 0);
     }
 }
 
 void Completion_ClampAnimTimer(void) {
-    if (((s32)D_86B0EBDC->unk_008.transformAnim.speedFixed >> 0x10) == -1) {
-        if ((D_86B0EBDC->unk_008.transformAnim.frameFixed >> 0x10) > 0) {
-            D_86B0EBDC->unk_008.transformAnim.frameFixed += 0xFFFF0000;
+    if (((s32)gCompletionSceneState->unk_008.transformAnim.speedFixed >> 0x10) == -1) {
+        if ((gCompletionSceneState->unk_008.transformAnim.frameFixed >> 0x10) > 0) {
+            gCompletionSceneState->unk_008.transformAnim.frameFixed += 0xFFFF0000;
         }
     }
 }
@@ -1442,96 +1442,96 @@ void Completion_ReadControllerInput(void) {
 }
 
 s32 Completion_UpdateSceneSteps(void) {
-    if (D_86B0EBDC->unk_2DC >= 7) {
+    if (gCompletionSceneState->unk_2DC >= 7) {
         Completion_HandleContinuePrompt();
         Completion_UpdateCryEventTrack();
         Completion_LoopBonusModelIdleAnim();
     }
 
-    switch (D_86B0EBDC->unk_2DC) {
+    switch (gCompletionSceneState->unk_2DC) {
         case 0:
             if (Completion_SlideLogoBannerIn() != 0) {
-                D_86B0EBDC->unk_2DC++;
+                gCompletionSceneState->unk_2DC++;
             }
             break;
 
         case 1:
             if (Completion_AnimateLogoBannerColor() != 0) {
-                D_86B0EBDC->unk_2E4 = 0;
-                D_86B0EBDC->unk_2DC++;
+                gCompletionSceneState->unk_2E4 = 0;
+                gCompletionSceneState->unk_2DC++;
             }
             break;
 
         case 2:
-            if (D_86B0EBDC->unk_2E4++ == 0x14) {
-                D_86B0EBDC->unk_2E4 = 0;
-                D_86B0EBDC->unk_2DC++;
+            if (gCompletionSceneState->unk_2E4++ == 0x14) {
+                gCompletionSceneState->unk_2E4 = 0;
+                gCompletionSceneState->unk_2DC++;
             }
             break;
 
         case 3:
             if (Completion_SlideLogoBannerOut() != 0) {
-                D_86B0EBDC->unk_2DC++;
+                gCompletionSceneState->unk_2DC++;
             }
             break;
 
         case 4:
-            if (D_86B0EBDC->unk_2E4++ >= 0x1E) {
-                Vec3f_SetComponentsDuplicate(&D_86B0EBC4->view.targetPosition, 0.0f, 90.0f, 0.0f);
-                Vec3f_SetComponentsDuplicate(&D_86B0EBC4->view.eyePosition, 0.0f, 80.0f, 90.0f);
+            if (gCompletionSceneState->unk_2E4++ >= 0x1E) {
+                Vec3f_SetComponentsDuplicate(&gFragment17Camera->view.targetPosition, 0.0f, 90.0f, 0.0f);
+                Vec3f_SetComponentsDuplicate(&gFragment17Camera->view.eyePosition, 0.0f, 80.0f, 90.0f);
 
-                if (D_86B0EBDC->unk_2E4 == 0x1F) {
+                if (gCompletionSceneState->unk_2E4 == 0x1F) {
                     miniRankingActorSetup1st(0.2f, 0.0f, 125.0f, -235.0f, 0x7D2, 0, 0);
                 }
 
-                if (D_86B0EBDC->unk_2E4 == 0x3C) {
+                if (gCompletionSceneState->unk_2E4 == 0x3C) {
                     miniRankingActorSetup2nd(0.2f, 100.0f, 125.0f, -235.0f, 0x7D2, -0xE38, 0);
                 }
 
-                if (D_86B0EBDC->unk_2E4 == 0x5A) {
+                if (gCompletionSceneState->unk_2E4 == 0x5A) {
                     miniRankingActorSetup3rd(0.2f, -100.0f, 125.0f, -235.0f, 0x7D2, 0xE38, 0);
                 }
             }
 
-            if (D_86B0EBDC->unk_2E4 == 0x78) {
-                D_86B0EBDC->unk_2E4 = 0;
-                D_86B0EBDC->unk_2DC++;
+            if (gCompletionSceneState->unk_2E4 == 0x78) {
+                gCompletionSceneState->unk_2E4 = 0;
+                gCompletionSceneState->unk_2DC++;
             }
             break;
 
         case 5:
             if (Completion_MoveCameraToFront() != 0) {
-                D_86B0EBDC->unk_2DC++;
+                gCompletionSceneState->unk_2DC++;
             }
             break;
 
         case 6:
             Completion_PositionBonusModel();
-            if (ModelAnim_IsAnimationDone(&D_86B0EBDC->unk_008) != 0) {
-                D_86B0EBDC->unk_2E4 = 0;
-                D_86B0EBDC->unk_2DC++;
+            if (ModelAnim_IsAnimationDone(&gCompletionSceneState->unk_008) != 0) {
+                gCompletionSceneState->unk_2E4 = 0;
+                gCompletionSceneState->unk_2DC++;
             }
             break;
 
         case 7:
             Completion_StartGiftDialog();
             Audio_StartMusicTrack(0x13);
-            D_86B0EBDC->unk_2DC++;
+            gCompletionSceneState->unk_2DC++;
             break;
 
         case 8:
             Completion_ClampAnimTimer();
             Completion_PositionBonusModel();
             Completion_HandleAcceptDeclineInput();
-            if (D_86B0EBE0->unk_00 == 0xC) {
-                D_86B0EBDC->unk_2DC++;
+            if (gFragment17TextState->unk_00 == 0xC) {
+                gCompletionSceneState->unk_2DC++;
             }
             break;
 
         case 9:
             Completion_ClampAnimTimer();
             Completion_PositionBonusModel();
-            if (D_86B0EBDC->unk_2E4++ == 2) {
+            if (gCompletionSceneState->unk_2E4++ == 2) {
                 return 1;
             }
             break;
@@ -1541,7 +1541,7 @@ s32 Completion_UpdateSceneSteps(void) {
 }
 
 void Completion_DrawDialog(void) {
-    if (D_86B0EBDC->unk_2D8 == 1) {
+    if (gCompletionSceneState->unk_2D8 == 1) {
         Completion_UpdateGiftDialogWithExisting();
     } else {
         Completion_UpdateGiftDialogFirstTime();
@@ -1554,7 +1554,7 @@ void Completion_RenderFrame(UNUSED s32 arg0) {
     BgStage_DrawFrame();
     GfxImage_FillCurrent(&gDisplayListHead, 1);
     GeoRender_AdvanceFrameCounter();
-    Geo_RenderRootNode(D_86B0EBC0);
+    Geo_RenderRootNode(gFragment17GraphRoot);
     Completion_DrawDialog();
     BgStage_AdvanceFrame();
 }
@@ -1596,12 +1596,12 @@ void Completion_FadeOutAndSave(void) {
         Completion_RenderFrame(2);
     }
 
-    if (D_86B0EBDC->unk_2F0 == 1) {
+    if (gCompletionSceneState->unk_2F0 == 1) {
         if (gSessionContext.mode == 0x1A) {
-            Save_SetSelectedPokemonId(D_86B0EBDC->unk_2EC, 1);
+            Save_SetSelectedPokemonId(gCompletionSceneState->unk_2EC, 1);
             Save_SetOptionsField1F(1);
         } else {
-            Save_SetSelectedPokemonId(D_86B0EBDC->unk_2EC, gSessionContext.inRound2);
+            Save_SetSelectedPokemonId(gCompletionSceneState->unk_2EC, gSessionContext.inRound2);
         }
         Save_CommitTypedRecord(0x14, 0);
         Save_FlushBank(2);
@@ -1612,18 +1612,18 @@ void Completion_InitScene(void) {
     MemoryBlock* sp1C;
 
     sp1C = MainPool_AllocState(main_pool_get_available(), 0);
-    D_86B0EBC0 = process_geo_layout(sp1C, &D_86B0DC5C);
+    gFragment17GraphRoot = process_geo_layout(sp1C, &gFragment17GeoLayout);
     MainPool_FinalizeAllocation(sp1C);
     ModelRenderer_InitDisplayRoots();
 
-    D_86B0EBE0 = main_pool_alloc(0x20, 0);
-    bzero(D_86B0EBE0, 0x20);
+    gFragment17TextState = main_pool_alloc(0x20, 0);
+    bzero(gFragment17TextState, 0x20);
 
-    D_86B0EBDC = main_pool_alloc(0x30C, 0);
-    bzero(D_86B0EBDC, 0x30C);
+    gCompletionSceneState = main_pool_alloc(0x30C, 0);
+    bzero(gCompletionSceneState, 0x30C);
 
-    D_86B0EBD8 = main_pool_alloc(0x4C, 0);
-    bzero(D_86B0EBD8, 0x4C);
+    gFragment17TileStruct = main_pool_alloc(0x4C, 0);
+    bzero(gFragment17TileStruct, 0x4C);
 
     Completion_SelectBonusPokemon();
     Completion_LoadModels();
@@ -1651,8 +1651,8 @@ s32 Stage_ShowCompletionScene(void) {
 
     Text_InitStringTables();
 
-    D_86B0EBD0 = Text_GetStringTable(0x1E);
-    D_86B0EBD4 = Text_GetStringTable(0x24);
+    gFragment17MsgBank0 = Text_GetStringTable(0x1E);
+    gFragment17MsgBank1 = Text_GetStringTable(0x24);
 
     Completion_InitScene();
     StageContext_Activate(sp24);

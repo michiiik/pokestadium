@@ -5,16 +5,16 @@
 #include "src/model_renderer.h"
 #include "src/math_util.h"
 
-static Gfx D_87806390[] = {
+static Gfx gFragment2_1EmptyDL[] = {
     gsSPEndDisplayList(),
 };
 
-u32 D_87806398[] = {
+u32 gFragment2_1GeoLayout[] = {
     0x0B00001E, 0x00000000, 0x014000F0, 0x00000000,  0x000016A8, 0x00000190, 0x05000000, 0x0D000000, 0x05000000,
-    0x0F000002, 0x05000000, 0x0A000000, &D_800AC858, 0x06000000, 0x06000000, 0x06000000, 0x04000000, 0x00000000,
+    0x0F000002, 0x05000000, 0x0A000000, &gGraphRoot1, 0x06000000, 0x06000000, 0x06000000, 0x04000000, 0x00000000,
 };
 
-static Vtx D_878063E0[] = {
+static Vtx gFragment2_1QuadVertices[] = {
     VTX(-32, 32, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),      VTX(-32, 16, 0, 0, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(32, 16, 0, 2048, 512, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(32, 32, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-32, 16, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),      VTX(-32, 0, 0, 0, 512, 0xFF, 0xFF, 0xFF, 0xFF),
@@ -25,14 +25,14 @@ static Vtx D_878063E0[] = {
     VTX(32, -32, 0, 2048, 512, 0xFF, 0xFF, 0xFF, 0xFF), VTX(32, -16, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
 
-static u32* D_878064E0[] = { &D_300C000, &D_3000000, 0x3004000, &D_3008000 };
+static u32* gFragment2_1TexturePtrs[] = { &D_300C000, &D_3000000, 0x3004000, &D_3008000 };
 
-static s16 D_8780FAC0;
-static s16 D_8780FAC2;
-static s16 D_8780FAC4;
-static s16 D_8780FAC6;
-static DisplayObject D_8780FAC8;
-static unk_func_80011B94* D_8780FC30;
+static s16 gFragment2_1RemainingSteps;
+static s16 gFragment2_1StepTimer;
+static s16 gFragment2_1Phase;
+static s16 gFragment2_1StartFlag;
+static DisplayObject gFragment2_1GraphNode;
+static SimpleGfxNode* gFragment2_1DisplayNode;
 
 void Widget_CountdownComputeScale(s16 arg0, s16 arg1, f32* arg2, f32* arg3) {
     f32 var_fv0;
@@ -91,17 +91,17 @@ void Widget_CountdownComputeScale(s16 arg0, s16 arg1, f32* arg2, f32* arg3) {
 void Widget_CountdownInit(void) {
     MainPoolState* sp1C;
 
-    D_8780FAC4 = 0;
-    D_8780FAC0 = 4;
-    D_8780FAC2 = 0;
-    D_8780FAC6 = 0;
+    gFragment2_1Phase = 0;
+    gFragment2_1RemainingSteps = 4;
+    gFragment2_1StepTimer = 0;
+    gFragment2_1StartFlag = 0;
 
-    ModelRenderer_AttachSecondaryDisplayObject(&D_8780FAC8);
+    ModelRenderer_AttachSecondaryDisplayObject(&gFragment2_1GraphNode);
     sp1C = MainPool_AllocState(main_pool_get_available(), 0);
-    D_8780FC30 = GeoNode_CreateDisplayList(sp1C, NULL, 4, D_87806390);
-    D_8780FAC8.node.renderFlags |= 8;
+    gFragment2_1DisplayNode = GeoNode_CreateDisplayList(sp1C, NULL, 4, gFragment2_1EmptyDL);
+    gFragment2_1GraphNode.node.renderFlags |= 8;
 
-    GraphNode_AppendChild(&D_8780FAC8.node, &D_8780FC30->display_node_header);
+    GraphNode_AppendChild(&gFragment2_1GraphNode.node, &gFragment2_1DisplayNode->display_node_header);
     MainPool_FinalizeAllocation(sp1C);
 }
 
@@ -116,56 +116,56 @@ void Widget_CountdownUpdate(void) {
     u32* img;
 
     var_s2 = 0;
-    switch (D_8780FAC4) {
+    switch (gFragment2_1Phase) {
         case 0:
-            if (D_8780FAC6 != 0) {
-                D_8780FAC6 = 0;
-                D_8780FAC4 = 1;
+            if (gFragment2_1StartFlag != 0) {
+                gFragment2_1StartFlag = 0;
+                gFragment2_1Phase = 1;
                 var_s2 = 1;
-                D_8780FAC8.node.flags |= 1;
-                D_8780FAC8.scale.x = 0.5f;
-                D_8780FAC8.scale.y = 0.5f;
+                gFragment2_1GraphNode.node.flags |= 1;
+                gFragment2_1GraphNode.scale.x = 0.5f;
+                gFragment2_1GraphNode.scale.y = 0.5f;
             }
             break;
 
         case 1:
-            D_8780FAC2 -= 1;
-            if (D_8780FAC2 <= 0) {
-                D_8780FAC2 = 0x1B;
-                D_8780FAC0 -= 1;
+            gFragment2_1StepTimer -= 1;
+            if (gFragment2_1StepTimer <= 0) {
+                gFragment2_1StepTimer = 0x1B;
+                gFragment2_1RemainingSteps -= 1;
             }
 
-            if ((D_8780FAC0 >= 0) && (D_8780FAC0 < 4)) {
+            if ((gFragment2_1RemainingSteps >= 0) && (gFragment2_1RemainingSteps < 4)) {
                 var_s2 = 1;
-                Widget_CountdownComputeScale(D_8780FAC0, D_8780FAC2, &D_8780FAC8.scale.x, &D_8780FAC8.scale.y);
+                Widget_CountdownComputeScale(gFragment2_1RemainingSteps, gFragment2_1StepTimer, &gFragment2_1GraphNode.scale.x, &gFragment2_1GraphNode.scale.y);
             } else {
-                D_8780FC30->gfx = D_87806390;
+                gFragment2_1DisplayNode->gfx = gFragment2_1EmptyDL;
             }
 
-            if (D_8780FAC0 < 0) {
-                D_8780FAC4 = 2;
-                D_8780FAC2 = 0x1B;
-                D_8780FAC8.node.flags &= ~1;
+            if (gFragment2_1RemainingSteps < 0) {
+                gFragment2_1Phase = 2;
+                gFragment2_1StepTimer = 0x1B;
+                gFragment2_1GraphNode.node.flags &= ~1;
             }
             break;
 
         case 2:
-            if (D_8780FAC2 == 0x1B) {
-                D_8780FAC2 = 0;
+            if (gFragment2_1StepTimer == 0x1B) {
+                gFragment2_1StepTimer = 0;
             }
             break;
     }
 
-    if ((var_s2 != 0) && (D_8780FAC0 < 4)) {
-        temp_s1 = D_878064E0[D_8780FAC0];
+    if ((var_s2 != 0) && (gFragment2_1RemainingSteps < 4)) {
+        temp_s1 = gFragment2_1TexturePtrs[gFragment2_1RemainingSteps];
         temp_v0 = Gfx_AllocDisplayList(sizeof(Gfx) * 48);
-        D_8780FC30->gfx = temp_v0;
+        gFragment2_1DisplayNode->gfx = temp_v0;
 
         gSPSetGeometryMode(&temp_v0[0], G_CULL_BACK);
         gSPTexture(&temp_v0[1], 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
         gDPPipeSync(&temp_v0[2]);
         gDPSetCombineMode(&temp_v0[3], G_CC_DECALRGBA, G_CC_PASS2);
-        gSPVertex(&temp_v0[4], D_878063E0, 16, 0);
+        gSPVertex(&temp_v0[4], gFragment2_1QuadVertices, 16, 0);
 
         temp_v0 += 5;
         img = temp_s1;
@@ -184,16 +184,16 @@ void Widget_CountdownUpdate(void) {
 #endif
 
 void Widget_CountdownStart(s16 arg0) {
-    D_8780FAC6 = arg0;
+    gFragment2_1StartFlag = arg0;
 }
 
 s32 Widget_CountdownGetState(void) {
     s16 var_v1 = -1;
 
-    if (D_8780FAC4 == 2) {
+    if (gFragment2_1Phase == 2) {
         var_v1 = -2;
-    } else if ((D_8780FAC2 == 0x1B) && (D_8780FAC4 == 1)) {
-        var_v1 = D_8780FAC0;
+    } else if ((gFragment2_1StepTimer == 0x1B) && (gFragment2_1Phase == 1)) {
+        var_v1 = gFragment2_1RemainingSteps;
     }
 
     return var_v1;

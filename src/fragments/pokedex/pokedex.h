@@ -111,7 +111,7 @@ typedef struct unk_func_888044BC_050 {
     /* 0x30 */ s32 unk_30;
 } unk_func_888044BC_050; // size = 0x34
 
-typedef struct unk_func_888044BC {
+typedef struct PokedexMenu {
     /* 0x00 */ WidgetNode unk_00;
     /* 0x2C */ unk_func_88500994* unk_2C;
     /* 0x30 */ unk_func_88500994* unk_30;
@@ -124,7 +124,7 @@ typedef struct unk_func_888044BC {
     /* 0x4C */ unk_func_888044BC_04C* unk_4C;
     /* 0x50 */ unk_func_888044BC_050* unk_50;
     /* 0x54 */ unk_func_888044BC_050* unk_54;
-} unk_func_888044BC; // size = 0x58
+} PokedexMenu; // size = 0x58
 
 void Pokedex_DrawCheckboxIcon(s32 arg0, s32 arg1, s32 arg2);
 s32 Pokedex_DrawListScrollArrows(unk_func_888044BC_050* arg0, s32 arg1, s32 arg2);
@@ -157,8 +157,8 @@ void Pokedex_InitPreviewWidget(unk_func_888044BC_04C_02C* arg0, s32 arg1, s32 ar
 void Pokedex_SetPreviewSpecies(unk_func_888044BC_04C_02C* arg0, s32 arg1);
 s32 Pokedex_DrawPreview(unk_func_888044BC_04C_02C* arg0, s32 arg1, s32 arg2);
 void Pokedex_BuildPreviewPanel(unk_func_888044BC_04C* arg0, s32 arg1, s32 arg2, MemoryPool* arg3);
-void Pokedex_BuildRootWidget(unk_func_888044BC* arg0, s32 arg1, s32 arg2, u8* arg3, MemoryPool* arg4);
-s32 func_88803614(void);
+void Pokedex_BuildRootWidget(PokedexMenu* arg0, s32 arg1, s32 arg2, u8* arg3, MemoryPool* arg4);
+s32 Pokedex_MenuLoopSpecies(void);
 s32 Pokedex_ShowEntryMenu(void);
 void Pokedex_LoadIcon(u8* arg0, s32 arg1);
 s32 Pokedex_ShowEntry(void);
@@ -180,7 +180,7 @@ void Pokedex_BuildMapMarkerDisplayList(void);
 void Pokedex_BuildMapMarkersDisplayList(void);
 void Pokedex_BuildOverviewMarkersDisplayList(void);
 Gfx* Pokedex_DrawMapPinIcon(Gfx* arg0, s16 arg1, s16 arg2);
-Gfx* func_88805AEC(Gfx* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6);
+Gfx* Pokedex_DrawMapLabelBox(Gfx* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6);
 void Pokedex_BuildMapLabelsDisplayList(void);
 void Pokedex_ResetCameraEase(void);
 void Pokedex_UpdateCameraEaseSpeed(void);
@@ -189,7 +189,7 @@ void Pokedex_UpdateAreaMapFrame(void);
 s32 Pokedex_GetCountTier(s32 arg0);
 s32 Pokedex_DrawAreaMapFrame(UNUSED u8 arg0);
 s32 Pokedex_CheckAreaMapExit(void);
-void func_88807D04(s32 arg0, MainPoolState* arg1, UNUSED s32 arg2, s32 arg3, s32 arg4, char* arg5, char** arg6);
+void Pokedex_InitSpeciesAreaMap(s32 arg0, MainPoolState* arg1, UNUSED s32 arg2, s32 arg3, s32 arg4, char* arg5, char** arg6);
 void Pokedex_ExitAreaMapPool(void);
 
 #endif // _FRAGMENT28_H_

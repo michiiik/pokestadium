@@ -4,17 +4,17 @@
 #include "global.h"
 #include "src/game_state.h"
 
-typedef struct unk_D_832025C8 {
+typedef struct TextFadeState {
     /* 0x000 */ s32 unk_00;
     /* 0x004 */ char unk04[0x1FC];
-} unk_D_832025C8; // size = 0x200
+} TextFadeState; // size = 0x200
 
-typedef struct unk_D_832027C8 {
+typedef struct PikachuSession {
     /* 0x00 */ u8 unk_00;
     /* 0x01 */ u8 unk_01;
     /* 0x02 */ u8 unk_02;
     /* 0x04 */ BattleMon unk_04;
-} unk_D_832027C8; // size = 0x58
+} PikachuSession; // size = 0x58
 
 s32 PikachuReward_PositionSurfingPikachuModel(s32 arg0, DisplayObject* arg1);
 s32 PikachuReward_CheckNoSpecialMove(BattleMon* arg0);

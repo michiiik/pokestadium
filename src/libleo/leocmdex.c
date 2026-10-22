@@ -4,7 +4,7 @@
 #include "PR/leo.h"
 
 // Command dispatch table, indexed by LEOCmdHeader.command. Slot 0 is unused.
-void (*D_80079520[16])(void) = {
+void (*gLeoCmdDispatchTable[16])(void) = {
     NULL,          leoClr_queue,  leoInquiry,    leoTest_unit_rdy,
     leoRezero,     leoRead,       leoWrite,      leoSeek,
     leoStart_stop, leoRd_capacity, leoTranslate, leoMode_sel,
@@ -183,7 +183,7 @@ void leomain(void* arg0) {
                     LEOdrive_flag = -1;
             }
         }
-        D_80079520[LEOcur_command->header.command]();
+        gLeoCmdDispatchTable[LEOcur_command->header.command]();
     post_exe:
         if (LEOcur_command->header.control & LEO_CONTROL_POST) {
             osSendMesg(LEOcur_command->header.post, (OSMesg)LEOcur_command->header.sense, OS_MESG_BLOCK);

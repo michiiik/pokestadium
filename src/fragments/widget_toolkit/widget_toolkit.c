@@ -3,83 +3,83 @@
 #include "src/text_system.h"
 #include "src/controller.h"
 
-extern u32 D_878067F0[];
-extern u32 D_87807690[];
-extern u32 D_87808530[];
-extern u32 D_878093D0[];
-extern u32 D_8780B110[];
-extern u32 D_8780BFB0[];
-extern u32 D_8780CE50[];
-extern u32 D_8780DCF0[];
-extern u32 D_8780A270[];
-extern u32 D_878064F0[];
-extern u32 D_87806670[];
-extern u32 D_878065B0[];
-extern u32 D_87806730[];
+extern u32 gPlayerIconTex_0[];
+extern u32 gPlayerIconTex_1[];
+extern u32 gPlayerIconTex_2[];
+extern u32 gPlayerIconTex_3[];
+extern u32 gPlayerIconTex_4[];
+extern u32 gPlayerIconTex_5[];
+extern u32 gPlayerIconTex_6[];
+extern u32 gPlayerIconTex_7[];
+extern u32 gResultCubeTex_8[];
+extern u32 gBorderTexture_Left[];
+extern u32 gBorderTexture_Middle[];
+extern u32 gBorderTexture_Fill[];
+extern u32 gBorderTexture_Right[];
 
-char** D_87806330 = NULL;
+char** gMinigameNamesBank = NULL;
 
-static s32 D_8780FA20;
-static char** D_8780FA24;
-u16 D_8780FA28;
-s16 D_8780FA2A;
-s16 D_8780FA2C;
+static s32 gRandomCounter;
+static char** gControllerWarningBank;
+u16 gComHyperUnlocked;
+s16 gMenuCursorX;
+s16 gMenuCursorY;
 
-s16 D_8780FA30[4];
-s16 D_8780FA38;
-s16 D_8780FA3A;
-s16 D_8780FA40[4];
-s16 D_8780FA48;
+s16 gMiniHudColorDefaults[4];
+s16 gMinigameComDifficulty;
+s16 gWinsToChampion;
+s16 gPlayerWinCounts[4];
+s16 gMenuSelectedOption;
 
 static s32 pad_D_8780FA4C;
 
-s16 D_8780FA50[9];
-s16 D_8780FA68[4];
+s16 gMenuOptionUsedFlags[9];
+s16 gMenuOptionFlags[4];
 
 void Widget_Init(void) {
     Text_InitStringTables();
-    D_87806330 = Text_GetStringTable(0x1D);
-    D_8780FA24 = Text_GetStringTable(0x14);
+    gMinigameNamesBank = Text_GetStringTable(0x1D);
+    gControllerWarningBank = Text_GetStringTable(0x14);
 }
 
 void Widget_DrawControllerDisconnectBanner(void) {
-    static s32 D_87806334 = 0;
+    static s32 gScrollingMessageOffset = 0;
 
     s32 sp24;
     s16 temp_s0;
 
     if (!(Cont_GetControllerBits() & 1)) {
-        sp24 = Font_MeasureTextExtent(4, 0, Text_GetString(NULL, 0, D_8780FA24, 0));
-        temp_s0 = 0x50 - D_87806334;
+        sp24 = Font_MeasureTextExtent(4, 0, Text_GetString(NULL, 0, gControllerWarningBank, 0));
+        temp_s0 = 0x50 - gScrollingMessageOffset;
 
         gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 16, 0, 304, 240);
 
         Font_BeginTranslucentTextRendering();
         Font_SetActive(4, 0);
-        Font_Printf(temp_s0, 0xB3, Text_GetString(NULL, 0, D_8780FA24, 0));
+        Font_Printf(temp_s0, 0xB3, Text_GetString(NULL, 0, gControllerWarningBank, 0));
 
         temp_s0 += sp24 + 0x1E;
         if (temp_s0 < 0x140) {
-            Font_Printf(temp_s0, 0xB3, Text_GetString(NULL, 0, D_8780FA24, 0));
+            Font_Printf(temp_s0, 0xB3, Text_GetString(NULL, 0, gControllerWarningBank, 0));
         }
 
         Font_EndTexturedTextRendering();
 
         gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, 320, 240);
 
-        D_87806334++;
-        if (D_87806334 >= (sp24 + 0x50)) {
-            D_87806334 = 0x32;
+        gScrollingMessageOffset++;
+        if (gScrollingMessageOffset >= (sp24 + 0x50)) {
+            gScrollingMessageOffset = 0x32;
         }
     }
 }
 
 void Rand_Advance(void) {
-    D_8780FA20++;
+    gRandomCounter++;
 }
 
 u32 Rand_Range(u32 arg0) {
-    u32 temp_a0 = guRandom() + D_8780FA20;
+    u32 temp_a0 = guRandom() + gRandomCounter;
     u32 var_v1;
 
     if (arg0 == 0) {
@@ -108,14 +108,14 @@ void Widget_DrawProgressBar(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
                         G_TX_RENDERTILE, 0, 0, 0, 0);
 
     gDPSetCombineMode(gDisplayListHead++, G_CC_DECALRGBA, G_CC_DECALRGBA);
-    gDPLoadTextureBlock(gDisplayListHead++, D_878064F0, G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 12, 0,
+    gDPLoadTextureBlock(gDisplayListHead++, gBorderTexture_Left, G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 12, 0,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                         G_TX_NOLOD);
 
     gSPTextureRectangle(gDisplayListHead++, arg0 << 2, arg1 << 2, (arg0 + 2) << 2, (arg1 + 0xC) << 2, G_TX_RENDERTILE,
                         0, 0, 0x0400, 0x0400);
 
-    gDPLoadTextureBlock(gDisplayListHead++, D_87806670, G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 12, 0,
+    gDPLoadTextureBlock(gDisplayListHead++, gBorderTexture_Middle, G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 12, 0,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                         G_TX_NOLOD);
 
@@ -123,7 +123,7 @@ void Widget_DrawProgressBar(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
                         (arg1 + 0xC) << 2, G_TX_RENDERTILE, 0x00C0, 0, 0x0400, 0x0400);
 
     if (sp1C > 0) {
-        gDPLoadTextureBlock(gDisplayListHead++, D_87806730, G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 12, 0,
+        gDPLoadTextureBlock(gDisplayListHead++, gBorderTexture_Right, G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 12, 0,
                             G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
                             G_TX_NOLOD, G_TX_NOLOD);
         gSPTextureRectangle(gDisplayListHead++, (arg0 + 2) << 2, arg1 << 2, ((arg0 + 2) + sp1C) << 2, (arg1 + 0xC) << 2,
@@ -131,7 +131,7 @@ void Widget_DrawProgressBar(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     }
 
     if (temp_lo > 0) {
-        gDPLoadTextureBlock(gDisplayListHead++, D_878065B0, G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 12, 0,
+        gDPLoadTextureBlock(gDisplayListHead++, gBorderTexture_Fill, G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 12, 0,
                             G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
                             G_TX_NOLOD, G_TX_NOLOD);
         gSPTextureRectangle(gDisplayListHead++, ((arg0 + 2) + sp1C) << 2, arg1 << 2,
@@ -147,22 +147,22 @@ void Widget_DrawMeterBar(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 sp14 = 0x30 - temp_lo;
 
     if (arg2 < ((arg3 * 0xA) / 48)) {
-        spCC = D_87806730;
+        spCC = gBorderTexture_Right;
     } else if (arg2 < ((arg3 * 0x1B) / 48)) {
-        spCC = D_87806730;
+        spCC = gBorderTexture_Right;
     } else {
-        spCC = D_878065B0;
+        spCC = gBorderTexture_Fill;
     }
 
     gSPDisplayList(gDisplayListHead++, gUiEnvTintTextureDL);
 
-    gDPLoadTextureBlock(gDisplayListHead++, D_878064F0, G_IM_FMT_RGBA, G_IM_SIZ_16b, 16, 5, 0,
+    gDPLoadTextureBlock(gDisplayListHead++, gBorderTexture_Left, G_IM_FMT_RGBA, G_IM_SIZ_16b, 16, 5, 0,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                         G_TX_NOLOD);
     gSPTextureRectangle(gDisplayListHead++, arg0 << 2, arg1 << 2, (arg0 + 0x10) << 2, (arg1 + 5) << 2, G_TX_RENDERTILE,
                         0, 0, 0x0400, 0x0400);
 
-    gDPLoadTextureBlock(gDisplayListHead++, D_87806670, G_IM_FMT_RGBA, G_IM_SIZ_16b, 4, 5, 0,
+    gDPLoadTextureBlock(gDisplayListHead++, gBorderTexture_Middle, G_IM_FMT_RGBA, G_IM_SIZ_16b, 4, 5, 0,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                         G_TX_NOLOD);
     gSPTextureRectangle(gDisplayListHead++, (arg0 + 0x40) << 2, arg1 << 2, (arg0 + 0x41) << 2, (arg1 + 5) << 2,
@@ -186,36 +186,36 @@ void Widget_DrawMeterBar(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     gSPDisplayList(gDisplayListHead++, gUiRestoreTextureDL);
 }
 
-s16 D_87806338 = -1;
-u32* D_8780633C[] = { D_878067F0, D_87807690, D_87808530, D_878093D0 };
-u32* D_8780634C[] = { D_8780B110, D_8780BFB0, D_8780CE50, D_8780DCF0, D_8780A270 };
+s16 gCurrentMenuIndex = -1;
+u32* gPositiveTextureBank[] = { gPlayerIconTex_0, gPlayerIconTex_1, gPlayerIconTex_2, gPlayerIconTex_3 };
+u32* gNegativeTextureBank[] = { gPlayerIconTex_4, gPlayerIconTex_5, gPlayerIconTex_6, gPlayerIconTex_7, gResultCubeTex_8 };
 
 void Minigame_InitSharedState(s16 arg0) {
     s32 i;
-    D_8780FA28 = 0;
-    D_87806338 = arg0;
-    D_8780FA2A = 0;
-    D_8780FA2C = 0;
+    gComHyperUnlocked = 0;
+    gCurrentMenuIndex = arg0;
+    gMenuCursorX = 0;
+    gMenuCursorY = 0;
 
     for (i = 0; i < 4; i++) {
-        D_8780FA30[i] = 1;
+        gMiniHudColorDefaults[i] = 1;
     }
 
     if (arg0 == 3) {
-        D_8780FA38 = 1;
+        gMinigameComDifficulty = 1;
     } else {
-        D_8780FA38 = 3;
+        gMinigameComDifficulty = 3;
     }
 
-    D_8780FA3A = 3;
+    gWinsToChampion = 3;
 
     for (i = 0; i < 4; i++) {
-        D_8780FA40[i] = 0;
+        gPlayerWinCounts[i] = 0;
     }
 
     i = 0;
     do {
-        D_8780FA68[i] = 0;
+        gMenuOptionFlags[i] = 0;
         i++;
     } while (i < 4);
     Widget_Init();
@@ -302,7 +302,7 @@ s32 Text_MeasureStringWidth(UNUSED FontContext* arg0, char* arg1) {
 }
 
 void Widget_DrawPlayerIconScaled(s32 arg0, s16 arg1, s16 arg2, f32 arg3, f32 arg4) {
-    static u32* D_8780FA70;
+    static u32* gCurrentPlayerIconTex;
 
     f32 temp_fa0;
     f32 temp_fv1;
@@ -313,12 +313,12 @@ void Widget_DrawPlayerIconScaled(s32 arg0, s16 arg1, s16 arg2, f32 arg3, f32 arg
     if ((arg3 != 0.0f) && (arg4 != 0.0f)) {
         if (arg0 < 0) {
             arg0 = -1 - arg0;
-            D_8780FA70 = D_8780634C[arg0];
+            gCurrentPlayerIconTex = gNegativeTextureBank[arg0];
         } else {
-            D_8780FA70 = D_8780633C[arg0 % 4];
+            gCurrentPlayerIconTex = gPositiveTextureBank[arg0 % 4];
         }
 
-        gDPLoadTextureBlock(gDisplayListHead++, D_8780FA70, G_IM_FMT_RGBA, G_IM_SIZ_32b, 36, 26, 0,
+        gDPLoadTextureBlock(gDisplayListHead++, gCurrentPlayerIconTex, G_IM_FMT_RGBA, G_IM_SIZ_32b, 36, 26, 0,
                             G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
                             G_TX_NOLOD, G_TX_NOLOD);
 
@@ -333,197 +333,197 @@ void Widget_DrawPlayerIcon(s32 arg0, s16 arg1, s16 arg2, f32 _scale) {
     Widget_DrawPlayerIconScaled(arg0, arg1, arg2, _scale, _scale);
 }
 
-void Widget_DrawAnimIcon16(s16 arg0, s16 arg1, unk_func_87801684* arg2) {
-    static unk_func_87801684* D_87806360 = NULL;
-    static unk_func_87801684* D_8780FA74;
-    static s16 D_8780FA78;
+void Widget_DrawAnimIcon16(s16 arg0, s16 arg1, AnimFrame* arg2) {
+    static AnimFrame* gAnimSprite1_Current = NULL;
+    static AnimFrame* gAnimSprite1_Ptr;
+    static s16 gAnimSprite1_Timer;
 
-    if ((D_87806360 != arg2) || (arg2 == NULL)) {
-        D_87806360 = arg2;
+    if ((gAnimSprite1_Current != arg2) || (arg2 == NULL)) {
+        gAnimSprite1_Current = arg2;
         if (arg2 == NULL) {
             return;
         }
-        D_8780FA74 = arg2;
-        D_8780FA78 = arg2->unk_04;
+        gAnimSprite1_Ptr = arg2;
+        gAnimSprite1_Timer = arg2->unk_04;
     }
 
-    D_8780FA78--;
-    if (D_8780FA78 <= 0) {
-        D_8780FA74++;
-        if (D_8780FA74->unk_00 == NULL) {
-            D_8780FA74 = arg2;
+    gAnimSprite1_Timer--;
+    if (gAnimSprite1_Timer <= 0) {
+        gAnimSprite1_Ptr++;
+        if (gAnimSprite1_Ptr->unk_00 == NULL) {
+            gAnimSprite1_Ptr = arg2;
         }
-        D_8780FA78 = D_8780FA74->unk_04;
+        gAnimSprite1_Timer = gAnimSprite1_Ptr->unk_04;
     }
 
-    Gfx_DrawTextureRgba32(arg0, arg1, 0x10, 0x10, D_8780FA74->unk_00, 0x10, 0);
+    Gfx_DrawTextureRgba32(arg0, arg1, 0x10, 0x10, gAnimSprite1_Ptr->unk_00, 0x10, 0);
 }
 
-void Widget_DrawAnimIcon16B(s16 arg0, s16 arg1, unk_func_87801684* arg2) {
-    static unk_func_87801684* D_87806364 = NULL;
-    static unk_func_87801684* D_8780FA7C;
-    static s16 D_8780FA80;
+void Widget_DrawAnimIcon16B(s16 arg0, s16 arg1, AnimFrame* arg2) {
+    static AnimFrame* gAnimSprite2_Current = NULL;
+    static AnimFrame* gAnimSprite2_Ptr;
+    static s16 gAnimSprite2_Timer;
 
-    if ((D_87806364 != arg2) || (arg2 == NULL)) {
-        D_87806364 = arg2;
+    if ((gAnimSprite2_Current != arg2) || (arg2 == NULL)) {
+        gAnimSprite2_Current = arg2;
         if (arg2 == NULL) {
             return;
         }
-        D_8780FA7C = arg2;
-        D_8780FA80 = arg2->unk_04;
+        gAnimSprite2_Ptr = arg2;
+        gAnimSprite2_Timer = arg2->unk_04;
     }
 
-    D_8780FA80--;
-    if (D_8780FA80 <= 0) {
-        D_8780FA7C++;
-        if (D_8780FA7C->unk_00 == NULL) {
-            D_8780FA7C = arg2;
+    gAnimSprite2_Timer--;
+    if (gAnimSprite2_Timer <= 0) {
+        gAnimSprite2_Ptr++;
+        if (gAnimSprite2_Ptr->unk_00 == NULL) {
+            gAnimSprite2_Ptr = arg2;
         }
-        D_8780FA80 = D_8780FA7C->unk_04;
+        gAnimSprite2_Timer = gAnimSprite2_Ptr->unk_04;
     }
 
-    Gfx_DrawTextureRgba32(arg0, arg1, 0x10, 0x10, D_8780FA7C->unk_00, 0x10, 0);
+    Gfx_DrawTextureRgba32(arg0, arg1, 0x10, 0x10, gAnimSprite2_Ptr->unk_00, 0x10, 0);
 }
 
-void Widget_DrawAnimIcon16C(s16 arg0, s16 arg1, unk_func_87801684* arg2) {
-    static unk_func_87801684* D_87806368 = NULL;
-    static unk_func_87801684* D_8780FA84;
-    static s16 D_8780FA88;
+void Widget_DrawAnimIcon16C(s16 arg0, s16 arg1, AnimFrame* arg2) {
+    static AnimFrame* gAnimSprite3_Current = NULL;
+    static AnimFrame* gAnimSprite3_Ptr;
+    static s16 gAnimSprite3_Timer;
 
-    if ((D_87806368 != arg2) || (arg2 == NULL)) {
-        D_87806368 = arg2;
+    if ((gAnimSprite3_Current != arg2) || (arg2 == NULL)) {
+        gAnimSprite3_Current = arg2;
         if (arg2 == NULL) {
             return;
         }
-        D_8780FA84 = arg2;
-        D_8780FA88 = arg2->unk_04;
+        gAnimSprite3_Ptr = arg2;
+        gAnimSprite3_Timer = arg2->unk_04;
     }
 
-    D_8780FA88--;
-    if (D_8780FA88 <= 0) {
-        D_8780FA84++;
-        if (D_8780FA84->unk_00 == NULL) {
-            D_8780FA84 = arg2;
+    gAnimSprite3_Timer--;
+    if (gAnimSprite3_Timer <= 0) {
+        gAnimSprite3_Ptr++;
+        if (gAnimSprite3_Ptr->unk_00 == NULL) {
+            gAnimSprite3_Ptr = arg2;
         }
-        D_8780FA88 = D_8780FA84->unk_04;
+        gAnimSprite3_Timer = gAnimSprite3_Ptr->unk_04;
     }
 
-    Gfx_DrawTextureRgba32(arg0, arg1, 0x10, 0x10, D_8780FA84->unk_00, 0x10, 0);
+    Gfx_DrawTextureRgba32(arg0, arg1, 0x10, 0x10, gAnimSprite3_Ptr->unk_00, 0x10, 0);
 }
 
-void Widget_DrawAnimIcon40x20(s16 arg0, s16 arg1, unk_func_87801684* arg2) {
-    static unk_func_87801684* D_8780636C = NULL;
-    static unk_func_87801684* D_8780FA8C;
-    static s16 D_8780FA90;
+void Widget_DrawAnimIcon40x20(s16 arg0, s16 arg1, AnimFrame* arg2) {
+    static AnimFrame* gAnimTex1_Current = NULL;
+    static AnimFrame* gAnimTex1_Ptr;
+    static s16 gAnimTex1_Timer;
 
-    if ((D_8780636C != arg2) || (arg2 == NULL)) {
-        D_8780636C = arg2;
+    if ((gAnimTex1_Current != arg2) || (arg2 == NULL)) {
+        gAnimTex1_Current = arg2;
         if (arg2 == NULL) {
             return;
         }
-        D_8780FA8C = arg2;
-        D_8780FA90 = arg2->unk_04;
+        gAnimTex1_Ptr = arg2;
+        gAnimTex1_Timer = arg2->unk_04;
     }
 
-    D_8780FA90--;
-    if (D_8780FA90 <= 0) {
-        D_8780FA8C++;
-        if (D_8780FA8C->unk_00 == NULL) {
-            D_8780FA8C = arg2;
+    gAnimTex1_Timer--;
+    if (gAnimTex1_Timer <= 0) {
+        gAnimTex1_Ptr++;
+        if (gAnimTex1_Ptr->unk_00 == NULL) {
+            gAnimTex1_Ptr = arg2;
         }
-        D_8780FA90 = D_8780FA8C->unk_04;
+        gAnimTex1_Timer = gAnimTex1_Ptr->unk_04;
     }
 
-    gDPLoadTextureTile(gDisplayListHead++, D_8780FA8C->unk_00, G_IM_FMT_RGBA, G_IM_SIZ_32b, 40, 0, 0, 0, 39, 19, 0,
+    gDPLoadTextureTile(gDisplayListHead++, gAnimTex1_Ptr->unk_00, G_IM_FMT_RGBA, G_IM_SIZ_32b, 40, 0, 0, 0, 39, 19, 0,
                        G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                        G_TX_NOLOD);
 
     Gfx_DrawTexturedRectClipped(arg0, arg1, 0x28, 0x14, 0, 0, 0x400, 0x400, 0);
 }
 
-void Widget_DrawAnimIcon40x20B(s16 arg0, s16 arg1, unk_func_87801684* arg2) {
-    static unk_func_87801684* D_87806370 = NULL;
-    static unk_func_87801684* D_8780FA94;
-    static s16 D_8780FA98;
+void Widget_DrawAnimIcon40x20B(s16 arg0, s16 arg1, AnimFrame* arg2) {
+    static AnimFrame* gAnimTex2_Current = NULL;
+    static AnimFrame* gAnimTex2_Ptr;
+    static s16 gAnimTex2_Timer;
 
-    if ((D_87806370 != arg2) || (arg2 == NULL)) {
-        D_87806370 = arg2;
+    if ((gAnimTex2_Current != arg2) || (arg2 == NULL)) {
+        gAnimTex2_Current = arg2;
         if (arg2 == NULL) {
             return;
         }
-        D_8780FA94 = arg2;
-        D_8780FA98 = arg2->unk_04;
+        gAnimTex2_Ptr = arg2;
+        gAnimTex2_Timer = arg2->unk_04;
     }
 
-    D_8780FA98--;
-    if (D_8780FA98 <= 0) {
-        D_8780FA94++;
-        if (D_8780FA94->unk_00 == NULL) {
-            D_8780FA94 = arg2;
+    gAnimTex2_Timer--;
+    if (gAnimTex2_Timer <= 0) {
+        gAnimTex2_Ptr++;
+        if (gAnimTex2_Ptr->unk_00 == NULL) {
+            gAnimTex2_Ptr = arg2;
         }
-        D_8780FA98 = D_8780FA94->unk_04;
+        gAnimTex2_Timer = gAnimTex2_Ptr->unk_04;
     }
 
-    gDPLoadTextureTile(gDisplayListHead++, D_8780FA94->unk_00, G_IM_FMT_RGBA, G_IM_SIZ_32b, 40, 0, 0, 0, 39, 19, 0,
+    gDPLoadTextureTile(gDisplayListHead++, gAnimTex2_Ptr->unk_00, G_IM_FMT_RGBA, G_IM_SIZ_32b, 40, 0, 0, 0, 39, 19, 0,
                        G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                        G_TX_NOLOD);
 
     Gfx_DrawTexturedRectClipped(arg0, arg1, 0x28, 0x14, 0, 0, 0x400, 0x400, 0);
 }
 
-void Widget_DrawAnimIcon24(s16 arg0, s16 arg1, unk_func_87801684* arg2) {
-    static unk_func_87801684* D_87806374 = NULL;
-    static unk_func_87801684* D_8780FA9C;
-    static s16 D_8780FAA0;
+void Widget_DrawAnimIcon24(s16 arg0, s16 arg1, AnimFrame* arg2) {
+    static AnimFrame* gAnimSpriteLarge_Current = NULL;
+    static AnimFrame* gAnimSpriteLarge_Ptr;
+    static s16 gAnimSpriteLarge_Timer;
 
-    if ((D_87806374 != arg2) || (arg2 == NULL)) {
-        D_87806374 = arg2;
+    if ((gAnimSpriteLarge_Current != arg2) || (arg2 == NULL)) {
+        gAnimSpriteLarge_Current = arg2;
         if (arg2 == NULL) {
             return;
         }
-        D_8780FA9C = arg2;
-        D_8780FAA0 = arg2->unk_04;
+        gAnimSpriteLarge_Ptr = arg2;
+        gAnimSpriteLarge_Timer = arg2->unk_04;
     }
 
-    D_8780FAA0--;
-    if (D_8780FAA0 <= 0) {
-        D_8780FA9C++;
-        if (D_8780FA9C->unk_00 == NULL) {
-            D_8780FA9C = arg2;
+    gAnimSpriteLarge_Timer--;
+    if (gAnimSpriteLarge_Timer <= 0) {
+        gAnimSpriteLarge_Ptr++;
+        if (gAnimSpriteLarge_Ptr->unk_00 == NULL) {
+            gAnimSpriteLarge_Ptr = arg2;
         }
-        D_8780FAA0 = D_8780FA9C->unk_04;
+        gAnimSpriteLarge_Timer = gAnimSpriteLarge_Ptr->unk_04;
     }
 
-    Gfx_DrawTextureRgba32(arg0, arg1, 0x18, 0x13, D_8780FA9C->unk_00, 0x18, 0);
+    Gfx_DrawTextureRgba32(arg0, arg1, 0x18, 0x13, gAnimSpriteLarge_Ptr->unk_00, 0x18, 0);
 }
 
-void Widget_DrawAnimIcon28(s16 arg0, s16 arg1, s16 arg2, unk_func_87801684* arg3) {
-    static unk_func_87801684* D_87806378[] = {
+void Widget_DrawAnimIcon28(s16 arg0, s16 arg1, s16 arg2, AnimFrame* arg3) {
+    static AnimFrame* gAnimTexDual_Current[] = {
         NULL,
         NULL,
     };
-    static unk_func_87801684* D_8780FAA8[2];
-    static s16 D_8780FAB0[2];
+    static AnimFrame* gAnimTexDual_Ptr[2];
+    static s16 gAnimTexDual_Timer[2];
 
-    if ((arg3 != D_87806378[arg0]) || (arg3 == NULL)) {
-        D_87806378[arg0] = arg3;
+    if ((arg3 != gAnimTexDual_Current[arg0]) || (arg3 == NULL)) {
+        gAnimTexDual_Current[arg0] = arg3;
         if (arg3 == NULL) {
             return;
         }
-        D_8780FAA8[arg0] = arg3;
-        D_8780FAB0[arg0] = arg3->unk_04;
+        gAnimTexDual_Ptr[arg0] = arg3;
+        gAnimTexDual_Timer[arg0] = arg3->unk_04;
     }
 
-    D_8780FAB0[arg0]--;
-    if (D_8780FAB0[arg0] <= 0) {
-        D_8780FAA8[arg0]++;
-        if (D_8780FAA8[arg0]->unk_00 == NULL) {
-            D_8780FAA8[arg0] = arg3;
+    gAnimTexDual_Timer[arg0]--;
+    if (gAnimTexDual_Timer[arg0] <= 0) {
+        gAnimTexDual_Ptr[arg0]++;
+        if (gAnimTexDual_Ptr[arg0]->unk_00 == NULL) {
+            gAnimTexDual_Ptr[arg0] = arg3;
         }
-        D_8780FAB0[arg0] = D_8780FAA8[arg0]->unk_04;
+        gAnimTexDual_Timer[arg0] = gAnimTexDual_Ptr[arg0]->unk_04;
     }
 
-    gDPLoadTextureTile(gDisplayListHead++, D_8780FAA8[arg0]->unk_00, G_IM_FMT_RGBA, G_IM_SIZ_32b, 28, 0, 0, 0, 27, 27,
+    gDPLoadTextureTile(gDisplayListHead++, gAnimTexDual_Ptr[arg0]->unk_00, G_IM_FMT_RGBA, G_IM_SIZ_32b, 28, 0, 0, 0, 27, 27,
                        0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                        G_TX_NOLOD);
 
@@ -531,9 +531,9 @@ void Widget_DrawAnimIcon28(s16 arg0, s16 arg1, s16 arg2, unk_func_87801684* arg3
 }
 
 void Widget_DrawSplitBanner(s16 arg0, s16 arg1, s16 arg2) {
-    static u32 D_87806380[] = { 0x03049CA0, 0x0304B1C0, 0x0304C6E0, 0x0304DC00 };
+    static u32 gDualTexturePanelIds[] = { 0x03049CA0, 0x0304B1C0, 0x0304C6E0, 0x0304DC00 };
 
-    u32 sp34 = D_87806380[arg0];
+    u32 sp34 = gDualTexturePanelIds[arg0];
 
     gDPLoadTextureTile(gDisplayListHead++, sp34, G_IM_FMT_RGBA, G_IM_SIZ_16b, 52, 0, 0, 0, 51, 25, 0,
                        G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,

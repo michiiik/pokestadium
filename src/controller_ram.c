@@ -1,10 +1,10 @@
 #include "global.h"
 #include "controller.h"
 
-s32 D_800697E0[] = { 0, 0, 0, 0 };
+s32 gStickerStationInitFlag[] = { 0, 0, 0, 0 };
 
-static u8 D_800A82B0[31];
-static u8 D_800A82CF;
+static u8 gStickerStationEepromBuf[31];
+static u8 gStickerStationCommand;
 
 extern OSMesgQueue gSIEventMesgQueue;
 
@@ -29,13 +29,13 @@ s32 Controller_CheckAccessoryEeprom(void) {
     s32 ret;
     u8 sp2F; // sp2F
 
-    if (D_800697E0[0] == 0) {
+    if (gStickerStationInitFlag[0] == 0) {
         u8* buffer;
         osPfsIsPlug(&gSIEventMesgQueue, &sp2F);
         // is controller 4 plugged in? (why?)
         if (sp2F & 8) {
             Cont_BlockEepromQueue();
-            for (buffer = D_800A82B0, i = 0; i < 32; i++) {
+            for (buffer = gStickerStationEepromBuf, i = 0; i < 32; i++) {
                 buffer[i] = 0xFE;
             }
             if ((__osContRamWrite(&gSIEventMesgQueue, 3, 0x400, buffer, 0) == 2) &&
@@ -43,11 +43,11 @@ s32 Controller_CheckAccessoryEeprom(void) {
                 Cont_NoBlockEepromQueue();
                 return 0;
             }
-            if ((__osContRamRead(&gSIEventMesgQueue, 3, 0x400, buffer) == 0) && (D_800A82CF == 0xFE)) {
+            if ((__osContRamRead(&gSIEventMesgQueue, 3, 0x400, buffer) == 0) && (gStickerStationCommand == 0xFE)) {
                 Cont_NoBlockEepromQueue();
                 return 0;
             }
-            for (buffer = D_800A82B0, i = 0; i < 32; i += 4) {
+            for (buffer = gStickerStationEepromBuf, i = 0; i < 32; i += 4) {
                 buffer[i + 0] = 0x85;
                 buffer[i + 1] = 0x85;
                 buffer[i + 2] = 0x85;
@@ -58,9 +58,9 @@ s32 Controller_CheckAccessoryEeprom(void) {
                 Cont_NoBlockEepromQueue();
                 return 0;
             }
-            if ((__osContRamRead(&gSIEventMesgQueue, 3, 0x400, buffer) == 0) && (D_800A82CF == 0x85)) {
+            if ((__osContRamRead(&gSIEventMesgQueue, 3, 0x400, buffer) == 0) && (gStickerStationCommand == 0x85)) {
                 Cont_NoBlockEepromQueue();
-                D_800697E0[0] = 1;
+                gStickerStationInitFlag[0] = 1;
                 return 1;
             }
             Cont_NoBlockEepromQueue();
@@ -72,22 +72,22 @@ s32 Controller_CheckAccessoryEeprom(void) {
 
 u8 Controller_ReadAccessoryStatus(void) {
     Cont_BlockEepromQueue();
-    __osContRamRead(&gSIEventMesgQueue, 3, 0x600, D_800A82B0);
+    __osContRamRead(&gSIEventMesgQueue, 3, 0x600, gStickerStationEepromBuf);
     Cont_NoBlockEepromQueue();
-    return D_800A82CF;
+    return gStickerStationCommand;
 }
 
 void Controller_WriteAccessoryStatus(u8 arg0) {
-    u8* buffer = D_800A82B0;
+    u8* buffer = gStickerStationEepromBuf;
     Cont_BlockEepromQueue();
     __osContRamRead(&gSIEventMesgQueue, 3, 0x600, buffer);
-    if (D_800A82CF == 8) {
+    if (gStickerStationCommand == 8) {
         do {
             System_DelayMilliseconds(0x14);
             __osContRamRead(&gSIEventMesgQueue, 3, 0x600, buffer);
         } while (buffer[0x1F] == 8);
     }
-    D_800A82CF = arg0;
+    gStickerStationCommand = arg0;
     __osContRamWrite(&gSIEventMesgQueue, 3, 0x600, buffer, 1);
     Cont_NoBlockEepromQueue();
 }

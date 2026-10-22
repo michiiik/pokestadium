@@ -15,25 +15,25 @@
 #include "src/memory.h"
 #include "src/stage_loader.h"
 
-static unk_D_84803760 D_84803760[2];
-static BinArchive* D_84803780;
-static void* D_84803784;
-static char** D_84803788;
-static char** D_8480378C;
-static char** D_84803790;
-static char** D_84803794;
-static s16 D_84803798;
-static s16 D_8480379A;
-static s32 D_8480379C;
-static unk_D_848037A0 D_848037A0[4];
-static SessionContext* D_84816420;
-static Controller D_84816428;
-static s32 D_8481644C;
-static s32 D_84816450;
-static s16 D_84816458[4];
+static unk_D_84803760 gSelectionStates[2];
+static BinArchive* gBinArchive;
+static void* gPanelTextureAtlas;
+static char** gOrderSelectMoveNamesBank;
+static char** gTypeNamesBank;
+static char** gMsgBank_Common;
+static char** gPanelStrings;
+static s16 gBottomActionButtonsTimer;
+static s16 gRulesTextScrollPos;
+static s32 gPanelCount;
+static unk_D_848037A0 gPanels[4];
+static SessionContext* gCurrentSessionContext;
+static Controller gPanelController;
+static s32 gInputTimerIndex;
+static s32 gInputTimerValue;
+static s16 gCursorWagFrames[4];
 
-static u16 D_84803540[] = { 0x1D, 0x341, 0x6947, 0x6A41 };
-static unk_D_84803548 D_84803548[] = {
+static u16 gPanelColors[] = { 0x1D, 0x341, 0x6947, 0x6A41 };
+static unk_D_84803548 gComAutoInputScriptSingleBrought[] = {
     { 0x001E, 0x0000 },
     { 0x001E, 0x4000 },
     { 0x0001, 0x8000 },
@@ -58,10 +58,10 @@ static unk_D_84803548 D_848035C0[] = {
     { 0x001E, 0x0000 }, { 0x000A, 0x4000 }, { 0x000A, 0x0002 }, { 0x000A, 0x0008 },
     { 0x000A, 0x8000 }, { 0x000A, 0x0004 }, { 0x001E, 0x0001 }, { 0x0001, 0x8000 },
 };
-static unk_D_84803548* D_848035E0[] = {
-    NULL, D_84803548, D_84803558, D_8480356C, D_84803584, D_848035A0, D_848035C0,
+static unk_D_84803548* gInputTimingTable[] = {
+    NULL, gComAutoInputScriptSingleBrought, D_84803558, D_8480356C, D_84803584, D_848035A0, D_848035C0,
 };
-static unk_D_848035FC D_848035FC[] = {
+static unk_D_848035FC gMoveTypeColors[] = {
     { { 0xF0, 0xF0, 0xF0 }, D_2017740 }, { { 0xF0, 0x96, 0x32 }, D_2019040 }, { { 0x50, 0x96, 0xF0 }, D_20199A0 },
     { { 0xC8, 0x96, 0xF0 }, D_2019680 }, { { 0xF0, 0xC8, 0x78 }, D_2018D20 }, { { 0x64, 0xB4, 0xB4 }, D_2018A00 },
     { { 0x50, 0x96, 0xF0 }, D_20199A0 }, { { 0xC8, 0xF0, 0x50 }, D_2019360 }, { { 0xDC, 0xC8, 0xF0 }, D_2019FE0 },
@@ -69,12 +69,12 @@ static unk_D_848035FC D_848035FC[] = {
     { { 0xF0, 0xF0, 0x32 }, D_20186E0 }, { { 0xF0, 0x8C, 0xB4 }, D_2019CC0 }, { { 0xB4, 0xF0, 0xF0 }, D_20180A0 },
     { { 0x64, 0xDC, 0xC8 }, D_201A300 },
 };
-static Color_RGB8 D_8480367C = { 0x00, 0x0A, 0x41 };
-static Color_RGB8 D_84803680 = { 0x00, 0x00, 0xD2 };
-static u8* D_84803684[] = { D_3008FD0, D_3009720, D_3009E70 };
-static u8* D_84803690[] = { D_300A5C0, D_300AD10 };
-static u8* D_84803698[] = { D_300B9B8 };
-static u8* D_8480369C[][3] = {
+static Color_RGB8 gSidebarGradStart = { 0x00, 0x0A, 0x41 };
+static Color_RGB8 gSidebarGradEnd = { 0x00, 0x00, 0xD2 };
+static u8* gLeadIconTextures[] = { D_3008FD0, D_3009720, D_3009E70 };
+static u8* gLeadIconPairPlayer1Textures[] = { D_300A5C0, D_300AD10 };
+static u8* gLeadIconPairPlayer2Textures[] = { D_300B9B8 };
+static u8* gTypeIconTextures[][3] = {
     {
         D_300C660,
         D_300D308,
@@ -101,12 +101,12 @@ static u8* D_8480369C[][3] = {
         D_3008100,
     },
 };
-static u8* D_848036D8 = D_30084C0;
+static u8* gLeadIconDefault = D_30084C0;
 
 void BattleMenu_DrawBottomActionButtons(void) {
-    Gfx_DrawTiledRgba16Image(D_84803784);
+    Gfx_DrawTiledRgba16Image(gPanelTextureAtlas);
 
-    gSPDisplayList(gDisplayListHead++, D_8006F4E0);
+    gSPDisplayList(gDisplayListHead++, gDL_CopyDecal);
 
     Gfx_DrawTextureRgba16(0x71, 0x1A8, 0x20, 0x18, D_3002220, 0x20, 0x200000);
     Gfx_DrawTextureRgba16(0x162, 0x1A8, 0x20, 0x18, D_3002820, 0x20, 0x200000);
@@ -117,8 +117,8 @@ void BattleMenu_DrawBottomActionButtons(void) {
     Font_SetActive(8, 0);
     Font_Printf(0x5A, 0x1AA, "*");
     Font_Printf(0x149, 0x1AA, "*");
-    Font_Printf(0x91, 0x1A8, Text_GetString(NULL, 0, D_84803790, 2));
-    Font_Printf(0x180, 0x1A8, Text_GetString(NULL, 0, D_84803790, 3));
+    Font_Printf(0x91, 0x1A8, Text_GetString(NULL, 0, gMsgBank_Common, 2));
+    Font_Printf(0x180, 0x1A8, Text_GetString(NULL, 0, gMsgBank_Common, 3));
     Font_EndTexturedTextRendering();
 }
 
@@ -132,11 +132,11 @@ void BattleMenu_DrawScrollingRulesText(void) {
     Color_RGB8 sp54;
     Color_RGB8 sp50;
 
-    var_s4 = 0x30 - (D_8480379A % 24);
-    var_s2 = D_8480379A / 24;
+    var_s4 = 0x30 - (gRulesTextScrollPos % 24);
+    var_s2 = gRulesTextScrollPos / 24;
     sp58 = StageContext_GetCurrentImage();
-    sp54 = D_8480367C;
-    sp50 = D_84803680;
+    sp54 = gSidebarGradStart;
+    sp50 = gSidebarGradEnd;
     Ui_DrawGradientPanel(0x228, 0x20, 0x2E, 0x186, &sp54, &sp50);
 
     gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 563, 48, 587, 408);
@@ -145,10 +145,10 @@ void BattleMenu_DrawScrollingRulesText(void) {
     Font_SetActive(0x10, 0);
     Gfx_SetEnvColor(0xA5, 0xDE, 0x8C, 0xFF);
 
-    if ((D_84816420->ruleCategory == 0) || (D_84816420->ruleCategory == 8)) {
-        var_v0 = Text_GetString(NULL, 0, D_84803790, 1);
+    if ((gCurrentSessionContext->ruleCategory == 0) || (gCurrentSessionContext->ruleCategory == 8)) {
+        var_v0 = Text_GetString(NULL, 0, gMsgBank_Common, 1);
     } else {
-        var_v0 = Text_GetString(NULL, 0, D_84803790, 0);
+        var_v0 = Text_GetString(NULL, 0, gMsgBank_Common, 0);
     }
 
     for (i = 0; i < 16; i++) {
@@ -163,9 +163,9 @@ void BattleMenu_DrawScrollingRulesText(void) {
 
     gDPSetScissorFrac(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, sp58->width * 4.0f, sp58->height * 4.0f);
 
-    D_8480379A += 2;
-    if (D_8480379A >= ((strlen(var_v0) * 0x18) + 0x18)) {
-        D_8480379A = 0;
+    gRulesTextScrollPos += 2;
+    if (gRulesTextScrollPos >= ((strlen(var_v0) * 0x18) + 0x18)) {
+        gRulesTextScrollPos = 0;
     }
 }
 
@@ -208,20 +208,20 @@ void BattleMenu_DrawSidebarLeadIcon(s32 arg0, s32 arg1, unk_D_84803760* arg2) {
         if (arg2->unk_01 != 0) {
             Gfx_DrawTextureRgba16(arg0, arg1, 0x24, 0x1A, D_3008880, 0x24, 0x200000);
         } else {
-            Gfx_DrawTextureRgba16(arg0, arg1, 0x24, 0x1A, D_84803684[arg2->unk_0E], 0x24, 0x200000);
+            Gfx_DrawTextureRgba16(arg0, arg1, 0x24, 0x1A, gLeadIconTextures[arg2->unk_0E], 0x24, 0x200000);
         }
     } else {
         switch (arg2->unk_0E) {
             case 0:
-                sp2C = D_84803690[arg2->unk_0F];
+                sp2C = gLeadIconPairPlayer1Textures[arg2->unk_0F];
                 break;
 
             case 1:
-                sp2C = D_84803698[arg2->unk_0F];
+                sp2C = gLeadIconPairPlayer2Textures[arg2->unk_0F];
                 break;
 
             case 2:
-                sp2C = D_8480369C[0][arg2->unk_0F];
+                sp2C = gTypeIconTextures[0][arg2->unk_0F];
                 break;
         }
         Gfx_DrawTextureRgba16(arg0, arg1, 0x24, 0x2D, sp2C, 0x24, 0x200000);
@@ -248,7 +248,7 @@ s32 BattleMenu_DrawSidebarRowTypeIcon(s32 arg0, s32 arg1, s8 arg2, s8 arg3) {
             }
 
             if (sp30 > 0) {
-                Gfx_DrawTextureRgba16(arg0 + 6, arg1, 0x18, 0x14, D_8480369C[sp34][sp30], 0x18, 0x200000);
+                Gfx_DrawTextureRgba16(arg0 + 6, arg1, 0x18, 0x14, gTypeIconTextures[sp34][sp30], 0x18, 0x200000);
                 arg2 = (sp34 * 0x10) | sp30;
             } else {
                 arg2 = 0;
@@ -259,7 +259,7 @@ s32 BattleMenu_DrawSidebarRowTypeIcon(s32 arg0, s32 arg1, s8 arg2, s8 arg3) {
 }
 
 void BattleMenu_DrawTeamOrderSidebarTeam0(void) {
-    unk_D_84803760* temp_v0 = &D_84803760[0];
+    unk_D_84803760* temp_v0 = &gSelectionStates[0];
     s32 i;
     s16 var_s2;
     s32 var_s1;
@@ -270,7 +270,7 @@ void BattleMenu_DrawTeamOrderSidebarTeam0(void) {
         var_s2 = 0x4A;
     }
 
-    gSPDisplayList(gDisplayListHead++, D_8006F4E0);
+    gSPDisplayList(gDisplayListHead++, gDL_CopyDecal);
 
     Gfx_DrawTextureRgba16(0x2D, var_s2, 0x20, 0xC, D_3003C80, 0x20, 0x200000);
     Gfx_DrawTextureRgba16(0x2D, var_s2 + 0xC, 0x20, 0x17, D_30050C0, 0x20, 0x200000);
@@ -280,9 +280,9 @@ void BattleMenu_DrawTeamOrderSidebarTeam0(void) {
     Gfx_DrawTextureRgba16(0x25, var_s2 + 0x68, 0x28, 0x2E, D_3002E20, 0x28, 0x200000);
 
     if (temp_v0->unk_0F == -1) {
-        BattleMenu_DrawSidebarLeadIcon(0x2D, 0x21, &D_84803760[0]);
+        BattleMenu_DrawSidebarLeadIcon(0x2D, 0x21, &gSelectionStates[0]);
     } else {
-        BattleMenu_DrawSidebarLeadIcon(0x2D, 0x1D, &D_84803760[0]);
+        BattleMenu_DrawSidebarLeadIcon(0x2D, 0x1D, &gSelectionStates[0]);
     }
 
     var_s1 = var_s2 + 0x76;
@@ -294,7 +294,7 @@ void BattleMenu_DrawTeamOrderSidebarTeam0(void) {
 }
 
 void BattleMenu_DrawTeamOrderSidebarTeam1(void) {
-    unk_D_84803760* temp_v0 = &D_84803760[1];
+    unk_D_84803760* temp_v0 = &gSelectionStates[1];
     s32 i;
     s16 var_s2;
     s32 var_s1;
@@ -305,7 +305,7 @@ void BattleMenu_DrawTeamOrderSidebarTeam1(void) {
         var_s2 = 0xE6;
     }
 
-    gSPDisplayList(gDisplayListHead++, D_8006F4E0);
+    gSPDisplayList(gDisplayListHead++, gDL_CopyDecal);
 
     Gfx_DrawTextureRgba16(0x2D, var_s2, 0x28, 0x2C, D_3003F80, 0x28, 0x200000);
     Gfx_DrawTextureRgba16(0x2D, var_s2 + 0x2C, 0x20, 0x17, D_30050C0, 0x20, 0x200000);
@@ -315,9 +315,9 @@ void BattleMenu_DrawTeamOrderSidebarTeam1(void) {
     Gfx_DrawTextureRgba16(0x2D, var_s2 + 0x88, 0x20, 0xE, D_3004D40, 0x20, 0x200000);
 
     if (temp_v0->unk_0F == -1) {
-        BattleMenu_DrawSidebarLeadIcon(0x2D, 0x189, &D_84803760[1]);
+        BattleMenu_DrawSidebarLeadIcon(0x2D, 0x189, &gSelectionStates[1]);
     } else {
-        BattleMenu_DrawSidebarLeadIcon(0x2D, 0x17C, &D_84803760[1]);
+        BattleMenu_DrawSidebarLeadIcon(0x2D, 0x17C, &gSelectionStates[1]);
     }
 
     var_s1 = var_s2 + 0xC;
@@ -329,7 +329,7 @@ void BattleMenu_DrawTeamOrderSidebarTeam1(void) {
 }
 
 void BattleMenu_AppendOrderSlotIcon(s32 arg0, s32 arg1) {
-    unk_D_84803760* temp_v0 = &D_84803760[arg0];
+    unk_D_84803760* temp_v0 = &gSelectionStates[arg0];
 
     temp_v0->unk_02[temp_v0->unk_00] = ((arg1 + 1) << 4) | (temp_v0->unk_02[temp_v0->unk_00] & 0xF);
     temp_v0->unk_08[temp_v0->unk_00] = 1;
@@ -337,7 +337,7 @@ void BattleMenu_AppendOrderSlotIcon(s32 arg0, s32 arg1) {
 }
 
 void BattleMenu_ResetOrderSlotIcons(s32 arg0) {
-    unk_D_84803760* ptr = &D_84803760[arg0];
+    unk_D_84803760* ptr = &gSelectionStates[arg0];
     s32 i;
 
     for (i = 0; i < 6; i++) {
@@ -347,7 +347,7 @@ void BattleMenu_ResetOrderSlotIcons(s32 arg0) {
 }
 
 void BattleMenu_DrawBorderedPanel(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4) {
-    Ui_DrawBorderedPanelStyleB(arg0, arg1, arg2, arg3, D_84803540[arg4]);
+    Ui_DrawBorderedPanelStyleB(arg0, arg1, arg2, arg3, gPanelColors[arg4]);
 }
 
 void BattleMenu_DrawOrderSelectPanel_PartyGrid(unk_D_848037A0* arg0) {
@@ -363,7 +363,7 @@ void BattleMenu_DrawOrderSelectPanel_PartyGrid(unk_D_848037A0* arg0) {
 
     BattleMenu_DrawBorderedPanel(temp_s7, temp_fp, 0x1D7, 0x5E, arg0->unk_0001);
 
-    gSPDisplayList(gDisplayListHead++, D_8006F4E0);
+    gSPDisplayList(gDisplayListHead++, gDL_CopyDecal);
 
     Gfx_DrawTextureRgba16(temp_s7 + 7, temp_fp + 0xB, 0x1A, 0x1A, &D_30005B0, 0x1C, 0x200000);
     Gfx_DrawTextureRgba16(temp_s7 + 0xA1, temp_fp + 0xB, 0x1A, 0x1A, &D_3001110, 0x1C, 0x200000);
@@ -397,7 +397,7 @@ void BattleMenu_DrawOrderSelectPanel_PartyGrid(unk_D_848037A0* arg0) {
         if ((arg0->unk_0009 != 0) && (temp_v0_4 != 0)) {
             Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
         }
-        Font_Printf(temp_s1_2, temp_s2_3 + 0x14, "%s%d", Text_GetString(NULL, 0, D_84803794, 0x15),
+        Font_Printf(temp_s1_2, temp_s2_3 + 0x14, "%s%d", Text_GetString(NULL, 0, gPanelStrings, 0x15),
                       arg0->unk_0018[i].unk_24);
     }
 
@@ -405,22 +405,22 @@ void BattleMenu_DrawOrderSelectPanel_PartyGrid(unk_D_848037A0* arg0) {
 
     if (arg0->unk_0007 > 0) {
         if (arg0->unk_0003 == 0) {
-            Gfx_DrawRgba16ImageRegion(D_84803784, 0xC8, 0x81, 0x15F, 0x53);
+            Gfx_DrawRgba16ImageRegion(gPanelTextureAtlas, 0xC8, 0x81, 0x15F, 0x53);
         } else {
-            Gfx_DrawRgba16ImageRegion(D_84803784, 0x50, 0xF0, 0x15F, 0x53);
+            Gfx_DrawRgba16ImageRegion(gPanelTextureAtlas, 0x50, 0xF0, 0x15F, 0x53);
         }
         arg0->unk_0007 -= 1;
     }
 }
 
 void BattleMenu_DrawCursorArrow(s16 arg0, s16 arg1, s16 arg2) {
-    if (D_84816458[arg2] < 6) {
-        arg0 += D_84816458[arg2];
+    if (gCursorWagFrames[arg2] < 6) {
+        arg0 += gCursorWagFrames[arg2];
     } else {
-        arg0 = (arg0 - D_84816458[arg2]) + 0xC;
+        arg0 = (arg0 - gCursorWagFrames[arg2]) + 0xC;
     }
     Ui_DrawTextureMarker(arg0, arg1);
-    D_84816458[arg2] = (D_84816458[arg2] + 1) % 12;
+    gCursorWagFrames[arg2] = (gCursorWagFrames[arg2] + 1) % 12;
 }
 
 void BattleMenu_DrawOrderSelectPanel_ConfirmPrompt(unk_D_848037A0* arg0) {
@@ -448,9 +448,9 @@ void BattleMenu_DrawOrderSelectPanel_ConfirmPrompt(unk_D_848037A0* arg0) {
 
         Font_BeginTranslucentTextRendering();
         Font_SetActive(0x10, 0);
-        Font_Printf(var_s1 + 0x1F, var_s2 + 0xB, Text_GetString(NULL, 0, D_84803790, 4));
-        Font_Printf(var_s1 + 0x4F, var_s2 + 0x30, Text_GetString(NULL, 0, D_84803790, 5));
-        Font_Printf(var_s1 + 0xAF, var_s2 + 0x30, Text_GetString(NULL, 0, D_84803790, 6));
+        Font_Printf(var_s1 + 0x1F, var_s2 + 0xB, Text_GetString(NULL, 0, gMsgBank_Common, 4));
+        Font_Printf(var_s1 + 0x4F, var_s2 + 0x30, Text_GetString(NULL, 0, gMsgBank_Common, 5));
+        Font_Printf(var_s1 + 0xAF, var_s2 + 0x30, Text_GetString(NULL, 0, gMsgBank_Common, 6));
         Font_EndTexturedTextRendering();
         arg0->unk_0007 = 2;
     } else {
@@ -467,9 +467,9 @@ void BattleMenu_DrawOrderSelectPanel_ConfirmPrompt(unk_D_848037A0* arg0) {
         Font_BeginTranslucentTextRendering();
         Font_SetActive(0x10, 0);
         Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
-        Font_Printf(var_s1 + 0x50, var_s2 + 0x14, Text_GetString(NULL, 0, D_84803790, 4));
-        Font_Printf(var_s1 + 0x80, var_s2 + 0x3C, Text_GetString(NULL, 0, D_84803790, 5));
-        Font_Printf(var_s1 + 0xE0, var_s2 + 0x3C, Text_GetString(NULL, 0, D_84803790, 6));
+        Font_Printf(var_s1 + 0x50, var_s2 + 0x14, Text_GetString(NULL, 0, gMsgBank_Common, 4));
+        Font_Printf(var_s1 + 0x80, var_s2 + 0x3C, Text_GetString(NULL, 0, gMsgBank_Common, 5));
+        Font_Printf(var_s1 + 0xE0, var_s2 + 0x3C, Text_GetString(NULL, 0, gMsgBank_Common, 6));
         Font_EndTexturedTextRendering();
     }
 }
@@ -480,7 +480,7 @@ void BattleMenu_DrawOrderSelectPanel_LevelCapNotice(unk_D_848037A0* arg0) {
     s32 sp30;
     s32 sp2C;
 
-    switch (D_84816420->ruleCategory) {
+    switch (gCurrentSessionContext->ruleCategory) {
         case 3:
             sp2C = 0x9B;
             break;
@@ -509,7 +509,7 @@ void BattleMenu_DrawOrderSelectPanel_LevelCapNotice(unk_D_848037A0* arg0) {
         Gfx_SetEnvColor(0xFF, 0x63, 0x63, 0xFF);
         Font_SetLineHeight(0x25);
         Text_SetNumberToken(3, sp2C);
-        Font_Printf(sp34 + 0x10, sp30 + 0xB, Text_GetString(sp38, sizeof(sp38), D_84803790, 7));
+        Font_Printf(sp34 + 0x10, sp30 + 0xB, Text_GetString(sp38, sizeof(sp38), gMsgBank_Common, 7));
         Font_EndTexturedTextRendering();
         arg0->unk_0007 = 2;
     } else {
@@ -523,7 +523,7 @@ void BattleMenu_DrawOrderSelectPanel_LevelCapNotice(unk_D_848037A0* arg0) {
         Gfx_SetEnvColor(0xFF, 0x63, 0x63, 0xFF);
         Font_SetLineHeight(0x28);
         Text_SetNumberToken(3, sp2C);
-        Font_Printf(sp34 + 0x50, sp30 + 0x14, Text_GetString(NULL, 0, D_84803790, 7));
+        Font_Printf(sp34 + 0x50, sp30 + 0x14, Text_GetString(NULL, 0, gMsgBank_Common, 7));
         Font_EndTexturedTextRendering();
     }
 }
@@ -549,7 +549,7 @@ void BattleMenu_DrawOrderSelectPanel_Ready(unk_D_848037A0* arg0) {
         Font_SetActive(0x20, 0);
         Font_EnableTwoCycleTexturing();
         Gfx_SetPrimColor(0x1C, 0x74, 0xFF, 0xFF);
-        temp_v0 = Text_GetString(NULL, 0, D_84803790, 8);
+        temp_v0 = Text_GetString(NULL, 0, gMsgBank_Common, 8);
         Font_Printf((sp3C - (Font_MeasureTextExtent(0x20, 0, temp_v0) / 2)) + 0xAF, sp38 + 0x19, temp_v0);
         Font_DisableTwoCycleTexturing();
         Font_EndTexturedTextRendering();
@@ -579,7 +579,7 @@ void BattleMenu_DrawOrderSelectPanel_Ready(unk_D_848037A0* arg0) {
         Font_EnableTwoCycleTexturing();
         Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, sp34);
         Gfx_SetPrimColor(0x1C, 0x74, 0xFF, sp34);
-        temp_v0 = Text_GetString(NULL, 0, D_84803790, 8);
+        temp_v0 = Text_GetString(NULL, 0, gMsgBank_Common, 8);
         Font_Printf((sp3C - (Font_MeasureTextExtent(0x20, 0, temp_v0) / 2)) + 0xEB, sp38 + 0x25, temp_v0);
         Font_DisableTwoCycleTexturing();
         Font_EndTexturedTextRendering();
@@ -611,30 +611,30 @@ void BattleMenu_DrawOrderSelectPanel_MonDetail(unk_D_848037A0* arg0) {
     Font_BeginTranslucentTextRendering();
     Font_SetActive(4, 0);
     Font_Printf(temp_fp + 0x32, sp7C + 7, arg0->unk_0018[temp_s1].unk_30);
-    Font_Printf(temp_fp + 0x32, sp7C + 0x1B, "%s", Text_GetString(NULL, 0, D_84803794, 8));
-    Font_Printf(temp_fp + 0xBE, sp7C + 7, Text_GetString(NULL, 0, D_84803790, 9));
-    Font_Printf(temp_fp + 0xBE, sp7C + 0x1B, Text_GetString(NULL, 0, D_84803790, 0xA));
-    Font_Printf(temp_fp + 0xBE, sp7C + 0x2F, Text_GetString(NULL, 0, D_84803790, 0xB));
-    Font_Printf(temp_fp + 0xBE, sp7C + 0x43, Text_GetString(NULL, 0, D_84803790, 0xC));
-    Font_Printf(temp_fp + 0x32, sp7C + 0x2F, Text_GetString(NULL, 0, D_84803790, 0xD));
+    Font_Printf(temp_fp + 0x32, sp7C + 0x1B, "%s", Text_GetString(NULL, 0, gPanelStrings, 8));
+    Font_Printf(temp_fp + 0xBE, sp7C + 7, Text_GetString(NULL, 0, gMsgBank_Common, 9));
+    Font_Printf(temp_fp + 0xBE, sp7C + 0x1B, Text_GetString(NULL, 0, gMsgBank_Common, 0xA));
+    Font_Printf(temp_fp + 0xBE, sp7C + 0x2F, Text_GetString(NULL, 0, gMsgBank_Common, 0xB));
+    Font_Printf(temp_fp + 0xBE, sp7C + 0x43, Text_GetString(NULL, 0, gMsgBank_Common, 0xC));
+    Font_Printf(temp_fp + 0x32, sp7C + 0x2F, Text_GetString(NULL, 0, gMsgBank_Common, 0xD));
 
     if (sp78->unk_06 != sp78->unk_07) {
-        Font_Printf(temp_fp + 0x32, sp7C + 0x43, Text_GetString(NULL, 0, D_84803790, 0xE));
+        Font_Printf(temp_fp + 0x32, sp7C + 0x43, Text_GetString(NULL, 0, gMsgBank_Common, 0xE));
     }
 
     idx = PokemonType_ToDisplayIndex(sp78->unk_06);
-    Gfx_SetEnvColor(D_848035FC[idx].unk_00.r, D_848035FC[idx].unk_00.g, D_848035FC[idx].unk_00.b, 0xFF);
-    Font_Printf(temp_fp + 0x7A, sp7C + 0x2F, Text_GetString(NULL, 0, D_8480378C, PokemonType_ToDisplayIndex(sp78->unk_06)));
+    Gfx_SetEnvColor(gMoveTypeColors[idx].unk_00.r, gMoveTypeColors[idx].unk_00.g, gMoveTypeColors[idx].unk_00.b, 0xFF);
+    Font_Printf(temp_fp + 0x7A, sp7C + 0x2F, Text_GetString(NULL, 0, gTypeNamesBank, PokemonType_ToDisplayIndex(sp78->unk_06)));
 
     if (sp78->unk_06 != sp78->unk_07) {
         idx = PokemonType_ToDisplayIndex(sp78->unk_07);
-        Gfx_SetEnvColor(D_848035FC[idx].unk_00.r, D_848035FC[idx].unk_00.g, D_848035FC[idx].unk_00.b, 0xFF);
-        Font_Printf(temp_fp + 0x7A, sp7C + 0x43, Text_GetString(NULL, 0, D_8480378C, PokemonType_ToDisplayIndex(sp78->unk_07)));
+        Gfx_SetEnvColor(gMoveTypeColors[idx].unk_00.r, gMoveTypeColors[idx].unk_00.g, gMoveTypeColors[idx].unk_00.b, 0xFF);
+        Font_Printf(temp_fp + 0x7A, sp7C + 0x43, Text_GetString(NULL, 0, gTypeNamesBank, PokemonType_ToDisplayIndex(sp78->unk_07)));
     }
 
     Font_SetActive(4, 0);
     Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
-    Font_Printf(temp_fp + 0x8C, sp7C + 7, "%s%d", Text_GetString(NULL, 0, D_84803794, 0x15),
+    Font_Printf(temp_fp + 0x8C, sp7C + 7, "%s%d", Text_GetString(NULL, 0, gPanelStrings, 0x15),
                   arg0->unk_0018[temp_s1].unk_24);
     Font_Printf(temp_fp + 0x52, sp7C + 0x1B, "%3d", sp78->unk_26);
     Font_Printf(temp_fp + 0xFA, sp7C + 7, "%3d", sp78->unk_28);
@@ -646,10 +646,10 @@ void BattleMenu_DrawOrderSelectPanel_MonDetail(unk_D_848037A0* arg0) {
         if (sp78->unk_09[i] == 0) {
             break;
         }
-        temp_v1 = &D_848035FC[gMoveDisplayInfo[sp78->unk_09[i] - 1].unk_01];
+        temp_v1 = &gMoveTypeColors[gMoveDisplayInfo[sp78->unk_09[i] - 1].unk_01];
         Font_SetActive(4, 0);
         Gfx_SetEnvColor(temp_v1->unk_00.r, temp_v1->unk_00.g, temp_v1->unk_00.b, 0xFF);
-        Font_Printf(temp_fp + 0x14C, (i * 0x14) + sp7C + 7, Text_GetString(NULL, 0, D_84803788, sp78->unk_09[i] - 1));
+        Font_Printf(temp_fp + 0x14C, (i * 0x14) + sp7C + 7, Text_GetString(NULL, 0, gOrderSelectMoveNamesBank, sp78->unk_09[i] - 1));
         Font_SetActive(4, 0);
         Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
         Font_Printf(temp_fp + 0x1B3, (i * 0x14) + sp7C + 7, "%2d", sp78->unk_20[i] & 0x3F);
@@ -664,16 +664,16 @@ void BattleMenu_DrawOrderSelectPanel_MonDetail(unk_D_848037A0* arg0) {
             break;
         }
         Gfx_DrawTextureRgba16(temp_fp + 0x136, (i * 0x14) + sp7C + 7, 0x14, 0x14,
-                      D_848035FC[gMoveDisplayInfo[sp78->unk_09[i] - 1].unk_01].unk_04, 0x14, 0);
+                      gMoveTypeColors[gMoveDisplayInfo[sp78->unk_09[i] - 1].unk_01].unk_04, 0x14, 0);
     }
 
     gSPDisplayList(gDisplayListHead++, gUiRestoreTextureDL);
 
     if (arg0->unk_0007 > 0) {
         if (arg0->unk_0003 == 0) {
-            Gfx_DrawRgba16ImageRegion(D_84803784, 0xC8, 0x81, 0x15F, 0x53);
+            Gfx_DrawRgba16ImageRegion(gPanelTextureAtlas, 0xC8, 0x81, 0x15F, 0x53);
         } else {
-            Gfx_DrawRgba16ImageRegion(D_84803784, 0x50, 0xF0, 0x15F, 0x53);
+            Gfx_DrawRgba16ImageRegion(gPanelTextureAtlas, 0x50, 0xF0, 0x15F, 0x53);
         }
         arg0->unk_0007--;
     }
@@ -701,8 +701,8 @@ void BattleMenu_DrawConfirmButtonLabel(unk_D_848037A0* arg0) {
 }
 
 void BattleMenu_DrawOrderSelectPanel(unk_D_848037A0* arg0) {
-    if ((D_84803798 != 0) || (arg0->unk_0006 != 0)) {
-        if ((D_84803798 != 0) && (arg0->unk_0002 == -1)) {
+    if ((gBottomActionButtonsTimer != 0) || (arg0->unk_0006 != 0)) {
+        if ((gBottomActionButtonsTimer != 0) && (arg0->unk_0002 == -1)) {
             BattleMenu_DrawConfirmButtonLabel(arg0);
         }
 
@@ -742,30 +742,30 @@ void BattleMenu_UpdateComPanelAutoInput(void) {
     unk_D_84803548* ptr;
 
     for (i = 0; i < 4; i++) {
-        if ((D_848037A0[i].unk_001C != NULL) && (D_848037A0[i].unk_001C->unk_000 & 2)) {
+        if ((gPanels[i].unk_001C != NULL) && (gPanels[i].unk_001C->unk_000 & 2)) {
             break;
         }
     }
 
     if (i < 4) {
-        if ((D_84816420->ruleCategory != 0) && (D_84816420->ruleCategory != 8)) {
+        if ((gCurrentSessionContext->ruleCategory != 0) && (gCurrentSessionContext->ruleCategory != 8)) {
             var_v0 = 3;
         } else {
-            var_v0 = D_848037A0[i].unk_0017;
+            var_v0 = gPanels[i].unk_0017;
         }
-        D_84816428.buttonPressed = 0;
-        if (D_84816450 == 0) {
-            ptr = D_848035E0[var_v0];
+        gPanelController.buttonPressed = 0;
+        if (gInputTimerValue == 0) {
+            ptr = gInputTimingTable[var_v0];
 
-            D_84816450 = ptr[D_8481644C].unk_00;
-            if (D_84816450 != 0) {
-                D_84816428.buttonPressed = ptr[D_8481644C].unk_02;
-                D_8481644C++;
+            gInputTimerValue = ptr[gInputTimerIndex].unk_00;
+            if (gInputTimerValue != 0) {
+                gPanelController.buttonPressed = ptr[gInputTimerIndex].unk_02;
+                gInputTimerIndex++;
             }
         }
 
-        if (D_84816450 > 0) {
-            D_84816450--;
+        if (gInputTimerValue > 0) {
+            gInputTimerValue--;
         }
     }
 }
@@ -793,7 +793,7 @@ s32 BattleMenu_PicksExceedLevelCap(unk_D_848037A0* arg0) {
             var_v0 += arg0->unk_0018[arg0->unk_000C[i]].unk_24;
         }
 
-        if (D_84816420->ruleCategory == 3) {
+        if (gCurrentSessionContext->ruleCategory == 3) {
             if ((arg0->unk_000B == 2) && (var_v0 >= 0x6A)) {
                 return 1;
             }
@@ -801,7 +801,7 @@ s32 BattleMenu_PicksExceedLevelCap(unk_D_848037A0* arg0) {
             if ((arg0->unk_000B == 3) && (var_v0 >= 0x9C)) {
                 return 1;
             }
-        } else if (D_84816420->ruleCategory == 4) {
+        } else if (gCurrentSessionContext->ruleCategory == 4) {
             if ((arg0->unk_000B == 2) && (var_v0 >= 0x38)) {
                 return 1;
             }
@@ -809,7 +809,7 @@ s32 BattleMenu_PicksExceedLevelCap(unk_D_848037A0* arg0) {
             if ((arg0->unk_000B == 3) && (var_v0 >= 0x51)) {
                 return 1;
             }
-        } else if (D_84816420->ruleCategory == 5) {
+        } else if (gCurrentSessionContext->ruleCategory == 5) {
             if ((arg0->unk_000B == 2) && (var_v0 >= 0x24)) {
                 return 1;
             }
@@ -826,7 +826,7 @@ s32 BattleMenu_PicksExceedLevelCap(unk_D_848037A0* arg0) {
 s32 BattleMenu_IsOrderSelectionComplete(unk_D_848037A0* arg0) {
     s8 var_v1;
 
-    if ((D_84816420->ruleCategory != 0) && (D_84816420->ruleCategory != 8)) {
+    if ((gCurrentSessionContext->ruleCategory != 0) && (gCurrentSessionContext->ruleCategory != 8)) {
         var_v1 = 3;
     } else if (arg0->unk_001C->unk_000 & 2) {
         var_v1 = arg0->unk_0017;
@@ -897,7 +897,7 @@ void BattleMenu_UndoLastOrderSelection(unk_D_848037A0* arg0) {
         Audio_PlaySoundEffectById(SFX_MENU_BACK);
 
         if (arg0->unk_0002 != -1) {
-            temp_v0 = &D_848037A0[arg0->unk_0002];
+            temp_v0 = &gPanels[arg0->unk_0002];
             temp_v0->unk_0005 = 0;
             temp_v0->unk_000B = 0;
             temp_v0->unk_0009 = 0;
@@ -967,7 +967,7 @@ void BattleMenu_HandleOrderSelectPanel_ConfirmInput(Controller* arg0, unk_D_8480
             BattleMenu_ResetOrderSlotIcons(arg1->unk_0003);
             Audio_PlaySoundEffectById(SFX_MENU_BACK);
             if (arg1->unk_0002 != -1) {
-                temp_v0_2 = &D_848037A0[arg1->unk_0002];
+                temp_v0_2 = &gPanels[arg1->unk_0002];
                 temp_v0_2->unk_0005 = 0;
                 temp_v0_2->unk_000B = 0;
                 temp_v0_2->unk_0009 = 0;
@@ -1044,7 +1044,7 @@ s32 BattleMenu_UpdateOrderSelectPanel(s32 arg0, unk_D_848037A0* arg1) {
     s32 sp18 = 0;
 
     if (arg1->unk_001C->unk_000 & 2) {
-        var_a0 = &D_84816428;
+        var_a0 = &gPanelController;
     } else {
         var_a0 = &gControllers[arg1->unk_0001];
     }
@@ -1091,13 +1091,13 @@ s32 BattleMenu_UpdateOrderSelect(s32 arg0) {
     GeoRender_AdvanceFrameCounter();
     BgStage_DrawFrame();
 
-    if (D_84803798 != 0) {
+    if (gBottomActionButtonsTimer != 0) {
         BattleMenu_DrawBottomActionButtons();
     }
 
-    for (i = 0; i < D_8480379C; i++) {
-        var_s2 += BattleMenu_UpdateOrderSelectPanel(arg0, &D_848037A0[i]);
-        BattleMenu_DrawOrderSelectPanel(&D_848037A0[i]);
+    for (i = 0; i < gPanelCount; i++) {
+        var_s2 += BattleMenu_UpdateOrderSelectPanel(arg0, &gPanels[i]);
+        BattleMenu_DrawOrderSelectPanel(&gPanels[i]);
     }
 
     BattleMenu_DrawTeamOrderSidebarTeam0();
@@ -1105,17 +1105,17 @@ s32 BattleMenu_UpdateOrderSelect(s32 arg0) {
     BattleMenu_DrawScrollingRulesText();
 
     if (arg0 == 0) {
-        if (var_s2 == D_8480379C) {
+        if (var_s2 == gPanelCount) {
             sp30 = 1;
             StageContext_SetClearColor(0xFFFF);
             Audio_StopMusic(0x10);
         }
 
-        if (D_84803798 > 0) {
-            D_84803798 -= 1;
+        if (gBottomActionButtonsTimer > 0) {
+            gBottomActionButtonsTimer -= 1;
         }
     } else {
-        D_84803798 = 2;
+        gBottomActionButtonsTimer = 2;
     }
     return sp30;
 }
@@ -1158,8 +1158,8 @@ void BattleMenu_CommitOrderSelection(void) {
     TeamRoster* temp_s1;
     unk_D_848037A0* var_s2;
 
-    var_s2 = D_848037A0;
-    var_s4 = D_8480379C;
+    var_s2 = gPanels;
+    var_s4 = gPanelCount;
 
     while (var_s4-- > 0) {
         temp_s1 = var_s2->unk_001C;
@@ -1177,8 +1177,8 @@ void BattleMenu_CommitOrderSelection(void) {
         var_s2++;
     }
 
-    BattleMenu_RearrangeLeadPokemon(&D_84816420->battleSides[0], &D_84803760[0]);
-    BattleMenu_RearrangeLeadPokemon(&D_84816420->battleSides[1], &D_84803760[1]);
+    BattleMenu_RearrangeLeadPokemon(&gCurrentSessionContext->battleSides[0], &gSelectionStates[0]);
+    BattleMenu_RearrangeLeadPokemon(&gCurrentSessionContext->battleSides[1], &gSelectionStates[1]);
 }
 
 void BattleMenu_AddOrderSelectPanel(s16 arg0, s16 arg1, TeamRoster* arg2, s32 arg3, s32 arg4) {
@@ -1186,8 +1186,8 @@ void BattleMenu_AddOrderSelectPanel(s16 arg0, s16 arg1, TeamRoster* arg2, s32 ar
     unk_D_848037A0* temp_v1;
     BattleMon* temp_s0;
 
-    temp_v1 = &D_848037A0[D_8480379C];
-    temp_v1->unk_0000 = D_8480379C;
+    temp_v1 = &gPanels[gPanelCount];
+    temp_v1->unk_0000 = gPanelCount;
     temp_v1->unk_0001 = arg2->unk_001;
     temp_v1->unk_0002 = arg4;
     temp_v1->unk_0003 = arg3;
@@ -1211,42 +1211,42 @@ void BattleMenu_AddOrderSelectPanel(s16 arg0, s16 arg1, TeamRoster* arg2, s32 ar
         PokeIcon_LoadModelTextureForMon(temp_v1->unk_0020[i], 0, temp_s0);
     }
 
-    D_8480379C++;
+    gPanelCount++;
 }
 
 void BattleMenu_InitOrderSelectPanels(SessionContext* arg0) {
     BattleSessionTeams* temp_s0 = &arg0->battleSides[0];
 
-    D_84816420 = arg0;
-    D_8480379C = 0;
-    D_84803798 = 2;
-    D_8480379A = 0;
-    D_8481644C = 0;
-    D_84816450 = 0;
-    D_84816428.buttonPressed = 0;
+    gCurrentSessionContext = arg0;
+    gPanelCount = 0;
+    gBottomActionButtonsTimer = 2;
+    gRulesTextScrollPos = 0;
+    gInputTimerIndex = 0;
+    gInputTimerValue = 0;
+    gPanelController.buttonPressed = 0;
 
-    BattleMenu_InitTeamOrderState(&D_84803760[0], &D_84816420->battleSides[0], D_84816420->ruleCategory);
-    BattleMenu_InitTeamOrderState(&D_84803760[1], &D_84816420->battleSides[1], D_84816420->ruleCategory);
+    BattleMenu_InitTeamOrderState(&gSelectionStates[0], &gCurrentSessionContext->battleSides[0], gCurrentSessionContext->ruleCategory);
+    BattleMenu_InitTeamOrderState(&gSelectionStates[1], &gCurrentSessionContext->battleSides[1], gCurrentSessionContext->ruleCategory);
 
     if (temp_s0->unk_01 == 1) {
         BattleMenu_AddOrderSelectPanel(0x50, 0x21, temp_s0->teamMember[0], 0, -1);
     } else if (temp_s0->teamMember[0]->unk_001 < temp_s0->teamMember[1]->unk_001) {
-        BattleMenu_AddOrderSelectPanel(0x50, 0x21, temp_s0->teamMember[0], 0, D_8480379C + 1);
-        BattleMenu_AddOrderSelectPanel(0x50, 0x81, temp_s0->teamMember[1], 0, D_8480379C - 1);
+        BattleMenu_AddOrderSelectPanel(0x50, 0x21, temp_s0->teamMember[0], 0, gPanelCount + 1);
+        BattleMenu_AddOrderSelectPanel(0x50, 0x81, temp_s0->teamMember[1], 0, gPanelCount - 1);
     } else {
-        BattleMenu_AddOrderSelectPanel(0x50, 0x21, temp_s0->teamMember[1], 0, D_8480379C + 1);
-        BattleMenu_AddOrderSelectPanel(0x50, 0x81, temp_s0->teamMember[0], 0, D_8480379C - 1);
+        BattleMenu_AddOrderSelectPanel(0x50, 0x21, temp_s0->teamMember[1], 0, gPanelCount + 1);
+        BattleMenu_AddOrderSelectPanel(0x50, 0x81, temp_s0->teamMember[0], 0, gPanelCount - 1);
     }
 
     temp_s0++;
     if (temp_s0->unk_01 == 1) {
         BattleMenu_AddOrderSelectPanel(0x50, 0x146, temp_s0->teamMember[0], 1, -1);
     } else if (temp_s0->teamMember[0]->unk_001 < temp_s0->teamMember[1]->unk_001) {
-        BattleMenu_AddOrderSelectPanel(0x50, 0xE6, temp_s0->teamMember[0], 1, D_8480379C + 1);
-        BattleMenu_AddOrderSelectPanel(0x50, 0x146, temp_s0->teamMember[1], 1, D_8480379C - 1);
+        BattleMenu_AddOrderSelectPanel(0x50, 0xE6, temp_s0->teamMember[0], 1, gPanelCount + 1);
+        BattleMenu_AddOrderSelectPanel(0x50, 0x146, temp_s0->teamMember[1], 1, gPanelCount - 1);
     } else {
-        BattleMenu_AddOrderSelectPanel(0x50, 0xE6, temp_s0->teamMember[1], 1, D_8480379C + 1);
-        BattleMenu_AddOrderSelectPanel(0x50, 0x146, temp_s0->teamMember[0], 1, D_8480379C - 1);
+        BattleMenu_AddOrderSelectPanel(0x50, 0xE6, temp_s0->teamMember[1], 1, gPanelCount + 1);
+        BattleMenu_AddOrderSelectPanel(0x50, 0x146, temp_s0->teamMember[0], 1, gPanelCount - 1);
     }
 }
 
@@ -1263,17 +1263,17 @@ s32 BattleMenu_RunOrderSelectScreen(s32 arg0, s32 arg1) {
     Text_InitStringTables();
     Font_Init(0x3C, 0);
     PokeIcon_OpenModelArchive();
-    D_84803780 = ASSET_LOAD2(backgrounds, 1, 1);
-    D_84803784 = BinArchive_GetFile(D_84803780, 5);
+    gBinArchive = ASSET_LOAD2(backgrounds, 1, 1);
+    gPanelTextureAtlas = BinArchive_GetFile(gBinArchive, 5);
 
     ASSET_LOAD(D_1000000, common_menu1_ui, 0);
     ASSET_LOAD(D_3000000, order_select_ui, 0);
     ASSET_LOAD(D_2000000, common_menu2_ui, 0);
 
-    D_84803788 = Text_GetStringTable(0x25);
-    D_8480378C = Text_GetStringTable(0x26);
-    D_84803790 = Text_GetStringTable(0x12);
-    D_84803794 = Text_GetStringTable(6);
+    gOrderSelectMoveNamesBank = Text_GetStringTable(0x25);
+    gTypeNamesBank = Text_GetStringTable(0x26);
+    gMsgBank_Common = Text_GetStringTable(0x12);
+    gPanelStrings = Text_GetStringTable(6);
 
     BattleMenu_InitOrderSelectPanels(&gSessionContext);
     Audio_PlayMusicIfChanged(7);

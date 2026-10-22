@@ -107,7 +107,7 @@ extern u8 D_2000000[];
 extern u8 D_3000000[];
 extern u8 D_3000000_2[];
 extern u8 D_3000210[];
-extern u8 D_04000000[];
+extern u8 gRentalViewerIconTop[];
 extern u8 D_4000008[];
 extern u8 D_4000810[];
 extern u8 D_4001018[];
@@ -129,10 +129,10 @@ extern u8 D_400CE00[];
 extern u8 D_400CF00[];
 extern u8 D_400D100[];
 extern u8 D_400D200[];
-extern u8 D_04000000[];
+extern u8 gRentalViewerIconTop[];
 extern u8 D_04000800[];
 extern u8 D_04001000[];
-extern u8 D_04001800[];
+extern u8 gRentalIconTexEmpty[];
 extern u8 D_04002000[];
 extern u8 D_04002800[];
 extern u8 D_04003000[];
@@ -323,11 +323,11 @@ extern u8 D_2003900[];
 extern u8 D_2004900[];
 extern u8 D_2004C00[];
 extern u8 D_2005A10[];
-extern u8 D_2006820[];
-extern u8 D_20068A0[];
-extern u8 D_2006920[];
+extern u8 gTransferPakErrorHighlightOverlay[];
+extern u8 gTransferPakErrorCursorTexture[];
+extern u8 gTransferPakErrorHighlightTexture[];
 extern u8 D_20069A0[];
-extern u8 D_2002000[];
+extern u8 gTransferPakErrorIconTexture[];
 extern u8 D_30C1290[];
 extern u8 D_0302EE00[];
 extern u8 D_03034580[];
@@ -557,7 +557,7 @@ extern u8 D_3008200[];
 extern u8 D_4000C40[];
 extern u8 D_4000DD0[];
 #define ELIGIBILITY_PANEL_LEGEND D_4000DD0
-extern u8 D_300F780[];
+extern u8 gPrefBackgroundTexture[];
 extern u8 D_3024480[];
 extern u8 D_30256A0[];
 extern u8 D_3026AE0[];
@@ -870,7 +870,7 @@ extern u8 D_3008018[];
 extern u8 D_3007BE0[];
 extern u8 D_3007D48[];
 
-extern LEODiskID D_800818E0;
+extern LEODiskID gLeoDiskId;
 
 extern Gfx gUiEnvTintTextureDL[];
 extern Gfx gUiRestoreTextureDL[];
@@ -892,13 +892,13 @@ typedef struct Rectangle {
 	/* 0x02 */ s16 y1;
 	/* 0x04 */ s16 x2;
 	/* 0x06 */ s16 y2;
-} unk_D_800A7440; // size >= 0x8
-extern unk_D_800A7440 D_800A7440;
+} ClipRect; // size >= 0x8
+extern ClipRect gClipRect;
 
-extern struct DisplayNodeHeader D_800AC840;
-extern struct DisplayNodeHeader D_800AC858;
+extern struct DisplayNodeHeader gGraphRoot0;
+extern struct DisplayNodeHeader gGraphRoot1;
 
-typedef struct unk_D_8006FF00 {
+typedef struct SpeciesDisplayParams {
 	/* 0x00 */ u8 unk_00;
 	/* 0x01 */ u8 unk_01;
 	/* 0x02 */ s16 unk_02;
@@ -911,8 +911,8 @@ typedef struct unk_D_8006FF00 {
 	/* 0x12 */ s16 unk_12;
 	/* 0x14 */ u32 unk_14;
 	/* 0x18 */ u32 unk_18;
-} unk_D_8006FF00; // size = 0x1C
-extern unk_D_8006FF00 D_8006FF00[152];
+} SpeciesDisplayParams; // size = 0x1C
+extern SpeciesDisplayParams gSpeciesDisplayTable[152];
 
 typedef struct FontSet {
 	/* 0x00 */ s16 unk_00;
@@ -933,24 +933,24 @@ typedef struct FontContext {
 
 extern Gfx gUiTranslucentFillDL[];
 
-extern s32 D_80078E60;
-extern s32 D_80078E64;
-extern s32 D_80078E68;
-extern u8 D_8007840C;
-extern s32 D_80078E70;
-extern s32 D_80078ECC;
-extern u8 D_80078ED0;
-extern u8 D_80078390[];
-extern u32 D_80078404;
-extern s32 D_80078408;
-extern s32 D_80078E74;
-extern u8 D_80078E78;
-extern u8 D_80078E7C;
-extern u8 D_80078E80;
-extern s32 D_80078EC8;
-extern s32 D_80078ED4;
-extern s32 D_80078ED8;
-extern s32 D_80078EDC;
+extern s32 gMusicChannel2MasterVolume;
+extern s32 gMusicChannel1MasterVolume;
+extern s32 gMusicTransitionSfxId;
+extern u8 gAudioStadiumSfxEnabled;
+extern s32 gMusicHandle;
+extern s32 gCurrentBgmHandle;
+extern u8 gBgmFadeState;
+extern u8 gPlayerRemainingPokemon[];
+extern u32 gCurrentStadiumPhase;
+extern s32 gStadiumPhaseSubstate;
+extern s32 gDefaultMusicVolume;
+extern u8 gMusicStateFlag1;
+extern u8 gMusicStateFlag2;
+extern u8 gStadiumModeActive;
+extern s32 gMusicFadeDuration;
+extern s32 gSpecialSequenceState;
+extern s32 gSequenceMusicHandle1;
+extern s32 gSequenceMusicHandle2;
 
 typedef struct unk_D_800A6CF4 {
     /* 0x00 */ char unk00[0x20];
@@ -963,9 +963,9 @@ extern Mtx gIdentityMtx;
 extern u32 D_1003E78[];
 extern u32 D_304F120[];
 
-extern s32 D_800FC820;
+extern s32 gAudioDMAFlags;
 
-extern OSViMode D_800795C0;
+extern OSViMode gViMode;
 
 typedef struct unk_70D3A0 {
     /* 0x00 */ f32 unk_00;

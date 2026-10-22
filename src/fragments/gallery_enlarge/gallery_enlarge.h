@@ -4,7 +4,7 @@
 #include "global.h"
 
 void Gallery_EnlargeInit(void);
-void func_83700090(void);
+void Gallery_EnlargeEmptyHandler(void);
 void Gallery_EnlargeDraw(void);
 s32 Gallery_EnlargeCheckExitInput(void);
 s32 Gallery_EnlargeUpdate(void);

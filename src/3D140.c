@@ -57,7 +57,7 @@ typedef struct AMDMAState {
     /* 0x08 */ AMDMABuffer* firstFree;
 } AMDMAState; // size = 0xC
 
-typedef struct unk_D_800FCB48 {
+typedef struct HPHistoryEntry {
     /* 0x00 */ u16 unk_00[16];
     /* 0x20 */ s32 unk_20;
     /* 0x24 */ s32 unk_24;
@@ -70,107 +70,107 @@ typedef struct unk_D_800FCB48 {
     /* 0x78 */ u32 unk_78;
     /* 0x7C */ s32 unk_7C;
     /* 0x80 */ s32 unk_80;
-} unk_D_800FCB48; // size = 0x84
+} HPHistoryEntry; // size = 0x84
 
-typedef struct unk_D_80078548 {
+typedef struct AudioMultiHitMovePair {
     /* 0x00 */ u8 unk_00;
     /* 0x01 */ u8 unk_01;
-} unk_D_80078548;
+} AudioMultiHitMovePair;
 
 // .data
 // global
 
 extern u8 D_800780B3[]; // needs addressing
-extern u16 D_80078410[1][9];
+extern u16 MenuSelectionSoundTable[1][9];
 extern u16 D_80078446[1][9];
 extern u16 D_800784EA[1][9];
 
 // .rodata
 
-// const f64 D_8007C7E0 = 0.699999999999999956f;
-// const f64 D_8007C7E8 = 0.599999999999999978f;
-// const f64 D_8007C7F0 = 0.400000000000000022f;
-// const f64 D_8007C7F8 = 0.299999999999999989f;
+// const f64 gAudioVolumeScale0 = 0.699999999999999956f;
+// const f64 gAudioVolumeScale1 = 0.599999999999999978f;
+// const f64 gAudioVolumeScale2 = 0.400000000000000022f;
+// const f64 gAudioVolumeScale3 = 0.299999999999999989f;
 
-// const f32 D_8007CB80 = 1.100000024f;
-// const f32 D_8007CB84 = 1.100000024f;
-// const f32 D_8007CB88 = 1.200000048f;
-// const f32 D_8007CB8C = 1.100000024f;
-// const f32 D_8007CB90 = 0.009999999776f;
+// const f32 gAudioPitchScale0 = 1.100000024f;
+// const f32 gAudioPitchScale1 = 1.100000024f;
+// const f32 gAudioPitchScale2 = 1.200000048f;
+// const f32 gAudioPitchScale3 = 1.100000024f;
+// const f32 gAudioPitchStep = 0.009999999776f;
 
-extern f64 D_8007C7E0;
-extern f64 D_8007C7E8;
-extern f64 D_8007C7F0;
-extern f64 D_8007C7F8;
+extern f64 gAudioVolumeScale0;
+extern f64 gAudioVolumeScale1;
+extern f64 gAudioVolumeScale2;
+extern f64 gAudioVolumeScale3;
 
-extern f32 D_8007CB80;
-extern f32 D_8007CB84;
-extern f32 D_8007CB88;
-extern f32 D_8007CB8C;
-extern f32 D_8007CB90;
+extern f32 gAudioPitchScale0;
+extern f32 gAudioPitchScale1;
+extern f32 gAudioPitchScale2;
+extern f32 gAudioPitchScale3;
+extern f32 gAudioPitchStep;
 
 // .bss
-s32 D_800FC820;
-s8 D_800FC824;
-u8 D_800FC825;
-s32 D_800FC828;
+s32 gAudioDMAFlags;
+s8 gMusicFadeStepActive;
+u8 gAudioUnitReadyCode;
+s32 gAudioUnitReadyStatus;
 AMAudioMgr __am;
 AMDMAState dmaState;
 s32 minFrameSize;
 u32 frameSize;
 s32 maxFrameSize;
 s32 maxRSPCmds;
-s32 D_800FCAD4;
-s32 D_800FCAD8;
+s32 gAudioOutputRate;
+s32 gAudioMaxVoices;
 OSMesgQueue audDMAMessageQ;
 AMDMABuffer* dmaBuffs;
 OSIoMesg* audDMAIOMesgBuf;
 OSMesg* audDMAMessageBuf;
 u32 dmaBufferLen;
-OSPiHandle* D_800FCB08[4];
+OSPiHandle* gAudioPiHandle[4];
 // s32 D_800FCB0C[3];
-BattleMonRuntime* D_800FCB18[4];
-u32 D_800FCB28[2];
-u8 D_800FCB30[2];
-u8 D_800FCB38[2][8];
-unk_D_800FCB48 D_800FCB48[2];
-s32 D_800FCC50[20];
-s8 D_800FCCA0;
-s8 D_800FCCA1;
-u8 D_800FCCA2;
-u32 D_800FCCA4;
-s32 D_800FCCA8;
-u8 D_800FCCAC;
-u8 D_800FCCAD;
-u8 D_800FCCAE;
-u8 D_800FCCAF;
-u8 D_800FCCB0;
-u8 D_800FCCB1;
-u8 D_800FCCB2;
-u8 D_800FCCB3;
-u8 D_800FCCB4;
-u8 D_800FCCB5;
-u8 D_800FCCB6;
-u8 D_800FCCB7;
-u8 D_800FCCB8[2];
-u8 D_800FCCBA[2];
-u8 D_800FCCBC[2];
-u8 D_800FCCBE[2];
-u8 D_800FCCC0[2];
-u8 D_800FCCC2[2];
-s8 D_800FCCC4[2];
-u8 D_800FCCC6[2];
-u8 D_800FCCC8[2];
-u8 D_800FCCCA[2];
-u8 D_800FCCCC[2];
-u8 D_800FCCCE[2];
-u8 D_800FCCD0[2];
-u8 D_800FCCD2[2];
-u8 D_800FCCD4[2];
-u8 D_800FCCD6[2];
-s8 D_800FCCD8[0x18];
-u32 D_800FCCF0[10];
-u8 D_800FCD18[0x28];
+BattleMonRuntime* gAudioInfoPtr[4];
+u32 PlayerCurrentHP[2];
+u8 MoveQueueFlag[2];
+u8 RecentMoveIDs[2][8];
+HPHistoryEntry gHPHistory[2];
+s32 gAudioRecentMessages[20];
+s8 gAudioGlobalFlag0;
+s8 gAudioGlobalFlag1;
+u8 gAudioQueueDelayCounter;
+u32 gAudioHPChangePercent;
+s32 gAudioPrevHPChangePercent;
+u8 gAudioCurrentMoveId;
+u8 gAudioCurrentCommandId;
+u8 gAudioSpecialCounter;
+u8 gAudioSpecialFlag0;
+u8 gAudioFaintedSidePlusOne;
+u8 gAudioSfxCrossoverFlag;
+u8 gAudioQueueProcessingFlag;
+u8 gAudioPendingFreezeReaction;
+u8 gAudioPendingSleepReaction;
+u8 gAudioPendingDefeatReaction;
+u8 gAudioAttackContinuesActive;
+u8 gAudioMoveDamageReactionDone;
+u8 gAudioEffectState0[2];
+u8 gAudioEffectStateDominanceCount[2];
+u8 gAudioEffectStateSleepCount[2];
+u8 gAudioEffectStateFreezeCount[2];
+u8 gAudioEffectStateParalysisCount[2];
+u8 gAudioEffectStateCantMoveCount[2];
+s8 gAudioEffectStateSelfHitPlayed[2];
+u8 gAudioEffectMapJRepeatCount[2];
+u8 gAudioEffectMapKEscalationCount[2];
+u8 gAudioEffectToggleSfxThrash[2];
+u8 gAudioEffectFellAsleepPlayed[2];
+u8 gAudioEffectMapPRepeatCount[2];
+u8 gAudioEffectMapQRepeatCount[2];
+u8 gAudioEffectMissCrashPlayed[2];
+u8 gAudioEffectStateDefeatMsgPlayed[2];
+u8 gAudioEffectStateHeavyDamageKo[2];
+s8 gAudioEffectTriggeredMask[0x18];
+u32 gAudioCommandQueue[10];
+u8 gAudioShuffleBuffer[0x28];
 
 // function prototypes
 void Audio_QueueSoundWithFallbackList(u16, u16*, u8*);
@@ -178,20 +178,20 @@ u32 Battle_EstimateMoveDamage(u32, BattleMonRuntime*, BattleMonRuntime*);
 s32 Battle_MapCategoryIdToCompactIndex(u8);
 ALDMAproc __amDmaNew(AMDMAState** state);
 
-u8 D_80077D90[4] = {
+u8 gMusicEnabled[4] = {
     0x00, 0x00, 0x00, 0x00,
 };
-f32 D_80077D94 = 0.800000011920929f;
-u8 D_80077D98[4] = {
+f32 gMusicVolume = 0.800000011920929f;
+u8 gAudioProcessChannelsFlag[4] = {
     0x01, 0x00, 0x00, 0x00,
 };
-u8 D_80077D9C[4] = {
+u8 gMusicFadeState[4] = {
     0x00, 0x00, 0x00, 0x00,
 };
-u16 D_80077DA0 = 0x0000;
-u32 D_80077DA4 = 0x00000000;
-u8 D_80077DA8 = 0x00;
-s32 D_80077DAC = 0x00000000;
+u16 gMusicFadeTargetTrack = 0x0000;
+u32 gMusicFadeTimer = 0x00000000;
+u8 gAudioPausedFlag = 0x00;
+s32 gAudioUnitReady = 0x00000000;
 u32 audFrameCt = 0x00000000;
 u32 nextDMA = 0x00000000;
 u32 curAcmdList = 0x00000000;
@@ -201,12 +201,12 @@ s32 mus_active_fade_handle = 0x00000000;
 f32 mus_fade_start_volume = 0.0f;
 u8 mus_fade_target_volume = 0x00;
 f32 mus_fade_step_rate = 0.0f;
-f32 D_80077DD4 = 0.0f;
-f32 D_80077DD8 = 0.0f;
-f32 D_80077DDC = 0.0f;
-f32 D_80077DE0 = 0.0f;
+f32 gMusicChannel2Volume = 0.0f;
+f32 gMusicChannel2Step = 0.0f;
+f32 gMusicChannel1Volume = 0.0f;
+f32 gMusicChannel1Step = 0.0f;
 u8 mus_sound_effect_blocked = 0x00;
-u8 D_80077DE8[8] = {
+u8 gAudioDmaBufferCount[8] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 // Defined in 3D140_2.c (the second half of this translation unit pair).
@@ -216,7 +216,7 @@ void amCreateAudioMgr(ALSynConfig* c, amConfig* amc, u32 num_dma_buffers, s32 ar
     u32 i;
     f32 fsize;
 
-    D_800FCB08[0] = osCartRomInit();
+    gAudioPiHandle[0] = osCartRomInit();
     dmaBufferLen = arg3;
 
     dmaState.initialized = FALSE;
@@ -267,9 +267,9 @@ void amCreateAudioMgr(ALSynConfig* c, amConfig* amc, u32 num_dma_buffers, s32 ar
 
     osCreateMesgQueue(&audDMAMessageQ, audDMAMessageBuf, num_dma_buffers << 1);
 
-    D_800FCAD4 = c->outputRate;
-    D_800FCAD8 = c->maxVVoices;
-    D_800FC824 = 0;
+    gAudioOutputRate = c->outputRate;
+    gAudioMaxVoices = c->maxVVoices;
+    gMusicFadeStepActive = 0;
 
     AudioStream_Init(c->heap, minFrameSize, maxFrameSize);
 }
@@ -284,11 +284,11 @@ s32 __amDMA(s32 addr, s32 len, void* state) {
     OSPiHandle* sp2C;
     s32 buffEnd;
 
-    if (D_800FC820 & 0x80000000) {
+    if (gAudioDMAFlags & 0x80000000) {
         return osVirtualToPhysical(addr);
     }
 
-    sp2C = D_800FCB08[0];
+    sp2C = gAudioPiHandle[0];
     dmaPtr = dmaState.firstUsed;
     lastDmaPtr = NULL;
     while (dmaPtr) {
@@ -364,7 +364,7 @@ OSTask* Audio_CreateFrameTask(OSTask* arg0) {
     audioPtr = osVirtualToPhysical(info->data);
     samplesLeft = HW_REG(AI_LEN_REG, u32) >> 2;
 
-    if ((D_80077DA8 == 0) && (lastInfo != NULL)) {
+    if ((gAudioPausedFlag == 0) && (lastInfo != NULL)) {
         osAiSetNextBuffer(lastInfo->data, lastInfo->frameSamples << 2);
     }
 
@@ -378,8 +378,8 @@ OSTask* Audio_CreateFrameTask(OSTask* arg0) {
 
     __clearAudioDMA();
 
-    if (D_80077DAC != 0) {
-        D_800FC828 = LeoTestUnitReady(&D_800FC825);
+    if (gAudioUnitReady != 0) {
+        gAudioUnitReadyStatus = LeoTestUnitReady(&gAudioUnitReadyCode);
     }
 
     cmdp = alAudioFrame(__am.ACMDList[curAcmdList], &cmdLen, audioPtr, info->frameSamples);
@@ -404,19 +404,19 @@ OSTask* Audio_CreateFrameTask(OSTask* arg0) {
     lastInfo = __am.audioInfo[audFrameCt % 3];
     audFrameCt++;
 
-    if (D_80077D9C[0] != 0) {
-        func_8003D32C();
+    if (gMusicFadeState[0] != 0) {
+        Audio_MusicFadeUpdate();
     }
 
-    if (D_80077D90[0] != 0) {
+    if (gMusicEnabled[0] != 0) {
         GbMusic_UpdateChannels();
         if (lastInfo != NULL) {
             GbAudio_GenerateSamples(lastInfo->data, 0, ((audFrameCt % 3) == 0) ? 0x216 : 0x215, 0);
         }
     }
 
-    if (D_80077D98[0] != 0) {
-        func_80044EA4();
+    if (gAudioProcessChannelsFlag[0] != 0) {
+        Audio_ProcessChannels();
     }
 
     Audio_UpdateBattleAudioFrame();
@@ -440,25 +440,25 @@ OSTask* Audio_CreateFrameTask(OSTask* arg0) {
         }
     }
 
-    if (D_80077DD4 != 0.0f) {
-        D_80077DD4 -= D_80077DD8;
-        if (D_80077DD4 <= 0) {
-            D_80077DD4 = 0.0f;
+    if (gMusicChannel2Volume != 0.0f) {
+        gMusicChannel2Volume -= gMusicChannel2Step;
+        if (gMusicChannel2Volume <= 0) {
+            gMusicChannel2Volume = 0.0f;
             Audio_QueueFadeCategoryCommand(2, 1);
         }
-        Audio_QueueSetVolumeCommand(2, D_80077DD4);
+        Audio_QueueSetVolumeCommand(2, gMusicChannel2Volume);
     }
 
-    if (D_80077DDC != 0.0f) {
-        D_80077DDC -= D_80077DE0;
-        if (D_80077DDC <= 0) {
-            D_80077DDC = 0.0f;
+    if (gMusicChannel1Volume != 0.0f) {
+        gMusicChannel1Volume -= gMusicChannel1Step;
+        if (gMusicChannel1Volume <= 0) {
+            gMusicChannel1Volume = 0.0f;
             Audio_QueueFadeCategoryCommand(1, 1);
         }
-        Audio_QueueSetVolumeCommand(1, D_80077DDC);
+        Audio_QueueSetVolumeCommand(1, gMusicChannel1Volume);
     }
 
-    if (D_80077DA8 != 0) {
+    if (gAudioPausedFlag != 0) {
         sp38.t.data_size = 0;
     }
 
@@ -521,105 +521,105 @@ void __clearAudioDMA(void) {
 void Cry_SetEnabled(s32 arg0) {
     const f32 D_8007C7C0 = 0.8000000119f;
     if (arg0 != 0) {
-        func_800498A8(0x7D00, 0x78, 0x640);
-        D_80077D90[0] = 1;
-        D_80077D94 = D_8007C7C0;
+        GbAudio_InitMusicPlayback(0x7D00, 0x78, 0x640);
+        gMusicEnabled[0] = 1;
+        gMusicVolume = D_8007C7C0;
         return;
     }
-    D_80077D90[0] = 0;
+    gMusicEnabled[0] = 0;
 }
 
 void Cry_PlayFromPokedex(s32 arg0) {
-    if (D_80077D90[0] == 0) {
-        func_800498A8(0x7D00, 0x78, 0x320);
-        D_80077D90[0] = 1;
-        D_80077D9C[0] = 1;
-        D_80077D94 = 0.0f;
-        D_80077DA0 = arg0;
-        D_80077DA4 = 0;
-        D_800FC824 = 0;
+    if (gMusicEnabled[0] == 0) {
+        GbAudio_InitMusicPlayback(0x7D00, 0x78, 0x320);
+        gMusicEnabled[0] = 1;
+        gMusicFadeState[0] = 1;
+        gMusicVolume = 0.0f;
+        gMusicFadeTargetTrack = arg0;
+        gMusicFadeTimer = 0;
+        gMusicFadeStepActive = 0;
     }
 }
 
-void func_8003D32C(void) {
-    switch (D_80077D9C[0]) {
+void Audio_MusicFadeUpdate(void) {
+    switch (gMusicFadeState[0]) {
         case 1:
-            Audio_StartVolumeTransition(D_80078E70, 0x50, 0x18, 3);
-            GbMusic_StartTableSequence(D_80077DA0);
-            D_80077D9C[0]++;
-            D_80077DA4 = 0;
+            Audio_StartVolumeTransition(gMusicHandle, 0x50, 0x18, 3);
+            GbMusic_StartTableSequence(gMusicFadeTargetTrack);
+            gMusicFadeState[0]++;
+            gMusicFadeTimer = 0;
             break;
 
         case 2:
-            D_80077DA4++;
-            if (D_80077DA4 >= 2) {
-                D_80077DA4 = 0;
-                D_80077D9C[0]++;
-                D_800FC824 = 1;
+            gMusicFadeTimer++;
+            if (gMusicFadeTimer >= 2) {
+                gMusicFadeTimer = 0;
+                gMusicFadeState[0]++;
+                gMusicFadeStepActive = 1;
             }
             break;
 
         case 3:
             if (GbMusic_CountActiveHighChannels() == 0) {
-                D_80077D9C[0]++;
-                D_80077DA4 = 0;
+                gMusicFadeState[0]++;
+                gMusicFadeTimer = 0;
             }
             break;
 
         case 4:
-            if (D_80077DA4 == 0) {
-                Audio_StartVolumeTransition(D_80078E70, 0x18, 0x50, 0x14);
+            if (gMusicFadeTimer == 0) {
+                Audio_StartVolumeTransition(gMusicHandle, 0x18, 0x50, 0x14);
             }
 
-            if (D_80077DA4 >= 0x1F) {
-                D_80077D9C[0]++;
+            if (gMusicFadeTimer >= 0x1F) {
+                gMusicFadeState[0]++;
             }
 
-            D_80077DA4++;
+            gMusicFadeTimer++;
             break;
 
         case 5:
-            D_80077D9C[0] = 0;
-            D_80077D90[0] = 0;
-            D_800FC824 = 0;
+            gMusicFadeState[0] = 0;
+            gMusicEnabled[0] = 0;
+            gMusicFadeStepActive = 0;
             break;
     }
 }
 
 s32 Cry_IsPlaying(void) {
-    return D_80077D90[0];
+    return gMusicEnabled[0];
 }
 
 s32 Audio_SetEnabled(s32 arg0) {
     if (arg0 == 0) {
-        if (mus_free_voices_count != D_800FCAD8) {
+        if (mus_free_voices_count != gAudioMaxVoices) {
             return 0;
         }
-        D_80077DA8 = 1;
+        gAudioPausedFlag = 1;
     } else {
-        osAiSetFrequency(D_800FCAD4);
+        osAiSetFrequency(gAudioOutputRate);
         lastInfo = NULL;
         dmaState.initialized = 0;
-        D_80077DA8 = 0;
+        gAudioPausedFlag = 0;
     }
     return 1;
 }
 
 s32 Audio_GetDiskReadyStatus(u8* arg0) {
-    if (D_80077DAC == 0) {
+    if (gAudioUnitReady == 0) {
         *arg0 = 7;
         return 8;
     }
-    *arg0 = D_800FC825;
-    return D_800FC828;
+    *arg0 = gAudioUnitReadyCode;
+    return gAudioUnitReadyStatus;
 }
 
 void Audio_SetDiskReadyPolling(s32 arg0) {
     if (arg0 == 1) {
-        D_80077DAC = 1;
+        gAudioUnitReady = 1;
         return;
     }
-    D_80077DAC = 0;
+    gAudioUnitReady = 0;
 }
 
 /**

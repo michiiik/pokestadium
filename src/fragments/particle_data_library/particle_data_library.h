@@ -20,7 +20,7 @@ typedef struct unk_arg0_func_81002260 {
     /* 0x1A */ s16 unk_1A;
 } unk_arg0_func_81002260; // size >= 0x1C
 
-extern const Gfx D_810041D0[];
+extern const Gfx gCommonGfxInit[];
 
 void Particle31_ResetAllSlots(DisplayObject*);
 void Particle31_ResetCounters(void);

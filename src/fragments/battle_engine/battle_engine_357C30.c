@@ -4,22 +4,22 @@
 #include "gallery.h"
 #include "battle_hud.h"
 
-static s16 D_843C3500;
-static unk_D_843C3508 D_843C3508[6];
+static s16 gSixSlotTrailFrameCounter;
+static unk_D_843C3508 gSixSlotTrailEffects[6];
 
 void BattleAnim_SixSlotTrail_ResetPool(void) {
     s32 i;
     s32 j;
     unk_D_843C3508* var_v0;
     unk_D_843C3508_0A4* var_a0;
-    unk_D_84389CE0 sp0 = {
+    ColorBlendInfo sp0 = {
         { 0, 0, 0, 0 },
         0,
     };
 
-    D_843C3500 = 0;
+    gSixSlotTrailFrameCounter = 0;
 
-    var_v0 = &D_843C3508[0];
+    var_v0 = &gSixSlotTrailEffects[0];
     for (i = 0; i < 6; i++, var_v0++) {
         var_v0->unk_000 = 0;
         var_v0->unk_004 = 0;
@@ -45,7 +45,7 @@ void BattleAnim_SixSlotTrail_ResetPool(void) {
 void BattleAnim_SixSlotTrail_Spawn(s16 arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, u8 arg7, u8 arg8, u8 arg9,
                    u8 argA, u8 argB, u8 argC, u8 argD, u8 argE, u8 argF, f32 arg10, f32 arg11, f32 arg12, s16 arg13,
                    s32 arg14, s32 arg15, s16 arg16, s16 arg17, s16 arg18, s16 arg19, s16 arg1A, s16 arg1B, s16 arg1C,
-                   s16 arg1D, unk_D_843C2C00_024* arg1E, unk_D_843C2C00_024* arg1F) {
+                   s16 arg1D, CombineParams* arg1E, CombineParams* arg1F) {
     unk_D_843C3508* var_v0;
     unk_D_843C3508_0A4* var_v1_2;
     s32 i;
@@ -53,7 +53,7 @@ void BattleAnim_SixSlotTrail_Spawn(s16 arg0, f32 arg1, f32 arg2, f32 arg3, f32 a
     Vec3f spC;
     Vec3f sp0;
 
-    var_v0 = &D_843C3508[0];
+    var_v0 = &gSixSlotTrailEffects[0];
     spC.x = arg1;
     spC.y = arg2;
     spC.z = arg3;
@@ -211,9 +211,9 @@ s32 BattleAnim_SixSlotTrail_UpdateAll(void) {
     s32 var_s2;
     unk_D_843C3508* var_s0;
 
-    D_843C3500++;
+    gSixSlotTrailFrameCounter++;
     var_s2 = 0;
-    var_s0 = &D_843C3508[0];
+    var_s0 = &gSixSlotTrailEffects[0];
 
     for (i = 0; i < 6; i++, var_s0++) {
         if (var_s0->unk_000 == 1) {
@@ -225,8 +225,8 @@ s32 BattleAnim_SixSlotTrail_UpdateAll(void) {
                 var_s2++;
             }
 
-            if (var_s0->unk_01C < D_843C3500) {
-                s16 tmp = D_843C3500 - var_s0->unk_01C;
+            if (var_s0->unk_01C < gSixSlotTrailFrameCounter) {
+                s16 tmp = gSixSlotTrailFrameCounter - var_s0->unk_01C;
 
                 temp_fv0 = tmp * 0.02f;
                 var_s0->unk_014 = 1.0f - temp_fv0;
@@ -263,7 +263,7 @@ Gfx* BattleAnim_SixSlotTrail_DrawSegments(Gfx* arg0, unk_D_843C3508* arg1) {
 }
 
 Gfx* BattleAnim_SixSlotTrail_LoadTextures(Gfx* arg0, unk_D_843C3508* arg1) {
-    unk_D_843C2C00_064* ptr;
+    TextureTileInfo* ptr;
     UNUSED s32 pad[2];
 
     ptr = &arg1->unk_068;
@@ -280,7 +280,7 @@ Gfx* BattleAnim_SixSlotTrail_LoadTextures(Gfx* arg0, unk_D_843C3508* arg1) {
 }
 
 Gfx* BattleAnim_SixSlotTrail_DrawAll(Gfx* arg0) {
-    static Gfx D_84389CE8[] = {
+    static Gfx sSixSlotTrailRenderStateDL[] = {
         gsDPPipeSync(),
         gsDPSetCycleType(G_CYC_2CYCLE),
         gsSPClearGeometryMode(G_ZBUFFER | G_SHADE | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN |
@@ -309,7 +309,7 @@ Gfx* BattleAnim_SixSlotTrail_DrawAll(Gfx* arg0) {
 
     BattleAnim_GetCameraContext();
 
-    var_s6 = &D_843C3508[0];
+    var_s6 = &gSixSlotTrailEffects[0];
     for (i = 0; i < 6; i++, var_s6++) {
         if (var_s6->unk_000 == 1) {
             var_s0 = &var_s6->unk_0A4[0];
@@ -350,7 +350,7 @@ Gfx* BattleAnim_SixSlotTrail_DrawAll(Gfx* arg0) {
                 }
             }
 
-            gSPDisplayList(arg0++, D_84389CE8);
+            gSPDisplayList(arg0++, sSixSlotTrailRenderStateDL);
 
             Gfx_SetCombineMode(
                 arg0++, var_s6->unk_028.unk_00, var_s6->unk_028.unk_04, var_s6->unk_028.unk_08, var_s6->unk_028.unk_0C,

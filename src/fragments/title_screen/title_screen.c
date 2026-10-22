@@ -30,7 +30,7 @@ static s32 gTitleInputReady;
 void func_82100020(void) {
 }
 
-void func_82100028(UNUSED s32 arg0, UNUSED s32 arg1) {
+void Title_DrawMenuOptionStub(UNUSED s32 arg0, UNUSED s32 arg1) {
 }
 
 void Title_PollDPad(void) {
@@ -38,11 +38,11 @@ void Title_PollDPad(void) {
 }
 
 s32 Title_ResolveStartPressState(void) {
-    static s32 D_82100DC0 = 0;
+    static s32 gStartPressState = 0;
 
     s32 var_v1 = 4;
 
-    if (D_82100DC0 != 0) {
+    if (gStartPressState != 0) {
         switch (gTitleStartPressMode) {
             case 0:
                 break;
@@ -169,7 +169,7 @@ void Title_DrawFrame(void) {
         Title_DrawPressStartBlink(0x6E, 0xAF);
     }
     Title_DrawNoControllerWarning();
-    func_82100028(0x64, 0x50);
+    Title_DrawMenuOptionStub(0x64, 0x50);
     BgStage_AdvanceFrame();
 }
 
@@ -238,7 +238,7 @@ static u8 gTitleAttractDemoScenarios[2][4] = {
     { 5, 0, 2, 9 },
 };
 
-static u8 D_82100E6C[4][4] = {
+static u8 gDemoBattlePresets[4][4] = {
     { 3, 3, 4, 13 },
     { 6, 3, 8, 3 },
     { 7, 4, 16, 9 },
@@ -279,7 +279,7 @@ s32 Title_ShouldStartAttractDemo(void) {
     return sp1C;
 }
 
-s32 func_821009AC(void) {
+s32 Title_CheckExitCondition(void) {
     return 0;
 }
 
@@ -305,7 +305,7 @@ s32 Title_Loop(void) {
         } else if (Title_ShouldStartAttractDemo() != 0) {
             var_s0 = Title_StartAttractDemo();
         } else {
-            var_s0 = func_821009AC();
+            var_s0 = Title_CheckExitCondition();
             if (var_s0 == 0) {
                 Title_PollDPad();
             }

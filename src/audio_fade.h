@@ -3,7 +3,7 @@
 
 #include "global.h"
 
-s32 Effect_TriggerMoveVisual(u32 move_id, u32 species, u32 sound_kind);
+s32 Audio_PlayMoveSoundEffect(u32 move_id, u32 species, u32 sound_kind);
 void Audio_FadeAndClearStoredSounds(void);
 
 #endif // _485C0_H_

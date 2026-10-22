@@ -1,7 +1,7 @@
 #include "credits.h"
 #include "src/matrix.h"
 
-unk_D_86A03170 D_86A03170[17][6] = {
+CameraPosition gStageCameraPositions[17][6] = {
     {
         {
             0xAB00,
@@ -1160,7 +1160,7 @@ unk_D_86A03170 D_86A03170[17][6] = {
     },
 };
 
-static unk_D_86A03170 D_86A03C98[2][3] = {
+static CameraPosition gCreditsCameraPositions[2][3] = {
     {
         {
             256,
@@ -1232,7 +1232,7 @@ static unk_D_86A03170 D_86A03C98[2][3] = {
         },
     },
 };
-static unk_D_86A03170 D_86A03D40[18][3] = {
+static CameraPosition sCreditsPivotCameras[18][3] = {
     {
         {
             0,
@@ -1865,7 +1865,7 @@ static unk_D_86A03170 D_86A03D40[18][3] = {
     },
 };
 
-static unk_D_86A04328 D_86A04328[18][6] = {
+static CreditsMovingCamera sCreditsMovingCameras[18][6] = {
     {
         {
             { 172.0f, 166.0f, 1901.0f },
@@ -3200,129 +3200,129 @@ static unk_D_86A04328 D_86A04328[18][6] = {
     },
 };
 
-static u16 D_86A06220;
-static u16 D_86A06222;
-static Vec3f D_86A06228;
-static f32 D_86A06234;
-static Vec3f D_86A06238;
-static f32 D_86A06244;
-Vec3f D_86A06248;
-static CameraNode* D_86A06254;
-static s16 D_86A06258;
-static s16* D_86A0625C;
+static u16 sCameraElapsed;
+static u16 sCameraDuration;
+static Vec3f sCameraEyeStep;
+static f32 gCreditsCameraFovStep;
+static Vec3f sCameraAtStep;
+static f32 sCameraFovStep;
+Vec3f gCreditsCameraPivot;
+static CameraNode* sCurrentCamera;
+static s16 sCameraRotationYRate;
+static s16* sCameraRotationYPtr;
 
 void Credits_InitCameraKeyframeBlend(CameraNode* arg0, u16 arg1, s8 arg2, u8 arg3) {
     f32 scale = 1.0f;
-    unk_D_86A04328* ptr = &D_86A04328[arg2 - 1][arg3 - 3];
+    CreditsMovingCamera* ptr = &sCreditsMovingCameras[arg2 - 1][arg3 - 3];
     Vec3f sp3C;
     Vec3f sp30;
-    D_86A06254 = arg0;
-    D_86A06220 = 0;
-    D_86A06222 = arg1;
+    sCurrentCamera = arg0;
+    sCameraElapsed = 0;
+    sCameraDuration = arg1;
 
-    Camera_ComputeEyeFromAngles(&ptr->unk_00, &sp3C, 720.0f, (((s32) D_86A04328[arg2 - 1][arg3 - 3].unk_0C) << 0xF) / 180, (((s32) D_86A04328[arg2 - 1][arg3 - 3].unk_10) << 0xF) / 180);
-    Camera_ComputeEyeFromAngles(&ptr->unk_14, &sp30, 720.0f, (((s32) D_86A04328[arg2 - 1][arg3 - 3].unk_20) << 0xF) / 180, (((s32) D_86A04328[arg2 - 1][arg3 - 3].unk_24) << 0xF) / 180);
+    Camera_ComputeEyeFromAngles(&ptr->unk_00, &sp3C, 720.0f, (((s32) sCreditsMovingCameras[arg2 - 1][arg3 - 3].unk_0C) << 0xF) / 180, (((s32) sCreditsMovingCameras[arg2 - 1][arg3 - 3].unk_10) << 0xF) / 180);
+    Camera_ComputeEyeFromAngles(&ptr->unk_14, &sp30, 720.0f, (((s32) sCreditsMovingCameras[arg2 - 1][arg3 - 3].unk_20) << 0xF) / 180, (((s32) sCreditsMovingCameras[arg2 - 1][arg3 - 3].unk_24) << 0xF) / 180);
 
-    D_86A06254->view.eyePosition = ptr->unk_00;
-    D_86A06254->view.targetPosition = sp3C;
+    sCurrentCamera->view.eyePosition = ptr->unk_00;
+    sCurrentCamera->view.targetPosition = sp3C;
 
-    D_86A06254->perspective.verticalFieldOfView = ptr->unk_28;
-    D_86A06254->perspective.nearPlane = ptr->unk_30;
-    D_86A06254->perspective.farPlane = ptr->unk_34;
+    sCurrentCamera->perspective.verticalFieldOfView = ptr->unk_28;
+    sCurrentCamera->perspective.nearPlane = ptr->unk_30;
+    sCurrentCamera->perspective.farPlane = ptr->unk_34;
 
-    D_86A06228.x = ((ptr->unk_14.x - ptr->unk_00.x) * scale) / arg1;
-    D_86A06228.y = ((ptr->unk_14.y - ptr->unk_00.y) * scale) / arg1;
-    D_86A06228.z = ((ptr->unk_14.z - ptr->unk_00.z) * scale) / arg1;
+    sCameraEyeStep.x = ((ptr->unk_14.x - ptr->unk_00.x) * scale) / arg1;
+    sCameraEyeStep.y = ((ptr->unk_14.y - ptr->unk_00.y) * scale) / arg1;
+    sCameraEyeStep.z = ((ptr->unk_14.z - ptr->unk_00.z) * scale) / arg1;
 
-    D_86A06238.x = ((sp30.x - sp3C.x) * scale) / arg1;
-    D_86A06238.y = ((sp30.y - sp3C.y) * scale) / arg1;
-    D_86A06238.z = ((sp30.z - sp3C.z) * scale) / arg1;
+    sCameraAtStep.x = ((sp30.x - sp3C.x) * scale) / arg1;
+    sCameraAtStep.y = ((sp30.y - sp3C.y) * scale) / arg1;
+    sCameraAtStep.z = ((sp30.z - sp3C.z) * scale) / arg1;
 
-    D_86A06244 = ((ptr->unk_2C - ptr->unk_28) * scale) / arg1;
+    sCameraFovStep = ((ptr->unk_2C - ptr->unk_28) * scale) / arg1;
 }
 
 void Credits_StepCameraKeyframeBlend(void) {
-    if (D_86A06220 < D_86A06222) {
-        s8 tmp = D_86A06210;
+    if (sCameraElapsed < sCameraDuration) {
+        s8 tmp = gPhaseDelta;
 
-        D_86A06220 += tmp;
-        D_86A06254->view.eyePosition.x += D_86A06228.x * tmp;
-        D_86A06254->view.eyePosition.y += D_86A06228.y * tmp;
-        D_86A06254->view.eyePosition.z += D_86A06228.z * tmp;
-        D_86A06254->view.targetPosition.x += D_86A06238.x * tmp;
-        D_86A06254->view.targetPosition.y += D_86A06238.y * tmp;
-        D_86A06254->view.targetPosition.z += D_86A06238.z * tmp;
-        D_86A06254->perspective.verticalFieldOfView += D_86A06244 * tmp;
+        sCameraElapsed += tmp;
+        sCurrentCamera->view.eyePosition.x += sCameraEyeStep.x * tmp;
+        sCurrentCamera->view.eyePosition.y += sCameraEyeStep.y * tmp;
+        sCurrentCamera->view.eyePosition.z += sCameraEyeStep.z * tmp;
+        sCurrentCamera->view.targetPosition.x += sCameraAtStep.x * tmp;
+        sCurrentCamera->view.targetPosition.y += sCameraAtStep.y * tmp;
+        sCurrentCamera->view.targetPosition.z += sCameraAtStep.z * tmp;
+        sCurrentCamera->perspective.verticalFieldOfView += sCameraFovStep * tmp;
     }
 }
 
-void func_86A01CF0(s16* arg0, s16* arg1, s16* arg2, CameraNode* arg3, u16 arg4, s8 arg5, u8 arg6) {
-    D_86A0625C = arg1;
-    D_86A06254 = arg3;
-    D_86A06220 = 0;
-    D_86A06222 = arg4;
+void Camera_SetupForPhase(s16* arg0, s16* arg1, s16* arg2, CameraNode* arg3, u16 arg4, s8 arg5, u8 arg6) {
+    sCameraRotationYPtr = arg1;
+    sCurrentCamera = arg3;
+    sCameraElapsed = 0;
+    sCameraDuration = arg4;
 
     if (arg6 < 6) {
-        *D_86A0625C = D_86A03170[arg5][arg6].unk_00;
+        *sCameraRotationYPtr = gStageCameraPositions[arg5][arg6].unk_00;
     } else if (arg6 < 9) {
-        *D_86A0625C = D_86A03C98[arg5][(s32)arg6].unk_00;
+        *sCameraRotationYPtr = gCreditsCameraPositions[arg5][(s32)arg6].unk_00;
     }
 
     if (arg6 < 6) {
-        unk_D_86A03170* temp_v1 = &D_86A03170[arg5][arg6];
+        CameraPosition* temp_v1 = &gStageCameraPositions[arg5][arg6];
 
         if (temp_v1->unk_04 == 1) {
             if (temp_v1->unk_00 < temp_v1->unk_02) {
-                D_86A06258 = (temp_v1->unk_02 - temp_v1->unk_00) / arg4;
+                sCameraRotationYRate = (temp_v1->unk_02 - temp_v1->unk_00) / arg4;
             } else {
-                D_86A06258 = ((temp_v1->unk_02 - temp_v1->unk_00) + 0x10000) / arg4;
+                sCameraRotationYRate = ((temp_v1->unk_02 - temp_v1->unk_00) + 0x10000) / arg4;
             }
         } else if (temp_v1->unk_00 < temp_v1->unk_02) {
-            D_86A06258 = (s32)((temp_v1->unk_02 - temp_v1->unk_00) + 0xFFFF0000) / arg4;
+            sCameraRotationYRate = (s32)((temp_v1->unk_02 - temp_v1->unk_00) + 0xFFFF0000) / arg4;
         } else {
-            D_86A06258 = (temp_v1->unk_02 - temp_v1->unk_00) / arg4;
+            sCameraRotationYRate = (temp_v1->unk_02 - temp_v1->unk_00) / arg4;
         }
 
         *arg0 = temp_v1->unk_06;
         *arg2 = temp_v1->unk_08;
 
-        D_86A06254->view.targetPosition.x = 0.0f;
-        D_86A06254->view.targetPosition.y = temp_v1->unk_10;
-        D_86A06254->view.targetPosition.z = 0.0f;
+        sCurrentCamera->view.targetPosition.x = 0.0f;
+        sCurrentCamera->view.targetPosition.y = temp_v1->unk_10;
+        sCurrentCamera->view.targetPosition.z = 0.0f;
 
-        D_86A06254->perspective.verticalFieldOfView = temp_v1->unk_0C;
-        D_86A06254->perspective.nearPlane = temp_v1->unk_14;
-        D_86A06254->perspective.farPlane = temp_v1->unk_18;
+        sCurrentCamera->perspective.verticalFieldOfView = temp_v1->unk_0C;
+        sCurrentCamera->perspective.nearPlane = temp_v1->unk_14;
+        sCurrentCamera->perspective.farPlane = temp_v1->unk_18;
     } else if (arg6 < 9) {
-        if (D_86A03D40[arg5 - 2][(s32)arg6].unk_04 == 1) {
-            if (D_86A03D40[arg5 - 2][(s32)arg6].unk_00 < D_86A03D40[arg5 - 2][(s32)arg6].unk_02) {
-                D_86A06258 = (D_86A03D40[arg5 - 2][(s32)arg6].unk_02 - D_86A03D40[arg5 - 2][(s32)arg6].unk_00) / arg4;
+        if (sCreditsPivotCameras[arg5 - 2][(s32)arg6].unk_04 == 1) {
+            if (sCreditsPivotCameras[arg5 - 2][(s32)arg6].unk_00 < sCreditsPivotCameras[arg5 - 2][(s32)arg6].unk_02) {
+                sCameraRotationYRate = (sCreditsPivotCameras[arg5 - 2][(s32)arg6].unk_02 - sCreditsPivotCameras[arg5 - 2][(s32)arg6].unk_00) / arg4;
             } else {
-                D_86A06258 = ((D_86A03D40[arg5 - 2][(s32)arg6].unk_02 - D_86A03D40[arg5 - 2][(s32)arg6].unk_00) + 0x10000) / arg4;
+                sCameraRotationYRate = ((sCreditsPivotCameras[arg5 - 2][(s32)arg6].unk_02 - sCreditsPivotCameras[arg5 - 2][(s32)arg6].unk_00) + 0x10000) / arg4;
             }
-        } else if (D_86A03D40[arg5 - 2][(s32)arg6].unk_00 < D_86A03D40[arg5 - 2][(s32)arg6].unk_02) {
-            D_86A06258 = (s32)((D_86A03D40[arg5 - 2][(s32)arg6].unk_02 + D_86A03D40[arg5 - 2][(s32)arg6].unk_00) + 0xFFFF0000) / arg4;
+        } else if (sCreditsPivotCameras[arg5 - 2][(s32)arg6].unk_00 < sCreditsPivotCameras[arg5 - 2][(s32)arg6].unk_02) {
+            sCameraRotationYRate = (s32)((sCreditsPivotCameras[arg5 - 2][(s32)arg6].unk_02 + sCreditsPivotCameras[arg5 - 2][(s32)arg6].unk_00) + 0xFFFF0000) / arg4;
         } else {
-            D_86A06258 = (D_86A03D40[arg5 - 2][(s32)arg6].unk_02 - D_86A03D40[arg5 - 2][(s32)arg6].unk_00) / arg4;
+            sCameraRotationYRate = (sCreditsPivotCameras[arg5 - 2][(s32)arg6].unk_02 - sCreditsPivotCameras[arg5 - 2][(s32)arg6].unk_00) / arg4;
         }
 
-        *arg0 = D_86A03D40[arg5 - 2][(s32)arg6].unk_06;
-        *arg2 = D_86A03D40[arg5 - 2][(s32)arg6].unk_08;
+        *arg0 = sCreditsPivotCameras[arg5 - 2][(s32)arg6].unk_06;
+        *arg2 = sCreditsPivotCameras[arg5 - 2][(s32)arg6].unk_08;
 
-        D_86A06248.x = 0.0f;
-        D_86A06248.y = D_86A03D40[arg5 - 2][(s32)arg6].unk_10;
-        D_86A06248.z = 0.0f;
+        gCreditsCameraPivot.x = 0.0f;
+        gCreditsCameraPivot.y = sCreditsPivotCameras[arg5 - 2][(s32)arg6].unk_10;
+        gCreditsCameraPivot.z = 0.0f;
 
-        D_86A06254->perspective.verticalFieldOfView = D_86A03D40[arg5 - 2][(s32)arg6].unk_0C;
-        D_86A06254->perspective.nearPlane = D_86A03D40[arg5 - 2][(s32)arg6].unk_14;
-        D_86A06254->perspective.farPlane = D_86A03D40[arg5 - 2][(s32)arg6].unk_18;
+        sCurrentCamera->perspective.verticalFieldOfView = sCreditsPivotCameras[arg5 - 2][(s32)arg6].unk_0C;
+        sCurrentCamera->perspective.nearPlane = sCreditsPivotCameras[arg5 - 2][(s32)arg6].unk_14;
+        sCurrentCamera->perspective.farPlane = sCreditsPivotCameras[arg5 - 2][(s32)arg6].unk_18;
     }
 }
 
 void Credits_StepCameraYawBlend(void) {
-    if (D_86A06220 < D_86A06222) {
-        D_86A06220 += D_86A06210;
-        *D_86A0625C += D_86A06258 * D_86A06210;
+    if (sCameraElapsed < sCameraDuration) {
+        sCameraElapsed += gPhaseDelta;
+        *sCameraRotationYPtr += sCameraRotationYRate * gPhaseDelta;
     }
 }
 
@@ -3336,59 +3336,59 @@ void Credits_SelectNextScene(s8* arg0, u8* arg1) {
     };
     s8 sp28[16];
 
-    static u8 D_86A05AD4 = 0;
-    static s8 D_86A05AD8[] = {
+    static u8 sStageGroupIndex = 0;
+    static s8 sRemainingStageIds[] = {
         0x00, 0x01, 0x02, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x11,
     };
-    static s8 D_86A05AE8[] = {
+    static s8 sStageList0[] = {
         0x00,
         0x01,
         0x02,
     };
-    static s8 D_86A05AEC[] = {
+    static s8 sStageList1[] = {
         0x00,
         0x01,
         0x02,
     };
-    static s8 D_86A05AF0[] = {
+    static s8 sStageList2[] = {
         0x04,
         0x05,
         0x06,
     };
-    static s8 D_86A05AF4[] = {
+    static s8 sStageList3[] = {
         0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E,
     };
-    static s8 D_86A05AFC[] = {
+    static s8 sStageList4[] = {
         0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E,
     };
-    static s8 D_86A05B04[] = {
+    static s8 sStageList5[] = {
         0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E,
     };
-    static s8 D_86A05B0C[] = {
+    static s8 sStageList6[] = {
         0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E,
     };
-    static s8 D_86A05B14[] = {
+    static s8 sStageList7[] = {
         0x07, 0x09, 0x0A, 0x0B, 0x0C, 0x0E,
     };
-    static s8 D_86A05B1C[] = {
+    static s8 sStageList8[] = {
         0x00, 0x02, 0x04, 0x05, 0x06, 0x11,
     };
-    static s8 D_86A05B24[] = {
+    static s8 sStageList9[] = {
         0x0F,
     };
-    static s8* D_86A05B28[] = {
-        D_86A05AE8, D_86A05AEC, D_86A05AF0, D_86A05AF4, D_86A05AFC,
-        D_86A05B04, D_86A05B0C, D_86A05B14, D_86A05B1C, D_86A05B24,
+    static s8* sStageLists[] = {
+        sStageList0, sStageList1, sStageList2, sStageList3, sStageList4,
+        sStageList5, sStageList6, sStageList7, sStageList8, sStageList9,
     };
 
-    if ((D_86A06211 == 0) && (D_86A05AD4 == 2)) {
+    if ((gUnusedTimer1 == 0) && (sStageGroupIndex == 2)) {
         *arg0 = 6;
     } else {
         var_a3 = 0;
         for (i = 0; i < 16; i++) {
-            for (j = 0; j < sp38[D_86A05AD4]; j++) {
-                if (D_86A05B28[D_86A05AD4][j] == D_86A05AD8[i]) {
-                    sp28[var_a3++] = D_86A05AD8[i];
+            for (j = 0; j < sp38[sStageGroupIndex]; j++) {
+                if (sStageLists[sStageGroupIndex][j] == sRemainingStageIds[i]) {
+                    sp28[var_a3++] = sRemainingStageIds[i];
                     break;
                 }
             }
@@ -3396,7 +3396,7 @@ void Credits_SelectNextScene(s8* arg0, u8* arg1) {
         *arg0 = sp28[Credits_RandomRange(var_a3)];
     }
 
-    switch (D_86A05AD4) {
+    switch (sStageGroupIndex) {
         case 0:
         case 6:
             *arg1 = 9;
@@ -3422,11 +3422,11 @@ void Credits_SelectNextScene(s8* arg0, u8* arg1) {
     }
 
     for (i = 0; i < 16; i++) {
-        if (*arg0 == D_86A05AD8[i]) {
-            D_86A05AD8[i] = -1;
+        if (*arg0 == sRemainingStageIds[i]) {
+            sRemainingStageIds[i] = -1;
             break;
         }
     }
 
-    D_86A05AD4++;
+    sStageGroupIndex++;
 }

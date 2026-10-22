@@ -13,19 +13,19 @@
 #include "src/memory.h"
 #include "src/stage_loader.h"
 
-static unk_D_86002F30* D_82800530;
-static GraphNode* D_82800534;
-static DisplayObject D_82800538;
-static BinArchive* D_828006A0;
-static u8* D_828006A4;
+static ModelData* gViewerStageModel;
+static GraphNode* gStageTextureNode;
+static DisplayObject gViewerGraphNode;
+static BinArchive* gViewerAssetArchive;
+static u8* gViewerTextureData;
 
-static u32 D_828004D0[] = {
+static u32 gViewerGeoLayout[] = {
     0x0C00FFFF, 0x05000000, 0x0B00001E,  0x00000000, 0x014000F0, 0x00000032, 0x00000000, 0x00000118,
     0x05000000, 0x0D000000, 0x05000000,  0x14000000, 0x002B0012, 0xFFFFFF32, 0x16FFFFFF, 0x0F000003,
-    0x05000000, 0x0A000000, &D_800AC840, 0x06000000, 0x06000000, 0x06000000, 0x06000000, 0x01000000,
+    0x05000000, 0x0A000000, &gGraphRoot0, 0x06000000, 0x06000000, 0x06000000, 0x06000000, 0x01000000,
 };
 
-void func_82900020(void) {
+void Input_PollAndMenuInit(void) {
     Cont_StartReadInputs();
     Cont_ReadInputs();
     Input_ResetRepeatState();
@@ -57,10 +57,10 @@ void Minigame2SampleViewer_DrawBackgroundTiles(u8* arg0) {
 
 void Minigame2SampleViewer_DrawFrame(void) {
     BgStage_DrawFrame();
-    Minigame2SampleViewer_DrawBackgroundTiles(D_828006A4);
+    Minigame2SampleViewer_DrawBackgroundTiles(gViewerTextureData);
     GfxImage_ClearDepthRectangle(&gDisplayListHead, 0, 0, 0x140, 0xF0);
     GeoRender_AdvanceFrameCounter();
-    Geo_RenderRootNode(D_82800534);
+    Geo_RenderRootNode(gStageTextureNode);
     BgStage_AdvanceFrame();
 }
 
@@ -70,19 +70,19 @@ void Minigame2SampleViewer_Loop(void) {
     StageFade_StartFromOpaque(0x10);
 
     for (i = 0; i < 16; i++) {
-        func_82900020();
+        Input_PollAndMenuInit();
         Minigame2SampleViewer_DrawFrame();
     }
 
     do {
-        func_82900020();
+        Input_PollAndMenuInit();
         Minigame2SampleViewer_DrawFrame();
     } while (!(BTN_IS_PRESSED(gPlayer1Controller, BTN_A)));
 
     StageFade_StartFromTransparent(0x10);
 
     for (i = 0; i < 16; i++) {
-        func_82900020();
+        Input_PollAndMenuInit();
         Minigame2SampleViewer_DrawFrame();
     }
 
@@ -92,17 +92,17 @@ void Minigame2SampleViewer_Loop(void) {
 void Minigame2SampleViewer_Init(void) {
     MemoryBlock* sp1C = MainPool_AllocState(main_pool_get_available(), 0);
 
-    D_82800534 = process_geo_layout(sp1C, D_828004D0);
+    gStageTextureNode = process_geo_layout(sp1C, gViewerGeoLayout);
     MainPool_FinalizeAllocation(sp1C);
     ModelRenderer_InitDisplayRoots();
-    ModelRenderer_AttachDisplayObject(&D_82800538);
+    ModelRenderer_AttachDisplayObject(&gViewerGraphNode);
     PokeIcon_OpenModelArchives();
-    D_82800530 = Model_LoadByArchiveIndex(0x96);
-    Model_InitDisplayObject(&D_82800538, 0, 0x96, D_82800530->unk_08->unk_00[0]);
-    ModelAnim_SetAnimation(&D_82800538, 0);
+    gViewerStageModel = Model_LoadByArchiveIndex(0x96);
+    Model_InitDisplayObject(&gViewerGraphNode, 0, 0x96, gViewerStageModel->unk_08->unk_00[0]);
+    ModelAnim_SetAnimation(&gViewerGraphNode, 0);
 }
 
-s32 func_82900390(UNUSED s32 arg0, UNUSED s32 arg1) {
+s32 Fragment52_Main(UNUSED s32 arg0, UNUSED s32 arg1) {
     StageContext* sp24;
 
     main_pool_push_state('MTWO');
@@ -114,8 +114,8 @@ s32 func_82900390(UNUSED s32 arg0, UNUSED s32 arg1) {
     ASSET_LOAD(D_1000000, common_menu1_ui, 0);
     FRAGMENT_LOAD(FRAGMENT_PARTICLE_DATA_LIBRARY);
 
-    D_828006A0 = ASSET_LOAD2(backgrounds, 1, 1);
-    D_828006A4 = BinArchive_GetFile(D_828006A0, 2);
+    gViewerAssetArchive = ASSET_LOAD2(backgrounds, 1, 1);
+    gViewerTextureData = BinArchive_GetFile(gViewerAssetArchive, 2);
 
     Minigame2SampleViewer_Init();
     StageContext_Activate(sp24);

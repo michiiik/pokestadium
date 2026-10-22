@@ -5,7 +5,7 @@
 #include "src/geo_node.h"
 #include "src/fragments/minigame_shared_library/minigame_shared_library.h"
 
-typedef struct unk_D_86404778 {
+typedef struct HudState {
     /* 0x000 */ s32 unk_000;
     /* 0x004 */ s32 unk_004;
     /* 0x008 */ s16 unk_008;
@@ -25,28 +25,28 @@ typedef struct unk_D_86404778 {
     /* 0x190 */ unk_D_86002F34_alt9* unk_190;
     /* 0x194 */ u16 unk_194[14][8];
     /* 0x274 */ u8 unk_274;
-} unk_D_86404778; // size = 0x278
+} HudState; // size = 0x278
 
-typedef struct unk_D_86405158 {
+typedef struct DrowzeeGameState {
     /* 0x000 */ u8 unk_000;
     /* 0x001 */ u8 unk_001;
     /* 0x004 */ DisplayObject unk_004;
     /* 0x16C */ u8 unk_16C;
     /* 0x16D */ u8 unk_16D;
-} unk_D_86405158; // size = 0x170
+} DrowzeeGameState; // size = 0x170
 
-extern u8 D_86402848;
-extern u16 D_864029F0[4][14][8];
-extern Gfx D_86403FA0[];
-extern Gfx D_86403BB0[];
-extern Gfx D_86403F30[];
+extern u8 gUseAlphaBlend;
+extern u16 gGaugeSegmentLengths[4][14][8];
+extern Gfx gHealthBarDL[];
+extern Gfx gHealthBarQuadDL[];
+extern Gfx gDamageOverlayDL[];
 
 void DrowzeeGame_UpdatePlayerTimingWindows(void);
 u16 DrowzeeGame_IsWindowMatch(u8 arg0);
-void DrowzeeGame_SetPlayerState(unk_D_86404778* arg0, s32 arg1, u8 arg2, s32 arg3, u8 arg4);
+void DrowzeeGame_SetPlayerState(HudState* arg0, s32 arg1, u8 arg2, s32 arg3, u8 arg4);
 void DrowzeeGame_InitPlayerSlots(void);
 void DrowzeeGame_LoopDrowzeeIdleAnim(void);
-void DrowzeeGame_AdvanceBreathPhase(unk_D_86405158* arg0);
+void DrowzeeGame_AdvanceBreathPhase(DrowzeeGameState* arg0);
 void DrowzeeGame_UpdatePlayerAnimations(void);
 void DrowzeeGame_ProcessElimination(u8 arg0);
 void DrowzeeGame_DrawPlayerOverlay(UNUSED s32 arg0);

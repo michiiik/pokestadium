@@ -255,7 +255,7 @@ void Gfx_DrawTiledImageMesh(s16 arg0, s16 arg1, s16 arg2, f32 arg3, Vtx* arg4, u
     }
 }
 
-Vtx* func_8001E490(void) {
+Vtx* AllocateTileMapVertices(void) {
     Vtx* sp54;
     Vtx* var_s0;
     s16 i;
@@ -308,7 +308,7 @@ u8 Font_MapGlyphCode(u16 arg0) {
     if ((arg0 >= 0x20) && (arg0 < 0x80)) {
         var_v1 = ((u8*)gUiRestoreTextureDL)[arg0];
     } else if ((arg0 >= 0xA0) && (arg0 < 0x100)) {
-        var_v1 = ((u8*)D_8006F608)[sizeof(Gfx) + arg0];
+        var_v1 = ((u8*)gFontCharTableExtended)[sizeof(Gfx) + arg0];
     }
 
     return var_v1;
@@ -577,23 +577,23 @@ void Font_BeginTranslucentTextRendering(void) {
     font_context->line_height = 0x28;
     font_context->unk_4C = 0;
 
-    gSPDisplayList(gDisplayListHead++, D_8006F710);
+    gSPDisplayList(gDisplayListHead++, gDL_TextResetState);
 }
 
 void Font_EndTexturedTextRendering(void) {
-    gSPDisplayList(gDisplayListHead++, D_8006F750);
+    gSPDisplayList(gDisplayListHead++, gDL_TextSetup);
 }
 
 void Font_EnableTwoCycleTexturing(void) {
     font_context->line_break_flag |= 1;
     font_context->line_break_flag &= ~2;
 
-    gSPDisplayList(gDisplayListHead++, D_8006F768);
+    gSPDisplayList(gDisplayListHead++, gDL_TextBegin);
 }
 
 void Font_DisableTwoCycleTexturing(void) {
     font_context->line_break_flag &= ~3;
-    gSPDisplayList(gDisplayListHead++, D_8006F798);
+    gSPDisplayList(gDisplayListHead++, gDL_TextEnd);
 }
 
 void Gfx_FillRectWithDisplayState(s32 x1, s32 y1, s32 width, s32 length, s32 r, s32 g, s32 b, s32 alpha) {

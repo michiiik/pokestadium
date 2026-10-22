@@ -10,27 +10,27 @@
 #include "src/memory.h"
 #include "src/stage_loader.h"
 
-static OSMesgQueue D_800AF750;
-static s32 D_800AF768;
+static OSMesgQueue gControllerMsgQueue;
+static s32 gControllerMsg;
 
-static Color_RGBA8 D_800758A0[] = {
+static Color_RGBA8 gMenuGrayColors[] = {
     { 0xF0, 0xF0, 0xF0, 0xFF },
     { 0xE1, 0xE1, 0xE1, 0xFF },
 };
 
-static u32 D_800758A8[] = {
+static u32 gDigitTextureIds[] = {
     D_04001878, D_040018E0, D_04001948, D_040019B0, D_04001A18, D_04001A80, D_04001AF0,
     D_04001B58, D_04001BC0, D_04001C28, 0x10,       0x10,       0x10,       D_4001010,
 };
 
-unk_func_88500020 D_800758E0 = {
+TiledTexture gMenuTextureInfo_Default = {
     0x00000014,
     0x00000014,
     0x00000014,
     D_4001C90,
 };
 
-unk_func_88500020 D_800758F0[] = {
+TiledTexture gMenuTextureInfo_Alternates[] = {
     {
         0x00000014,
         0x00000014,
@@ -45,7 +45,7 @@ unk_func_88500020 D_800758F0[] = {
     },
 };
 
-void GbSave_BuildPortSummary(unk_func_8002D860* arg0, s32 arg1) {
+void GbSave_BuildPortSummary(PortSummary* arg0, s32 arg1) {
     if (GbSave_GetSaveState(arg1) != 0) {
         arg0->unk_00 = 1;
     } else {
@@ -56,7 +56,7 @@ void GbSave_BuildPortSummary(unk_func_8002D860* arg0, s32 arg1) {
     arg0->unk_04 = GbSave_GetPortGame(arg1);
 }
 
-void Gfx_DrawTiledTextureStrip(unk_func_88500020* arg0, s32 arg1, s32 a2) {
+void Gfx_DrawTiledTextureStrip(TiledTexture* arg0, s32 arg1, s32 a2) {
     s32 temp_lo;
     s32 var_t0;
     u8* var_s2;
@@ -327,7 +327,7 @@ void Gfx_DrawNumber(s32 arg0, s32 arg1, s32 arg2) {
         if ((temp_lo != 0) || (var_s3 != 0) || (i == 0)) {
             var_s3 = 1;
 
-            gDPLoadTextureBlock(gDisplayListHead++, D_800758A8[temp_lo], G_IM_FMT_IA, G_IM_SIZ_8b, 8, 12, 0,
+            gDPLoadTextureBlock(gDisplayListHead++, gDigitTextureIds[temp_lo], G_IM_FMT_IA, G_IM_SIZ_8b, 8, 12, 0,
                                 G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
                                 G_TX_NOLOD, G_TX_NOLOD);
             gSPTextureRectangle(gDisplayListHead++, arg0 << 2, arg1 << 2, (arg0 + 8) << 2, (arg1 + 0xC) << 2,
@@ -354,7 +354,7 @@ void Gfx_DrawNumberFixedWidth(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     while (arg3 > 0) {
         arg3--;
         if ((arg2 > 0) || (var_t0 != 0)) {
-            gDPLoadTextureBlock(gDisplayListHead++, D_800758A8[arg2 % 10], G_IM_FMT_IA, G_IM_SIZ_8b, 8, 12, 0,
+            gDPLoadTextureBlock(gDisplayListHead++, gDigitTextureIds[arg2 % 10], G_IM_FMT_IA, G_IM_SIZ_8b, 8, 12, 0,
                                 G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
                                 G_TX_NOLOD, G_TX_NOLOD);
             gSPTextureRectangle(gDisplayListHead++, (arg0 + (arg3 * 9)) << 2, arg1 << 2, ((arg0 + (arg3 * 9)) + 8) << 2,
@@ -376,7 +376,7 @@ void Gfx_DrawNumberDigits(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
     while (arg3 > 0) {
         arg3--;
-        gDPLoadTextureBlock(gDisplayListHead++, D_800758A8[arg2 % 10], G_IM_FMT_IA, G_IM_SIZ_8b, 8, 12, 0,
+        gDPLoadTextureBlock(gDisplayListHead++, gDigitTextureIds[arg2 % 10], G_IM_FMT_IA, G_IM_SIZ_8b, 8, 12, 0,
                             G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                             G_TX_NOLOD);
         gSPTextureRectangle(gDisplayListHead++, (arg0 + (arg3 * 9)) << 2, arg1 << 2, ((arg0 + (arg3 * 9)) + 8) << 2,
@@ -398,19 +398,19 @@ s32 Ui_GetSelectionDirection(unk_func_8002EBD8_arg0* arg0) {
 }
 
 s32 GbSave_GameToCategoryIndex(s32 arg0) {
-    static s32 D_80075910[] = { 0, 0, 1, 2, 0, 0, 0, 3, 0, 0, 0, 0 };
+    static s32 gGameCategoryTable[] = { 0, 0, 1, 2, 0, 0, 0, 3, 0, 0, 0, 0 };
 
-    return D_80075910[arg0];
+    return gGameCategoryTable[arg0];
 }
 
 Color_RGBA8 Color_InterpolateFromGray(Color_RGBA8 arg0, f32 arg1) {
-    static Color_RGBA8 D_80075940 = { 0xC8, 0xC8, 0xC8, 0xFF };
+    static Color_RGBA8 gFadeGrayColor = { 0xC8, 0xC8, 0xC8, 0xFF };
 
     Color_RGBA8 sp4;
 
-    sp4.r = (s32)((arg0.r - D_80075940.r) * arg1) + D_80075940.r;
-    sp4.g = (s32)((arg0.g - D_80075940.g) * arg1) + D_80075940.g;
-    sp4.b = (s32)((arg0.b - D_80075940.b) * arg1) + D_80075940.b;
+    sp4.r = (s32)((arg0.r - gFadeGrayColor.r) * arg1) + gFadeGrayColor.r;
+    sp4.g = (s32)((arg0.g - gFadeGrayColor.g) * arg1) + gFadeGrayColor.g;
+    sp4.b = (s32)((arg0.b - gFadeGrayColor.b) * arg1) + gFadeGrayColor.b;
     sp4.a = arg0.a;
 
     return sp4;
@@ -496,22 +496,22 @@ s32 Deck_GetEntryCountForType(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 void Ui_InitInputMessageQueue(void) {
-    osCreateMesgQueue(&D_800AF750, &D_800AF768, 1);
+    osCreateMesgQueue(&gControllerMsgQueue, &gControllerMsg, 1);
 }
 
 void Ui_SendMessageAndPollInput(OSMesg arg0) {
-    osSendMesg(&D_800AF750, arg0, 1);
+    osSendMesg(&gControllerMsgQueue, arg0, 1);
     Cont_StartReadInputs();
     Cont_ReadInputs();
     Input_ResetRepeatState();
 }
 
 void Ui_SendNullMessage(void) {
-    osSendMesg(&D_800AF750, NULL, 1);
+    osSendMesg(&gControllerMsgQueue, NULL, 1);
 }
 
 void Ui_ReceiveMessage(OSMesg arg0) {
-    osRecvMesg(&D_800AF750, arg0, 1);
+    osRecvMesg(&gControllerMsgQueue, arg0, 1);
 }
 
 void State_PokemonLab(void) {
@@ -546,10 +546,10 @@ void State_PokemonLab(void) {
 
             FRAGMENT_LOAD_AND_CALL2(FRAGMENT_PROFESSOR_OAK_LAB, var_s4, 0);
 
-            while ((game_state == STATE_POKEMON_LAB) && (D_800AE520.unk_00 != 0)) {
-                D_800AE520.unk_00 = 0;
-                game_state = Fragment_LoadAndCall(D_800AE520.fragment_id, D_800AE520.rom_start, D_800AE520.rom_end,
-                                           D_800AE520.arg0, D_800AE520.arg1);
+            while ((game_state == STATE_POKEMON_LAB) && (gFragmentCallContext.unk_00 != 0)) {
+                gFragmentCallContext.unk_00 = 0;
+                game_state = Fragment_LoadAndCall(gFragmentCallContext.fragment_id, gFragmentCallContext.rom_start, gFragmentCallContext.rom_end,
+                                           gFragmentCallContext.arg0, gFragmentCallContext.arg1);
             }
 
             StageContext_Deactivate();

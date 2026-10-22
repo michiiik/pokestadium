@@ -25,18 +25,18 @@ typedef struct {
     MtxF mtx[16];   // 16 (0x10) × 0x40 = 0x400
 } MtxBuffer; // size = 0x400
 
-s32 D_80076270[16] = { // identity Mtx
+s32 gOrthoProjectionMtx[16] = { // identity Mtx
     0x00010000, 0x00000000, 0x00000001, 0x00000000,
     0x00000000, 0x00010000, 0x00000000, 0x00000001,
     0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000000, 0x00000000,
 };
-Gfx D_800762B0[3] = {
+Gfx gModelSetupDL[3] = {
     {{ 0xE3000A01, 0x00100000 }},
     {{ 0xE7000000, 0x00000000 }},
     {{ 0xDF000000, 0x00000000 }},
 };
-Gfx D_800762C8[5] = {
+Gfx gModelRenderDL[5] = {
     {{ 0xD9FDFFFF, 0x00000000 }},
     {{ 0xE7000000, 0x00000000 }},
     {{ 0xFC309680, 0x5F1AFFFF }},
@@ -44,7 +44,7 @@ Gfx D_800762C8[5] = {
     {{ 0xDF000000, 0x00000000 }},
 };
 
-// extern Gfx D_800762C8[] = {
+// extern Gfx gModelRenderDL[] = {
 //     gsSPSetGeometryMode(0x00FDFFFF),
 //     gsDPPipeSync(),
 //     gsDPSetCombineLERP(
@@ -57,10 +57,10 @@ Gfx D_800762C8[5] = {
 //     gsSPEndDisplayList(),
 // };
 
-s16 D_800AF7C0[4];
-static MtxBuffer D_800AF7C8[2];
-static StadiumModelSlot D_800AFFC8[2][3];
-static unk_D_800B2EA8 D_800B2EA8[1];
+s16 gModelPhase[4];
+static MtxBuffer gModelMtxBuffers[2];
+static StadiumModelSlot gStadiumModelSlots[2][3];
+static unk_D_800B2EA8 gModelNormalAccumulators[1];
 
 void ModelRenderer_OnSlotReady(s32 arg0) {
 
@@ -71,16 +71,16 @@ s32 ModelRenderer_IsReady(UNUSED s32 arg0) {
 }
 
 void ModelRenderer_CacheSlotMatrices(u8 arg0) {
-    MtxF_Copy(D_800AF7C8[arg0].mtx, GeoRender_GetRelativeMatrix(0));
-    MtxF_Copy(D_800AF7C8[arg0].mtx[1].mf, GeoRender_GetRelativeMatrix(-1));
+    MtxF_Copy(gModelMtxBuffers[arg0].mtx, GeoRender_GetRelativeMatrix(0));
+    MtxF_Copy(gModelMtxBuffers[arg0].mtx[1].mf, GeoRender_GetRelativeMatrix(-1));
 }
 
 void ModelRenderer_ApplySlotScale(u8 index) {
     MtxF* temp_a1;
     MtxF sp1C;
 
-    temp_a1 = &D_800AF7C8[index];
-    MtxF_ExtractScale(&sp1C, &D_8006F088->view.floatMatrix);
+    temp_a1 = &gModelMtxBuffers[index];
+    MtxF_ExtractScale(&sp1C, &gCurrentCameraNode->view.floatMatrix);
     guMtxCatF(sp1C.mf, temp_a1->mf, temp_a1->mf);
 }
 
@@ -96,7 +96,7 @@ void ModelRenderer_RebuildSlotMatrix(u8 index) {
     MtxF sp38;
     Vec3f sp2C;
     
-    temp_a0 = &D_800AF7C8[index].mtx;
+    temp_a0 = &gModelMtxBuffers[index].mtx;
     
     MtxF_GetScaleVector(temp_a0, &sp2C);
     guScaleF(sp38.mf, sp2C.x, sp2C.y, sp2C.z);
@@ -107,7 +107,7 @@ void ModelRenderer_RebuildSlotMatrix(u8 index) {
 
 void ModelRenderer_ClearSlotModels(s32 arg0) {
     s32 i;
-    StadiumModelSlot* slot = &D_800AFFC8[arg0];
+    StadiumModelSlot* slot = &gStadiumModelSlots[arg0];
 
     for (i = 0; i < 3; i++) {
         slot[i].model.unk_00 = 0;
@@ -115,23 +115,23 @@ void ModelRenderer_ClearSlotModels(s32 arg0) {
 }
 
 Gfx* ModelRenderer_SetupSlotColors(Gfx* gfx) {
-    u8 temp_v0 = D_8006F09C->lodFraction;
+    u8 temp_v0 = gDefaultGraphRoot->lodFraction;
 
-    switch (D_8006F09C->objectType) {
+    switch (gDefaultGraphRoot->objectType) {
         case 0x92:
-            gSPDisplayList(gfx++, D_800762C8);
+            gSPDisplayList(gfx++, gModelRenderDL);
             gDPSetPrimColor(gfx++, 0, temp_v0, 255, 255, 255, 200);
             gDPSetEnvColor(gfx++, 255, 32, 0, 0);
             break;
         case 0x7E:
-            gSPDisplayList(gfx++, D_800762C8);
+            gSPDisplayList(gfx++, gModelRenderDL);
             gDPSetPrimColor(gfx++, 0, temp_v0, 255, 255, 5, 255);
             gDPSetEnvColor(gfx++, 255, 32, 0, 0);
             break;
         default:
-            gSPDisplayList(gfx++, D_800762C8);
+            gSPDisplayList(gfx++, gModelRenderDL);
             gDPSetPrimColor(gfx++, 0, temp_v0, 255, 255, 255, 255);
-            gDPSetEnvColor(gfx++, 180 - (D_8006F084 % 8) * 10, 32, 0, 0);
+            gDPSetEnvColor(gfx++, 180 - (gAnimationFrame % 8) * 10, 32, 0, 0);
             break;
     }
 
@@ -149,11 +149,11 @@ void ModelRenderer_UpdateSlotModel(void) {
         ModelRenderer_RebuildSlotMatrix(index);
         ModelRenderer_ApplySlotScale(index);
 
-        if (D_8006F09C->objectType == 0x92) {
-            func_80033B2C(&D_800AFFC8[index][D_800AF7B0[index & 1]].model, D_800B2EA8, D_800AF7C8[index].mtx, &D_80077950);
+        if (gDefaultGraphRoot->objectType == 0x92) {
+            Model_DrawWithSegment(&gStadiumModelSlots[index][gModelUpdateFlag[index & 1]].model, gModelNormalAccumulators, gModelMtxBuffers[index].mtx, &gSpecialModelSegment);
             return;
         }
-        func_80033B2C(&D_800AFFC8[index][D_800AF7B0[index & 1]].model, D_800B2EA8, D_800AF7C8[index].mtx, &D_800777A8);
+        Model_DrawWithSegment(&gStadiumModelSlots[index][gModelUpdateFlag[index & 1]].model, gModelNormalAccumulators, gModelMtxBuffers[index].mtx, &gNormalModelSegment);
     }
 }
 
@@ -163,11 +163,11 @@ void ModelRenderer_UpdateSlotVertices(void) {
 
     mode = ModelRenderer_GetActiveMode();
     index = (u8)mode;
-    if ((mode < 2) && (ModelPhase_IsIdle() == 0) && (D_800AF7C0[index] >= 2)) {
+    if ((mode < 2) && (ModelPhase_IsIdle() == 0) && (gModelPhase[index] >= 2)) {
         ModelRenderer_CacheSlotMatrices(index);
         ModelRenderer_RebuildSlotMatrix(index);
         ModelRenderer_ApplySlotScale(index);
-        func_800361C4(&D_800AFFC8[index][D_800AF7B0[index & 1]].model, &D_800AF7C8[index].mtx);
+        Model_DrawPrepared(&gStadiumModelSlots[index][gModelUpdateFlag[index & 1]].model, &gModelMtxBuffers[index].mtx);
     }
 }
 
@@ -185,12 +185,12 @@ Gfx* ModelRenderer_DrawStaticSegment(Gfx* gfx) {
     Vec3f scale;
     Vec3f translate;
 
-    if (D_8006F09C->objectType == 0x92) {
-        segment = (ModelSegment *)&D_80077950;
+    if (gDefaultGraphRoot->objectType == 0x92) {
+        segment = (ModelSegment *)&gSpecialModelSegment;
     } else {
-        segment = (ModelSegment *)&D_800777A8;
+        segment = (ModelSegment *)&gNormalModelSegment;
     }
-    MtxF_ExtractScale(&modelMtx, &D_8006F088->view.floatMatrix);
+    MtxF_ExtractScale(&modelMtx, &gCurrentCameraNode->view.floatMatrix);
     guMtxF2L(&modelMtx.mf[0], &tempMtx);
     MtxF_Copy(&tempCatMtx, GeoRender_GetRelativeMatrix(0));
     MtxF_GetScaleVector(&tempCatMtx, &scale);
@@ -206,7 +206,7 @@ Gfx* ModelRenderer_DrawStaticSegment(Gfx* gfx) {
     {    Gfx *_gfx = (Gfx *)(gfx++);    _gfx->words.w0 = 0xDB060038;    _gfx->words.w1 = (s32) segment->vertexSegment;    }
     {    Gfx *_gfx = (Gfx *)(gfx++);    _gfx->words.w0 = 0xDE000000;    _gfx->words.w1 = (s32) segment->displayList;    }
     {    Gfx *_gfx = (Gfx *)(gfx++);    _gfx->words.w0 = 0xD8380002;    _gfx->words.w1 = 0x40;    }
-    {    Gfx *_gfx = (Gfx *)(gfx++);    _gfx->words.w0 = 0xDE000000;    _gfx->words.w1 = &D_800762B0;    }
+    {    Gfx *_gfx = (Gfx *)(gfx++);    _gfx->words.w0 = 0xDE000000;    _gfx->words.w1 = &gModelSetupDL;    }
     return gfx;
 }
 
@@ -228,37 +228,37 @@ Gfx* ModelRenderer_RenderActiveSlot(Gfx* gfx) {
     }
     if (mode >= 2) {
         mode &= 1;
-        if (D_800AF7C0[mode] >= 2) {
+        if (gModelPhase[mode] >= 2) {
             Gfx_AllocDisplayList(0xA0);
             gfx = ModelRenderer_SetupSlotColors(gfx);
-            var_v1 = &D_800AF7B0[mode & 1];
+            var_v1 = &gModelUpdateFlag[mode & 1];
             {
-                ModelSegment* segment = (ModelSegment*)(&D_800AFFC8[mode][*var_v1].model.unkSegment);
+                ModelSegment* segment = (ModelSegment*)(&gStadiumModelSlots[mode][*var_v1].model.unkSegment);
                 {    Gfx *_gfx = (Gfx *)(gfx++);    _gfx->words.w0 = 0xDB060038;    _gfx->words.w1 = (s32) segment->vertexSegment;    }
                 {    Gfx *_gfx = (Gfx *)(gfx++);    _gfx->words.w0 = 0xDE000000;    _gfx->words.w1 = (s32) segment->displayList;    }
-                {    Gfx *_gfx = (Gfx *)(gfx++);    _gfx->words.w0 = 0xDE000000;    _gfx->words.w1 = &D_800762B0;    }
+                {    Gfx *_gfx = (Gfx *)(gfx++);    _gfx->words.w0 = 0xDE000000;    _gfx->words.w1 = &gModelSetupDL;    }
             }
             *var_v1 += 1;
         }
         return gfx;
     }
-    switch (D_800AF7C0[mode]) {
+    switch (gModelPhase[mode]) {
         default:
-            var_v1 = &D_800AF7B0[mode & 1];
+            var_v1 = &gModelUpdateFlag[mode & 1];
             break;
         case 1:
             ModelRenderer_UpdateSlotModel();
-            var_v1 = &D_800AF7B0[mode & 1];
+            var_v1 = &gModelUpdateFlag[mode & 1];
             break;
         case 2:
         case 3:
             vtx = Gfx_AllocDisplayList(0xA0);
-            {    Gfx *_gfx = (Gfx *)(gfx++);    _gfx->words.w0 = 0xDA380002;    _gfx->words.w1 = &D_80076270;    }
+            {    Gfx *_gfx = (Gfx *)(gfx++);    _gfx->words.w0 = 0xDA380002;    _gfx->words.w1 = &gOrthoProjectionMtx;    }
             gfx = ModelRenderer_SetupSlotColors(gfx);
-            var_v1 = &D_800AF7B0[mode & 1];
-            gfx = Model_Draw(gfx, &D_800AFFC8[mode][*var_v1].model, vtx);
+            var_v1 = &gModelUpdateFlag[mode & 1];
+            gfx = Model_Draw(gfx, &gStadiumModelSlots[mode][*var_v1].model, vtx);
             {    Gfx *_gfx = (Gfx *)(gfx++);    _gfx->words.w0 = 0xD8380002;    _gfx->words.w1 = 0x40;    }
-            {    Gfx *_gfx = (Gfx *)(gfx++);    _gfx->words.w0 = 0xDE000000;    _gfx->words.w1 = &D_800762B0;    }
+            {    Gfx *_gfx = (Gfx *)(gfx++);    _gfx->words.w0 = 0xDE000000;    _gfx->words.w1 = &gModelSetupDL;    }
             break;
     }
     *var_v1 += 1;

@@ -118,7 +118,7 @@ void BattleAnim_SetupUnusedDescriptor4FColorCycleScaleFadeVariant(Particle* arg0
 
     Particle_Field1C_SetScaled_0B938(arg0, 0.25f);
     Particle_Field94_AddY_0A594(arg0, ParticleMath_RandomSigned(0x400));
-    Particle_Field74_SetScaled_0AD8C(arg0, D_84392058[0]);
+    Particle_Field74_SetScaled_0AD8C(arg0, gWaterWaveTable[0]);
     ParticleGfx_RecolorPrimEnvFromPalettePair(arg0, 0x17);
     Particle_FieldA6_SetS16_0BCA8(arg0, sp22 * 2);
     Particle_DisableRendering(arg0);
@@ -969,7 +969,7 @@ void BattleAnim_CallbackEndEffect40Descriptor3DSpreadRisingColorFade_InitParticl
     Vec3s sp30;
     UNUSED s32 pad[3];
 
-    Particle_SetRandomVelocityXYZ(arg0, 5, 5, 5);
+    Particle_SetRandomPositionXYZ(arg0, 5, 5, 5);
     Particle_Field1C_SetScaled_0B938(arg0, 0.5f);
     Particle_Field74_SetScaled_0AD8C(arg0, 1.0f);
     sp30.x = 0x2000 - ParticleMath_RandomRange(0x4000);
@@ -1071,7 +1071,7 @@ void BattleAnim_CallbackEndEffect56Descriptor47SpreadScaleAlphaRise_InitParticle
     Vec3s sp30;
     UNUSED s32 pad[3];
 
-    Particle_SetRandomVelocityXYZ(arg0, 5, 0xA, 0xA);
+    Particle_SetRandomPositionXYZ(arg0, 5, 0xA, 0xA);
     Particle_Field1C_SetScaled_0B938(arg0, 0.90000004f);
     Particle_Field74_SetScaled_0AD8C(arg0, 1.0f);
     sp30.x = ParticleMath_RandomSigned(0x2000);
@@ -1121,7 +1121,7 @@ void BattleAnim_CallbackEndEffects54And56Descriptor3DRisingColorScaleFade_InitPa
     Vec3s sp30;
     UNUSED s32 pad[3];
 
-    Particle_SetRandomVelocityXYZ(arg0, 5, 5, 5);
+    Particle_SetRandomPositionXYZ(arg0, 5, 5, 5);
     Particle_Field1C_SetScaled_0B938(arg0, 0.75f);
     Particle_Field74_SetScaled_0AD8C(arg0, 1.0f);
     sp30.x = 0x2000 - ParticleMath_RandomRange(0x4000);
@@ -1560,9 +1560,9 @@ void BattleAnim_CallbackEndEffect59Descriptor4FColorScaleFade_InitParticle(Parti
 
     Particle_FieldCF_GetS16_0C058(arg0);
     Particle_Field1C_SetScaled_0B938(arg0, 0.7f);
-    Particle_SetRandomVelocityX(arg0, 0xF);
-    Particle_SetRandomVelocityYOffset(arg0, 0xF, 0xA);
-    Particle_SetRandomVelocityZ(arg0, 0xF);
+    Particle_SetRandomPositionX(arg0, 0xF);
+    Particle_SetRandomPositionYOffset(arg0, 0xF, 0xA);
+    Particle_SetRandomPositionZ(arg0, 0xF);
     ParticleGfx_RecolorPrimEnvFromPalettePair(arg0, 0x1A);
     Particle_SetPrimAlpha(arg0, 0xC8);
     Particle_FieldA6_SetS16_0BCA8(arg0, sp22 * 4);

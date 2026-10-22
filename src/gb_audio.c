@@ -1,78 +1,78 @@
 #include "gb_audio.h"
 #include "gb_audio_render.h"
 
-typedef struct unk_D_800FCD70 {
+typedef struct EnvelopeState {
     /* 0x00 */ u8 unk_00;
     /* 0x01 */ u8 unk_01;
     /* 0x02 */ u8 unk_02;
     /* 0x03 */ u8 unk_03;
     /* 0x04 */ u8 unk_04;
-} unk_D_800FCD70; // size = 0x5
+} EnvelopeState; // size = 0x5
 
-typedef struct unk_D_800FCD98 {
+typedef struct PitchSlideState {
     /* 0x00 */ f32 unk_00;
     /* 0x04 */ f32 unk_04;
     /* 0x08 */ f32 unk_08;
     /* 0x0C */ u8 unk_0C;
-} unk_D_800FCD98; // size = 0x10
+} PitchSlideState; // size = 0x10
 
 static u8 D_800FCD40[8];
-static u8 D_800FCD48[8];
-static u8 D_800FCD50[8];
-static u8 D_800FCD58[8];
-static u8 D_800FCD60[8];
-static u8 D_800FCD68;
-static unk_D_800FCD70 D_800FCD70[8];
-static unk_D_800FCD98 D_800FCD98[8];
-static u8 D_800FCE18[8];
-static u8 D_800FCE20[8];
-static u8 D_800FCE28[8];
-static u8 D_800FCE30[8];
-static u8 D_800FCE38[8];
-static u8 D_800FCE40[8];
-static u8* D_800FCE48[8];
-static s32 D_800FCE68[8];
-static s32 D_800FCE88[8];
-static u8 D_800FCEA8[8];
-static u16 D_800FCEB0;
-static u16 D_800FCEB2;
-static u8 D_800FCEB4;
-static u8 D_800FCEB6[2];
-static u8* D_800FCEB8[2];
-static u8 D_800FCEC0[8];
-static u32 D_800FCEC8;
-static u8 D_800FCECC;
-static u8 D_800FCECD;
+static u8 gChannelActiveFlags[8];
+static u8 gChannelWaitCounters[8];
+static u8 gChannelStatus[8];
+static u8 gChannelControl[8];
+static u8 gTrackTransitionFlag;
+static EnvelopeState gEnvelopeState[8];
+static PitchSlideState gPitchSlideState[8];
+static u8 gChannelDutyRotationValues[8];
+static u8 gChannelDutyValues[8];
+static u8 gChannelVolumeValues[8];
+static u8 gChannelJumpCounters[8];
+static u8 gChannelOctaves[8];
+static u8 gMasterVolume[8];
+static u8* gChannelProgramCounters[8];
+static s32 gChannelPrevProgramCounters[8];
+static s32 gChannelDataBases[8];
+static u8 gChannelNoteLengths[8];
+static u16 gBpmLow;
+static u16 gBpmHigh;
+static u8 gCurrentTrackId;
+static u8 gPitchModifiers[2];
+static u8* gCustomWaveforms[2];
+static u8 gChannelNoteOffsets[8];
+static u32 gCurrentTrackData;
+static u8 gTrackPitchOffset;
+static u8 gTrackBpmOffset;
 
-static u8 D_80078590[] = {
+static u8 gChannelPanLow[] = {
     0x11, 0x22, 0x44, 0x88, 0x11, 0x22, 0x44, 0x88,
 };
-static u8 D_80078598[] = {
+static u8 gChannelPanHigh[] = {
     0xEE, 0xDD, 0xBB, 0x77, 0xEE, 0xDD, 0xBB, 0x77,
 };
-static u8 D_800785A0 = 0;
-static u8 D_800785A4 = 0xF0;
-static u8 D_800785A8 = 0xF1;
-static u8 D_800785AC = 0xFF;
-static u8 D_800785B0 = 0;
-static u8 D_800785B4 = 0;
-static u8 D_800785B8 = 0xFF;
+static u8 gTrackRangeStart = 0;
+static u8 gTrackRangeEnd = 0xF0;
+static u8 gTrackIdLimit = 0xF1;
+static u8 gTrackIdMax = 0xFF;
+static u8 gTrackMinId = 0;
+static u8 gTrackLoadStatus = 0;
+static u8 gDefaultSequenceEnd = 0xFF;
 
 void GbMusic_UpdateChannels(void) {
     s32 i;
 
     for (i = 0; i < 8; i++) {
-        if (D_800FCD48[i] != 0) {
+        if (gChannelActiveFlags[i] != 0) {
             GbMusic_UpdateChannel(i);
         }
     }
 }
 
 void GbMusic_StartSequenceById(u8 arg0) {
-    D_800FCEB4 = arg0;
+    gCurrentTrackId = arg0;
     if (arg0 == 0xFF) {
         GbMusic_ResetApu();
-    } else if ((D_800785A8 >= arg0) || (D_800785AC < arg0)) {
+    } else if ((gTrackIdLimit >= arg0) || (gTrackIdMax < arg0)) {
         GbMusic_StartSfx(arg0);
     } else {
         GbMusic_StartMusic(arg0);
@@ -87,22 +87,22 @@ s32 GbMusic_StartTableSequence(u16 arg0) {
         return 0;
     }
 
-    func_80044A50(D_800FC6D4);
+    Music_ResolveTrackOffsets(gAudioSfxBankExtra);
 
-    if (D_800FC6D4->num_entries < arg0) {
+    if (gAudioSfxBankExtra->num_entries < arg0) {
         return 0;
     }
 
-    offset = D_800FC6D4->offset;
+    offset = gAudioSfxBankExtra->offset;
     GbMusic_ResetApu();
 
     arg0--;
 
-    a = D_800FC6D4->entries[arg0].unk_00;
-    D_800FCEB4 = a;
-    D_800FCECC = D_800FC6D4->entries[arg0].unk_02;
-    D_800FCECD = D_800FC6D4->entries[arg0].unk_03;
-    D_800FCEC8 = offset + a * 0x18;
+    a = gAudioSfxBankExtra->entries[arg0].unk_00;
+    gCurrentTrackId = a;
+    gTrackPitchOffset = gAudioSfxBankExtra->entries[arg0].unk_02;
+    gTrackBpmOffset = gAudioSfxBankExtra->entries[arg0].unk_03;
+    gCurrentTrackData = offset + a * 0x18;
 
     GbMusic_StartSfx(a);
 
@@ -110,52 +110,52 @@ s32 GbMusic_StartTableSequence(u16 arg0) {
 }
 
 void GbMusic_UpdateChannel(u32 arg0) {
-    if (D_800FCD50[arg0] < 2) {
-        D_800FCD70[arg0].unk_03 = D_800FCD70[arg0].unk_04;
-        D_800FCD58[arg0] &= (u8)~0x30;
+    if (gChannelWaitCounters[arg0] < 2) {
+        gEnvelopeState[arg0].unk_03 = gEnvelopeState[arg0].unk_04;
+        gChannelStatus[arg0] &= (u8)~0x30;
         GbMusic_DecodeChannelCommands(arg0);
         return;
     }
 
-    D_800FCD50[arg0]--;
+    gChannelWaitCounters[arg0]--;
 
-    if ((arg0 < 4) && (D_800FCD48[arg0 + 4] != 0)) {
+    if ((arg0 < 4) && (gChannelActiveFlags[arg0 + 4] != 0)) {
         return;
     }
 
-    if (D_800FCD58[arg0] & 0x40) {
+    if (gChannelStatus[arg0] & 0x40) {
         GbMusic_RotateChannelDuty(arg0);
     }
 
-    if ((D_800FCD60[arg0] & 1) || (D_800FCD58[arg0] & 4)) {
-        if (D_800FCD58[arg0] & 0x10) {
+    if ((gChannelControl[arg0] & 1) || (gChannelStatus[arg0] & 4)) {
+        if (gChannelStatus[arg0] & 0x10) {
             GbMusic_AdvancePitchSlide(arg0);
-        } else if (D_800FCD70[arg0].unk_03 != 0) {
-            D_800FCD70[arg0].unk_03--;
-        } else if (D_800FCD70[arg0].unk_00 != 0) {
-            if (D_800FCD70[arg0].unk_01 & 0xF) {
-                D_800FCD70[arg0].unk_01--;
+        } else if (gEnvelopeState[arg0].unk_03 != 0) {
+            gEnvelopeState[arg0].unk_03--;
+        } else if (gEnvelopeState[arg0].unk_00 != 0) {
+            if (gEnvelopeState[arg0].unk_01 & 0xF) {
+                gEnvelopeState[arg0].unk_01--;
             } else {
-                u8 sp2F = D_800FCD70[arg0].unk_01;
+                u8 sp2F = gEnvelopeState[arg0].unk_01;
                 sp2F = (sp2F << 4) | ((sp2F >> 4) & 0xF);
 
-                D_800FCD70[arg0].unk_01 |= sp2F;
+                gEnvelopeState[arg0].unk_01 |= sp2F;
 
-                if ((D_800FCD58[arg0] & 8) != 0) {
-                    sp2F = D_800FCD70[arg0].unk_00 & 0xF;
-                    D_800FCD58[arg0] &= ~8;
-                    if (D_800FCD70[arg0].unk_02 < sp2F) {
-                        sp2F = D_800FCD58[arg0] * 0;
+                if ((gChannelStatus[arg0] & 8) != 0) {
+                    sp2F = gEnvelopeState[arg0].unk_00 & 0xF;
+                    gChannelStatus[arg0] &= ~8;
+                    if (gEnvelopeState[arg0].unk_02 < sp2F) {
+                        sp2F = gChannelStatus[arg0] * 0;
                     } else {
-                        sp2F = D_800FCD70[arg0].unk_02 - sp2F;
+                        sp2F = gEnvelopeState[arg0].unk_02 - sp2F;
                     }
                 } else {
-                    sp2F = (D_800FCD70[arg0].unk_00 & 0xF0) >> 4;
-                    D_800FCD58[arg0] &= 8;
-                    if ((0xFF - sp2F) < D_800FCD70[arg0].unk_02) {
+                    sp2F = (gEnvelopeState[arg0].unk_00 & 0xF0) >> 4;
+                    gChannelStatus[arg0] &= 8;
+                    if ((0xFF - sp2F) < gEnvelopeState[arg0].unk_02) {
                         sp2F = 0xFF;
                     } else {
-                        sp2F += D_800FCD70[arg0].unk_02;
+                        sp2F += gEnvelopeState[arg0].unk_02;
                     }
                 }
                 GbAudio_QueueRegisterWrite(GbMusic_GetChannelRegister(arg0, 3), sp2F, 0);
@@ -231,35 +231,35 @@ void GbMusic_DecodeChannelCommands(u32 arg0) {
 }
 
 u8 GbMusic_CmdEndOrReturn(u32 arg0) {
-    if (D_800FCD58[arg0] & 2) {
-        D_800FCD58[arg0] &= ~2;
-        D_800FCE68[arg0] = D_800FCE48[arg0];
+    if (gChannelStatus[arg0] & 2) {
+        gChannelStatus[arg0] &= ~2;
+        gChannelPrevProgramCounters[arg0] = gChannelProgramCounters[arg0];
         return 0;
     }
 
     if (arg0 >= 3) {
-        D_800FCD58[arg0] &= ~4;
-        D_800FCD60[arg0] &= ~1;
+        gChannelStatus[arg0] &= ~4;
+        gChannelControl[arg0] &= ~1;
         if (arg0 == 6) {
             GbAudio_QueueRegisterWrite(0xFF1A, 0, 0);
             GbAudio_QueueRegisterWrite(0xFF1A, 0x80, 0);
         }
 
-        if (D_800FCD68 != 0) {
-            D_800FCD68 = 0;
+        if (gTrackTransitionFlag != 0) {
+            gTrackTransitionFlag = 0;
         }
-        GbAudio_QueueRegisterWrite(0xFF25, D_80078598[arg0] & GbAudio_GetRegisterValue(0xFF25), 0);
+        GbAudio_QueueRegisterWrite(0xFF25, gChannelPanHigh[arg0] & GbAudio_GetRegisterValue(0xFF25), 0);
     }
 
-    D_800FCD48[arg0] = 0;
+    gChannelActiveFlags[arg0] = 0;
 
-    if ((D_800FCD48[4] >= D_800785A0) && (D_800FCD48[4] < D_800785A4)) {
+    if ((gChannelActiveFlags[4] >= gTrackRangeStart) && (gChannelActiveFlags[4] < gTrackRangeEnd)) {
         if ((arg0 != 4) && (GbMusic_RewindIfSfxActive(arg0) != 0)) {
             return 1;
         } else {
-            GbAudio_QueueRegisterWrite(0xFF24, D_800FCE40[0], 0);
-            D_800FCE40[0] = 0;
-            D_800FCD48[arg0] = 0;
+            GbAudio_QueueRegisterWrite(0xFF24, gMasterVolume[0], 0);
+            gMasterVolume[0] = 0;
+            gChannelActiveFlags[arg0] = 0;
         }
     }
     return 1;
@@ -274,9 +274,9 @@ u8 GbMusic_CmdCall(u32 arg0) {
     temp_v0 = GbMusic_ReadStreamByte(arg0);
     tmp = (temp_v0 << 8) + sp1F;
 
-    D_800FCE68[arg0] = D_800FCE48[arg0];
-    D_800FCE48[arg0] = tmp + D_800FCE88[arg0];
-    D_800FCD58[arg0] |= 2;
+    gChannelPrevProgramCounters[arg0] = gChannelProgramCounters[arg0];
+    gChannelProgramCounters[arg0] = tmp + gChannelDataBases[arg0];
+    gChannelStatus[arg0] |= 2;
     return 0;
 }
 
@@ -286,24 +286,24 @@ u8 GbMusic_CmdLoop(u32 arg0) {
     u32 temp_v0 = GbMusic_ReadStreamByte(arg0);
 
     if (temp_v0) {
-        if (D_800FCE30[arg0] == temp_v0) {
-            D_800FCE30[arg0] = 1;
+        if (gChannelJumpCounters[arg0] == temp_v0) {
+            gChannelJumpCounters[arg0] = 1;
             GbMusic_ReadStreamByte(arg0);
             GbMusic_ReadStreamByte(arg0);
             return 0;
         }
-        D_800FCE30[arg0]++;
+        gChannelJumpCounters[arg0]++;
     }
 
     sp27 = GbMusic_ReadStreamByte(arg0);
     sp26 = GbMusic_ReadStreamByte(arg0);
 
-    D_800FCE48[arg0] = (u8*)D_800FCE88 + ((sp26 << 8) | sp27);
+    gChannelProgramCounters[arg0] = (u8*)gChannelDataBases + ((sp26 << 8) | sp27);
     return 0;
 }
 
 u8 GbMusic_CmdToggleFinePitch(u32 arg0) {
-    D_800FCD58[arg0] ^= 1;
+    gChannelStatus[arg0] ^= 1;
     return 0;
 }
 
@@ -314,8 +314,8 @@ u8 GbMusic_CmdSetEnvelope(u32 arg0) {
     u8 temp_t9;
 
     temp_v0 = GbMusic_ReadStreamByte(arg0);
-    D_800FCD70[arg0].unk_03 = temp_v0;
-    D_800FCD70[arg0].unk_04 = temp_v0;
+    gEnvelopeState[arg0].unk_03 = temp_v0;
+    gEnvelopeState[arg0].unk_04 = temp_v0;
 
     temp_v0 = GbMusic_ReadStreamByte(arg0);
     temp_a0 = temp_v0 & 0xF0;
@@ -326,12 +326,12 @@ u8 GbMusic_CmdSetEnvelope(u32 arg0) {
     temp_a0 = temp_a1 + temp_t9;
     temp_a0 <<= 4;
     temp_t9 = temp_a0 | temp_a1;
-    D_800FCD70[arg0].unk_00 = temp_t9;
+    gEnvelopeState[arg0].unk_00 = temp_t9;
 
     temp_t9 = temp_v0 & 0xF;
     temp_v0 = temp_t9 << 4;
     temp_v0 |= temp_t9;
-    D_800FCD70[arg0].unk_01 = temp_v0;
+    gEnvelopeState[arg0].unk_01 = temp_v0;
     return 0;
 }
 
@@ -339,16 +339,16 @@ u8 GbMusic_CmdPitchSlide(u32 arg0) {
     UNUSED s32 pad;
     u8 temp_v0;
 
-    D_800FCD98[arg0].unk_0C = GbMusic_ReadStreamByte(arg0);
+    gPitchSlideState[arg0].unk_0C = GbMusic_ReadStreamByte(arg0);
     temp_v0 = GbMusic_ReadStreamByte(arg0);
-    D_800FCD98[arg0].unk_04 = GbMusic_GetNoteFrequency(temp_v0 & 0xF, (temp_v0 & 0xF0) >> 4);
-    D_800FCD58[arg0] |= 0x10;
+    gPitchSlideState[arg0].unk_04 = GbMusic_GetNoteFrequency(temp_v0 & 0xF, (temp_v0 & 0xF0) >> 4);
+    gChannelStatus[arg0] |= 0x10;
     GbMusic_ScheduleNote(arg0, GbMusic_ReadStreamByte(arg0));
     return 1;
 }
 
 u8 GbMusic_CmdSetDutyCycle(u32 arg0) {
-    D_800FCE20[arg0] = GbMusic_ReadStreamByte(arg0) << 6;
+    gChannelDutyValues[arg0] = GbMusic_ReadStreamByte(arg0) << 6;
     return 0;
 }
 
@@ -359,33 +359,33 @@ u8 GbMusic_CmdSetTempo(u32 arg0) {
     if (arg0 < 4) {
         sp1F = GbMusic_ReadStreamByte(arg0);
         sp1E = GbMusic_ReadStreamByte(arg0);
-        D_800FCEB0 = (sp1E << 8) + sp1F;
-        D_800FCEC0[0] = 0;
-        D_800FCEC0[1] = 0;
-        D_800FCEC0[2] = 0;
-        D_800FCEC0[3] = 0;
+        gBpmLow = (sp1E << 8) + sp1F;
+        gChannelNoteOffsets[0] = 0;
+        gChannelNoteOffsets[1] = 0;
+        gChannelNoteOffsets[2] = 0;
+        gChannelNoteOffsets[3] = 0;
     } else {
         sp1F = GbMusic_ReadStreamByte(arg0);
         sp1E = GbMusic_ReadStreamByte(arg0);
-        D_800FCEB2 = (sp1E << 8) + sp1F;
-        D_800FCEC0[4] = 0;
-        D_800FCEC0[5] = 0;
-        D_800FCEC0[6] = 0;
-        D_800FCEC0[7] = 0;
+        gBpmHigh = (sp1E << 8) + sp1F;
+        gChannelNoteOffsets[4] = 0;
+        gChannelNoteOffsets[5] = 0;
+        gChannelNoteOffsets[6] = 0;
+        gChannelNoteOffsets[7] = 0;
     }
     return 0;
 }
 
 u8 GbMusic_CmdSetPanMask(u32 arg0) {
-    D_800FCE40[1] = GbMusic_ReadStreamByte(arg0);
+    gMasterVolume[1] = GbMusic_ReadStreamByte(arg0);
     return 0;
 }
 
 u8 GbMusic_CmdPlaySequence(u32 arg0) {
     GbMusic_StartSequenceById(GbMusic_ReadStreamByte(arg0));
-    if (D_800FCD68 == 0) {
-        D_800FCD68 = D_800FCD48[7];
-        D_800FCD48[7] = 0;
+    if (gTrackTransitionFlag == 0) {
+        gTrackTransitionFlag = gChannelActiveFlags[7];
+        gChannelActiveFlags[7] = 0;
     }
     return 0;
 }
@@ -393,9 +393,9 @@ u8 GbMusic_CmdPlaySequence(u32 arg0) {
 u8 GbMusic_CmdSetDutyRotation(u32 arg0) {
     u8 temp_v0 = GbMusic_ReadStreamByte(arg0);
 
-    D_800FCE18[arg0] = temp_v0;
-    D_800FCE20[arg0] = temp_v0 & 0xC0;
-    D_800FCD58[arg0] |= 0x40;
+    gChannelDutyRotationValues[arg0] = temp_v0;
+    gChannelDutyValues[arg0] = temp_v0 & 0xC0;
+    gChannelStatus[arg0] |= 0x40;
     return 0;
 }
 
@@ -405,30 +405,30 @@ u8 GbMusic_CmdSetMasterVolume(u32 arg0) {
 }
 
 u8 GbMusic_CmdEnableEnvelope(u32 arg0) {
-    D_800FCD60[arg0] |= 1;
+    gChannelControl[arg0] |= 1;
     return 0;
 }
 
 u8 GbMusic_CmdSetNoteLength(u32 arg0, u8 arg1) {
     u8 var_a1;
 
-    D_800FCEA8[arg0] = arg1 & 0xF;
+    gChannelNoteLengths[arg0] = arg1 & 0xF;
     if (arg0 != 3) {
         var_a1 = GbMusic_ReadStreamByte(arg0);
         if (arg0 == 2) {
-            D_800FCEB6[0] = var_a1 & 0xF;
+            gPitchModifiers[0] = var_a1 & 0xF;
             var_a1 = (var_a1 & 0x30) * 2;
         } else if (arg0 == 6) {
-            D_800FCEB6[1] = var_a1 & 0xF;
+            gPitchModifiers[1] = var_a1 & 0xF;
             var_a1 = (var_a1 & 0x30) * 2;
         }
-        D_800FCE28[arg0] = var_a1;
+        gChannelVolumeValues[arg0] = var_a1;
     }
     return 0;
 }
 
 u8 GbMusic_CmdSetOctave(u32 arg0, u8 arg1) {
-    D_800FCE38[arg0] = arg1 & 0xF;
+    gChannelOctaves[arg0] = arg1 & 0xF;
     return 0;
 }
 
@@ -438,10 +438,10 @@ s32 GbMusic_CmdPlayNoteWithDuty(u32 arg0, u8 arg1) {
     u8 sp25;
     u32 var_v1;
 
-    if (((arg1 & 0xF0) != 0x20) || (arg0 < 3) || (D_800FCD60[arg0] & 1)) {
+    if (((arg1 & 0xF0) != 0x20) || (arg0 < 3) || (gChannelControl[arg0] & 1)) {
         var_v1 = GbMusic_CmdPlayNote(arg0, arg1);
     } else {
-        sp25 = D_800FCE20[arg0] | GbMusic_ScheduleNote(arg0, arg1);
+        sp25 = gChannelDutyValues[arg0] | GbMusic_ScheduleNote(arg0, arg1);
         GbAudio_QueueRegisterWrite(GbMusic_GetChannelRegister(arg0, 1), sp25, 0);
         sp27 = GbMusic_ReadStreamByte(arg0);
         GbAudio_QueueRegisterWrite(GbMusic_GetChannelRegister(arg0, 2), sp27, 0);
@@ -468,7 +468,7 @@ u8 GbMusic_CmdPlayNote(u32 arg0, u8 arg1) {
         return 1;
     }
 
-    if (D_800FCD60[arg0] & 1) {
+    if (gChannelControl[arg0] & 1) {
         GbMusic_TriggerNoteFromByte(arg0, arg1);
         return 1;
     }
@@ -490,8 +490,8 @@ u8 GbMusic_TriggerNoteFromByte(u32 arg0, u8 arg1) {
             sp1F = temp_v0 >> 4;
         }
 
-        if (D_800FCD68 == 0) {
-            GbMusic_StartSequenceById(D_800FCEB4);
+        if (gTrackTransitionFlag == 0) {
+            GbMusic_StartSequenceById(gCurrentTrackId);
         }
     }
 
@@ -506,29 +506,29 @@ s32 GbMusic_ScheduleNote(u32 arg0, u8 arg1) {
     u16 sp20;
     u8 sp1F;
 
-    sp26 = (D_800FCEA8[arg0] * ((arg1 & 0xF) + 1));
+    sp26 = (gChannelNoteLengths[arg0] * ((arg1 & 0xF) + 1));
     var_t0 = 0x100;
     if (arg0 >= 4) {
         if (arg0 != 7) {
             GbMusic_UpdateHighChannelTempo();
-            var_t0 = D_800FCEB2;
+            var_t0 = gBpmHigh;
         }
     } else {
-        var_t0 = D_800FCEB0;
+        var_t0 = gBpmLow;
     }
 
-    tmp = (D_800FCEC0[arg0] + (sp26 * var_t0));
-    D_800FCEC0[arg0] = tmp & 0xFFFF;
-    D_800FCD50[arg0] = (tmp & 0xFF00) >> 8;
+    tmp = (gChannelNoteOffsets[arg0] + (sp26 * var_t0));
+    gChannelNoteOffsets[arg0] = tmp & 0xFFFF;
+    gChannelWaitCounters[arg0] = (tmp & 0xFF00) >> 8;
 
-    if (!(D_800FCD60[arg0] & 1) && (D_800FCD58[arg0] & 4)) {
-        return D_800FCD50[arg0];
+    if (!(gChannelControl[arg0] & 1) && (gChannelStatus[arg0] & 4)) {
+        return gChannelWaitCounters[arg0];
     } else if ((arg1 & 0xF0) != 0xC0) {
         return GbMusic_TriggerChannelNote(arg0, arg1, tmp);
-    } else if ((arg0 < 4) && (D_800FCD48[4 + arg0] != 0)) {
-        return D_800FCD48[4 + arg0];
+    } else if ((arg0 < 4) && (gChannelActiveFlags[4 + arg0] != 0)) {
+        return gChannelActiveFlags[4 + arg0];
     } else if ((arg0 == 2) || (arg0 == 6)) {
-        sp1F = D_80078598[arg0] | GbAudio_GetRegisterValue(0xFF25);
+        sp1F = gChannelPanHigh[arg0] | GbAudio_GetRegisterValue(0xFF25);
         GbAudio_QueueRegisterWrite(0xFF25, sp1F, 0);
         return sp1F;
     } else {
@@ -547,25 +547,25 @@ s32 GbMusic_TriggerChannelNote(u32 arg0, u16 arg1, u16 arg2) {
 
     arg1 = (arg1 & 0xF0) >> 8;
 
-    tmp1 = D_800FCE38[arg0];
+    tmp1 = gChannelOctaves[arg0];
     var_s1 = GbMusic_GetNoteFrequency(arg1, tmp1);
-    tmp = D_800FCD58[arg0] == 0;
+    tmp = gChannelStatus[arg0] == 0;
 
     if (tmp & 0x10) {
         GbMusic_StartPitchSlide(arg0, var_s1);
     }
 
-    if ((arg0 < 4) && (D_800FCD48[4 + arg0] != 0)) {
+    if ((arg0 < 4) && (gChannelActiveFlags[4 + arg0] != 0)) {
         return 1;
     }
 
-    GbAudio_QueueRegisterWrite(GbMusic_GetChannelRegister(arg0, 2), D_800FCE28[arg0], 0);
+    GbAudio_QueueRegisterWrite(GbMusic_GetChannelRegister(arg0, 2), gChannelVolumeValues[arg0], 0);
     GbMusic_WriteChannelDutyLength(arg0);
     GbMusic_UpdateChannelPanning(arg0);
-    if (D_800FCD58[arg0] & 1) {
+    if (gChannelStatus[arg0] & 1) {
         var_s1++;
     }
-    D_800FCD70[arg0].unk_02 = var_s1 & 0xFF;
+    gEnvelopeState[arg0].unk_02 = var_s1 & 0xFF;
     GbMusic_WriteChannelFrequency(arg0, var_s1);
     return 1;
 }
@@ -573,31 +573,31 @@ s32 GbMusic_TriggerChannelNote(u32 arg0, u16 arg1, u16 arg2) {
 s32 GbMusic_UpdateChannelPanning(u32 arg0) {
     u8 tmp;
     u8 sp1E;
-    u8 temp_v1 = D_80078590[arg0] | GbAudio_GetRegisterValue(0xFF25);
+    u8 temp_v1 = gChannelPanLow[arg0] | GbAudio_GetRegisterValue(0xFF25);
 
     if ((arg0 >= 4) && (arg0 != 7)) {
         GbAudio_QueueRegisterWrite(0xFF25, temp_v1, 0);
         return 1;
     }
 
-    if ((arg0 != 7) && (D_800FCD48[4 + arg0] != 0)) {
+    if ((arg0 != 7) && (gChannelActiveFlags[4 + arg0] != 0)) {
         GbAudio_QueueRegisterWrite(0xFF25, temp_v1, 0);
         return 1;
     }
 
-    sp1E = (D_800FCE40[1] & D_80078590[arg0]);
-    tmp = D_80078598[arg0] & GbAudio_GetRegisterValue(0xFF25);
+    sp1E = (gMasterVolume[1] & gChannelPanLow[arg0]);
+    tmp = gChannelPanHigh[arg0] & GbAudio_GetRegisterValue(0xFF25);
     tmp |= sp1E;
     GbAudio_QueueRegisterWrite(0xFF25, tmp, 0);
     return 1;
 }
 
 s32 GbMusic_WriteChannelDutyLength(u32 arg0) {
-    u8 sp1F = D_800FCD50[arg0];
+    u8 sp1F = gChannelWaitCounters[arg0];
     u8 tmp;
 
     if ((arg0 != 2) && (arg0 != 6)) {
-        tmp = D_800FCE20[arg0];
+        tmp = gChannelDutyValues[arg0];
 
         sp1F &= 0x3F;
         sp1F |= tmp;
@@ -622,7 +622,7 @@ s32 GbMusic_WriteChannelFrequency(u32 arg0, u16 arg1) {
         GbAudio_QueueRegisterWrite(0xFF1A, 0, 0);
 
         for (i = 0; i < 16; i++) {
-            GbAudio_QueueRegisterWrite(i + 0x20, D_800FCEB8[var_s2][i], 0);
+            GbAudio_QueueRegisterWrite(i + 0x20, gCustomWaveforms[var_s2][i], 0);
         }
 
         GbAudio_QueueRegisterWrite(0xFF1A, 0x80, 0);
@@ -639,7 +639,7 @@ s32 GbMusic_WriteChannelFrequency(u32 arg0, u16 arg1) {
         GbAudio_QueueRegisterWrite(temp_v0, new_var2, 0);
         GbAudio_QueueRegisterWrite(temp_v0 + 1, new_var, 0);
 
-        if (D_800FCD48[4] != 0) {
+        if (gChannelActiveFlags[4] != 0) {
             GbMusic_WriteTransposedFrequency(sp2E[2] + (sp2E[3] << 8), temp_v0);
         }
     }
@@ -650,16 +650,16 @@ void GbMusic_UpdateHighChannelTempo(void) {
     s32 tmp;
 
     if (GbMusic_IsSfxActive() != 0) {
-        tmp = D_800FCECD + 0x80;
-        D_800FCEB2 = tmp;
+        tmp = gTrackBpmOffset + 0x80;
+        gBpmHigh = tmp;
     } else {
-        D_800FCEB2 = 0x100;
+        gBpmHigh = 0x100;
     }
 }
 
 void GbMusic_WriteTransposedFrequency(u16 arg0, u16 arg1) {
     if (GbMusic_IsSfxActive() != 0) {
-        u16 sp18 = D_800FCECC;
+        u16 sp18 = gTrackPitchOffset;
 
         arg0 += sp18;
         GbAudio_QueueRegisterWrite(arg1, arg0 & 0xFF, 0);
@@ -669,14 +669,14 @@ void GbMusic_WriteTransposedFrequency(u16 arg0, u16 arg1) {
 
 s32 GbMusic_RewindIfSfxActive(u32 arg0) {
     if (GbMusic_IsSfxActive() != 0) {
-        D_800FCE48[arg0]--;
+        gChannelProgramCounters[arg0]--;
         return 1;
     }
     return 0;
 }
 
 s32 GbMusic_IsSfxActive(void) {
-    if ((D_800FCD48[4] < D_800785A4) && (D_800FCD48[4] >= D_800785A0)) {
+    if ((gChannelActiveFlags[4] < gTrackRangeEnd) && (gChannelActiveFlags[4] >= gTrackRangeStart)) {
         return 1;
     }
     return 0;
@@ -687,32 +687,32 @@ void GbMusic_AdvancePitchSlide(u32 arg0) {
     u8 sp1E;
     u16 sp1C;
 
-    D_800FCD98[arg0].unk_00 += D_800FCD98[arg0].unk_08;
-    if (D_800FCD58[arg0] & 0x20) {
-        if (D_800FCD98[arg0].unk_04 < D_800FCD98[arg0].unk_00) {
-            D_800FCD58[arg0] &= ~0x30;
+    gPitchSlideState[arg0].unk_00 += gPitchSlideState[arg0].unk_08;
+    if (gChannelStatus[arg0] & 0x20) {
+        if (gPitchSlideState[arg0].unk_04 < gPitchSlideState[arg0].unk_00) {
+            gChannelStatus[arg0] &= ~0x30;
             return;
         }
-    } else if (D_800FCD98[arg0].unk_00 < D_800FCD98[arg0].unk_04) {
-        D_800FCD58[arg0] &= ~0x30;
+    } else if (gPitchSlideState[arg0].unk_00 < gPitchSlideState[arg0].unk_04) {
+        gChannelStatus[arg0] &= ~0x30;
         return;
     }
 
-    sp1F = D_800FCD98[arg0].unk_00;
-    sp1E = ((u16)D_800FCD98[arg0].unk_00 & 0xFF00) >> 8;
+    sp1F = gPitchSlideState[arg0].unk_00;
+    sp1E = ((u16)gPitchSlideState[arg0].unk_00 & 0xFF00) >> 8;
     sp1C = GbMusic_GetChannelRegister(arg0, 3);
     GbAudio_QueueRegisterWrite(sp1C, sp1F, 0);
     GbAudio_QueueRegisterWrite(sp1C + 1, sp1E, 0);
 }
 
 s32 GbMusic_StartPitchSlide(u32 arg0, u16 arg1) {
-    D_800FCD98[arg0].unk_00 = arg1;
-    if (arg1 < D_800FCD98[arg0].unk_04) {
-        D_800FCD58[arg0] &= ~0x20;
+    gPitchSlideState[arg0].unk_00 = arg1;
+    if (arg1 < gPitchSlideState[arg0].unk_04) {
+        gChannelStatus[arg0] &= ~0x20;
     } else {
-        D_800FCD58[arg0] |= 0x20;
+        gChannelStatus[arg0] |= 0x20;
     }
-    D_800FCD98[arg0].unk_08 = (D_800FCD98[arg0].unk_04 - D_800FCD98[arg0].unk_00) / D_800FCD98[arg0].unk_0C;
+    gPitchSlideState[arg0].unk_08 = (gPitchSlideState[arg0].unk_04 - gPitchSlideState[arg0].unk_00) / gPitchSlideState[arg0].unk_0C;
     return 1;
 }
 
@@ -720,25 +720,25 @@ void GbMusic_RotateChannelDuty(u32 arg0) {
     u8 sp1F;
     u16 sp1C;
 
-    sp1F = D_800FCE18[arg0];
+    sp1F = gChannelDutyRotationValues[arg0];
     sp1F &= 0xC0;
-    D_800FCE18[arg0] *= 4;
-    D_800FCE18[arg0] |= (sp1F >> 6);
+    gChannelDutyRotationValues[arg0] *= 4;
+    gChannelDutyRotationValues[arg0] |= (sp1F >> 6);
     sp1F &= 0xC0;
     sp1C = GbMusic_GetChannelRegister(arg0, 1);
     GbAudio_QueueRegisterWrite(sp1C, (sp1F | (GbAudio_GetRegisterValue(sp1C) & 0x3F) & 0xFF), 0);
 }
 
 u8 GbMusic_ReadStreamByte(u32 arg0) {
-    return *D_800FCE48[arg0]++;
+    return *gChannelProgramCounters[arg0]++;
 }
 
 u16 GbMusic_GetChannelRegister(u32 arg0, s32 arg1) {
     UNUSED s32 pad;
-    u16 D_800785BC[] = {
+    u16 gChannelRegisters[] = {
         0xFF10, 0XFF15, 0xFF1A, 0XFF1F, 0xFF10, 0XFF15, 0xFF1A, 0XFF1F,
     };
-    s32 ret = D_800785BC[arg0] + arg1;
+    s32 ret = gChannelRegisters[arg0] + arg1;
 
     return ret;
 }
@@ -757,41 +757,41 @@ u16 GbMusic_GetNoteFrequency(u8 arg0, u8 arg1) {
 void GbMusic_StartMusic(u8 arg0) {
     s32 i;
 
-    D_800FCD68 = 0;
-    D_800FCEB0 = 0x100;
-    D_800FCEB6[0] = 0;
-    D_800FCEB6[1] = 0;
+    gTrackTransitionFlag = 0;
+    gBpmLow = 0x100;
+    gPitchModifiers[0] = 0;
+    gPitchModifiers[1] = 0;
 
     for (i = 0; i < 8; i++) {
-        D_800FCE68[i] = 0;
-        D_800FCE48[i] = 0;
+        gChannelPrevProgramCounters[i] = 0;
+        gChannelProgramCounters[i] = 0;
     }
 
     for (i = 0; i < 4; i++) {
-        D_800FCD48[i] = 0;
-        D_800FCD58[i] = 0;
-        D_800FCE20[i] = 0;
-        D_800FCE18[i] = 0;
+        gChannelActiveFlags[i] = 0;
+        gChannelStatus[i] = 0;
+        gChannelDutyValues[i] = 0;
+        gChannelDutyRotationValues[i] = 0;
 
-        D_800FCD70[i].unk_03 = 0;
-        D_800FCD70[i].unk_00 = 0;
-        D_800FCD70[i].unk_01 = 0;
-        D_800FCD70[i].unk_02 = 0;
-        D_800FCD70[i].unk_04 = 0;
+        gEnvelopeState[i].unk_03 = 0;
+        gEnvelopeState[i].unk_00 = 0;
+        gEnvelopeState[i].unk_01 = 0;
+        gEnvelopeState[i].unk_02 = 0;
+        gEnvelopeState[i].unk_04 = 0;
 
-        D_800FCD60[i] = 0;
+        gChannelControl[i] = 0;
 
-        D_800FCD98[i].unk_0C = 0;
-        D_800FCD98[i].unk_00 = 0;
-        D_800FCD98[i].unk_04 = 0;
-        D_800FCD98[i].unk_08 = 0;
+        gPitchSlideState[i].unk_0C = 0;
+        gPitchSlideState[i].unk_00 = 0;
+        gPitchSlideState[i].unk_04 = 0;
+        gPitchSlideState[i].unk_08 = 0;
 
-        D_800FCE30[i] = 1;
-        D_800FCD50[i] = 1;
-        D_800FCEA8[i] = 1;
+        gChannelJumpCounters[i] = 1;
+        gChannelWaitCounters[i] = 1;
+        gChannelNoteLengths[i] = 1;
     }
 
-    D_800FCE40[1] = 0xFF;
+    gMasterVolume[1] = 0xFF;
     GbAudio_QueueRegisterWrite(0xFF24, 0, 0);
     GbAudio_QueueRegisterWrite(0xFF10, 8, 0);
     GbAudio_QueueRegisterWrite(0xFF25, 0, 0);
@@ -804,48 +804,48 @@ void GbMusic_StartMusic(u8 arg0) {
 void GbMusic_StartSfx(u8 arg0) {
     u8 i;
 
-    D_800FCE40[1] = 0xFF;
+    gMasterVolume[1] = 0xFF;
 
     for (i = 4; i < 7; i++) {
         if (i == 6) {
             continue;
         }
 
-        if (D_800FCD48[i]) {
+        if (gChannelActiveFlags[i]) {
             if (i == 7) {
-                if (arg0 < D_800785B0) {
+                if (arg0 < gTrackMinId) {
                     return;
                 }
-                if ((D_800FCD48[i] < D_800785B0) && (D_800FCD48[i] < arg0)) {
+                if ((gChannelActiveFlags[i] < gTrackMinId) && (gChannelActiveFlags[i] < arg0)) {
                     return;
                 }
-            } else if (D_800FCD48[i] < arg0) {
+            } else if (gChannelActiveFlags[i] < arg0) {
                 return;
             }
         }
 
-        D_800FCE68[i] = 0;
-        D_800FCE48[i] = 0;
-        D_800FCD48[i] = 0;
+        gChannelPrevProgramCounters[i] = 0;
+        gChannelProgramCounters[i] = 0;
+        gChannelActiveFlags[i] = 0;
 
-        D_800FCD58[i] = 0;
-        D_800FCE20[i] = 0;
-        D_800FCE18[i] = 0;
+        gChannelStatus[i] = 0;
+        gChannelDutyValues[i] = 0;
+        gChannelDutyRotationValues[i] = 0;
 
-        D_800FCD70[i].unk_03 = 0;
-        D_800FCD70[i].unk_00 = 0;
-        D_800FCD70[i].unk_01 = 0;
-        D_800FCD70[i].unk_02 = 0;
-        D_800FCD70[i].unk_04 = 0;
+        gEnvelopeState[i].unk_03 = 0;
+        gEnvelopeState[i].unk_00 = 0;
+        gEnvelopeState[i].unk_01 = 0;
+        gEnvelopeState[i].unk_02 = 0;
+        gEnvelopeState[i].unk_04 = 0;
 
-        D_800FCD98[i].unk_0C = 0;
-        D_800FCD98[i].unk_00 = 0.0f;
-        D_800FCD98[i].unk_04 = 0.0f;
-        D_800FCD98[i].unk_08 = 0.0f;
+        gPitchSlideState[i].unk_0C = 0;
+        gPitchSlideState[i].unk_00 = 0.0f;
+        gPitchSlideState[i].unk_04 = 0.0f;
+        gPitchSlideState[i].unk_08 = 0.0f;
 
-        D_800FCE30[i] = 1;
-        D_800FCD50[i] = 1;
-        D_800FCEA8[i] = 1;
+        gChannelJumpCounters[i] = 1;
+        gChannelWaitCounters[i] = 1;
+        gChannelNoteLengths[i] = 1;
 
         if (i == 4) {
             GbAudio_QueueRegisterWrite(0xFF10, 8, 0);
@@ -871,20 +871,20 @@ void GbMusic_ResetApu(void) {
     GbAudio_QueueRegisterWrite(0xFF23, 0x40, 0);
     GbAudio_QueueRegisterWrite(0xFF24, 0x77, 0);
 
-    D_800FCD68 = 0;
-    D_800785B4 = 0;
-    D_800FCEB0 = 0x100;
-    D_800FCEB2 = 0x100;
-    D_800FCEB6[0] = 0;
-    D_800FCEB6[1] = 0;
+    gTrackTransitionFlag = 0;
+    gTrackLoadStatus = 0;
+    gBpmLow = 0x100;
+    gBpmHigh = 0x100;
+    gPitchModifiers[0] = 0;
+    gPitchModifiers[1] = 0;
 
     for (i = 0; i < 8; i++) {
-        D_800FCD50[i] = 1;
-        D_800FCE30[i] = 1;
-        D_800FCEA8[i] = 1;
+        gChannelWaitCounters[i] = 1;
+        gChannelJumpCounters[i] = 1;
+        gChannelNoteLengths[i] = 1;
     }
 
-    D_800FCE40[1] = 0xFF;
+    gMasterVolume[1] = 0xFF;
 }
 
 void GbMusic_BindSequenceTracks(u8 arg0) {
@@ -893,34 +893,34 @@ void GbMusic_BindSequenceTracks(u8 arg0) {
     u8 temp;
     u8 temp_v1;
 
-    temp_v1 = ((unk_D_800FC6D4_008*)D_800FCEC8)->unk_04;
+    temp_v1 = ((unk_D_800FC6D4_008*)gCurrentTrackData)->unk_04;
     temp = (temp_v1 >> 6) & 3;
     x = temp_v1 & 0xF;
     i = 0;
     while (1) {
-        D_800FCD48[x] = arg0 + 1;
+        gChannelActiveFlags[x] = arg0 + 1;
         if (x >= 3) {
-            D_800FCD58[x] |= 4;
+            gChannelStatus[x] |= 4;
         }
 
-        D_800FCE48[x] = ((unk_D_800FC6D4_008*)D_800FCEC8 + i)->unk_00;
-        D_800FCE88[x] = D_800FCE48[x];
+        gChannelProgramCounters[x] = ((unk_D_800FC6D4_008*)gCurrentTrackData + i)->unk_00;
+        gChannelDataBases[x] = gChannelProgramCounters[x];
         i++;
         
         if (i > temp) {
             break;
         }
-        x = ((unk_D_800FC6D4_008*)D_800FCEC8 + i)->unk_04 & 0xF;
+        x = ((unk_D_800FC6D4_008*)gCurrentTrackData + i)->unk_04 & 0xF;
     }
 
-    if ((arg0 >= D_800785A0) && (arg0 < D_800785A4)) {
-        D_800FCD48[4] = arg0 + 1;
-        D_800FCD48[5] = arg0 + 1;
-        D_800FCD48[6] = arg0 + 1;
-        D_800FCD48[7] = arg0 + 1;
-        D_800FCE48[6] = &D_800785B8;
-        if (D_800FCE40[0] == 0) {
-            D_800FCE40[0] = GbAudio_GetRegisterValue(0xFF24);
+    if ((arg0 >= gTrackRangeStart) && (arg0 < gTrackRangeEnd)) {
+        gChannelActiveFlags[4] = arg0 + 1;
+        gChannelActiveFlags[5] = arg0 + 1;
+        gChannelActiveFlags[6] = arg0 + 1;
+        gChannelActiveFlags[7] = arg0 + 1;
+        gChannelProgramCounters[6] = &gDefaultSequenceEnd;
+        if (gMasterVolume[0] == 0) {
+            gMasterVolume[0] = GbAudio_GetRegisterValue(0xFF24);
             GbAudio_QueueRegisterWrite(0xFF24, 0x77, 0);
         }
     }
@@ -931,7 +931,7 @@ s32 GbMusic_CountActiveHighChannels(void) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
-        if (D_800FCD48[4 + i] != 0) {
+        if (gChannelActiveFlags[4 + i] != 0) {
             ret++;
         }
     }
@@ -944,7 +944,7 @@ typedef struct unk_80044A50_008 {
     u32 unk_04;
 } unk_80044A50_008;
 
-void func_80044A50(unk_D_800FC6D4* arg0) {
+void Music_ResolveTrackOffsets(GbTrackHeader* arg0) {
     s32 i, end;
     u32 base;
     u8* temp_v1;

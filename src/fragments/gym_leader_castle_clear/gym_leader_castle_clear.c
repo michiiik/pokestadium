@@ -16,7 +16,7 @@
 s32 GymLeaderCastleClear_GeoSpriteCallback(s32, GraphNode*);
 s32 GymLeaderCastleClear_GeoBannerCallback(s32, GraphNode*);
 
-typedef struct unk_D_83101E6C {
+typedef struct Glc_ColorKeyframe {
     /* 0x00 */ s16 unk_00;
     /* 0x04 */ f32 unk_04;
     /* 0x08 */ s16 unk_08;
@@ -25,7 +25,7 @@ typedef struct unk_D_83101E6C {
     /* 0x0E */ s16 unk_0E;
     /* 0x10 */ s16 unk_10;
     /* 0x12 */ s16 unk_12;
-} unk_D_83101E6C; // size = 0x14
+} Glc_ColorKeyframe; // size = 0x14
 
 typedef struct CircleTransition {
     /* 0x00 */ s16 fadeState;
@@ -43,31 +43,31 @@ typedef struct FadeTimer {
 static BinArchive* sBackground;
 static u8* sBinBackground;
 static s16 sStageFadeMode;
-static s16 D_83101EEA;
+static s16 gClearScreenTimer;
 static s16 sTrackingIconOn;
-static s16 D_83101EEE;
-static s16 D_83101EF0;
-static GraphNode* D_83101EF4;
-static GraphNode* D_83101EF8;
-static GraphNode* D_83101EFC;
-static unk_D_83101F00 D_83101F00[2];
-static unk_D_83101F00* D_83102210;
-static unk_D_83101F00* D_83102214;
+static s16 gCursorX;
+static s16 gCursorY;
+static GraphNode* gClearScreenRoot;
+static GraphNode* gClearScreenNode1;
+static GraphNode* gClearScreenNode2;
+static unk_D_83101F00 gClearScreenNodes[2];
+static unk_D_83101F00* gNode1State;
+static unk_D_83101F00* gNode2State;
 static CircleTransition sCircleFade;
 static FadeTimer sBackgroundFade;
 
-static Vtx D_83101BE0[] = {
+static Vtx gClearBannerVerts[] = {
     VTX(-100, 14, 0, 0, 0, 0x78, 0x32, 0xFF, 0xFF),      VTX(-100, 0, 0, 0, 448, 0xBB, 0x28, 0x8E, 0xFF),
     VTX(100, 0, 0, 6400, 448, 0xBB, 0x28, 0x8E, 0xFF),   VTX(100, 14, 0, 6400, 0, 0x78, 0x32, 0xFF, 0xFF),
     VTX(-100, 0, 0, 0, 0, 0xBB, 0x28, 0x8E, 0xFF),       VTX(-100, -14, 0, 0, 448, 0xFF, 0x1E, 0x1E, 0xFF),
     VTX(100, -14, 0, 6400, 448, 0xFF, 0x1E, 0x1E, 0xFF), VTX(100, 0, 0, 6400, 0, 0xBB, 0x28, 0x8E, 0xFF),
 };
 
-static Gfx D_83101C60[] = {
+static Gfx gClearBannerDL[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetCombineLERP(SHADE, 0, TEXEL0, 0, 0, 0, 0, TEXEL0, 0, 0, 0, COMBINED, 0, 0, 0, COMBINED),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
-    gsSPVertex(D_83101BE0, 8, 0),
+    gsSPVertex(gClearBannerVerts, 8, 0),
     gsDPLoadTextureBlock(0x0F000000, G_IM_FMT_IA, G_IM_SIZ_8b, 200, 14, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                          G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
@@ -77,43 +77,43 @@ static Gfx D_83101C60[] = {
     gsSPEndDisplayList(),
 };
 
-static u32 D_83101D08[] = {
-    0x17000000, 0x00000000, 0x00000000, 0x00000000, D_83101BE0,
+static u32 gClearBannerGeo[] = {
+    0x17000000, 0x00000000, 0x00000000, 0x00000000, gClearBannerVerts,
     0x05000000, 0x22050000, 0x00000000, 0x08000000, GymLeaderCastleClear_GeoBannerCallback,
     0x00000000, 0x06000000, 0x01000000, 0x00000000,
 };
 
-static Vtx D_83101D40[] = {
+static Vtx gClearSpriteVerts[] = {
     VTX(-64, 16, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, -16, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -16, 0, 4096, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, 16, 0, 4096, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
 
-static Gfx D_83101D80[] = {
+static Gfx gClearSpriteDL[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetCombineMode(G_CC_BLENDPEDECALA, G_CC_PASS2),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
-    gsSPVertex(D_83101D40, 4, 0),
+    gsSPVertex(gClearSpriteVerts, 4, 0),
     gsDPLoadTextureBlock(0x0F000000, G_IM_FMT_IA, G_IM_SIZ_8b, 128, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                          G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
 
-static u32 D_83101DE8[] = {
-    0x17000000, 0x00000000, 0x00000000, 0x00000000, D_83101D40,
+static u32 gClearSpriteGeo[] = {
+    0x17000000, 0x00000000, 0x00000000, 0x00000000, gClearSpriteVerts,
     0x05000000, 0x22050000, 0x00000000, 0x08000000, GymLeaderCastleClear_GeoSpriteCallback,
     0x00000000, 0x06000000, 0x01000000,
 };
 
-static u32 D_83101E1C[] = {
+static u32 gClearScreenRootGeo[] = {
     0x0C000000,  0x05000000, 0x0B00002D, 0x00000000, 0x028001E0, 0x00000000, 0xFDBD0000,
     0x00000243,  0x05000000, 0x0D000000, 0x05000000, 0x0F000002, 0x05000000, 0x0A000000,
-    &D_800AC840, 0x06000000, 0x06000000, 0x06000000, 0x06000000, 0x01000000,
+    &gGraphRoot0, 0x06000000, 0x06000000, 0x06000000, 0x06000000, 0x01000000,
 };
 
-static unk_D_83101E6C D_83101E6C[] = {
+static Glc_ColorKeyframe gNodeColorScaleTable[] = {
     { 12, 0.0f, 0, 0, 0, 0, 0, 0 },
     { 4, 2.4f, 0xFF, 0, 0, 0, 0, 0 },
     { 4, 2.0f, 0xFF, 0xFF, 0xFF, 200, 100, 0 },
@@ -152,8 +152,8 @@ void GymLeaderCastleClear_UpdateSweepObject(DisplayObject* arg0) {
             }
 
             ptr->unk_000.position.x = var_fv0 - 320.0f;
-            D_83101EEE = (s16)var_fv0 + 200;
-            D_83101EF0 = 172;
+            gCursorX = (s16)var_fv0 + 200;
+            gCursorY = 172;
             break;
 
         case 0:
@@ -169,14 +169,14 @@ s32 GymLeaderCastleClear_GeoBannerCallback(s32 arg0, UNUSED GraphNode* arg1) {
             break;
 
         case 2:
-            GymLeaderCastleClear_UpdateSweepObject(D_8006F09C);
+            GymLeaderCastleClear_UpdateSweepObject(gDefaultGraphRoot);
             break;
 
         case 5:
             gDPPipeSync(gDisplayListHead++);
 
             gSPSegment(gDisplayListHead++, 0x0F, Memmap_GetSegmentVaddr(D_3000000));
-            gSPDisplayList(gDisplayListHead++, D_83101C60);
+            gSPDisplayList(gDisplayListHead++, gClearBannerDL);
 
             GeoRender_ApplyMaterialState();
             break;
@@ -186,15 +186,15 @@ s32 GymLeaderCastleClear_GeoBannerCallback(s32 arg0, UNUSED GraphNode* arg1) {
 }
 
 void GymLeaderCastleClear_UpdateColorKeyframe(unk_D_83101F00* arg0) {
-    unk_D_83101E6C* ptr1;
-    unk_D_83101E6C* ptr2;
+    Glc_ColorKeyframe* ptr1;
+    Glc_ColorKeyframe* ptr2;
     f32 scale;
 
     switch (arg0->unk_16A) {
         case 1:
             arg0->unk_16C--;
-            ptr1 = &D_83101E6C[arg0->unk_170];
-            ptr2 = &D_83101E6C[arg0->unk_170 + 1];
+            ptr1 = &gNodeColorScaleTable[arg0->unk_170];
+            ptr2 = &gNodeColorScaleTable[arg0->unk_170 + 1];
 
             arg0->unk_172 = ptr2->unk_08 + (((ptr1->unk_08 - ptr2->unk_08) * arg0->unk_16C) / arg0->unk_16E);
             arg0->unk_174 = ptr2->unk_0A + (((ptr1->unk_0A - ptr2->unk_0A) * arg0->unk_16C) / arg0->unk_16E);
@@ -208,7 +208,7 @@ void GymLeaderCastleClear_UpdateColorKeyframe(unk_D_83101F00* arg0) {
 
             if (arg0->unk_16C <= 0) {
                 arg0->unk_170++;
-                ptr1 = &D_83101E6C[arg0->unk_170];
+                ptr1 = &gNodeColorScaleTable[arg0->unk_170];
 
                 arg0->unk_16C = arg0->unk_16E = ptr1->unk_00;
                 arg0->unk_172 = ptr1->unk_08;
@@ -238,7 +238,7 @@ void GymLeaderCastleClear_UpdateColorKeyframe(unk_D_83101F00* arg0) {
 }
 
 s32 GymLeaderCastleClear_GeoSpriteCallback(s32 arg0, GraphNode* arg1) {
-    unk_D_83101F00* ptr = (unk_D_83101F00*)D_8006F09C;
+    unk_D_83101F00* ptr = (unk_D_83101F00*)gDefaultGraphRoot;
 
     switch (arg0) {
         case 0:
@@ -254,7 +254,7 @@ s32 GymLeaderCastleClear_GeoSpriteCallback(s32 arg0, GraphNode* arg1) {
             gSPSegment(gDisplayListHead++, 0x0F, Memmap_GetSegmentVaddr(D_30015E0));
             gDPSetPrimColor(gDisplayListHead++, 0, 0, ptr->unk_172, ptr->unk_174, ptr->unk_176, 0xFF);
             gDPSetEnvColor(gDisplayListHead++, ptr->unk_178, ptr->unk_17A, ptr->unk_17C, 0xFF);
-            gSPDisplayList(gDisplayListHead++, D_83101D80);
+            gSPDisplayList(gDisplayListHead++, gClearSpriteDL);
 
             GeoRender_ApplyMaterialState();
             break;
@@ -307,7 +307,7 @@ void GymLeaderCastleClear_DrawCircleWipe(void) {
     }
 
     if ((sCircleFade.ratio <= 0.0f) || (sCircleFade.fadeState == 2)) {
-        gSPDisplayList(gDisplayListHead++, D_8006F4C0);
+        gSPDisplayList(gDisplayListHead++, gDL_FillCycle);
         gDPSetFillColor(gDisplayListHead++, 0x00010001);
         gDPFillRectangle(gDisplayListHead++, 0, 0, 639, 479);
         return;
@@ -332,7 +332,7 @@ void GymLeaderCastleClear_DrawCircleWipe(void) {
     var_z1 = z1;
     var_y1 = y1;
 
-    gSPDisplayList(gDisplayListHead++, D_8006F4C0);
+    gSPDisplayList(gDisplayListHead++, gDL_FillCycle);
     gDPSetFillColor(gDisplayListHead++, 0x00010001);
 
     screen_width = z1 + width;
@@ -454,7 +454,7 @@ void GymLeaderCastleClear_ReadInputs(void) {
 }
 
 void GymLeaderCastleClear_InitObjectAnimation(unk_D_83101F00* arg0, s16 arg1) {
-    unk_D_83101E6C* ptr;
+    Glc_ColorKeyframe* ptr;
 
     arg0->unk_16A = arg1;
 
@@ -467,7 +467,7 @@ void GymLeaderCastleClear_InitObjectAnimation(unk_D_83101F00* arg0, s16 arg1) {
 
             case 2:
                 arg0->unk_170 = 0;
-                ptr = &D_83101E6C[arg0->unk_170];
+                ptr = &gNodeColorScaleTable[arg0->unk_170];
 
                 arg0->unk_16C = arg0->unk_16E = ptr->unk_00;
                 arg0->unk_172 = ptr->unk_08;
@@ -503,7 +503,7 @@ void GymLeaderCastleClear_DrawTrackingIcon(void) {
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                         G_TX_NOLOD);
 
-    GymLeaderCastleClear_DrawScissoredRectangle(D_83101EEE, D_83101EF0, var_ft2, var_ft2, 0, 0, var_fa0, var_fa0);
+    GymLeaderCastleClear_DrawScissoredRectangle(gCursorX, gCursorY, var_ft2, var_ft2, 0, 0, var_fa0, var_fa0);
 
     gSPDisplayList(gDisplayListHead++, gUiRestoreTextureDL);
 }
@@ -515,8 +515,8 @@ void GymLeaderCastleClear_InitState(void) {
     } else {
         sTrackingIconOn = 0;
     }
-    D_83101EF0 = -100;
-    D_83101EEE = D_83101EF0;
+    gCursorY = -100;
+    gCursorX = gCursorY;
     GymLeaderCastleClear_InitCircleWipe();
     GymLeaderCastleClear_InitBackgroundFade();
 }
@@ -524,7 +524,7 @@ void GymLeaderCastleClear_InitState(void) {
 void GymLeaderCastleClear_Draw(void) {
     BgStage_DrawFrame();
     GymLeaderCastleClear_DrawBackground();
-    Geo_RenderRootNode(D_83101EF4);
+    Geo_RenderRootNode(gClearScreenRoot);
     if (sTrackingIconOn != 0) {
         GymLeaderCastleClear_DrawTrackingIcon();
     }
@@ -539,27 +539,27 @@ s32 GymLeaderCastleClear_AdvanceState(void) {
         case 0:
             if (StageContext_GetFadeMode() == 0) {
                 sStageFadeMode = 1;
-                D_83101EEA = 0;
-                GymLeaderCastleClear_InitObjectAnimation(D_83102210, 1);
+                gClearScreenTimer = 0;
+                GymLeaderCastleClear_InitObjectAnimation(gNode1State, 1);
             }
             break;
 
         case 1:
-            if (D_83102210->unk_16A == 2) {
-                switch (D_83102214->unk_16A) {
+            if (gNode1State->unk_16A == 2) {
+                switch (gNode2State->unk_16A) {
                     case 0:
-                        GymLeaderCastleClear_InitObjectAnimation(D_83102214, 1);
+                        GymLeaderCastleClear_InitObjectAnimation(gNode2State, 1);
                         break;
 
                     case 2:
-                        D_83101EEA += 1;
-                        if (D_83101EEA == 1) {
+                        gClearScreenTimer += 1;
+                        if (gClearScreenTimer == 1) {
                             GymLeaderCastleClear_StartBackgroundFade(1);
                         }
 
-                        if (D_83101EEA >= 30) {
+                        if (gClearScreenTimer >= 30) {
                             sStageFadeMode = 2;
-                            D_83101EEA = 0;
+                            gClearScreenTimer = 0;
                             GymLeaderCastleClear_StartCircleWipe(0xF);
                             StageContext_SetClearColor(1);
                         }
@@ -595,15 +595,15 @@ void GymLeaderCastleClear_InitGraphics(void) {
     MemoryBlock* var_v0 = MainPool_AllocState(main_pool_get_available(), 0);
     s32 i;
 
-    D_83101EF4 = process_geo_layout(var_v0, D_83101E1C);
-    D_83101EF8 = process_geo_layout(var_v0, D_83101D08);
-    D_83101EFC = process_geo_layout(var_v0, D_83101DE8);
+    gClearScreenRoot = process_geo_layout(var_v0, gClearScreenRootGeo);
+    gClearScreenNode1 = process_geo_layout(var_v0, gClearBannerGeo);
+    gClearScreenNode2 = process_geo_layout(var_v0, gClearSpriteGeo);
 
     MainPool_FinalizeAllocation(var_v0);
     ModelRenderer_InitDisplayRoots();
 
     for (i = 0; i < 2; i++) {
-        ptr = &D_83101F00[i];
+        ptr = &gClearScreenNodes[i];
 
         ModelRenderer_AttachDisplayObject(&ptr->unk_000);
 
@@ -621,17 +621,17 @@ void GymLeaderCastleClear_InitGraphics(void) {
             case 0:
                 Vec3f_SetComponentsDuplicate(&ptr->unk_000.position, -520.0f, 44.0f, -579.0f);
                 Vec3f_SetComponentsDuplicate(&ptr->unk_000.scale, 2.0f, 2.0f, 2.0f);
-                Model_InitDisplayObject(&ptr->unk_000, 0, 0, D_83101EF8);
+                Model_InitDisplayObject(&ptr->unk_000, 0, 0, gClearScreenNode1);
                 ptr->unk_168 = 1;
-                D_83102210 = ptr;
+                gNode1State = ptr;
                 break;
 
             case 1:
                 Vec3f_SetComponentsDuplicate(&ptr->unk_000.position, 0.0, -24.0f, -579.0f);
                 Vec3f_SetComponentsDuplicate(&ptr->unk_000.scale, 0.0f, 0.0f, 0.0f);
-                Model_InitDisplayObject(&ptr->unk_000, 0, 0, D_83101EFC);
+                Model_InitDisplayObject(&ptr->unk_000, 0, 0, gClearScreenNode2);
                 ptr->unk_168 = 2;
-                D_83102214 = ptr;
+                gNode2State = ptr;
                 break;
         }
     }

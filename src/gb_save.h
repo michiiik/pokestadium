@@ -35,11 +35,11 @@ typedef struct unk_func_8002DE78_arg0 {
     /* 0x0C */ s32 unk_0C;
 } unk_func_8002DE78_arg0; // size >= 0x10
 
-typedef struct unk_func_8002D860 {
+typedef struct PortSummary {
     /* 0x00 */ s32 unk_00;
     /* 0x04 */ s32 unk_04;
     /* 0x08 */ s32 unk_08;
-} unk_func_8002D860; // size = 0xC
+} PortSummary; // size = 0xC
 
 typedef struct ret_func_8002ED08 {
     /* 0x00 */ u8 unk_00[12];
@@ -61,18 +61,18 @@ typedef struct unk_func_8830867C_044_038_030 {
     /* 0x10 */ s32 unk_10;
 } unk_func_8830867C_044_038_030; // size = 0x14
 
-typedef struct unk_D_8007596C {
+typedef struct MenuItemCoord {
     /* 0x00 */ u16 unk_00;
     /* 0x02 */ u16 unk_02;
-} unk_D_8007596C; // size = 0x4
+} MenuItemCoord; // size = 0x4
 
-extern unk_func_88500020 D_800758E0;
-extern unk_func_88500020 D_800758F0[];
-extern unk_D_8007596C D_8007596C[];
-extern s32 D_80075BD0[];
+extern TiledTexture gMenuTextureInfo_Default;
+extern TiledTexture gMenuTextureInfo_Alternates[];
+extern MenuItemCoord gPokedexSpeciesHeightWeight[];
+extern s32 gStageRomOffsets[];
 
-void GbSave_BuildPortSummary(unk_func_8002D860* arg0, s32 arg1);
-void Gfx_DrawTiledTextureStrip(unk_func_88500020* arg0, s32 arg1, s32 a2);
+void GbSave_BuildPortSummary(PortSummary* arg0, s32 arg1);
+void Gfx_DrawTiledTextureStrip(TiledTexture* arg0, s32 arg1, s32 a2);
 s32 Ui_AdjustVerticalSelection(unk_func_8002DCB8_arg0* arg0, s32 arg1);
 s32 Ui_HandleVerticalSelectionInput(s32 arg0);
 s32 Ui_AdjustHorizontalSelection(unk_func_8002DD98_arg0* arg0, s32 arg1);

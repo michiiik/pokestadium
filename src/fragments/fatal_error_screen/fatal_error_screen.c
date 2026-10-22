@@ -7,9 +7,9 @@
 #include "src/memory.h"
 #include "src/stage_loader.h"
 
-static s32 D_81100930;
-static s32 D_81100934;
-static char** D_81100938;
+static s32 gErrorMenuSelection;
+static s32 gErrorMessageId;
+static char** gErrorMessageBank;
 
 void FatalError_DrawBackgroundPattern(s32 arg0, s32 arg1, s32 arg2) {
     s32 i;
@@ -39,7 +39,7 @@ void FatalError_DrawIcon(s32 arg0, s32 arg1) {
     gDPSetRenderMode(gDisplayListHead++, G_RM_NOOP, G_RM_NOOP2);
     gDPSetCombineMode(gDisplayListHead++, G_CC_DECALRGBA, G_CC_DECALRGBA);
 
-    Gfx_DrawTextureRgba16(arg0, arg1, 0x18, 0x18, D_2002000, 0x18, 0x200000);
+    Gfx_DrawTextureRgba16(arg0, arg1, 0x18, 0x18, gTransferPakErrorIconTexture, 0x18, 0x200000);
 
     gSPDisplayList(gDisplayListHead++, gUiRestoreTextureDL);
 }
@@ -50,7 +50,7 @@ void FatalError_DrawMessagePanel(s32 arg0) {
     Font_BeginTranslucentTextRendering();
     Font_SetActive(2, 0);
     Font_SetLineHeight(0x10);
-    Font_Printf(0x52, 0x21, Text_GetString(NULL, 0, D_81100938, arg0 - 1));
+    Font_Printf(0x52, 0x21, Text_GetString(NULL, 0, gErrorMessageBank, arg0 - 1));
     Font_EndTexturedTextRendering();
 }
 
@@ -67,7 +67,7 @@ void FatalError_DrawPortDiagram(s32 arg0) {
     Gfx_DrawTextureRgba16(0x98, 0xA1, 8, 8, D_20069A0, 8, 0);
 
     gSPTextureRectangle(gDisplayListHead++, 0x01C8, 0x0284, 0x0260, 0x02A4, G_TX_RENDERTILE, 0, 0, 0, 0x0400);
-    gSPDisplayList(gDisplayListHead++, D_8006F4E0);
+    gSPDisplayList(gDisplayListHead++, gDL_CopyDecal);
 
     Gfx_DrawTextureRgba16(0x4D, 0x94, 0x40, 0x20, D_2002900, 0x40, 0x200000);
     Gfx_DrawTextureRgba16(0x4D, 0xB4, 0x40, 0x20, D_2003900, 0x40, 0x200000);
@@ -78,15 +78,15 @@ void FatalError_DrawPortDiagram(s32 arg0) {
 
     gSPDisplayList(gDisplayListHead++, gUiEnvTintTextureDL);
 
-    Gfx_DrawTextureRgba16(0x9B, 0xD4, 8, 8, D_20068A0, 8, 0);
+    Gfx_DrawTextureRgba16(0x9B, 0xD4, 8, 8, gTransferPakErrorCursorTexture, 8, 0);
 
     gSPTextureRectangle(gDisplayListHead++, 0x026C, 0x02A4, 0x028C, 0x0350, G_TX_RENDERTILE, 0, 0, 0x0400, 0);
 
-    Gfx_DrawTextureRgba16(sp80[arg0], 0xD4, 8, 8, D_2006920, 8, 0);
+    Gfx_DrawTextureRgba16(sp80[arg0], 0xD4, 8, 8, gTransferPakErrorHighlightTexture, 8, 0);
 
     gSPTextureRectangle(gDisplayListHead++, 0x028C, 0x0350, sp80[arg0] << 2, 0x0370, G_TX_RENDERTILE, 0, 0, 0, 0x0400);
 
-    Gfx_DrawTextureRgba16(sp80[arg0], 0xC0, 8, 8, D_2006820, 8, 0);
+    Gfx_DrawTextureRgba16(sp80[arg0], 0xC0, 8, 8, gTransferPakErrorHighlightOverlay, 8, 0);
 
     gSPTextureRectangle(gDisplayListHead++, sp80[arg0] << 2, 0x0320, (sp80[arg0] + 8) << 2, 0x0350, G_TX_RENDERTILE, 0,
                         0x00E0, 0x0400, 0);
@@ -96,16 +96,16 @@ void FatalError_DrawPortDiagram(s32 arg0) {
 s32 FatalError_DrawFrame(u8 arg0) {
     BgStage_DrawFrame();
     FatalError_DrawBackgroundPattern(0x55, 0x70, 0x88);
-    FatalError_DrawMessagePanel(D_81100934);
-    FatalError_DrawPortDiagram(D_81100930);
+    FatalError_DrawMessagePanel(gErrorMessageId);
+    FatalError_DrawPortDiagram(gErrorMenuSelection);
     return 0;
 }
 
 void FatalError_Main(s32 arg0, s32 arg1) {
     StageContext* temp_s0;
 
-    D_81100930 = arg0;
-    D_81100934 = arg1;
+    gErrorMenuSelection = arg0;
+    gErrorMessageId = arg1;
 
     main_pool_push_state('FATL');
 
@@ -115,7 +115,7 @@ void FatalError_Main(s32 arg0, s32 arg1) {
     ASSET_LOAD(D_1000000, common_menu1_ui, 0);
     ASSET_LOAD(D_2000000, transfer_pak_error_ui, 0);
     Text_InitStringTables();
-    D_81100938 = Text_GetStringTable(0xD);
+    gErrorMessageBank = Text_GetStringTable(0xD);
     StageContext_Activate(temp_s0);
 
     while (true) {

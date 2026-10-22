@@ -12,24 +12,24 @@
 #include "hal_libc.h"
 #include "src/geo_render.h"
 
-struct DisplayNodeHeader D_800AC840;
-struct DisplayNodeHeader D_800AC858;
+struct DisplayNodeHeader gGraphRoot0;
+struct DisplayNodeHeader gGraphRoot1;
 
 void ModelRenderer_InitDisplayRoots(void) {
-    GeoNode_CreateContainer(0, &D_800AC840);
-    GeoNode_CreateContainer(0, &D_800AC858);
+    GeoNode_CreateContainer(0, &gGraphRoot0);
+    GeoNode_CreateContainer(0, &gGraphRoot1);
 }
 
 void ModelRenderer_AttachDisplayObject(DisplayObject* display_object) {
-    GeoNode_CreateModelPart(NULL, display_object, 0, &D_8006F050, &D_8006F05C, &D_8006F064);
-    GraphNode_AppendChild(&D_800AC840, &display_object->node);
+    GeoNode_CreateModelPart(NULL, display_object, 0, &gRootNodePosition, &gZeroVec3s, &gRootNodeScale);
+    GraphNode_AppendChild(&gGraphRoot0, &display_object->node);
     display_object->effectSlot = 0;
     display_object->node.flags &= ~1;
 }
 
 void ModelRenderer_AttachSecondaryDisplayObject(DisplayObject* arg0) {
-    GeoNode_CreateModelPart(NULL, arg0, 0, &D_8006F050, &D_8006F05C, &D_8006F064);
-    GraphNode_AppendChild(&D_800AC858, &arg0->node);
+    GeoNode_CreateModelPart(NULL, arg0, 0, &gRootNodePosition, &gZeroVec3s, &gRootNodeScale);
+    GraphNode_AppendChild(&gGraphRoot1, &arg0->node);
     arg0->node.flags &= ~1;
 }
 
@@ -121,7 +121,7 @@ ModelAnimationBank* ModelAnim_GetAnimationRecord(DisplayObject* arg0, s32 arg1) 
     ModelAnimationBank* var_v1 = NULL;
 
     if (arg0 == NULL) {
-        arg0 = D_8006F09C;
+        arg0 = gDefaultGraphRoot;
     }
 
     if (arg0 != NULL) {
@@ -137,12 +137,12 @@ arg1_func_80010CA8* Model_ComputeSizeVariant(arg1_func_80010CA8* arg0, BattleMon
     UNUSED s32 pad;
     char sp38[0xB];
     arg1_func_80010CA8 sp34;
-    unk_D_8006FF00* sp30;
+    SpeciesDisplayParams* sp30;
     UNUSED s32 pad2;
     u8 var_a0;
     s8* var_v1;
 
-    sp30 = &D_8006FF00[arg1->unk_00.unk_00 - 1];
+    sp30 = &gSpeciesDisplayTable[arg1->unk_00.unk_00 - 1];
     sp34.raw = 0;
 
     Text_CopySpeciesName(sp38, arg1->unk_00.unk_00);

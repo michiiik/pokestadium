@@ -47,6 +47,6 @@ void GbMusic_StartSfx(u8 arg0);
 void GbMusic_ResetApu(void);
 void GbMusic_BindSequenceTracks(u8 arg0);
 s32 GbMusic_CountActiveHighChannels(void);
-void func_80044A50(unk_D_800FC6D4* arg0);
+void Music_ResolveTrackOffsets(GbTrackHeader* arg0);
 
 #endif // _435D0_H_

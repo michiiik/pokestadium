@@ -10,21 +10,21 @@
 
 s16 minigameState = 0;
 s16 minigameInputLock = 0;
-s16 D_87903DA8 = 0;
-s16 D_87903DAC = 0;
+s16 gMiniGameTimer1 = 0;
+s16 gMiniGameTimer2 = 0;
 s16 miniDebugMode = 0;
 s32 pad_D_87903DB4 = 0;
-s16 D_87903DB8 = 0;
-s16 D_87903DBC = 0;
-s16 D_87903DC0 = 0;
+s16 gMiniDebugCameraTranslateMode = 0;
+s16 gMiniGameSoundDispatchCount = 0;
+s16 gMiniTutoScreenPhase = 0;
 s16 miniTutoScreenState = 0;
-s16 D_87903DC8 = 0;
-s16 D_87903DCC = 0;
-s16 D_87903DD0 = 0;
-s16 D_87903DD4 = 0;
+s16 gMiniTutoTimer1 = 0;
+s16 gMiniTutoTimer2 = 0;
+s16 gMiniTutoTimer3 = 0;
+s16 gMiniResultIconRow = 0;
 
-ret_func_80004454 func_87900020(void) {
-    return func_87900020;
+ret_func_80004454 MiniGame_GetFragmentFunc(void) {
+    return MiniGame_GetFragmentFunc;
 }
 
 // func_8790002C
@@ -306,52 +306,52 @@ void MiniActor_SyncModelTransform(MiniActor* arg0) {
 }
 
 void miniResetGlobalState(void) {
-    s16* ptr = D_8780FA30;
+    s16* ptr = gMiniHudColorDefaults;
 
     minigameInputLock = 0;
-    D_87903DA8 = 0;
-    D_87903DAC = 0;
+    gMiniGameTimer1 = 0;
+    gMiniGameTimer2 = 0;
     miniInputLockTimer = 0;
-    D_87906048 = 0;
-    D_8790604A = 0;
-    D_87903DC0 = 0;
+    gMiniGameResetOnlyFlag = 0;
+    gMetapodAudioMuted = 0;
+    gMiniTutoScreenPhase = 0;
     miniTutoScreenState = 0;
-    D_87903DC8 = 0;
-    D_87903DCC = 0;
-    D_87903DD0 = 0;
-    D_87906072 = 0;
+    gMiniTutoTimer1 = 0;
+    gMiniTutoTimer2 = 0;
+    gMiniTutoTimer3 = 0;
+    gMiniWinCamPhase = 0;
 
     Widget_PauseMenuInit();
     Widget_CountdownInit();
 
-    D_879060C4[0] = ptr[0];
-    D_879060C4[1] = ptr[1];
-    D_879060C4[2] = ptr[2];
-    D_879060C4[3] = ptr[3];
+    gMiniHudColors[0] = ptr[0];
+    gMiniHudColors[1] = ptr[1];
+    gMiniHudColors[2] = ptr[2];
+    gMiniHudColors[3] = ptr[3];
 
     miniHudTransparency = 0xFF;
 }
 
 void miniSaveCameraState(void) {
-    D_8790607C = miniCameraDistance;
-    D_87906080 = miniCameraFov;
+    gMiniCameraDistanceBackup = miniCameraDistance;
+    gMiniCameraFovBackup = miniCameraFov;
 
-    D_87906088.x = miniCameraCoords.x;
-    D_87906088.y = miniCameraCoords.y;
-    D_87906088.z = miniCameraCoords.z;
+    gMiniCameraCoordsBackup.x = miniCameraCoords.x;
+    gMiniCameraCoordsBackup.y = miniCameraCoords.y;
+    gMiniCameraCoordsBackup.z = miniCameraCoords.z;
 
-    D_87906076 = miniCameraXRot;
-    D_87906078 = miniCameraYRot;
+    gMiniCameraXRotBackup = miniCameraXRot;
+    gMiniCameraYRotBackup = miniCameraYRot;
 }
 
 void miniRestoreCameraState(void) {
-    miniCameraDistance = D_8790607C;
-    miniCameraFov = D_87906080;
+    miniCameraDistance = gMiniCameraDistanceBackup;
+    miniCameraFov = gMiniCameraFovBackup;
 
-    miniCameraCoords.x = D_87906088.x;
-    miniCameraCoords.y = D_87906088.y;
-    miniCameraCoords.z = D_87906088.z;
+    miniCameraCoords.x = gMiniCameraCoordsBackup.x;
+    miniCameraCoords.y = gMiniCameraCoordsBackup.y;
+    miniCameraCoords.z = gMiniCameraCoordsBackup.z;
 
-    miniCameraXRot = D_87906076;
-    miniCameraYRot = D_87906078;
+    miniCameraXRot = gMiniCameraXRotBackup;
+    miniCameraYRot = gMiniCameraYRotBackup;
 }

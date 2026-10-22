@@ -20,7 +20,7 @@ void Gfx_DrawTextureRgba16Ia8(s16 x1, s16 y1, s16 draw_width, s16 height, u8* te
 void Gfx_DrawTiledRgba16Image(u8* image);
 void Gfx_DrawRgba16ImageRegion(u32 arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4);
 void Gfx_DrawTiledImageMesh(s16 arg0, s16 arg1, s16 arg2, f32 arg3, Vtx* arg4, u32 arg5);
-Vtx* func_8001E490(void);
+Vtx* AllocateTileMapVertices(void);
 void Gfx_SetVertexAttributes(Vtx* vertex, s16 x, s16 y, s16 z, s16 texture_x, s16 texture_y, u8 r, u8 g, u8 b, u8 alpha) ;
 void Gfx_SetViewportDimensions(Vp* viewport, s16 width, s16 height);
 u8 Font_MapGlyphCode(u16 arg0);

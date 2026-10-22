@@ -9,8 +9,8 @@
 #include "src/memory.h"
 #include "src/controller.h"
 
-u8 D_80075680[3] = { 1, 15, 30 };
-static s16 D_80075684 = 0;
+u8 gBattleTimerLimits[3] = { 1, 15, 30 };
+static s16 gBattleToggleFlag = 0;
 
 void Team_ClearTrainerSlot(BattleSessionTeams* arg0) {
     arg0->uniqueStatusFlags = 0;
@@ -391,7 +391,7 @@ void Team_LoadPresetTrainer(s16 arg0, s16 arg1, s16 arg2, s32 arg3) {
         arg1 += 0x1F;
     }
 
-    ptr = BinArchive_GetFile(D_800AF738, arg1);
+    ptr = BinArchive_GetFile(gBattleArchive, arg1);
     ptr += arg2;
 
     temp_s2 = &ptr->unk_004;
@@ -456,7 +456,7 @@ void Team_LoadOpponentPreset(void) {
 
     main_pool_push_state('RIVL');
 
-    D_800AF738 = BinArchive_Open(TRAINER_DATA_ROM_START, NULL, 1, 0);
+    gBattleArchive = BinArchive_Open(TRAINER_DATA_ROM_START, NULL, 1, 0);
 
     switch (gSessionContext.mode) {
         case 1:
@@ -498,7 +498,7 @@ void Team_LoadOpponentPreset(void) {
 void Team_BuildQuickBattleTeams(s16 arg0) {
     main_pool_push_state('RIVL');
 
-    D_800AF738 = BinArchive_Open(TRAINER_DATA_ROM_START, NULL, 1, 0);
+    gBattleArchive = BinArchive_Open(TRAINER_DATA_ROM_START, NULL, 1, 0);
     Session_SetMode(9, 6, 0);
 
     if (arg0 == 1) {
@@ -509,7 +509,7 @@ void Team_BuildQuickBattleTeams(s16 arg0) {
         Team_AddTrainer(1, Trainer_Create(1, 0, "2P", Text_GetPlayerLabel(1)));
     }
 
-    if (D_80075684 == 0) {
+    if (gBattleToggleFlag == 0) {
         Team_LoadPresetTrainer(0, 0x1D, 0, 0);
         Team_LoadPresetTrainer(1, 0x1D, 1, 0);
     } else {
@@ -517,7 +517,7 @@ void Team_BuildQuickBattleTeams(s16 arg0) {
         Team_LoadPresetTrainer(1, 0x1D, 0, 0);
     }
 
-    D_80075684 ^= 1;
+    gBattleToggleFlag ^= 1;
 
     main_pool_pop_state('RIVL');
 }

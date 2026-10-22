@@ -16,22 +16,22 @@
 #include "src/memory.h"
 #include "src/stage_loader.h"
 
-typedef struct unk_D_86B10BD0 {
+typedef struct SceneState {
     /* 0x00 */ s32 unk_00;
     /* 0x04 */ s32 unk_04;
     /* 0x08 */ s32 unk_08;
-} unk_D_86B10BD0; // size >= 0xC
+} SceneState; // size >= 0xC
 
-typedef struct unk_D_86B10BE0 {
+typedef struct DialogBoxState {
     /* 0x00 */ s32 unk_00;
     /* 0x04 */ s32 unk_04;
     /* 0x08 */ s32 unk_08;
     /* 0x0C */ s32 unk_0C;
     /* 0x10 */ s32 unk_10;
-} unk_D_86B10BE0; // size >= 0x14
+} DialogBoxState; // size >= 0x14
 
 #if !defined(VERSION_JP)
-static u32 D_86B0E2B0[] = {
+static u32 gFirstClearBonusTextData[] = {
     0xA4AAA4E1, 0xA4C7A4C8, 0xA4A6A1AA, 0x20A5C9A1, 0xBCA5C9A1, 0xBCA4CE0A, 0xA5B2A1BC, 0xA5E0A5DC, 0xA1BCA5A4,
     0xA4F2A5B2, 0xA5C3A5C8, 0xA4C0A1AA, 0x00000000, 0x4742A5D3, 0xA5EBA4CE, 0xA5B2A1BC, 0xA5E0A5DC, 0xA1BCA5A4,
     0xA4AC0A20, 0x20A5B9A5, 0xD4A1BCA5, 0xC9A5A2A5, 0xC3A5D7A1, 0xAA000000, 0xA4B9A4B4, 0xA4A4A4BE, 0xA1AA20A5,
@@ -43,57 +43,57 @@ static u32 D_86B0E2B0[] = {
 // EUC-JP dialog lines. The Japanese FirstClearBonus_UpdateDialogSequence formats them directly;
 // the other builds read entries 0x91..0x94 of string table 0x1E instead and leave these unused.
 // Mode 0x16 (Doduo Game Boy):
-static char D_86B0E2B0[] = "おめでとう！ ドードーの\nゲームボーイをゲットだ！";
+static char gFirstClearBonusTextData[] = "おめでとう！ ドードーの\nゲームボーイをゲットだ！";
 static char D_86B0E2E4[] = "GBビルのゲームボーイが\n  スピードアップ！";
 // Other modes (Dodrio Game Boy):
 static char D_86B0E310[] = "すごいぞ！ ドードリオの\nゲームボーイをゲットだ！";
 static char D_86B0E344[] = "GBビルのゲームボーイが\nさらにスピードアップだ！";
 #endif
 
-static u32 D_86B0E374[] = {
+static u32 gFirstClearBonusGeoLayout[] = {
     0x0C00FFFF, 0x05000000, 0x0B00001E,  0x00000000, 0x014000F0, 0x00000000, 0x00000000, 0x00000118,
     0x05000000, 0x0D000000, 0x05000000,  0x14000000, 0x002B0012, 0xFFFFFF32, 0x16FFFFFF, 0x0F000003,
-    0x05000000, 0x0A000000, &D_800AC840, 0x06000000, 0x06000000, 0x06000000, 0x06000000, 0x01000000,
+    0x05000000, 0x0A000000, &gGraphRoot0, 0x06000000, 0x06000000, 0x06000000, 0x06000000, 0x01000000,
 };
 
 #if !defined(VERSION_JP)
-static char** D_86B10840;
+static char** gFirstClearBonusStringTable;
 #endif
-static unk_D_86002F30* D_86B10844;
-static GraphNode* D_86B10848;
-static DisplayObject D_86B10850;
-static CameraNode* D_86B109B8;
-static BinArchive* D_86B109BC;
-static u8* D_86B109C0;
-static s8 D_86B109C8[0x100];
-static s8 D_86B10AC8[0x100];
-static s16 D_86B10BC8;
-static s16 D_86B10BCA;
+static ModelData* gFirstClearBonusModelData;
+static GraphNode* gFirstClearBonusGraphRoot;
+static DisplayObject gFirstClearBonusModelObj;
+static CameraNode* gFirstClearBonusCamera;
+static BinArchive* gFirstClearBonusBgArchive;
+static u8* gFirstClearBonusBgTiles;
+static s8 gFirstClearBonusTextBuffer[0x100];
+static s8 gFirstClearBonusTypingBuffer[0x100];
+static s16 gFirstClearBonusCamAngleX;
+static s16 gFirstClearBonusCamAngleY;
 static s16 D_86B10BCC;
-static unk_D_86B10BD0 D_86B10BD0;
-static unk_D_86B10BE0 D_86B10BE0;
+static SceneState D_86B10BD0;
+static DialogBoxState gMessageBoxState;
 
 void FirstClearBonus_InitCamera(void) {
-    D_86B109B8 = D_86B10848->children;
+    gFirstClearBonusCamera = gFirstClearBonusGraphRoot->children;
 
-    D_86B10BC8 = 0;
-    D_86B10BCA = 0;
+    gFirstClearBonusCamAngleX = 0;
+    gFirstClearBonusCamAngleY = 0;
     D_86B10BCC = 0x78;
 
-    Camera_ComputeEyeFromAngles(&D_86B109B8->view.targetPosition, &D_86B109B8->view.eyePosition, D_86B10BCC, D_86B10BC8, D_86B10BCA);
+    Camera_ComputeEyeFromAngles(&gFirstClearBonusCamera->view.targetPosition, &gFirstClearBonusCamera->view.eyePosition, D_86B10BCC, gFirstClearBonusCamAngleX, gFirstClearBonusCamAngleY);
 
-    D_86B109B8->perspective.nearPlane = 50.0f;
-    D_86B109B8->perspective.farPlane = 6400.0f;
+    gFirstClearBonusCamera->perspective.nearPlane = 50.0f;
+    gFirstClearBonusCamera->perspective.farPlane = 6400.0f;
 }
 
 void FirstClearBonus_InitState(void) {
     D_86B10BD0.unk_00 = 0;
     D_86B10BD0.unk_04 = 0;
     D_86B10BD0.unk_08 = 0;
-    D_86B10BE0.unk_10 = 0xA;
+    gMessageBoxState.unk_10 = 0xA;
 }
 
-void func_86B0A81C(void) {
+void FirstClearBonus_EmptyFunc(void) {
 }
 
 void FirstClearBonus_DrawDialogFrame(s16 arg0, s16 arg1, s16 arg2, s16 arg3, u8 arg4, u8 arg5, u8 arg6, u8 arg7) {
@@ -157,101 +157,101 @@ void FirstClearBonus_DrawDialogFrame(s16 arg0, s16 arg1, s16 arg2, s16 arg3, u8 
 }
 
 void FirstClearBonus_ShowDialogBox(void) {
-    D_86B10BE0.unk_00 = 0xFF;
+    gMessageBoxState.unk_00 = 0xFF;
 }
 
 void FirstClearBonus_HideDialogBox(void) {
-    D_86B10BE0.unk_00 = 0;
+    gMessageBoxState.unk_00 = 0;
 }
 
 #if defined(VERSION_JP)
 // Reveals one character of the dialog text per call: a leading newline or space is copied first,
 // then one byte if it is 0x21..0x3F, otherwise two bytes (an EUC-JP character).
 s32 FirstClearBonus_RevealNextChar(void) {
-    if (D_86B109C8[D_86B10BE0.unk_04] == 0) {
+    if (gFirstClearBonusTextBuffer[gMessageBoxState.unk_04] == 0) {
         return 1;
     }
 
-    if ((D_86B109C8[D_86B10BE0.unk_04] == '\n') || (D_86B109C8[D_86B10BE0.unk_04] == ' ')) {
-        D_86B10AC8[D_86B10BE0.unk_04] = D_86B109C8[D_86B10BE0.unk_04];
-        D_86B10BE0.unk_04++;
+    if ((gFirstClearBonusTextBuffer[gMessageBoxState.unk_04] == '\n') || (gFirstClearBonusTextBuffer[gMessageBoxState.unk_04] == ' ')) {
+        gFirstClearBonusTypingBuffer[gMessageBoxState.unk_04] = gFirstClearBonusTextBuffer[gMessageBoxState.unk_04];
+        gMessageBoxState.unk_04++;
     }
 
-    if ((D_86B109C8[D_86B10BE0.unk_04] > 0x20) && (D_86B109C8[D_86B10BE0.unk_04] < 0x40)) {
-        D_86B10AC8[D_86B10BE0.unk_04] = D_86B109C8[D_86B10BE0.unk_04];
-        D_86B10BE0.unk_04++;
+    if ((gFirstClearBonusTextBuffer[gMessageBoxState.unk_04] > 0x20) && (gFirstClearBonusTextBuffer[gMessageBoxState.unk_04] < 0x40)) {
+        gFirstClearBonusTypingBuffer[gMessageBoxState.unk_04] = gFirstClearBonusTextBuffer[gMessageBoxState.unk_04];
+        gMessageBoxState.unk_04++;
     } else {
-        D_86B10AC8[D_86B10BE0.unk_04] = D_86B109C8[D_86B10BE0.unk_04];
-        D_86B10AC8[D_86B10BE0.unk_04 + 1] = D_86B109C8[D_86B10BE0.unk_04 + 1];
-        D_86B10BE0.unk_04 += 2;
+        gFirstClearBonusTypingBuffer[gMessageBoxState.unk_04] = gFirstClearBonusTextBuffer[gMessageBoxState.unk_04];
+        gFirstClearBonusTypingBuffer[gMessageBoxState.unk_04 + 1] = gFirstClearBonusTextBuffer[gMessageBoxState.unk_04 + 1];
+        gMessageBoxState.unk_04 += 2;
     }
     return 0;
 }
 #else
 s32 FirstClearBonus_RevealNextChar(void) {
-    if (D_86B109C8[D_86B10BE0.unk_04] == 0) {
+    if (gFirstClearBonusTextBuffer[gMessageBoxState.unk_04] == 0) {
         return 1;
     }
 
-    D_86B10AC8[D_86B10BE0.unk_04++] = D_86B109C8[D_86B10BE0.unk_04];
+    gFirstClearBonusTypingBuffer[gMessageBoxState.unk_04++] = gFirstClearBonusTextBuffer[gMessageBoxState.unk_04];
 
-    if (D_86B109C8[D_86B10BE0.unk_04] == 0) {
+    if (gFirstClearBonusTextBuffer[gMessageBoxState.unk_04] == 0) {
         return 1;
     }
 
-    D_86B10AC8[D_86B10BE0.unk_04++] = D_86B109C8[D_86B10BE0.unk_04];
+    gFirstClearBonusTypingBuffer[gMessageBoxState.unk_04++] = gFirstClearBonusTextBuffer[gMessageBoxState.unk_04];
     return 0;
 }
 #endif
 
 void FirstClearBonus_DrawDialogBox(void) {
-    FirstClearBonus_DrawDialogFrame(0x3C, 0xBE - (D_86B10BE0.unk_10 / 2), D_86B10BE0.unk_0C, D_86B10BE0.unk_10, 0x50, 0x50, 0xF0, 0x80);
+    FirstClearBonus_DrawDialogFrame(0x3C, 0xBE - (gMessageBoxState.unk_10 / 2), gMessageBoxState.unk_0C, gMessageBoxState.unk_10, 0x50, 0x50, 0xF0, 0x80);
 }
 
 void FirstClearBonus_DrawDialogText(void) {
     Font_BeginTranslucentTextRendering();
     Font_SetActive(2, 0);
     Font_SetLineHeight(0x10);
-    Font_Printf(0x56, 0xAF, "%s", D_86B10AC8);
+    Font_Printf(0x56, 0xAF, "%s", gFirstClearBonusTypingBuffer);
     Font_EndTexturedTextRendering();
 }
 
 void FirstClearBonus_UpdateDialogSequence(void) {
     s32 i;
 
-    switch (D_86B10BE0.unk_00) {
+    switch (gMessageBoxState.unk_00) {
         case 0x0:
 #if defined(VERSION_JP)
             if (gSessionContext.mode == 0x16) {
-                sprintf(D_86B109C8, D_86B0E2B0);
+                sprintf(gFirstClearBonusTextBuffer, gFirstClearBonusTextData);
             } else {
-                sprintf(D_86B109C8, D_86B0E310);
+                sprintf(gFirstClearBonusTextBuffer, D_86B0E310);
             }
 #else
             if (gSessionContext.mode == 0x16) {
-                sprintf(D_86B109C8, Text_GetString(NULL, 0, D_86B10840, 0x91));
+                sprintf(gFirstClearBonusTextBuffer, Text_GetString(NULL, 0, gFirstClearBonusStringTable, 0x91));
             } else {
-                sprintf(D_86B109C8, Text_GetString(NULL, 0, D_86B10840, 0x93));
+                sprintf(gFirstClearBonusTextBuffer, Text_GetString(NULL, 0, gFirstClearBonusStringTable, 0x93));
             }
 #endif
 
-            D_86B10BE0.unk_04 = 0;
-            D_86B10BE0.unk_08 = 0;
-            D_86B10BE0.unk_0C = 0xC8;
-            D_86B10BE0.unk_10 = 0xA;
+            gMessageBoxState.unk_04 = 0;
+            gMessageBoxState.unk_08 = 0;
+            gMessageBoxState.unk_0C = 0xC8;
+            gMessageBoxState.unk_10 = 0xA;
 
             // clang-format off
-            for (i = 0; i < 255; i++) { D_86B10AC8[i] = 0; }
+            for (i = 0; i < 255; i++) { gFirstClearBonusTypingBuffer[i] = 0; }
             // clang-format on
 
             FirstClearBonus_DrawDialogBox();
-            D_86B10BE0.unk_00++;
+            gMessageBoxState.unk_00++;
             break;
 
         case 0x1:
-            D_86B10BE0.unk_10 = Math_StepToS32(D_86B10BE0.unk_10, 0x28, 8, 8);
-            if (D_86B10BE0.unk_10 == 0x28) {
-                D_86B10BE0.unk_00++;
+            gMessageBoxState.unk_10 = Math_StepToS32(gMessageBoxState.unk_10, 0x28, 8, 8);
+            if (gMessageBoxState.unk_10 == 0x28) {
+                gMessageBoxState.unk_00++;
             }
             FirstClearBonus_DrawDialogBox();
             break;
@@ -259,7 +259,7 @@ void FirstClearBonus_UpdateDialogSequence(void) {
         case 0x2:
             FirstClearBonus_DrawDialogBox();
             if (FirstClearBonus_RevealNextChar() != 0) {
-                D_86B10BE0.unk_00++;
+                gMessageBoxState.unk_00++;
             }
             FirstClearBonus_DrawDialogText();
             break;
@@ -268,36 +268,36 @@ void FirstClearBonus_UpdateDialogSequence(void) {
             FirstClearBonus_DrawDialogBox();
             FirstClearBonus_DrawDialogText();
 
-            if (D_86B10BE0.unk_08++ == 0x3C) {
+            if (gMessageBoxState.unk_08++ == 0x3C) {
 #if defined(VERSION_JP)
                 if (gSessionContext.mode == 0x16) {
-                    sprintf(D_86B109C8, D_86B0E2E4);
+                    sprintf(gFirstClearBonusTextBuffer, D_86B0E2E4);
                 } else {
-                    sprintf(D_86B109C8, D_86B0E344);
+                    sprintf(gFirstClearBonusTextBuffer, D_86B0E344);
                 }
 #else
                 if (gSessionContext.mode == 0x16) {
-                    sprintf(D_86B109C8, Text_GetString(NULL, 0, D_86B10840, 0x92));
+                    sprintf(gFirstClearBonusTextBuffer, Text_GetString(NULL, 0, gFirstClearBonusStringTable, 0x92));
                 } else {
-                    sprintf(D_86B109C8, Text_GetString(NULL, 0, D_86B10840, 0x94));
+                    sprintf(gFirstClearBonusTextBuffer, Text_GetString(NULL, 0, gFirstClearBonusStringTable, 0x94));
                 }
 #endif
 
-                D_86B10BE0.unk_04 = 0;
-                D_86B10BE0.unk_08 = 0;
+                gMessageBoxState.unk_04 = 0;
+                gMessageBoxState.unk_08 = 0;
 
                 // clang-format off
-                for (i = 0; i < 255; i++) { D_86B10AC8[i] = 0; }
+                for (i = 0; i < 255; i++) { gFirstClearBonusTypingBuffer[i] = 0; }
                 // clang-format on
 
-                D_86B10BE0.unk_00++;
+                gMessageBoxState.unk_00++;
             }
             break;
 
         case 0x4:
             FirstClearBonus_DrawDialogBox();
             if (FirstClearBonus_RevealNextChar() != 0) {
-                D_86B10BE0.unk_00++;
+                gMessageBoxState.unk_00++;
             }
             FirstClearBonus_DrawDialogText();
             break;
@@ -306,14 +306,14 @@ void FirstClearBonus_UpdateDialogSequence(void) {
             FirstClearBonus_DrawDialogBox();
             FirstClearBonus_DrawDialogText();
 
-            if (D_86B10BE0.unk_08++ == 0x41) {
-                D_86B10BE0.unk_00 = 0xFF;
+            if (gMessageBoxState.unk_08++ == 0x41) {
+                gMessageBoxState.unk_00 = 0xFF;
             }
             break;
 
         case 0xFF:
-            D_86B10BE0.unk_10 = Math_StepToS32(D_86B10BE0.unk_10, 0, 8, 8);
-            if (D_86B10BE0.unk_10 >= 0xB) {
+            gMessageBoxState.unk_10 = Math_StepToS32(gMessageBoxState.unk_10, 0, 8, 8);
+            if (gMessageBoxState.unk_10 >= 0xB) {
                 FirstClearBonus_DrawDialogBox();
             }
             break;
@@ -326,7 +326,7 @@ void FirstClearBonus_ReadControllerInput(void) {
     Input_ResetRepeatState();
 }
 
-void func_86B0B4C8(void) {
+void FirstClearBonus_NoopStub2(void) {
 }
 
 void FirstClearBonus_DrawBackgroundTiles(u8* arg0) {
@@ -355,10 +355,10 @@ void FirstClearBonus_DrawBackgroundTiles(u8* arg0) {
 
 void FirstClearBonus_RenderFrame(void) {
     BgStage_DrawFrame();
-    FirstClearBonus_DrawBackgroundTiles(D_86B109C0);
+    FirstClearBonus_DrawBackgroundTiles(gFirstClearBonusBgTiles);
     GfxImage_ClearDepthRectangle(&gDisplayListHead, 0, 0, 0x140, 0xF0);
     GeoRender_AdvanceFrameCounter();
-    Geo_RenderRootNode(D_86B10848);
+    Geo_RenderRootNode(gFirstClearBonusGraphRoot);
     FirstClearBonus_UpdateDialogSequence();
     BgStage_AdvanceFrame();
 }
@@ -368,19 +368,19 @@ s32 FirstClearBonus_UpdateScene(void) {
 
     switch (D_86B10BD0.unk_00) {
         case 0:
-            D_86B10850.node.renderFlags |= 0x20;
-            D_86B10850.node.flags |= 1;
+            gFirstClearBonusModelObj.node.renderFlags |= 0x20;
+            gFirstClearBonusModelObj.node.flags |= 1;
             D_86B10BD0.unk_00++;
             break;
 
         case 1:
-            if ((D_86B10850.transformAnim.frameFixed >> 0x10) == 0xA) {
+            if ((gFirstClearBonusModelObj.transformAnim.frameFixed >> 0x10) == 0xA) {
                 Audio_StartMusicTrack(0x38);
             }
 
-            if ((D_86B10850.transformAnim.frameFixed >> 0x10) == 0x72) {
+            if ((gFirstClearBonusModelObj.transformAnim.frameFixed >> 0x10) == 0x72) {
                 D_86B10BD0.unk_08 = 0;
-                D_86B10850.node.renderFlags &= 0xFFDF;
+                gFirstClearBonusModelObj.node.renderFlags &= 0xFFDF;
                 FirstClearBonus_HideDialogBox();
                 Audio_StartMusicTrack(0x13);
                 D_86B10BD0.unk_00++;
@@ -388,16 +388,16 @@ s32 FirstClearBonus_UpdateScene(void) {
             break;
 
         case 2:
-            if (D_86B10BE0.unk_00 == 0xFF) {
+            if (gMessageBoxState.unk_00 == 0xFF) {
                 D_86B10BD0.unk_08 = 0;
-                D_86B10850.node.renderFlags |= 0x20;
+                gFirstClearBonusModelObj.node.renderFlags |= 0x20;
                 FirstClearBonus_ShowDialogBox();
                 D_86B10BD0.unk_00++;
             }
             break;
 
         case 3:
-            if (ModelAnim_IsAnimationDone(&D_86B10850) != 0) {
+            if (ModelAnim_IsAnimationDone(&gFirstClearBonusModelObj) != 0) {
                 D_86B10BD0.unk_00++;
             }
             break;
@@ -444,30 +444,30 @@ void FirstClearBonus_RunLoop(void) {
 void FirstClearBonus_InitScene(void) {
     MemoryBlock* temp_v0 = MainPool_AllocState(main_pool_get_available(), 0);
 
-    D_86B10848 = process_geo_layout(temp_v0, &D_86B0E374);
+    gFirstClearBonusGraphRoot = process_geo_layout(temp_v0, &gFirstClearBonusGeoLayout);
     MainPool_FinalizeAllocation(temp_v0);
 
     ModelRenderer_InitDisplayRoots();
     FirstClearBonus_InitCamera();
     FirstClearBonus_InitState();
     FirstClearBonus_ShowDialogBox();
-    ModelRenderer_AttachDisplayObject(&D_86B10850);
+    ModelRenderer_AttachDisplayObject(&gFirstClearBonusModelObj);
     PokeIcon_OpenModelArchives();
 
     if (gSessionContext.mode == 0x16) {
-        D_86B10844 = Model_LoadByArchiveIndex(0xD5);
-        Model_InitDisplayObject(&D_86B10850, 0, 0xD5, D_86B10844->unk_08->unk_00[0]);
+        gFirstClearBonusModelData = Model_LoadByArchiveIndex(0xD5);
+        Model_InitDisplayObject(&gFirstClearBonusModelObj, 0, 0xD5, gFirstClearBonusModelData->unk_08->unk_00[0]);
     } else {
-        D_86B10844 = Model_LoadByArchiveIndex(0xD4);
-        Model_InitDisplayObject(&D_86B10850, 0, 0xD4, D_86B10844->unk_08->unk_00[0]);
+        gFirstClearBonusModelData = Model_LoadByArchiveIndex(0xD4);
+        Model_InitDisplayObject(&gFirstClearBonusModelObj, 0, 0xD4, gFirstClearBonusModelData->unk_08->unk_00[0]);
     }
 
-    ModelAnim_SetAnimation(&D_86B10850, 0);
+    ModelAnim_SetAnimation(&gFirstClearBonusModelObj, 0);
 
-    D_86B10850.node.renderFlags &= ~0x20;
-    D_86B10850.node.flags &= ~1;
+    gFirstClearBonusModelObj.node.renderFlags &= ~0x20;
+    gFirstClearBonusModelObj.node.flags &= ~1;
 
-    Vec3f_SetComponentsDuplicate(&D_86B10850.position, 0.0f, 11.0f, -105.0f);
+    Vec3f_SetComponentsDuplicate(&gFirstClearBonusModelObj.position, 0.0f, 11.0f, -105.0f);
 }
 
 s32 Stage_ShowFirstClearBonusScene(void) {
@@ -485,15 +485,15 @@ s32 Stage_ShowFirstClearBonusScene(void) {
 
 #if !defined(VERSION_JP)
     Text_InitStringTables();
-    D_86B10840 = Text_GetStringTable(0x1E);
+    gFirstClearBonusStringTable = Text_GetStringTable(0x1E);
 #endif
 
     if (gSessionContext.mode == 0x16) {
-        D_86B109BC = ASSET_LOAD2(backgrounds, 1, 1);
-        D_86B109C0 = BinArchive_GetFile(D_86B109BC, 0x12);
+        gFirstClearBonusBgArchive = ASSET_LOAD2(backgrounds, 1, 1);
+        gFirstClearBonusBgTiles = BinArchive_GetFile(gFirstClearBonusBgArchive, 0x12);
     } else {
-        D_86B109BC = ASSET_LOAD2(backgrounds, 1, 1);
-        D_86B109C0 = BinArchive_GetFile(D_86B109BC, 0x13);
+        gFirstClearBonusBgArchive = ASSET_LOAD2(backgrounds, 1, 1);
+        gFirstClearBonusBgTiles = BinArchive_GetFile(gFirstClearBonusBgArchive, 0x13);
     }
 
     FirstClearBonus_InitScene();

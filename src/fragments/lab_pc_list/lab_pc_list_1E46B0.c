@@ -7,10 +7,10 @@
 #include "src/hal_libc.h"
 #include "src/memory.h"
 
-static Gfx D_883176D0[] = {
+static Gfx gLabPCListHeaderSelectIconDlEnd[] = {
     gsSPEndDisplayList(),
 };
-u32 D_883176D8[] = {
+u32 gLabPCListHeaderSelectIconTexture[] = {
     0x00000000, 0x00000000, 0x0000051D, 0x4F0C0300, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x020B5FDF, 0xFFBF2F08, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000007,
     0x1FAFFFFF, 0xFFFFFF7F, 0x0D040000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00030C6F, 0xEFFFFFFF,
@@ -28,10 +28,10 @@ u32 D_883176D8[] = {
     0x4F5FFF2F, 0xBF1F0000, 0x00000000, 0x0000082F, 0xAFEFFFFF, 0xFFFFFFFF, 0xFFFF8F08, 0x087FFFFF, 0x4F5FFF2F,
     0xBF1F0000, 0x00000000, 0x00000002, 0x081C4E6F, 0x6F6F6F6F, 0x6F7F3F07, 0x073F7F6F, 0x1F2F6F0F, 0x4F0D0000,
 };
-static Gfx D_88317918[] = {
+static Gfx gEmptyDisplayList2[] = {
     gsSPEndDisplayList(),
 };
-u32 D_88317920[] = {
+u32 gLabPCListHeaderLeftOrnamentTexture[] = {
     0x42104210, 0x42104210, 0x42104210, 0x421139CF, 0x39CF39CF, 0x39CF39CF, 0x39CF39CF, 0x39CF39CF, 0x39CF39CF,
     0x39CF39CF, 0x39CF39CF, 0x39CF39CF, 0x42114210, 0x42104210, 0x42104210, 0x42104210, 0x42104210, 0x42104210,
     0x421139CF, 0x4A538C63, 0xC631D6B5, 0xDEF7DEF7, 0xDEF7DEF7, 0xDEF7DEF7, 0xDEF7DEF7, 0xDEF7DEF7, 0xDEF7DEF7,
@@ -76,10 +76,10 @@ u32 D_88317920[] = {
     0x42104210, 0x42104210, 0x42114211, 0x42114211, 0x42114211, 0x42114211, 0x42114211, 0x42114211, 0x42114211,
     0x42114211, 0x42114211, 0x42114210, 0x42104210, 0x42104210, 0x42104210,
 };
-static Gfx D_88317F20[] = {
+static Gfx gLabPCListHeaderTitleOrnamentDlEnd[] = {
     gsSPEndDisplayList(),
 };
-u32 D_88317F28[] = {
+u32 gLabPCListHeaderTitleOrnamentTexture[] = {
     0x421039CF, 0x4A534211, 0x42114211, 0x42114211, 0x42114211, 0x42114211, 0x42114211, 0x42114211, 0x42114211,
     0x39CF4211, 0x42104210, 0x42104210, 0x42104210, 0x42104210, 0x42104210, 0x42104210, 0x39CF6B5B, 0xD6B5DEF7,
     0xDEF7DEF7, 0xDEF7DEF7, 0xDEF7DEF7, 0xDEF7DEF7, 0xDEF7DEF7, 0xDEF7DEF7, 0xD6B5B5AD, 0x7BDF39CF, 0x42114211,
@@ -124,10 +124,10 @@ u32 D_88317F28[] = {
     0x42114211, 0x42114211, 0x42114211, 0x42114211, 0x42114211, 0x42114211, 0x42114211, 0x42114211, 0x42114211,
     0x42104210, 0x42104210, 0x42104210, 0x42104210, 0x42104210, 0x42104210,
 };
-static Gfx D_88318528[] = {
+static Gfx gCheckerboardPatternDlEnd[] = {
     gsSPEndDisplayList(),
 };
-u32 D_88318530[] = {
+u32 gCheckerboardPattern[] = {
     0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0x52895289, 0x5289FFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE,
     0xFFFE5289, 0xFFDBFFDB, 0x5287FFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0x5289FFDB, 0xFFDBFFDB, 0x5287FFFE,
     0xFFFEFFFE, 0xFFFEFFFE, 0xFFFE5289, 0xFFDBFFDB, 0xFFDBFFDB, 0x5287FFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0x5289FFDB,
@@ -141,10 +141,10 @@ u32 D_88318530[] = {
     0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0x5289FFDB, 0xFFDBFFDB, 0x5287FFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE,
     0xFFFE5289, 0xFFDBFFDB, 0x5287FFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0x52895289, 0x5289FFFE,
 };
-static Gfx D_883186E0[] = {
+static Gfx gCheckerboardPatternStatusEntryDlEnd[] = {
     gsSPEndDisplayList(),
 };
-u32 D_883186E8[] = {
+u32 gCheckerboardPatternStatusEntry[] = {
     0x52895289, 0x5289FFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0x5289FFD9, 0xFFDB5287, 0xFFFEFFFE,
     0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0x5289FFD9, 0xFFDBFFDB, 0x5287FFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE,
     0x5289FFD9, 0xFFDBFFDB, 0xFFDB5287, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0x5289FFD9, 0xFFDBFFDB, 0xFFDBFFDB,
@@ -158,7 +158,7 @@ u32 D_883186E8[] = {
     0x5289FFD9, 0xFFDBFFDB, 0x5287FFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0x5289FFD9, 0xFFDB5287, 0xFFFEFFFE,
     0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0x52895289, 0x5289FFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE,
 };
-u32 D_88318898[] = {
+u32 gLabPCListBackgroundImage[] = {
     0xAA99A989, 0x9998AAAA, 0xBA9B9899, 0x99A99AA9, 0x88998999, 0x9A98A988, 0x9989989A, 0x98989989, 0x999A98A9,
     0x88000000, 0x00000000, 0x0007AB99, 0x98575000, 0x00000000, 0x00000000, 0x01458999, 0x98899A9A, 0xABA89999,
     0x9888A9AA, 0x999898A9, 0x99AA8888, 0x99788989, 0x99888888, 0x9999AA89, 0x88997889, 0x99233333, 0x33222220,
@@ -274,10 +274,10 @@ u32 D_88318898[] = {
     0x9AAA9A9A, 0x9999889A, 0xBBA989A9, 0xBA9BAA9A, 0x98888888, 0x9AAA9889, 0x9AA8AAA9, 0x99988888, 0x889AAA88,
     0x88000000, 0x00000000, 0x0008BDB9, 0x99586000, 0x00000000, 0x00000000, 0x024699BA,
 };
-static Gfx D_88319898[] = {
+static Gfx gFontBitmapDataDlEnd[] = {
     gsSPEndDisplayList(),
 };
-u32 D_883198A0[] = {
+u32 gLabPCListCornerIconTexture[] = {
     0x435E435E, 0x435E435F, 0x435F435F, 0x435F435F, 0x431F3B5F, 0x43613B1F, 0x435F435F, 0x435F435F, 0x435F435F,
     0x435F435F, 0x435F435F, 0x435F435F, 0x435F435F, 0x435F435F, 0x435F435F, 0x435F3B1F, 0x435F3B1F, 0x435F435F,
     0x435F435E, 0x435E435E, 0x435E435E, 0x435F435F, 0x435F3B1F, 0x43614361, 0x3B5F431D, 0x3B1F435F, 0x3B5F435F,
@@ -343,7 +343,7 @@ u32 D_883198A0[] = {
     0x435F435E, 0x435E435E,
 };
 
-s32 LabPCList_CompareByPointer(unk_func_88316128* arg0, unk_func_88316128* arg1) {
+s32 LabPCList_CompareByPointer(PokemonListEntry* arg0, PokemonListEntry* arg1) {
     return (arg0 == arg1) ? 0 : (arg0 < arg1) ? -1 : 1;
 }
 
@@ -359,7 +359,7 @@ s32 LabPCList_CompareBySpeciesGroup(unk_func_8830867C_02C_0CC* arg0, unk_func_88
     return var_v1;
 }
 
-s32 LabPCList_CompareByLevelAsc(unk_func_88316128* arg0, unk_func_88316128* arg1) {
+s32 LabPCList_CompareByLevelAsc(PokemonListEntry* arg0, PokemonListEntry* arg1) {
     s32 var_v0 = arg0->unk_2C - arg1->unk_2C;
     s32 ret;
 
@@ -371,7 +371,7 @@ s32 LabPCList_CompareByLevelAsc(unk_func_88316128* arg0, unk_func_88316128* arg1
     return ret;
 }
 
-s32 LabPCList_CompareByLevelDesc(unk_func_88316128* arg0, unk_func_88316128* arg1) {
+s32 LabPCList_CompareByLevelDesc(PokemonListEntry* arg0, PokemonListEntry* arg1) {
     s32 var_v0 = arg1->unk_2C - arg0->unk_2C;
     s32 ret;
 
@@ -383,7 +383,7 @@ s32 LabPCList_CompareByLevelDesc(unk_func_88316128* arg0, unk_func_88316128* arg
     return ret;
 }
 
-s32 LabPCList_CompareByHpAsc(unk_func_88316128* arg0, unk_func_88316128* arg1) {
+s32 LabPCList_CompareByHpAsc(PokemonListEntry* arg0, PokemonListEntry* arg1) {
     s32 var_v0 = arg0->unk_2E - arg1->unk_2E;
     s32 ret;
 
@@ -395,7 +395,7 @@ s32 LabPCList_CompareByHpAsc(unk_func_88316128* arg0, unk_func_88316128* arg1) {
     return ret;
 }
 
-s32 LabPCList_CompareByHpDesc(unk_func_88316128* arg0, unk_func_88316128* arg1) {
+s32 LabPCList_CompareByHpDesc(PokemonListEntry* arg0, PokemonListEntry* arg1) {
     s32 var_v0 = arg1->unk_2E - arg0->unk_2E;
     s32 ret;
 
@@ -407,7 +407,7 @@ s32 LabPCList_CompareByHpDesc(unk_func_88316128* arg0, unk_func_88316128* arg1) 
     return ret;
 }
 
-s32 LabPCList_CompareByAttackAsc(unk_func_88316128* arg0, unk_func_88316128* arg1) {
+s32 LabPCList_CompareByAttackAsc(PokemonListEntry* arg0, PokemonListEntry* arg1) {
     s32 var_v0 = arg0->unk_30 - arg1->unk_30;
     s32 ret;
 
@@ -419,7 +419,7 @@ s32 LabPCList_CompareByAttackAsc(unk_func_88316128* arg0, unk_func_88316128* arg
     return ret;
 }
 
-s32 LabPCList_CompareByAttackDesc(unk_func_88316128* arg0, unk_func_88316128* arg1) {
+s32 LabPCList_CompareByAttackDesc(PokemonListEntry* arg0, PokemonListEntry* arg1) {
     s32 var_v0 = arg1->unk_30 - arg0->unk_30;
     s32 ret;
 
@@ -431,7 +431,7 @@ s32 LabPCList_CompareByAttackDesc(unk_func_88316128* arg0, unk_func_88316128* ar
     return ret;
 }
 
-s32 LabPCList_CompareByDefenseAsc(unk_func_88316128* arg0, unk_func_88316128* arg1) {
+s32 LabPCList_CompareByDefenseAsc(PokemonListEntry* arg0, PokemonListEntry* arg1) {
     s32 var_v0 = arg0->unk_32 - arg1->unk_32;
     s32 ret;
 
@@ -443,7 +443,7 @@ s32 LabPCList_CompareByDefenseAsc(unk_func_88316128* arg0, unk_func_88316128* ar
     return ret;
 }
 
-s32 LabPCList_CompareByDefenseDesc(unk_func_88316128* arg0, unk_func_88316128* arg1) {
+s32 LabPCList_CompareByDefenseDesc(PokemonListEntry* arg0, PokemonListEntry* arg1) {
     s32 var_v0 = arg1->unk_32 - arg0->unk_32;
     s32 ret;
 
@@ -455,7 +455,7 @@ s32 LabPCList_CompareByDefenseDesc(unk_func_88316128* arg0, unk_func_88316128* a
     return ret;
 }
 
-s32 LabPCList_CompareBySpeedAsc(unk_func_88316128* arg0, unk_func_88316128* arg1) {
+s32 LabPCList_CompareBySpeedAsc(PokemonListEntry* arg0, PokemonListEntry* arg1) {
     s32 var_v0 = arg0->unk_34 - arg1->unk_34;
     s32 ret;
 
@@ -467,7 +467,7 @@ s32 LabPCList_CompareBySpeedAsc(unk_func_88316128* arg0, unk_func_88316128* arg1
     return ret;
 }
 
-s32 LabPCList_CompareBySpeedDesc(unk_func_88316128* arg0, unk_func_88316128* arg1) {
+s32 LabPCList_CompareBySpeedDesc(PokemonListEntry* arg0, PokemonListEntry* arg1) {
     s32 var_v0 = arg1->unk_34 - arg0->unk_34;
     s32 ret;
 
@@ -479,7 +479,7 @@ s32 LabPCList_CompareBySpeedDesc(unk_func_88316128* arg0, unk_func_88316128* arg
     return ret;
 }
 
-s32 LabPCList_CompareBySpecialAsc(unk_func_88316128* arg0, unk_func_88316128* arg1) {
+s32 LabPCList_CompareBySpecialAsc(PokemonListEntry* arg0, PokemonListEntry* arg1) {
     s32 var_v0 = arg0->unk_36 - arg1->unk_36;
     s32 ret;
 
@@ -491,7 +491,7 @@ s32 LabPCList_CompareBySpecialAsc(unk_func_88316128* arg0, unk_func_88316128* ar
     return ret;
 }
 
-s32 LabPCList_CompareBySpecialDesc(unk_func_88316128* arg0, unk_func_88316128* arg1) {
+s32 LabPCList_CompareBySpecialDesc(PokemonListEntry* arg0, PokemonListEntry* arg1) {
     s32 var_v0 = arg1->unk_36 - arg0->unk_36;
     s32 ret;
 
@@ -503,7 +503,7 @@ s32 LabPCList_CompareBySpecialDesc(unk_func_88316128* arg0, unk_func_88316128* a
     return ret;
 }
 
-s32 LabPCList_CompareById(unk_func_88316128* arg0, unk_func_88316128* arg1) {
+s32 LabPCList_CompareById(PokemonListEntry* arg0, PokemonListEntry* arg1) {
     s32 var_v0 = arg0->unk_16 - arg1->unk_16;
     s32 ret;
 
@@ -519,7 +519,7 @@ s32 LabPCList_CompareByPokemonColumn(unk_func_8830867C_02C_0CC* arg0, unk_func_8
     return LabPCList_CompareBySpeciesGroup(arg0, arg1);
 }
 
-s32 LabPCList_CompareByOtName(unk_func_88316128* arg0, unk_func_88316128* arg1) {
+s32 LabPCList_CompareByOtName(PokemonListEntry* arg0, PokemonListEntry* arg1) {
     s32 var_v0;
     s32 ret;
 
@@ -532,7 +532,7 @@ s32 LabPCList_CompareByOtName(unk_func_88316128* arg0, unk_func_88316128* arg1) 
     return ret;
 }
 
-s32 LabPCList_CompareByNickname(unk_func_88316128* arg0, unk_func_88316128* arg1) {
+s32 LabPCList_CompareByNickname(PokemonListEntry* arg0, PokemonListEntry* arg1) {
     s32 var_v0;
     s32 ret;
 
@@ -546,7 +546,7 @@ s32 LabPCList_CompareByNickname(unk_func_88316128* arg0, unk_func_88316128* arg1
 }
 
 s32 LabPCList_CompareBySpeciesDexOrder(unk_func_8830867C_02C_0CC* arg0, unk_func_8830867C_02C_0CC* arg1) {
-    static u8 D_8831A160[] = {
+    static u8 gSpeciesSortOrder[] = {
         0x09, 0x38, 0x8B, 0x0E, 0x0F, 0x0D, 0x81, 0x90, 0x08, 0x0B, 0x50, 0x0A, 0x91, 0x3F, 0x06, 0x66, 0x65,
         0x64, 0x73, 0x72, 0x80, 0x25, 0x1F, 0x03, 0x67, 0x70, 0x76, 0x77, 0x58, 0x5A, 0x57, 0x59, 0x5B, 0x56,
         0x11, 0x10, 0x8F, 0x5C, 0x39, 0x94, 0x96, 0x2B, 0x5D, 0x2A, 0x8D, 0x61, 0x62, 0x8A, 0x89, 0x15, 0x1D,
@@ -557,7 +557,7 @@ s32 LabPCList_CompareBySpeciesDexOrder(unk_func_8830867C_02C_0CC* arg0, unk_func
         0x83, 0x82, 0x54, 0x78, 0x3B, 0x20, 0x4A, 0x68, 0x85, 0x49, 0x32, 0x44, 0x16, 0x1E, 0x88, 0x3A, 0x26,
         0x6D, 0x5E, 0x5F, 0x3C, 0x3D, 0x01, 0x7F, 0x05, 0x95, 0x53, 0x1B, 0x19, 0x1A, 0x52, 0x51, 0x00,
     };
-    s32 var_v0 = D_8831A160[*(u8*)&arg0->unk_08 - 1] - D_8831A160[*(u8*)&arg1->unk_08 - 1];
+    s32 var_v0 = gSpeciesSortOrder[*(u8*)&arg0->unk_08 - 1] - gSpeciesSortOrder[*(u8*)&arg1->unk_08 - 1];
     s32 ret;
 
     if (var_v0 != 0) {
@@ -580,7 +580,7 @@ s32 LabPCList_CompareBySpeciesRawId(unk_func_8830867C_02C_0CC* arg0, unk_func_88
     return ret;
 }
 
-unk_D_8831A1F8 D_8831A1F8[] = {
+SortComparatorFunc gListSortComparators[] = {
     LabPCList_CompareByPointer, LabPCList_CompareByPokemonColumn, LabPCList_CompareByLevelAsc, LabPCList_CompareByLevelDesc, LabPCList_CompareByHpAsc, LabPCList_CompareByHpDesc, LabPCList_CompareByAttackAsc,
     LabPCList_CompareByAttackDesc, LabPCList_CompareByDefenseAsc, LabPCList_CompareByDefenseDesc, LabPCList_CompareBySpeedAsc, LabPCList_CompareBySpeedDesc, LabPCList_CompareBySpecialAsc, LabPCList_CompareBySpecialDesc,
     LabPCList_CompareById, LabPCList_CompareByOtName, LabPCList_CompareByNickname, LabPCList_CompareBySpeciesDexOrder, LabPCList_CompareBySpeciesRawId,
@@ -700,12 +700,12 @@ s32 LabPCList_FilterByExactTypePair(unk_func_8830867C_02C_0CC* arg0, unk_func_88
     return 1;
 }
 
-s32 LabPCList_FilterByCategoryBit(unk_func_88316128* arg0, u8* arg1) {
-    static u8 D_8831A244[] = {
+s32 LabPCList_FilterByCategoryBit(PokemonListEntry* arg0, u8* arg1) {
+    static u8 gCupAllowedMasks[] = {
         0x03, 0x04, 0x00, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     };
 
-    return ((1 << D_8831A244[*arg1]) & ((D_8006FF00 + arg0->unk_08 - 1)->unk_0C)) != 0;
+    return ((1 << gCupAllowedMasks[*arg1]) & ((gSpeciesDisplayTable + arg0->unk_08 - 1)->unk_0C)) != 0;
 }
 
 typedef struct unk_func_883164C0 {
@@ -936,7 +936,7 @@ void LabPCList_InitDeckCategories(unk_func_8830867C_02C_154* arg0, MemoryPool* a
     UNUSED s32 pad;
     s32 temp_s1;
     char sp54[4];
-    unk_func_8002D860 sp48;
+    PortSummary sp48;
     char sp38[16];
     s32 i;
 
@@ -1006,12 +1006,12 @@ s32 LabPCList_IsTmItemId(s32* arg0) {
 }
 
 s32 LabPCList_IsHmItemId(s32* arg0) {
-    static u8 D_8831A250[] = { 0x23, 0x24, 0x25, 0x26, 0x27, 0x28 };
+    static u8 gHmItemIds[] = { 0x23, 0x24, 0x25, 0x26, 0x27, 0x28 };
 
     s32 i;
 
     for (i = 0; i < 6; i++) {
-        if (*arg0 == D_8831A250[i]) {
+        if (*arg0 == gHmItemIds[i]) {
             *arg0 = i;
             return 1;
         }
@@ -1021,12 +1021,12 @@ s32 LabPCList_IsHmItemId(s32* arg0) {
 }
 
 s32 LabPCList_IsSpecialTmItemId(s32* arg0) {
-    static u8 D_8831A258[] = { 0x4F };
+    static u8 gSpecialTmItemIds[] = { 0x4F };
 
     s32 i;
 
     for (i = 0; i < 1; i++) {
-        if (*arg0 == D_8831A258[i]) {
+        if (*arg0 == gSpecialTmItemIds[i]) {
             *arg0 = i + 0x32;
             return 1;
         }

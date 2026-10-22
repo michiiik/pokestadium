@@ -13,7 +13,7 @@
 #include "src/gfx_buffer.h"
 #include "src/scheduler.h"
 
-u32 D_878064F0[] = {
+u32 gBorderTexture_Left[] = {
     0x00010001, 0x00010001, 0x00010001, 0x00010001, 0x000100DD, 0x00DD00DD, 0x00DD00DD, 0x00DD00DD,
     0x00010925, 0x09250925, 0x09250925, 0x09250925, 0x0001092F, 0x092F092F, 0x092F092F, 0x092F092F,
     0x00010925, 0x09250925, 0x09250925, 0x09250925, 0x000100DD, 0x00DD00DD, 0x00DD00DD, 0x00DD00DD,
@@ -22,7 +22,7 @@ u32 D_878064F0[] = {
     0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE,
 };
 
-u32 D_878065B0[] = {
+u32 gBorderTexture_Fill[] = {
     0x00010001, 0x00010001, 0x00010001, 0x00010001, 0x00DD00DD, 0x00DD00DD, 0x00DD00DD, 0x00DD00DD,
     0x09250925, 0x09250925, 0x09250925, 0x09250925, 0x092F092F, 0x092F092F, 0x092F092F, 0x092F092F,
     0x09250925, 0x09250925, 0x09250925, 0x09250925, 0x00DD00DD, 0x00DD00DD, 0x00DD00DD, 0x00DD00DD,
@@ -31,7 +31,7 @@ u32 D_878065B0[] = {
     0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE,
 };
 
-u32 D_87806670[] = {
+u32 gBorderTexture_Middle[] = {
     0x00010001, 0x00010001, 0x00010001, 0x00010001, 0x00DD00DD, 0x00DD00DD, 0x00DD00DD, 0x00DD0001,
     0x09250925, 0x09250925, 0x09250925, 0x09250001, 0x092F092F, 0x092F092F, 0x092F092F, 0x092F0001,
     0x09250925, 0x09250925, 0x09250925, 0x09250001, 0x00DD00DD, 0x00DD00DD, 0x00DD00DD, 0x00DD0001,
@@ -40,7 +40,7 @@ u32 D_87806670[] = {
     0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE,
 };
 
-u32 D_87806730[] = {
+u32 gBorderTexture_Right[] = {
     0x00010001, 0x00010001, 0x00010001, 0x00010001, 0xC5C7C5C7, 0xC5C7C5C7, 0xC5C7C5C7, 0xC5C7C5C7,
     0xF709F709, 0xF709F709, 0xF709F709, 0xF709F709, 0xF7CBF7CB, 0xF7CBF7CB, 0xF7CBF7CB, 0xF7CBF7CB,
     0xF709F709, 0xF709F709, 0xF709F709, 0xF709F709, 0xC5C7C5C7, 0xC5C7C5C7, 0xC5C7C5C7, 0xC5C7C5C7,
@@ -49,7 +49,7 @@ u32 D_87806730[] = {
     0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE, 0xFFFEFFFE,
 };
 
-u32 D_878067F0[] = {
+u32 gPlayerIconTex_0[] = {
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
@@ -156,7 +156,7 @@ u32 D_878067F0[] = {
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
 };
 
-u32 D_87807690[] = {
+u32 gPlayerIconTex_1[] = {
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
@@ -263,7 +263,7 @@ u32 D_87807690[] = {
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
 };
 
-u32 D_87808530[] = {
+u32 gPlayerIconTex_2[] = {
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
@@ -370,7 +370,7 @@ u32 D_87808530[] = {
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
 };
 
-u32 D_878093D0[] = {
+u32 gPlayerIconTex_3[] = {
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
@@ -477,7 +477,7 @@ u32 D_878093D0[] = {
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
 };
 
-u32 D_8780A270[] = {
+u32 gResultCubeTex_8[] = {
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
@@ -584,7 +584,7 @@ u32 D_8780A270[] = {
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
 };
 
-u32 D_8780B110[] = {
+u32 gPlayerIconTex_4[] = {
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
@@ -691,7 +691,7 @@ u32 D_8780B110[] = {
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
 };
 
-u32 D_8780BFB0[] = {
+u32 gPlayerIconTex_5[] = {
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
@@ -798,7 +798,7 @@ u32 D_8780BFB0[] = {
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
 };
 
-u32 D_8780CE50[] = {
+u32 gPlayerIconTex_6[] = {
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
@@ -905,7 +905,7 @@ u32 D_8780CE50[] = {
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
 };
 
-u32 D_8780DCF0[] = {
+u32 gPlayerIconTex_7[] = {
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
@@ -1012,7 +1012,7 @@ u32 D_8780DCF0[] = {
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
 };
 
-static Vp D_8780EB90 = {
+static Vp gResultScreenViewport = {
     {
         {
             0x280,
@@ -1029,7 +1029,7 @@ static Vp D_8780EB90 = {
     },
 };
 
-static Gfx D_8780EBA0[] = {
+static Gfx gResultScreenSetupDL[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_1CYCLE),
     gsSPClearGeometryMode(G_ZBUFFER | G_LIGHTING),
@@ -1037,11 +1037,11 @@ static Gfx D_8780EBA0[] = {
     gsDPSetRenderMode(G_RM_XLU_SURF, G_RM_XLU_SURF2),
     gsDPSetTexturePersp(G_TP_PERSP),
     gsSPPerspNormalize(0xFFFF),
-    gsSPViewport(&D_8780EB90),
+    gsSPViewport(&gResultScreenViewport),
     gsSPEndDisplayList(),
 };
 
-static u32 D_8780EBE8[] = {
+static u32 gResultScreenTextureData[] = {
     0x00010001, 0x00010001, 0x00010001, 0x00010001, 0x08011841, 0x310151C1, 0x6A818B41, 0x9BC1AC85, 0xA4859403,
     0x7B016281, 0x41C120C1, 0x08010001, 0x00010001, 0x00010001, 0x00010001, 0x00010001, 0x00010001, 0x00010001,
     0x00010001, 0x00011881, 0x39414181, 0x51C16A81, 0x7B017AC1, 0x8B419C43, 0xA4859C45, 0x8B818341, 0x6AC15201,
@@ -1102,7 +1102,7 @@ static u32 D_8780EBE8[] = {
 };
 
 // Meant to be 32, this is only 30, it uses 2 vertices from the next list
-static Vtx D_8780F3E8[] = {
+static Vtx gResultCubeVertexBatchFirst[] = {
     VTX(0, 0, -11, 512, 566, 0x2D, 0x18, 0x94, 0xFF),    VTX(0, 50, 0, 512, 0, 0x2D, 0x18, 0x94, 0xFF),
     VTX(15, 21, 0, 677, 326, 0x2D, 0x18, 0x94, 0xFF),    VTX(15, 21, 0, 677, 326, 0x2D, 0x18, 0x6C, 0xFF),
     VTX(0, 50, 0, 512, 0, 0x2D, 0x18, 0x6C, 0xFF),       VTX(0, 0, 11, 512, 566, 0x2D, 0x18, 0x6C, 0xFF),
@@ -1120,7 +1120,7 @@ static Vtx D_8780F3E8[] = {
     VTX(48, 15, 0, 1024, 391, 0x24, 0xDD, 0x6C, 0xFF),   VTX(0, 0, 11, 512, 566, 0x24, 0xDD, 0x6C, 0xFF),
 };
 
-static Vtx D_8780F5C8[] = {
+static Vtx gResultCubeVertexBatchSecond[] = {
     VTX(0, 0, 11, 512, 566, 0x32, 0x07, 0x6C, 0xFF),     VTX(29, -40, 0, 828, 1023, 0x32, 0x07, 0x6C, 0xFF),
     VTX(25, -8, 0, 779, 657, 0x32, 0x07, 0x6C, 0xFF),    VTX(25, -8, 0, 779, 657, 0x32, 0x07, 0x94, 0xFF),
     VTX(29, -40, 0, 828, 1023, 0x32, 0x07, 0x94, 0xFF),  VTX(0, 0, -11, 512, 566, 0x32, 0x07, 0x94, 0xFF),
@@ -1138,7 +1138,7 @@ static Vtx D_8780F5C8[] = {
     VTX(-29, -40, 0, 195, 1023, 0x16, 0xD2, 0x94, 0xFF), VTX(0, 0, -11, 512, 566, 0x16, 0xD2, 0x94, 0xFF),
 };
 
-static Gfx D_8780F7A8[] = {
+static Gfx gResultCubeSetupDL[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_2CYCLE),
     gsSPClearGeometryMode(G_ZBUFFER | G_SHADE | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN |
@@ -1150,20 +1150,20 @@ static Gfx D_8780F7A8[] = {
     gsDPSetRenderMode(G_RM_PASS, G_RM_AA_ZB_OPA_SURF2),
     gsDPSetTexturePersp(G_TP_PERSP),
     gsSPPerspNormalize(0xFFFF),
-    gsSPViewport(&D_8780EB90),
-    gsDPLoadTextureBlock(D_8780EBE8, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+    gsSPViewport(&gResultScreenViewport),
+    gsDPLoadTextureBlock(gResultScreenTextureData, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                          G_TX_NOMIRROR | G_TX_CLAMP, 5, 5, 1, 1),
     gsSPEndDisplayList(),
 };
 
-static Gfx D_8780F840[] = {
-    gsSPVertex(D_8780F3E8, 32, 0),
+static Gfx gResultCubeRenderDL[] = {
+    gsSPVertex(gResultCubeVertexBatchFirst, 32, 0),
     gsSP2Triangles(0, 1, 2, 0, 3, 4, 5, 0),
     gsSP2Triangles(6, 7, 8, 0, 9, 10, 11, 0),
     gsSP2Triangles(12, 13, 14, 0, 15, 16, 17, 0),
     gsSP2Triangles(18, 19, 20, 0, 21, 22, 23, 0),
     gsSP2Triangles(24, 25, 26, 0, 27, 28, 29, 0),
-    gsSPVertex(D_8780F5C8, 30, 0),
+    gsSPVertex(gResultCubeVertexBatchSecond, 30, 0),
     gsSP2Triangles(0, 1, 2, 0, 3, 4, 5, 0),
     gsSP2Triangles(6, 7, 8, 0, 9, 10, 11, 0),
     gsSP2Triangles(12, 13, 14, 0, 15, 16, 17, 0),
@@ -1177,160 +1177,160 @@ static s32 pad_D_8780F8A8[] = {
     0x00000000,
 };
 
-static f32 D_8780F8B0[] = { 0.8f, 0.75f, 0.7f, 0.75f, 0.8f, 0.75f, 0.7f, 0.65f, 0.6f, 0.55f, 0.5f };
+static f32 gResultScaleFactors[] = { 0.8f, 0.75f, 0.7f, 0.75f, 0.8f, 0.75f, 0.7f, 0.65f, 0.6f, 0.55f, 0.5f };
 
-static f32 D_8780F8DC[] = { 1.0f, 1.1f, 1.0f, 1.57f, 2.14f, 2.71f, 3.29f, 3.86f, 4.43f, 5.0f };
+static f32 gResultEndSequenceZoomFactors[] = { 1.0f, 1.1f, 1.0f, 1.57f, 2.14f, 2.71f, 3.29f, 3.86f, 4.43f, 5.0f };
 
-static u8 D_8780F904[] = {
+static u8 gResultFadeAlphas[] = {
     0xFF, 0xFF, 0xFF, 0xE2, 0xC4, 0xA7, 0x8A, 0x6D, 0x4F, 0x32,
 };
 
-static u32* D_8780F910[2][4] = {
-    { D_878067F0, D_87807690, D_87808530, D_878093D0 },
-    { D_8780B110, D_8780BFB0, D_8780CE50, D_8780DCF0 },
+static u32* gResultCubeTextureTable[2][4] = {
+    { gPlayerIconTex_0, gPlayerIconTex_1, gPlayerIconTex_2, gPlayerIconTex_3 },
+    { gPlayerIconTex_4, gPlayerIconTex_5, gPlayerIconTex_6, gPlayerIconTex_7 },
 };
 
-static f32 D_8780F930[] = {
+static f32 gResultPlayerIconPulseScales[] = {
     0.9f,
     1.0f,
     1.1f,
     1.0f,
 };
 
-static f32 D_8780F940[] = {
+static f32 gResultCubeRotationOffset[] = {
     0.0f, 3.0f,  6.0f,  9.0f,  12.0f,  15.0f,  12.0f,  9.0f,  6.0f,  3.0f,
     0.0f, -3.0f, -6.0f, -9.0f, -12.0f, -15.0f, -12.0f, -9.0f, -6.0f, -3.0f,
 };
 
-static s32 D_8780F990[] = { 3, 1, 0 };
-static s32 D_8780F99C[] = { 1, 4, 0 };
-static s32 D_8780F9A8[] = { 4, 0 };
+static s32 gResultOptionCount_Mode0[] = { 3, 1, 0 };
+static s32 gResultOptionCount_Mode1[] = { 1, 4, 0 };
+static s32 gResultOptionCount_Mode2[] = { 4, 0 };
 
-static u8 D_8780F9B0[] = {
+static u8 gResultStateMessageIds[] = {
     6,
     5,
     4,
     3,
 };
 
-static s32 D_8780FC40;
-static u8 D_8780FC44;
-static s32 D_8780FC48;
-static u8 D_8780FC4C;
-static u8 D_8780FC50[4];
-static u8 D_8780FC54[4];
-static u8 D_8780FC58[4];
-static s8 D_8780FC5C;
-static u8 D_8780FC5D;
-static s32 D_8780FC60;
-static s32 D_8780FC64;
-static s32 D_8780FC68;
-static s32 D_8780FC6C;
-static s32 D_8780FC70;
-static s32 D_8780FC74;
-static s16 D_8780FC78;
-static s16 D_8780FC80[4];
-static s16 D_8780FC88[4];
-static s16 D_8780FC90;
-u16 D_8780FC92;
-u16 D_8780FC94;
-u16 D_8780FC96;
-u16 D_8780FC98;
-static u8 D_8780FC9A;
-static u8 D_8780FC9B;
-static Controller* D_8780FC9C;
-static u8 D_8780FCA0;
-static u8 D_8780FCA1;
-static u8 D_8780FCA2;
-static u8 D_8780FCA3;
-static s16 D_8780FCA4;
-static u8 D_8780FCA6;
-static u8 D_8780FCA7;
-static u8 D_8780FCA8;
-static s16 D_8780FCAA;
-static u8 D_8780FCAC[4];
-static u8 D_8780FCB0[4];
+static s32 gResultState;
+static u8 gResultFlag_Win;
+static s32 gResultFrameCounter;
+static u8 gResultScoreThresholdMet;
+static u8 gResultPlayerScored[4];
+static u8 gResultPlayerMaxScore[4];
+static u8 gResultPlayerCurrentScore[4];
+static s8 gResultSelectedOption;
+static u8 gResultOptionLimit;
+static s32 gResultGraphicsActive;
+static s32 gResultSlideInActive;
+static s32 gResultEndSequenceActive;
+static s32 gResultSpecialWinActive;
+static s32 gResultMenuActive;
+static s32 gResultCubesActive;
+static s16 gResultLowestScorerCount;
+static s16 gResultIsLowestScorer[4];
+static s16 gResultLowestScorerIndices[4];
+static s16 gResultCubeCycleIndex;
+u16 gResultFlag_Special;
+u16 gResultMenuVisible;
+u16 gResultExitPending;
+u16 gResultConfirmPressed;
+static u8 gResultStickUp;
+static u8 gResultStickDown;
+static Controller* gResultController;
+static u8 gResultDeltaTime;
+static u8 gResultDeltaTimeInit;
+static u8 gResultAnimFrame;
+static u8 gResultAnimState;
+static s16 gResultAnimYOffset;
+static u8 gResultAnimStep;
+static u8 gResultBankSyncDone;
+static u8 gResultAnimTimer;
+static s16 gResultIconYOffset;
+static u8 gResultPlayerIconAnimFrame[4];
+static u8 gResultPlayerIconAnimTimer[4];
 static char pad_D_8780FCB4[0x4];
-static u16 D_8780FCB8[10]; // grid x coordinates; [10 + i] aliases D_8780FCCC
+static u16 gResultTiledTexX[10]; // grid x coordinates; [10 + i] aliases gResultTiledTexY
 // IDO 8-aligns arrays of 8+ bytes, so the grid y coordinates (6 entries) are declared as
-// a 4-byte array plus a filler to keep D_8780FCCC at 0x8780FCCC.
-static u16 D_8780FCCC[2];
+// a 4-byte array plus a filler to keep gResultTiledTexY at 0x8780FCCC.
+static u16 gResultTiledTexY[2];
 static u16 D_8780FCD0[4];
 
-typedef struct unk_D_8780FCD8 {
+typedef struct ResultCubeState {
     /* 0x00 */ s16 unk_00;
     /* 0x02 */ s16 unk_02;
     /* 0x04 */ f32 unk_04;
-} unk_D_8780FCD8; // size = 0x8
+} ResultCubeState; // size = 0x8
 
-static unk_D_8780FCD8 D_8780FCD8[4][9];
-static u8 D_8780FDF8;
-static u8 D_8780FDFC[4];
-static s8 D_8780FE00;
-static u8 D_8780FE01;
-static char* D_8780FE08[4];
-static char* D_8780FE18[4];
-static char* D_8780FE28[2];
-static u16 D_8780FE30;
-static u16 D_8780FE32;
-static u16 D_8780FE34;
-static u16 D_8780FE36;
+static ResultCubeState gResultCubes[4][9];
+static u8 gResultSfxTriggered;
+static u8 gResultCubeStateFlag[4];
+static s8 gResultAnimCountdown;
+static u8 gResultMusicChangePending;
+static char* gResultMenuStrings_PlayAgainDiffGameQuit[4];
+static char* gResultMenuStrings_ContinueRestartQuit[4];
+static char* gResultMenuStrings_PlayAgainQuit[2];
+static u16 gResultPauseMenuWidth;
+static u16 gResultMenuWidth_PlayAgainDiffGameQuit;
+static u16 gResultMenuWidth_ContinueRestartQuit;
+static u16 gResultMenuWidth_PlayAgainQuit;
 
 void Widget_PauseMenuInit(void) {
     u8 i;
     u8 j;
 
-    D_8780FC40 = 0;
-    D_8780FC44 = 0;
-    D_8780FC4C = 0;
-    D_8780FC5C = 0;
-    D_8780FC9C = gPlayer1Controller;
-    D_8780FC60 = D_8780FC64 = D_8780FC68 = D_8780FC6C = D_8780FC70 = D_8780FC74 = 0;
-    D_8780FC92 = 0;
-    D_8780FC94 = 0;
-    D_8780FC96 = 0;
-    D_8780FC98 = 0;
-    D_8780FC48 = 0;
-    D_8780FCA0 = 2;
-    D_8780FCA1 = 0;
-    D_8780FCA3 = 0;
+    gResultState = 0;
+    gResultFlag_Win = 0;
+    gResultScoreThresholdMet = 0;
+    gResultSelectedOption = 0;
+    gResultController = gPlayer1Controller;
+    gResultGraphicsActive = gResultSlideInActive = gResultEndSequenceActive = gResultSpecialWinActive = gResultMenuActive = gResultCubesActive = 0;
+    gResultFlag_Special = 0;
+    gResultMenuVisible = 0;
+    gResultExitPending = 0;
+    gResultConfirmPressed = 0;
+    gResultFrameCounter = 0;
+    gResultDeltaTime = 2;
+    gResultDeltaTimeInit = 0;
+    gResultAnimState = 0;
 
     for (i = 0; i < 4; i++) {
-        D_8780FC50[i] = 0;
-        D_8780FDFC[i] = 0;
-        D_8780FCAC[i] = 0;
-        D_8780FCB0[i] = 0;
+        gResultPlayerScored[i] = 0;
+        gResultCubeStateFlag[i] = 0;
+        gResultPlayerIconAnimFrame[i] = 0;
+        gResultPlayerIconAnimTimer[i] = 0;
     }
 
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 9; j++) {
-            D_8780FCD8[i][j].unk_04 = 0.0f;
+            gResultCubes[i][j].unk_04 = 0.0f;
         }
     }
 
-    D_8780FCA7 = 0;
-    D_8780FDF8 = 0;
-    D_8780FE01 = 0;
-    D_8780FE00 = 0xC;
+    gResultBankSyncDone = 0;
+    gResultSfxTriggered = 0;
+    gResultMusicChangePending = 0;
+    gResultAnimCountdown = 0xC;
 
-    D_8780FE08[0] = D_8780FE28[0] = Text_GetString(NULL, 0, D_87806330, 0x51);
+    gResultMenuStrings_PlayAgainDiffGameQuit[0] = gResultMenuStrings_PlayAgainQuit[0] = Text_GetString(NULL, 0, gMinigameNamesBank, 0x51);
 
-    D_8780FE08[1] = Text_GetString(NULL, 0, D_87806330, 0x52);
+    gResultMenuStrings_PlayAgainDiffGameQuit[1] = Text_GetString(NULL, 0, gMinigameNamesBank, 0x52);
 
-    D_8780FE08[2] = D_8780FE18[2] = D_8780FE28[1] = Text_GetString(NULL, 0, D_87806330, 0x53);
+    gResultMenuStrings_PlayAgainDiffGameQuit[2] = gResultMenuStrings_ContinueRestartQuit[2] = gResultMenuStrings_PlayAgainQuit[1] = Text_GetString(NULL, 0, gMinigameNamesBank, 0x53);
 
-    D_8780FE18[0] = Text_GetString(NULL, 0, D_87806330, 0x54);
-    D_8780FE18[1] = Text_GetString(NULL, 0, D_87806330, 0x55);
+    gResultMenuStrings_ContinueRestartQuit[0] = Text_GetString(NULL, 0, gMinigameNamesBank, 0x54);
+    gResultMenuStrings_ContinueRestartQuit[1] = Text_GetString(NULL, 0, gMinigameNamesBank, 0x55);
 
     Font_SetActive(4, 0);
 
-    D_8780FE30 = MAX(Font_MeasureTextExtent(0, 0, D_8780FE18[0]), Font_MeasureTextExtent(0, 0, D_8780FE18[2]));
-    D_8780FE32 = MAX(Font_MeasureTextExtent(0, 0, D_8780FE08[0]), Font_MeasureTextExtent(0, 0, D_8780FE08[1]));
-    D_8780FE32 = MAX(D_8780FE32, Font_MeasureTextExtent(0, 0, D_8780FE08[2]));
-    D_8780FE34 = MAX(D_8780FE30, Font_MeasureTextExtent(0, 0, D_8780FE18[1]));
-    D_8780FE36 = MAX(Font_MeasureTextExtent(0, 0, D_8780FE28[0]), Font_MeasureTextExtent(0, 0, D_8780FE28[1]));
+    gResultPauseMenuWidth = MAX(Font_MeasureTextExtent(0, 0, gResultMenuStrings_ContinueRestartQuit[0]), Font_MeasureTextExtent(0, 0, gResultMenuStrings_ContinueRestartQuit[2]));
+    gResultMenuWidth_PlayAgainDiffGameQuit = MAX(Font_MeasureTextExtent(0, 0, gResultMenuStrings_PlayAgainDiffGameQuit[0]), Font_MeasureTextExtent(0, 0, gResultMenuStrings_PlayAgainDiffGameQuit[1]));
+    gResultMenuWidth_PlayAgainDiffGameQuit = MAX(gResultMenuWidth_PlayAgainDiffGameQuit, Font_MeasureTextExtent(0, 0, gResultMenuStrings_PlayAgainDiffGameQuit[2]));
+    gResultMenuWidth_ContinueRestartQuit = MAX(gResultPauseMenuWidth, Font_MeasureTextExtent(0, 0, gResultMenuStrings_ContinueRestartQuit[1]));
+    gResultMenuWidth_PlayAgainQuit = MAX(Font_MeasureTextExtent(0, 0, gResultMenuStrings_PlayAgainQuit[0]), Font_MeasureTextExtent(0, 0, gResultMenuStrings_PlayAgainQuit[1]));
 
-    if (D_8780FE32) {}
+    if (gResultMenuWidth_PlayAgainDiffGameQuit) {}
 
     Save_EnsureBankLoaded(2);
 }
@@ -1339,49 +1339,49 @@ void Widget_PauseMenuResetWinStreak(void) {
     u8 i;
 
     for (i = 0; i < 4; i++) {
-        D_8780FC54[i] = 0;
-        D_8780FC58[i] = 0;
+        gResultPlayerMaxScore[i] = 0;
+        gResultPlayerCurrentScore[i] = 0;
     }
 }
 
 /**
- * Same shape as func_86A01490 in credits_158A00.c: the wrap-around arm widens the counter to
+ * Same shape as Stage_UpdateLogic in credits_158A00.c: the wrap-around arm widens the counter to
  * 64 bits before subtracting, which makes IDO stage the value through the low half of a
  * register pair (addiu t5, v0, 0) before the 32-bit subtract (subu t9, t5, v1).
  */
-void func_87802E58(void) {
-    static u32 D_8780FE38;
+void Widget_UpdateDeltaTime(void) {
+    static u32 gLastRspTimestamp;
 
-    s32 v0 = D_800A62E0.unk_A34;
+    s32 v0 = gRspTaskManager.unk_A34;
 
-    if (D_8780FCA1 == 0) {
-        D_8780FCA1 = 1;
-    } else if ((u32) D_8780FE38 < (u32) v0) {
-        D_8780FCA0 = v0 - D_8780FE38;
+    if (gResultDeltaTimeInit == 0) {
+        gResultDeltaTimeInit = 1;
+    } else if ((u32) gLastRspTimestamp < (u32) v0) {
+        gResultDeltaTime = v0 - gLastRspTimestamp;
     } else {
-        D_8780FCA0 = ((u64) (u32) v0 - 0x100000000ULL - 0x100000000ULL) - D_8780FE38;
+        gResultDeltaTime = ((u64) (u32) v0 - 0x100000000ULL - 0x100000000ULL) - gLastRspTimestamp;
     }
 
-    D_8780FE38 = v0;
+    gLastRspTimestamp = v0;
 }
 
 void Widget_PauseMenuTrigger(s16 arg0) {
     switch (arg0) {
         case 1:
-            D_8780FC44 = 1;
+            gResultFlag_Win = 1;
             break;
 
         case 2:
-            D_8780FC92 = 1;
+            gResultFlag_Special = 1;
             break;
     }
 }
 
 void Widget_PauseMenuRecordWin(s32 arg0) {
     if ((arg0 >= 0) && (arg0 < 4)) {
-        D_8780FA40[arg0]++;
-        D_8780FC50[arg0] = 1;
-        D_8780FDFC[arg0] = 1;
+        gPlayerWinCounts[arg0]++;
+        gResultPlayerScored[arg0] = 1;
+        gResultCubeStateFlag[arg0] = 1;
     }
 }
 
@@ -1389,16 +1389,16 @@ void Widget_PauseMenuCheckTournamentEnd(void) {
     u8 i;
 
     for (i = 0; i < 4; i++) {
-        if (D_8780FA40[i] >= D_8780FA3A) {
-            D_8780FC4C = 1;
+        if (gPlayerWinCounts[i] >= gWinsToChampion) {
+            gResultScoreThresholdMet = 1;
             break;
         }
     }
 }
 
 s32 Widget_PauseMenuCheckHyperUnlock(void) {
-    if ((D_8780FA2A == 1) && (D_8780FA3A >= 5) && (D_8780FA38 == 2) && (D_8780FA30[0] == 0) && (D_8780FA30[1] == 1) &&
-        (D_8780FA30[2] == 1) && (D_8780FA30[3] == 1) && (*D_8780FC58 == 5) && !(D_8780FA28 & 1)) {
+    if ((gMenuCursorX == 1) && (gWinsToChampion >= 5) && (gMinigameComDifficulty == 2) && (gMiniHudColorDefaults[0] == 0) && (gMiniHudColorDefaults[1] == 1) &&
+        (gMiniHudColorDefaults[2] == 1) && (gMiniHudColorDefaults[3] == 1) && (*gResultPlayerCurrentScore == 5) && !(gComHyperUnlocked & 1)) {
         return 1;
     }
     return 0;
@@ -1409,47 +1409,47 @@ void Widget_PauseMenuFindLeaders(void) {
     s8 var_v0 = 9;
 
     for (i = 0; i < 4; i++) {
-        if (D_8780FA40[i] < var_v0) {
-            var_v0 = D_8780FA40[i];
+        if (gPlayerWinCounts[i] < var_v0) {
+            var_v0 = gPlayerWinCounts[i];
         }
     }
 
-    D_8780FC78 = 0;
+    gResultLowestScorerCount = 0;
 
     for (i = 0; i < 4; i++) {
-        if (var_v0 == D_8780FA40[i]) {
-            D_8780FC80[i] = 1;
-            D_8780FC88[D_8780FC78] = i;
-            D_8780FC78++;
+        if (var_v0 == gPlayerWinCounts[i]) {
+            gResultIsLowestScorer[i] = 1;
+            gResultLowestScorerIndices[gResultLowestScorerCount] = i;
+            gResultLowestScorerCount++;
         } else {
-            D_8780FC80[i] = 0;
+            gResultIsLowestScorer[i] = 0;
         }
     }
 
-    D_8780FA48 = D_8780FC88[0];
+    gMenuSelectedOption = gResultLowestScorerIndices[0];
 }
 
 s32 Widget_PauseMenuGetResult(void) {
     s32 sp1C;
 
-    if (D_8780FE01 != 0) {
-        if (D_8780FA2A == 0) {
+    if (gResultMusicChangePending != 0) {
+        if (gMenuCursorX == 0) {
             sp1C = 1;
         } else {
             sp1C = 4;
         }
         Audio_SetPauseMixMode(4);
-        D_8780FE01 = 0;
-    } else if (D_8780FC92 != 0) {
+        gResultMusicChangePending = 0;
+    } else if (gResultFlag_Special != 0) {
         sp1C = 1;
-    } else if (D_8780FC4C == 0) {
-        if (D_8780FA2A == 0) {
-            sp1C = D_8780F990[D_8780FC5C];
+    } else if (gResultScoreThresholdMet == 0) {
+        if (gMenuCursorX == 0) {
+            sp1C = gResultOptionCount_Mode0[gResultSelectedOption];
         } else {
-            sp1C = D_8780F99C[D_8780FC5C];
+            sp1C = gResultOptionCount_Mode1[gResultSelectedOption];
         }
     } else {
-        sp1C = D_8780F9A8[D_8780FC5C];
+        sp1C = gResultOptionCount_Mode2[gResultSelectedOption];
     }
 
     return sp1C;
@@ -1510,38 +1510,38 @@ void Widget_PauseMenuDrawWinIcons(s16 arg0) {
 
     gSPLookAtX(gDisplayListHead++, &temp_s2->l[0]);
     gSPLookAtY(gDisplayListHead++, &temp_s2->l[1]);
-    gSPDisplayList(gDisplayListHead++, D_8780F7A8);
+    gSPDisplayList(gDisplayListHead++, gResultCubeSetupDL);
 
     guOrtho(temp_s3, -160.0f, 160.0f, -120.0f, 120.0f, -100.0f, 100.0f, 1.0f);
 
     gSPMatrix(gDisplayListHead++, (u32)temp_s3 & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
 
     for (i = 0; i < 4; i++) {
-        for (j = 0; j < D_8780FA40[i]; j++) {
-            if ((D_8780FA40[i] >= D_8780FA3A) && (D_8780FDFC[i] == 2)) {
-                D_8780FCD8[i][j].unk_04 += 7.5f;
-                if (D_8780FCD8[i][j].unk_04 >= 360.0f) {
-                    D_8780FCD8[i][j].unk_04 -= 360.0f;
+        for (j = 0; j < gPlayerWinCounts[i]; j++) {
+            if ((gPlayerWinCounts[i] >= gWinsToChampion) && (gResultCubeStateFlag[i] == 2)) {
+                gResultCubes[i][j].unk_04 += 7.5f;
+                if (gResultCubes[i][j].unk_04 >= 360.0f) {
+                    gResultCubes[i][j].unk_04 -= 360.0f;
                 }
             }
 
-            if (((j + 1) == D_8780FA40[i]) && (D_8780FC50[i] == 1)) {
+            if (((j + 1) == gPlayerWinCounts[i]) && (gResultPlayerScored[i] == 1)) {
                 if (arg0 != 0) {
                     break;
                 }
 
-                if ((0xB6 - (j * 0x12)) != D_8780FCD8[i][j].unk_02) {
-                    D_8780FCD8[i][j].unk_02 += 6;
-                    D_8780FCD8[i][j].unk_04 += 15.0f;
-                    if (D_8780FCD8[i][j].unk_04 >= 360.0f) {
-                        D_8780FCD8[i][j].unk_04 -= 360.0f;
+                if ((0xB6 - (j * 0x12)) != gResultCubes[i][j].unk_02) {
+                    gResultCubes[i][j].unk_02 += 6;
+                    gResultCubes[i][j].unk_04 += 15.0f;
+                    if (gResultCubes[i][j].unk_04 >= 360.0f) {
+                        gResultCubes[i][j].unk_04 -= 360.0f;
                     }
                 } else {
-                    if (D_8780FDFC[i] == 1) {
-                        D_8780FDFC[i] = 2;
+                    if (gResultCubeStateFlag[i] == 1) {
+                        gResultCubeStateFlag[i] = 2;
 
                         for (x = 0; x < 4; x++) {
-                            if (D_8780FDFC[x] == 1) {
+                            if (gResultCubeStateFlag[x] == 1) {
                                 break;
                             }
                         }
@@ -1553,20 +1553,20 @@ void Widget_PauseMenuDrawWinIcons(s16 arg0) {
                         }
                     }
 
-                    if (D_8780FA40[i] < D_8780FA3A) {
-                        D_8780FCD8[i][j].unk_04 += 7.5f;
-                        if (D_8780FCD8[i][j].unk_04 >= 360.0f) {
-                            D_8780FCD8[i][j].unk_04 -= 360.0f;
+                    if (gPlayerWinCounts[i] < gWinsToChampion) {
+                        gResultCubes[i][j].unk_04 += 7.5f;
+                        if (gResultCubes[i][j].unk_04 >= 360.0f) {
+                            gResultCubes[i][j].unk_04 -= 360.0f;
                         }
                     }
                 }
             }
 
-            MathUtil_BuildTransformMtx(spC8, 0.2f, 0.2f, 0.2f, D_8780FCD8[i][j].unk_04, 0.0f, 1.0f, 0.0f,
-                          (D_8780FCD8[i][j].unk_00 + arg0) - 0xA0, 0x78 - D_8780FCD8[i][j].unk_02, 0.0f);
+            MathUtil_BuildTransformMtx(spC8, 0.2f, 0.2f, 0.2f, gResultCubes[i][j].unk_04, 0.0f, 1.0f, 0.0f,
+                          (gResultCubes[i][j].unk_00 + arg0) - 0xA0, 0x78 - gResultCubes[i][j].unk_02, 0.0f);
 
             gSPMatrix(gDisplayListHead++, (u32)spC8++ & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-            gSPDisplayList(gDisplayListHead++, D_8780F840);
+            gSPDisplayList(gDisplayListHead++, gResultCubeRenderDL);
         }
     }
 }
@@ -1593,7 +1593,7 @@ void Widget_PauseMenuDrawIconQuad(s32 arg0, u32* arg1, u8 arg2, u8 arg3, s16 arg
 
     MathUtil_BuildTransformMtx(spC4, arg8, arg9, argA, argB, argC, argD, argE, 0.0f, 0.0f, 0.0f);
 
-    gSPDisplayList(gDisplayListHead++, D_8780EBA0);
+    gSPDisplayList(gDisplayListHead++, gResultScreenSetupDL);
 
     gDPLoadTextureBlock(gDisplayListHead++, arg1, G_IM_FMT_RGBA, G_IM_SIZ_32b, arg2, arg3, 0,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
@@ -1618,7 +1618,7 @@ void Widget_PauseMenuDrawIconQuad(s32 arg0, u32* arg1, u8 arg2, u8 arg3, s16 arg
     }
 }
 
-void func_87803EAC(u32* arg0, u16 arg1, UNUSED u16 arg2, u16 arg3, u16 arg4, u8 arg5, u8 arg6) {
+void ResultScreen_DrawTiledTexture(u32* arg0, u16 arg1, UNUSED u16 arg2, u16 arg3, u16 arg4, u8 arg5, u8 arg6) {
     u8 j;
     u8 i;
     Vtx* temp_fp;
@@ -1627,8 +1627,8 @@ void func_87803EAC(u32* arg0, u16 arg1, UNUSED u16 arg2, u16 arg3, u16 arg4, u8 
 
     for (i = 0; i < arg6; i++) {
         for (j = 0; j < arg5; j++) {
-            Gfx_SetVertexAttributes(&temp_fp[(arg5 * i) + j], D_8780FCB8[j] - arg3, D_8780FCCC[i] - arg4, 0,
-                                    D_8780FCB8[j] * 32, D_8780FCCC[i] * 32, 0xFF, 0xFF, 0xFF, 0xFF);
+            Gfx_SetVertexAttributes(&temp_fp[(arg5 * i) + j], gResultTiledTexX[j] - arg3, gResultTiledTexY[i] - arg4, 0,
+                                    gResultTiledTexX[j] * 32, gResultTiledTexY[i] * 32, 0xFF, 0xFF, 0xFF, 0xFF);
         }
     }
 
@@ -1636,8 +1636,8 @@ void func_87803EAC(u32* arg0, u16 arg1, UNUSED u16 arg2, u16 arg3, u16 arg4, u8 
 
     for (i = 0; i < arg6 - 1; i++) {
         for (j = 0; j < arg5 - 1; j++) {
-            gDPLoadTextureTile(gDisplayListHead++, arg0, G_IM_FMT_RGBA, G_IM_SIZ_32b, arg1, 0, D_8780FCB8[j],
-                               D_8780FCCC[i], D_8780FCB8[j + 1], D_8780FCCC[i + 1], 0, G_TX_NOMIRROR | G_TX_CLAMP,
+            gDPLoadTextureTile(gDisplayListHead++, arg0, G_IM_FMT_RGBA, G_IM_SIZ_32b, arg1, 0, gResultTiledTexX[j],
+                               gResultTiledTexY[i], gResultTiledTexX[j + 1], gResultTiledTexY[i + 1], 0, G_TX_NOMIRROR | G_TX_CLAMP,
                                G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
 
             gSP2Triangles(gDisplayListHead++, ((arg5 * i) + j), ((arg5 * (i + 1)) + j), (((arg5 * (i + 1)) + j)) + 1, 0,
@@ -1653,7 +1653,7 @@ typedef struct Vtx4 {
     /* 0x30 */ Vtx vtx4;
 } Vtx4; // size = 0x40
 
-void func_87804320(u8 arg0, s8 arg1, s8 arg2, s8 arg3, s8 arg4) {
+void ResultScreen_RenderResultGraphics(u8 arg0, s8 arg1, s8 arg2, s8 arg3, s8 arg4) {
     u8 i;
     Mtx* temp_v0;
     f32 var_fv1;
@@ -1663,16 +1663,16 @@ void func_87804320(u8 arg0, s8 arg1, s8 arg2, s8 arg3, s8 arg4) {
     temp_v0 = Gfx_AllocDisplayList(sizeof(Mtx) * 1);
     temp_s2 = arg1 + arg2 + arg3 + arg4;
 
-    gSPDisplayList(gDisplayListHead++, D_8780EBA0);
+    gSPDisplayList(gDisplayListHead++, gResultScreenSetupDL);
 
     if (temp_s2 == -4) {
-        var_fv1 = D_8780F8DC[arg0];
+        var_fv1 = gResultEndSequenceZoomFactors[arg0];
 
         gDPSetCombineLERP(gDisplayListHead++, 0, 0, 0, TEXEL0, TEXEL0, 0, ENVIRONMENT, 0, 0, 0, 0, TEXEL0, TEXEL0, 0,
                           ENVIRONMENT, 0);
-        gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, D_8780F904[arg0]);
+        gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gResultFadeAlphas[arg0]);
     } else {
-        var_fv1 = D_8780F8B0[arg0];
+        var_fv1 = gResultScaleFactors[arg0];
 
         gDPSetCombineMode(gDisplayListHead++, G_CC_DECALRGBA, G_CC_DECALRGBA);
     }
@@ -1688,63 +1688,63 @@ void func_87804320(u8 arg0, s8 arg1, s8 arg2, s8 arg3, s8 arg4) {
     gSPMatrix(gDisplayListHead++, (u32)&gIdentityMtx & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     if (temp_s2 == -4) {
-        D_8780FCB8[0] = 0;
-        D_8780FCB8[1] = 0x1D;
-        D_8780FCB8[2] = 0x3A;
-        D_8780FCB8[3] = 0x57;
-        D_8780FCB8[4] = 0x74;
-        D_8780FCB8[5] = 0x91;
-        D_8780FCB8[6] = 0xAE;
-        D_8780FCB8[7] = 0xCB;
-        D_8780FCB8[8] = 0xE8;
+        gResultTiledTexX[0] = 0;
+        gResultTiledTexX[1] = 0x1D;
+        gResultTiledTexX[2] = 0x3A;
+        gResultTiledTexX[3] = 0x57;
+        gResultTiledTexX[4] = 0x74;
+        gResultTiledTexX[5] = 0x91;
+        gResultTiledTexX[6] = 0xAE;
+        gResultTiledTexX[7] = 0xCB;
+        gResultTiledTexX[8] = 0xE8;
 
-        D_8780FCCC[0] = 0;
-        D_8780FCCC[1] = 0x1F;
-        D_8780FCCC[2] = 0x3D;
+        gResultTiledTexY[0] = 0;
+        gResultTiledTexY[1] = 0x1F;
+        gResultTiledTexY[2] = 0x3D;
 
-        func_87803EAC(&D_30200C0, 0xE8, 0x5C, 0x74, 0x2E, 9, 3);
+        ResultScreen_DrawTiledTexture(&D_30200C0, 0xE8, 0x5C, 0x74, 0x2E, 9, 3);
 
-        D_8780FCCC[0] = 0x3D;
-        D_8780FCCC[1] = 0x5C;
+        gResultTiledTexY[0] = 0x3D;
+        gResultTiledTexY[1] = 0x5C;
 
-        func_87803EAC(&D_30200C0, 0xE8, 0x5C, 0x74, 0x2E, 9, 2);
+        ResultScreen_DrawTiledTexture(&D_30200C0, 0xE8, 0x5C, 0x74, 0x2E, 9, 2);
     } else if (temp_s2 == 0) {
-        if ((arg0 == 0xA) && (D_87806338 != 2)) {
+        if ((arg0 == 0xA) && (gCurrentMenuIndex != 2)) {
             Audio_StartMusicTrack(0x1B);
         }
-        D_8780FCB8[0] = 0;
-        D_8780FCB8[1] = 0x1E;
-        D_8780FCB8[2] = 0x3C;
-        D_8780FCB8[3] = 0x5A;
-        D_8780FCB8[4] = 0x78;
-        D_8780FCB8[5] = 0x96;
-        D_8780FCB8[6] = 0xB4;
+        gResultTiledTexX[0] = 0;
+        gResultTiledTexX[1] = 0x1E;
+        gResultTiledTexX[2] = 0x3C;
+        gResultTiledTexX[3] = 0x5A;
+        gResultTiledTexX[4] = 0x78;
+        gResultTiledTexX[5] = 0x96;
+        gResultTiledTexX[6] = 0xB4;
 
-        D_8780FCCC[0] = 0;
-        D_8780FCCC[1] = 0x1A;
-        D_8780FCCC[2] = 0x34;
+        gResultTiledTexY[0] = 0;
+        gResultTiledTexY[1] = 0x1A;
+        gResultTiledTexY[2] = 0x34;
 
-        func_87803EAC(&D_3016E80, 0xB4, 0x34, 0x5A, 0x1A, 7, 3);
+        ResultScreen_DrawTiledTexture(&D_3016E80, 0xB4, 0x34, 0x5A, 0x1A, 7, 3);
     } else {
         Vtx4* spAC;
         u16 spA4[4];
         s8 spA0[4];
 
-        if ((arg0 == 0xA) && (D_87806338 != 2)) {
+        if ((arg0 == 0xA) && (gCurrentMenuIndex != 2)) {
             Audio_StartMusicTrack(0x1A);
         }
 
-        D_8780FCB8[0] = 0;
-        D_8780FCB8[1] = 0x22;
-        D_8780FCB8[2] = 0x44;
-        D_8780FCB8[3] = 0x66;
-        D_8780FCB8[4] = 0x88;
+        gResultTiledTexX[0] = 0;
+        gResultTiledTexX[1] = 0x22;
+        gResultTiledTexX[2] = 0x44;
+        gResultTiledTexX[3] = 0x66;
+        gResultTiledTexX[4] = 0x88;
 
-        D_8780FCCC[0] = 0;
-        D_8780FCCC[1] = 0x1A;
-        D_8780FCCC[2] = 0x34;
+        gResultTiledTexY[0] = 0;
+        gResultTiledTexY[1] = 0x1A;
+        gResultTiledTexY[2] = 0x34;
 
-        func_87803EAC(&D_3010000, 0x88, 0x34, 0x23, 0x1A, 5, 3);
+        ResultScreen_DrawTiledTexture(&D_3010000, 0x88, 0x34, 0x23, 0x1A, 5, 3);
 
         spAC = Gfx_AllocDisplayList(sizeof(Vtx) * 4 * temp_s2);
 
@@ -1778,7 +1778,7 @@ void func_87804320(u8 arg0, s8 arg1, s8 arg2, s8 arg3, s8 arg4) {
                 Gfx_SetVertexAttributes(&spAC[var_s4].vtx4, -0x1B, spA4[var_s4] + 0x34, 0, 0x480, 0x340, 0xFF, 0xFF, 0xFF, 0xFF);
 
                 gSPVertex(gDisplayListHead++, &spAC[var_s4].vtx1, 4, 0);
-                gDPLoadTextureBlock(gDisplayListHead++, D_8780F910[D_8780FA30[i]][i], G_IM_FMT_RGBA, G_IM_SIZ_32b, 36,
+                gDPLoadTextureBlock(gDisplayListHead++, gResultCubeTextureTable[gMiniHudColorDefaults[i]][i], G_IM_FMT_RGBA, G_IM_SIZ_32b, 36,
                                     26, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK,
                                     G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
                 gSP2Triangles(gDisplayListHead++, 0, 2, 3, 0, 0, 3, 1, 0);
@@ -1801,38 +1801,38 @@ void Widget_PauseMenuDrawPlayerIcons(s16 arg0) {
 
     for (i = 0; i < 4; i++) {
         var_a0 = 0;
-        if (D_8780FC74 != 0) {
-            if (D_8780FC80[i] == 0) {
+        if (gResultCubesActive != 0) {
+            if (gResultIsLowestScorer[i] == 0) {
                 gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 75);
             } else {
                 gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
 
-                if ((D_8780FA48 == i) && ((D_8780FC40 == 4) || (((D_8780FC40 == 5) || (D_8780FC40 == 6)) &&
-                                                                ((D_8780FCA8 >= 0x28) || ((D_8780FCA8 % 10) < 5))))) {
+                if ((gMenuSelectedOption == i) && ((gResultState == 4) || (((gResultState == 5) || (gResultState == 6)) &&
+                                                                ((gResultAnimTimer >= 0x28) || ((gResultAnimTimer % 10) < 5))))) {
                     var_a0 = 1;
                 }
             }
 
-            D_8780FCAC[i] = 0;
-            D_8780FCB0[i] = 0;
+            gResultPlayerIconAnimFrame[i] = 0;
+            gResultPlayerIconAnimTimer[i] = 0;
         } else {
-            if (D_8780FDFC[i] == 2) {
-                D_8780FCAC[i]++;
-                if (D_8780FCAC[i] == 4u) {
-                    D_8780FCAC[i] = 0;
+            if (gResultCubeStateFlag[i] == 2) {
+                gResultPlayerIconAnimFrame[i]++;
+                if (gResultPlayerIconAnimFrame[i] == 4u) {
+                    gResultPlayerIconAnimFrame[i] = 0;
                 }
 
-                if (D_8780FA40[i] >= D_8780FA3A) {
-                    D_8780FCB0[i]++;
-                    if (D_8780FCB0[i] == 0x14) {
-                        D_8780FCB0[i] = 0;
+                if (gPlayerWinCounts[i] >= gWinsToChampion) {
+                    gResultPlayerIconAnimTimer[i]++;
+                    if (gResultPlayerIconAnimTimer[i] == 0x14) {
+                        gResultPlayerIconAnimTimer[i] = 0;
                     }
                 }
             }
         }
-        Widget_PauseMenuDrawIconQuad(var_a0, D_8780F910[D_8780FA30[i]][i], 0x24, 0x1A, ((i * 0x36) + arg0) + 0x3E, 0xBF,
-                      ((i * 0x36) + arg0) + 0x62, 0xD9, D_8780F930[D_8780FCAC[i]], D_8780F930[D_8780FCAC[i]],
-                      D_8780F930[D_8780FCAC[i]], D_8780F940[D_8780FCB0[i]], 0.0f, 0.0f, 1.0f);
+        Widget_PauseMenuDrawIconQuad(var_a0, gResultCubeTextureTable[gMiniHudColorDefaults[i]][i], 0x24, 0x1A, ((i * 0x36) + arg0) + 0x3E, 0xBF,
+                      ((i * 0x36) + arg0) + 0x62, 0xD9, gResultPlayerIconPulseScales[gResultPlayerIconAnimFrame[i]], gResultPlayerIconPulseScales[gResultPlayerIconAnimFrame[i]],
+                      gResultPlayerIconPulseScales[gResultPlayerIconAnimFrame[i]], gResultCubeRotationOffset[gResultPlayerIconAnimTimer[i]], 0.0f, 0.0f, 1.0f);
     }
 
     Font_BeginTranslucentTextRendering();
@@ -1840,18 +1840,18 @@ void Widget_PauseMenuDrawPlayerIcons(s16 arg0) {
     Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
 
     for (i = 0; i < 4; i++) {
-        if (D_8780FC74 != 0) {
-            if (D_8780FC80[i] == 0) {
+        if (gResultCubesActive != 0) {
+            if (gResultIsLowestScorer[i] == 0) {
                 Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0x4B);
             } else {
                 Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
             }
         }
 
-        if (D_8780FDFC[i] == 1) {
-            Font_Printf((i * 0x36) + arg0 + 0x4C, 0xD8, "%d", D_8780FA40[i] - 1);
+        if (gResultCubeStateFlag[i] == 1) {
+            Font_Printf((i * 0x36) + arg0 + 0x4C, 0xD8, "%d", gPlayerWinCounts[i] - 1);
         } else {
-            Font_Printf((i * 0x36) + arg0 + 0x4C, 0xD8, "%d", D_8780FA40[i]);
+            Font_Printf((i * 0x36) + arg0 + 0x4C, 0xD8, "%d", gPlayerWinCounts[i]);
         }
     }
 
@@ -1859,16 +1859,16 @@ void Widget_PauseMenuDrawPlayerIcons(s16 arg0) {
     Font_EnableTwoCycleTexturing();
     Gfx_SetEnvColor(0xF0, 0xF0, 0xF0, 0xFF);
     Gfx_SetPrimColor(0x8C, 0x8C, 0x8C, 0xFF);
-    Text_SetNumberToken(1, D_8780FA3A);
+    Text_SetNumberToken(1, gWinsToChampion);
 
     {
         char sp8C[0x60];
         char* var_s0_3;
 
-        var_s0_3 = Text_GetString(sp8C, 0x60, D_87806330, 0x13);
+        var_s0_3 = Text_GetString(sp8C, 0x60, gMinigameNamesBank, 0x13);
 
-        if ((D_8780FA30[0] + D_8780FA30[1] + D_8780FA30[2] + D_8780FA30[3]) != 0) {
-            sprintf(sp8C, "%s - %s", var_s0_3, Text_GetString(NULL, 0, D_87806330, D_8780F9B0[D_8780FA38]));
+        if ((gMiniHudColorDefaults[0] + gMiniHudColorDefaults[1] + gMiniHudColorDefaults[2] + gMiniHudColorDefaults[3]) != 0) {
+            sprintf(sp8C, "%s - %s", var_s0_3, Text_GetString(NULL, 0, gMinigameNamesBank, gResultStateMessageIds[gMinigameComDifficulty]));
             var_s0_3 = sp8C;
         }
 
@@ -1879,9 +1879,9 @@ void Widget_PauseMenuDrawPlayerIcons(s16 arg0) {
 }
 
 s32 Widget_PauseMenuUpdate(void) {
-    static s32 D_8780FE3C;
-    static s32 D_8780FE40;
-    static s32 D_8780FE44;
+    static s32 gResultCubeCycleTimer;
+    static s32 gResultCubeCycleInterval;
+    static s32 gResultAnimDelayTimer;
 
     u8 sp70[] = {
         0, 0, 30, 0, 0, 250,
@@ -1903,95 +1903,95 @@ s32 Widget_PauseMenuUpdate(void) {
 
     sp67 = 0;
     sp66 = 0;
-    if (D_8780FC9C->rawStickY >= 0x32) {
+    if (gResultController->rawStickY >= 0x32) {
         sp67 = 1;
-    } else if (D_8780FC9C->rawStickY < -0x31) {
+    } else if (gResultController->rawStickY < -0x31) {
         sp66 = 1;
     }
 
-    func_87802E58();
+    Widget_UpdateDeltaTime();
 
-    switch (D_8780FC40) {
+    switch (gResultState) {
         case 0:
-            if (D_8780FC44 != 0) {
-                D_8780FC44 = 0;
-                D_8780FCA2 = 0xB;
-                D_8780FC60 = 1;
-                D_8780FC40 = 1;
-                D_8780FC94 = 0;
-                D_8780FE44 = 0xB4;
-                if (D_8780FA2A != 0) {
-                    if ((D_8780FC50[0] + D_8780FC50[1] + D_8780FC50[2] + D_8780FC50[3]) != 0) {
+            if (gResultFlag_Win != 0) {
+                gResultFlag_Win = 0;
+                gResultAnimFrame = 0xB;
+                gResultGraphicsActive = 1;
+                gResultState = 1;
+                gResultMenuVisible = 0;
+                gResultAnimDelayTimer = 0xB4;
+                if (gMenuCursorX != 0) {
+                    if ((gResultPlayerScored[0] + gResultPlayerScored[1] + gResultPlayerScored[2] + gResultPlayerScored[3]) != 0) {
                         for (i = 0; i < 4; i++) {
-                            if (D_8780FC50[i] != 0) {
-                                D_8780FC58[i]++;
-                                if (D_8780FC54[i] < D_8780FC58[i]) {
-                                    D_8780FC54[i] = D_8780FC58[i];
+                            if (gResultPlayerScored[i] != 0) {
+                                gResultPlayerCurrentScore[i]++;
+                                if (gResultPlayerMaxScore[i] < gResultPlayerCurrentScore[i]) {
+                                    gResultPlayerMaxScore[i] = gResultPlayerCurrentScore[i];
                                 }
                             } else {
-                                D_8780FC58[i] = 0;
+                                gResultPlayerCurrentScore[i] = 0;
                             }
                         }
                     }
                 }
-            } else if (D_8780FC92 == 0) {
-                if (D_8780FC94 != 0) {
-                    if ((D_8780FC9C->buttonPressed & 0x800) || ((sp67 == 1) && (D_8780FC9A == 0))) {
+            } else if (gResultFlag_Special == 0) {
+                if (gResultMenuVisible != 0) {
+                    if ((gResultController->buttonPressed & 0x800) || ((sp67 == 1) && (gResultStickUp == 0))) {
                         Audio_SetPauseMixMode(2);
-                        D_8780FC5C--;
-                        if (D_8780FC5C < 0) {
-                            D_8780FC5C = D_8780FC5D - 1;
+                        gResultSelectedOption--;
+                        if (gResultSelectedOption < 0) {
+                            gResultSelectedOption = gResultOptionLimit - 1;
                         }
-                    } else if ((D_8780FC9C->buttonPressed & 0x400) || ((sp66 == 1) && (D_8780FC9B == 0))) {
+                    } else if ((gResultController->buttonPressed & 0x400) || ((sp66 == 1) && (gResultStickDown == 0))) {
                         Audio_SetPauseMixMode(2);
-                        D_8780FC5C++;
-                        if (D_8780FC5C >= D_8780FC5D) {
-                            D_8780FC5C = 0;
+                        gResultSelectedOption++;
+                        if (gResultSelectedOption >= gResultOptionLimit) {
+                            gResultSelectedOption = 0;
                         }
-                    } else if (D_8780FC9C->buttonPressed & 0x8000) {
-                        if (D_8780FC5C == 0) {
+                    } else if (gResultController->buttonPressed & 0x8000) {
+                        if (gResultSelectedOption == 0) {
                             Audio_SetPauseMixMode(0);
-                            D_8780FC94 = 0;
-                        } else if (D_8780FC5C == 1) {
+                            gResultMenuVisible = 0;
+                        } else if (gResultSelectedOption == 1) {
                             Audio_SetPauseMixMode(3);
-                            D_8780FC92 = 1;
-                            D_8780FE01 = 1;
+                            gResultFlag_Special = 1;
+                            gResultMusicChangePending = 1;
                         }
-                    } else if (D_8780FC9C->buttonPressed & 0x1000) {
+                    } else if (gResultController->buttonPressed & 0x1000) {
                         Audio_SetPauseMixMode(0);
-                        D_8780FC94 = 0;
-                        D_8780FC5C = 0;
+                        gResultMenuVisible = 0;
+                        gResultSelectedOption = 0;
                     }
-                } else if ((Widget_CountdownGetState() == -2) && (D_8780FC9C->buttonPressed & 0x1000)) {
+                } else if ((Widget_CountdownGetState() == -2) && (gResultController->buttonPressed & 0x1000)) {
                     Audio_SetPauseMixMode(1);
-                    D_8780FC94 = 1;
-                    D_8780FC5D = 2;
+                    gResultMenuVisible = 1;
+                    gResultOptionLimit = 2;
                 }
             }
             break;
 
         case 1:
-            if (D_8780FE44 > 0) {
-                D_8780FE44 -= D_8780FCA0;
+            if (gResultAnimDelayTimer > 0) {
+                gResultAnimDelayTimer -= gResultDeltaTime;
             }
 
-            if ((D_8780FE44 <= 0) && (D_8780FC9C->buttonPressed & 0x8000)) {
-                D_8780FC98 = 1;
-                if (D_8780FA2A == 0) {
+            if ((gResultAnimDelayTimer <= 0) && (gResultController->buttonPressed & 0x8000)) {
+                gResultConfirmPressed = 1;
+                if (gMenuCursorX == 0) {
                     Audio_PlaySoundEffectById(SFX_PANEL_OPEN);
-                    D_8780FC40 = 3;
-                    D_8780FC70 = 1;
-                    D_8780FC5D = 3;
+                    gResultState = 3;
+                    gResultMenuActive = 1;
+                    gResultOptionLimit = 3;
                 } else {
                     Audio_PlayPersistentSoundCommand(0x12, 0);
-                    D_8780FC40 = 2;
-                    D_8780FC64 = 1;
-                    D_8780FCAA = 0x190;
+                    gResultState = 2;
+                    gResultSlideInActive = 1;
+                    gResultIconYOffset = 0x190;
                     Widget_PauseMenuCheckTournamentEnd();
-                    if (D_8780FC4C != 0) {
-                        D_8780FC5D = 2;
+                    if (gResultScoreThresholdMet != 0) {
+                        gResultOptionLimit = 2;
                     } else {
-                        D_8780FC5D = 3;
+                        gResultOptionLimit = 3;
                     }
                     Widget_PauseMenuFindLeaders();
                 }
@@ -1999,58 +1999,58 @@ s32 Widget_PauseMenuUpdate(void) {
             break;
 
         case 2:
-            if (D_8780FCAA == 0) {
-                if (D_8780FC4C == 1) {
-                    if (D_8780FC68 == 0) {
+            if (gResultIconYOffset == 0) {
+                if (gResultScoreThresholdMet == 1) {
+                    if (gResultEndSequenceActive == 0) {
                         for (i = 0; i < 4; i++) {
-                            if (D_8780FDFC[i] == 1) {
+                            if (gResultCubeStateFlag[i] == 1) {
                                 break;
                             }
                         }
 
                         if (i == 4) {
-                            D_8780FC68 = 1;
-                            D_8780FCA4 = 0xF0;
-                            D_8780FCA6 = 0xA;
+                            gResultEndSequenceActive = 1;
+                            gResultAnimYOffset = 0xF0;
+                            gResultAnimStep = 0xA;
                         }
                     }
                 }
 
-                if ((D_8780FC4C == 0) || ((D_8780FC4C == 1) && (D_8780FCA6 == 0) && (Audio_CountCategorySounds(2) == 0))) {
+                if ((gResultScoreThresholdMet == 0) || ((gResultScoreThresholdMet == 1) && (gResultAnimStep == 0) && (Audio_CountCategorySounds(2) == 0))) {
                     for (i = 0; i < 4; i++) {
-                        if (D_8780FDFC[i] == 1) {
+                        if (gResultCubeStateFlag[i] == 1) {
                             break;
                         }
                     }
 
                     if (i == 4) {
-                        if (D_8780FC6C == 0) {
-                            if (D_8780FC9C->buttonPressed & 0x8000) {
+                        if (gResultSpecialWinActive == 0) {
+                            if (gResultController->buttonPressed & 0x8000) {
                                 Audio_PlaySoundEffectById(SFX_PANEL_OPEN);
                                 if (Widget_PauseMenuCheckHyperUnlock() != 0) {
                                     Audio_StartMusicTrack(0x13);
-                                    D_8780FC6C = 1;
-                                    D_8780FE44 = 0xB4;
+                                    gResultSpecialWinActive = 1;
+                                    gResultAnimDelayTimer = 0xB4;
                                 } else {
-                                    D_8780FC40 = 3;
-                                    D_8780FC70 = 1;
+                                    gResultState = 3;
+                                    gResultMenuActive = 1;
                                 }
                             }
                         } else {
-                            D_8780FE44 -= D_8780FCA0;
-                            if (D_8780FE44 <= 0) {
-                                if (D_8780FC9C->buttonPressed & 0x8000) {
+                            gResultAnimDelayTimer -= gResultDeltaTime;
+                            if (gResultAnimDelayTimer <= 0) {
+                                if (gResultController->buttonPressed & 0x8000) {
                                     Audio_PlaySoundEffectById(SFX_PANEL_OPEN);
-                                    D_8780FC40 = 3;
-                                    D_8780FC70 = 1;
-                                    D_8780FC6C = 0;
+                                    gResultState = 3;
+                                    gResultMenuActive = 1;
+                                    gResultSpecialWinActive = 0;
                                 }
-                            } else if ((D_8780FE44 < 0xAB) && (D_8780FCA7 == 0)) {
-                                D_8780FA28 |= 1;
-                                Save_SetOptionsField1E(D_8780FA28 & 0xFF);
+                            } else if ((gResultAnimDelayTimer < 0xAB) && (gResultBankSyncDone == 0)) {
+                                gComHyperUnlocked |= 1;
+                                Save_SetOptionsField1E(gComHyperUnlocked & 0xFF);
                                 Save_CommitTypedRecord(0x14, 0);
                                 Save_FlushBank(2);
-                                D_8780FCA7 = 1;
+                                gResultBankSyncDone = 1;
                             }
                         }
                     }
@@ -2059,85 +2059,85 @@ s32 Widget_PauseMenuUpdate(void) {
             break;
 
         case 3:
-            if ((D_8780FC9C->buttonPressed & 0x800) || ((sp67 == 1) && (D_8780FC9A == 0))) {
+            if ((gResultController->buttonPressed & 0x800) || ((sp67 == 1) && (gResultStickUp == 0))) {
                 Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
-                D_8780FC5C--;
-                if (D_8780FC5C < 0) {
-                    D_8780FC5C = D_8780FC5D - 1;
+                gResultSelectedOption--;
+                if (gResultSelectedOption < 0) {
+                    gResultSelectedOption = gResultOptionLimit - 1;
                 }
-            } else if ((D_8780FC9C->buttonPressed & 0x400) || ((sp66 == 1) && (D_8780FC9B == 0))) {
+            } else if ((gResultController->buttonPressed & 0x400) || ((sp66 == 1) && (gResultStickDown == 0))) {
                 Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
-                D_8780FC5C++;
-                if (D_8780FC5C >= D_8780FC5D) {
-                    D_8780FC5C = 0;
+                gResultSelectedOption++;
+                if (gResultSelectedOption >= gResultOptionLimit) {
+                    gResultSelectedOption = 0;
                 }
-            } else if (D_8780FC9C->buttonPressed & 0x8000) {
+            } else if (gResultController->buttonPressed & 0x8000) {
                 Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
-                if (D_8780FA2A == 0) {
-                    D_8780FC40 = 6;
-                } else if (D_8780FC4C != 0) {
-                    D_8780FC40 = 6;
-                } else if (D_8780FC5C == 0) {
-                    D_8780FC70 = 0;
-                    D_8780FC74 = 1;
-                    if (D_8780FC78 == 1) {
-                        D_8780FC40 = 5;
-                        D_8780FCA8 = 0x2F;
+                if (gMenuCursorX == 0) {
+                    gResultState = 6;
+                } else if (gResultScoreThresholdMet != 0) {
+                    gResultState = 6;
+                } else if (gResultSelectedOption == 0) {
+                    gResultMenuActive = 0;
+                    gResultCubesActive = 1;
+                    if (gResultLowestScorerCount == 1) {
+                        gResultState = 5;
+                        gResultAnimTimer = 0x2F;
                     } else {
-                        D_8780FC40 = 4;
-                        D_8780FE3C = 0x60 - Rand_Range(0x20);
-                        D_8780FC90 = 0;
+                        gResultState = 4;
+                        gResultCubeCycleTimer = 0x60 - Rand_Range(0x20);
+                        gResultCubeCycleIndex = 0;
                     }
                 } else {
-                    D_8780FC40 = 6;
+                    gResultState = 6;
                 }
             }
             break;
 
         case 4:
-            D_8780FE3C--;
-            if (D_8780FE3C >= 0x1F) {
-                D_8780FE40 = 1;
+            gResultCubeCycleTimer--;
+            if (gResultCubeCycleTimer >= 0x1F) {
+                gResultCubeCycleInterval = 1;
             } else {
-                D_8780FE40 = 3;
+                gResultCubeCycleInterval = 3;
             }
 
-            if (!(D_8780FC48 & D_8780FE40)) {
-                D_8780FC90++;
+            if (!(gResultFrameCounter & gResultCubeCycleInterval)) {
+                gResultCubeCycleIndex++;
                 Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
-                if (D_8780FC90 >= D_8780FC78) {
-                    D_8780FC90 = 0;
+                if (gResultCubeCycleIndex >= gResultLowestScorerCount) {
+                    gResultCubeCycleIndex = 0;
                 }
-                D_8780FA48 = D_8780FC88[D_8780FC90];
+                gMenuSelectedOption = gResultLowestScorerIndices[gResultCubeCycleIndex];
             }
 
-            if (D_8780FE3C <= 0) {
-                D_8780FC40 = 5;
-                D_8780FCA8 = 0x2A;
+            if (gResultCubeCycleTimer <= 0) {
+                gResultState = 5;
+                gResultAnimTimer = 0x2A;
             }
             break;
 
         case 5:
-            D_8780FCA8--;
-            if (D_8780FCA8 == 0x29) {
+            gResultAnimTimer--;
+            if (gResultAnimTimer == 0x29) {
                 Audio_PlaySoundEffectById(0x11);
-            } else if (D_8780FCA8 <= 0) {
-                D_8780FC40 = 6;
+            } else if (gResultAnimTimer <= 0) {
+                gResultState = 6;
             }
             break;
 
         case 6:
-            D_8780FC96 = 1;
+            gResultExitPending = 1;
             break;
     }
 
-    if (D_8780FC94 != 0) {
-        Widget_DrawPanel(((0x140 - D_8780FE30) / 2) - 0xA, 0x61, D_8780FE30 + 0x14, 0x30, &sp70[0], &sp70[3]);
+    if (gResultMenuVisible != 0) {
+        Widget_DrawPanel(((0x140 - gResultPauseMenuWidth) / 2) - 0xA, 0x61, gResultPauseMenuWidth + 0x14, 0x30, &sp70[0], &sp70[3]);
         Font_BeginTranslucentTextRendering();
         Font_SetActive(4, 0);
 
-        for (i = 0; i < D_8780FC5D; i++) {
-            if (D_8780FC5C == i) {
+        for (i = 0; i < gResultOptionLimit; i++) {
+            if (gResultSelectedOption == i) {
                 Gfx_SetEnvColor(0xFF, 0xFF, 0, 0xFF);
             } else {
                 Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
@@ -2149,86 +2149,86 @@ s32 Widget_PauseMenuUpdate(void) {
                 temp_t0 = i;
             }
 
-            Font_Printf((0x140 - D_8780FE30) / 2, (i * 0x12) + 0x68, "%s", D_8780FE18[temp_t0]);
+            Font_Printf((0x140 - gResultPauseMenuWidth) / 2, (i * 0x12) + 0x68, "%s", gResultMenuStrings_ContinueRestartQuit[temp_t0]);
         }
 
         Font_EndTexturedTextRendering();
     } else {
-        if (D_8780FC60 != 0) {
-            if (D_8780FCA2 > 0) {
-                D_8780FCA2--;
+        if (gResultGraphicsActive != 0) {
+            if (gResultAnimFrame > 0) {
+                gResultAnimFrame--;
             }
-            func_87804320(D_8780FCA2, D_8780FC50[0], D_8780FC50[1], D_8780FC50[2], D_8780FC50[3]);
+            ResultScreen_RenderResultGraphics(gResultAnimFrame, gResultPlayerScored[0], gResultPlayerScored[1], gResultPlayerScored[2], gResultPlayerScored[3]);
         }
 
-        if ((D_8780FC40 != 0) && (D_8780FC40 != 1)) {
+        if ((gResultState != 0) && (gResultState != 1)) {
             Gfx_FillRectWithDisplayState(0, 0, 0x140, 0xF0, 0, 0, 0, 0xB4);
         }
 
-        if (D_8780FC64 != 0) {
-            D_8780FCAA -= 0x14;
-            if (D_8780FCAA <= 0) {
-                D_8780FCAA = 0;
-                if (D_8780FDF8 == 0) {
-                    D_8780FDF8 = 1;
+        if (gResultSlideInActive != 0) {
+            gResultIconYOffset -= 0x14;
+            if (gResultIconYOffset <= 0) {
+                gResultIconYOffset = 0;
+                if (gResultSfxTriggered == 0) {
+                    gResultSfxTriggered = 1;
                     Audio_PlayPersistentSoundCommand(0x13, 0);
 
                     for (i = 0; i < 4; i++) {
-                        if (D_8780FC50[i] != 0) {
-                            D_8780FCD8[i][D_8780FA40[i] - 1].unk_00 = (i * 0x36) + 0x4F;
-                            D_8780FCD8[i][D_8780FA40[i] - 1].unk_02 = -0x58;
-                            D_8780FCD8[i][D_8780FA40[i] - 1].unk_04 =
+                        if (gResultPlayerScored[i] != 0) {
+                            gResultCubes[i][gPlayerWinCounts[i] - 1].unk_00 = (i * 0x36) + 0x4F;
+                            gResultCubes[i][gPlayerWinCounts[i] - 1].unk_02 = -0x58;
+                            gResultCubes[i][gPlayerWinCounts[i] - 1].unk_04 =
                                 360.0f -
-                                ((((s32)((0xC8 - D_8780FA40[i] * 0x12) - D_8780FCD8[i][D_8780FA40[i] - 1].unk_02) / 6) %
+                                ((((s32)((0xC8 - gPlayerWinCounts[i] * 0x12) - gResultCubes[i][gPlayerWinCounts[i] - 1].unk_02) / 6) %
                                   24) *
                                  15.0f);
                         }
                     }
                 }
 
-                if (D_8780FE00 >= 0) {
-                    if (D_8780FE00 == 0) {
-                        if ((D_8780FC50[0] + D_8780FC50[1] + D_8780FC50[2] + D_8780FC50[3]) != 0) {
+                if (gResultAnimCountdown >= 0) {
+                    if (gResultAnimCountdown == 0) {
+                        if ((gResultPlayerScored[0] + gResultPlayerScored[1] + gResultPlayerScored[2] + gResultPlayerScored[3]) != 0) {
                             Audio_PlayPersistentSoundCommand(0x14, 0);
                         }
                     }
-                    D_8780FE00--;
+                    gResultAnimCountdown--;
                 }
             }
 
-            Widget_PauseMenuDrawPlayerIcons(D_8780FCAA);
-            Widget_PauseMenuDrawWinIcons(D_8780FCAA);
+            Widget_PauseMenuDrawPlayerIcons(gResultIconYOffset);
+            Widget_PauseMenuDrawWinIcons(gResultIconYOffset);
         }
 
-        if (D_8780FC68 != 0) {
-            switch (D_8780FCA3) {
+        if (gResultEndSequenceActive != 0) {
+            switch (gResultAnimState) {
                 case 0:
-                    D_8780FCA4 -= D_8780FCA0;
-                    if (D_8780FCA4 < 0xB4) {
+                    gResultAnimYOffset -= gResultDeltaTime;
+                    if (gResultAnimYOffset < 0xB4) {
                         Audio_StartMusicTrack(0x2C);
-                        D_8780FCA3 = 1;
+                        gResultAnimState = 1;
                     }
                     break;
 
                 case 1:
-                    D_8780FCA4 -= D_8780FCA0;
-                    if (D_8780FCA4 < 0) {
-                        D_8780FCA3 = 2;
+                    gResultAnimYOffset -= gResultDeltaTime;
+                    if (gResultAnimYOffset < 0) {
+                        gResultAnimState = 2;
                     }
                     break;
 
                 case 2:
-                    if (D_8780FCA6 > 0) {
-                        D_8780FCA6--;
+                    if (gResultAnimStep > 0) {
+                        gResultAnimStep--;
                     }
-                    func_87804320(D_8780FCA6, -1, -1, -1, -1);
+                    ResultScreen_RenderResultGraphics(gResultAnimStep, -1, -1, -1, -1);
                     break;
             }
         }
 
-        if (D_8780FC6C != 0) {
-            sp60 = Text_GetString(0, 0, D_87806330, 0x57);
-            sp5C = Text_GetString(0, 0, D_87806330, 0x58);
+        if (gResultSpecialWinActive != 0) {
+            sp60 = Text_GetString(0, 0, gMinigameNamesBank, 0x57);
+            sp5C = Text_GetString(0, 0, gMinigameNamesBank, 0x58);
             sp44 = Text_CountLines(sp60);
             tmp = Text_CountLines(sp5C);
             tmp = sp44 + tmp;
@@ -2250,56 +2250,56 @@ s32 Widget_PauseMenuUpdate(void) {
             Font_EndTexturedTextRendering();
         }
 
-        if (D_8780FC70 != 0) {
-            if (D_8780FC4C == 0) {
-                if (D_8780FA2A == 0) {
-                    Widget_DrawPanel(((0x140 - D_8780FE32) / 2) - 0xA, 0x58, D_8780FE32 + 0x14, 0x42, &sp70[0], &sp70[3]);
+        if (gResultMenuActive != 0) {
+            if (gResultScoreThresholdMet == 0) {
+                if (gMenuCursorX == 0) {
+                    Widget_DrawPanel(((0x140 - gResultMenuWidth_PlayAgainDiffGameQuit) / 2) - 0xA, 0x58, gResultMenuWidth_PlayAgainDiffGameQuit + 0x14, 0x42, &sp70[0], &sp70[3]);
                 } else {
-                    Widget_DrawPanel(((0x140 - D_8780FE34) / 2) - 0xA, 0x58, D_8780FE34 + 0x14, 0x42, &sp70[0], &sp70[3]);
+                    Widget_DrawPanel(((0x140 - gResultMenuWidth_ContinueRestartQuit) / 2) - 0xA, 0x58, gResultMenuWidth_ContinueRestartQuit + 0x14, 0x42, &sp70[0], &sp70[3]);
                 }
             } else {
-                Widget_DrawPanel(((0x140 - D_8780FE36) / 2) - 0xA, 0x61, D_8780FE36 + 0x14, 0x30, &sp70[0], &sp70[3]);
+                Widget_DrawPanel(((0x140 - gResultMenuWidth_PlayAgainQuit) / 2) - 0xA, 0x61, gResultMenuWidth_PlayAgainQuit + 0x14, 0x30, &sp70[0], &sp70[3]);
             }
             Font_BeginTranslucentTextRendering();
             Font_SetActive(4, 0);
 
-            for (i = 0; i < D_8780FC5D; i++) {
-                if (D_8780FC5C == i) {
+            for (i = 0; i < gResultOptionLimit; i++) {
+                if (gResultSelectedOption == i) {
                     Gfx_SetEnvColor(0xFF, 0xFF, 0, 0xFF);
                 } else {
                     Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
                 }
 
-                if (D_8780FC4C == 0) {
-                    if (D_8780FA2A == 0) {
-                        Font_Printf((0x140 - D_8780FE32) / 2, (i * 0x12) + 0x5F, "%s", D_8780FE08[i]);
+                if (gResultScoreThresholdMet == 0) {
+                    if (gMenuCursorX == 0) {
+                        Font_Printf((0x140 - gResultMenuWidth_PlayAgainDiffGameQuit) / 2, (i * 0x12) + 0x5F, "%s", gResultMenuStrings_PlayAgainDiffGameQuit[i]);
                     } else {
-                        Font_Printf((0x140 - D_8780FE34) / 2, (i * 0x12) + 0x5F, "%s", D_8780FE18[i]);
+                        Font_Printf((0x140 - gResultMenuWidth_ContinueRestartQuit) / 2, (i * 0x12) + 0x5F, "%s", gResultMenuStrings_ContinueRestartQuit[i]);
                     }
                 } else {
-                    Font_Printf((0x140 - D_8780FE36) / 2, (i * 0x12) + 0x68, "%s", D_8780FE28[i]);
+                    Font_Printf((0x140 - gResultMenuWidth_PlayAgainQuit) / 2, (i * 0x12) + 0x68, "%s", gResultMenuStrings_PlayAgainQuit[i]);
                 }
             }
 
             Font_EndTexturedTextRendering();
         }
 
-        if (D_8780FC74 != 0) {
+        if (gResultCubesActive != 0) {
             Font_BeginTranslucentTextRendering();
             Font_EnableTwoCycleTexturing();
             Font_SetActive(0x10, 0);
             Gfx_SetEnvColor(0xE6, 0xD2, 0xFF, 0xFF);
             Gfx_SetPrimColor(0x82, 0x50, 0xD2, 0xFF);
-            Font_Printf(0xA0 - (Text_MeasureStringWidth(NULL, Text_GetString(0, 0, D_87806330, 0x56)) / 2), 0x6C,
-                          Text_GetString(0, 0, D_87806330, 0x56));
+            Font_Printf(0xA0 - (Text_MeasureStringWidth(NULL, Text_GetString(0, 0, gMinigameNamesBank, 0x56)) / 2), 0x6C,
+                          Text_GetString(0, 0, gMinigameNamesBank, 0x56));
             Font_DisableTwoCycleTexturing();
             Font_EndTexturedTextRendering();
         }
     }
 
-    D_8780FC9A = sp67;
-    D_8780FC9B = sp66;
-    D_8780FC48++;
+    gResultStickUp = sp67;
+    gResultStickDown = sp66;
+    gResultFrameCounter++;
 
     return 0;
 }

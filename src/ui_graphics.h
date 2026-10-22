@@ -3,19 +3,19 @@
 
 #include "global.h"
 
-extern Gfx D_8006F470[];
+extern Gfx gMenuDL_BackgroundFill[];
 extern Gfx gUiTranslucentFillDL[];
-extern Gfx D_8006F4C0[];
-extern Gfx D_8006F4E0[];
+extern Gfx gDL_FillCycle[];
+extern Gfx gDL_CopyDecal[];
 extern Gfx gUiEnvTintTextureDL[];
-extern Gfx D_8006F558[];
-extern Gfx D_8006F5A0[];
-extern Gfx D_8006F608[];
+extern Gfx gDL_XluBorder[];
+extern Gfx gDL_PalettedIcon[];
+extern Gfx gFontCharTableExtended[];
 extern Gfx gUiRestoreTextureDL[];
-extern Gfx D_8006F710[];
-extern Gfx D_8006F750[];
-extern Gfx D_8006F768[];
-extern Gfx D_8006F798[];
+extern Gfx gDL_TextResetState[];
+extern Gfx gDL_TextSetup[];
+extern Gfx gDL_TextBegin[];
+extern Gfx gDL_TextEnd[];
 
 void Ui_DrawTexturedRect8x8(s32 x1, s32 y1, s32 width, s32 height, u8* texture);
 void Ui_DrawBorderStyleA(s32 x1, s32 y1, s32 width, s32 height);

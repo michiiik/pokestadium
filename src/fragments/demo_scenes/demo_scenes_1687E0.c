@@ -2,7 +2,7 @@
 #include "src/graphics_textures.h"
 #include "src/gfx_rect.h"
 
-static Gfx D_86B0DFD0[] = {
+static Gfx gGfxSetup_BrickWipe[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_1CYCLE),
     gsSPClearGeometryMode(G_ZBUFFER | G_CULL_BACK | G_LIGHTING),
@@ -14,7 +14,7 @@ static Gfx D_86B0DFD0[] = {
     gsSPEndDisplayList(),
 };
 
-static Gfx D_86B0E018[] = {
+static Gfx gGfxRestore_BrickWipe[] = {
     gsDPSetCycleType(G_CYC_2CYCLE),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPSetTexturePersp(G_TP_PERSP),
@@ -22,7 +22,7 @@ static Gfx D_86B0E018[] = {
     gsSPEndDisplayList(),
 };
 
-unk_D_86B0C160 D_86B0E040[] = {
+DioramaAnimData gIntroCameraKeyframes[] = {
     {
         0,
         0,
@@ -215,42 +215,42 @@ unk_D_86B0C160 D_86B0E040[] = {
     },
 };
 
-static s16 D_86B106A0;
-static s16 D_86B106A2;
-static s16 D_86B106A4;
+static s16 gScrollMode;
+static s16 gScrollOffset;
+static s16 gScrollStep;
 
 void WipeTransition_Start(s32 arg0, s32 arg1) {
-    D_86B106A0 = arg0;
-    D_86B106A4 = arg1;
+    gScrollMode = arg0;
+    gScrollStep = arg1;
 
-    if ((D_86B106A0 == 0) || ((D_86B106A0 != 1) && (D_86B106A0 != 2) && (D_86B106A0 == 3))) {
-        D_86B106A2 = 0x140;
+    if ((gScrollMode == 0) || ((gScrollMode != 1) && (gScrollMode != 2) && (gScrollMode == 3))) {
+        gScrollOffset = 0x140;
     } else {
-        D_86B106A2 = 0;
+        gScrollOffset = 0;
     }
 }
 
 s32 WipeTransition_GetState(void) {
-    return D_86B106A0;
+    return gScrollMode;
 }
 
 void WipeTransition_Update(void) {
-    s16 tmp = D_86B106A2;
+    s16 tmp = gScrollOffset;
 
-    switch (D_86B106A0) {
+    switch (gScrollMode) {
         case 2:
             if (tmp < 0x140) {
-                tmp += D_86B106A4;
+                tmp += gScrollStep;
             } else {
-                D_86B106A0 = 0;
+                gScrollMode = 0;
             }
             break;
 
         case 3:
             if (tmp > 0) {
-                tmp -= D_86B106A4;
+                tmp -= gScrollStep;
             } else {
-                D_86B106A0 = 1;
+                gScrollMode = 1;
             }
 
             if (tmp < 0) {
@@ -259,7 +259,7 @@ void WipeTransition_Update(void) {
             break;
     }
 
-    D_86B106A2 = tmp;
+    gScrollOffset = tmp;
 }
 
 Gfx* WipeTransition_BuildBrickDisplayList(Gfx* gfx, u32 arg1) {
@@ -269,7 +269,7 @@ Gfx* WipeTransition_BuildBrickDisplayList(Gfx* gfx, u32 arg1) {
     s16 xl;
     s16 yl;
 
-    gSPDisplayList(gfx++, D_86B0DFD0);
+    gSPDisplayList(gfx++, gGfxSetup_BrickWipe);
 
     gDPLoadTextureBlock_4b(gfx++, D_3000000, G_IM_FMT_I, 12, 48, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                            G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
@@ -277,7 +277,7 @@ Gfx* WipeTransition_BuildBrickDisplayList(Gfx* gfx, u32 arg1) {
     gDPPipeSync(gfx++);
 
     for (i = idx1; i < 5; i += 2) {
-        xl = (D_86B106A2 * 2) - 0x140;
+        xl = (gScrollOffset * 2) - 0x140;
         yl = (i * 0x30);
 
         gSPScisTextureRectangle(gfx++, xl << 2, yl << 2, (xl + 0x280) << 2, (yl + 24) << 2, 0, 0, 0, 1 << 6, 1 << 10);
@@ -286,7 +286,7 @@ Gfx* WipeTransition_BuildBrickDisplayList(Gfx* gfx, u32 arg1) {
     }
 
     for (i = idx2; i < 5; i += 2) {
-        xl = -D_86B106A2 * 2;
+        xl = -gScrollOffset * 2;
         yl = (i * 0x30);
 
         gSPScisTextureRectangle(gfx++, xl << 2, yl << 2, (xl + 0x280) << 2, (yl + 24) << 2, 0, 0x500, 0, -(1 << 6),
@@ -295,7 +295,7 @@ Gfx* WipeTransition_BuildBrickDisplayList(Gfx* gfx, u32 arg1) {
                                 -(1 << 6), 1 << 10);
     }
 
-    gSPDisplayList(gfx++, D_86B0E018);
+    gSPDisplayList(gfx++, gGfxRestore_BrickWipe);
 
     return gfx;
 }
@@ -303,8 +303,8 @@ Gfx* WipeTransition_BuildBrickDisplayList(Gfx* gfx, u32 arg1) {
 void WipeTransition_Draw(void) {
     Gfx* var_a0 = gDisplayListHead;
 
-    if (D_86B106A0 != 0) {
-        if (D_86B106A0 == 2) {
+    if (gScrollMode != 0) {
+        if (gScrollMode == 2) {
             var_a0 = WipeTransition_BuildBrickDisplayList(var_a0, 0);
         } else {
             var_a0 = WipeTransition_BuildBrickDisplayList(var_a0, 1);
@@ -314,7 +314,7 @@ void WipeTransition_Draw(void) {
 }
 
 void UI_DrawClippedTextureRect(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, s16 arg6, s16 arg7) {
-    unk_D_800A7440 sp30;
+    ClipRect sp30;
 
     GfxRect_SetBounds(&sp30, arg0, arg1, (arg0 + arg2) - 1, (arg1 + arg3) - 1);
 
@@ -343,7 +343,7 @@ void UI_DrawTiledTexture(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8* arg4, UNUSE
     UI_DrawClippedTextureRect(arg0, arg1, arg2, arg3, 0, 0, 0x400, 0x400);
 }
 
-void UI_DrawGradientTexture(u8* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, unk_D_86B0DAE0_000* arg5) {
+void UI_DrawGradientTexture(u8* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, SpriteColorParams* arg5) {
     gDPPipeSync(gDisplayListHead++);
 
     gDPSetCycleType(gDisplayListHead++, G_CYC_1CYCLE);

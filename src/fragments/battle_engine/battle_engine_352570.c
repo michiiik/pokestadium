@@ -1,15 +1,15 @@
 #include "battle_engine.h"
 #include "src/gfx_buffer.h"
 
-static FourStreamTrail D_843AA880[4];
+static FourStreamTrail gFourStreamTrailEmitters[4];
 
-static Vtx D_843898B0[] = {
+static Vtx gFourStreamTrailQuadVtx[] = {
     VTX(-30, 0, -20, 2048, 0, 0xFF, 0xFF, 0xFF, 0xC8),
     VTX(10, 0, -20, 0, 0, 0xFF, 0xFF, 0xFF, 0xC8),
     VTX(-30, 0, 20, 2048, 2048, 0xFF, 0xFF, 0xFF, 0xC8),
     VTX(10, 0, 20, 0, 2048, 0xFF, 0xFF, 0xFF, 0xC8),
 };
-static Gfx D_843898F0[] = {
+static Gfx gFourStreamTrailGroundQuadDL[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_1CYCLE),
     gsSPClearGeometryMode(G_ZBUFFER | G_SHADE | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN |
@@ -21,11 +21,11 @@ static Gfx D_843898F0[] = {
     gsDPSetCombineMode(G_CC_BLENDIA, G_CC_BLENDIA),
     gsDPSetPrimColor(0, 0, 255, 255, 255, 255),
     gsDPSetEnvColor(255, 255, 255, 255),
-    gsSPVertex(D_843898B0, 4, 0),
+    gsSPVertex(gFourStreamTrailQuadVtx, 4, 0),
     gsSP2Triangles(0, 2, 1, 0, 2, 3, 1, 0),
     gsSPEndDisplayList(),
 };
-static Gfx D_84389958[] = {
+static Gfx gFourStreamTrailDL[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_1CYCLE),
     gsSPClearGeometryMode(G_ZBUFFER | G_SHADE | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN |
@@ -47,7 +47,7 @@ void FourStreamTrail_Init(void) {
     FourStreamTrailNode* var_v0;
 
     temp_fa0 = BattleAnim_GetSecondaryOwnerModelScale() * 0.75f;
-    var_a2 = &D_843AA880[0];
+    var_a2 = &gFourStreamTrailEmitters[0];
 
     for (i = 0; i < 4; i++, var_a2++) {
         var_a2->unk_000 = 0;
@@ -78,7 +78,7 @@ void FourStreamTrail_Start(f32 arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32
     sp64.x = arg0;
     sp64.y = arg1;
     sp64.z = arg2;
-    var_v1 = &D_843AA880[0];
+    var_v1 = &gFourStreamTrailEmitters[0];
 
     for (i = 0; i < 4; i++, var_v1++) {
         if (var_v1->unk_000 == 0) {
@@ -195,7 +195,7 @@ void FourStreamTrail_UpdateNodeChain(FourStreamTrail* arg0) {
 
 s32 FourStreamTrail_IsComplete(void) {
     s32 i;
-    FourStreamTrail* var_s0 = &D_843AA880[0];
+    FourStreamTrail* var_s0 = &gFourStreamTrailEmitters[0];
 
     for (i = 0; i < 4; i++, var_s0++) {
         if (var_s0->unk_000 == 1) {
@@ -229,7 +229,7 @@ Gfx* FourStreamTrail_Draw(Gfx* arg0) {
     gDPLoadTextureBlock_4b(arg0++, sBattleAnimAssetPointers[0x49], G_IM_FMT_I, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
                            G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
 
-    var_s4 = &D_843AA880[0];
+    var_s4 = &gFourStreamTrailEmitters[0];
     for (i = 0; i < 4; i++, var_s4++) {
         if (var_s4->unk_000 == 1) {
             guScale(&spB0, var_s4->unk_00C, var_s4->unk_00C, var_s4->unk_00C);
@@ -244,7 +244,7 @@ Gfx* FourStreamTrail_Draw(Gfx* arg0) {
                 guMtxCatL(&spB0, temp_v0, temp_v0);
 
                 gSPMatrix(arg0++, temp_v0, G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
-                gSPDisplayList(arg0++, D_843898F0);
+                gSPDisplayList(arg0++, gFourStreamTrailGroundQuadDL);
                 gSPPopMatrix(arg0++, G_MTX_MODELVIEW);
             }
 
@@ -287,7 +287,7 @@ Gfx* FourStreamTrail_Draw(Gfx* arg0) {
 
             var_s0 = var_s4->unk_018;
 
-            gSPDisplayList(arg0++, D_84389958);
+            gSPDisplayList(arg0++, gFourStreamTrailDL);
 
             for (k = 0; k < 14; k++) {
                 gSPVertex(arg0++, var_s0, 4, 0);

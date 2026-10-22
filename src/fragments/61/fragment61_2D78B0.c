@@ -20,25 +20,25 @@
 #include "src/memory.h"
 #include "src/stage_loader.h"
 
-BinArchive* D_84211B30;
-void* D_84211B34;
-RentalRoster* D_84211B38;
-char** D_84211B3C;
-char** D_84211B40;
-char** D_84211B44;
-char** D_84211B48;
-char** D_84211B4C;
-RentalTeamTray D_84211B50;
-RentalCarouselState D_842168A0;
-unk_D_84229EB0 D_84229EB0;
-unk_D_8423D3A8 D_8423D3A8;
-unk_D_8423D3D8 D_8423D3D8[4];
-s16 D_8423D3F8;
+BinArchive* gBattleSelectionBackgroundArchive;
+void* gPartyScreenBackground;
+RentalRoster* gBattleSelectionControllerInfo;
+char** gSpeciesNamesBank;
+char** gTeamSelectionMoveNamesBank;
+char** gMessageBankTypeNames;
+char** gTeamSelectionUiLabelsBank;
+char** gMessageBankStatusScreenLabels;
+RentalTeamTray gPartyInfo;
+RentalCarouselState gControllerInfo;
+RegisteredTeamMenu gPokemonData;
+unk_D_8423D3A8 gMoveScreenInfo;
+unk_D_8423D3D8 gBattleSelectionSlots[4];
+s16 gMenuSelectionIndex;
 
-s16 D_84210D40 = 2;
-s16 D_84210D44 = 0x20;
-s16 D_84210D48 = 0;
-u8 D_84210D4C[] = {
+s16 gFrameTimer = 2;
+s16 gSubsystemEnableMask = 0x20;
+s16 gPartyScreenIconAnimTimer = 0;
+u8 gStadiumModeTextureIndices[] = {
     0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0F,
 };
 
@@ -54,27 +54,27 @@ s32 TeamSelection_CheckCartRemoved(s32 arg0) {
 }
 
 char* TeamSelection_GetTextFromSetA(s32 arg0) {
-    return Text_GetString(NULL, 0, D_84211B3C, arg0 - 1);
+    return Text_GetString(NULL, 0, gSpeciesNamesBank, arg0 - 1);
 }
 
 char* TeamSelection_GetTextFromSetB(s32 arg0) {
-    return Text_GetString(NULL, 0, D_84211B40, arg0 - 1);
+    return Text_GetString(NULL, 0, gTeamSelectionMoveNamesBank, arg0 - 1);
 }
 
 char* TeamSelection_GetModeText(s32 arg0) {
-    return Text_GetString(NULL, 0, D_84211B44, PokemonType_ToDisplayIndex(arg0));
+    return Text_GetString(NULL, 0, gMessageBankTypeNames, PokemonType_ToDisplayIndex(arg0));
 }
 
 char* TeamSelection_GetLabelText(s32 arg0) {
-    return Text_GetString(NULL, 0, D_84211B48, arg0);
+    return Text_GetString(NULL, 0, gTeamSelectionUiLabelsBank, arg0);
 }
 
 char* TeamSelection_GetInstructionText(s32 arg0) {
-    return Text_GetString(NULL, 0, D_84211B4C, arg0);
+    return Text_GetString(NULL, 0, gMessageBankStatusScreenLabels, arg0);
 }
 
 char* TeamSelection_FormatText(char* arg0, s32 arg1, s32 arg2) {
-    return Text_GetString(arg0, arg1, D_84211B48, arg2);
+    return Text_GetString(arg0, arg1, gTeamSelectionUiLabelsBank, arg2);
 }
 
 void TeamSelection_DrawCornerFrame(s16 arg0, s16 arg1, s16 arg2, s16 arg3) {
@@ -277,7 +277,7 @@ void TeamSelection_DrawCategoryBanner(s16 arg0, s16 arg1, s16 arg2) {
 }
 
 void TeamSelection_DrawGradientPanel(s16 arg0, s16 arg1, s16 arg2, Color_RGBA8* arg3, Color_RGBA8* arg4) {
-    gSPDisplayList(gDisplayListHead++, D_8006F558);
+    gSPDisplayList(gDisplayListHead++, gDL_XluBorder);
     gDPSetEnvColor(gDisplayListHead++, arg3->r, arg3->g, arg3->b, 255);
     gDPSetPrimColor(gDisplayListHead++, 0, 0, arg4->r, arg4->g, arg4->b, 255);
 
@@ -310,7 +310,7 @@ void TeamSelection_DrawTitleHeader(void) {
 }
 
 void TeamSelection_DrawCategoryRow(s16 arg0, s16 arg1, s16 arg2, s32 arg3) {
-    if (arg2 == D_8423D3F8) {
+    if (arg2 == gMenuSelectionIndex) {
         Gfx_SetEnvColor(0xFF, 0xFF, 0, 0xFF);
     } else {
         Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
@@ -325,7 +325,7 @@ void TeamSelection_DrawCategoryScreen(s16 arg0, s16 arg1, s16 arg2) {
     s16 temp_v0;
 
     BgStage_DrawFrame();
-    Gfx_DrawTiledRgba16Image(D_84211B34);
+    Gfx_DrawTiledRgba16Image(gPartyScreenBackground);
     TeamSelection_DrawTitleHeader();
     if (arg2 > 0) {
         temp_a3 = (((arg2 * 0x9A) - 0x9A) / 8) + 0x10;
@@ -337,7 +337,7 @@ void TeamSelection_DrawCategoryScreen(s16 arg0, s16 arg1, s16 arg2) {
         if (arg2 == 9) {
             TeamSelection_DrawColoredFrame(0x74, 0x88, 0x198, 0x20, 0x8C, 0x28, 0x8C, 0xFF);
             TeamSelection_DrawColoredFrame(0x74, 0xA8, 0x198, 0x7C, 0x64, 0x1E, 0x64, 0xFF);
-            Ui_DrawAnimatedTextureMarker(0x79, (D_8423D3F8 * 0x1E) + 0xAD);
+            Ui_DrawAnimatedTextureMarker(0x79, (gMenuSelectionIndex * 0x1E) + 0xAD);
             Font_BeginTranslucentTextRendering();
             Font_SetActive(0x10, 0);
             Font_Printf(0x7D, 0x8B, "%s %s", TeamSelection_GetLabelText(gSessionContext.ruleCategory + 0x3F), TeamSelection_GetLabelText(0x48));
@@ -348,7 +348,7 @@ void TeamSelection_DrawCategoryScreen(s16 arg0, s16 arg1, s16 arg2) {
             Font_SetActive(8, 0);
             Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
             Font_SetLineHeight(0x18);
-            Font_Printf(0x58, 0x154, Text_GetString(NULL, 0, D_84211B48, 0x4D));
+            Font_Printf(0x58, 0x154, Text_GetString(NULL, 0, gTeamSelectionUiLabelsBank, 0x4D));
             Font_EndTexturedTextRendering();
         }
     }
@@ -371,10 +371,10 @@ s32 TeamSelection_HandleConfirmInput(void) {
     s32 sp1C = 'exec';
 
     if (BTN_IS_PRESSED(gPlayer1Controller, BTN_A)) {
-        if ((D_8423D3F8 == 0) && (Deck_FindFirstFreeTeamSlot() == 0xA)) {
+        if ((gMenuSelectionIndex == 0) && (Deck_FindFirstFreeTeamSlot() == 0xA)) {
             TeamSelection_WaitForConfirm();
         } else {
-            if (D_8423D3F8 < 3) {
+            if (gMenuSelectionIndex < 3) {
                 Audio_PlaySoundEffectById(0x1C);
             } else {
                 Audio_PlaySoundEffectById(SFX_MENU_BACK);
@@ -383,19 +383,19 @@ s32 TeamSelection_HandleConfirmInput(void) {
         }
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_B)) {
         Audio_PlaySoundEffectById(SFX_MENU_BACK);
-        D_8423D3F8 = 3;
+        gMenuSelectionIndex = 3;
         sp1C = 'btnB';
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DUP)) {
         Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
-        D_8423D3F8--;
-        if (D_8423D3F8 < 0) {
-            D_8423D3F8 = 3;
+        gMenuSelectionIndex--;
+        if (gMenuSelectionIndex < 0) {
+            gMenuSelectionIndex = 3;
         }
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DDOWN)) {
         Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
-        D_8423D3F8++;
-        if (D_8423D3F8 >= 4) {
-            D_8423D3F8 = 0;
+        gMenuSelectionIndex++;
+        if (gMenuSelectionIndex >= 4) {
+            gMenuSelectionIndex = 0;
         }
     }
     return sp1C;
@@ -405,7 +405,7 @@ s16 TeamSelection_RunCategorySelection(void) {
     s16 i;
     s32 temp_s0;
 
-    D_8423D3F8 = 0;
+    gMenuSelectionIndex = 0;
     Audio_PlaySoundEffectById(SFX_PANEL_OPEN);
 
     for (i = 0; i < 9; i++) {
@@ -425,7 +425,7 @@ s16 TeamSelection_RunCategorySelection(void) {
     }
 
     TeamSelection_DrawCategoryScreen(0x8C, 0xBC, 0);
-    return TeamSelection_CheckCartRemoved(D_8423D3F8);
+    return TeamSelection_CheckCartRemoved(gMenuSelectionIndex);
 }
 
 #if defined(VERSION_US_REV2)
@@ -437,13 +437,13 @@ void TeamSelection_DrawFrame(s16 arg0, s16 arg1) {
     s32 var_t0 = 0;
 
     if ((gSessionContext.mode == 0) && (arg1 >= 0)) {
-        if (D_84210D48 == 0) {
+        if (gPartyScreenIconAnimTimer == 0) {
             var_t0 = 1;
         } else {
-            if ((D_84210D48 % 12) >= 5) {
+            if ((gPartyScreenIconAnimTimer % 12) >= 5) {
                 var_t0 = 1;
             }
-            D_84210D48--;
+            gPartyScreenIconAnimTimer--;
         }
     }
 
@@ -466,50 +466,50 @@ void TeamSelection_DrawFrame(s16 arg0, s16 arg1) {
     Font_SetActive(0x10, 0);
     Gfx_SetEnvColor(0, 0, 0, 0xFF);
 
-    Font_Printf(0x6A, 0x2C, Text_GetString(NULL, 0, D_84211B48, arg0 + 0x37));
+    Font_Printf(0x6A, 0x2C, Text_GetString(NULL, 0, gTeamSelectionUiLabelsBank, arg0 + 0x37));
     Gfx_SetEnvColor(0xFF, 0xFF, 0x77, 0xFF);
-    Font_Printf(0x68, 0x2A, Text_GetString(NULL, 0, D_84211B48, arg0 + 0x37));
+    Font_Printf(0x68, 0x2A, Text_GetString(NULL, 0, gTeamSelectionUiLabelsBank, arg0 + 0x37));
 
     if ((arg0 == 0) && (var_t0 != 0)) {
         Font_SetActive(4, 0);
-        Font_Printf(0x1F9, 0x2F, Text_GetString(NULL, 0, D_84211B48, 0x4E));
+        Font_Printf(0x1F9, 0x2F, Text_GetString(NULL, 0, gTeamSelectionUiLabelsBank, 0x4E));
     }
     Font_EndTexturedTextRendering();
 }
 #endif
 
 void TeamSelection_RenderFrame(UNUSED s16 arg0, s16 arg1, s16 arg2) {
-    s32 temp_s0 = D_84210D40 > 0;
+    s32 temp_s0 = gFrameTimer > 0;
 
     BgStage_DrawFrame();
 
     if (temp_s0 != 0) {
-        D_84210D40--;
-        Gfx_DrawTiledRgba16Image(D_84211B34);
+        gFrameTimer--;
+        Gfx_DrawTiledRgba16Image(gPartyScreenBackground);
         TeamSelection_DrawFrame(arg1, arg2);
     }
 
-    if (D_84210D44 & 8) {
+    if (gSubsystemEnableMask & 8) {
         TeamSelection_TrainerSlots_Render(temp_s0);
     }
 
-    if (D_84210D44 & 1) {
-        Rental_DrawTeamTray(&D_84211B50, temp_s0);
+    if (gSubsystemEnableMask & 1) {
+        Rental_DrawTeamTray(&gPartyInfo, temp_s0);
     }
 
-    if (D_84210D44 & 2) {
-        Rental_CarouselDraw(&D_842168A0, temp_s0);
+    if (gSubsystemEnableMask & 2) {
+        Rental_CarouselDraw(&gControllerInfo, temp_s0);
     }
 
-    if (D_84210D44 & 4) {
-        TeamSelection_RegisteredTeam_Render(&D_84229EB0, temp_s0);
+    if (gSubsystemEnableMask & 4) {
+        TeamSelection_RegisteredTeam_Render(&gPokemonData, temp_s0);
     }
 
-    if (D_84210D44 & 0x10) {
-        TeamSelection_Preview_DrawPokemonDetails(&D_8423D3A8, temp_s0);
+    if (gSubsystemEnableMask & 0x10) {
+        TeamSelection_Preview_DrawPokemonDetails(&gMoveScreenInfo, temp_s0);
     }
 
-    if (D_84210D44 & 0x20) {
+    if (gSubsystemEnableMask & 0x20) {
         TeamSelection_RulePrompt_DrawFrame(temp_s0);
     }
 
@@ -520,10 +520,10 @@ s16 TeamSelection_RunModal(s16 arg0, s16 arg1, s16 arg2, s32 arg3) {
     s32 temp_s1 = -1;
     s16 i;
 
-    D_84210D48 = 0x27;
+    gPartyScreenIconAnimTimer = 0x27;
 
     for (i = 0; i < 4; i++) {
-        D_84210D40 = 2;
+        gFrameTimer = 2;
         TeamSelection_RenderFrame(-1, arg1, arg2);
     }
 
@@ -534,7 +534,7 @@ s16 TeamSelection_RunModal(s16 arg0, s16 arg1, s16 arg2, s32 arg3) {
         TeamSelection_TrainerSlots_Update();
         TeamSelection_RulePrompt_Update();
         temp_s1 = TeamSelection_TrainerSlots_GetSelection();
-        D_84210D40 = 2;
+        gFrameTimer = 2;
         TeamSelection_RenderFrame(-1, arg1, arg2);
     }
 
@@ -545,38 +545,38 @@ s16 TeamSelection_RunModal(s16 arg0, s16 arg1, s16 arg2, s32 arg3) {
 void TeamSelection_Update(UNUSED s16 arg0, UNUSED s32 arg1) {
     s32 var_a1 = 0;
 
-    if (D_84210D44 & 1) {
-        var_a1 = Rental_TeamSlotsUpdate(&D_84211B50);
+    if (gSubsystemEnableMask & 1) {
+        var_a1 = Rental_TeamSlotsUpdate(&gPartyInfo);
     }
 
-    if (D_84210D44 & 2) {
-        var_a1 |= Rental_CarouselTick(&D_842168A0);
+    if (gSubsystemEnableMask & 2) {
+        var_a1 |= Rental_CarouselTick(&gControllerInfo);
     }
 
-    if (D_84210D44 & 4) {
-        var_a1 |= TeamSelection_RegisteredTeam_Update(&D_84229EB0);
+    if (gSubsystemEnableMask & 4) {
+        var_a1 |= TeamSelection_RegisteredTeam_Update(&gPokemonData);
     }
 
-    if (D_84210D44 & 0x10) {
-        var_a1 |= TeamSelection_Preview_Update(&D_8423D3A8);
+    if (gSubsystemEnableMask & 0x10) {
+        var_a1 |= TeamSelection_Preview_Update(&gMoveScreenInfo);
     }
 
-    if (D_84210D44 & 0x20) {
+    if (gSubsystemEnableMask & 0x20) {
         var_a1 |= TeamSelection_RulePrompt_Update();
     }
 
     if (var_a1 != 0) {
-        D_84210D40 = 2;
+        gFrameTimer = 2;
     }
 }
 
 void TeamSelection_Open(s16 arg0, s32 arg1, s16 arg2) {
     Audio_PlaySoundEffectById(SFX_PANEL_OPEN);
     if (arg0 == 4) {
-        RegistrationManager_Begin(&D_84229EB0);
+        RegistrationManager_Begin(&gPokemonData);
     } else {
-        Rental_TeamTrayOpen(&D_84211B50, 0);
-        Rental_CarouselOpen(&D_842168A0, 0);
+        Rental_TeamTrayOpen(&gPartyInfo, 0);
+        Rental_CarouselOpen(&gControllerInfo, 0);
     }
     Controller_PollInputs();
     TeamSelection_Update(arg0, 0);
@@ -586,7 +586,7 @@ void TeamSelection_Open(s16 arg0, s32 arg1, s16 arg2) {
 void TeamSelection_RunInputLoop(s16 arg0, s16 arg1, s16 arg2) {
     s32 var_s0 = 1;
 
-    Input_SetRepeatController(&gControllers[D_842168A0.unk_00003]);
+    Input_SetRepeatController(&gControllers[gControllerInfo.unk_00003]);
 
     while (var_s0 != 0) {
         Controller_PollInputs();
@@ -594,10 +594,10 @@ void TeamSelection_RunInputLoop(s16 arg0, s16 arg1, s16 arg2) {
         TeamSelection_RenderFrame(arg0, arg1, arg2);
 
         if (arg0 == 4) {
-            var_s0 = TeamSelection_RegisteredTeam_GetSelection(&D_84229EB0) == 0;
+            var_s0 = TeamSelection_RegisteredTeam_GetSelection(&gPokemonData) == 0;
         } else {
-            var_s0 = !Rental_TeamTrayIsIdle(&D_84211B50);
-            var_s0 |= !Rental_CarouselIsIdle(&D_842168A0);
+            var_s0 = !Rental_TeamTrayIsIdle(&gPartyInfo);
+            var_s0 |= !Rental_CarouselIsIdle(&gControllerInfo);
         }
     }
 }
@@ -607,21 +607,21 @@ void TeamSelection_InitializeSlots(void) {
     TeamRoster* var_v0 = gSessionContext.trainerSlots;
 
     for (i = 0; i < 4; i++) {
-        D_8423D3D8[i].unk_00 = 0;
-        D_8423D3D8[i].unk_01 = i;
-        D_8423D3D8[i].unk_02 = i;
+        gBattleSelectionSlots[i].unk_00 = 0;
+        gBattleSelectionSlots[i].unk_01 = i;
+        gBattleSelectionSlots[i].unk_02 = i;
     }
 
     for (i = 0; i < 4; i++, var_v0++) {
         if (var_v0->unk_000 & 1) {
             if (!(var_v0->unk_000 & 2)) {
-                D_8423D3D8[var_v0->unk_001].unk_00 = 1;
-                D_8423D3D8[var_v0->unk_001].unk_04 = var_v0;
+                gBattleSelectionSlots[var_v0->unk_001].unk_00 = 1;
+                gBattleSelectionSlots[var_v0->unk_001].unk_04 = var_v0;
             } else if (gSessionContext.mode == 0) {
-                D_8423D3D8[var_v0->unk_001].unk_00 = 1;
-                D_8423D3D8[var_v0->unk_001].unk_04 = var_v0;
-                D_8423D3D8[var_v0->unk_001].unk_01 = 4;
-                D_8423D3D8[var_v0->unk_001].unk_02 = 0;
+                gBattleSelectionSlots[var_v0->unk_001].unk_00 = 1;
+                gBattleSelectionSlots[var_v0->unk_001].unk_04 = var_v0;
+                gBattleSelectionSlots[var_v0->unk_001].unk_01 = 4;
+                gBattleSelectionSlots[var_v0->unk_001].unk_02 = 0;
             }
         }
     }
@@ -634,7 +634,7 @@ void TeamSelection_InitializeSlot(unk_D_8423D3D8* arg0, s16 arg1) {
     GbSavePlayerIdentity sp38;
 
     if (arg1 == 4) {
-        D_84210D44 |= TeamSelection_RegisteredTeam_Initialize(&D_84229EB0, &D_84211B50, &D_842168A0, &D_8423D3A8, 0, 0x2C, 0x54, arg0->unk_02);
+        gSubsystemEnableMask |= TeamSelection_RegisteredTeam_Initialize(&gPokemonData, &gPartyInfo, &gControllerInfo, &gMoveScreenInfo, 0, 0x2C, 0x54, arg0->unk_02);
         return;
     }
 
@@ -647,8 +647,8 @@ void TeamSelection_InitializeSlot(unk_D_8423D3D8* arg0, s16 arg1) {
         var_v1 = 0;
     }
 
-    D_84210D44 |= Rental_InitTeamTray(&D_84211B50, &D_842168A0, &D_8423D3A8, NULL, 0, var_v1, sp50, 0x40, 0x54, arg0->unk_02);
-    D_84210D44 |= Rental_PrimeCarousel(&D_842168A0, &D_84211B50, &D_8423D3A8, 0, 0x68, 0xE4, arg0->unk_02, arg1, D_84211B38);
+    gSubsystemEnableMask |= Rental_InitTeamTray(&gPartyInfo, &gControllerInfo, &gMoveScreenInfo, NULL, 0, var_v1, sp50, 0x40, 0x54, arg0->unk_02);
+    gSubsystemEnableMask |= Rental_PrimeCarousel(&gControllerInfo, &gPartyInfo, &gMoveScreenInfo, 0, 0x68, 0xE4, arg0->unk_02, arg1, gBattleSelectionControllerInfo);
 }
 
 s32 Team_CommitSelectionToTrainer(unk_D_8423D3D8* arg0, s16 arg1) {
@@ -659,7 +659,7 @@ s32 Team_CommitSelectionToTrainer(unk_D_8423D3D8* arg0, s16 arg1) {
 
     arg0->unk_04->numberOfPokemonBrought = 0;
     if (arg1 == 4) {
-        temp_s3 = RegisteredTeam_LoadSelected(&D_84229EB0, &sp34);
+        temp_s3 = RegisteredTeam_LoadSelected(&gPokemonData, &sp34);
         if (sp34 != NULL) {
             arg0->unk_04->unk_018 = sp34->unk_4D10;
             if (gSessionContext.mode != 0) {
@@ -673,15 +673,15 @@ s32 Team_CommitSelectionToTrainer(unk_D_8423D3D8* arg0, s16 arg1) {
             var_s0 = 1;
         }
     } else {
-        arg0->unk_04->unk_018 = D_84211B50.unk_001C;
+        arg0->unk_04->unk_018 = gPartyInfo.unk_001C;
         if (gSessionContext.mode != 0) {
-            HAL_Strcpy(arg0->unk_04->unk_008, D_84211B50.unk_001E);
+            HAL_Strcpy(arg0->unk_04->unk_008, gPartyInfo.unk_001E);
         }
-        HAL_Strcpy(arg0->unk_04->rosterInfo->unk_014, D_84211B50.unk_001E);
+        HAL_Strcpy(arg0->unk_04->rosterInfo->unk_014, gPartyInfo.unk_001E);
 
-        if (D_84211B50.unk_0006 > 0) {
-            for (i = 0; i < D_84211B50.unk_0006; i++) {
-                Trainer_AddPokemon(arg0->unk_04, &D_84211B50.unk_0030[i].unk_004);
+        if (gPartyInfo.unk_0006 > 0) {
+            for (i = 0; i < gPartyInfo.unk_0006; i++) {
+                Trainer_AddPokemon(arg0->unk_04, &gPartyInfo.unk_0030[i].unk_004);
             }
             var_s0 = 1;
         }
@@ -699,7 +699,7 @@ void TeamSelection_FadeOut(s32 arg0) {
     for (i = 0; i < 8; i++) {
         Controller_PollInputs();
         BgStage_DrawFrame();
-        Gfx_DrawTiledRgba16Image(D_84211B34);
+        Gfx_DrawTiledRgba16Image(gPartyScreenBackground);
         if (arg0 != 0) {
             TeamSelection_DrawFrame(0, -1);
         }
@@ -717,7 +717,7 @@ void TeamSelection_FadeIn(void) {
         for (i = 0; i < 10; i++) {
             Controller_PollInputs();
             BgStage_DrawFrame();
-            Gfx_DrawTiledRgba16Image(D_84211B34);
+            Gfx_DrawTiledRgba16Image(gPartyScreenBackground);
             TeamSelection_DrawFrame(0, -1);
             BgStage_AdvanceFrame();
         }
@@ -725,13 +725,13 @@ void TeamSelection_FadeIn(void) {
 }
 
 void TeamSelection_ApplySlotSelection(s16 arg0, s16 arg1) {
-    TeamRoster* temp_v1 = D_8423D3D8[arg0].unk_04;
+    TeamRoster* temp_v1 = gBattleSelectionSlots[arg0].unk_04;
 
     if (temp_v1->numberOfPokemonBrought != 0) {
         if (arg1 == 4) {
-            TeamSelection_RegisteredTeam_ApplySelection(&D_84229EB0, temp_v1->rosterInfo->unk_028[0].unk_53);
+            TeamSelection_RegisteredTeam_ApplySelection(&gPokemonData, temp_v1->rosterInfo->unk_028[0].unk_53);
         } else {
-            Rental_CopyRosterToTeam(&D_84211B50, &temp_v1->rosterInfo->unk_028, temp_v1->rosterInfo->numberOfPokemonCanBePicked);
+            Rental_CopyRosterToTeam(&gPartyInfo, &temp_v1->rosterInfo->unk_028, temp_v1->rosterInfo->numberOfPokemonCanBePicked);
         }
     }
 }
@@ -767,19 +767,19 @@ s32 Team_SelectTeams(void) {
     TeamSelection_InitializeSlots();
     TeamSelection_FadeIn();
 
-    D_84210D44 |= TeamSelection_TrainerSlots_Initialize(0);
-    D_84210D44 |= TeamSelection_Preview_Initialize(&D_8423D3A8);
+    gSubsystemEnableMask |= TeamSelection_TrainerSlots_Initialize(0);
+    gSubsystemEnableMask |= TeamSelection_Preview_Initialize(&gMoveScreenInfo);
 
     while (var_s1 >= 0 && var_s1 < 4) {
-        if (D_8423D3D8[var_s1].unk_00 != 0) {
-            var_s2 = TeamSelection_RunModal(D_8423D3D8[var_s1].unk_02, 0, D_8423D3D8[var_s1].unk_01, 1);
-            D_8423D3D8[var_s1].unk_04->numberOfPokemonBrought = 0;
+        if (gBattleSelectionSlots[var_s1].unk_00 != 0) {
+            var_s2 = TeamSelection_RunModal(gBattleSelectionSlots[var_s1].unk_02, 0, gBattleSelectionSlots[var_s1].unk_01, 1);
+            gBattleSelectionSlots[var_s1].unk_04->numberOfPokemonBrought = 0;
 
             if (var_s2 < 0) {
                 var_s1 -= 1;
                 while (var_s1 >= 0) {
-                    if (D_8423D3D8[var_s1].unk_00 != 0) {
-                        var_s2 = (D_8423D3D8[var_s1].unk_04->pokemonPicked[0].unk_52 & 0x70) >> 4;
+                    if (gBattleSelectionSlots[var_s1].unk_00 != 0) {
+                        var_s2 = (gBattleSelectionSlots[var_s1].unk_04->pokemonPicked[0].unk_52 & 0x70) >> 4;
                         break;
                     }
                     var_s1--;
@@ -799,12 +799,12 @@ s32 Team_SelectTeams(void) {
                     gSessionContext.gbStarterChoice = 0;
                 }
 
-                TeamSelection_InitializeSlot(&D_8423D3D8[(unsigned long)idx], var_s2);
+                TeamSelection_InitializeSlot(&gBattleSelectionSlots[(unsigned long)idx], var_s2);
                 TeamSelection_ApplySlotSelection(var_s1, var_s2);
-                TeamSelection_Open(var_s2, 0, D_8423D3D8[var_s1].unk_01);
-                TeamSelection_RunInputLoop(var_s2, 0, D_8423D3D8[var_s1].unk_01);
+                TeamSelection_Open(var_s2, 0, gBattleSelectionSlots[var_s1].unk_01);
+                TeamSelection_RunInputLoop(var_s2, 0, gBattleSelectionSlots[var_s1].unk_01);
 
-                if (Team_CommitSelectionToTrainer(&D_8423D3D8[(unsigned long)idx], var_s2) != 0) {
+                if (Team_CommitSelectionToTrainer(&gBattleSelectionSlots[(unsigned long)idx], var_s2) != 0) {
                     var_s1++;
                 }
 
@@ -849,23 +849,23 @@ s32 Team_SelectRegisteredTeams(void) {
     TeamSelection_InitializeSlots();
     TeamSelection_FadeIn();
 
-    D_84210D44 |= TeamSelection_TrainerSlots_Initialize(0);
-    D_84210D44 |= TeamSelection_Preview_Initialize(&D_8423D3A8);
+    gSubsystemEnableMask |= TeamSelection_TrainerSlots_Initialize(0);
+    gSubsystemEnableMask |= TeamSelection_Preview_Initialize(&gMoveScreenInfo);
 
     while ((var_s1 >= 0) && (var_s1 < 4)) {
-        if (D_8423D3D8[var_s1].unk_00 != 0) {
-            if (D_8423D3D8[var_s1].unk_04->numberOfPokemonBrought == 0) {
-                var_s2 = TeamSelection_RunModal(D_8423D3D8[var_s1].unk_02, 0, D_8423D3D8[var_s1].unk_01, 1);
+        if (gBattleSelectionSlots[var_s1].unk_00 != 0) {
+            if (gBattleSelectionSlots[var_s1].unk_04->numberOfPokemonBrought == 0) {
+                var_s2 = TeamSelection_RunModal(gBattleSelectionSlots[var_s1].unk_02, 0, gBattleSelectionSlots[var_s1].unk_01, 1);
             } else {
-                var_s2 = ((D_8423D3D8[var_s1].unk_04->pokemonPicked[0].unk_52 & 0x70) >> 4);
+                var_s2 = ((gBattleSelectionSlots[var_s1].unk_04->pokemonPicked[0].unk_52 & 0x70) >> 4);
             }
 
             if (var_s2 < 0) {
                 var_s1--;
 
                 while (var_s1 >= 0) {
-                    if (D_8423D3D8[var_s1].unk_00 != 0) {
-                        var_s2 = (D_8423D3D8[var_s1].unk_04->pokemonPicked[0].unk_52 & 0x70) >> 4;
+                    if (gBattleSelectionSlots[var_s1].unk_00 != 0) {
+                        var_s2 = (gBattleSelectionSlots[var_s1].unk_04->pokemonPicked[0].unk_52 & 0x70) >> 4;
                         break;
                     }
                     var_s1--;
@@ -884,11 +884,11 @@ s32 Team_SelectRegisteredTeams(void) {
                 } else {
                     gSessionContext.gbStarterChoice = 0;
                 }
-                TeamSelection_InitializeSlot(&D_8423D3D8[(unsigned long)idx], var_s2);
+                TeamSelection_InitializeSlot(&gBattleSelectionSlots[(unsigned long)idx], var_s2);
                 TeamSelection_ApplySlotSelection(var_s1, var_s2);
-                TeamSelection_Open(var_s2, 0, D_8423D3D8[var_s1].unk_01);
-                TeamSelection_RunInputLoop(var_s2, 0, D_8423D3D8[var_s1].unk_01);
-                if (Team_CommitSelectionToTrainer(&D_8423D3D8[(unsigned long)idx], var_s2) != 0) {
+                TeamSelection_Open(var_s2, 0, gBattleSelectionSlots[var_s1].unk_01);
+                TeamSelection_RunInputLoop(var_s2, 0, gBattleSelectionSlots[var_s1].unk_01);
+                if (Team_CommitSelectionToTrainer(&gBattleSelectionSlots[(unsigned long)idx], var_s2) != 0) {
                     var_s1++;
                 }
 
@@ -909,7 +909,7 @@ s32 Team_SelectRegisteredTeams(void) {
 }
 
 void RegisteredTeam_Register(void) {
-    unk_D_84229EB0* ptr;
+    RegisteredTeamMenu* ptr;
     char sp74[16];
     s16 temp_v0;
     u16 var_s1;
@@ -934,59 +934,59 @@ void RegisteredTeam_Register(void) {
             var_s1 = 0;
         }
 
-        ptr = &D_84229EB0;
-        D_84210D44 |= TeamSelection_RegisteredTeam_Initialize(ptr, &D_84211B50, &D_842168A0, &D_8423D3A8, 3, 0x2C, 0xBC, 0);
-        D_84210D44 |= Rental_InitTeamTray(&D_84211B50, &D_842168A0, &D_8423D3A8, ptr, 1, var_s1, sp74, 0x40, 0x54, 0);
-        D_84210D44 |= Rental_PrimeCarousel(&D_842168A0, &D_84211B50, &D_8423D3A8, 1, 0x68, 0xE4, 0, temp_v0, D_84211B38);
+        ptr = &gPokemonData;
+        gSubsystemEnableMask |= TeamSelection_RegisteredTeam_Initialize(ptr, &gPartyInfo, &gControllerInfo, &gMoveScreenInfo, 3, 0x2C, 0xBC, 0);
+        gSubsystemEnableMask |= Rental_InitTeamTray(&gPartyInfo, &gControllerInfo, &gMoveScreenInfo, ptr, 1, var_s1, sp74, 0x40, 0x54, 0);
+        gSubsystemEnableMask |= Rental_PrimeCarousel(&gControllerInfo, &gPartyInfo, &gMoveScreenInfo, 1, 0x68, 0xE4, 0, temp_v0, gBattleSelectionControllerInfo);
 
         TeamSelection_Open(temp_v0, 1, 0);
         TeamSelection_RunInputLoop(temp_v0, 1, 0);
 
         main_pool_pop_state('regi');
 
-        if (D_84211B50.unk_0006 != 0) {
+        if (gPartyInfo.unk_0006 != 0) {
             break;
         }
     }
 }
 
 void RegisteredTeam_Browse(void) {
-    D_84210D44 |= TeamSelection_RegisteredTeam_Initialize(&D_84229EB0, &D_84211B50, &D_842168A0, &D_8423D3A8, 1, 0x2C, 0x54, 0);
+    gSubsystemEnableMask |= TeamSelection_RegisteredTeam_Initialize(&gPokemonData, &gPartyInfo, &gControllerInfo, &gMoveScreenInfo, 1, 0x2C, 0x54, 0);
 
-    RegistrationManager_Begin(&D_84229EB0);
+    RegistrationManager_Begin(&gPokemonData);
     Controller_PollInputs();
     TeamSelection_Update(4, 0);
     TeamSelection_RenderFrame(4, 2, 0);
-    Input_SetRepeatController(&gControllers[D_842168A0.unk_00003]);
+    Input_SetRepeatController(&gControllers[gControllerInfo.unk_00003]);
 
     do {
         Controller_PollInputs();
         TeamSelection_Update(4, Input_GetRepeatedDPad() & 0xFFFF);
         TeamSelection_RenderFrame(4, 2, 0);
-    } while (TeamSelection_RegisteredTeam_GetSelection(&D_84229EB0) == 0);
+    } while (TeamSelection_RegisteredTeam_GetSelection(&gPokemonData) == 0);
 }
 
 void RegisteredTeam_Delete(void) {
-    D_84210D44 |= TeamSelection_RegisteredTeam_Initialize(&D_84229EB0, &D_84211B50, &D_842168A0, &D_8423D3A8, 2, 0x2C, 0x54, 0);
+    gSubsystemEnableMask |= TeamSelection_RegisteredTeam_Initialize(&gPokemonData, &gPartyInfo, &gControllerInfo, &gMoveScreenInfo, 2, 0x2C, 0x54, 0);
 
-    RegistrationManager_Begin(&D_84229EB0);
+    RegistrationManager_Begin(&gPokemonData);
     Controller_PollInputs();
     TeamSelection_Update(4, 0);
     TeamSelection_RenderFrame(4, 3, 0);
-    Input_SetRepeatController(&gControllers[D_842168A0.unk_00003]);
+    Input_SetRepeatController(&gControllers[gControllerInfo.unk_00003]);
 
     do {
         Controller_PollInputs();
         TeamSelection_Update(4, Input_GetRepeatedDPad() & 0xFFFF);
         TeamSelection_RenderFrame(4, 3, 0);
-    } while (TeamSelection_RegisteredTeam_GetSelection(&D_84229EB0) == 0);
+    } while (TeamSelection_RegisteredTeam_GetSelection(&gPokemonData) == 0);
 }
 
 s32 RegisteredTeam_Manage(void) {
     s16 temp_v0;
 
-    D_84210D44 |= TeamSelection_TrainerSlots_Initialize(1);
-    D_84210D44 |= TeamSelection_Preview_Initialize(&D_8423D3A8);
+    gSubsystemEnableMask |= TeamSelection_TrainerSlots_Initialize(1);
+    gSubsystemEnableMask |= TeamSelection_Preview_Initialize(&gMoveScreenInfo);
 
     do {
         temp_v0 = TeamSelection_RunCategorySelection();
@@ -1057,33 +1057,33 @@ void Rental_LoadRosterForMode(void) {
     }
 
     if (var_a1 == 0) {
-        D_84211B38 = NULL;
+        gBattleSelectionControllerInfo = NULL;
     } else {
         if (gSessionContext.inRound2 != 0) {
             var_a1 += 0x1F;
         }
-        D_84211B38 = BinArchive_GetFile(temp_a0, var_a1);
+        gBattleSelectionControllerInfo = BinArchive_GetFile(temp_a0, var_a1);
     }
 }
 
 void Rental_LoadBackgroundImage(void) {
     ModeSettings sp20;
 
-    D_84211B30 = ASSET_LOAD2(backgrounds, 1, 1);
+    gBattleSelectionBackgroundArchive = ASSET_LOAD2(backgrounds, 1, 1);
     if (gSessionContext.mode == 7) {
         if (gSessionContext.modeSelection >= 8) {
-            D_84211B34 = BinArchive_GetFile(D_84211B30, 0xE);
+            gPartyScreenBackground = BinArchive_GetFile(gBattleSelectionBackgroundArchive, 0xE);
         } else {
             Save_EnsureBankLoaded(2);
             Save_GetModeSettings(&sp20, gSessionContext.inRound2);
             if (sp20.castleClears < 8) {
-                D_84211B34 = BinArchive_GetFile(D_84211B30, 0xD);
+                gPartyScreenBackground = BinArchive_GetFile(gBattleSelectionBackgroundArchive, 0xD);
             } else {
-                D_84211B34 = BinArchive_GetFile(D_84211B30, 0x10);
+                gPartyScreenBackground = BinArchive_GetFile(gBattleSelectionBackgroundArchive, 0x10);
             }
         }
     } else {
-        D_84211B34 = BinArchive_GetFile(D_84211B30, D_84210D4C[gSessionContext.mode]);
+        gPartyScreenBackground = BinArchive_GetFile(gBattleSelectionBackgroundArchive, gStadiumModeTextureIndices[gSessionContext.mode]);
     }
 }
 
@@ -1099,11 +1099,11 @@ s32 Rental_Main(s32 arg0, UNUSED s32 arg1) {
     PokeIcon_OpenModelArchives();
     Text_InitStringTables();
 
-    D_84211B3C = Text_GetStringTable(0x24);
-    D_84211B40 = Text_GetStringTable(0x25);
-    D_84211B44 = Text_GetStringTable(0x26);
-    D_84211B48 = Text_GetStringTable(0x1A);
-    D_84211B4C = Text_GetStringTable(6);
+    gSpeciesNamesBank = Text_GetStringTable(0x24);
+    gTeamSelectionMoveNamesBank = Text_GetStringTable(0x25);
+    gMessageBankTypeNames = Text_GetStringTable(0x26);
+    gTeamSelectionUiLabelsBank = Text_GetStringTable(0x1A);
+    gMessageBankStatusScreenLabels = Text_GetStringTable(6);
 
     Save_EnsureBankLoaded(gSessionContext.ruleCategory / 4);
     Save_SetActiveRecordBank(gSessionContext.ruleCategory);

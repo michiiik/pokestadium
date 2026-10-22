@@ -34,10 +34,10 @@ extern u32 D_03047720[];
 static MiniActor miniSandshrews[4];
 static MiniActor miniSandshrewHoles[4];
 static MiniActor miniSandshrewGeisers[4];
-static s16 D_86F0D260;
-static FontContext* D_86F0D264;
+static s16 gMiniGameDemoFlag;
+static FontContext* gMiniHUDTextObject;
 
-static u32 D_86F02690[1024] = {
+static u32 gFragment21Texture0[1024] = {
     0xBC99B499, 0xCD5DDE61, 0xE623C4DB, 0xD59DCD5D, 0xCD5BDDDD, 0xD5DFBCD9, 0xEE69E6A9, 0xDDDDDDDF, 0xDDDFE61F,
     0xE661DE1F, 0xDE21E661, 0xDE21C51B, 0xC55DE621, 0xD5DDD59D, 0xD5DDDDDF, 0xDDDFDDDF, 0xDDDFD5DF, 0xD5DFDDDF,
     0xD5DFD5DF, 0xD59FD59F, 0xDDDFD5DD, 0xCD9BD599, 0xC599C559, 0xC557C555, 0xC553C557, 0xC557B54F, 0xB54DD59D,
@@ -153,7 +153,7 @@ static u32 D_86F02690[1024] = {
     0xACCDA4CF, 0xACD3B497, 0xAC57B499, 0xBCD9B499, 0xB459B499, 0xBCDBC51D, 0xCD59C555, 0xBD4FB54B, 0xB54BB54B,
     0xB54BB54B, 0xB54BB54B, 0xB54BB54B, 0xB58BB58B, 0xB54BB54B, 0xAD4BAD4B, 0xB54BAD49
 };
-static u32 D_86F03690[512] = {
+static u32 gFragment21Texture1[512] = {
     0x7B9BAD27, 0xB569CE2F, 0xCE2FBDAB, 0xC5EDC5EB, 0xC5EDC5AB, 0x8399B569, 0xD671CE2F, 0xCE2FC5ED, 0xBDABBD69,
     0xC5EBBDAB, 0xC5EDCDED, 0xC5EDC5AB, 0xC5EDC5AB, 0xC5EDC5ED, 0xC5EDBD69, 0xB5696B17, 0x4A0F5251, 0x49CF839B,
     0x7B995A91, 0x73597B9B, 0x5A4F7317, 0x7317941F, 0x9461A4E3, 0x8BDD5A91, 0x524F6293, 0x6B17520F, 0x5A51839B,
@@ -212,7 +212,7 @@ static u32 D_86F03690[512] = {
     0x6B155251, 0x41CD941F, 0x8C1D62D3, 0x6AD37357, 0x6B157357, 0xB5677B59, 0x39494A0D, 0x6AD56B15, 0x62936291,
     0x6B157357, 0x9C61A4E3, 0x6AD34A0D, 0x5A5183DB, 0xA4A37317, 0x7317839B, 0x73174A0F, 0x3149398B
 };
-static u32 D_86F03E90[512] = {
+static u32 gFragment21Texture2[512] = {
     0x7BE173DF, 0x8C637BE1, 0x6B9F9CE7, 0x94A5635B, 0x8421BDEF, 0x9CE76B9D, 0x84639CE7, 0x94A5A4E7, 0x94A552D7,
     0x4A979CE9, 0xBDADA529, 0xB5ADC5ED, 0xBDABBDAB, 0xB5ADA4E7, 0xA529A4E7, 0x73DF8C63, 0x6B5D9CE7, 0xA52973DF,
     0x739FA529, 0x94A56B9D, 0xB5ABBDAB, 0x8421739D, 0x8C657C23, 0x8C63C5EF, 0x739D6B5D, 0x739D73E1, 0x9CE7AD29,
@@ -271,7 +271,7 @@ static u32 D_86F03E90[512] = {
     0x9CA59CA5, 0xB56B9463, 0x8C638C63, 0x84635B19, 0x5B1994A7, 0xA529B569, 0x9CA59CA5, 0x7BDF8C63, 0x8423AD6B,
     0x7BE1635D, 0x84256B9D, 0xB5AF8421, 0x73DF4A97, 0x425552D9, 0xAD6B8C63, 0x3A11B56D, 0xA4E794A3
 };
-static u32 D_86F04690[512] = {
+static u32 gFragment21Texture3[512] = {
     0xB56DAD6B, 0x9CE58C61, 0x84215253, 0x94A5AD6D, 0xA4E98423, 0x62D9739D, 0x9CA5B5AB, 0xB569AD27, 0xAD2794A3,
     0x735994A5, 0xAD6DAD2B, 0xA5299CE7, 0x9CE99CE9, 0x94A58C61, 0x94A78C65, 0x84638421, 0x84219CE7, 0x94638C63,
     0x94A794A5, 0x739DAD6B, 0xB56D8C63, 0x5A958421, 0x841FA4E5, 0xBDABAD67, 0x94A18421, 0x735B9463, 0xB5ADAD6B,
@@ -330,7 +330,7 @@ static u32 D_86F04690[512] = {
     0xC5F1BDEF, 0x94638C61, 0x83DD4A4F, 0x83DDAD67, 0x9CE3841F, 0x94A5A529, 0xB56BAD69, 0xB56BBDF1, 0xB5ADAD29,
     0x8C1FA4E7, 0xA4E79463, 0x8C2194A3, 0x9CA17357, 0x8C1F8C21, 0x7B9B7B99, 0x9461C5EF, 0xC5EFBDEF
 };
-static u32 D_86F04E90[512] = {
+static u32 gFragment21Texture4[512] = {
     0xC6BDC6BD, 0xC6BDBEBD, 0xBE7DB67D, 0xA5FD95BD, 0x8DBD8D7B, 0x9DBDAE3D, 0xBE7DBE7D, 0xAE3D9DBD, 0x857B7CFB,
     0x6CBB5C7B, 0x4C394BF9, 0x4BF94BF9, 0x4BF94BF9, 0x4BF94BF9, 0x4BF94BF9, 0x4BF94BF9, 0xBEBDBEBD, 0xBEBDBE7D,
     0xB67DB67D, 0xAE3DA5FD, 0x9DFD95BD, 0x95BD9DFD, 0xA63DA5FD, 0x95BD853B, 0x74FB64BB, 0x5C795439, 0x4C394BF9,
@@ -389,7 +389,7 @@ static u32 D_86F04E90[512] = {
     0xC66DC66D, 0xC66BC66B, 0xC66BC66B, 0xC66BC66B, 0xC66BC66B, 0xC66BC66B, 0xC66BC66B, 0xC66BC66B, 0xC66BC66B,
     0xC66BC66B, 0xC66BC66B, 0xC66BC66B, 0xC66BC66B, 0xC66BC66B, 0xC66BC66B, 0xC66BC66B, 0xC66BC66B
 };
-static u32 D_86F05690[1024] = {
+static u32 gFragment21Texture5[1024] = {
     0x004B2C00, 0x004B2C00, 0x004B2C00, 0x004B2C00, 0x004B2C00, 0x004B2C00, 0x004B2C00, 0x004B2C00, 0x004B2C00,
     0x004B2C00, 0x004B2C00, 0x004B2C00, 0x004B2C00, 0x004B2C00, 0x004B2C00, 0x004B2C00, 0x004B2C00, 0x004B2C00,
     0x004B2C00, 0x004B2C00, 0x004B2C00, 0x004B2C00, 0x004B2C00, 0x004B2C00, 0x004B2C00, 0x004B2C00, 0x004B2C00,
@@ -505,7 +505,7 @@ static u32 D_86F05690[1024] = {
     0xA6B43EF0, 0xADB844F0, 0xA6B632F0, 0x9ABC11F0, 0xA7C60DF0, 0xAABC2AF0, 0xAAC51DF0, 0x9EAF34F0, 0x9DB816F0,
     0xA6C01AF0, 0xAFC02EF0, 0x99B422F0, 0xA2BA18F0, 0xABC516F0, 0xABCA0AF4, 0xAAC21DE1
 };
-static u32 D_86F06690[512] = {
+static u32 gFragment21Texture6[512] = {
     0x84239CE7, 0xA529A529, 0x9CE7A4E9, 0xAD6B9CE9, 0xA529A4E9, 0x94A59CE7, 0xA5299CE7, 0x846373DF, 0x7BE18C65,
     0x94A58421, 0x84239CA7, 0x94A57BDF, 0x6B5D7BDF, 0x739F631B, 0x5B1B631B, 0x5B1B5AD9, 0x8C638C63, 0x8C6594A5,
     0x94A78C65, 0x94A794A5, 0x9CA79CE7, 0x9CE78421, 0xA529AD6B, 0x9CE79CE7, 0x9CE78CA5, 0x8C639CE9, 0x9CE78C65,
@@ -564,7 +564,7 @@ static u32 D_86F06690[512] = {
     0x631B5AD9, 0x5B195B1B, 0x631B5AD9, 0x5AD96B5D, 0x6B9D739F, 0x7C217BE1, 0x84237C21, 0x6B9F73DF, 0x8423739F,
     0x6B5D635B, 0x73DF7C21, 0x8423739F, 0x6B9D635B, 0x5B1B5B1B, 0x5B195B19, 0x631B635D, 0x631B5B1B
 };
-static u32 D_86F06E90[1024] = {
+static u32 gFragment21Texture7[1024] = {
     0xBDEDBDED, 0xBDEDBDED, 0xBDEDBDED, 0x94A594A3, 0xA569B5AB, 0xBDEDBDED, 0xBDEDBDED, 0xBDEDBDED, 0xBDEDBDED,
     0xBDEDBDED, 0xBDEDBDED, 0xBDEDBDED, 0xBDEDBDED, 0xBDEDBDED, 0xBDEDBDED, 0xBDEDBDED, 0xBDEDBDED, 0xBDEDBDED,
     0xBDEDBDED, 0xBDEDBDED, 0xBDEDBDED, 0xBDEDBDED, 0xBDEDBDED, 0xBDEDBDED, 0xBDEDBDED, 0xBDEDBDED, 0xBDEDBDED,
@@ -680,7 +680,7 @@ static u32 D_86F06E90[1024] = {
     0x7C097C0B, 0x7C0D7C0D, 0x7C0D7C0D, 0x7C0D7C0D, 0x7C0D7C0B, 0x84098409, 0x84097C09, 0x7C098409, 0x7C097C09,
     0x73C973C9, 0x73896B89, 0x63475AC7, 0x4A454A45, 0x7C098409, 0x7C097C09, 0x7C097C09
 };
-static u32 D_86F07E90[1024] = {
+static u32 gFragment21Texture8[1024] = {
     0x841F7BDD, 0x7BDD739D, 0x739B739B, 0x739B739B, 0x739B739B, 0x739B739B, 0x739B739B, 0x739B739B, 0x739B739B,
     0x739B739B, 0x739B739B, 0x739B739B, 0x739B739B, 0x739B739D, 0x739D7BDD, 0x7BDD841F, 0x841F7BDD, 0x7BDD7BDD,
     0x739D739D, 0x739D739B, 0x739D739D, 0x739D739D, 0x739B739B, 0x739B739B, 0x739B739B, 0x739B739B, 0x739B739B,
@@ -797,14 +797,14 @@ static u32 D_86F07E90[1024] = {
     0x73C573C5, 0x73C573C5, 0x73C573C5, 0x73C573C5, 0x73C573C5, 0x73C573C5, 0x73C573C5
 };
 
-static unk_D_86002F34_018 D_86F08E90[9] = {
+static GfxTextureInfo gFragment21TextureInfoTable[9] = {
     {
         0x00,
         unk_D_86002F34_018_GFX_TYPE_2,
         64,
         32,
         2048,
-        D_86F02690,
+        gFragment21Texture0,
     },
     {
         0x00,
@@ -812,7 +812,7 @@ static unk_D_86002F34_018 D_86F08E90[9] = {
         32,
         32,
         1024,
-        D_86F03690,
+        gFragment21Texture1,
     },
     {
         0x00,
@@ -820,7 +820,7 @@ static unk_D_86002F34_018 D_86F08E90[9] = {
         32,
         32,
         1024,
-        D_86F03E90,
+        gFragment21Texture2,
     },
     {
         0x00,
@@ -828,7 +828,7 @@ static unk_D_86002F34_018 D_86F08E90[9] = {
         32,
         32,
         1024,
-        D_86F04690,
+        gFragment21Texture3,
     },
     {
         0x00,
@@ -836,7 +836,7 @@ static unk_D_86002F34_018 D_86F08E90[9] = {
         32,
         32,
         1024,
-        D_86F04E90,
+        gFragment21Texture4,
     },
     {
         0x00,
@@ -844,7 +844,7 @@ static unk_D_86002F34_018 D_86F08E90[9] = {
         32,
         32,
         1024,
-        D_86F05690,
+        gFragment21Texture5,
     },
     {
         0x00,
@@ -852,7 +852,7 @@ static unk_D_86002F34_018 D_86F08E90[9] = {
         32,
         32,
         1024,
-        D_86F06690,
+        gFragment21Texture6,
     },
     {
         0x00,
@@ -860,7 +860,7 @@ static unk_D_86002F34_018 D_86F08E90[9] = {
         64,
         32,
         2048,
-        D_86F06E90,
+        gFragment21Texture7,
     },
     {
         0x00,
@@ -868,11 +868,11 @@ static unk_D_86002F34_018 D_86F08E90[9] = {
         32,
         64,
         2048,
-        D_86F07E90,
+        gFragment21Texture8,
     },
 };
 
-static Gfx D_86F08F00[] = {
+static Gfx gFragment21GfxSetupHole[] = {
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0x0000, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, 6, G_TX_NOLOD,
                 G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD),
     gsDPLoadSync(),
@@ -883,7 +883,7 @@ static Gfx D_86F08F00[] = {
     gsDPSetTileSize(G_TX_RENDERTILE, 0, 0, 0x007C, 0x00FC),
     gsSPEndDisplayList(),
 };
-static Gfx D_86F08F38[] = {
+static Gfx gFragment21GfxSetupSandPatch[] = {
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0x0000, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD,
                 G_TX_MIRROR | G_TX_CLAMP, 6, G_TX_NOLOD),
     gsDPLoadSync(),
@@ -894,7 +894,7 @@ static Gfx D_86F08F38[] = {
     gsDPSetTileSize(G_TX_RENDERTILE, 0, 0, 0x00FC, 0x007C),
     gsSPEndDisplayList(),
 };
-static Gfx D_86F08F70[] = {
+static Gfx gFragment21GfxSetupSmallRock[] = {
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0x0000, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD,
                 G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD),
     gsDPLoadSync(),
@@ -906,7 +906,7 @@ static Gfx D_86F08F70[] = {
     gsDPSetTileSize(G_TX_RENDERTILE, 0, 0, 0x00FC, 0x007C),
     gsSPEndDisplayList(),
 };
-static Gfx D_86F08FB0[] = {
+static Gfx gFragment21GfxSetupWallSide[] = {
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_32b, 0, 0x0000, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD,
                 G_TX_MIRROR | G_TX_CLAMP, 5, G_TX_NOLOD),
     gsDPLoadSync(),
@@ -918,7 +918,7 @@ static Gfx D_86F08FB0[] = {
     gsDPSetTileSize(G_TX_RENDERTILE, 0, 0, 0x00FC, 0x007C),
     gsSPEndDisplayList(),
 };
-static Gfx D_86F08FF0[] = {
+static Gfx gFragment21GfxSetupWallBack[] = {
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0x0000, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD,
                 G_TX_MIRROR | G_TX_CLAMP, 5, G_TX_NOLOD),
     gsDPLoadSync(),
@@ -930,7 +930,7 @@ static Gfx D_86F08FF0[] = {
     gsDPSetTileSize(G_TX_RENDERTILE, 0, 0, 0x027C, 0x007C),
     gsSPEndDisplayList(),
 };
-static Gfx D_86F09030[] = {
+static Gfx gFragment21GfxSetupRockRight[] = {
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0x0000, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD,
                 G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD),
     gsDPLoadSync(),
@@ -942,7 +942,7 @@ static Gfx D_86F09030[] = {
     gsDPSetTileSize(G_TX_RENDERTILE, 0, 0, 0x05FC, 0x017C),
     gsSPEndDisplayList(),
 };
-static Gfx D_86F09070[] = {
+static Gfx gFragment21GfxSetupRockBack[] = {
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0x0000, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD,
                 G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD),
     gsDPLoadSync(),
@@ -954,7 +954,7 @@ static Gfx D_86F09070[] = {
     gsDPSetTileSize(G_TX_RENDERTILE, 0, 0, 0x077C, 0x017C),
     gsSPEndDisplayList(),
 };
-static Gfx D_86F090B0[] = {
+static Gfx gFragment21GfxSetupRockLeft[] = {
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0x0000, G_TX_LOADTILE, 0, G_TX_MIRROR | G_TX_CLAMP, 5, G_TX_NOLOD,
                 G_TX_MIRROR | G_TX_CLAMP, 5, G_TX_NOLOD),
     gsDPLoadSync(),
@@ -966,7 +966,7 @@ static Gfx D_86F090B0[] = {
     gsDPSetTileSize(G_TX_RENDERTILE, 0, 0, 0x08FC, 0x01FC),
     gsSPEndDisplayList(),
 };
-static Gfx D_86F090F0[] = {
+static Gfx gFragment21GfxSetupGroundWall[] = {
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0x0000, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD,
                 G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD),
     gsDPLoadSync(),
@@ -978,7 +978,7 @@ static Gfx D_86F090F0[] = {
     gsDPSetTileSize(G_TX_RENDERTILE, 0, 0, 0x09FC, 0x007C),
     gsSPEndDisplayList(),
 };
-static Gfx D_86F09130[] = {
+static Gfx gFragment21GfxSetupGround[] = {
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0x0000, G_TX_LOADTILE, 0, G_TX_MIRROR | G_TX_CLAMP, 5, G_TX_NOLOD,
                 G_TX_MIRROR | G_TX_CLAMP, 6, G_TX_NOLOD),
     gsDPLoadSync(),
@@ -991,14 +991,14 @@ static Gfx D_86F09130[] = {
     gsSPEndDisplayList(),
 };
 
-static Vtx D_86F09170[] = {
+static Vtx gFragment21VtxGround[] = {
     VTX(-1900, 0, -450, 243, 2183, 0x40, 0x64, 0x0C, 0xFF),  VTX(1900, 0, -450, 8174, 3040, 0xAE, 0x55, 0x10, 0xFF),
     VTX(1400, 0, -1900, 5844, 3696, 0xC9, 0x64, 0x22, 0xFF), VTX(2000, 0, 1500, 10113, 2028, 0x00, 0x78, 0x00, 0xFF),
     VTX(2000, 0, 1500, 10113, 2028, 0xAC, 0x54, 0x04, 0xFF), VTX(-2000, 0, 1500, 1764, 1126, 0x54, 0x54, 0x04, 0xFF),
     VTX(-2000, 0, 1500, 1764, 1126, 0x00, 0x78, 0x00, 0xFF), VTX(500, 0, -2800, 3167, 3970, 0xE1, 0x58, 0x4B, 0xFF),
     VTX(-500, 0, -2800, 1079, 3745, 0x28, 0x39, 0x61, 0xFF), VTX(-1400, 0, -1900, 0, 3065, 0x37, 0x64, 0x22, 0xFF),
 };
-static Vtx D_86F09210[] = {
+static Vtx gFragment21VtxGroundWall[] = {
     VTX(1900, 300, -450, 1314, 0, 0x8B, 0x00, 0x16, 0xFF),    VTX(1400, 0, -1900, 2924, 1024, 0xC9, 0x64, 0x22, 0xFF),
     VTX(1900, 0, -450, 1314, 1024, 0xAE, 0x55, 0x10, 0xFF),   VTX(2000, 300, 1500, -69, 0, 0x89, 0x00, 0x06, 0xFF),
     VTX(2000, 0, 1500, -69, 1024, 0xAC, 0x54, 0x04, 0xFF),    VTX(500, 300, -2800, 4109, 0, 0xD3, 0x00, 0x6E, 0xFF),
@@ -1008,7 +1008,7 @@ static Vtx D_86F09210[] = {
     VTX(-1900, 0, -450, 7787, 1024, 0x40, 0x64, 0x0C, 0xFF),  VTX(-2000, 300, 1500, 9172, 0, 0x77, 0x00, 0x06, 0xFF),
     VTX(-2000, 0, 1500, 9172, 1024, 0x54, 0x54, 0x04, 0xFF),  VTX(1400, 300, -1900, 2924, 0, 0x9B, 0x00, 0x3F, 0xFF),
 };
-static Vtx D_86F09310[] = {
+static Vtx gFragment21VtxRockLeft[] = {
     VTX(-974, 61, -787, 612, 2702, 0xD0, 0x69, 0x1C, 0xFF),   VTX(-941, 0, -538, 2544, 4096, 0xE7, 0x6D, 0x2A, 0xFF),
     VTX(-766, 75, -630, 3748, 2397, 0xFC, 0x6B, 0x34, 0xFF),  VTX(-599, 0, -487, 4847, 4096, 0x0D, 0x6D, 0x2F, 0xFF),
     VTX(-417, 47, -747, 6818, 3023, 0x2D, 0x6E, 0x0F, 0xFF),  VTX(-597, 162, -859, 7917, 404, 0x29, 0x70, 0x06, 0xFF),
@@ -1017,7 +1017,7 @@ static Vtx D_86F09310[] = {
     VTX(-817, 180, -824, 10155, 0, 0xE6, 0x73, 0x13, 0xFF),   VTX(-766, 75, -630, 14500, 2397, 0xFC, 0x6B, 0x34, 0xFF),
     VTX(-693, 167, -972, 9548, 294, 0x07, 0x70, 0xD6, 0xFF),  VTX(-1177, 0, -791, 605, 4096, 0xD7, 0x6F, 0x11, 0xFF),
 };
-static Vtx D_86F093F0[] = {
+static Vtx gFragment21VtxRockBack[] = {
     VTX(-816, 516, -1963, 1210, 0, 0xC5, 0x65, 0x18, 0xFF),
     VTX(-1011, 354, -2018, 877, 389, 0xB1, 0x5A, 0x03, 0xFF),
     VTX(-925, 256, -1650, 1576, 1315, 0xCE, 0x5F, 0x34, 0xFF),
@@ -1038,7 +1038,7 @@ static Vtx D_86F093F0[] = {
     VTX(-327, 410, -2087, 7194, 103, 0x21, 0x6C, 0xDA, 0xFF),
     VTX(-1266, 0, -2281, 355, 992, 0xB6, 0x4E, 0xCD, 0xFF),
 };
-static Vtx D_86F09520[] = {
+static Vtx gFragment21VtxRockRight[] = {
     VTX(360, 173, -974, 1245, 1635, 0xBA, 0x5B, 0x1F, 0xFF), VTX(381, 0, -576, 1944, 2983, 0xDA, 0x5F, 0x3D, 0xFF),
     VTX(646, 211, -743, 2676, 1953, 0xE9, 0x57, 0x4E, 0xFF), VTX(875, 0, -530, 3318, 3072, 0x1C, 0x57, 0x4D, 0xFF),
     VTX(382, 158, -1318, 142, 1022, 0xBC, 0x5C, 0xDE, 0xFF), VTX(593, 510, -1050, 2335, 361, 0xDC, 0x6E, 0x1E, 0xFF),
@@ -1048,32 +1048,32 @@ static Vtx D_86F09520[] = {
     VTX(918, 460, -1129, 4130, 377, 0x42, 0x63, 0x07, 0xFF), VTX(166, 0, -1423, 141, 1347, 0xC8, 0x64, 0xDE, 0xFF),
     VTX(1257, 0, -848, 4336, 2459, 0x4D, 0x53, 0x25, 0xFF),
 };
-static Vtx D_86F09610[] = {
+static Vtx gFragment21VtxBackWall[] = {
     VTX(-4000, 0, -3000, 0, 1024, 0x00, 0x00, 0x78, 0xFF),
     VTX(4000, 0, -3000, 5120, 1024, 0x00, 0x00, 0x78, 0xFF),
     VTX(4000, 1350, -3000, 5120, 0, 0x00, 0x00, 0x78, 0xFF),
     VTX(-4000, 1350, -3000, 0, 0, 0x00, 0x00, 0x78, 0xFF),
 };
-static Vtx D_86F09650[] = {
+static Vtx gFragment21VtxLeftWall[] = {
     VTX(-929, 0, -1211, 0, 1024, 0xDD, 0x00, 0x72, 0xFF),
     VTX(-164, 0, -977, 2048, 1024, 0xDD, 0x00, 0x72, 0xFF),
     VTX(-164, 135, -977, 2048, 0, 0xDD, 0x00, 0x72, 0xFF),
     VTX(-929, 135, -1211, 0, 0, 0xDD, 0x00, 0x72, 0xFF),
 };
-static Vtx D_86F09690[] = {
+static Vtx gFragment21VtxRightWall[] = {
     VTX(318, 0, -544, 0, 1024, 0xEC, 0x00, 0x76, 0xFF),
     VTX(1106, 0, -405, 2048, 1024, 0xEC, 0x00, 0x76, 0xFF),
     VTX(1106, 135, -405, 2048, 0, 0xEC, 0x00, 0x76, 0xFF),
     VTX(318, 135, -544, 0, 0, 0xEC, 0x00, 0x76, 0xFF),
 };
-static Vtx D_86F096D0[] = {
+static Vtx gFragment21VtxSmallRockLeft[] = {
     VTX(-469, 34, -488, 545, 283, 0xAC, 0x45, 0x31, 0xFF),  VTX(-426, 42, -477, 819, 82, 0x21, 0x61, 0x3D, 0xFF),
     VTX(-433, 53, -558, 266, 506, 0x05, 0x6F, 0xD3, 0xFF),  VTX(-428, 3, -452, 773, 331, 0x11, 0xFF, 0x76, 0xFF),
     VTX(-391, 8, -496, 947, 450, 0x76, 0x0D, 0x10, 0xFF),   VTX(-469, -17, -474, 665, 487, 0xAC, 0xBE, 0x35, 0xFF),
     VTX(-422, -37, -492, 792, 640, 0x36, 0x98, 0x13, 0xFF), VTX(-433, 53, -558, 1290, 506, 0x05, 0x6F, 0xD3, 0xFF),
     VTX(-426, 10, -582, 1264, 776, 0x37, 0xE9, 0x98, 0xFF),
 };
-static Vtx D_86F09760[] = {
+static Vtx gFragment21VtxSmallRockCenter[] = {
     VTX(633, 20, -440, 1266, 731, 0x6B, 0xE4, 0x2C, 0xFF),  VTX(508, 18, -382, 963, 387, 0xF5, 0x12, 0x76, 0xFF),
     VTX(499, -27, -428, 800, 533, 0xF4, 0x92, 0x2B, 0xFF),  VTX(476, 52, -433, 808, 101, 0xD1, 0x69, 0x1E, 0xFF),
     VTX(439, 13, -434, 774, 277, 0x8B, 0x02, 0x17, 0xFF),   VTX(468, -7, -497, 648, 405, 0xCB, 0xB5, 0xB4, 0xFF),
@@ -1081,7 +1081,7 @@ static Vtx D_86F09760[] = {
     VTX(597, 63, -450, 267, 523, 0x24, 0x72, 0x03, 0xFF),   VTX(597, 63, -450, 1291, 523, 0x24, 0x72, 0x03, 0xFF),
     VTX(607, -18, -484, 1428, 827, 0x2D, 0x95, 0xE5, 0xFF),
 };
-static Vtx D_86F09810[] = {
+static Vtx gFragment21VtxSmallRockRight[] = {
     VTX(558, 36, -384, 1224, 734, 0x95, 0x18, 0x2F, 0xFF),  VTX(734, 39, -271, 983, 442, 0x1C, 0xEA, 0x72, 0xFF),
     VTX(737, 129, -380, 832, 587, 0x13, 0x70, 0x25, 0xFF),  VTX(768, -30, -396, 917, 106, 0x3F, 0x9D, 0x14, 0xFF),
     VTX(817, 49, -405, 802, 300, 0x77, 0x00, 0x07, 0xFF),   VTX(766, 89, -545, 631, 456, 0x3A, 0x4B, 0xB8, 0xFF),
@@ -1089,7 +1089,7 @@ static Vtx D_86F09810[] = {
     VTX(558, 36, -384, 200, 734, 0x95, 0x18, 0x2F, 0xFF),   VTX(593, 65, -571, 473, 646, 0xB3, 0xF8, 0xA5, 0xFF),
     VTX(585, 112, -490, 1503, 833, 0xCB, 0x69, 0xEF, 0xFF), VTX(604, -51, -413, 1273, 456, 0xD2, 0x92, 0x0A, 0xFF),
 };
-static Vtx D_86F098D0[] = {
+static Vtx gFragment21VtxSandPatch1[] = {
     VTX(94, 157, -546, 217, 82, 0x2A, 0x54, 0x49, 0xFF),    VTX(69, 157, -532, 39, 82, 0x2A, 0x54, 0x49, 0xFF),
     VTX(76, 124, -520, 39, 281, 0x3B, 0xFF, 0x67, 0xFF),    VTX(101, 124, -534, 217, 281, 0x3B, 0xFF, 0x67, 0xFF),
     VTX(298, 165, -703, 1829, 39, 0x00, 0x78, 0x00, 0xFF),  VTX(80, 165, -577, 238, 39, 0x00, 0x78, 0x00, 0xFF),
@@ -1107,7 +1107,7 @@ static Vtx D_86F098D0[] = {
     VTX(18, 86, -620, 39, 507, 0xE2, 0x67, 0xCD, 0xFF),     VTX(43, 86, -634, 217, 507, 0xE2, 0x67, 0xCD, 0xFF),
     VTX(66, 4, -593, 217, 995, 0x1E, 0x99, 0x34, 0xFF),     VTX(42, 4, -579, 39, 995, 0x1E, 0x99, 0x34, 0xFF),
 };
-static Vtx D_86F09AD0[] = {
+static Vtx gFragment21VtxSandPatch2[] = {
     VTX(285, 91, -733, 1850, 479, 0xF9, 0x76, 0xF3, 0xFF),  VTX(309, 91, -747, 2028, 479, 0xF9, 0x76, 0xF3, 0xFF),
     VTX(291, 86, -778, 2028, 507, 0xE2, 0x67, 0xCD, 0xFF),  VTX(267, 86, -764, 1850, 507, 0xE2, 0x67, 0xCD, 0xFF),
     VTX(77, 33, -575, 217, 824, 0x30, 0xB9, 0x53, 0xFF),    VTX(53, 33, -561, 39, 824, 0x30, 0xB9, 0x53, 0xFF),
@@ -1124,7 +1124,7 @@ static Vtx D_86F09AD0[] = {
     VTX(277, 124, -745, 1850, 281, 0x89, 0x00, 0x00, 0xFF), VTX(277, 124, -739, 1829, 281, 0x89, 0x00, 0x00, 0xFF),
     VTX(285, 91, -733, 1850, 479, 0x8B, 0xE6, 0x00, 0xFF),  VTX(286, 87, -724, 1829, 503, 0x8B, 0xE6, 0x00, 0xFF),
 };
-static Vtx D_86F09CB0[] = {
+static Vtx gFragment21VtxSandPatch3[] = {
     VTX(267, 86, -764, 1850, 507, 0x98, 0x33, 0x1B, 0xFF),  VTX(266, 82, -759, 1829, 535, 0x98, 0x33, 0x1B, 0xFF),
     VTX(286, 87, -724, 1829, 503, 0xA5, 0x40, 0x2B, 0xFF),  VTX(285, 91, -733, 1850, 479, 0xA5, 0x40, 0x2B, 0xFF),
     VTX(256, 58, -783, 1850, 678, 0x8A, 0x0E, 0x05, 0xFF),  VTX(256, 56, -776, 1829, 686, 0x8A, 0x0E, 0x05, 0xFF),
@@ -1141,7 +1141,7 @@ static Vtx D_86F09CB0[] = {
     VTX(101, 124, -534, 217, 281, 0x3B, 0xFF, 0x67, 0xFF),  VTX(76, 124, -520, 39, 281, 0x3B, 0xFF, 0x67, 0xFF),
     VTX(69, 91, -532, 39, 479, 0x36, 0xD0, 0x5F, 0xFF),     VTX(93, 91, -547, 217, 479, 0x36, 0xD0, 0x5F, 0xFF),
 };
-static Vtx D_86F09E90[] = {
+static Vtx gFragment21VtxSandPatch4[] = {
     VTX(335, 86, -645, 1850, 507, 0x1E, 0x67, 0x33, 0xFF),  VTX(360, 86, -659, 2028, 507, 0x1E, 0x67, 0x33, 0xFF),
     VTX(342, 91, -690, 2028, 479, 0x07, 0x76, 0x0D, 0xFF),  VTX(317, 91, -676, 1850, 479, 0x07, 0x76, 0x0D, 0xFF),
     VTX(346, 58, -626, 1850, 678, 0x39, 0x1F, 0x64, 0xFF),  VTX(371, 58, -640, 2028, 678, 0x39, 0x1F, 0x64, 0xFF),
@@ -1158,7 +1158,7 @@ static Vtx D_86F09E90[] = {
     VTX(256, 58, -783, 1850, 678, 0xC7, 0x1F, 0x9C, 0xFF),  VTX(280, 58, -797, 2028, 678, 0xC7, 0x1F, 0x9C, 0xFF),
     VTX(267, 86, -764, 1850, 507, 0xE2, 0x67, 0xCD, 0xFF),  VTX(291, 86, -778, 2028, 507, 0xE2, 0x67, 0xCD, 0xFF),
 };
-static Vtx D_86F0A070[] = {
+static Vtx gFragment21VtxSandPatch5[] = {
     VTX(43, 86, -634, 217, 507, 0xE2, 0x67, 0xCD, 0xFF),    VTX(18, 86, -620, 39, 507, 0xE2, 0x67, 0xCD, 0xFF),
     VTX(36, 91, -589, 39, 479, 0xF9, 0x76, 0xF3, 0xFF),     VTX(61, 91, -603, 217, 479, 0xF9, 0x76, 0xF3, 0xFF),
     VTX(61, 91, -603, 217, 479, 0xCA, 0xD0, 0xA1, 0xFF),    VTX(36, 91, -589, 39, 479, 0xCA, 0xD0, 0xA1, 0xFF),
@@ -1176,7 +1176,7 @@ static Vtx D_86F0A070[] = {
     VTX(120, 22, -500, 217, 892, 0x73, 0xE1, 0xF9, 0xFF),   VTX(120, 23, -507, 238, 884, 0x73, 0xE1, 0xF9, 0xFF),
     VTX(106, 0, -525, 217, 1024, 0x6A, 0xCB, 0xF1, 0xFF),   VTX(108, 5, -529, 238, 992, 0x6A, 0xCB, 0xF1, 0xFF),
 };
-static Vtx D_86F0A270[] = {
+static Vtx gFragment21VtxSandPatch6[] = {
     VTX(284, 154, -728, 1829, 104, 0xD7, 0x56, 0xB9, 0xFF), VTX(65, 154, -602, 238, 104, 0xD7, 0x56, 0xB9, 0xFF),
     VTX(80, 165, -577, 238, 39, 0x00, 0x78, 0x00, 0xFF),    VTX(298, 165, -703, 1829, 39, 0x00, 0x78, 0x00, 0xFF),
     VTX(277, 124, -739, 1829, 281, 0xC5, 0xFF, 0x99, 0xFF), VTX(59, 124, -613, 238, 281, 0xC5, 0xFF, 0x99, 0xFF),
@@ -1193,7 +1193,7 @@ static Vtx D_86F0A270[] = {
     VTX(60, 157, -604, 217, 82, 0x46, 0x29, 0xA8, 0xFF),    VTX(65, 154, -602, 238, 104, 0x46, 0x29, 0xA8, 0xFF),
     VTX(77, 171, -575, 217, 0, 0x5B, 0x39, 0xCC, 0xFF),     VTX(80, 165, -577, 238, 39, 0x5B, 0x39, 0xCC, 0xFF),
 };
-static Vtx D_86F0A450[] = {
+static Vtx gFragment21VtxSandPatch7[] = {
     VTX(318, 157, -675, 1850, 82, 0x2A, 0x54, 0x49, 0xFF),  VTX(342, 157, -689, 2028, 82, 0x2A, 0x54, 0x49, 0xFF),
     VTX(325, 171, -718, 2028, 0, 0x00, 0x78, 0x00, 0xFF),   VTX(301, 171, -704, 1850, 0, 0x00, 0x78, 0x00, 0xFF),
     VTX(313, 154, -677, 1829, 104, 0x29, 0x56, 0x47, 0xFF), VTX(94, 154, -551, 238, 104, 0x29, 0x56, 0x47, 0xFF),
@@ -1209,7 +1209,7 @@ static Vtx D_86F0A450[] = {
     VTX(258, 23, -772, 1829, 884, 0xCD, 0xC3, 0xA7, 0xFF),  VTX(40, 23, -646, 238, 884, 0xCD, 0xC3, 0xA7, 0xFF),
     VTX(270, 5, -751, 1829, 992, 0xDD, 0x9F, 0xC4, 0xFF),   VTX(52, 5, -625, 238, 992, 0xDD, 0x9F, 0xC4, 0xFF),
 };
-static Vtx D_86F0A610[] = {
+static Vtx gSandshrewHoleVerts[] = {
     VTX(29, 124, -602, 245, 507, 0x99, 0x00, 0x3B, 0xFF),  VTX(36, 91, -589, 326, 923, 0x99, 0x00, 0x3C, 0xFF),
     VTX(69, 91, -532, 697, 923, 0x99, 0x00, 0x3C, 0xFF),   VTX(76, 124, -520, 778, 507, 0x99, 0x00, 0x3B, 0xFF),
     VTX(36, 157, -590, 323, 87, 0x99, 0x00, 0x3B, 0xFF),   VTX(69, 157, -532, 700, 87, 0x99, 0x00, 0x3B, 0xFF),
@@ -1221,8 +1221,8 @@ static Vtx D_86F0A610[] = {
     VTX(18, 86, -620, 124, 982, 0x99, 0x00, 0x3C, 0xFF),   VTX(87, 86, -501, 899, 982, 0x99, 0x00, 0x3C, 0xFF),
 };
 
-static Gfx D_86F0A730[] = {
-    gsSPVertex(D_86F098D0, 32, 0),
+static Gfx gSandshrewStageDisplayList[] = {
+    gsSPVertex(gFragment21VtxSandPatch1, 32, 0),
     gsSPSetGeometryMode(G_CULL_BACK),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSP2Triangles(4, 5, 6, 0, 4, 6, 7, 0),
@@ -1234,7 +1234,7 @@ static Gfx D_86F0A730[] = {
     gsSP2Triangles(26, 27, 23, 0, 26, 23, 22, 0),
     gsSP2Triangles(25, 24, 28, 0, 25, 28, 29, 0),
     gsSP2Triangles(30, 31, 27, 0, 30, 27, 26, 0),
-    gsSPVertex(D_86F09AD0, 32, 0),
+    gsSPVertex(gFragment21VtxSandPatch2, 32, 0),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSP2Triangles(4, 5, 6, 0, 4, 6, 7, 0),
     gsSP2Triangles(8, 9, 10, 0, 8, 10, 11, 0),
@@ -1246,7 +1246,7 @@ static Gfx D_86F0A730[] = {
     gsSP2Triangles(22, 23, 24, 0, 22, 24, 25, 0),
     gsSP2Triangles(26, 27, 23, 0, 26, 23, 22, 0),
     gsSP2Triangles(28, 29, 27, 0, 28, 27, 26, 0),
-    gsSPVertex(D_86F09CB0, 32, 0),
+    gsSPVertex(gFragment21VtxSandPatch3, 32, 0),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSP2Triangles(4, 5, 1, 0, 4, 1, 0, 0),
     gsSP2Triangles(6, 7, 5, 0, 6, 5, 4, 0),
@@ -1257,7 +1257,7 @@ static Gfx D_86F0A730[] = {
     gsSP2Triangles(18, 19, 20, 0, 18, 20, 21, 0),
     gsSP2Triangles(22, 23, 24, 0, 22, 24, 25, 0),
     gsSP2Triangles(26, 27, 28, 0, 26, 28, 29, 0),
-    gsSPVertex(D_86F09E90, 32, 0),
+    gsSPVertex(gFragment21VtxSandPatch4, 32, 0),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSP2Triangles(4, 5, 1, 0, 4, 1, 0, 0),
     gsSP2Triangles(6, 7, 5, 0, 6, 5, 4, 0),
@@ -1269,7 +1269,7 @@ static Gfx D_86F0A730[] = {
     gsSP2Triangles(22, 23, 24, 0, 22, 24, 25, 0),
     gsSP2Triangles(26, 27, 23, 0, 26, 23, 22, 0),
     gsSP2Triangles(28, 29, 27, 0, 28, 27, 26, 0),
-    gsSPVertex(D_86F0A070, 32, 0),
+    gsSPVertex(gFragment21VtxSandPatch5, 32, 0),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSP2Triangles(4, 5, 6, 0, 4, 6, 7, 0),
     gsSP2Triangles(8, 9, 10, 0, 8, 10, 11, 0),
@@ -1281,7 +1281,7 @@ static Gfx D_86F0A730[] = {
     gsSP2Triangles(25, 24, 26, 0, 25, 26, 27, 0),
     gsSP2Triangles(27, 26, 28, 0, 27, 28, 29, 0),
     gsSP2Triangles(29, 28, 30, 0, 29, 30, 31, 0),
-    gsSPVertex(D_86F0A270, 32, 0),
+    gsSPVertex(gFragment21VtxSandPatch6, 32, 0),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSP2Triangles(4, 5, 1, 0, 4, 1, 0, 0),
     gsSP2Triangles(6, 7, 5, 0, 6, 5, 4, 0),
@@ -1293,7 +1293,7 @@ static Gfx D_86F0A730[] = {
     gsSP2Triangles(22, 23, 24, 0, 22, 24, 25, 0),
     gsSP2Triangles(25, 24, 26, 0, 25, 26, 27, 0),
     gsSP2Triangles(27, 26, 28, 0, 27, 28, 29, 0),
-    gsSPVertex(D_86F0A450, 28, 0),
+    gsSPVertex(gFragment21VtxSandPatch7, 28, 0),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSP2Triangles(4, 5, 6, 0, 4, 6, 7, 0),
     gsSP2Triangles(7, 6, 8, 0, 7, 8, 9, 0),
@@ -1306,8 +1306,8 @@ static Gfx D_86F0A730[] = {
     gsSP2Triangles(26, 27, 25, 0, 26, 25, 24, 0),
     gsSPEndDisplayList(),
 };
-static Gfx D_86F0A9C8[] = {
-    gsSPVertex(D_86F0A610, 18, 0),
+static Gfx gSandshrewHoleDisplayList[] = {
+    gsSPVertex(gSandshrewHoleVerts, 18, 0),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSP2Triangles(4, 0, 3, 0, 4, 3, 5, 0),
     gsSP2Triangles(6, 7, 8, 0, 9, 10, 11, 0),
@@ -1318,8 +1318,8 @@ static Gfx D_86F0A9C8[] = {
     gsSP2Triangles(1, 16, 17, 0, 1, 17, 2, 0),
     gsSPEndDisplayList(),
 };
-static Gfx D_86F0AA18[] = {
-    gsSPVertex(D_86F09810, 12, 0),
+static Gfx gSandshrewSmallRockRightDisplayList[] = {
+    gsSPVertex(gFragment21VtxSmallRockRight, 12, 0),
     gsSPSetGeometryMode(G_CULL_BACK),
     gsSP2Triangles(0, 1, 2, 0, 3, 4, 1, 0),
     gsSP2Triangles(2, 5, 6, 0, 5, 2, 4, 0),
@@ -1329,8 +1329,8 @@ static Gfx D_86F0AA18[] = {
     gsSP1Triangle(3, 1, 11, 0),
     gsSPEndDisplayList(),
 };
-static Gfx D_86F0AA60[] = {
-    gsSPVertex(D_86F09760, 11, 0),
+static Gfx gSandshrewSmallRockCenterDisplayList[] = {
+    gsSPVertex(gFragment21VtxSmallRockCenter, 11, 0),
     gsSPSetGeometryMode(G_CULL_BACK),
     gsSP2Triangles(0, 1, 2, 0, 3, 4, 1, 0),
     gsSP2Triangles(2, 5, 6, 0, 5, 2, 4, 0),
@@ -1340,8 +1340,8 @@ static Gfx D_86F0AA60[] = {
     gsSP1Triangle(3, 1, 8, 0),
     gsSPEndDisplayList(),
 };
-static Gfx D_86F0AAA8[] = {
-    gsSPVertex(D_86F096D0, 9, 0),
+static Gfx gSandshrewSmallRockLeftDisplayList[] = {
+    gsSPVertex(gFragment21VtxSmallRockLeft, 9, 0),
     gsSPSetGeometryMode(G_CULL_BACK),
     gsSP2Triangles(0, 1, 2, 0, 1, 3, 4, 0),
     gsSP2Triangles(1, 4, 2, 0, 5, 6, 3, 0),
@@ -1349,26 +1349,26 @@ static Gfx D_86F0AAA8[] = {
     gsSP2Triangles(4, 3, 6, 0, 7, 4, 8, 0),
     gsSPEndDisplayList(),
 };
-static Gfx D_86F0AAE0[] = {
-    gsSPVertex(D_86F09690, 4, 0),
+static Gfx gSandshrewRightWallDisplayList[] = {
+    gsSPVertex(gFragment21VtxRightWall, 4, 0),
     gsSPSetGeometryMode(G_CULL_BACK),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
-static Gfx D_86F0AB00[] = {
-    gsSPVertex(D_86F09650, 4, 0),
+static Gfx gSandshrewLeftWallDisplayList[] = {
+    gsSPVertex(gFragment21VtxLeftWall, 4, 0),
     gsSPSetGeometryMode(G_CULL_BACK),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
-static Gfx D_86F0AB20[] = {
-    gsSPVertex(D_86F09610, 4, 0),
+static Gfx gSandshrewBackWallDisplayList[] = {
+    gsSPVertex(gFragment21VtxBackWall, 4, 0),
     gsSPSetGeometryMode(G_CULL_BACK),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
-static Gfx D_86F0AB40[] = {
-    gsSPVertex(D_86F09520, 15, 0),
+static Gfx gSandshrewRockRightDisplayList[] = {
+    gsSPVertex(gFragment21VtxRockRight, 15, 0),
     gsSPSetGeometryMode(G_CULL_BACK),
     gsSP2Triangles(0, 1, 2, 0, 2, 1, 3, 0),
     gsSP2Triangles(4, 0, 5, 0, 6, 0, 4, 0),
@@ -1380,8 +1380,8 @@ static Gfx D_86F0AB40[] = {
     gsSP1Triangle(3, 14, 7, 0),
     gsSPEndDisplayList(),
 };
-static Gfx D_86F0AB98[] = {
-    gsSPVertex(D_86F093F0, 19, 0),
+static Gfx gSandshrewRockBackDisplayList[] = {
+    gsSPVertex(gFragment21VtxRockBack, 19, 0),
     gsSPSetGeometryMode(G_CULL_BACK),
     gsSP2Triangles(0, 1, 2, 0, 1, 3, 4, 0),
     gsSP2Triangles(2, 4, 5, 0, 0, 2, 6, 0),
@@ -1397,8 +1397,8 @@ static Gfx D_86F0AB98[] = {
     gsSP1Triangle(17, 8, 10, 0),
     gsSPEndDisplayList(),
 };
-static Gfx D_86F0AC10[] = {
-    gsSPVertex(D_86F09310, 14, 0),
+static Gfx gSandshrewRockLeftDisplayList[] = {
+    gsSPVertex(gFragment21VtxRockLeft, 14, 0),
     gsSPSetGeometryMode(G_CULL_BACK),
     gsSP2Triangles(0, 1, 2, 0, 2, 1, 3, 0),
     gsSP2Triangles(2, 4, 5, 0, 6, 5, 4, 0),
@@ -1409,8 +1409,8 @@ static Gfx D_86F0AC10[] = {
     gsSP1Triangle(3, 9, 4, 0),
     gsSPEndDisplayList(),
 };
-static Gfx D_86F0AC60[] = {
-    gsSPVertex(D_86F09170, 10, 0),
+static Gfx gSandshrewGroundDL[] = {
+    gsSPVertex(gFragment21VtxGround, 10, 0),
     gsSPSetGeometryMode(G_CULL_BACK),
     gsSP2Triangles(0, 1, 2, 0, 3, 4, 1, 0),
     gsSP2Triangles(3, 1, 0, 0, 3, 0, 5, 0),
@@ -1418,8 +1418,8 @@ static Gfx D_86F0AC60[] = {
     gsSP2Triangles(2, 9, 0, 0, 9, 2, 7, 0),
     gsSPEndDisplayList(),
 };
-static Gfx D_86F0AC98[] = {
-    gsSPVertex(D_86F09210, 16, 0),
+static Gfx gSandshrewGroundWallDL[] = {
+    gsSPVertex(gFragment21VtxGroundWall, 16, 0),
     gsSP2Triangles(0, 1, 2, 0, 3, 0, 2, 0),
     gsSP2Triangles(3, 2, 4, 0, 5, 6, 7, 0),
     gsSP2Triangles(5, 7, 8, 0, 6, 9, 10, 0),
@@ -1430,44 +1430,44 @@ static Gfx D_86F0AC98[] = {
     gsSPEndDisplayList(),
 };
 
-static u32 D_86F0ACE0[] = {
+static u32 gSandshrewStageObjectTable[] = {
     0x09000000, 0x05000000, 0x1D0B0100, 0x00000000, 0xFDA80000, 0x00000000, 0x00010000, 0x00010000, 0x00010000,
     0x05000000, 0x1D0A0101, 0x00000000, 0x00000000, 0x00000000, 0x00010000, 0x00010000, 0x00010000, 0x05000000,
-    0x2301FFFF, D_86F09130, 0x0000FFFF, 0xFFFFFFFF, 0x22010000, D_86F0AC60, 0x2301FFFF, D_86F090F0, 0x0001FFFF,
-    0xFFFFFFFF, 0x22010000, D_86F0AC98, 0x1D090102, 0x00000000, 0x00000000, 0x00000000, 0x00010000, 0x00010000,
-    0x00010000, 0x05000000, 0x2301FFFF, D_86F090B0, 0x0002FFFF, 0xE7DA8A8A, 0x22010000, D_86F0AC10, 0x06000000,
+    0x2301FFFF, gFragment21GfxSetupGround, 0x0000FFFF, 0xFFFFFFFF, 0x22010000, gSandshrewGroundDL, 0x2301FFFF, gFragment21GfxSetupGroundWall, 0x0001FFFF,
+    0xFFFFFFFF, 0x22010000, gSandshrewGroundWallDL, 0x1D090102, 0x00000000, 0x00000000, 0x00000000, 0x00010000, 0x00010000,
+    0x00010000, 0x05000000, 0x2301FFFF, gFragment21GfxSetupRockLeft, 0x0002FFFF, 0xE7DA8A8A, 0x22010000, gSandshrewRockLeftDisplayList, 0x06000000,
     0x1D080103, 0x00000000, 0x00000000, 0x00000000, 0x00010000, 0x00010000, 0x00010000, 0x05000000, 0x2301FFFF,
-    D_86F09070, 0x0003FFFF, 0xFFFFFFFF, 0x22010000, D_86F0AB98, 0x06000000, 0x1D070104, 0x00000000, 0x00000000,
-    0x00000000, 0x00010000, 0x00010000, 0x00010000, 0x05000000, 0x2301FFFF, D_86F09030, 0x0002FFFF, 0xFFD87E7E,
-    0x22010000, D_86F0AB40, 0x06000000, 0x1D060105, 0x00000000, 0x00000000, 0x00000000, 0x00010000, 0x00010000,
-    0x00010000, 0x05000000, 0x2301FFFF, D_86F08FF0, 0x0004FFFF, 0xFFFFFFFF, 0x22010000, D_86F0AB20, 0x06000000,
+    gFragment21GfxSetupRockBack, 0x0003FFFF, 0xFFFFFFFF, 0x22010000, gSandshrewRockBackDisplayList, 0x06000000, 0x1D070104, 0x00000000, 0x00000000,
+    0x00000000, 0x00010000, 0x00010000, 0x00010000, 0x05000000, 0x2301FFFF, gFragment21GfxSetupRockRight, 0x0002FFFF, 0xFFD87E7E,
+    0x22010000, gSandshrewRockRightDisplayList, 0x06000000, 0x1D060105, 0x00000000, 0x00000000, 0x00000000, 0x00010000, 0x00010000,
+    0x00010000, 0x05000000, 0x2301FFFF, gFragment21GfxSetupWallBack, 0x0004FFFF, 0xFFFFFFFF, 0x22010000, gSandshrewBackWallDisplayList, 0x06000000,
     0x1D050106, 0x00000000, 0x00000000, 0x00000000, 0x00010000, 0x00010000, 0x00010000, 0x05000000, 0x2301FFFF,
-    D_86F08FB0, 0x0005FFFF, 0xFFFFFFFF, 0x22050000, D_86F0AB00, 0x06000000, 0x1D040107, 0x00000000, 0x00000000,
-    0x00000000, 0x00010000, 0x00010000, 0x00010000, 0x05000000, 0x22050000, D_86F0AAE0, 0x06000000, 0x1D030108,
-    0x00000000, 0x00000000, 0x00000000, 0x00010000, 0x00010000, 0x00010000, 0x05000000, 0x2301FFFF, D_86F08F70,
-    0x0006FFFF, 0xFFFFFFFF, 0x22010000, D_86F0AAA8, 0x06000000, 0x1D020109, 0x00000000, 0x00000000, 0x00000000,
-    0x00010000, 0x00010000, 0x00010000, 0x05000000, 0x2301FFFF, D_86F08F70, 0x0006FFFF, 0xFFFFBEBE, 0x22010000,
-    D_86F0AA60, 0x06000000, 0x1D01010A, 0x00000000, 0x00000000, 0x00000000, 0x00010000, 0x00010000, 0x00010000,
-    0x05000000, 0x22010000, D_86F0AA18, 0x06000000, 0x1D00010B, 0x00000000, 0x00000000, 0x00000000, 0x00010000,
-    0x00010000, 0x00010000, 0x05000000, 0x2301FFFF, D_86F08F38, 0x0007FFFF, 0xFFFFFFFF, 0x22010000, D_86F0A730,
-    0x2301FFFF, D_86F08F00, 0x0008FFFF, 0xFFFFFFFF, 0x22010000, D_86F0A9C8, 0x06000000, 0x06000000, 0x06000000,
+    gFragment21GfxSetupWallSide, 0x0005FFFF, 0xFFFFFFFF, 0x22050000, gSandshrewLeftWallDisplayList, 0x06000000, 0x1D040107, 0x00000000, 0x00000000,
+    0x00000000, 0x00010000, 0x00010000, 0x00010000, 0x05000000, 0x22050000, gSandshrewRightWallDisplayList, 0x06000000, 0x1D030108,
+    0x00000000, 0x00000000, 0x00000000, 0x00010000, 0x00010000, 0x00010000, 0x05000000, 0x2301FFFF, gFragment21GfxSetupSmallRock,
+    0x0006FFFF, 0xFFFFFFFF, 0x22010000, gSandshrewSmallRockLeftDisplayList, 0x06000000, 0x1D020109, 0x00000000, 0x00000000, 0x00000000,
+    0x00010000, 0x00010000, 0x00010000, 0x05000000, 0x2301FFFF, gFragment21GfxSetupSmallRock, 0x0006FFFF, 0xFFFFBEBE, 0x22010000,
+    gSandshrewSmallRockCenterDisplayList, 0x06000000, 0x1D01010A, 0x00000000, 0x00000000, 0x00000000, 0x00010000, 0x00010000, 0x00010000,
+    0x05000000, 0x22010000, gSandshrewSmallRockRightDisplayList, 0x06000000, 0x1D00010B, 0x00000000, 0x00000000, 0x00000000, 0x00010000,
+    0x00010000, 0x00010000, 0x05000000, 0x2301FFFF, gFragment21GfxSetupSandPatch, 0x0007FFFF, 0xFFFFFFFF, 0x22010000, gSandshrewStageDisplayList,
+    0x2301FFFF, gFragment21GfxSetupHole, 0x0008FFFF, 0xFFFFFFFF, 0x22010000, gSandshrewHoleDisplayList, 0x06000000, 0x06000000, 0x06000000,
     0x06000000, 0x04000000,
 };
-static u32 D_86F0AFB8[] = {
-    0x17000009, 0x0000015C, D_86F08E90, NULL,       D_86F09170, 0x05000000, 0x1C000000, 0x000023D7,
-    0x000023D7, 0x000023D7, 0x05000000, 0x03000000, D_86F0ACE0, 0x06000000, 0x06000000, 0x01000000,
+static u32 gSandshrewStageInitTable[] = {
+    0x17000009, 0x0000015C, gFragment21TextureInfoTable, NULL,       gFragment21VtxGround, 0x05000000, 0x1C000000, 0x000023D7,
+    0x000023D7, 0x000023D7, 0x05000000, 0x03000000, gSandshrewStageObjectTable, 0x06000000, 0x06000000, 0x01000000,
 };
 
 static MiniActor* miniSandshrewPtr = miniSandshrews;
 static MiniActor* miniSandshrewHolePtr = miniSandshrewHoles;
 static MiniActor* miniSandshrewGeiserPtr = miniSandshrewGeisers;
 
-static u32 D_86F0B004[] = {
+static u32 gSandshrewStageScript[] = {
     0x0C00FFFF, 0x05000000, 0x0B00001E, 0x00000000, 0x014000F0, 0x0000000F, 0x00000000, 0x00000000,
     0x05000000, 0x0D000000, 0x05000000, 0x14000000, 0x002B0012, 0xFFFFFF32, 0x16FFFFFF, 0x0F000003,
     0x05000000, 0x1F00FFFF, 0x00000000, 0x00000000, 0xFFFE0000, 0x00640064, 0x00640000, 0x05000000,
-    0x00000000, D_86F0AFB8, 0x06000000, 0x06000000, 0x0F000003, 0x05000000, 0x0A000000, &D_800AC840,
-    0x06000000, 0x06000000, 0x06000000, 0x03000000, D_87806398, 0x06000000, 0x01000000,
+    0x00000000, gSandshrewStageInitTable, 0x06000000, 0x06000000, 0x0F000003, 0x05000000, 0x0A000000, &gGraphRoot0,
+    0x06000000, 0x06000000, 0x06000000, 0x03000000, gFragment2_1GeoLayout, 0x06000000, 0x01000000,
 };
 static Vec3f sandshrewPositions[4] = {
     {
@@ -1493,20 +1493,20 @@ static Vec3f sandshrewPositions[4] = {
 };
 
 //  unuced
-static s16 D_86F0B0D0[] = {
+static s16 gSandshrewAngleOffsets[] = {
     0x6000,
     0x2000,
     0xE000,
     0xA000,
 };
 
-static unk_func_87801684 D_86F0B0D8[5] = {
+static AnimFrame gSandshrewTutoSmallIconAnim[5] = {
     { D_03040580, 0x12 }, { D_03040980, 2 }, { D_03040D80, 8 }, { D_03040980, 2 }, { NULL, 0 },
 };
-static unk_func_87801684 D_86F0B100[5] = {
+static AnimFrame gSandshrewTutoLeftIconAnim[5] = {
     { D_030451A0, 8 }, { D_03045E20, 2 }, { D_03046AA0, 2 }, { D_03045E20, 2 }, { NULL, 0 },
 };
-static unk_func_87801684 D_86F0B128[6] = {
+static AnimFrame gSandshrewTutoRightIconAnim[6] = {
     { D_03047720, 2 }, { D_030483A0, 2 }, { D_03049020, 2 }, { D_030483A0, 2 }, { D_03047720, 6 }, { NULL, 0 },
 };
 
@@ -1562,7 +1562,7 @@ void SandshrewGame_PlaySoundEvent(s16 arg0, s16 arg1) {
         case 9:
             Audio_FadeCategories(1, arg1);
             Audio_FadeCategories(2, arg1);
-            D_8790604A = 1;
+            gMetapodAudioMuted = 1;
             break;
 
         case 10:
@@ -1579,13 +1579,13 @@ void SandshrewGame_PlaySoundEvent(s16 arg0, s16 arg1) {
     }
 
     if (var_s0 != 0) {
-        D_87903DBC++;
+        gMiniGameSoundDispatchCount++;
         Audio_DispatchSoundBankCommand(var_s0, sp30, sp2C);
     }
 }
 
 void SandshrewGame_PlaySoundEventGuarded(s16 arg0, s16 arg1) {
-    if (D_8790604A == 0) {
+    if (gMetapodAudioMuted == 0) {
         SandshrewGame_PlaySoundEvent(arg0, arg1);
     }
 }
@@ -1629,7 +1629,7 @@ void initSandshrew(MiniActor* sandshrew, s32 player) {
     sandshrew->mainState = 0;
     sandshrew->isSquashed = 0;
 
-    sandshrew->isComp = D_879060C4[player];
+    sandshrew->isComp = gMiniHudColors[player];
 }
 
 void initSandshrews(void) {
@@ -2055,7 +2055,7 @@ void SandshrewGame_UpdateGeisers(void) {
 }
 
 void SandshrewGame_InitCamera(void) {
-    D_87906054 = D_87906050->node.children;
+    gMiniCameraPtr = gMiniCameraStruct->node.children;
 
     miniCameraXRot = 0x1600;
     miniCameraYRot = 0;
@@ -2072,21 +2072,21 @@ void SandshrewGame_InitCamera(void) {
 }
 
 void SandshrewGame_UpdateWinCamera(void) {
-    switch (D_87906072) {
+    switch (gMiniWinCamPhase) {
         case 1:
             miniSaveCameraState();
-            D_87906072++;
+            gMiniWinCamPhase++;
             break;
 
         case 2:
-            ParticleMath_ApproachFloat(&D_8790607C, 250.0f, 1.0f);
-            ParticleMath_ApproachFloat(&D_87906088.y, 34.0f, 1.8f);
-            ParticleMath_ApproachS16(&D_87906076, 0x600, 0xCC);
+            ParticleMath_ApproachFloat(&gMiniCameraDistanceBackup, 250.0f, 1.0f);
+            ParticleMath_ApproachFloat(&gMiniCameraCoordsBackup.y, 34.0f, 1.8f);
+            ParticleMath_ApproachS16(&gMiniCameraXRotBackup, 0x600, 0xCC);
             ParticleMath_ApproachS16(&miniHudTransparency, 0, 0x30);
             break;
     }
 
-    if (D_87906072 != 0) {
+    if (gMiniWinCamPhase != 0) {
         miniRestoreCameraState();
     }
 }
@@ -2139,7 +2139,7 @@ s32 SandshrewGame_CheckWinCondition(void) {
         miniSandshrewGeiserPtr++;
     }
 
-    D_87903DD4 = var_s4;
+    gMiniResultIconRow = var_s4;
     return var_s7;
 }
 
@@ -2199,7 +2199,7 @@ void SandshrewGame_MinigameStateMachine(void) {
             if (SandshrewGame_CheckWinCondition() != 0) {
                 SandshrewGame_ResetDigSpeeds();
                 minigameInputLock = false;
-                D_87906072 = 1;
+                gMiniWinCamPhase = 1;
                 minigameState++;
                 miniInputLockTimer = 0x28;
             }
@@ -2216,9 +2216,9 @@ void SandshrewGame_MinigameStateMachine(void) {
             break;
 
         case 6:
-            if (D_8780FC96 != 0) {
+            if (gResultExitPending != 0) {
                 minigameState++;
-                D_87903DAC = 1;
+                gMiniGameTimer2 = 1;
             }
             break;
     }
@@ -2242,42 +2242,42 @@ void SandshrewGame_DrawTutorialText(void) {
     Font_SetLineHeight(0xC);
     Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
     Gfx_SetPrimColor(0xF9, 0xF4, 0, 0xFF);
-    Font_Printf(0xA0 - (Text_MeasureStringWidth(D_86F0D264, Text_GetString(NULL, 0, D_87806330, 0x4A)) / 2), 0x20,
-                  Text_GetString(NULL, 0, D_87806330, 0x4A));
+    Font_Printf(0xA0 - (Text_MeasureStringWidth(gMiniHUDTextObject, Text_GetString(NULL, 0, gMinigameNamesBank, 0x4A)) / 2), 0x20,
+                  Text_GetString(NULL, 0, gMinigameNamesBank, 0x4A));
     Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
     Gfx_SetPrimColor(0xFF, 0xFF, 0xFF, 0xFF);
-    Font_Printf(0x28, 0x34, Text_GetString(NULL, 0, D_87806330, 0x4B));
-    Font_Printf(0x28, 0x58, Text_GetString(NULL, 0, D_87806330, 0x4C));
-    Font_Printf(0x28, 0x70, Text_GetString(NULL, 0, D_87806330, 0x4D));
+    Font_Printf(0x28, 0x34, Text_GetString(NULL, 0, gMinigameNamesBank, 0x4B));
+    Font_Printf(0x28, 0x58, Text_GetString(NULL, 0, gMinigameNamesBank, 0x4C));
+    Font_Printf(0x28, 0x70, Text_GetString(NULL, 0, gMinigameNamesBank, 0x4D));
     Gfx_SetEnvColor(0xE6, 0xD2, 0xFF, 0xFF);
     Gfx_SetPrimColor(0x82, 0x50, 0xD2, 0xFF);
-    Widget_MeasureLabelBox(&sp38, &sp34, Text_GetString(NULL, 0, D_87806330, 0x4B), Text_GetString(NULL, 0, D_87806330, 0x63),
+    Widget_MeasureLabelBox(&sp38, &sp34, Text_GetString(NULL, 0, gMinigameNamesBank, 0x4B), Text_GetString(NULL, 0, gMinigameNamesBank, 0x63),
                   0xC);
-    Font_Printf(sp38 + 0x28, sp34 + 0x34, Text_GetString(NULL, 0, D_87806330, 0x63));
-    Font_Printf(0xB8, 0xB2, Text_GetString(NULL, 0, D_87806330, 0x5C));
-    Font_Printf(0x8B, 0xC8, Text_GetString(NULL, 0, D_87806330, 0x5C));
+    Font_Printf(sp38 + 0x28, sp34 + 0x34, Text_GetString(NULL, 0, gMinigameNamesBank, 0x63));
+    Font_Printf(0xB8, 0xB2, Text_GetString(NULL, 0, gMinigameNamesBank, 0x5C));
+    Font_Printf(0x8B, 0xC8, Text_GetString(NULL, 0, gMinigameNamesBank, 0x5C));
     Gfx_SetEnvColor(0xE6, 0xD2, 0xFF, 0xFF);
     Gfx_SetPrimColor(0x82, 0x50, 0xD2, 0xFF);
-    Font_Printf(0xCF, 0xB2, Text_GetString(NULL, 0, D_87806330, 0x4E));
+    Font_Printf(0xCF, 0xB2, Text_GetString(NULL, 0, gMinigameNamesBank, 0x4E));
     Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
     Gfx_SetPrimColor(0xFF, 0x80, 0x80, 0xFF);
-    Font_Printf(0xA2, 0xC8, Text_GetString(NULL, 0, D_87806330, 0x14));
+    Font_Printf(0xA2, 0xC8, Text_GetString(NULL, 0, gMinigameNamesBank, 0x14));
     Font_DisableTwoCycleTexturing();
     Font_SetActive(4, -2);
     Font_EndTexturedTextRendering();
 }
 
 void SandshrewGame_DrawTutorialScreen(void) {
-    switch (D_87903DCC) {
+    switch (gMiniTutoTimer2) {
         case 3:
             SandshrewGame_DrawTutorialText();
 
             gSPDisplayList(gDisplayListHead++, gUiEnvTintTextureDL);
 
             Widget_DrawSplitBanner(2, 0x19, 0xA6);
-            Widget_DrawAnimIcon40x20(0x63, 0xAB, D_86F0B100);
-            Widget_DrawAnimIcon40x20B(0x8B, 0xAB, D_86F0B128);
-            Widget_DrawAnimIcon16C(0x74, 0xC6, D_86F0B0D8);
+            Widget_DrawAnimIcon40x20(0x63, 0xAB, gSandshrewTutoLeftIconAnim);
+            Widget_DrawAnimIcon40x20B(0x8B, 0xAB, gSandshrewTutoRightIconAnim);
+            Widget_DrawAnimIcon16C(0x74, 0xC6, gSandshrewTutoSmallIconAnim);
 
             gSPDisplayList(gDisplayListHead++, gUiRestoreTextureDL);
             break;
@@ -2289,7 +2289,7 @@ void SandshrewGame_DrawTutorialScreen(void) {
 
     if (miniTutoScreenState == -2) {
         Font_SetActive(0x10, -2);
-        if (D_87903DD0 == 0x18) {
+        if (gMiniTutoTimer3 == 0x18) {
             miniDrawResultIcons(miniSandshrews);
         }
         Font_SetActive(4, -2);
@@ -2306,7 +2306,7 @@ void fixSandshrewMinigameHUD(void) {
         s16 xPos = playerIconsScreenXPos[i];
         s16 yPos = playerIconsScreenYPos[i];
 
-        if (D_879060C4[i] == 0) { //	if ai player
+        if (gMiniHudColors[i] == 0) { //	if ai player
             Widget_DrawPlayerIcon(i, xPos, yPos, 0.75f);
         } else { //	if human player
             Widget_DrawPlayerIcon(-1 - i, xPos, yPos, 0.75f);
@@ -2335,7 +2335,7 @@ void SandshrewGame_DrawPlayerHUBs(UNUSED s32 arg0) {
     Font_EndTexturedTextRendering();
 }
 
-static u32 D_86F0B170[] = {
+static u32 gSandshrewHudPanelRect[] = {
     0xFFFFFFF4,
     0x00000028,
     0xFFFFFFD8,
@@ -2346,15 +2346,15 @@ void SandshrewGame_DrawFrame(s32 arg0) {
     BgStage_DrawFrame();
     GfxImage_FillCurrent(&gDisplayListHead, 0xA6BF);
 
-    if (D_8780FC94 == 0) {
+    if (gResultMenuVisible == 0) {
         GeoRender_AdvanceFrameCounter();
     }
 
-    Geo_RenderRootNode(&D_87906050->node);
+    Geo_RenderRootNode(&gMiniCameraStruct->node);
     MiniFx_DrawParticles();
 
     if (miniDebugMode == 0) {
-        if (D_8780FC98 == 0) {
+        if (gResultConfirmPressed == 0) {
             SandshrewGame_DrawPlayerHUBs(arg0);
         }
         Widget_PauseMenuUpdate();
@@ -2371,7 +2371,7 @@ void sandshrewMinigameInit(void) {
     StageLoader_RunFrames(0xA);
     StageFade_StartFromOpaque(0x10);
     miniTutoScreenState = 3;
-    miniDifficulty = D_8780FA38;
+    miniDifficulty = gMinigameComDifficulty;
 }
 
 void SandshrewGame_MainLoop(void) {
@@ -2384,9 +2384,9 @@ void SandshrewGame_MainLoop(void) {
         MiniActor_ReadControllerInputs();
 
         if (minigameState == 0) {
-            D_87906042 += 1;
-            if (D_87906042 < 0) {
-                D_87906042 = 0;
+            gMiniGameIdleTimer += 1;
+            if (gMiniGameIdleTimer < 0) {
+                gMiniGameIdleTimer = 0;
             }
         }
 
@@ -2396,13 +2396,13 @@ void SandshrewGame_MainLoop(void) {
                 minigameState = 1;
                 miniShowHUB = true;
                 SandshrewGame_PlaySoundEventGuarded(7, 0);
-            } else if ((D_8780FA2A == 0) && (BTN_IS_PRESSED(gPlayer1Controller, BTN_B))) {
+            } else if ((gMenuCursorX == 0) && (BTN_IS_PRESSED(gPlayer1Controller, BTN_B))) {
                 SandshrewGame_PlaySoundEventGuarded(8, 0);
                 Widget_PauseMenuTrigger(2);
             }
         }
 
-        if (D_8780FC94 == 0) {
+        if (gResultMenuVisible == 0) {
             Particle_UpdateFrameCounters();
             SandshrewGame_MinigameStateMachine(); //	next stept
             SandshrewGame_UpdatePlayers();
@@ -2412,7 +2412,7 @@ void SandshrewGame_MainLoop(void) {
             SandshrewGame_CameraControls();
         }
 
-        if ((miniDebugMode == 0) && ((D_87903DAC != 0) || (D_8780FC92 != 0))) {
+        if ((miniDebugMode == 0) && ((gMiniGameTimer2 != 0) || (gResultFlag_Special != 0))) {
             var_s5 = 0;
         }
 
@@ -2425,7 +2425,7 @@ void SandshrewGame_ShowResultText(void) {
 
     StageFade_StartFromTransparent(0x1E);
 
-    if (D_86F0D260 != 0) {
+    if (gMiniGameDemoFlag != 0) {
         SandshrewGame_PlaySoundEventGuarded(0xA, 0x1E);
     } else {
         SandshrewGame_PlaySoundEventGuarded(9, 0x1E);
@@ -2434,7 +2434,7 @@ void SandshrewGame_ShowResultText(void) {
     for (i = 0; i < 30; i++) {
         MiniActor_ReadControllerInputs();
 
-        if (D_8780FC94 == 0) {
+        if (gResultMenuVisible == 0) {
             Particle_UpdateFrameCounters();
             SandshrewGame_UpdatePlayers();
             SandshrewGame_UpdateHoles();
@@ -2453,9 +2453,9 @@ void SandshrewGame_ShowResultText(void) {
 void SandshrewGame_LoadAssets(void) {
     s32 i;
     MemoryBlock* temp_v0 = MainPool_AllocState(main_pool_get_available(), 0);
-    unk_D_86002F30* temp_s1;
+    ModelData* temp_s1;
 
-    D_87906050 = process_geo_layout(temp_v0, D_86F0B004);
+    gMiniCameraStruct = process_geo_layout(temp_v0, gSandshrewStageScript);
     MainPool_FinalizeAllocation(temp_v0);
     ModelRenderer_InitDisplayRoots();
 
@@ -2505,16 +2505,16 @@ s32 sandshrewMinigameLoad(s32 arg0, UNUSED s32 arg1) {
     StageContext* sp24;
 
     if (arg0 == 1) {
-        D_86F0D260 = 1;
+        gMiniGameDemoFlag = 1;
     } else {
-        D_86F0D260 = 0;
+        gMiniGameDemoFlag = 0;
     }
 
     main_pool_push_state('MINI');
 
     Gfx_InitDisplayListBuffers(0x20000, 0);
     sp24 = StageContext_Allocate(0, 1, 3, 1, 2, 1);
-    D_86F0D264 = Font_Init(0x16, 0);
+    gMiniHUDTextObject = Font_Init(0x16, 0);
 
     ASSET_LOAD(D_1000000, common_menu1_ui, 0);
     FRAGMENT_LOAD(FRAGMENT_PARTICLE_DATA_LIBRARY);
@@ -2526,8 +2526,8 @@ s32 sandshrewMinigameLoad(s32 arg0, UNUSED s32 arg1) {
     SandshrewGame_MainLoop(); //	tutorial screen ?
     SandshrewGame_ShowResultText();
     StageContext_Deactivate();
-    Font_Free(); //	main_pool_try_free(D_800AC870);
-    Gfx_FreeDisplayListBuffers(); //	main_pool_try_free(D_800A7428.unk4); main_pool_try_free(D_800A7428.unk0);
+    Font_Free(); //	main_pool_try_free(gFontManager);
+    Gfx_FreeDisplayListBuffers(); //	main_pool_try_free(gDLBuffers.unk4); main_pool_try_free(gDLBuffers.unk0);
 
     main_pool_pop_state('MINI');
 

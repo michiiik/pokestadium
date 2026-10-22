@@ -684,7 +684,7 @@ void Particle_Field38_AddXZFromField94YOffsetMinus90_0901C(Particle* arg0, f32 a
     arg0->unk_38.z += arg1 * COSS(arg0->unk_94.y - 0x4000) * gParticleRenderContext.unk_00.y;
 }
 
-void Particle_AddVelocityFromDirVector(Particle* arg0, f32 arg1) {
+void Particle_AddPositionFromRotationY(Particle* arg0, f32 arg1) {
     Vec3f sp1C;
 
     Particle_ComputeVectorFromRotationY(arg0, arg1, &sp1C);
@@ -714,31 +714,31 @@ void Particle_AddPositionRotatedVectorByYaw(Particle* arg0, Vec3f arg1) {
     Particle_Field38_AddVecScaledFromVec3f_08D78(arg0, sp24);
 }
 
-void Particle_SetRandomVelocityX(Particle* arg0, s32 arg1) {
+void Particle_SetRandomPositionX(Particle* arg0, s32 arg1) {
     arg0->unk_38.x = ParticleMath_RandomSigned(arg1) * gParticleRenderContext.unk_00.y;
 }
 
-void func_81409288(Particle* arg0, s32 arg1) {
+void Particle_SetRandomPositionY(Particle* arg0, s32 arg1) {
     arg0->unk_38.y = ParticleMath_RandomSigned(arg1) * gParticleRenderContext.unk_00.y;
 }
 
-void Particle_SetRandomVelocityZ(Particle* arg0, s32 arg1) {
+void Particle_SetRandomPositionZ(Particle* arg0, s32 arg1) {
     arg0->unk_38.z = ParticleMath_RandomSigned(arg1) * gParticleRenderContext.unk_00.y;
 }
 
-void func_81409308(Particle* arg0, s32 arg1, s32 arg2) {
+void Particle_SetRandomPositionXOffset(Particle* arg0, s32 arg1, s32 arg2) {
     arg0->unk_38.x = (ParticleMath_RandomSigned(arg1) * gParticleRenderContext.unk_00.y) + arg2;
 }
 
-void Particle_SetRandomVelocityYOffset(Particle* arg0, s32 arg1, s32 arg2) {
+void Particle_SetRandomPositionYOffset(Particle* arg0, s32 arg1, s32 arg2) {
     arg0->unk_38.y = (ParticleMath_RandomSigned(arg1) * gParticleRenderContext.unk_00.y) + arg2;
 }
 
-void func_814093B0(Particle* arg0, s32 arg1, s32 arg2) {
+void Particle_SetRandomPositionZOffset(Particle* arg0, s32 arg1, s32 arg2) {
     arg0->unk_38.z = (ParticleMath_RandomSigned(arg1) * gParticleRenderContext.unk_00.y) + arg2;
 }
 
-void Particle_SetRandomVelocityXSymmetric(Particle* arg0, s32 arg1, s32 arg2) {
+void Particle_SetRandomPositionXSymmetric(Particle* arg0, s32 arg1, s32 arg2) {
     f32 temp_fv0 = ParticleMath_RandomSigned(arg1);
 
     if (temp_fv0 >= 0.0f) {
@@ -748,7 +748,7 @@ void Particle_SetRandomVelocityXSymmetric(Particle* arg0, s32 arg1, s32 arg2) {
     }
 }
 
-void func_8140948C(Particle* arg0, s32 arg1, s32 arg2) {
+void Particle_SetRandomPositionYSymmetric(Particle* arg0, s32 arg1, s32 arg2) {
     f32 temp_fv0 = ParticleMath_RandomSigned(arg1);
 
     if (temp_fv0 >= 0.0f) {
@@ -758,7 +758,7 @@ void func_8140948C(Particle* arg0, s32 arg1, s32 arg2) {
     }
 }
 
-void Particle_SetRandomVelocityZSymmetric(Particle* arg0, s32 arg1, s32 arg2) {
+void Particle_SetRandomPositionZSymmetric(Particle* arg0, s32 arg1, s32 arg2) {
     f32 temp_fv0 = ParticleMath_RandomSigned(arg1);
 
     if (temp_fv0 >= 0.0f) {
@@ -768,7 +768,7 @@ void Particle_SetRandomVelocityZSymmetric(Particle* arg0, s32 arg1, s32 arg2) {
     }
 }
 
-void Particle_SetRandomVelocityXYZ(Particle* arg0, s32 arg1, s32 arg2, s32 arg3) {
+void Particle_SetRandomPositionXYZ(Particle* arg0, s32 arg1, s32 arg2, s32 arg3) {
     Vec3f sp18;
 
     sp18.x = ParticleMath_RandomSigned(arg1);
@@ -780,7 +780,7 @@ void Particle_SetRandomVelocityXYZ(Particle* arg0, s32 arg1, s32 arg2, s32 arg3)
     arg0->unk_38.z = sp18.z * gParticleRenderContext.unk_00.y;
 }
 
-void func_81409634(Particle* arg0, s32 arg1, s32 arg2, s32 arg3) {
+void Particle_SetRandomModPositionXYZ(Particle* arg0, s32 arg1, s32 arg2, s32 arg3) {
     Vec3f sp1C;
 
     sp1C.x = ParticleMath_RandomRange(arg1);
@@ -792,7 +792,7 @@ void func_81409634(Particle* arg0, s32 arg1, s32 arg2, s32 arg3) {
     arg0->unk_38.z = sp1C.z * gParticleRenderContext.unk_00.y;
 }
 
-void Particle_SetRandomRotatedVelocityXY(Particle* arg0, s32 arg1, s32 arg2) {
+void Particle_SetRandomRotatedPositionXY(Particle* arg0, s32 arg1, s32 arg2) {
     Vec3f sp2C;
     Vec3f sp20;
 
@@ -807,7 +807,7 @@ void Particle_SetRandomRotatedVelocityXY(Particle* arg0, s32 arg1, s32 arg2) {
     arg0->unk_38.z = sp20.z * gParticleRenderContext.unk_00.y;
 }
 
-void func_814097D8(Particle* arg0, s32 arg1, s32 arg2, s32 arg3) {
+void Particle_AddRandomPositionXYZ(Particle* arg0, s32 arg1, s32 arg2, s32 arg3) {
     Vec3f sp24;
 
     sp24.x = ParticleMath_RandomSigned(arg1);
@@ -1997,19 +1997,19 @@ void Particle_RenderOrthoParticles(CameraNode* arg0) {
 void Particle_SetRenderMode(s16 arg0) {
     switch (arg0) {
         case 0:
-            gSPDisplayList(gDisplayListHead++, D_8140DD58);
+            gSPDisplayList(gDisplayListHead++, gDL_OverlayUI);
             break;
 
         case 2:
-            gSPDisplayList(gDisplayListHead++, D_8140DC78);
+            gSPDisplayList(gDisplayListHead++, gDL_UI_ModulateBilerpXlu);
             break;
 
         case 1:
-            gSPDisplayList(gDisplayListHead++, D_8140DCD8);
+            gSPDisplayList(gDisplayListHead++, gDL_BaseUI);
             break;
 
         case 3:
-            gSPDisplayList(gDisplayListHead++, D_8140DC00);
+            gSPDisplayList(gDisplayListHead++, gDL_UI_DecalBilerpTexEdge);
             break;
     }
 }

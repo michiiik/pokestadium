@@ -7,32 +7,32 @@
 #include "src/controller_ram.h"
 #include "src/memory.h"
 
-unk_D_83402EE0 D_83402EE0[24];
-s32 D_83403C00[24];
-unk_D_83403C60 D_83403C60[36];
-static unk_D_83403C60 D_83405010[36];
-unk_D_83403C60 D_834063C0[21];
-static unk_D_83403C60 D_83406F40[21];
-unk_D_83403C60* D_83407ABC;
-unk_D_83403C60* D_83407AC0;
-static unk_D_83406EB0* D_83407AC4;
-unk_D_83407AC8 D_83407AC8;
-s32 D_83407AE4;
-s32 D_83407AE8;
-s32 D_83407AEC;
-static ModeSettings D_83407AF0;
-unk_D_83407B00 D_83407AF8;
-unk_D_83407B00 D_83407B00;
-unk_D_83407B00 D_83407B08;
-unk_D_83407B00 D_83407B10;
-unk_D_83407B18 D_83407B18;
-unk_D_83407B00 D_83407B30;
-unk_D_83407B38 D_83407B38;
+unk_D_83402EE0 gDisplayableMonIndices[24];
+s32 gMonSelectionFlags[24];
+PhotoSceneData gGalleryEntries[36];
+static PhotoSceneData gGalleryEntriesBackup[36];
+PhotoSceneData gGalleryCamEntries[21];
+static PhotoSceneData gGalleryCamEntriesBackup[21];
+PhotoSceneData* gCurrentCamEntry;
+PhotoSceneData* gCurrentCamEntryPage;
+static PhotoSceneControl* gCurrentCamEntrySpecial;
+PhotoMonSpecies gGallerySpecialSpecies;
+s32 gGallerySpecialUnlocked;
+s32 gGallerySpecialViewed;
+s32 gGallerySpecialUnlockEnabled;
+static ModeSettings gGallerySessionSettings;
+GalleryCursor gGallerySelection;
+GalleryCursor gGalleryMainSelectionCam;
+GalleryCursor gGallerySubSelection;
+GalleryCursor gGalleryTertiarySelection;
+unk_D_83407B18 gGalleryFinalSelection;
+GalleryCursor gGalleryMainSelection;
+GallerySceneGrid gGalleryCamList;
 
-s32 D_83402E20 = 0;
-s32 D_83402E24 = 1;
-s32 D_83402E28 = 0;
-unk_D_83403C60* D_83402E2C = NULL;
+s32 gGalleryPhotoPoolCount = 0;
+s32 gGalleryPhotoPoolMin = 1;
+s32 gGalleryPhotoPoolMax = 0;
+PhotoSceneData* gCurrentGalleryEntryPtr = NULL;
 
 void Gallery_LoadUnlockedBackgrounds(void) {
     s32 i;
@@ -40,66 +40,66 @@ void Gallery_LoadUnlockedBackgrounds(void) {
     main_pool_push_state('bkgl');
 
     Save_EnsureBankLoaded(2);
-    bzero(D_83403C60, sizeof(unk_D_83403C60) * 36);
-    bzero(D_83405010, sizeof(unk_D_83403C60) * 36);
-    bzero(&D_834063C0, sizeof(unk_D_83403C60) * 21);
-    bzero(&D_83406F40, sizeof(unk_D_83403C60) * 21);
+    bzero(gGalleryEntries, sizeof(PhotoSceneData) * 36);
+    bzero(gGalleryEntriesBackup, sizeof(PhotoSceneData) * 36);
+    bzero(&gGalleryCamEntries, sizeof(PhotoSceneData) * 21);
+    bzero(&gGalleryCamEntriesBackup, sizeof(PhotoSceneData) * 21);
 
     for (i = 0; i < 36; i++) {
-        Deck_ReadSaveEntry(0x16, 0, i, &D_83403C60[i]);
+        Deck_ReadSaveEntry(0x16, 0, i, &gGalleryEntries[i]);
     }
 
-    _bcopy(&D_83403C60, &D_83405010, sizeof(unk_D_83403C60) * 36);
+    _bcopy(&gGalleryEntries, &gGalleryEntriesBackup, sizeof(PhotoSceneData) * 36);
 
     for (i = 0; i < 21; i++) {
-        Deck_ReadSaveEntry(0x17, 0, i, &D_834063C0[i]);
+        Deck_ReadSaveEntry(0x17, 0, i, &gGalleryCamEntries[i]);
     }
 
-    Save_GetModeSettings(&D_83407AF0, 1);
-    if (D_83407AF0.clearedModes == 0x1F8) {
-        D_83407AEC = 1;
+    Save_GetModeSettings(&gGallerySessionSettings, 1);
+    if (gGallerySessionSettings.clearedModes == 0x1F8) {
+        gGallerySpecialUnlockEnabled = 1;
     } else {
-        D_83407AEC = 0;
+        gGallerySpecialUnlockEnabled = 0;
     }
 
-    D_83407ABC = &D_834063C0[0];
-    D_83407AC0 = &D_834063C0[4];
-    D_83407AC4 = &D_834063C0[20];
+    gCurrentCamEntry = &gGalleryCamEntries[0];
+    gCurrentCamEntryPage = &gGalleryCamEntries[4];
+    gCurrentCamEntrySpecial = &gGalleryCamEntries[20];
 
-    if (Gallery_ControlRecordIsPopulated(D_83407AC4) != 0) {
-        D_83407AE4 = 1;
+    if (Gallery_ControlRecordIsPopulated(gCurrentCamEntrySpecial) != 0) {
+        gGallerySpecialUnlocked = 1;
     } else {
-        D_83407AE4 = 0;
+        gGallerySpecialUnlocked = 0;
     }
 
-    if (Gallery_ControlRecordIsDirty(D_83407AC4) != 0) {
-        D_83407AE8 = 1;
-        D_83407AC4->unk_6C &= ~2;
+    if (Gallery_ControlRecordIsDirty(gCurrentCamEntrySpecial) != 0) {
+        gGallerySpecialViewed = 1;
+        gCurrentCamEntrySpecial->unk_6C &= ~2;
 
         for (i = 0; i < 21; i++) {
-            Save_WriteTypedRecord(0x17, 0, i, &D_834063C0[i]);
+            Save_WriteTypedRecord(0x17, 0, i, &gGalleryCamEntries[i]);
         }
 
         Save_CommitBankRecords(2);
         Save_FlushBank(2);
     } else {
-        D_83407AE8 = 0;
+        gGallerySpecialViewed = 0;
     }
 
-    _bcopy(&D_834063C0, &D_83406F40, sizeof(unk_D_83403C60) * 21);
+    _bcopy(&gGalleryCamEntries, &gGalleryCamEntriesBackup, sizeof(PhotoSceneData) * 21);
 
     main_pool_pop_state('bkgl');
 
-    Gallery_InitPageCursor(&D_83407B30);
-    Gallery_ClearSavedPosition(&D_83407B00);
-    Gallery_ClearSavedPosition(&D_83407B08);
-    Gallery_ClearSavedPosition(&D_83407B10);
-    Gallery_ClearSavedPosition(&D_83407B18.unk_00);
+    Gallery_InitPageCursor(&gGalleryMainSelection);
+    Gallery_ClearSavedPosition(&gGalleryMainSelectionCam);
+    Gallery_ClearSavedPosition(&gGallerySubSelection);
+    Gallery_ClearSavedPosition(&gGalleryTertiarySelection);
+    Gallery_ClearSavedPosition(&gGalleryFinalSelection.unk_00);
     Gallery_ClearPhotoRenderTarget();
-    Gallery_InitSceneGrid(&D_83407B38, 0x3C, 0x2D, 0x10, 4, 0, 0, D_83407AC0, 0x10, 0);
+    Gallery_InitSceneGrid(&gGalleryCamList, 0x3C, 0x2D, 0x10, 4, 0, 0, gCurrentCamEntryPage, 0x10, 0);
 }
 
-s32 Gallery_ControlRecordIsPopulated(unk_D_83406EB0* arg0) {
+s32 Gallery_ControlRecordIsPopulated(PhotoSceneControl* arg0) {
     s32 var_v1 = 0;
 
     if (arg0->unk_6C & 1) {
@@ -108,7 +108,7 @@ s32 Gallery_ControlRecordIsPopulated(unk_D_83406EB0* arg0) {
     return var_v1;
 }
 
-s32 Gallery_ControlRecordIsDirty(unk_D_83406EB0* arg0) {
+s32 Gallery_ControlRecordIsDirty(PhotoSceneControl* arg0) {
     s32 var_v1 = 0;
 
     if (arg0->unk_6C & 2) {
@@ -117,7 +117,7 @@ s32 Gallery_ControlRecordIsDirty(unk_D_83406EB0* arg0) {
     return var_v1;
 }
 
-s32 Gallery_ArraysDiffer(unk_D_83403C60* arg0, unk_D_83403C60* arg1, s32 arg2) {
+s32 Gallery_ArraysDiffer(PhotoSceneData* arg0, PhotoSceneData* arg1, s32 arg2) {
     s32 sp1C = 0;
 
     if (bcmp(arg0, arg1, arg2) != 0) {
@@ -129,19 +129,19 @@ s32 Gallery_ArraysDiffer(unk_D_83403C60* arg0, unk_D_83403C60* arg1, s32 arg2) {
 s32 Gallery_BackgroundsChanged(void) {
     s32 sp1C = 0;
 
-    if (D_83407AE4 != 0) {
-        D_83407AC4->unk_6C |= 1;
+    if (gGallerySpecialUnlocked != 0) {
+        gCurrentCamEntrySpecial->unk_6C |= 1;
     } else {
-        D_83407AC4->unk_6C &= ~1;
+        gCurrentCamEntrySpecial->unk_6C &= ~1;
     }
 
-    if (D_83407AE8 != 0) {
-        D_83407AC4->unk_6C |= 2;
+    if (gGallerySpecialViewed != 0) {
+        gCurrentCamEntrySpecial->unk_6C |= 2;
     } else {
-        D_83407AC4->unk_6C &= ~2;
+        gCurrentCamEntrySpecial->unk_6C &= ~2;
     }
 
-    if ((Gallery_ArraysDiffer(D_83403C60, D_83405010, 0x13B0) != 0) || (Gallery_ArraysDiffer(D_834063C0, D_83406F40, 0xB7C) != 0)) {
+    if ((Gallery_ArraysDiffer(gGalleryEntries, gGalleryEntriesBackup, 0x13B0) != 0) || (Gallery_ArraysDiffer(gGalleryCamEntries, gGalleryCamEntriesBackup, 0xB7C) != 0)) {
         sp1C = 1;
     }
     return sp1C;
@@ -166,11 +166,11 @@ s32 Gallery_SaveUnlockedBackgrounds(s32 arg0, s32 arg1) {
 
     if (sp28 != 0) {
         for (i = 0; i < 36; i++) {
-            Save_WriteTypedRecord(0x16, 0, i, &D_83403C60[i]);
+            Save_WriteTypedRecord(0x16, 0, i, &gGalleryEntries[i]);
         }
 
         for (i = 0; i < 21; i++) {
-            Save_WriteTypedRecord(0x17, 0, i, &D_834063C0[i]);
+            Save_WriteTypedRecord(0x17, 0, i, &gGalleryCamEntries[i]);
         }
 
         Save_CommitBankRecords(2);
@@ -190,48 +190,48 @@ void func_8340051C(void) {
 }
 
 void Gallery_ResetPhotoPool(void) {
-    D_83402E20 = 0;
-    bzero(D_83402EE0, 0xD20);
-    bzero(D_83403C00, 0x60);
-    Gallery_ClearSavedPosition(&D_83407AF8);
+    gGalleryPhotoPoolCount = 0;
+    bzero(gDisplayableMonIndices, 0xD20);
+    bzero(gMonSelectionFlags, 0x60);
+    Gallery_ClearSavedPosition(&gGallerySelection);
 }
 
-void Gallery_ClearPhotoRecord(unk_D_83403C60* arg0) {
-    bzero(arg0, sizeof(unk_D_83403C60));
+void Gallery_ClearPhotoRecord(PhotoSceneData* arg0) {
+    bzero(arg0, sizeof(PhotoSceneData));
 }
 
-void Gallery_SwapPhotoRecords(unk_D_83403C60* arg0, unk_D_83403C60* arg1) {
-    unk_D_83403C60 sp4;
+void Gallery_SwapPhotoRecords(PhotoSceneData* arg0, PhotoSceneData* arg1) {
+    PhotoSceneData sp4;
 
     sp4 = *arg0;
     *arg0 = *arg1;
     *arg1 = sp4;
 }
 
-s32 Gallery_PhotoRecordsEqual(unk_D_83403C60* arg0, unk_D_83403C60* arg1) {
+s32 Gallery_PhotoRecordsEqual(PhotoSceneData* arg0, PhotoSceneData* arg1) {
     s32 sp1C = 0;
 
-    if (bcmp(arg0, arg1, sizeof(unk_D_83403C60)) == 0) {
+    if (bcmp(arg0, arg1, sizeof(PhotoSceneData)) == 0) {
         sp1C = 1;
     }
     return sp1C;
 }
 
-void Gallery_SetEnlargeTarget(unk_D_83403C60* arg0) {
-    D_83402E2C = arg0;
+void Gallery_SetEnlargeTarget(PhotoSceneData* arg0) {
+    gCurrentGalleryEntryPtr = arg0;
 }
 
-unk_D_83403C60* Gallery_GetEnlargeTarget(s32 arg0) {
-    unk_D_83403C60* ret = D_83402E2C;
+PhotoSceneData* Gallery_GetEnlargeTarget(s32 arg0) {
+    PhotoSceneData* ret = gCurrentGalleryEntryPtr;
 
     if (arg0 != 0) {
-        D_83402E2C = NULL;
+        gCurrentGalleryEntryPtr = NULL;
     }
 
     return ret;
 }
 
-void Gallery_InitPageCursor(unk_D_83407B00* arg0) {
+void Gallery_InitPageCursor(GalleryCursor* arg0) {
     arg0->unk_00 = 0;
     arg0->unk_04 = -1;
 }
@@ -249,7 +249,7 @@ s32 Gallery_CountTextLines(s8* arg0) {
     return var_v1;
 }
 
-s32 Gallery_CountValidPhotos(unk_D_83403C60* arg0, s32 arg1, s32 arg2) {
+s32 Gallery_CountValidPhotos(PhotoSceneData* arg0, s32 arg1, s32 arg2) {
     s32 var_s0 = 0;
     s32 i;
 
@@ -266,7 +266,7 @@ s32 Gallery_CountValidPhotos(unk_D_83403C60* arg0, s32 arg1, s32 arg2) {
     return var_s0;
 }
 
-s32 Gallery_FindNthEmptySlot(unk_D_83403C60* arg0, s32 arg1, s32 arg2, s32 arg3) {
+s32 Gallery_FindNthEmptySlot(PhotoSceneData* arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 var_s0 = arg2;
     s32 var_s1 = -1;
 
@@ -284,7 +284,7 @@ s32 Gallery_FindNthEmptySlot(unk_D_83403C60* arg0, s32 arg1, s32 arg2, s32 arg3)
     return var_s0;
 }
 
-s32 Gallery_FindFirstEmptySlot(unk_D_83403C60* arg0, s32 arg1) {
+s32 Gallery_FindFirstEmptySlot(PhotoSceneData* arg0, s32 arg1) {
     s32 i;
     s32 sp28 = -1;
 
@@ -366,7 +366,7 @@ void Gallery_DrawRoundedFrame(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4, u
 }
 
 void Gallery_DrawHeaderBar(s32 arg0, s32 arg1, s32 arg2, Color_RGBA8* arg3, Color_RGBA8* arg4) {
-    gSPDisplayList(gDisplayListHead++, D_8006F558);
+    gSPDisplayList(gDisplayListHead++, gDL_XluBorder);
     gDPSetEnvColor(gDisplayListHead++, arg4->r, arg4->g, arg4->b, arg4->a);
     gDPSetPrimColor(gDisplayListHead++, 0, 0, arg3->r, arg3->g, arg3->b, arg3->a);
     gDPLoadTextureBlock(gDisplayListHead++, D_300BF40, G_IM_FMT_IA, G_IM_SIZ_8b, 16, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
@@ -408,7 +408,7 @@ void Gallery_FillRect(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 void Gallery_DrawWhiteBorder(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     UNUSED s32 pad;
 
-    gSPDisplayList(gDisplayListHead++, D_8006F4C0);
+    gSPDisplayList(gDisplayListHead++, gDL_FillCycle);
     gDPSetFillColor(gDisplayListHead++, 0xFFFFFFFF);
 
     Gallery_FillRect(arg0 - arg4, arg1 - arg4, (arg4 * 2) + arg2, arg4);
@@ -447,9 +447,9 @@ void Gallery_DrawPhotoThumbnail(u16* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg
 }
 
 void Gallery_DrawSelectionCorners(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    static s16 D_83402E38 = 0;
+    static s16 gGalleryCornerAnimTimer = 0;
 
-    s16 sp4E = SINS(D_83402E38) * 2;
+    s16 sp4E = SINS(gGalleryCornerAnimTimer) * 2;
     UNUSED s32 pad[4];
 
     gDPPipeSync(gDisplayListHead++);
@@ -459,7 +459,7 @@ void Gallery_DrawSelectionCorners(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     Gfx_DrawTextureIa8(sp4E + arg0, ((arg1 + arg3) - sp4E) - 0x10, 0x10, 0x10, D_300C840, 0x10, 0);
     Gfx_DrawTextureIa8(((arg0 + arg2) - sp4E) - 0x10, sp4E + arg1, 0x10, 0x10, D_300C640, 0x10, 0);
     Gfx_DrawTextureIa8(((arg0 + arg2) - sp4E) - 0x10, ((arg1 + arg3) - sp4E) - 0x10, 0x10, 0x10, D_300C740, 0x10, 0);
-    D_83402E38 += 0x2000;
+    gGalleryCornerAnimTimer += 0x2000;
 }
 
 void Gallery_DrawStatusIcon(s32 arg0, s32 arg1, s32 arg2) {
@@ -474,8 +474,8 @@ void Gallery_DrawStatusIcon(s32 arg0, s32 arg1, s32 arg2) {
     Gfx_DrawTextureRgba16(arg0, arg1, 0x40, 0x20, var_v0, 0x40, 0);
 }
 
-void Gallery_InitSceneGrid(unk_D_83407B38* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, ModelLoadContext* arg5,
-                   BinArchive* arg6, unk_D_83403C60* arg7, s32 arg8, s32 arg9) {
+void Gallery_InitSceneGrid(GallerySceneGrid* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, ModelLoadContext* arg5,
+                   BinArchive* arg6, PhotoSceneData* arg7, s32 arg8, s32 arg9) {
     UNUSED s32 pad;
     DepthBuffer* sp168;
     DepthBuffer* sp68[64];
@@ -517,9 +517,9 @@ void Gallery_InitSceneGrid(unk_D_83407B38* arg0, s32 arg1, s32 arg2, s32 arg3, s
     arg0->unk_B0 = Geo_CreateSceneInstance(arg1, arg2, 0, sp168, arg5, arg6, NULL);
 }
 
-void Gallery_ProcessSceneGrid(unk_D_83407B38* arg0) {
+void Gallery_ProcessSceneGrid(GallerySceneGrid* arg0) {
     s32 temp_v0 = Gallery_FindReadyScene(arg0->unk_20, 0x25);
-    unk_func_80031270* var_s0;
+    Camera* var_s0;
     s32 i;
 
     if (temp_v0 == -1) {
@@ -544,7 +544,7 @@ void Gallery_ProcessSceneGrid(unk_D_83407B38* arg0) {
 }
 
 void Gallery_FinishActiveScene(void) {
-    unk_func_80031270* temp_v0 = Gallery_GetActiveScene();
+    Camera* temp_v0 = Gallery_GetActiveScene();
 
     if ((temp_v0 != NULL) && (temp_v0->unk_00 == 2)) {
         main_pool_pop_state('albu');
@@ -552,7 +552,7 @@ void Gallery_FinishActiveScene(void) {
     }
 }
 
-s32 Gallery_CountReadyScenesOnPage(unk_D_83407B38* arg0, s32 arg1) {
+s32 Gallery_CountReadyScenesOnPage(GallerySceneGrid* arg0, s32 arg1) {
     s32 i;
     s32 idx;
     s32 var_s2 = 0;
@@ -568,33 +568,33 @@ s32 Gallery_CountReadyScenesOnPage(unk_D_83407B38* arg0, s32 arg1) {
     return var_s2;
 }
 
-void Gallery_ClearSavedPosition(unk_D_83407B00* arg0) {
+void Gallery_ClearSavedPosition(GalleryCursor* arg0) {
     arg0->unk_00 = -1;
     arg0->unk_04 = -1;
 }
 
-void Gallery_SavePosition(unk_D_83407B38* arg0, unk_D_83407B00* arg1) {
+void Gallery_SavePosition(GallerySceneGrid* arg0, GalleryCursor* arg1) {
     arg1->unk_00 = arg0->unk_00;
     arg1->unk_04 = arg0->unk_08;
 }
 
-void Gallery_RestorePosition(unk_D_83407B38* arg0, unk_D_83407B00* arg1) {
+void Gallery_RestorePosition(GallerySceneGrid* arg0, GalleryCursor* arg1) {
     if (arg1->unk_00 != -1) {
         arg0->unk_00 = arg1->unk_00;
         arg0->unk_08 = arg1->unk_04;
     }
 }
 
-void Gallery_IndexToGridPos(unk_D_83407B38* arg0, s32* arg1, s32* arg2, s32 arg3) {
+void Gallery_IndexToGridPos(GallerySceneGrid* arg0, s32* arg1, s32* arg2, s32 arg3) {
     *arg1 = arg3 % arg0->unk_18;
     *arg2 = arg3 / arg0->unk_18;
 }
 
-s32 Gallery_GridPosToIndex(unk_D_83407B38* arg0, s32 arg1, s32 arg2) {
+s32 Gallery_GridPosToIndex(GallerySceneGrid* arg0, s32 arg1, s32 arg2) {
     return (arg0->unk_18 * arg2) + arg1;
 }
 
-void Gallery_RebindSceneGridResources(unk_D_83407B38* arg0, ModelLoadContext* arg1, BinArchive* arg2) {
+void Gallery_RebindSceneGridResources(GallerySceneGrid* arg0, ModelLoadContext* arg1, BinArchive* arg2) {
     s32 i;
 
     for (i = 0; i < 37; i++) {

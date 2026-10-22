@@ -10,11 +10,11 @@
 #include "src/memory.h"
 #include "src/stage_loader.h"
 
-static ModelLoadContext* D_82A00370;
-static unk_func_8001A024* D_82A00374;
-static BattleMon D_82A00378[6];
+static ModelLoadContext* gPokeIconFramebuffers;
+static SpriteDisplay* gSpriteDisplay;
+static BattleMon gLoadedPokemon[6];
 
-static s32 D_82A00360 = 0;
+static s32 gLoadedPokemonCount = 0;
 
 void GbTower_LoadPartyFromDeck(s32 arg0) {
     s32 i;
@@ -22,19 +22,19 @@ void GbTower_LoadPartyFromDeck(s32 arg0) {
 
     if (GbSave_EnsureMainDataLoaded(arg0) != 0) {
         temp_v0 = Deck_Open(0x20, arg0, 0, 0);
-        D_82A00360 = Deck_ReadEntries(D_82A00378, 6, temp_v0);
+        gLoadedPokemonCount = Deck_ReadEntries(gLoadedPokemon, 6, temp_v0);
         Deck_CloseAndFlush(temp_v0);
     }
 
-    for (i = 0; i < D_82A00360; i++) {
-        func_8001A46C(D_82A00374, i, &D_82A00378[i], 1);
+    for (i = 0; i < gLoadedPokemonCount; i++) {
+        SpriteDisplay_ConfigSlotWithAnim(gSpriteDisplay, i, &gLoadedPokemon[i], 1);
     }
 }
 
 s32 GbTower_TeamPrepFrameCallback(u8 arg0) {
     Cont_StartReadInputs();
     Cont_ReadInputs();
-    PokeIcon_ProcessAllSlots(D_82A00374, 0);
+    PokeIcon_ProcessAllSlots(gSpriteDisplay, 0);
     BgStage_DrawFrame();
     GfxImage_FillCurrent(&gDisplayListHead, 1);
     return 0;
@@ -48,14 +48,14 @@ void GbTower_BuildPartyResult(UnkInputStruct8000D738* arg0) {
     Save_GetOptions(&sp34);
     arg0->unk_02 = sp34.gbTowerUnlockTier;
     arg0->unk_00 = sp34.unk_04;
-    arg0->unk_03 = D_82A00360;
+    arg0->unk_03 = gLoadedPokemonCount;
 
-    for (i = 0; i < D_82A00360; i++, var_s1++) {
-        _bcopy(PokeIcon_GetImage(D_82A00374, i), var_s1, sizeof(var_s1[0]));
+    for (i = 0; i < gLoadedPokemonCount; i++, var_s1++) {
+        _bcopy(PokeIcon_GetImage(gSpriteDisplay, i), var_s1, sizeof(var_s1[0]));
     }
 
-    if (D_82A00360 < 6) {
-        bzero(var_s1, 0x4B00 + (-D_82A00360 * 0xC80));
+    if (gLoadedPokemonCount < 6) {
+        bzero(var_s1, 0x4B00 + (-gLoadedPokemonCount * 0xC80));
     }
 }
 
@@ -70,8 +70,8 @@ s32 GbTower_TeamPrep(s32 arg0, UnkInputStruct8000D738* arg1) {
     ASSET_LOAD(D_1000000, common_menu1_ui, 0);
     FRAGMENT_LOAD(FRAGMENT_PARTICLE_DATA_LIBRARY);
 
-    D_82A00370 = PokeIcon_AllocFramebuffers(1);
-    D_82A00374 = PokeIcon_CreateRenderList(D_82A00370, 6, 0x28, 0x28);
+    gPokeIconFramebuffers = PokeIcon_AllocFramebuffers(1);
+    gSpriteDisplay = PokeIcon_CreateRenderList(gPokeIconFramebuffers, 6, 0x28, 0x28);
     PokeIcon_OpenModelArchives();
     GbTower_LoadPartyFromDeck(arg0);
     Save_EnsureBankLoaded(2);
@@ -83,5 +83,5 @@ s32 GbTower_TeamPrep(s32 arg0, UnkInputStruct8000D738* arg1) {
 
     main_pool_pop_state('PREP');
 
-    return D_82A00360;
+    return gLoadedPokemonCount;
 }

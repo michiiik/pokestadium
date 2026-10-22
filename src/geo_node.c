@@ -151,9 +151,9 @@ unk_D_86002F34_alt17* GeoNode_CreateClearDepth(MainPoolState* arg0, unk_D_86002F
     return arg1;
 }
 
-unk_D_8690A610* GeoNode_CreateFog(s32 arg0, unk_D_8690A610* arg1, s16 arg2, s16 arg3, u8 r, u8 g, u8 b, u8 a) {
+FogRect* GeoNode_CreateFog(s32 arg0, FogRect* arg1, s16 arg2, s16 arg3, u8 r, u8 g, u8 b, u8 a) {
     if (arg0 != 0) {
-        arg1 = MainPool_AllocAligned(arg0, sizeof(unk_D_8690A610), 4);
+        arg1 = MainPool_AllocAligned(arg0, sizeof(FogRect), 4);
     }
 
     if (arg1 != NULL) {
@@ -200,10 +200,10 @@ unk_D_86002F34_alt19* GeoNode_CreateAmbientLight(MainPoolState* arg0, unk_D_8600
     return arg1;
 }
 
-unk_D_86002F34* GeoNode_CreateShadowContext(MainPoolState* arg0, unk_D_86002F34* arg1, s32 arg2, unk_D_86002F34_018* arg3, s32 arg4,
+ShadowContextNode* GeoNode_CreateShadowContext(MainPoolState* arg0, ShadowContextNode* arg1, s32 arg2, GfxTextureInfo* arg3, s32 arg4,
                               unk_D_86002F34_01C* arg5, s32 arg6, Vtx* arg7) {
     if (arg0 != NULL) {
-        arg1 = MainPool_AllocAligned(arg0, sizeof(unk_D_86002F34), 4);
+        arg1 = MainPool_AllocAligned(arg0, sizeof(ShadowContextNode), 4);
     }
 
     if (arg1 != NULL) {
@@ -403,9 +403,9 @@ unk_D_86002F34_alt9* GeoNode_CreateScale(MainPoolState* arg0, unk_D_86002F34_alt
     return arg1;
 }
 
-unk_func_80011B94* GeoNode_CreateDisplayList(MainPoolState* arg0, unk_func_80011B94* arg1, s32 arg2, Gfx* arg3) {
+SimpleGfxNode* GeoNode_CreateDisplayList(MainPoolState* arg0, SimpleGfxNode* arg1, s32 arg2, Gfx* arg3) {
     if (arg0 != NULL) {
-        arg1 = MainPool_AllocAligned(arg0, sizeof(unk_func_80011B94), 4);
+        arg1 = MainPool_AllocAligned(arg0, sizeof(SimpleGfxNode), 4);
     }
 
     if (arg1 != NULL) {

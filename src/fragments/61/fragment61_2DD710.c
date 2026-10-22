@@ -6,8 +6,8 @@
 #include "src/audio_sfx.h"
 #include "src/hal_libc.h"
 
-s16 D_842115B0[] = { 0x78, 0xFC, 0x180, 0x78, 0xFC, 0x180 };
-s16 D_842115BC[] = {
+s16 gSlotPosXOffsets[] = { 0x78, 0xFC, 0x180, 0x78, 0xFC, 0x180 };
+s16 gSlotPosYOffsets[] = {
     4, 4, 4, 0x30, 0x30, 0x30,
 };
 
@@ -37,8 +37,8 @@ void Rental_DrawTeamTrayFrame(RentalTeamTray* arg0, s16 arg1, s16 arg2) {
     }
 
     for (i = 0; i < 6; i++) {
-        s16 tmp1 = D_842115B0[i] + arg1;
-        s16 tmp2 = D_842115BC[i] + arg2;
+        s16 tmp1 = gSlotPosXOffsets[i] + arg1;
+        s16 tmp2 = gSlotPosYOffsets[i] + arg2;
 
         Rental_DrawTeamSlotFrame(tmp1, tmp2, arg0->unk_0030[i].raw);
     }
@@ -86,8 +86,8 @@ void Rental_DrawTeamTray(RentalTeamTray* arg0, s32 arg1) {
 
         for (i = 0; i < 6; i++) {
             if (arg0->unk_0030[i].unk_004.unk_00.unk_00 != 0) {
-                s16 tmp1 = D_842115B0[i] + arg0->unk_0018 + 2;
-                s16 tmp2 = D_842115BC[i] + arg0->unk_001A + 2;
+                s16 tmp1 = gSlotPosXOffsets[i] + arg0->unk_0018 + 2;
+                s16 tmp2 = gSlotPosYOffsets[i] + arg0->unk_001A + 2;
 
                 Gfx_DrawTextureRgba16(tmp1, tmp2, 0x28, 0x28, arg0->unk_0030[i].unk_058, 0x28, 0);
             }
@@ -141,8 +141,8 @@ void Rental_DrawTeamTray(RentalTeamTray* arg0, s32 arg1) {
 
         for (i = 0; i < 6; i++) {
             if (arg0->unk_0030[i].unk_004.unk_00.unk_00 != 0) {
-                s16 tmp1 = D_842115B0[i] + arg0->unk_0018 + 0x2C;
-                s16 tmp2 = D_842115BC[i] + arg0->unk_001A + 5;
+                s16 tmp1 = gSlotPosXOffsets[i] + arg0->unk_0018 + 0x2C;
+                s16 tmp2 = gSlotPosYOffsets[i] + arg0->unk_001A + 5;
 
                 Font_Printf(tmp1, tmp2, arg0->unk_0030[i].unk_004.unk_30);
             }
@@ -152,8 +152,8 @@ void Rental_DrawTeamTray(RentalTeamTray* arg0, s32 arg1) {
 
         for (i = 0; i < 6; i++) {
             if (arg0->unk_0030[i].unk_004.unk_00.unk_00 != 0) {
-                sp42 = D_842115B0[i] + arg0->unk_0018 + 0x2C;
-                sp40 = D_842115BC[i] + arg0->unk_001A + 0x17;
+                sp42 = gSlotPosXOffsets[i] + arg0->unk_0018 + 0x2C;
+                sp40 = gSlotPosYOffsets[i] + arg0->unk_001A + 0x17;
                 Font_Printf(sp42, sp40, "%s %d", TeamSelection_GetInstructionText(0x15), arg0->unk_0030[i].unk_004.unk_24);
             }
         }
@@ -705,7 +705,7 @@ s32 Rental_TeamSlotsUpdate(RentalTeamTray* arg0) {
     return sp1C;
 }
 
-s32 Rental_InitTeamTray(RentalTeamTray* arg0, RentalCarouselState* arg1, unk_D_8423D3A8* arg2, unk_D_84229EB0* arg3, s16 arg4,
+s32 Rental_InitTeamTray(RentalTeamTray* arg0, RentalCarouselState* arg1, unk_D_8423D3A8* arg2, RegisteredTeamMenu* arg3, s16 arg4,
                   u16 arg5, char* arg6, s16 arg7, s16 arg8, s16 arg9) {
     s32 i;
 

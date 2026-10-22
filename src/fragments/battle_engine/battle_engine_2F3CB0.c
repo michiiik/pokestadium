@@ -3,7 +3,7 @@
 #include "src/model_renderer.h"
 #include "src/matrix.h"
 
-static f32 D_84384600[] = { 1.0f, 2.0f };
+static f32 gDefaultScales[] = { 1.0f, 2.0f };
 
 void BattleAnim_InitSwayOffset(ActivePokemon* arg0, f32 arg1, s16 arg2) {
     arg0->unk_498 = arg1;
@@ -297,7 +297,7 @@ void BattleAnim_StatusIdleCase2(ActivePokemon* arg0, ActivePokemon* arg1) {
 void BattleAnim_StatusIdleCase3Sub0(UNUSED ActivePokemon* arg0, ActivePokemon* arg1) {
     Vec3f_SetComponentsDuplicate(&arg1->swayState, 0.0f, 0.0f, 0.0f);
     Vec3f_SetComponentsDuplicate(&arg1->swayState.unk_0C, 0.0f, 0.0f, 0.0f);
-    BattleAnim_InitSwayOffset(arg1, D_84384600[0], 0x4000);
+    BattleAnim_InitSwayOffset(arg1, gDefaultScales[0], 0x4000);
     BattleScene_ShowSecondaryModelsStaggeredFrame(arg1);
     arg1->animationFlags2++;
 }
@@ -326,7 +326,7 @@ void BattleAnim_StatusIdleCase3(ActivePokemon* arg0, ActivePokemon* arg1) {
 void BattleAnim_StatusIdleCase14Sub0(UNUSED ActivePokemon* arg0, ActivePokemon* arg1) {
     Vec3f_SetComponentsDuplicate(&arg1->swayState, 0.0f, 0.0f, 0.0f);
     Vec3f_SetComponentsDuplicate(&arg1->swayState.unk_0C, 0.0f, 0.0f, 0.0f);
-    BattleAnim_InitSwayOffset(arg1, D_84384600[0], 0x4000);
+    BattleAnim_InitSwayOffset(arg1, gDefaultScales[0], 0x4000);
     arg1->animationFlags2++;
 }
 
@@ -338,7 +338,7 @@ void BattleAnim_StatusIdleCase14Sub1(ActivePokemon* arg0, ActivePokemon* arg1) {
     }
 }
 
-void func_8430A4E0(UNUSED ActivePokemon* arg0, UNUSED ActivePokemon* arg1) {
+void BattleAnim_StatusIdleCase14Sub2(UNUSED ActivePokemon* arg0, UNUSED ActivePokemon* arg1) {
 }
 
 void BattleAnim_StatusIdleCase14(ActivePokemon* arg0, ActivePokemon* arg1) {
@@ -351,7 +351,7 @@ void BattleAnim_StatusIdleCase14(ActivePokemon* arg0, ActivePokemon* arg1) {
             break;
 
         case 2:
-            func_8430A4E0(arg0, arg1);
+            BattleAnim_StatusIdleCase14Sub2(arg0, arg1);
             break;
     }
 }
@@ -1107,7 +1107,7 @@ ThumbnailSettings sSideThumbnailSettings[2] = {
     },
 };
 
-unk_D_86B0C160 D_843847EC[] = {
+DioramaAnimData gCameraFovyPresetRandom[] = {
     {
         0,
         0,
@@ -1166,7 +1166,7 @@ unk_D_86B0C160 D_843847EC[] = {
         50.0f,
     },
 };
-unk_D_86B0C160 D_84384888[] = {
+DioramaAnimData gCameraFovyPresetSpecial[] = {
     {
         0,
         0,
@@ -1207,23 +1207,23 @@ unk_D_86B0C160 D_84384888[] = {
     },
 };
 
-unk_D_86B0C160 D_843848F0 = {
+DioramaAnimData gCameraPresetAngled = {
     0, 0, 0, 0, 0, 0.0f, 0.0f, 0, 0, 0, 0, 5461, 0.0f, 3.5f, 0.20000000298023224f, 0.05999999865889549f, 200.0f,
 };
 
-unk_D_86B0C160 D_84384924 = {
+DioramaAnimData gCameraPresetOwnerAnchor = {
     0, 0, 0, 0, 0, 0.0f, 0.0f, 0, 0, 0, 4550, 31850, 0.0f, 6.0f, 0.20000000298023224f, 0.03999999910593033f, 200.0f,
 };
 
-unk_D_86B0C160 D_84384958 = {
+DioramaAnimData gCameraPresetAttackerSide = {
     0, 0, 0, 0, 0, 0.0f, 0.0f, 0, 0, 0, 3640, -32768, 0.0f, 6.0f, 0.20000000298023224f, 0.07999999821186066f, 200.0f,
 };
 
-unk_D_86B0C160 D_8438498C = {
+DioramaAnimData gCameraPresetStraightOn = {
     0, 0, 0, 0, 0, 0.0f, 0.0f, 0, 0, 0, 0, 0, 0.0f, 3.5f, 0.20000000298023224f, 0.05999999865889549f, 200.0f,
 };
 
-unk_D_86B0C160 D_843849C0[] = {
+DioramaAnimData gBattleCameraPresetTable[] = {
     {
         0,
         0,
@@ -1340,11 +1340,11 @@ unk_D_86B0C160 D_843849C0[] = {
     },
 };
 
-unk_D_86B0C160 D_84384AF8 = {
+DioramaAnimData gCameraPresetSendOutPushIn = {
     0, 0, 0, 2184, 0, 0.0f, 10.5f, 0, 0, 0, 182, 0, 0.0f, 2.0f, 0.20000000298023224f, 0.014999999664723873f, 50.0f,
 };
 
-unk_D_86B0C160 D_84384B2C[] = {
+DioramaAnimData gBattleIntroCameraPresetTable[] = {
     {
         0,
         0,
@@ -1442,7 +1442,7 @@ unk_D_86B0C160 D_84384B2C[] = {
     },
 };
 
-Vec3f D_84384C30[] = {
+Vec3f gCameraOffsetTable[] = {
     { 0.17000000178813934f, 11.5f, -1.5f },
     { 0.10999999940395355f, 27.0f, -2.5f },
     { 0.12999999523162842f, 55.0f, 15.0f },

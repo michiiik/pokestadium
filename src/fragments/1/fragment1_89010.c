@@ -22,5 +22,5 @@ s32 D_812286F0[32] = {
 };
 
 
-void func_81209690(UNUSED s32 arg0) {
+void Fragment1_NoOp(UNUSED s32 arg0) {
 }

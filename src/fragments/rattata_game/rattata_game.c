@@ -24,13 +24,13 @@
 #include "src/memory.h"
 #include "src/stage_loader.h"
 
-typedef struct unk_D_86203CEC {
+typedef struct RaceAiDifficulty {
     /* 0x0 */ void* unk_00;
     /* 0x4 */ s16 unk_04;
     /* 0x6 */ s16 unk_06;
-} unk_D_86203CEC; // size = 0x8
+} RaceAiDifficulty; // size = 0x8
 
-static u32 D_862038C0[] = {
+static u32 gRaceTextTable[] = {
     0xFFFFFFD8, 0xFFFFFF65, 0x00000056, 0x00000097, 0xA4CFA4B7, 0xA4ECA5B3, 0xA5E9A5C3, 0xA5BF0000, 0xA1A1A1A1,
     0xA1A1A1A1, 0xA4F2A4EC, 0xA4F3A4C0, 0xA4B7A4C6, 0xA1A1A4CF, 0xA4B7A4ED, 0xA4A6A1A3, 0x00000000, 0xA5CFA1BC,
     0xA5C9A5EB, 0xA4CFA1A1, 0xA1A1A1A1, 0xA1A1A1A1, 0xA1A1A1A1, 0xA4CE20A4, 0xA6A4A8A4, 0xF2A1A1A4, 0xAAA4B7A4,
@@ -54,19 +54,19 @@ static u32 D_862038C0[] = {
     0x00000000, 0x00000000, 0x000A0005, 0x00020000,
 };
 
-static f32 D_86203BA0[4][10] = {
+static f32 gLaneBaseY[4][10] = {
     { 5.5f, 10.5f, 15.5f, 20.5f, 23.79999924f, 27.10000038f, 30.5f, 35.5f, 40.5f, 45.5f },
     { 5.5f, 8.5f, 17.5f, 19.5f, 24.5f, 26.5f, 34.5f, 37.5f, 45.5f, 47.5f },
     { 5.5f, 7.5f, 9.5f, 17.5f, 27.5f, 29.5f, 31.5f, 42.5f, 44.5f, 46.5f },
     { 60.0f, 61.0f, 62.0f, 63.0f, 64.0f, 65.0f, 66.0f, 67.0f, 68.0f, 69.0f },
 };
 
-static u32 D_86203C40[] = {
+static u32 gRaceUnusedPanelParams[] = {
     0x001C000E, 0xFFFFFFFF, 0x0000FFFF, 0x0062000E, 0xFFFFFFFF, 0x00FF00FF, 0x00A8000E,
     0xFFFFFFFF, 0xFF0000FF, 0x00EE000E, 0xFFFFFFFF, 0xFFFF00FF, 0x00000000,
 };
 
-static unk_func_87801684 D_86203C74[] = {
+static AnimFrame gRacePanelRightIconAnim[] = {
     {
         0x303ED80,
         0x02,
@@ -89,7 +89,7 @@ static unk_func_87801684 D_86203C74[] = {
     },
 };
 
-static unk_func_87801684 D_86203C9C[] = {
+static AnimFrame gRacePanelLowerIconAnim[] = {
     {
         0x3040580,
         0x12,
@@ -106,65 +106,65 @@ static unk_func_87801684 D_86203C9C[] = {
     { 0x0, 0x0 },
 };
 
-static unk_func_87801684 D_86203CC4[] = {
+static AnimFrame gRacePanelLeftIconAnim[] = {
     { 0x03042E00, 0x0E }, { 0x03044360, 0x02 }, { 0x03044A80, 0x06 }, { 0x03044360, 0x02 }, { 0, 0 },
 };
 
-static unk_D_86203CEC D_86203CEC[] = {
-    { D_87A01190, 0x0019, 0x000F },
-    { D_87A01178, 0x0019, 0x0014 },
-    { D_87A01180, 0x001E, 0x0028 },
-    { D_87A011A4, 0x0028, 0x005A },
+static RaceAiDifficulty gRaceAiDifficultyTable[] = {
+    { gRaceComNameMusashi, 0x0019, 0x000F },
+    { gRaceComNameSatoshi, 0x0019, 0x0014 },
+    { gRaceComNameKasumi, 0x001E, 0x0028 },
+    { gRaceComNameShigeru, 0x0028, 0x005A },
 };
 
-static u32 D_86203D0C[] = {
+static u32 gRaceStageScript[] = {
     0x0C00FFFF,       (u32)&D_5000000, 0x0B00001E,      0x00000000,      0x014000F0,      0x0000000F,
     0x00000000,       0x00000000,      (u32)&D_5000000, 0x0D000000,      (u32)&D_5000000, 0x14000000,
     0x002B0012,       0xFFFFFF32,      0x16FFFFFF,      0x0F000003,      (u32)&D_5000000, 0x0A000000,
-    (u32)&D_800AC840, (u32)&D_6000000, (u32)&D_6000000, (u32)&D_6000000, (u32)&D_3000000, D_87806398,
+    (u32)&gGraphRoot0, (u32)&D_6000000, (u32)&D_6000000, (u32)&D_6000000, (u32)&D_3000000, gFragment2_1GeoLayout,
     (u32)&D_6000000,  (u32)&D_1000000, 0xFFFFFFFF,      0x0505FFFF,      0x0505FFFF,      0xFFFFFFFF,
     0xFFFFFFFF,       0x05FF05FF,      0x05FF05FF,      0xFFFFFFFF,      0xFFFFFFFF,      0xFF0505FF,
     0xFF0505FF,       0xFFFFFFFF,      0xFFFFFFFF,      0xFFFF05FF,      0xFFFF05FF,      0xFFFFFFFF,
 };
 
 // Unused rodata strings
-const char D_86203DC0[] = " %dP";
-const char D_86203DC8[] = "%s";
+const char gRaceNumPlayersFmt[] = " %dP";
+const char gRaceStringFmt[] = "%s";
 
-static unk_D_86002F30* D_86203E30;
-static unk_D_86002F30* D_86203E34;
-static unk_D_86002F34* D_86203E38;
-static CameraNode* D_86203E3C;
-static s16 D_86203E40;
-static s16 D_86203E42;
-static s16 D_86203E44;
-static u16 D_86203E46;
-static s32 D_86203E48;
-static s16 D_86203E4C;
-static RattataRacer D_86203E50[4];
-static RattataRacer* D_86204590;
-static DisplayObject* D_86204594;
-static DisplayObject D_86204598;
-static s16 D_86204700;
-static u32 D_86204704;
-static s16 D_86204708;
-static s16 D_8620470A;
-static s16 D_8620470C;
-static s16 D_8620470E;
-static f32 D_86204710;
-static FontContext* D_86204714;
-static s16 D_86204718;
-static s16 D_8620471A;
-static s16 D_8620471C;
-static RattataHurdleMarker D_86204720[4][10];
-static RattataHurdleMarker* D_86208280;
-static s32 D_86208288[4];
-static s32 D_86208298;
-static s16 D_8620829C;
-u32 D_862082A0[4];
+static ModelData* gRaceStageData;
+static ModelData* gRaceStageAssets;
+static ShadowContextNode* gRaceGraphRoot;
+static CameraNode* gRaceCamera;
+static s16 gRaceCameraDist;
+static s16 gRaceCameraRotationY;
+static s16 gRaceCameraRotationX;
+static u16 gRaceFrameCounter;
+static s32 gRacePhase;
+static s16 gRaceFinishOrder;
+static RattataRacer gRacePlayerStates[4];
+static RattataRacer* gRacePlayerState;
+static DisplayObject* gRacePlayerGraphNode;
+static DisplayObject gRacePlayerGraphNodeTemp;
+static s16 gRaceStartCountdownActive;
+static u32 gRaceFinishFrame;
+static s16 gRaceWinnersCount;
+static s16 gRaceMultipleWinners;
+static s16 gRaceUnusedFlag1;
+static s16 gRaceExitFadeCounter;
+static f32 gRaceBestFinishTime;
+static FontContext* gRaceTextObject;
+static s16 gRaceIsResultScreen;
+static s16 gRaceStageReady;
+static s16 gRaceLaneIndex;
+static RattataHurdleMarker gRaceObstacles[4][10];
+static RattataHurdleMarker* gRaceObstaclePtr;
+static s32 gRaceFinishOrderTable[4];
+static s32 gRaceFinishCount;
+static s16 gRaceCameraInitFlag;
+u32 gRacePlayerScreenY[4];
 
 void RattataGame_InitAIDifficulty(RattataRacer* arg0) {
-    arg0->unk_002 = D_8780FA38 + 1;
+    arg0->unk_002 = gMinigameComDifficulty + 1;
 }
 
 void RattataGame_DrawRankBanners(void) {
@@ -174,14 +174,14 @@ void RattataGame_DrawRankBanners(void) {
     s32 i;
     UNUSED s32 pad2[1];
 
-    MtxF_ExtractScale(&spDC, &D_86203E3C->view.floatMatrix);
+    MtxF_ExtractScale(&spDC, &gRaceCamera->view.floatMatrix);
     guMtxF2L(spDC.mf, &sp98);
 
     for (i = 0; i < 4; i++) {
-        D_86204590 = &D_86203E50[i];
-        D_86204594 = &D_86204590->unk_008;
-        if (D_86204590->unk_19E == 2) {
-            switch (D_86204590->unk_1B2) {
+        gRacePlayerState = &gRacePlayerStates[i];
+        gRacePlayerGraphNode = &gRacePlayerState->unk_008;
+        if (gRacePlayerState->unk_19E == 2) {
+            switch (gRacePlayerState->unk_1B2) {
                 case 0:
                     gDisplayListHead = MiniGfx_DrawTexturedQuad(gDisplayListHead, &sp98, -(i - 1.5f) * 40.0f, 5.0f, 30.0f, 0.25f,
                                                      &D_4000008, 0x20, 0x20);
@@ -206,13 +206,13 @@ void RattataGame_DrawRankBanners(void) {
     }
 }
 
-void func_862002EC(void) {
+void Race_Stub(void) {
 }
 
 void RattataGame_UpdateAIInput(void) {
     UNUSED s32 pad[2];
     s32 i;
-    unk_D_86203CEC* temp_s0;
+    RaceAiDifficulty* temp_s0;
     u16 sp60[4];
     f32 temp_fv0;
     f32 temp_fv1;
@@ -222,26 +222,26 @@ void RattataGame_UpdateAIInput(void) {
     sp60[2] = gPlayer3Controller->buttonPressed;
     sp60[3] = gPlayer4Controller->buttonPressed;
 
-    if (D_86203E48 == 2) {
+    if (gRacePhase == 2) {
         for (i = 0; i < 4; i++) {
-            D_86204590 = &D_86203E50[i];
+            gRacePlayerState = &gRacePlayerStates[i];
 
-            if (D_86204590->unk_002 == 0) {
-                D_86204590->unk_170 = sp60[i];
+            if (gRacePlayerState->unk_002 == 0) {
+                gRacePlayerState->unk_170 = sp60[i];
             } else {
-                D_86204590->unk_170 = 0;
-                if (D_86204590->unk_002 > 0) {
-                    temp_s0 = &D_86203CEC[D_86204590->unk_002 - 1];
+                gRacePlayerState->unk_170 = 0;
+                if (gRacePlayerState->unk_002 > 0) {
+                    temp_s0 = &gRaceAiDifficultyTable[gRacePlayerState->unk_002 - 1];
 
                     if (Rand_Range(0x64) < temp_s0->unk_04) {
-                        D_86204590->unk_170 |= 0x8000;
+                        gRacePlayerState->unk_170 |= 0x8000;
                     }
 
                     if (Rand_Range(0x64) < temp_s0->unk_06) {
-                        temp_fv0 = D_86204590->unk_1A8;
-                        temp_fv1 = D_86204590->unk_1A4;
+                        temp_fv0 = gRacePlayerState->unk_1A8;
+                        temp_fv1 = gRacePlayerState->unk_1A4;
                         if (((temp_fv0 + 10.0f) < temp_fv1) && (temp_fv1 < (temp_fv0 + 20.0f))) {
-                            D_86204590->unk_170 |= 0x800;
+                            gRacePlayerState->unk_170 |= 0x800;
                         }
                     }
                 }
@@ -252,14 +252,14 @@ void RattataGame_UpdateAIInput(void) {
     }
 
     for (i = 0; i < 4; i++) {
-        D_86203E50[i].unk_170 = sp60[i];
+        gRacePlayerStates[i].unk_170 = sp60[i];
     }
 }
 
 void RattataGame_PollInput(void) {
-    D_8620471A = 0;
+    gRaceStageReady = 0;
     if (StageContext_GetFadeMode() == 0) {
-        D_8620471A = 1;
+        gRaceStageReady = 1;
         Cont_StartReadInputs();
         Cont_ReadInputs();
         Input_ResetRepeatState();
@@ -268,111 +268,111 @@ void RattataGame_PollInput(void) {
 }
 
 void RattataGame_InitCamera(void) {
-    D_8620829C = 0;
-    D_86203E3C = D_86203E38->node.children;
+    gRaceCameraInitFlag = 0;
+    gRaceCamera = gRaceGraphRoot->node.children;
 
-    MiniCam_SetActive(D_86203E3C);
-    D_86203E40 = 0x1300;
-    D_86203E42 = -0x6700;
-    D_86203E44 = 0x14A;
+    MiniCam_SetActive(gRaceCamera);
+    gRaceCameraDist = 0x1300;
+    gRaceCameraRotationY = -0x6700;
+    gRaceCameraRotationX = 0x14A;
 
-    D_86203E3C->perspective.nearPlane = 50.0f;
-    D_86203E3C->perspective.farPlane = 6400.0f;
-    D_86203E3C->perspective.verticalFieldOfView = 30.0f;
+    gRaceCamera->perspective.nearPlane = 50.0f;
+    gRaceCamera->perspective.farPlane = 6400.0f;
+    gRaceCamera->perspective.verticalFieldOfView = 30.0f;
 
-    D_86203E3C->view.targetPosition.x = 0.0f;
-    D_86203E3C->view.targetPosition.y = 0.0f;
-    D_86203E3C->view.targetPosition.z = 5.0f;
+    gRaceCamera->view.targetPosition.x = 0.0f;
+    gRaceCamera->view.targetPosition.y = 0.0f;
+    gRaceCamera->view.targetPosition.z = 5.0f;
 
-    Camera_ComputeEyeFromAngles(&D_86203E3C->view.targetPosition, &D_86203E3C->view.eyePosition, D_86203E44, D_86203E40, D_86203E42);
+    Camera_ComputeEyeFromAngles(&gRaceCamera->view.targetPosition, &gRaceCamera->view.eyePosition, gRaceCameraRotationX, gRaceCameraDist, gRaceCameraRotationY);
 }
 
 void RattataGame_UpdateCamera(void) {
-    switch (D_86203E48) {
+    switch (gRacePhase) {
         case 0:
-            D_86203E40 = 0xD00;
-            D_86203E42 = -0x1D00;
-            D_86203E44 = 0x1F4;
+            gRaceCameraDist = 0xD00;
+            gRaceCameraRotationY = -0x1D00;
+            gRaceCameraRotationX = 0x1F4;
             break;
 
         case 1:
-            if (D_86203E40 > 0x1300) {
-                D_86203E40 -= 0x20;
+            if (gRaceCameraDist > 0x1300) {
+                gRaceCameraDist -= 0x20;
             }
 
-            if (D_86203E42 > 0x9900u) {
-                D_86203E42 -= 0x100;
-                if (D_86203E42 < 0x9900u) {
-                    D_86203E42 = -0x6700;
+            if (gRaceCameraRotationY > 0x9900u) {
+                gRaceCameraRotationY -= 0x100;
+                if (gRaceCameraRotationY < 0x9900u) {
+                    gRaceCameraRotationY = -0x6700;
                 }
             }
 
-            if (D_86203E44 > 0x14A) {
-                D_86203E44 -= 2;
+            if (gRaceCameraRotationX > 0x14A) {
+                gRaceCameraRotationX -= 2;
             }
             break;
 
         case 2:
-            if (D_8780FC94 == 0) {
-                if (D_86203E44 > 0x14A) {
-                    D_86203E44 -= 2;
+            if (gResultMenuVisible == 0) {
+                if (gRaceCameraRotationX > 0x14A) {
+                    gRaceCameraRotationX -= 2;
                 }
 
-                D_86203E42 += 0x20;
-                if ((u16)D_86203E42 < 0xC000) {
-                    D_86203E40 += 0xA;
+                gRaceCameraRotationY += 0x20;
+                if ((u16)gRaceCameraRotationY < 0xC000) {
+                    gRaceCameraDist += 0xA;
 
-                    if (D_86203E40 > 0x1500) {
-                        D_86203E40 = 0x1500;
+                    if (gRaceCameraDist > 0x1500) {
+                        gRaceCameraDist = 0x1500;
                     }
-                } else if ((D_86203E40 & 0xFFFF) > 0xA00) {
-                    D_86203E40 -= 0xA;
+                } else if ((gRaceCameraDist & 0xFFFF) > 0xA00) {
+                    gRaceCameraDist -= 0xA;
                 }
             }
             break;
 
         case 3:
         case 4:
-            if (D_86203E44 > 0xF0) {
-                D_86203E44 -= 1;
-                if (D_86203E44 < 0xF0) {
-                    D_86203E44 = 0xF0;
+            if (gRaceCameraRotationX > 0xF0) {
+                gRaceCameraRotationX -= 1;
+                if (gRaceCameraRotationX < 0xF0) {
+                    gRaceCameraRotationX = 0xF0;
                 }
             }
 
-            if ((D_86203E40 & 0xFFFF) > 0x2FC) {
-                D_86203E40 -= 0x1E;
-                if ((D_86203E40 & 0xFFFF) < 0x2FC) {
-                    D_86203E40 = 0x2FC;
+            if ((gRaceCameraDist & 0xFFFF) > 0x2FC) {
+                gRaceCameraDist -= 0x1E;
+                if ((gRaceCameraDist & 0xFFFF) < 0x2FC) {
+                    gRaceCameraDist = 0x2FC;
                 }
             }
-            D_86203E42 += 0x40;
+            gRaceCameraRotationY += 0x40;
             break;
 
         case 5:
-            D_86203E42 += 0x60;
+            gRaceCameraRotationY += 0x60;
             break;
 
         default:
             break;
     }
 
-    if (D_86203E40 > 0x3F00) {
-        D_86203E40 = 0x3F00;
+    if (gRaceCameraDist > 0x3F00) {
+        gRaceCameraDist = 0x3F00;
     }
 
-    if (D_86203E40 < 0) {
-        D_86203E40 = 0;
+    if (gRaceCameraDist < 0) {
+        gRaceCameraDist = 0;
     }
 
-    if (D_86203E44 < 0x32) {
-        D_86203E44 = 0x32;
+    if (gRaceCameraRotationX < 0x32) {
+        gRaceCameraRotationX = 0x32;
     }
 
-    Camera_ComputeEyeFromAngles(&D_86203E3C->view.targetPosition, &D_86203E3C->view.eyePosition, D_86203E44, D_86203E40, D_86203E42);
+    Camera_ComputeEyeFromAngles(&gRaceCamera->view.targetPosition, &gRaceCamera->view.eyePosition, gRaceCameraRotationX, gRaceCameraDist, gRaceCameraRotationY);
 }
 
-void func_86200938(void) {
+void RattataGame_Stub(void) {
 }
 
 void RattataGame_DrawTutorialScreen(s32 arg0) {
@@ -409,18 +409,18 @@ void RattataGame_DrawTutorialScreen(s32 arg0) {
             Font_SetLineHeight(0xC);
             Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
             Gfx_SetPrimColor(0xF9, 0xF4, 0, 0xFF);
-            Font_Printf(0xA0 - (Text_MeasureStringWidth(D_86204714, Text_GetString(NULL, 0, D_87806330, 0x23)) / 2), 0x20,
-                          Text_GetString(NULL, 0, D_87806330, 0x23));
+            Font_Printf(0xA0 - (Text_MeasureStringWidth(gRaceTextObject, Text_GetString(NULL, 0, gMinigameNamesBank, 0x23)) / 2), 0x20,
+                          Text_GetString(NULL, 0, gMinigameNamesBank, 0x23));
             Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
             Gfx_SetPrimColor(0xFF, 0xFF, 0xFF, 0xFF);
-            Font_Printf(0x28, 0x34, Text_GetString(NULL, 0, D_87806330, 0x24));
-            Font_Printf(0x28, 0x4C, Text_GetString(NULL, 0, D_87806330, 0x25));
-            Font_Printf(0x28, 0x70, Text_GetString(NULL, 0, D_87806330, 0x26));
+            Font_Printf(0x28, 0x34, Text_GetString(NULL, 0, gMinigameNamesBank, 0x24));
+            Font_Printf(0x28, 0x4C, Text_GetString(NULL, 0, gMinigameNamesBank, 0x25));
+            Font_Printf(0x28, 0x70, Text_GetString(NULL, 0, gMinigameNamesBank, 0x26));
             Gfx_SetEnvColor(0xC8, 0xC8, 0xFF, 0xFF);
             Gfx_SetPrimColor(0x50, 0x50, 0xFF, 0xFF);
 
-            sp40 = Text_GetString(NULL, 0, D_87806330, 0x5F);
-            Widget_MeasureLabelBox(&sp48, &sp44, Text_GetString(NULL, 0, D_87806330, 0x24), sp40, 0xC);
+            sp40 = Text_GetString(NULL, 0, gMinigameNamesBank, 0x5F);
+            Widget_MeasureLabelBox(&sp48, &sp44, Text_GetString(NULL, 0, gMinigameNamesBank, 0x24), sp40, 0xC);
             if (sp48 >= 0) {
                 Font_Printf(sp48 + 0x28, sp44 + 0x34, sp40);
             }
@@ -428,26 +428,26 @@ void RattataGame_DrawTutorialScreen(s32 arg0) {
             Gfx_SetEnvColor(0xE6, 0xD2, 0xFF, 0xFF);
             Gfx_SetPrimColor(0x82, 0x50, 0xD2, 0xFF);
 
-            sp34 = Text_GetString(NULL, 0, D_87806330, 0x61);
-            Widget_MeasureLabelBox(&sp3C, &sp38, Text_GetString(NULL, 0, D_87806330, 0x25), sp34, 0xC);
+            sp34 = Text_GetString(NULL, 0, gMinigameNamesBank, 0x61);
+            Widget_MeasureLabelBox(&sp3C, &sp38, Text_GetString(NULL, 0, gMinigameNamesBank, 0x25), sp34, 0xC);
             if (sp3C >= 0) {
                 Font_Printf(sp3C + 0x28, sp38 + 0x4C, sp34);
             }
 
             Gfx_SetEnvColor(0xE6, 0xD2, 0xFF, 0xFF);
             Gfx_SetPrimColor(0x82, 0x50, 0xD2, 0xFF);
-            Font_Printf(0x8C, 0xB0, Text_GetString(NULL, 0, D_87806330, 0x19));
+            Font_Printf(0x8C, 0xB0, Text_GetString(NULL, 0, gMinigameNamesBank, 0x19));
             Gfx_SetEnvColor(0xC8, 0xC8, 0xFF, 0xFF);
             Gfx_SetPrimColor(0x50, 0x50, 0xFF, 0xFF);
-            Font_Printf(0xFC, 0xB0, Text_GetString(NULL, 0, D_87806330, 0x27));
+            Font_Printf(0xFC, 0xB0, Text_GetString(NULL, 0, gMinigameNamesBank, 0x27));
             Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
             Gfx_SetPrimColor(0xFF, 0x80, 0x80, 0xFF);
-            Font_Printf(0xA2, 0xC8, Text_GetString(NULL, 0, D_87806330, 0x14));
+            Font_Printf(0xA2, 0xC8, Text_GetString(NULL, 0, gMinigameNamesBank, 0x14));
             Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
             Gfx_SetPrimColor(0xFF, 0xFF, 0xFF, 0xFF);
-            Font_Printf(0x75, 0xB0, Text_GetString(NULL, 0, D_87806330, 0x5C));
-            Font_Printf(0xE5, 0xB0, Text_GetString(NULL, 0, D_87806330, 0x5C));
-            Font_Printf(0x8B, 0xC8, Text_GetString(NULL, 0, D_87806330, 0x5C));
+            Font_Printf(0x75, 0xB0, Text_GetString(NULL, 0, gMinigameNamesBank, 0x5C));
+            Font_Printf(0xE5, 0xB0, Text_GetString(NULL, 0, gMinigameNamesBank, 0x5C));
+            Font_Printf(0x8B, 0xC8, Text_GetString(NULL, 0, gMinigameNamesBank, 0x5C));
             Font_DisableTwoCycleTexturing();
             break;
     }
@@ -457,11 +457,11 @@ void RattataGame_DrawTutorialScreen(s32 arg0) {
     gSPDisplayList(gDisplayListHead++, gUiEnvTintTextureDL);
 
     if (arg0 == 0) {
-        Widget_DrawAnimIcon24(0x56, 0xAC, D_86203CC4);
-        Widget_DrawAnimIcon16(0xCC, 0xB0, D_86203C74);
-        Widget_DrawAnimIcon16C(0x74, 0xC6, D_86203C9C);
+        Widget_DrawAnimIcon24(0x56, 0xAC, gRacePanelLeftIconAnim);
+        Widget_DrawAnimIcon16(0xCC, 0xB0, gRacePanelRightIconAnim);
+        Widget_DrawAnimIcon16C(0x74, 0xC6, gRacePanelLowerIconAnim);
         Widget_DrawSplitBanner(2, 0x19, 0xA6);
-    } else if (D_86204718 == 1) {
+    } else if (gRaceIsResultScreen == 1) {
         Widget_DrawStripedBar(0x1E, 0x17);
     }
 }
@@ -470,33 +470,33 @@ void RattataGame_DrawFrame(s32 arg0) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
-        D_862082A0[i] = D_86203E50[i].unk_190 * 36.0f;
+        gRacePlayerScreenY[i] = gRacePlayerStates[i].unk_190 * 36.0f;
     }
 
     BgStage_DrawFrame();
     GfxImage_FillCurrent(&gDisplayListHead, 1);
 
-    if (D_8780FC94 == 0) {
+    if (gResultMenuVisible == 0) {
         GeoRender_AdvanceFrameCounter();
     }
 
     Widget_CountdownUpdate();
-    Geo_RenderRootNode(D_86203E38);
+    Geo_RenderRootNode(gRaceGraphRoot);
     gDisplayListHead = MiniCam_ApplyProjection(gDisplayListHead);
     RattataGame_DrawRankBanners();
 
-    if (D_8780FC98 == 0) {
+    if (gResultConfirmPressed == 0) {
         RattataGame_DrawTutorialScreen(arg0);
     }
 
-    if (D_86204718 == 0) {
+    if (gRaceIsResultScreen == 0) {
         Widget_PauseMenuUpdate();
     } else {
         Widget_DrawControllerDisconnectBanner();
     }
 
     BgStage_AdvanceFrame();
-    D_86203E46++;
+    gRaceFrameCounter++;
 }
 
 s32 RattataGame_WaitForStart(void) {
@@ -507,47 +507,47 @@ s32 RattataGame_WaitForStart(void) {
     StageFade_StartFromOpaque(0x10);
 
     for (i = 0; i < 4; i++) {
-        D_86204590 = &D_86203E50[i];
-        D_86204594 = &D_86204590->unk_008;
-        ModelAnim_SetAnimation(D_86204594, 0);
-        ModelAnim_ClearEventTrack(D_86204594);
-        D_86204594->transformAnim.speedFixed = 0x10000;
-        D_86204594->transformAnim.frameFixed = Rand_Range(0x14) << 0x10;
+        gRacePlayerState = &gRacePlayerStates[i];
+        gRacePlayerGraphNode = &gRacePlayerState->unk_008;
+        ModelAnim_SetAnimation(gRacePlayerGraphNode, 0);
+        ModelAnim_ClearEventTrack(gRacePlayerGraphNode);
+        gRacePlayerGraphNode->transformAnim.speedFixed = 0x10000;
+        gRacePlayerGraphNode->transformAnim.frameFixed = Rand_Range(0x14) << 0x10;
     }
 
     for (i = 0; i < 4; i++) {
-        D_86204590 = &D_86203E50[i];
-        if ((D_8780FA30[i] == 0) && (D_86204718 == 0)) {
-            D_86204590->unk_002 = 0;
+        gRacePlayerState = &gRacePlayerStates[i];
+        if ((gMiniHudColorDefaults[i] == 0) && (gRaceIsResultScreen == 0)) {
+            gRacePlayerState->unk_002 = 0;
         } else {
-            RattataGame_InitAIDifficulty(D_86204590);
+            RattataGame_InitAIDifficulty(gRacePlayerState);
         }
     }
 
-    D_86203E48 = 0;
-    if (D_86204718 == 0) {
+    gRacePhase = 0;
+    if (gRaceIsResultScreen == 0) {
         var_s1_3 = 1;
     } else {
         RattataGame_UpdateCamera();
-        RattataGame_DrawFrame(D_86203E48);
+        RattataGame_DrawFrame(gRacePhase);
         return 0;
     }
 
     while (var_s1_3 == 1) {
         RattataGame_PollInput();
         RattataGame_UpdateCamera();
-        if (D_8620471A == 1) {
+        if (gRaceStageReady == 1) {
             if (gPlayer1Controller->buttonPressed & 0x1000) {
                 var_s1_3 = 0;
             }
 
-            if ((D_8780FA2A == 0) && (gPlayer1Controller->buttonPressed & 0x4000)) {
+            if ((gMenuCursorX == 0) && (gPlayer1Controller->buttonPressed & 0x4000)) {
                 Audio_PlaySoundEffectById(SFX_MENU_BACK);
                 Widget_PauseMenuTrigger(2);
                 return -1;
             }
         }
-        RattataGame_DrawFrame(D_86203E48);
+        RattataGame_DrawFrame(gRacePhase);
     }
 
     return 0;
@@ -559,14 +559,14 @@ void RattataGame_UpdateStartCountdown(void) {
     StageFade_StartFromOpaque(0x10);
 
     for (i = 0; i < 4; i++) {
-        ModelAnim_SetAnimation(&D_86203E50[i].unk_008, 0);
+        ModelAnim_SetAnimation(&gRacePlayerStates[i].unk_008, 0);
     }
 
-    D_86204700 = 1;
+    gRaceStartCountdownActive = 1;
     Widget_CountdownStart(1);
-    D_86203E48 = 1;
+    gRacePhase = 1;
 
-    while (D_86204700 == 1) {
+    while (gRaceStartCountdownActive == 1) {
         switch (Widget_CountdownGetState()) {
             case 1:
             case 2:
@@ -574,27 +574,27 @@ void RattataGame_UpdateStartCountdown(void) {
                 MiniSound_DispatchCommand(0x60001, 0, 0);
                 break;
             case 0:
-                D_86204700 = 0;
+                gRaceStartCountdownActive = 0;
                 break;
         }
 
         RattataGame_PollInput();
 
-        if ((D_86204718 == 1) && (StageContext_GetFadeMode() == 0) &&
+        if ((gRaceIsResultScreen == 1) && (StageContext_GetFadeMode() == 0) &&
             ((gPlayer1Controller->buttonPressed | gPlayer2Controller->buttonPressed |
               gPlayer3Controller->buttonPressed | (gPlayer4Controller->buttonPressed != 0)) != 0)) {
             StageFade_StartFromTransparent(0x1E);
             Audio_BeginVolumeTransition(0x1E);
-            D_86204700 = 0;
+            gRaceStartCountdownActive = 0;
 
             for (i = 0; i < 30; i++) {
                 RattataGame_UpdateCamera();
-                RattataGame_DrawFrame(D_86203E48);
+                RattataGame_DrawFrame(gRacePhase);
             }
 
             while (Audio_GetActivityScore() != 0) {
                 RattataGame_UpdateCamera();
-                RattataGame_DrawFrame(D_86203E48);
+                RattataGame_DrawFrame(gRacePhase);
             }
 
             Audio_ResetVolumeTransition();
@@ -602,7 +602,7 @@ void RattataGame_UpdateStartCountdown(void) {
         }
 
         RattataGame_UpdateCamera();
-        RattataGame_DrawFrame(D_86203E48);
+        RattataGame_DrawFrame(gRacePhase);
     }
 }
 
@@ -705,68 +705,68 @@ void RattataGame_UpdateHurdleMarkers(RattataRacer* arg0) {
     f32 unk_190;
 
     for (i = 0; i < 10; i++) {
-        D_86208280 = &D_86204720[arg0_unk000][i];
-        temp_s1 = &D_86208280->unk_004;
-        D_86208280->unk_000 = 0;
+        gRaceObstaclePtr = &gRaceObstacles[arg0_unk000][i];
+        temp_s1 = &gRaceObstaclePtr->unk_004;
+        gRaceObstaclePtr->unk_000 = 0;
         unk_190 = arg0->unk_190;
-        temp_fs1 = D_86203BA0[D_8620471C][i] * 10.44f * 1.7f;
+        temp_fs1 = gLaneBaseY[gRaceLaneIndex][i] * 10.44f * 1.7f;
 
         if (((temp_fs1 - 30.0f) <= unk_190) && (unk_190 <= ((temp_fs1 - 30.0f) + 67.64706f))) {
 
-            switch (D_86208280->unk_002) {
+            switch (gRaceObstaclePtr->unk_002) {
                 case 0:
                     if ((unk_190 - (temp_fs1 - 30.0f)) < 5.0f) {
-                        D_86208280->unk_002 = 1;
-                        Model_InitDisplayObject(temp_s1, 0, 0xB0, D_86203E34->unk_08->unk_00[arg0_unk000]);
+                        gRaceObstaclePtr->unk_002 = 1;
+                        Model_InitDisplayObject(temp_s1, 0, 0xB0, gRaceStageAssets->unk_08->unk_00[arg0_unk000]);
                     }
                     break;
 
                 case 2:
-                    D_86208280->unk_17A++;
-                    if (D_86208280->unk_17A >= 5) {
-                        D_86208280->unk_17A = 0;
-                        D_86208280->unk_002 = 3;
+                    gRaceObstaclePtr->unk_17A++;
+                    if (gRaceObstaclePtr->unk_17A >= 5) {
+                        gRaceObstaclePtr->unk_17A = 0;
+                        gRaceObstaclePtr->unk_002 = 3;
                     }
                     break;
 
                 case 3:
-                    D_86208280->unk_17A++;
-                    if (D_86208280->unk_17A >= 5) {
-                        D_86208280->unk_17A = 0;
-                        D_86208280->unk_002 = 2;
+                    gRaceObstaclePtr->unk_17A++;
+                    if (gRaceObstaclePtr->unk_17A >= 5) {
+                        gRaceObstaclePtr->unk_17A = 0;
+                        gRaceObstaclePtr->unk_002 = 2;
                     }
                     break;
             }
 
-            if ((D_86208280->unk_002 > 0) && ((unk_190 - (temp_fs1 - 30.0f)) > 64.70588f)) {
-                D_86208280->unk_002 = 0;
+            if ((gRaceObstaclePtr->unk_002 > 0) && ((unk_190 - (temp_fs1 - 30.0f)) > 64.70588f)) {
+                gRaceObstaclePtr->unk_002 = 0;
                 ModelRenderer_ClearDisplayObject(temp_s1);
             }
 
-            if (D_86208280->unk_002 >= 2) {
-                D_86208280->unk_178++;
-                if (D_86208280->unk_178 >= 0x1F) {
-                    D_86208280->unk_002 = 0;
+            if (gRaceObstaclePtr->unk_002 >= 2) {
+                gRaceObstaclePtr->unk_178++;
+                if (gRaceObstaclePtr->unk_178 >= 0x1F) {
+                    gRaceObstaclePtr->unk_002 = 0;
                     ModelRenderer_ClearDisplayObject(temp_s1);
                 }
             }
 
             temp_v0 = ((unk_190 - temp_fs1) + 30.0f) * 1.7f * 65536.0f;
-            temp_s1->transformAnim.frameFixed = (D_86208280->unk_16C + temp_v0) >> 1;
-            D_86208280->unk_16C = temp_v0;
+            temp_s1->transformAnim.frameFixed = (gRaceObstaclePtr->unk_16C + temp_v0) >> 1;
+            gRaceObstaclePtr->unk_16C = temp_v0;
 
-            if (D_86208280->unk_002 == 1) {
+            if (gRaceObstaclePtr->unk_002 == 1) {
                 ModelAnim_SetAnimation(temp_s1, 0);
                 temp_s1->lodFraction = 0xFF;
-            } else if (D_86208280->unk_002 == 3) {
+            } else if (gRaceObstaclePtr->unk_002 == 3) {
                 ModelAnim_SetAnimation(temp_s1, 0);
                 temp_s1->lodFraction = 0x80;
-            } else if ((D_86208280->unk_002 == 0) || (D_86208280->unk_002 == 2)) {
+            } else if ((gRaceObstaclePtr->unk_002 == 0) || (gRaceObstaclePtr->unk_002 == 2)) {
                 temp_s1->transformAnim.frameFixed = 0x730000;
             }
 
             temp_s1->transformAnim.speedFixed = 0;
-            D_86208280->unk_000 = 1;
+            gRaceObstaclePtr->unk_000 = 1;
         }
     }
 
@@ -783,153 +783,153 @@ s16 RattataGame_UpdateRacers(void) {
     sp86 = 0;
 
     for (i = 0; i < 4; i++) {
-        D_86204590 = &D_86203E50[i];
-        D_86204594 = &D_86204590->unk_008;
+        gRacePlayerState = &gRacePlayerStates[i];
+        gRacePlayerGraphNode = &gRacePlayerState->unk_008;
 
-        D_86204590->unk_1A0 = 0;
+        gRacePlayerState->unk_1A0 = 0;
 
-        if (D_86204590->unk_178 < D_86204590->unk_174) {
-            var_fa0 = D_86204590->unk_174 - D_86204590->unk_178;
+        if (gRacePlayerState->unk_178 < gRacePlayerState->unk_174) {
+            var_fa0 = gRacePlayerState->unk_174 - gRacePlayerState->unk_178;
             if (var_fa0 < 1.0f) {
-                D_86204590->unk_178 += var_fa0;
+                gRacePlayerState->unk_178 += var_fa0;
             } else {
-                D_86204590->unk_178 += 1.0f;
+                gRacePlayerState->unk_178 += 1.0f;
             }
-        } else if (D_86204590->unk_174 < D_86204590->unk_178) {
-            var_fa0 = D_86204590->unk_178 - D_86204590->unk_174;
+        } else if (gRacePlayerState->unk_174 < gRacePlayerState->unk_178) {
+            var_fa0 = gRacePlayerState->unk_178 - gRacePlayerState->unk_174;
             if (var_fa0 < 1.0f) {
-                D_86204590->unk_178 -= var_fa0;
+                gRacePlayerState->unk_178 -= var_fa0;
             } else {
-                D_86204590->unk_178 -= 1.0f;
+                gRacePlayerState->unk_178 -= 1.0f;
             }
         }
 
-        if (D_86204590->unk_19E == 0) {
-            switch (D_86204590->unk_19C) {
+        if (gRacePlayerState->unk_19E == 0) {
+            switch (gRacePlayerState->unk_19C) {
                 case 0:
-                    if (D_86204590->unk_170 & 0x800) {
-                        RattataGame_SetRacerAnimState(D_86204590, 1);
+                    if (gRacePlayerState->unk_170 & 0x800) {
+                        RattataGame_SetRacerAnimState(gRacePlayerState, 1);
                     } else {
-                        if (D_86204590->unk_170 & 0x8000) {
-                            D_86204590->unk_174 += D_86204590->unk_188;
-                            if (D_86204590->unk_174 < D_86204590->unk_184) {
-                                D_86204590->unk_174 = D_86204590->unk_184;
+                        if (gRacePlayerState->unk_170 & 0x8000) {
+                            gRacePlayerState->unk_174 += gRacePlayerState->unk_188;
+                            if (gRacePlayerState->unk_174 < gRacePlayerState->unk_184) {
+                                gRacePlayerState->unk_174 = gRacePlayerState->unk_184;
                             }
                         }
 
-                        D_86204590->unk_174 -= (D_86204590->unk_188 / 10.0f);
+                        gRacePlayerState->unk_174 -= (gRacePlayerState->unk_188 / 10.0f);
 
-                        if (D_86204590->unk_180 < D_86204590->unk_174) {
-                            D_86204590->unk_174 = D_86204590->unk_180;
-                            D_86204590->unk_1A2 = 5;
+                        if (gRacePlayerState->unk_180 < gRacePlayerState->unk_174) {
+                            gRacePlayerState->unk_174 = gRacePlayerState->unk_180;
+                            gRacePlayerState->unk_1A2 = 5;
                         } else {
-                            D_86204590->unk_1A2 -= 1;
-                            if (D_86204590->unk_1A2 < 0) {
-                                D_86204590->unk_1A2 = 0;
+                            gRacePlayerState->unk_1A2 -= 1;
+                            if (gRacePlayerState->unk_1A2 < 0) {
+                                gRacePlayerState->unk_1A2 = 0;
                             }
                         }
 
-                        if (D_86204590->unk_174 < 0.0f) {
-                            D_86204590->unk_174 = 0.0f;
+                        if (gRacePlayerState->unk_174 < 0.0f) {
+                            gRacePlayerState->unk_174 = 0.0f;
                         }
 
-                        RattataGame_UpdateRunAnimSpeed(D_86204590);
+                        RattataGame_UpdateRunAnimSpeed(gRacePlayerState);
                     }
 
-                    if (D_86204590->unk_174 <= D_86204590->unk_17C) {
-                        RattataGame_SetRacerAnimState(D_86204590, 3);
+                    if (gRacePlayerState->unk_174 <= gRacePlayerState->unk_17C) {
+                        RattataGame_SetRacerAnimState(gRacePlayerState, 3);
                     }
                     break;
 
                 case 1:
-                    if (ModelAnim_IsFinished(D_86204594) != 0) {
-                        RattataGame_SetRacerAnimState(D_86204590, 0);
+                    if (ModelAnim_IsFinished(gRacePlayerGraphNode) != 0) {
+                        RattataGame_SetRacerAnimState(gRacePlayerState, 0);
                     }
                     break;
 
                 case 2:
-                    D_86204590->unk_174 = 0.0f;
-                    if (ModelAnim_IsFinished(D_86204594) != 0) {
-                        RattataGame_SetRacerAnimState(D_86204590, 3);
+                    gRacePlayerState->unk_174 = 0.0f;
+                    if (ModelAnim_IsFinished(gRacePlayerGraphNode) != 0) {
+                        RattataGame_SetRacerAnimState(gRacePlayerState, 3);
                     }
                     break;
 
                 case 3:
-                    D_86204590->unk_174 = 0.0f;
-                    if (D_86204590->unk_170 & 0x8000) {
-                        D_86204590->unk_174 = D_86204590->unk_184;
-                        RattataGame_SetRacerAnimState(D_86204590, 0);
+                    gRacePlayerState->unk_174 = 0.0f;
+                    if (gRacePlayerState->unk_170 & 0x8000) {
+                        gRacePlayerState->unk_174 = gRacePlayerState->unk_184;
+                        RattataGame_SetRacerAnimState(gRacePlayerState, 0);
                     }
                     break;
             }
 
-            D_86204590->unk_18C = D_86204590->unk_190;
-            D_86204590->unk_190 += D_86204590->unk_178 * 0.05f;
+            gRacePlayerState->unk_18C = gRacePlayerState->unk_190;
+            gRacePlayerState->unk_190 += gRacePlayerState->unk_178 * 0.05f;
 
-            RattataGame_SyncRacerZPosition(D_86204590);
+            RattataGame_SyncRacerZPosition(gRacePlayerState);
 
             for (j = 0; j < 10; j++) {
-                D_86208280 = &D_86204720[i][j];
+                gRaceObstaclePtr = &gRaceObstacles[i][j];
 
-                if ((D_86208280->unk_002 == 1) && (RattataGame_CheckHurdleCollision(D_86204590, D_86208280) != 0)) {
-                    RattataGame_SetRacerAnimState(D_86204590, 2);
-                    D_86208280->unk_002 = 2;
-                    D_86208280->unk_17A = 0;
-                    D_86204590->unk_1AC += 1;
+                if ((gRaceObstaclePtr->unk_002 == 1) && (RattataGame_CheckHurdleCollision(gRacePlayerState, gRaceObstaclePtr) != 0)) {
+                    RattataGame_SetRacerAnimState(gRacePlayerState, 2);
+                    gRaceObstaclePtr->unk_002 = 2;
+                    gRaceObstaclePtr->unk_17A = 0;
+                    gRacePlayerState->unk_1AC += 1;
                 }
             }
 
-            if (D_86204590->unk_190 + D_86204590->unk_194 >= 885.0f) {
+            if (gRacePlayerState->unk_190 + gRacePlayerState->unk_194 >= 885.0f) {
                 var_fa0 = 0.0f;
-                if (D_86204590->unk_178 > 0.0f) {
-                    f32 var_fa1 = (885.0f - D_86204590->unk_18C);
+                if (gRacePlayerState->unk_178 > 0.0f) {
+                    f32 var_fa1 = (885.0f - gRacePlayerState->unk_18C);
 
-                    var_fa0 = var_fa1 / (D_86204590->unk_178 * 0.05f);
+                    var_fa0 = var_fa1 / (gRacePlayerState->unk_178 * 0.05f);
                 }
 
-                D_86204590->unk_198 = D_86204704 + var_fa0;
-                D_86204590->unk_19E = 1;
-                D_86204590->unk_174 = D_86204590->unk_180;
-                D_86204590->unk_178 = D_86204590->unk_174;
+                gRacePlayerState->unk_198 = gRaceFinishFrame + var_fa0;
+                gRacePlayerState->unk_19E = 1;
+                gRacePlayerState->unk_174 = gRacePlayerState->unk_180;
+                gRacePlayerState->unk_178 = gRacePlayerState->unk_174;
 
-                ModelAnim_SetAnimation(D_86204594, 2);
-                D_86204594->transformAnim.speedFixed = 0x10000;
+                ModelAnim_SetAnimation(gRacePlayerGraphNode, 2);
+                gRacePlayerGraphNode->transformAnim.speedFixed = 0x10000;
 
-                switch (D_86208298) {
+                switch (gRaceFinishCount) {
                     case 0:
-                        MiniSound_DispatchCommand(0x60006, D_86204590->unk_000, 0);
+                        MiniSound_DispatchCommand(0x60006, gRacePlayerState->unk_000, 0);
                         break;
 
                     case 3:
-                        MiniSound_DispatchCommand(0x60008, D_86204590->unk_000, 0);
+                        MiniSound_DispatchCommand(0x60008, gRacePlayerState->unk_000, 0);
                         break;
 
                     default:
-                        MiniSound_DispatchCommand(0x60007, D_86204590->unk_000, 0);
+                        MiniSound_DispatchCommand(0x60007, gRacePlayerState->unk_000, 0);
                         break;
                 }
 
-                D_86208288[D_86208298] = i;
-                D_86208298++;
-                D_86204590->unk_1A0 = 1;
+                gRaceFinishOrderTable[gRaceFinishCount] = i;
+                gRaceFinishCount++;
+                gRacePlayerState->unk_1A0 = 1;
                 sp86++;
             } else {
-                D_86204590->unk_18C = D_86204590->unk_190 + D_86204590->unk_194;
+                gRacePlayerState->unk_18C = gRacePlayerState->unk_190 + gRacePlayerState->unk_194;
             }
         } else {
-            D_86204590->unk_190 += D_86204590->unk_178 * 0.05f;
+            gRacePlayerState->unk_190 += gRacePlayerState->unk_178 * 0.05f;
 
-            if (D_86204590->unk_190 > 910.0f) {
-                D_86204590->unk_190 = 910.0f;
-                D_86204590->unk_19E = 2;
+            if (gRacePlayerState->unk_190 > 910.0f) {
+                gRacePlayerState->unk_190 = 910.0f;
+                gRacePlayerState->unk_19E = 2;
             }
 
-            RattataGame_SyncRacerZPosition(D_86204590);
+            RattataGame_SyncRacerZPosition(gRacePlayerState);
 
-            if (ModelAnim_IsFinished(D_86204594) != 0) {
-                ModelAnim_SetAnimation(D_86204594, 0);
-                D_86204594->transformAnim.frameFixed = 0;
-                D_86204594->transformAnim.speedFixed = 0x10000;
+            if (ModelAnim_IsFinished(gRacePlayerGraphNode) != 0) {
+                ModelAnim_SetAnimation(gRacePlayerGraphNode, 0);
+                gRacePlayerGraphNode->transformAnim.frameFixed = 0;
+                gRacePlayerGraphNode->transformAnim.speedFixed = 0x10000;
             }
         }
     }
@@ -941,22 +941,22 @@ void RattataGame_AdvanceFinishLineApproach(void) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
-        D_86204590 = &D_86203E50[i];
-        D_86204594 = &D_86204590->unk_008;
+        gRacePlayerState = &gRacePlayerStates[i];
+        gRacePlayerGraphNode = &gRacePlayerState->unk_008;
 
-        if (D_86204590->unk_19E == 1) {
-            D_86204590->unk_190 += D_86204590->unk_178 * 0.05f;
-            if (D_86204590->unk_190 > 910.0f) {
-                D_86204590->unk_190 = 910.0f;
-                D_86204590->unk_19E = 2;
+        if (gRacePlayerState->unk_19E == 1) {
+            gRacePlayerState->unk_190 += gRacePlayerState->unk_178 * 0.05f;
+            if (gRacePlayerState->unk_190 > 910.0f) {
+                gRacePlayerState->unk_190 = 910.0f;
+                gRacePlayerState->unk_19E = 2;
             }
 
-            RattataGame_SyncRacerZPosition(D_86204590);
+            RattataGame_SyncRacerZPosition(gRacePlayerState);
 
-            if (ModelAnim_IsFinished(D_86204594) != 0) {
-                ModelAnim_SetAnimation(D_86204594, 0);
-                D_86204594->transformAnim.frameFixed = 0;
-                D_86204594->transformAnim.speedFixed = 0x10000;
+            if (ModelAnim_IsFinished(gRacePlayerGraphNode) != 0) {
+                ModelAnim_SetAnimation(gRacePlayerGraphNode, 0);
+                gRacePlayerGraphNode->transformAnim.frameFixed = 0;
+                gRacePlayerGraphNode->transformAnim.speedFixed = 0x10000;
             }
         }
     }
@@ -979,7 +979,7 @@ void RattataGame_MainLoop(void) {
     spA4 = 1;
 
     for (i = 0; i < 4; i++) {
-        temp_s1 = &D_86203E50[i];
+        temp_s1 = &gRacePlayerStates[i];
         var_s2 = &temp_s1->unk_008;
 
         ModelAnim_SetAnimation(var_s2, 1);
@@ -992,71 +992,71 @@ void RattataGame_MainLoop(void) {
         temp_s1->unk_198 = -1.0f;
     }
 
-    D_86204704 = 0;
-    D_86203E4C = 0;
+    gRaceFinishFrame = 0;
+    gRaceFinishOrder = 0;
     MiniSound_DispatchCommand(0x60002, 0, 0);
-    D_86203E48 = 2;
-    D_86203E46 = 0;
+    gRacePhase = 2;
+    gRaceFrameCounter = 0;
 
     sp8C = 0;
-    D_86204710 = 99999.0f;
+    gRaceBestFinishTime = 99999.0f;
 
     while (spA4 != 0) {
         RattataGame_PollInput();
         RattataGame_UpdateCamera();
 
-        if (D_8780FC92 != 0) {
+        if (gResultFlag_Special != 0) {
             return;
         }
 
-        if (D_8780FC94 == 0) {
-            if (D_86204704 >= 0x708) {
+        if (gResultMenuVisible == 0) {
+            if (gRaceFinishFrame >= 0x708) {
                 spA4 = 0;
             }
 
-            if (D_86204718 == 1) {
+            if (gRaceIsResultScreen == 1) {
                 if ((gPlayer1Controller->buttonPressed != 0) && (sp8C == 0)) {
-                    D_86204704 = 0x1C2;
+                    gRaceFinishFrame = 0x1C2;
                     sp8C = 1;
                 }
 
-                if (D_86204704 == 0x1C2) {
+                if (gRaceFinishFrame == 0x1C2) {
                     StageFade_StartFromTransparent(0x1E);
                     Audio_BeginVolumeTransition(0x1E);
                 }
 
-                if (D_86204704 >= 0x1E0) {
+                if (gRaceFinishFrame >= 0x1E0) {
                     Widget_PauseMenuTrigger(2);
                     spA4 = 0;
                 }
             }
 
-            if (D_86204704 == 0xF) {
+            if (gRaceFinishFrame == 0xF) {
                 Audio_StartMusicTrack(0x19);
             }
 
             temp_s1_2 = RattataGame_UpdateRacers();
 
             for (i = 0; i < 4; i++) {
-                RattataGame_UpdateHurdleMarkers(&D_86203E50[i]);
+                RattataGame_UpdateHurdleMarkers(&gRacePlayerStates[i]);
             }
 
             if (temp_s1_2 > 0) {
                 var_v0_2 = 0;
                 for (i = 0; i < 4; i++) {
-                    var_s0_3 = &D_86203E50[i];
+                    var_s0_3 = &gRacePlayerStates[i];
                     if (var_s0_3->unk_1A0 == 1) {
                         f32 tmp = var_s0_3->unk_198;
 
-                        if (tmp < D_86204710) {
-                            D_86204710 = tmp;
+                        if (tmp < gRaceBestFinishTime) {
+                            gRaceBestFinishTime = tmp;
                         }
                         sp78[var_v0_2++] = var_s0_3;
                     }
                 }
 
                 if (temp_s1_2 == 1) {
-                    sp78[0]->unk_1B2 = D_86203E4C;
+                    sp78[0]->unk_1B2 = gRaceFinishOrder;
                     sp78[0]->unk_1A0 = 0;
                 } else {
                     for (i = 0; i < temp_s1_2 - 1; i++) {
@@ -1069,12 +1069,12 @@ void RattataGame_MainLoop(void) {
                         }
                     }
 
-                    sp78[0]->unk_1B2 = D_86203E4C;
+                    sp78[0]->unk_1B2 = gRaceFinishOrder;
                     for (i = 1; i < temp_s1_2; i++) {
                         if (sp78[i - 1]->unk_198 < sp78[i]->unk_198) {
-                            D_86203E4C++;
+                            gRaceFinishOrder++;
                         }
-                        sp78[i]->unk_1B2 = D_86203E4C;
+                        sp78[i]->unk_1B2 = gRaceFinishOrder;
                     }
 
                     for (i = 0; i < temp_s1_2; i++) {
@@ -1082,12 +1082,12 @@ void RattataGame_MainLoop(void) {
                     }
                 }
 
-                D_86203E4C++;
+                gRaceFinishOrder++;
             }
 
             var_s3 = 0;
             for (i = 0; i < 4; i++) {
-                if (D_86203E50[i].unk_19E == 2) {
+                if (gRacePlayerStates[i].unk_19E == 2) {
                     var_s3++;
                 }
             }
@@ -1096,15 +1096,15 @@ void RattataGame_MainLoop(void) {
                 spA4 = 0;
             }
 
-            D_86204704++;
+            gRaceFinishFrame++;
         }
 
-        RattataGame_DrawFrame(D_86203E48);
+        RattataGame_DrawFrame(gRacePhase);
     }
 
     var_s3 = 0;
     for (i = 0; i < 4; i++) {
-        if (D_86203E50[i].unk_19E == 1) {
+        if (gRacePlayerStates[i].unk_19E == 1) {
             var_s3++;
         }
     }
@@ -1112,37 +1112,37 @@ void RattataGame_MainLoop(void) {
     while (var_s3 > 0) {
         RattataGame_PollInput();
         RattataGame_UpdateCamera();
-        if (D_8780FC92 == 0) {
-            if (D_8780FC94 == 0) {
+        if (gResultFlag_Special == 0) {
+            if (gResultMenuVisible == 0) {
                 var_s3 = 0;
                 RattataGame_AdvanceFinishLineApproach();
 
                 for (i = 0; i < 4; i++) {
-                    RattataGame_UpdateHurdleMarkers(&D_86203E50[i]);
+                    RattataGame_UpdateHurdleMarkers(&gRacePlayerStates[i]);
                 }
 
                 for (i = 0; i < 4; i++) {
-                    if (D_86203E50[i].unk_19E == 1) {
+                    if (gRacePlayerStates[i].unk_19E == 1) {
                         var_s3++;
                     }
                 }
             }
 
-            RattataGame_DrawFrame(D_86203E48);
+            RattataGame_DrawFrame(gRacePhase);
         } else {
             return;
         }
     }
 
     var_s3 = 0;
-    D_86204708 = 0;
+    gRaceWinnersCount = 0;
 
     for (i = 0; i < 4; i++) {
-        temp_s1 = &D_86203E50[i];
+        temp_s1 = &gRacePlayerStates[i];
 
         if ((temp_s1->unk_19E > 0) && (temp_s1->unk_1B2 == 0)) {
             Widget_PauseMenuRecordWin(i);
-            D_86204708++;
+            gRaceWinnersCount++;
             temp_s1->unk_1C8 = 1;
             if (temp_s1->unk_002 == 0) {
                 var_s3 = 1;
@@ -1150,8 +1150,8 @@ void RattataGame_MainLoop(void) {
         }
     }
 
-    if (D_86204708 != 1) {
-        D_8620470A = 1;
+    if (gRaceWinnersCount != 1) {
+        gRaceMultipleWinners = 1;
     } else if (var_s3 == 1) {
         Audio_StartMusicTrack(0xBD);
     } else {
@@ -1163,19 +1163,19 @@ void RattataGame_UpdatePostRaceIdleAnim(void) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
-        D_86204590 = &D_86203E50[i];
-        D_86204594 = &D_86204590->unk_008;
+        gRacePlayerState = &gRacePlayerStates[i];
+        gRacePlayerGraphNode = &gRacePlayerState->unk_008;
 
-        if ((D_86204590->unk_19E > 0) && (D_86204590->unk_1C8 == 1)) {
+        if ((gRacePlayerState->unk_19E > 0) && (gRacePlayerState->unk_1C8 == 1)) {
             continue;
         }
 
-        if ((ModelAnim_IsFinished(D_86204594) == 0) && (D_86204594->transformAnim.frameFixed < 0x340000)) {
+        if ((ModelAnim_IsFinished(gRacePlayerGraphNode) == 0) && (gRacePlayerGraphNode->transformAnim.frameFixed < 0x340000)) {
             continue;
         }
 
-        ModelAnim_SetAnimation(D_86204594, 5);
-        D_86204594->transformAnim.frameFixed = 0x270000;
+        ModelAnim_SetAnimation(gRacePlayerGraphNode, 5);
+        gRacePlayerGraphNode->transformAnim.frameFixed = 0x270000;
     }
 }
 
@@ -1183,44 +1183,44 @@ void RattataGame_PlayResultAnimation(void) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
-        D_86204590 = &D_86203E50[i];
-        D_86204594 = &D_86204590->unk_008;
-        if ((D_86204590->unk_19E > 0) && (D_86204590->unk_1C8 == 1)) {
-            ModelAnim_SetAnimation(D_86204594, 4);
-            D_86204594->transformAnim.speedFixed = 0x10000;
+        gRacePlayerState = &gRacePlayerStates[i];
+        gRacePlayerGraphNode = &gRacePlayerState->unk_008;
+        if ((gRacePlayerState->unk_19E > 0) && (gRacePlayerState->unk_1C8 == 1)) {
+            ModelAnim_SetAnimation(gRacePlayerGraphNode, 4);
+            gRacePlayerGraphNode->transformAnim.speedFixed = 0x10000;
         } else {
-            ModelAnim_SetAnimation(D_86204594, 5);
-            D_86204594->transformAnim.frameFixed = 0;
-            D_86204594->transformAnim.speedFixed = 0x10000;
-            ModelAnim_SetEventTrack(D_86204594, 0);
+            ModelAnim_SetAnimation(gRacePlayerGraphNode, 5);
+            gRacePlayerGraphNode->transformAnim.frameFixed = 0;
+            gRacePlayerGraphNode->transformAnim.speedFixed = 0x10000;
+            ModelAnim_SetEventTrack(gRacePlayerGraphNode, 0);
         }
     }
 
-    while (D_8780FC94 != 0) {
+    while (gResultMenuVisible != 0) {
         RattataGame_PollInput();
-        RattataGame_DrawFrame(D_86203E48);
+        RattataGame_DrawFrame(gRacePhase);
     }
 
     Widget_PauseMenuTrigger(1);
-    D_86203E48 = 3;
+    gRacePhase = 3;
 
     for (i = 0; i < 120; i++) {
         RattataGame_PollInput();
         RattataGame_UpdateCamera();
-        RattataGame_DrawFrame(D_86203E48);
+        RattataGame_DrawFrame(gRacePhase);
     }
 
     for (i = 0; i < 30; i++) {
         RattataGame_PollInput();
         RattataGame_UpdateCamera();
-        RattataGame_DrawFrame(D_86203E48);
+        RattataGame_DrawFrame(gRacePhase);
     }
 }
 
 void RattataGame_WaitForAudioToFinish(void) {
     while (Audio_GetActivityScore() != 0) {
         RattataGame_PollInput();
-        RattataGame_DrawFrame(D_86203E48);
+        RattataGame_DrawFrame(gRacePhase);
     }
     Audio_ResetVolumeTransition();
 }
@@ -1233,36 +1233,36 @@ void RattataGame_FadeOutAndTransition(void) {
 
     for (i = 0; i < 30; i++) {
         RattataGame_PollInput();
-        RattataGame_DrawFrame(D_86203E48);
+        RattataGame_DrawFrame(gRacePhase);
     }
 }
 
 void RattataGame_PlayOutroSequence(s32 arg0) {
     s32 i;
 
-    D_86203E48 = 6;
+    gRacePhase = 6;
 
     for (i = 0; i < arg0; i++) {
         RattataGame_PollInput();
-        RattataGame_DrawFrame(D_86203E48);
+        RattataGame_DrawFrame(gRacePhase);
     }
 }
 
 void RattataGame_WaitForContinue(void) {
-    D_86203E48 = 5;
+    gRacePhase = 5;
 
-    while (D_8780FC96 == 0) {
-        if ((D_8780FA2A == 1) && (D_8620470E > 0)) {
-            D_8620470E -= 0xA;
-            if (D_8620470E < 0) {
-                D_8620470E = 0;
+    while (gResultExitPending == 0) {
+        if ((gMenuCursorX == 1) && (gRaceExitFadeCounter > 0)) {
+            gRaceExitFadeCounter -= 0xA;
+            if (gRaceExitFadeCounter < 0) {
+                gRaceExitFadeCounter = 0;
             }
         }
 
         RattataGame_PollInput();
         RattataGame_UpdateCamera();
         RattataGame_UpdatePostRaceIdleAnim();
-        RattataGame_DrawFrame(D_86203E48);
+        RattataGame_DrawFrame(gRacePhase);
     }
 }
 
@@ -1272,26 +1272,26 @@ void RattataGame_LoadAssets(void) {
     MemoryBlock* temp_v0 = MainPool_AllocState(main_pool_get_available(), 0);
     DisplayObject* temp_s0;
 
-    D_86203E38 = process_geo_layout(temp_v0, &D_86203D0C);
+    gRaceGraphRoot = process_geo_layout(temp_v0, &gRaceStageScript);
     MainPool_FinalizeAllocation(temp_v0);
     ModelRenderer_InitDisplayRoots();
     PokeIcon_OpenModelArchives();
-    D_8620470E = 0xFF;
-    D_8620471A = 0;
-    D_86203E30 = Model_LoadByArchiveIndex(0xB8);
-    ModelRenderer_AttachDisplayObject(&D_86204598);
-    Model_InitDisplayObject(&D_86204598, 0, 0xB8, D_86203E30->unk_08->unk_00[0]);
-    D_86204598.position.y = -26.0f;
-    D_86203E30 = Model_LoadByArchiveIndex(0xAF);
+    gRaceExitFadeCounter = 0xFF;
+    gRaceStageReady = 0;
+    gRaceStageData = Model_LoadByArchiveIndex(0xB8);
+    ModelRenderer_AttachDisplayObject(&gRacePlayerGraphNodeTemp);
+    Model_InitDisplayObject(&gRacePlayerGraphNodeTemp, 0, 0xB8, gRaceStageData->unk_08->unk_00[0]);
+    gRacePlayerGraphNodeTemp.position.y = -26.0f;
+    gRaceStageData = Model_LoadByArchiveIndex(0xAF);
 
     for (i = 0; i < 4; i++) {
-        D_86204590 = &D_86203E50[i];
-        temp_s0 = &D_86204590->unk_008;
-        D_86204590->unk_000 = i;
+        gRacePlayerState = &gRacePlayerStates[i];
+        temp_s0 = &gRacePlayerState->unk_008;
+        gRacePlayerState->unk_000 = i;
 
-        RattataGame_InitAIDifficulty(D_86204590);
+        RattataGame_InitAIDifficulty(gRacePlayerState);
         ModelRenderer_AttachDisplayObject(temp_s0);
-        Model_InitDisplayObject(temp_s0, 0, 0xAF, D_86203E30->unk_08->unk_00[0]);
+        Model_InitDisplayObject(temp_s0, 0, 0xAF, gRaceStageData->unk_08->unk_00[0]);
         temp_s0->position.x = -(i - 1.5f) * 40.0f;
         temp_s0->position.y = 0.0f;
         temp_s0->scale.x = 1.0f;
@@ -1299,21 +1299,21 @@ void RattataGame_LoadAssets(void) {
         temp_s0->scale.z = 1.0f;
         ModelAnim_SetAnimation(temp_s0, 0);
         ModelAnim_ClearEventTrack(temp_s0);
-        RattataGame_ResetRacerState(D_86204590);
+        RattataGame_ResetRacerState(gRacePlayerState);
         temp_s0->transformAnim.speedFixed = 0x20000;
     }
 
-    D_86203E34 = Model_LoadByArchiveIndex(0xB0);
+    gRaceStageAssets = Model_LoadByArchiveIndex(0xB0);
 
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 10; j++) {
-            D_86208280 = &D_86204720[i][j];
-            temp_s0 = &D_86208280->unk_004;
+            gRaceObstaclePtr = &gRaceObstacles[i][j];
+            temp_s0 = &gRaceObstaclePtr->unk_004;
 
             ModelRenderer_AttachDisplayObject(temp_s0);
 
-            D_86208280->unk_000 = 0;
-            D_86208280->unk_002 = 0;
+            gRaceObstaclePtr->unk_000 = 0;
+            gRaceObstaclePtr->unk_002 = 0;
             temp_s0->position.x = -(i - 1.5f) * 40.0f;
             temp_s0->position.y = -25.0f;
             temp_s0->transformAnim.frameFixed = 0x730000;
@@ -1330,25 +1330,25 @@ void RattataGame_InitPlayerSlots(void) {
     s32 j;
     DisplayObject* temp_s0;
 
-    D_86208298 = 0;
-    D_8620470A = 0;
-    D_8620471C = Rand_Range(3);
+    gRaceFinishCount = 0;
+    gRaceMultipleWinners = 0;
+    gRaceLaneIndex = Rand_Range(3);
 
     for (i = 0; i < 4; i++) {
-        D_86204590 = &D_86203E50[i];
-        temp_s0 = &D_86204590->unk_008;
+        gRacePlayerState = &gRacePlayerStates[i];
+        temp_s0 = &gRacePlayerState->unk_008;
 
-        D_86204590->unk_000 = i;
-        D_86204590->unk_19E = 0;
-        RattataGame_InitAIDifficulty(D_86204590);
-        D_86204590->unk_1A2 = 0;
-        D_86204590->unk_1AE = 0;
-        D_86204590->unk_1B0 = 0;
-        D_86204590->unk_1AC = 0;
-        D_86204590->unk_1B2 = 4;
-        D_86204590->unk_1B4 = 0;
-        D_86204590->unk_170 = 0;
-        RattataGame_ResetRacerState(D_86204590);
+        gRacePlayerState->unk_000 = i;
+        gRacePlayerState->unk_19E = 0;
+        RattataGame_InitAIDifficulty(gRacePlayerState);
+        gRacePlayerState->unk_1A2 = 0;
+        gRacePlayerState->unk_1AE = 0;
+        gRacePlayerState->unk_1B0 = 0;
+        gRacePlayerState->unk_1AC = 0;
+        gRacePlayerState->unk_1B2 = 4;
+        gRacePlayerState->unk_1B4 = 0;
+        gRacePlayerState->unk_170 = 0;
+        RattataGame_ResetRacerState(gRacePlayerState);
         temp_s0->position.x = -(i - 1.5f) * 40.0f;
         temp_s0->position.y = 0.0f;
         temp_s0->scale.x = 1.0f;
@@ -1359,13 +1359,13 @@ void RattataGame_InitPlayerSlots(void) {
 
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 10; j++) {
-            D_86208280 = &D_86204720[i][j];
-            temp_s0 = &D_86208280->unk_004;
+            gRaceObstaclePtr = &gRaceObstacles[i][j];
+            temp_s0 = &gRaceObstaclePtr->unk_004;
 
-            D_86208280->unk_000 = 0;
-            D_86208280->unk_002 = 0;
-            D_86208280->unk_178 = 0;
-            D_86208280->unk_170 = 0;
+            gRaceObstaclePtr->unk_000 = 0;
+            gRaceObstaclePtr->unk_002 = 0;
+            gRaceObstaclePtr->unk_178 = 0;
+            gRaceObstaclePtr->unk_170 = 0;
             temp_s0->position.x = -(i - 1.5f) * 40.0f;
             temp_s0->position.y = -25.0f;
             temp_s0->transformAnim.frameFixed = 0x730000;
@@ -1378,10 +1378,10 @@ void RattataGame_Main(s32 arg0, UNUSED s32 arg1) {
     StageContext* sp24;
 
     if (arg0 == 1) {
-        D_86204718 = 1;
+        gRaceIsResultScreen = 1;
         Minigame_InitSharedState(3);
     } else {
-        D_86204718 = 0;
+        gRaceIsResultScreen = 0;
     }
 
     main_pool_push_state('MINI');
@@ -1389,10 +1389,10 @@ void RattataGame_Main(s32 arg0, UNUSED s32 arg1) {
     Gfx_InitDisplayListBuffers(0x10000, 0);
 
     sp24 = StageContext_Allocate(0, 0, 3, 1, 2, 1);
-    D_86204714 = Font_Init(0x16, 0);
+    gRaceTextObject = Font_Init(0x16, 0);
 
     ASSET_LOAD(D_1000000, common_menu1_ui, 0);
-    ASSET_LOAD(D_04000000, run_rattata_run_flag_gfx, 0);
+    ASSET_LOAD(gRentalViewerIconTop, run_rattata_run_flag_gfx, 0);
     FRAGMENT_LOAD(FRAGMENT_PARTICLE_DATA_LIBRARY);
 
     Fragment_Load((((u32)&D_8D000000 & 0x0FF00000) >> 0x14) - 0x10, _5C7A70_ROM_START, _5C7A70_ROM_END);
@@ -1407,13 +1407,13 @@ void RattataGame_Main(s32 arg0, UNUSED s32 arg1) {
         RattataGame_PlayOutroSequence(5);
         RattataGame_UpdateStartCountdown();
         RattataGame_MainLoop();
-        if ((D_8780FC92 == 0) && (D_86204718 == 0)) {
+        if ((gResultFlag_Special == 0) && (gRaceIsResultScreen == 0)) {
             RattataGame_PlayResultAnimation();
             RattataGame_WaitForContinue();
         }
     }
 
-    if (D_86204718 == 0) {
+    if (gRaceIsResultScreen == 0) {
         RattataGame_FadeOutAndTransition();
     } else {
         RattataGame_WaitForAudioToFinish();

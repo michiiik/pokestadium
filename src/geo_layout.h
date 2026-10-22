@@ -67,7 +67,7 @@ typedef struct unk_D_800ABE00_cmd6 {
 
 typedef struct unk_D_800ABE00_cmd7 {
     /* 0x00 */ u8 cmd;
-    /* 0x04 */ unk_D_8690A610* unk_04;
+    /* 0x04 */ FogRect* unk_04;
 } unk_D_800ABE00_cmd7; // size = 0x8
 
 typedef struct unk_D_800ABE00_cmd8 {
@@ -173,7 +173,7 @@ typedef struct unk_D_800ABE00_cmd17 {
     /* 0x02 */ s16 unk_02;
     /* 0x04 */ s16 unk_04;
     /* 0x06 */ s16 unk_06;
-    /* 0x08 */ unk_D_86002F34_018* unk_08;
+    /* 0x08 */ GfxTextureInfo* unk_08;
     /* 0x0C */ unk_D_86002F34_01C* unk_0C;
     /* 0x10 */ Vtx* unk_10;
 } unk_D_800ABE00_cmd17; // size = 0x14

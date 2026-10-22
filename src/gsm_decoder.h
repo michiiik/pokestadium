@@ -22,7 +22,7 @@ typedef struct unk_D_800FCED8_01598 {
 
 typedef void (*unk_D_800FCED8_190)(s32, unk_D_800FCED8_01598*, s32, OSMesgQueue*);
 
-typedef struct unk_D_800FCED8 {
+typedef struct GbAudioChannelState {
     /* 0x0000 */ unk_D_800FCED8_0000 unk_0000;
     /* 0x0190 */ unk_D_800FCED8_190 unk_0190;
     /* 0x0194 */ s32 unk_0194;
@@ -44,8 +44,8 @@ typedef struct unk_D_800FCED8 {
     /* 0x25D1 */ s8 unk_25D1;
     /* 0x25D2 */ s8 unk_25D2;
     /* 0x25D3 */ char unk25D3[0x5];
-} unk_D_800FCED8; // size = 0x25D8
+} GbAudioChannelState; // size = 0x25D8
 
-s32 Gsm_Decode_Stream(unk_D_800FCED8*, void*);
+s32 Gsm_Decode_Stream(GbAudioChannelState*, void*);
 
 #endif // _46680_H_

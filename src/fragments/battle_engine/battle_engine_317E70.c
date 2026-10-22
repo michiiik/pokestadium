@@ -544,14 +544,14 @@ void BattleAnim_CleanupEffectsRetainingCategory4(void) {
 }
 
 s32 BattleAnim_GetMoveFailedFlag(void) {
-    return D_84390340;
+    return gBattleAnimMoveFailedFlag;
 }
 
 void BattleAnim_UpdateMoveFailedFlag(void) {
     if (sBattleMoveFailed != 0) {
-        D_84390340 = 1;
+        gBattleAnimMoveFailedFlag = 1;
     } else {
-        D_84390340 = 0;
+        gBattleAnimMoveFailedFlag = 0;
     }
 }
 
@@ -565,24 +565,24 @@ void BattleAnim_ClearEffectCallbacks(void) {
         }
     }
 
-    D_84390340 = 0;
+    gBattleAnimMoveFailedFlag = 0;
 }
 
 s32 BattleAnim_IsEffectSpawningEnabled(void) {
     s32 var_v1 = 0;
 
-    if (D_843902F8 == 0) {
+    if (gBattleEngineStatus == 0) {
         var_v1 = 1;
     }
     return var_v1;
 }
 
 void BattleAnim_DisableEffectSpawning(void) {
-    D_843902F8 = 1;
+    gBattleEngineStatus = 1;
 }
 
 void BattleAnim_EnableEffectSpawning(void) {
-    D_843902F8 = 0;
+    gBattleEngineStatus = 0;
 }
 
 void BattleAnim_DisableEffectSpawningAlias(void) {
@@ -788,15 +788,15 @@ void BattleAnim_EffectEndNop(void) {
 }
 
 void BattleAnim_SetEffectStateFlag(s32 arg0) {
-    D_843902F4 = arg0;
+    gEffectStateFlag = arg0;
 }
 
 void BattleAnim_ClearEffectStateFlag(void) {
-    D_843902F4 = 0;
+    gEffectStateFlag = 0;
 }
 
 s32 BattleAnim_GetEffectStateFlag(void) {
-    return D_843902F4;
+    return gEffectStateFlag;
 }
 
 s32 BattleAnim_IsCurrentOwnerSpecies(s32 arg0) {

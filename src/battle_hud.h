@@ -3,15 +3,15 @@
 
 #include "global.h"
 
-extern u8 D_800AF770[8];
-extern s16 D_800AF778[4];
-extern s16 D_800AF780[4];
-extern s16 D_800AF788[4];
-extern s16 D_800AF790[4];
-extern s16 D_800AF798[4];
-extern s16 D_800AF7A0[4];
-extern s16 D_800AF7AE;
-extern s16 D_800AF7B0[2];
+extern u8 gPillarGlowValues[8];
+extern s16 gHpWheelDigitOffsetOnes[4];
+extern s16 gHpWheelDigitOffsetTens[4];
+extern s16 gHpWheelDigitOffsetHundreds[4];
+extern s16 gHpWheelDigitOffsetOnesSmooth[4];
+extern s16 gHpWheelDigitOffsetTensSmooth[4];
+extern s16 gHpWheelDigitOffsetHundredsSmooth[4];
+extern s16 gTextureOffsetScale;
+extern s16 gModelUpdateFlag[2];
 
 void BattleHud_SetDigitRotationTargets(u8 arg0, s16 arg1);
 void BattleHud_ApproachDigitRotations(u8 arg0, s16 arg1);

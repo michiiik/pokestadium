@@ -3,20 +3,20 @@
 
 #include "global.h"
 
-extern u16 D_87B000C0;
-extern u16 D_87B000C4;
-extern u8 D_87B000C8;
-extern u8 D_87B000CC;
-extern u8 D_87B000D0;
-extern u8 D_87B000D4;
+extern u16 gDrowzeeFrameCounter;
+extern u16 gDrowzeeStartCountdown;
+extern u8 gDrowzeeGameIsOver;
+extern u8 gDrowzeePauseTriggered;
+extern u8 gDrowzeeTutorialPage;
+extern u8 gDrowzeeWinnerCount;
 
-extern FontContext* D_87B000E0;
-extern unk_D_86002F30* D_87B000E4;
-extern unk_D_86002F34* D_87B000E8;
-extern CameraNode* D_87B000EC;
-extern s16 D_87B000F0;
-extern s16 D_87B000F2;
-extern s16 D_87B000F4;
+extern FontContext* gCurrentTextObject;
+extern ModelData* gDrowzeeModelTemp;
+extern ShadowContextNode* gDrowzeeStageRoot;
+extern CameraNode* gDrowzeeCamera;
+extern s16 gDrowzeeCamDist;
+extern s16 gDrowzeeCamRotationY;
+extern s16 gDrowzeeCamDistance;
 
 void MiniGame_ReadInputs(void);
 u32 MiniGame_RandomRange(u32);

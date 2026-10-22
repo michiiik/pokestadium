@@ -7,25 +7,25 @@
 u8* sBattleAnimAssetPointers[256];
 s16 sBattleAnimResourceList[0x10];
 arg1_func_80019420* sBattleAnimResourceTablePointers[40];
-static s16 D_84392580;
-static s16 D_84392582;
-static Mtx D_84392588;
-static s16 D_843925C8;
-static s16 D_843925CA;
-static s16 D_843925CC;
-static s16 D_843925CE;
-static s16 D_843925D0;
-static s16 D_843925D2;
-static s16 D_843925D4;
-static s16 D_843925D6;
-static s16 D_843925D8;
-static s16 D_843925DA;
+static s16 gEffect45FourStreamTrailPhaseCounter;
+static s16 gEffect62OwnerLinkedFourStreamPhaseCounter;
+static Mtx gEffectMatrix;
+static s16 gParticleSpawnTimerI;
+static s16 gEffect78Radial20SpawnTimer;
+static s16 gParticleSpawnTimerH;
+static s16 gEffect19Radial20SpawnTimer;
+static s16 gEffect7TexturedRibbonSheetSpawnTimer;
+static s16 gEffect33Radial20SpawnTimer;
+static s16 gEffect39CombinedTrailSpawnTimer;
+static s16 gEffect98Radial20SpawnTimer;
+static s16 gEffect11Trail50AltSpawnTimer;
+static s16 gParticleSpawnTimerG;
 
 #if !(defined(VERSION_US_REV2))
-static const char D_8438D3D0[] = "calc_vector_ATtoDM() normal error!!!\n";
+static const char gCalcVectorATtoDMErrorMsg[] = "calc_vector_ATtoDM() normal error!!!\n";
 #endif
 #if !(defined(VERSION_US_REV2))
-static const char D_8438D3F8[] = "calc_vector_ATtoDM2() normal error!!!\n";
+static const char gCalcVectorATtoDM2ErrorMsg[] = "calc_vector_ATtoDM2() normal error!!!\n";
 #endif
 
 void BattleAnim_NoopUpdateHook(void) {
@@ -202,7 +202,7 @@ void BattleAnim_CalcVectorAtToDm2(f32* arg0, f32* arg1, f32* arg2, f32* arg3, f3
 #endif
 
 void BattleAnim_ResetSharedEffectMatrix(void) {
-    guRotateRPY(&D_84392588, 0.0f, 0.0f, 0.0f);
+    guRotateRPY(&gEffectMatrix, 0.0f, 0.0f, 0.0f);
 }
 
 void BattleAnim_Effect5RibbonMesh_Init(void) {
@@ -221,7 +221,7 @@ s32 BattleAnim_Effect5RibbonMesh_Update(void) {
 }
 
 void BattleAnim_Effect5RibbonMesh_Draw(void) {
-    gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, &gEffectMatrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     gDisplayListHead = RibbonMesh_DrawPool(gDisplayListHead);
 }
@@ -242,7 +242,7 @@ s32 BattleAnim_EndEffect1RibbonMesh_Update(void) {
 }
 
 void BattleAnim_EndEffect1RibbonMesh_Draw(void) {
-    gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, &gEffectMatrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     gDisplayListHead = RibbonMesh_DrawPool(gDisplayListHead);
 }
@@ -264,7 +264,7 @@ s32 BattleAnim_EndEffect19RibbonMesh_Update(void) {
 }
 
 void BattleAnim_EndEffect19RibbonMesh_Draw(void) {
-    gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, &gEffectMatrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     gDisplayListHead = RibbonMesh_DrawPool(gDisplayListHead);
 }
@@ -286,7 +286,7 @@ s32 BattleAnim_Effect54RibbonMesh_Update(void) {
 }
 
 void BattleAnim_Effect54RibbonMesh_Draw(void) {
-    gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, &gEffectMatrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     gDisplayListHead = RibbonMesh_DrawPool(gDisplayListHead);
 }
@@ -309,7 +309,7 @@ s32 BattleAnim_StartEffect34TerrainGrid_Update(void) {
 }
 
 void BattleAnim_StartEffect34TerrainGrid_Draw(void) {
-    gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, &gEffectMatrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     gDisplayListHead = TerrainGrid_Draw(gDisplayListHead);
 }
@@ -348,26 +348,26 @@ void BattleAnim_StartEffect19Radial20_EmitVariantD(void) {
 }
 
 void BattleAnim_StartEffect19Radial20_Init(void) {
-    D_843925CE = 0;
+    gEffect19Radial20SpawnTimer = 0;
     BattleAnim_ResetSharedEffectMatrix();
     Radial20_ResetPool();
     BattleAnim_StartEffect19Radial20_EmitVariantD();
 }
 
 s32 BattleAnim_StartEffect19Radial20_Update(void) {
-    D_843925CE++;
-    if (D_843925CE >= 0xB5) {
+    gEffect19Radial20SpawnTimer++;
+    if (gEffect19Radial20SpawnTimer >= 0xB5) {
         return -1;
     }
 
-    if ((D_843925CE < 0x78) && ((D_843925CE % 7) == 0)) {
+    if ((gEffect19Radial20SpawnTimer < 0x78) && ((gEffect19Radial20SpawnTimer % 7) == 0)) {
         BattleAnim_StartEffect19Radial20_EmitVariantD();
     }
     return Radial20_IsComplete();
 }
 
 void BattleAnim_StartEffect19Radial20_Draw(void) {
-    gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, &gEffectMatrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     gDisplayListHead = Radial20_Draw(gDisplayListHead);
 }
@@ -388,7 +388,7 @@ s32 BattleAnim_EndEffect9Radial20_Update(void) {
 }
 
 void BattleAnim_EndEffect9Radial20_Draw(void) {
-    gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, &gEffectMatrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     gDisplayListHead = Strip400_Draw(gDisplayListHead);
 }
@@ -415,19 +415,19 @@ void BattleAnim_StartEffect7TexturedRibbonSheet_Emit(void) {
 }
 
 void BattleAnim_StartEffect7TexturedRibbonSheet_Init(void) {
-    D_843925D0 = 0;
+    gEffect7TexturedRibbonSheetSpawnTimer = 0;
     BattleAnim_ResetSharedEffectMatrix();
     TexturedRibbonSheet_Init();
     BattleAnim_StartEffect7TexturedRibbonSheet_Emit();
 }
 
 s32 BattleAnim_StartEffect7TexturedRibbonSheet_Update(void) {
-    D_843925D0++;
-    if (D_843925D0 >= 0x709) {
+    gEffect7TexturedRibbonSheetSpawnTimer++;
+    if (gEffect7TexturedRibbonSheetSpawnTimer >= 0x709) {
         return -1;
     }
 
-    if ((D_843925D0 < 0x6EA) && ((D_843925D0 % 3) == 0)) {
+    if ((gEffect7TexturedRibbonSheetSpawnTimer < 0x6EA) && ((gEffect7TexturedRibbonSheetSpawnTimer % 3) == 0)) {
         BattleAnim_StartEffect7TexturedRibbonSheet_Emit();
     }
 
@@ -435,7 +435,7 @@ s32 BattleAnim_StartEffect7TexturedRibbonSheet_Update(void) {
 }
 
 void BattleAnim_StartEffect7TexturedRibbonSheet_Draw(void) {
-    gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, &gEffectMatrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     gDisplayListHead = TexturedRibbonSheet_Draw(gDisplayListHead);
 }
@@ -464,19 +464,19 @@ void BattleAnim_StartEffect33Radial20_EmitVariantC(void) {
 }
 
 void BattleAnim_StartEffect33Radial20_Init(void) {
-    D_843925D2 = 0;
+    gEffect33Radial20SpawnTimer = 0;
     BattleAnim_ResetSharedEffectMatrix();
     Radial20_ResetPool();
     BattleAnim_StartEffect33Radial20_EmitVariantC();
 }
 
 s32 BattleAnim_StartEffect33Radial20_Update(void) {
-    D_843925D2++;
-    if (D_843925D2 >= 0xB5) {
+    gEffect33Radial20SpawnTimer++;
+    if (gEffect33Radial20SpawnTimer >= 0xB5) {
         return -1;
     }
 
-    if ((D_843925D2 < 0x78) && ((D_843925D2 % 7) == 0)) {
+    if ((gEffect33Radial20SpawnTimer < 0x78) && ((gEffect33Radial20SpawnTimer % 7) == 0)) {
         BattleAnim_StartEffect33Radial20_EmitVariantC();
     }
 
@@ -484,7 +484,7 @@ s32 BattleAnim_StartEffect33Radial20_Update(void) {
 }
 
 void BattleAnim_StartEffect33Radial20_Draw(void) {
-    gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, &gEffectMatrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     gDisplayListHead = Radial20_Draw(gDisplayListHead);
 }
@@ -505,7 +505,7 @@ s32 BattleAnim_EndEffect32Radial20_Update(void) {
 }
 
 void BattleAnim_EndEffect32Radial20_Draw(void) {
-    gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, &gEffectMatrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     gDisplayListHead = Strip400_Draw(gDisplayListHead);
 }
@@ -526,7 +526,7 @@ s32 BattleAnim_EndEffect33Radial20_Update(void) {
 }
 
 void BattleAnim_EndEffect33Radial20_Draw(void) {
-    gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, &gEffectMatrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     gDisplayListHead = Strip400_Draw(gDisplayListHead);
 }
@@ -555,19 +555,19 @@ void BattleAnim_StartEffect98Radial20_EmitVariantD(void) {
 }
 
 void BattleAnim_StartEffect98Radial20_Init(void) {
-    D_843925D6 = 0;
+    gEffect98Radial20SpawnTimer = 0;
     BattleAnim_ResetSharedEffectMatrix();
     Radial20_ResetPool();
     BattleAnim_StartEffect98Radial20_EmitVariantD();
 }
 
 s32 BattleAnim_StartEffect98Radial20_Update(void) {
-    D_843925D6++;
-    if (D_843925D6 >= 0xB5) {
+    gEffect98Radial20SpawnTimer++;
+    if (gEffect98Radial20SpawnTimer >= 0xB5) {
         return -1;
     }
 
-    if ((D_843925D6 < 0x78) && ((D_843925D6 % 7) == 0)) {
+    if ((gEffect98Radial20SpawnTimer < 0x78) && ((gEffect98Radial20SpawnTimer % 7) == 0)) {
         BattleAnim_StartEffect98Radial20_EmitVariantD();
     }
 
@@ -575,13 +575,13 @@ s32 BattleAnim_StartEffect98Radial20_Update(void) {
 }
 
 void BattleAnim_StartEffect98Radial20_Draw(void) {
-    gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, &gEffectMatrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     gDisplayListHead = Radial20_Draw(gDisplayListHead);
 }
 
 void BattleAnim_StartEffect11Trail50Alt_Init(void) {
-    D_843925D8 = 0;
+    gEffect11Trail50AltSpawnTimer = 0;
     BattleAnim_ResetSharedEffectMatrix();
     Trail50EffectAlt_Init();
 }
@@ -596,8 +596,8 @@ s32 BattleAnim_StartEffect11Trail50Alt_Update(void) {
     f32 var_fv0;
     f32 sp44;
 
-    D_843925D8++;
-    if (!(D_843925D8 & 1)) {
+    gEffect11Trail50AltSpawnTimer++;
+    if (!(gEffect11Trail50AltSpawnTimer & 1)) {
         sp44 = BattleAnim_EffectSecondaryOwnerModelScale();
         BattleAnim_EffectSecondaryOwnerAnchorPosition(&sp60);
         sp5C = (((guRandom() % 50) - 0x19) * sp44) + sp60.x;
@@ -614,13 +614,13 @@ s32 BattleAnim_StartEffect11Trail50Alt_Update(void) {
 }
 
 void BattleAnim_StartEffect11Trail50Alt_Draw(void) {
-    gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, &gEffectMatrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     gDisplayListHead = Trail50EffectAlt_Draw(gDisplayListHead);
 }
 
 void BattleAnim_StartEffect57Trail50_Init(void) {
-    D_843925DA = 0;
+    gParticleSpawnTimerG = 0;
     BattleAnim_ResetSharedEffectMatrix();
     Trail50Effect_Init();
 }
@@ -635,8 +635,8 @@ s32 BattleAnim_StartEffect57Trail50_Update(void) {
     f32 var_fv0;
     f32 sp44;
 
-    D_843925DA++;
-    if (!(D_843925DA & 1)) {
+    gParticleSpawnTimerG++;
+    if (!(gParticleSpawnTimerG & 1)) {
         sp44 = BattleAnim_EffectSecondaryOwnerModelScale();
         BattleAnim_EffectSecondaryOwnerAnchorPosition(&sp60);
         sp5C = (((guRandom() % 50) - 0x19) * sp44) + sp60.x;
@@ -653,7 +653,7 @@ s32 BattleAnim_StartEffect57Trail50_Update(void) {
 }
 
 void BattleAnim_StartEffect57Trail50_Draw(void) {
-    gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, &gEffectMatrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     gDisplayListHead = Trail50Effect_Draw(gDisplayListHead);
 }
@@ -671,7 +671,7 @@ s32 BattleAnim_StartEffect42Trail40_Update(void) {
 }
 
 void BattleAnim_StartEffect42Trail40_Draw(void) {
-    gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, &gEffectMatrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     gDisplayListHead = Trail40_Draw(gDisplayListHead);
 }
@@ -689,7 +689,7 @@ s32 BattleAnim_StartEffect43Trail40Variant_Update(void) {
 }
 
 void BattleAnim_StartEffect43Trail40Variant_Draw(void) {
-    gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, &gEffectMatrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     gDisplayListHead = Trail40Variant_BuildGfx(gDisplayListHead);
 }
@@ -707,13 +707,13 @@ s32 BattleAnim_StartEffect44Trail40GridAlt_Update(void) {
 }
 
 void BattleAnim_StartEffect44Trail40GridAlt_Draw(void) {
-    gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, &gEffectMatrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     gDisplayListHead = Trail40GridAlt_Draw(gDisplayListHead);
 }
 
 void BattleAnim_StartEffect45FourStreamTrail_Init(void) {
-    D_84392580 = 0;
+    gEffect45FourStreamTrailPhaseCounter = 0;
     BattleAnim_ResetSharedEffectMatrix();
     FourStreamTrail_Init();
 }
@@ -729,18 +729,18 @@ s32 BattleAnim_StartEffect45FourStreamTrail_Update(void) {
     f32 sp50;
     f32 sp4C;
 
-    D_84392580++;
-    if (D_84392580 >= 0x32) {
+    gEffect45FourStreamTrailPhaseCounter++;
+    if (gEffect45FourStreamTrailPhaseCounter >= 0x32) {
         return -1;
     }
 
-    if (D_84392580 < 4) {
+    if (gEffect45FourStreamTrailPhaseCounter < 4) {
         BattleAnim_EffectSecondaryOwnerBonePosition(&sp68);
         sp64 = sp68.x;
         sp60 = sp68.y;
         sp5C = sp68.z;
         sp58 = 1.0f;
-        sp4C = (((D_84392580 % 3) * M_PI_F) / 3.0) + 0.5235987901687622;
+        sp4C = (((gEffect45FourStreamTrailPhaseCounter % 3) * M_PI_F) / 3.0) + 0.5235987901687622;
         sp54 = (f64)__sinf(sp4C);
         sp50 = (f64)__cosf(sp4C);
         Vec3f_NormalizeComponents(&sp58, &sp54, &sp50);
@@ -754,7 +754,7 @@ s32 BattleAnim_StartEffect45FourStreamTrail_Update(void) {
                       2.0f, 13.0f, 0x28);
     }
 
-    if (D_84392580 >= 2) {
+    if (gEffect45FourStreamTrailPhaseCounter >= 2) {
         var_v1 = FourStreamTrail_IsComplete();
     } else {
         var_v1 = 0;
@@ -763,15 +763,15 @@ s32 BattleAnim_StartEffect45FourStreamTrail_Update(void) {
 }
 
 void BattleAnim_StartEffect45FourStreamTrail_Draw(void) {
-    if (D_84392580 >= 2) {
-        gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    if (gEffect45FourStreamTrailPhaseCounter >= 2) {
+        gSPMatrix(gDisplayListHead++, &gEffectMatrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
         gDisplayListHead = FourStreamTrail_Draw(gDisplayListHead);
     }
 }
 
 void BattleAnim_StartEffect62OwnerLinkedFourStream_Init(void) {
-    D_84392582 = 0;
+    gEffect62OwnerLinkedFourStreamPhaseCounter = 0;
     BattleAnim_ResetSharedEffectMatrix();
     OwnerLinkedFourStream_Init();
 }
@@ -786,17 +786,17 @@ s32 BattleAnim_StartEffect62OwnerLinkedFourStream_Update(void) {
     f32 sp4C;
     f32 sp48;
 
-    D_84392582++;
-    if (((D_84392582 >> 2) < 4) && !(D_84392582 & 3)) {
+    gEffect62OwnerLinkedFourStreamPhaseCounter++;
+    if (((gEffect62OwnerLinkedFourStreamPhaseCounter >> 2) < 4) && !(gEffect62OwnerLinkedFourStreamPhaseCounter & 3)) {
         BattleAnim_CalcVectorAtToDm(&sp60, &sp5C, &sp58, &sp54, &sp50, &sp4C);
-        sp48 = ((2 - (((D_84392582 >> 2) + 2) % 3)) * 0.5235988f) + 0.34906587f;
+        sp48 = ((2 - (((gEffect62OwnerLinkedFourStreamPhaseCounter >> 2) + 2) % 3)) * 0.5235988f) + 0.34906587f;
         sp54 *= 7.0f * __cosf(sp48);
         sp50 = __sinf(sp48) * 10.0f;
         sp4C = 0.0f;
         OwnerLinkedFourStream_Start(sp60, sp5C, sp58, sp54, sp50, 0.0f, 0xD0, 0xFF, 0xFF, 0x80, 0.8f, 2.0f, 4.0f, 0x28);
     }
 
-    if (D_84392582 >= 2) {
+    if (gEffect62OwnerLinkedFourStreamPhaseCounter >= 2) {
         var_v1 = OwnerLinkedFourStream_IsComplete();
     } else {
         var_v1 = 0;
@@ -805,8 +805,8 @@ s32 BattleAnim_StartEffect62OwnerLinkedFourStream_Update(void) {
 }
 
 void BattleAnim_StartEffect62OwnerLinkedFourStream_Draw(void) {
-    if (D_84392582 >= 2) {
-        gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    if (gEffect62OwnerLinkedFourStreamPhaseCounter >= 2) {
+        gSPMatrix(gDisplayListHead++, &gEffectMatrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
         gDisplayListHead = OwnerLinkedFourStream_Draw(gDisplayListHead);
     }
@@ -821,7 +821,7 @@ void BattleAnim_StartEffect67OwnerAnchoredFourStream_Init(void) {
     f32 sp48;
     f32 sp44;
 
-    D_843925C8 = 0;
+    gParticleSpawnTimerI = 0;
     BattleAnim_ResetSharedEffectMatrix();
     OwnerAnchoredFourStream_Init();
     BattleAnim_CalcVectorAtToDm(&sp58, &sp54, &sp50, &sp4C, &sp48, &sp44);
@@ -836,8 +836,8 @@ void BattleAnim_StartEffect67OwnerAnchoredFourStream_Init(void) {
 }
 
 s32 BattleAnim_StartEffect67OwnerAnchoredFourStream_Update(void) {
-    D_843925C8++;
-    if (D_843925C8 >= 0x32) {
+    gParticleSpawnTimerI++;
+    if (gParticleSpawnTimerI >= 0x32) {
         return -1;
     }
 
@@ -845,7 +845,7 @@ s32 BattleAnim_StartEffect67OwnerAnchoredFourStream_Update(void) {
 }
 
 void BattleAnim_StartEffect67OwnerAnchoredFourStream_Draw(void) {
-    gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, &gEffectMatrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     gDisplayListHead = OwnerAnchoredFourStream_Draw(gDisplayListHead);
 }
@@ -866,31 +866,31 @@ void BattleAnim_StartEffect78Radial20_EmitVariantA(void) {
 }
 
 void BattleAnim_StartEffect78Radial20_Init(void) {
-    D_843925CA = 0;
+    gEffect78Radial20SpawnTimer = 0;
     BattleAnim_ResetSharedEffectMatrix();
     Radial20_ResetPool();
     BattleAnim_StartEffect78Radial20_EmitVariantA();
 }
 
 s32 BattleAnim_StartEffect78Radial20_Update(void) {
-    D_843925CA++;
-    if (D_843925CA >= 0xB5) {
+    gEffect78Radial20SpawnTimer++;
+    if (gEffect78Radial20SpawnTimer >= 0xB5) {
         return -1;
     }
     return Radial20_IsComplete();
 }
 
 void BattleAnim_StartEffect78Radial20_Draw(void) {
-    gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, &gEffectMatrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     gDisplayListHead = Radial20_Draw(gDisplayListHead);
 }
 
 void BattleAnim_StartEffect26DoubleTextureTrail_Seed(void) {
-    static unk_D_843C2C00_024 D_84387FC0 = { 2, 1, 0xE, 1, 2, 2, 3, 1 };
-    static unk_D_843C2C00_024 D_84387FE0 = { 3, 5, 0, 5, 3, 7, 0, 5 };
-    static unk_D_843C2C00_024 D_84388000 = { 2, 1, 0xE, 1, 2, 1, 3, 1 };
-    static unk_D_843C2C00_024 D_84388020 = { 3, 5, 0, 5, 0, 7, 5, 7 };
+    static CombineParams gEffect26TrailShortTex0Combine = { 2, 1, 0xE, 1, 2, 2, 3, 1 };
+    static CombineParams gEffect26TrailShortTex1Combine = { 3, 5, 0, 5, 3, 7, 0, 5 };
+    static CombineParams gEffect26TrailLongTex0Combine = { 2, 1, 0xE, 1, 2, 1, 3, 1 };
+    static CombineParams gEffect26TrailLongTex1Combine = { 3, 5, 0, 5, 0, 7, 5, 7 };
 
     f32 spB4;
     f32 spB0;
@@ -904,10 +904,10 @@ void BattleAnim_StartEffect26DoubleTextureTrail_Seed(void) {
     spA4 *= 10.0f;
     spA0 *= 10.0f;
     DoubleTextureTrail_Spawn(spB4, spB0, spAC, spA8, spA4, spA0, 0.0f, 5.0f, 1.2f, 2.0f, 10.0f, 0x14, 0x8F, 0x8F, 6, 0xA, 0xF, 0xE,
-                  -3, 5, 0, 0xF, &D_84387FC0, &D_84387FE0, 0xFF, 0xFF, 0, 0x96, 0x64, 0xFF, 0, 0xC8, 0x32, 0xFF, 0x96,
+                  -3, 5, 0, 0xF, &gEffect26TrailShortTex0Combine, &gEffect26TrailShortTex1Combine, 0xFF, 0xFF, 0, 0x96, 0x64, 0xFF, 0, 0xC8, 0x32, 0xFF, 0x96,
                   0xFF, 0x78);
     DoubleTextureTrail_Spawn(spB4, spB0, spAC, spA8, spA4, spA0, 0.0f, 5.0f, 1.2f, 3.0f, 15.0f, 0x14, 0x8F, 0x90, 2, 6, 0, 0xF, -4,
-                  2, 0, 0, &D_84388000, &D_84388020, 0, 0xFF, 0x64, 0x96, 0x64, 0x64, 0, 0xFF, 0xC8, 0, 0, 0, 0);
+                  2, 0, 0, &gEffect26TrailLongTex0Combine, &gEffect26TrailLongTex1Combine, 0, 0xFF, 0x64, 0x96, 0x64, 0x64, 0, 0xFF, 0xC8, 0, 0, 0, 0);
 }
 
 void BattleAnim_StartEffect26DoubleTextureTrail_Init(void) {
@@ -921,14 +921,14 @@ s32 BattleAnim_StartEffect26DoubleTextureTrail_Update(void) {
 }
 
 void BattleAnim_StartEffect26DoubleTextureTrail_Draw(void) {
-    gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, &gEffectMatrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     gDisplayListHead = DoubleTextureTrail_DrawAll(gDisplayListHead);
 }
 
 void BattleAnim_StartEffect47SixSlotTrail_Seed(void) {
-    static unk_D_843C2C00_024 D_84388040 = { 3, 5, 1, 5, 1, 7, 3, 7 };
-    static unk_D_843C2C00_024 D_84388060 = { 0x1F, 0x1F, 0x1F, 0, 7, 7, 7, 0 };
+    static CombineParams gEffect47SixSlotTrailTex0Combine = { 3, 5, 1, 5, 1, 7, 3, 7 };
+    static CombineParams gEffect47SixSlotTrailTex1Combine = { 0x1F, 0x1F, 0x1F, 0, 7, 7, 7, 0 };
 
     f32 spA4;
     f32 spA0;
@@ -946,35 +946,35 @@ void BattleAnim_StartEffect47SixSlotTrail_Seed(void) {
     sp90 *= 12.0f;
 
     BattleAnim_SixSlotTrail_Spawn(0, spA4, spA0, sp9C, sp98, sp94, sp90, 0xFF, 0xFF, 0xFF, 0xFF, 0, 0, 0x64, 0xFF, 0xFF, 0.4f, 2.0f,
-                  20.0f, 0x3C, 0x95, 0x95, 0, 0xA, 0, 0xD, 0, 0, 0, 0, &D_84388040, &D_84388060);
+                  20.0f, 0x3C, 0x95, 0x95, 0, 0xA, 0, 0xD, 0, 0, 0, 0, &gEffect47SixSlotTrailTex0Combine, &gEffect47SixSlotTrailTex1Combine);
 }
 
 void BattleAnim_StartEffect47SixSlotTrail_Init(void) {
-    D_843925CC = 0;
+    gParticleSpawnTimerH = 0;
     BattleAnim_ResetSharedEffectMatrix();
     BattleAnim_SixSlotTrail_ResetPool();
     BattleAnim_StartEffect47SixSlotTrail_Seed();
 }
 
 s32 BattleAnim_StartEffect47SixSlotTrail_Update(void) {
-    D_843925CC++;
-    if ((D_843925CC % 10) == 0) {
+    gParticleSpawnTimerH++;
+    if ((gParticleSpawnTimerH % 10) == 0) {
         BattleAnim_StartEffect47SixSlotTrail_Seed();
     }
     return BattleAnim_SixSlotTrail_UpdateAll();
 }
 
 void BattleAnim_StartEffect47SixSlotTrail_Draw(void) {
-    gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, &gEffectMatrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     gDisplayListHead = BattleAnim_SixSlotTrail_DrawAll(gDisplayListHead);
 }
 
 void BattleAnim_StartEffect4DoubleTextureTrail_Seed(void) {
-    static unk_D_843C2C00_024 D_84388080 = { 3, 5, 1, 5, 6, 7, 2, 3 };
-    static unk_D_843C2C00_024 D_843880A0 = { 0x1F, 0x1F, 0x1F, 0, 0, 7, 5, 7 };
-    static unk_D_843C2C00_024 D_843880C0 = { 3, 5, 2, 5, 1, 7, 3, 7 };
-    static unk_D_843C2C00_024 D_843880E0 = { 0x1F, 0x1F, 0x1F, 0, 0, 7, 5, 7 };
+    static CombineParams gEffect4TrailShortTex0Combine = { 3, 5, 1, 5, 6, 7, 2, 3 };
+    static CombineParams gEffect4TrailShortTex1Combine = { 0x1F, 0x1F, 0x1F, 0, 0, 7, 5, 7 };
+    static CombineParams gEffect4TrailLongTex0Combine = { 3, 5, 2, 5, 1, 7, 3, 7 };
+    static CombineParams gEffect4TrailLongTex1Combine = { 0x1F, 0x1F, 0x1F, 0, 0, 7, 5, 7 };
 
     f32 spB4;
     f32 spB0;
@@ -988,10 +988,10 @@ void BattleAnim_StartEffect4DoubleTextureTrail_Seed(void) {
     spA4 *= 10.0f;
     spA0 *= 10.0f;
     DoubleTextureTrail_Spawn(spB4, spB0, spAC, spA8, spA4, spA0, 0.0f, 5.0f, 1.2f, 2.0f, 10.0f, 0x14, 0x93, 0x93, 5, 0xA, 0xF, 0xF,
-                  -5, 5, 0xF, 0xF, &D_84388080, &D_843880A0, 0xC8, 0xC8, 0, 0x64, 0, 0, 0xC8, 0, 0xFF, 0, 0xFF, 0,
+                  -5, 5, 0xF, 0xF, &gEffect4TrailShortTex0Combine, &gEffect4TrailShortTex1Combine, 0xC8, 0xC8, 0, 0x64, 0, 0, 0xC8, 0, 0xFF, 0, 0xFF, 0,
                   0x5A);
     DoubleTextureTrail_Spawn(spB4, spB0, spAC, spA8, spA4, spA0, 0.0f, 5.0f, 1.2f, 3.0f, 15.0f, 0x14, 0x91, 0x91, -2, 0xA, 0xF,
-                  0xF, 5, 0xF, 0xF, 0xF, &D_843880C0, &D_843880E0, 0xFF, 0x32, 0x64, 0xC8, 0, 0x64, 0x32, 0xFF, 0xFF, 0,
+                  0xF, 5, 0xF, 0xF, 0xF, &gEffect4TrailLongTex0Combine, &gEffect4TrailLongTex1Combine, 0xFF, 0x32, 0x64, 0xC8, 0, 0x64, 0x32, 0xFF, 0xFF, 0,
                   0, 0, 0);
 }
 
@@ -1006,16 +1006,16 @@ s32 BattleAnim_StartEffect4DoubleTextureTrail_Update(void) {
 }
 
 void BattleAnim_StartEffect4DoubleTextureTrail_Draw(void) {
-    gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, &gEffectMatrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     gDisplayListHead = DoubleTextureTrail_DrawAll(gDisplayListHead);
 }
 
 void BattleAnim_StartEffect77DoubleTextureTrail_Seed(void) {
-    static unk_D_843C2C00_024 D_84388100 = { 2, 1, 0xE, 1, 2, 7, 1, 3 };
-    static unk_D_843C2C00_024 D_84388120 = { 3, 5, 0, 5, 0, 7, 5, 7 };
-    static unk_D_843C2C00_024 D_84388140 = { 2, 1, 0xE, 1, 2, 7, 1, 3 };
-    static unk_D_843C2C00_024 D_84388160 = { 3, 5, 0, 5, 0, 7, 5, 7 };
+    static CombineParams gEffect77TrailShortTex0Combine = { 2, 1, 0xE, 1, 2, 7, 1, 3 };
+    static CombineParams gEffect77TrailShortTex1Combine = { 3, 5, 0, 5, 0, 7, 5, 7 };
+    static CombineParams gEffect77TrailLongTex0Combine = { 2, 1, 0xE, 1, 2, 7, 1, 3 };
+    static CombineParams gEffect77TrailLongTex1Combine = { 3, 5, 0, 5, 0, 7, 5, 7 };
 
     f32 spB4;
     f32 spB0;
@@ -1029,10 +1029,10 @@ void BattleAnim_StartEffect77DoubleTextureTrail_Seed(void) {
     spA4 *= 10.0f;
     spA0 *= 10.0f;
     DoubleTextureTrail_Spawn(spB4, spB0, spAC, spA8, spA4, spA0, 0.0f, 5.0f, 1.2f, 2.0f, 10.0f, 0x14, 0x97, 0x98, -5, 0x14, 0xF,
-                  0xD, -5, 0x14, 0, 0xE, &D_84388100, &D_84388120, 0xFF, 0xFF, 0xFF, 0x32, 0x64, 0x64, 0, 0xFF, 0xFF,
+                  0xD, -5, 0x14, 0, 0xE, &gEffect77TrailShortTex0Combine, &gEffect77TrailShortTex1Combine, 0xFF, 0xFF, 0xFF, 0x32, 0x64, 0x64, 0, 0xFF, 0xFF,
                   0xC8, 0xFF, 0xFF, 0x96);
     DoubleTextureTrail_Spawn(spB4, spB0, spAC, spA8, spA4, spA0, 0.0f, 5.0f, 1.2f, 3.0f, 15.0f, 0x14, 0x97, 0x98, 5, 0xF, 0xF, 0xE,
-                  0, 0xF, 0xF, 0xF, &D_84388140, &D_84388160, 0xFF, 0xFF, 0xFF, 0x32, 0x64, 0x64, 0x64, 0xFF, 0xFF, 0,
+                  0, 0xF, 0xF, 0xF, &gEffect77TrailLongTex0Combine, &gEffect77TrailLongTex1Combine, 0xFF, 0xFF, 0xFF, 0x32, 0x64, 0x64, 0x64, 0xFF, 0xFF, 0,
                   0, 0, 0);
 }
 
@@ -1047,14 +1047,14 @@ s32 BattleAnim_StartEffect77DoubleTextureTrail_Update(void) {
 }
 
 void BattleAnim_StartEffect77DoubleTextureTrail_Draw(void) {
-    gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, &gEffectMatrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     gDisplayListHead = DoubleTextureTrail_DrawAll(gDisplayListHead);
 }
 
 void BattleAnim_StartEffect70DoubleTextureTrail_Seed(void) {
-    static unk_D_843C2C00_024 D_84388180 = { 2, 1, 0xE, 1, 2, 1, 3, 1 };
-    static unk_D_843C2C00_024 D_843881A0 = { 3, 5, 0, 5, 0, 7, 5, 7 };
+    static CombineParams D_84388180 = { 2, 1, 0xE, 1, 2, 1, 3, 1 };
+    static CombineParams D_843881A0 = { 3, 5, 0, 5, 0, 7, 5, 7 };
 
     f32 spB4;
     f32 spB0;
@@ -1083,22 +1083,22 @@ s32 BattleAnim_StartEffect70DoubleTextureTrail_Update(void) {
 }
 
 void BattleAnim_StartEffect70DoubleTextureTrail_Draw(void) {
-    gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, &gEffectMatrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     gDisplayListHead = DoubleTextureTrail_DrawAll(gDisplayListHead);
 }
 
 void BattleAnim_StartEffect39DoubleTextureTrail_Seed(void) {
-    static unk_D_843C2C00_024 D_843881C0 = {
+    static CombineParams D_843881C0 = {
         0x00000002, 0x00000001, 0x0000000E, 0x00000001, 0x00000007, 0x00000007, 0x00000007, 0x00000003,
     };
-    static unk_D_843C2C00_024 D_843881E0 = {
+    static CombineParams D_843881E0 = {
         0x00000003, 0x00000005, 0x00000000, 0x00000005, 0x00000007, 0x00000007, 0x00000007, 0x00000000,
     };
-    static unk_D_843C2C00_024 D_84388200 = {
+    static CombineParams D_84388200 = {
         0x00000002, 0x00000001, 0x0000000E, 0x00000001, 0x00000002, 0x00000001, 0x00000003, 0x00000001,
     };
-    static unk_D_843C2C00_024 D_84388220 = {
+    static CombineParams D_84388220 = {
         0x00000003, 0x00000005, 0x00000000, 0x00000005, 0x00000000, 0x00000007, 0x00000005, 0x00000007,
     };
 
@@ -1122,10 +1122,10 @@ void BattleAnim_StartEffect39DoubleTextureTrail_Seed(void) {
 }
 
 void BattleAnim_StartEffect39SixSlotTrail_Seed(void) {
-    static unk_D_843C2C00_024 D_84388240 = {
+    static CombineParams D_84388240 = {
         0x00000002, 0x00000001, 0x0000000E, 0x00000001, 0x00000002, 0x00000001, 0x00000003, 0x00000001,
     };
-    static unk_D_843C2C00_024 D_84388260 = {
+    static CombineParams D_84388260 = {
         0x00000003, 0x00000005, 0x00000000, 0x00000005, 0x00000000, 0x00000007, 0x00000005, 0x00000007,
     };
 
@@ -1158,8 +1158,8 @@ void BattleAnim_StartEffect39CombinedTrail_Init(void) {
 }
 
 s32 BattleAnim_StartEffect39CombinedTrail_Update(void) {
-    D_843925D4++;
-    if ((D_843925D4 % 10) == 0) {
+    gEffect39CombinedTrailSpawnTimer++;
+    if ((gEffect39CombinedTrailSpawnTimer % 10) == 0) {
         BattleAnim_StartEffect39SixSlotTrail_Seed();
     }
     BattleAnim_SixSlotTrail_UpdateAll();
@@ -1167,7 +1167,7 @@ s32 BattleAnim_StartEffect39CombinedTrail_Update(void) {
 }
 
 void BattleAnim_StartEffect39CombinedTrail_Draw(void) {
-    gSPMatrix(gDisplayListHead++, &D_84392588, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, &gEffectMatrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     gDisplayListHead = DoubleTextureTrail_DrawAll(gDisplayListHead);
     gDisplayListHead = BattleAnim_SixSlotTrail_DrawAll(gDisplayListHead);

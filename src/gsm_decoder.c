@@ -1,7 +1,7 @@
 #include "gsm_decoder.h"
 #include "libgsm/libgsm.h"
 
-typedef struct unk_arg1_func_80045D60 {
+typedef struct GsmPackedFrame {
     u8 unk0;
     u8 unk1;
     u8 unk2;
@@ -9,7 +9,7 @@ typedef struct unk_arg1_func_80045D60 {
     u8 unk4;
     u8 unk5;
     u8 unk6;
-} unk_arg1_func_80045D60; // size 0x7
+} GsmPackedFrame; // size 0x7
 
 #define ROUND_Q15 0x4000
 
@@ -51,7 +51,7 @@ void Gsm_Decoder(gsm_state* state, s16* LARc, s16* Ncr, s16* bcr, s16* Mcr, s16*
 }
 
 // Unused
-s32 Gsm_Decode(gsm_state* state, unk_arg1_func_80045D60* arg1, s16 signal[160]) {
+s32 Gsm_Decode(gsm_state* state, GsmPackedFrame* arg1, s16 signal[160]) {
     s16 LARpp[8];
     s16 spC8[4];
     s16 spC0[4];
@@ -110,7 +110,7 @@ s32 Gsm_Decode(gsm_state* state, unk_arg1_func_80045D60* arg1, s16 signal[160]) 
         bitsLeft += 32 - (n);                                                 \
     }
 
-s32 Gsm_Decode_Stream(unk_D_800FCED8* state, void* arg1) {
+s32 Gsm_Decode_Stream(GbAudioChannelState* state, void* arg1) {
     s16 LARc[8];
     s16 Nc[4];
     s16 Mc[4];

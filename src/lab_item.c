@@ -289,15 +289,15 @@ char* func_8002E160_jp(s32 item_id, char* dest) {
 #endif
 
 s32 LabItem_IsQuantitylessItem(s32 arg0) {
-    static u8 D_80075950[] = {
+    static u8 gQuantitylessItems[] = {
         5,    6,    8,    9,    0x1F, 0x29, 0x2A, 0x2B, 0x2D, 0x30, 0x3F, 0x40, 0x45,
         0x46, 0x47, 0x48, 0x49, 0x4A, 0x4C, 0x4D, 0x4E, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8,
     };
 
     s32 i;
 
-    for (i = 0; i < ARRAY_COUNT(D_80075950); i++) {
-        if (arg0 == D_80075950[i]) {
+    for (i = 0; i < ARRAY_COUNT(gQuantitylessItems); i++) {
+        if (arg0 == gQuantitylessItems[i]) {
             return 1;
         }
     }
@@ -318,11 +318,11 @@ s32 LabItem_IsQuantitylessItemForOperation(s32 arg0) {
 // Pokedex_FormatWeightString.
 //@src/fragments/pokedex/pokedex_214920.c
 #if defined(VERSION_JP)
-// The Japanese .data holds only one zero entry here (rom 0x7A70C, between D_80075950 and
-// D_80075BD0).
-unk_D_8007596C D_8007596C[] = { { 0, 0 } };
+// The Japanese .data holds only one zero entry here (rom 0x7A70C, between gQuantitylessItems and
+// gStageRomOffsets).
+MenuItemCoord gPokedexSpeciesHeightWeight[] = { { 0, 0 } };
 #else
-unk_D_8007596C D_8007596C[] = {
+MenuItemCoord gPokedexSpeciesHeightWeight[] = {
     { 0x0000, 0x0000 }, { 0x00CC, 0x0096 }, { 0x012F, 0x0122 }, { 0x025F, 0x08A2 }, { 0x00C8, 0x00BE },
     { 0x0133, 0x01A4 }, { 0x01FB, 0x07D0 }, { 0x006C, 0x00C8 }, { 0x012F, 0x01F4 }, { 0x01F7, 0x0762 },
     { 0x0064, 0x003C }, { 0x00CC, 0x00DC }, { 0x0133, 0x02C6 }, { 0x0064, 0x0046 }, { 0x00C8, 0x00DC },
@@ -357,7 +357,7 @@ unk_D_8007596C D_8007596C[] = {
 };
 #endif
 
-s32 D_80075BD0[] = {
+s32 gStageRomOffsets[] = {
     0x00000000, 0x00000B90, 0x00001720, 0x000022B0, 0x00002E40, 0x000039D0, 0x00004560, 0x000050F0, 0x00005C80,
     0x00006810, 0x000073A0, 0x00007F30, 0x00008AC0, 0x00009650, 0x0000A1E0, 0x0000AD70, 0x0000B900, 0x0000C490,
     0x0000D020, 0x0000DBB0, 0x0000E740, 0x0000F2D0, 0x0000FE60, 0x000109F0, 0x00011580, 0x00012110, 0x00012CA0,

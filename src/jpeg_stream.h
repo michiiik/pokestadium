@@ -54,12 +54,12 @@ typedef struct BinArchiveFile {
     /* 0x0C */ char unk0C[0x4];
 } BinArchiveFile; // size = 0x10
 
-typedef struct unk_func_800041C0 {
+typedef struct StorageRange {
     /* 0x00 */ u16 unk_00;
     /* 0x02 */ u16 unk_02;
     /* 0x04 */ s32 unk_04;
     /* 0x08 */ s32 unk_08;
-} unk_func_800041C0; // size >= 0x8
+} StorageRange; // size >= 0x8
 
 typedef struct unk_func_80003680_sp300 {
     /* 0x00 */ u8 unk_00; // mode
@@ -101,9 +101,9 @@ void* Jpeg_LoadDecodedImage(u8* addr, PRESJPEG* arg1, s32 side);
 s32 Yay0_LoadDecompressedAsset(s32 arg0, PERSSZP* arg1, s32 side);
 u32* Asset_CopyUncompressed(u8* arg0, s32 arg1, u32 arg2, s32 arg3);
 void* Asset_LoadCompressed(u8* romStart, u8* romEnd, s32 arg2, s32 arg3);
-void* Storage_LoadAssetByLbaRange(unk_func_800041C0* arg0, s32 arg1);
-unk_func_800041C0* Storage_SetLbaRange(unk_func_800041C0* arg0, s32 arg1, s32 arg2);
-unk_func_800041C0* Storage_SetByteRange(unk_func_800041C0* arg0, u32 arg1, u32 offset, u32 size);
+void* Storage_LoadAssetByLbaRange(StorageRange* arg0, s32 arg1);
+StorageRange* Storage_SetLbaRange(StorageRange* arg0, s32 arg1, s32 arg2);
+StorageRange* Storage_SetByteRange(StorageRange* arg0, u32 arg1, u32 offset, u32 size);
 void Storage_PrefetchLbaRange(s32 arg0, s32 arg1, s32 arg2);
 void Memmap_ClearSegmentOnBlockFree(u32 block_addr, u32 addr);
 u8* Asset_LoadToSegment(s32 id, u8* rom_start, u8* rom_end, s32 arg3);

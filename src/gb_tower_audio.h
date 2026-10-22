@@ -3,12 +3,12 @@
 
 #include "global.h"
 
-typedef struct unk_D_800AA664 {
+typedef struct GbEmuThreadInfo {
   /* 0x0000 */ OSThread thread;
   /* 0x01B0 */ char unk01B0[0x2030];
-} unk_D_800AA664; // size = 0x21E0
+} GbEmuThreadInfo; // size = 0x21E0
 
-extern unk_D_800AA660* D_800AA660;
+extern GbEmuState* gGbEmuState;
 
 void GbTower_Start(UnkInputStruct8000D738* arg0);
 OSMesg* GbTower_RecvExitMesg(void);

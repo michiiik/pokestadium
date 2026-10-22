@@ -147,7 +147,7 @@ void LabPC_SetGridBorderActive(unk_func_88200FA0_030_030* arg0, s32 arg1) {
     } else {
         var_v0 = 1;
     }
-    arg0->unk_44->unk_2C = D_88218230[var_v0];
+    arg0->unk_44->unk_2C = gGridBorderColors[var_v0];
 }
 
 void LabPC_BoxGrid_BindMessagePanel(unk_func_8820BE14_02C_038* arg0, unk_func_88507D4C* arg1) {
@@ -327,7 +327,7 @@ s32 LabPC_ScrollableGrid_DrawCells(unk_func_8820BE14_02C_038* arg0, s32 arg1, s3
     return 0;
 }
 
-s32 func_88216000(unk_func_8820BE14_02C_038* arg0, s32 arg1, s32 arg2) {
+s32 StatBar_Draw(unk_func_8820BE14_02C_038* arg0, s32 arg1, s32 arg2) {
     s32 sp12C;
     s32 height = 16;
     s32 width = 8;
@@ -397,7 +397,7 @@ s32 func_88216000(unk_func_8820BE14_02C_038* arg0, s32 arg1, s32 arg2) {
     return 0;
 }
 
-s32 func_882169D4(unk_func_8820BE14_02C_038* arg0, Controller* arg1) {
+s32 ScrollableList_HandleInput(unk_func_8820BE14_02C_038* arg0, Controller* arg1) {
     s32 sp24 = arg0->unk_00.unk_38;
     s32 temp_t3 = arg0->unk_60;
     s32 var_t2 = 0;
@@ -584,8 +584,8 @@ void LabPC_ScrollableGrid_SetSwapMode(unk_func_8820BE14_02C_038* arg0, s32 arg1)
         arg0->unk_70 = 1;
         arg0->unk_00.unk_00.unk_1C = LabPC_ScrollableGrid_UpdateScroll;
         arg0->unk_00.unk_00.unk_18 = LabPC_ScrollableGrid_DrawCells;
-        arg0->unk_00.unk_00.unk_20 = func_882169D4;
-        arg0->unk_84->unk_00.unk_18 = func_88216000;
+        arg0->unk_00.unk_00.unk_20 = ScrollableList_HandleInput;
+        arg0->unk_84->unk_00.unk_18 = StatBar_Draw;
         if (arg0->unk_00.unk_2C->unk_08 > 0) {
             ((func88507AE4)Memmap_GetFragmentVaddr(WidgetTree_SetScrollableGridIndex))(arg0, arg0->unk_00.unk_38 + 1);
         }
@@ -780,16 +780,16 @@ s32 LabPC_ModeToggleIcon_Draw(unk_func_88217740* arg0, s32 arg1, s32 arg2) {
     gDPSetTexturePersp(gDisplayListHead++, G_TP_NONE);
     gDPSetTextureFilter(gDisplayListHead++, G_TF_POINT);
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIDECALA_PRIM, G_CC_MODULATEIDECALA_PRIM);
-    gDPLoadTextureBlock(gDisplayListHead++, D_8821EE88, G_IM_FMT_IA, G_IM_SIZ_16b, 64, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
+    gDPLoadTextureBlock(gDisplayListHead++, gSwapArrowsTexture, G_IM_FMT_IA, G_IM_SIZ_16b, 64, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
                         G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
 
-    sp6C = D_88218238[(arg0->unk_2C != 0) ? 0 : 1];
+    sp6C = gModeToggleColors[(arg0->unk_2C != 0) ? 0 : 1];
 
     gDPSetPrimColor(gDisplayListHead++, 0, 0, sp6C.r, sp6C.g, sp6C.b, sp6C.a);
     gSPTextureRectangle(gDisplayListHead++, arg1 << 2, arg2 << 2, (arg1 + 0x20) << 2, (arg2 + 0x14) << 2,
                         G_TX_RENDERTILE, 0, 0, 0x0400, 0x0400);
 
-    sp6C = D_88218238[(arg0->unk_2C == 0) ? 0 : 1];
+    sp6C = gModeToggleColors[(arg0->unk_2C == 0) ? 0 : 1];
 
     gDPPipeSync(gDisplayListHead++);
 

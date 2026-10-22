@@ -21,10 +21,10 @@ static PokemonBattleCues sSide1BattleCues;
 static PokemonBattleCues sSide2BattleCues;
 static SpeciesModelTransform sSide1PresentationTransform;
 static SpeciesModelTransform sSide2PresentationTransform;
-static SpeciesModelTransform D_8438FFB0;
-static SpeciesModelTransform D_8438FFD0;
-static TagTeamPartners D_8438FFF0;
-static TagTeamPartners D_84390000;
+static SpeciesModelTransform gStageCameraAnchor0;
+static SpeciesModelTransform gStageCameraAnchor1;
+static TagTeamPartners gAnimExtraDataPlayer0;
+static TagTeamPartners gAnimExtraDataPlayer1;
 ActivePokemon* sActivePokemon[2];
 ActivePokemon* sSide1ActivePokemon;
 ActivePokemon* sSide2ActivePokemon;
@@ -33,19 +33,19 @@ unk_D_84390028 gPokemonModelDimensions[2];
 static SwayLayoutConfig sDefaultSwayLayout;
 static BattleSceneStateTickSlot sBattleSceneStateTickSlots[7];
 static s32 sBattleSceneStateTickSlotIndex;
-static s32 D_843900A4;
-f32 D_843900A8[2];
+static s32 gAnimStateQueueCount;
+f32 gPlayerScaleFactors[2];
 
 PokemonBattleCues* sSideBattleCues[] = { &sSide1BattleCues, &sSide2BattleCues };
 SpeciesModelTransform* sSidePresentationTransform[] = {
     &sSide1PresentationTransform,
     &sSide2PresentationTransform,
 };
-SpeciesModelTransform* D_84384580[] = {
-    &D_8438FFB0,
-    &D_8438FFD0,
+SpeciesModelTransform* gStageCameraAnchorSet[] = {
+    &gStageCameraAnchor0,
+    &gStageCameraAnchor1,
 };
-TagTeamPartners* sPlayerTagTeam[] = { &D_8438FFF0, &D_84390000 };
+TagTeamPartners* sPlayerTagTeam[] = { &gAnimExtraDataPlayer0, &gAnimExtraDataPlayer1 };
 u8 sPokemonWithAlternateSleepIdle[] = { PRIMEAPE, EXEGGUTOR, VOLTORB, KOFFING, WIGGLYTUFF, WEEZING, GOLBAT, VICTREEBEL };
 static u8 sPokemonWithAlternateSleepHitReactions[] = { VOLTORB, WEEZING };
 static u8 sPokemonWithNewHmInYellow[] = {
@@ -472,7 +472,7 @@ void Battle_DmaLoadSpeciesLearnsets(s32 species_index, SpeciesLearnsetBuffer* re
     Dma_WriteChunks(yellow_learnset, buffer_start, buffer_start + 0x20, 0);
 }
 
-// D_80075BD0 holds one PokemonBattleCues ROM offset per species (indexed species - 1);
+// gStageRomOffsets holds one PokemonBattleCues ROM offset per species (indexed species - 1);
 // the entry after SUBSTITUTE_DOLL is the partner Pikachu cue bank.
 #define PARTNER_PIKACHU_CUE_BANK 152
 /**
@@ -498,15 +498,15 @@ void Battle_LoadAnimationAndMarkMoveIllegality(ActivePokemon* pokemon, s32 mark_
 
     battle_mon = &pokemon->sessionTeams->teamMember[pokemon->state.unk_2C]->pokemonPicked[pokemon->state.unk_18];
 
-    rom_address = (u32)_70D3A0_ROM_START + ((u32)D_80075BD0[species] & 0xFFFFFF);
+    rom_address = (u32)_70D3A0_ROM_START + ((u32)gStageRomOffsets[species] & 0xFFFFFF);
     if ((pokemon->displayObject.objectType == PIKACHU) && (battle_mon->unk_52 & 0x80)) {
-        rom_address = (u32)_70D3A0_ROM_START + ((u32)D_80075BD0[PARTNER_PIKACHU_CUE_BANK] & 0xFFFFFF);
+        rom_address = (u32)_70D3A0_ROM_START + ((u32)gStageRomOffsets[PARTNER_PIKACHU_CUE_BANK] & 0xFFFFFF);
     }
     transform_end = ((u32)_70D3A0_ROM_START + ((u32)(D_6E910 + (species << 5)) & 0xFFFFFF)) + 0x20;
     Dma_WriteChunks(sSideBattleCues[side_index], rom_address, rom_address + 0xBC0, 0);
 
     rom_address = (u32)_70D3A0_ROM_START + ((u32)(D_6E910 + (species << 5)) & 0xFFFFFF);
-    Dma_WriteChunks(D_84384580[side_index], rom_address, transform_end, 0);
+    Dma_WriteChunks(gStageCameraAnchorSet[side_index], rom_address, transform_end, 0);
 
     if (side_index == 1) {
         rom_address = (u32)_70D3A0_ROM_START + ((u32)(D_6E910 + (species << 5)) & 0xFFFFFF);
@@ -710,8 +710,8 @@ void BattleScene_TickRow3PostEffectCamera(ActivePokemon* active_pokemon) {
     if (active_pokemon->animationTimer == (sCurrentAnimation->animationDuration + 1)) {
         if (BattleAnim_IsAssetLoadBusy(active_pokemon) == 0) {
             if (sBattleScene.unk_00->unk_48 == 24) {
-                D_84390234--;
-                if (D_84390234 < 0) {
+                gInitialMoveIndex--;
+                if (gInitialMoveIndex < 0) {
                     if (sBattleMoveFailed != 0) {
                         BattleAnim_PlaySpeciesReactionSound(active_pokemon, runtime, 2);
                     }
@@ -812,7 +812,7 @@ void BattleScene_EnterRow21StartAnimRecord0(ActivePokemon* active_pokemon) {
 void BattleScene_TickRow21PlaySpeciesSound(ActivePokemon* active_pokemon) {
     sCurrentAnimation = &sSideBattleCues[BattleScene_GetParticipantSideIndex(active_pokemon)]->moveCues[0];
     if ((active_pokemon->animationTimer == (sCurrentAnimation->animationDuration + 1)) && (BattleAnim_IsAssetLoadBusy(active_pokemon) == 0)) {
-        Effect_TriggerMoveVisual(1, active_pokemon->displayObject.objectType, 0);
+        Audio_PlayMoveSoundEffect(1, active_pokemon->displayObject.objectType, 0);
         sBattleSceneStateTickSlots[sBattleSceneStateTickSlotIndex].callback = sBattleSceneStateTickSentinel;
     }
 }
@@ -905,8 +905,8 @@ void BattleScene_TickRow19PostEffectCamera(ActivePokemon* active_pokemon) {
     if (animation_duration == active_pokemon->animationTimer) {
         if (BattleAnim_IsAssetLoadBusy(active_pokemon) == 0) {
             if (sBattleScene.unk_00->unk_48 == 24) {
-                D_84390234--;
-                if (D_84390234 < 0) {
+                gInitialMoveIndex--;
+                if (gInitialMoveIndex < 0) {
                     if (sBattleMoveFailed != 0) {
                         BattleAnim_PlaySpeciesReactionSound(active_pokemon, runtime, 2);
                     } else {
@@ -2484,8 +2484,8 @@ void BattleScene_InitializeParticipantAuxiliaryModel(ActivePokemon* active_pokem
  * session mode, message buffers and audio channel groups.
  */
 void BattleScene_InitializePresentation(UNUSED BattleSessionTeams* session_teams) {
-    D_84390174 = 0;
-    D_84390178.unk_00 = 0;
+    gAttractInputScriptIndex = 0;
+    gAttractInputTimer.unk_00 = 0;
 
     BattleScene_InitializeParticipantController(sActivePokemon[0]);
     BattleScene_InitializeParticipantController(sActivePokemon[1]);
@@ -2611,7 +2611,7 @@ s32 BattleScene_DispatchLifecycle(s32 lifecycle_stage, BattleSessionTeams* sessi
 /**
  * Empty callback. Not referenced by any state row.
  */
-void func_84307414(ActivePokemon* active_pokemon) {
+void AnimHandler_Idle(ActivePokemon* active_pokemon) {
 }
 
 /**

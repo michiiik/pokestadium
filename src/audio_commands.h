@@ -50,7 +50,7 @@ typedef struct unk_D_800FC6D4_008 {
     /* 0x04 */ u8 unk_04;
 } unk_D_800FC6D4_008; // size = 0x5
 
-typedef struct unk_D_800FC6D4 {
+typedef struct GbTrackHeader {
     /* 0x00 */ u16 flags;
     /* 0x02 */ u16 num_entries;
     /* 0x04 */ u16 unk_04;
@@ -58,45 +58,45 @@ typedef struct unk_D_800FC6D4 {
     /* 0x08 */ unk_D_800FC6D4_008* offset;
     /* 0x0C */ char unk_0C[0x4];
     /* 0x10 */ unk_D_800FC6D4_entry entries[ENTRY_SIZE];
-} unk_D_800FC6D4; // size = 0x10
+} GbTrackHeader; // size = 0x10
 
 typedef struct MoveSoundEntry { u8 unk0[0x6]; } MoveSoundEntry;
 typedef struct MoveSoundTable { u8 header[0x10]; MoveSoundEntry entries[1]; } MoveSoundTable;
 
-extern u8 D_800B32A0[0x493E0];
-extern u32* D_800FC680;
-extern u8* D_800FC684;
-extern u8* D_800FC688;
-extern u8* D_800FC68C;
-extern u8* D_800FC690;
-extern u8* D_800FC698[3];
-extern u8* D_800FC6A4;
-extern u8* D_800FC6A8;
-extern u8* D_800FC6AC;
-extern u8* D_800FC6B0[3];
-extern MoveSoundTable* D_800FC6C0[3];
-extern unk_D_800FC6CC* D_800FC6CC;
-extern u8* D_800FC6D0;
-extern unk_D_800FC6D4* D_800FC6D4;
-extern s16* D_800FC6D8;
-extern u8* D_800FC6DC;
+extern u8 gAudioHeap[0x493E0];
+extern u32* gSfxWaveTableBuffer;
+extern u8* gSfxWaveTable;
+extern u8* gSfxTable;
+extern u8* gSfxBankStandard;
+extern u8* gSfxBankSecondary;
+extern u8* gSfxBankScratch[3];
+extern u8* gAudioSfxBank;
+extern u8* gAudioSfxInstBank;
+extern u8* gMoveSoundBankBase;
+extern u8* gMoveSoundBankData[3];
+extern MoveSoundTable* gMoveSoundTables[3];
+extern unk_D_800FC6CC* gAudioSeqTOC;
+extern u8* gAudioSfxDataBuffer;
+extern GbTrackHeader* gAudioSfxBankExtra;
+extern s16* gMusicFadeBuffer;
+extern u8* gMoveSoundTempBuffer;
 extern u32* gAudioRegions;
-extern File1Header* D_800FC6E4;
-extern ALSeqFile* D_800FC6E8;
-extern File2SubHeader1* D_800FC6EC;
-extern File2SubHeader2* D_800FC6F0;
-extern ALSeqFile* D_800FC6F4;
-extern ALSeqFile* D_800FC6F8;
-extern File2SubHeader2* D_800FC6FC;
-extern ALSeqFile* D_800FC700;
-extern ALSeqFile* D_800FC704;
-extern ALSeqFile* D_800FC708;
-extern ALSeqFile* D_800FC714;
-extern u32* D_800FC798;
+extern File1Header* gSfxArchiveHeader;
+extern ALSeqFile* gMoveSoundSeqInfo;
+extern File2SubHeader1* gSfxStandardSubHeader;
+extern File2SubHeader2* gSfxSecondarySubHeader;
+extern ALSeqFile* gAudioSfxBankSeqHeader;
+extern ALSeqFile* gAudioSeqHeaderNested;
+extern File2SubHeader2* gMoveSoundArchive;
+extern ALSeqFile* gMoveSoundSeqTable;
+extern ALSeqFile* gAudioSeqBank;
+extern ALSeqFile* gAudioSeqBuffer;
+extern ALSeqFile* gAudioSeqData;
+extern u32* gAudioHeaderTemp;
 
 s32 Audio_PlayCommand(u32 command, s32 parameter, UNUSED s32 unused);
 s32 Audio_FadeCommand(s32 arg0, u32 arg1);
-void func_8003733C(void);
+void Audio_NullTask(void);
 void Audio_CreateFrameTaskWrapper(void* arg0);
 void Audio_RelocateOffsets(u32* arg0, u32 arg1, s32 arg2);
 s32 Audio_InitBanks(void);

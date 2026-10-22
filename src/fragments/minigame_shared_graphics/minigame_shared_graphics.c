@@ -3,40 +3,40 @@
 #include "src/gfx_buffer.h"
 #include "src/audio_commands_category2.h"
 
-u32 D_87A01110[] = {
+u32 gMinigameSharedStrings[] = {
     0xA5B2A1BC, 0xA5E0A4CE, 0xA4BBA4C4, 0xA4E1A4A4, 0x00000000, 0xA3C1A5DC, 0xA5BFA5F3, 0x00000000, 0xA4B8A4E5,
     0xA4A6A4B8, 0xA5ADA1BC, 0x00000000, 0xA5B2A1BC, 0xA5E0A4F2, 0xA4CFA4B8, 0xA4E1A4EB, 0x00000000, 0xA5B8A5E3,
     0xA5F3A5D7, 0x00000000, 0xA1A6A1A6, 0xA1A60000, 0xA5B2A5C3, 0xA5C8A4C0, 0xA4BCA1AA, 0x00000000,
 };
 
-u32 D_87A01178[] = {
+u32 gRaceComNameSatoshi[] = {
     0xA5B5A5C8,
     0xA5B70000,
 };
 
-u32 D_87A01180[] = {
+u32 gRaceComNameKasumi[] = {
     0xA5ABA5B9,
     0xA5DF0000,
     0xA5BFA5B1,
     0xA5B70000,
 };
 
-u32 D_87A01190[] = {
+u32 gRaceComNameMusashi[] = {
     0xA5E0A5B5, 0xA5B70000, 0xA5B3A5B8, 0xA5EDA5A6, 0x00000000,
 };
 
-u32 D_87A011A4[] = {
+u32 gRaceComNameShigeru[] = {
     0xA5B7A5B2, 0xA5EB0000, 0xA4CEA4AB, 0xA4C10000, 0xA4D2A4AD, 0xA4EFA4B1, 0x00000000,
 };
 
-static Vtx D_87A011C0[] = {
+static Vtx gQuadVtx[] = {
     VTX(-25, 25, 0, 0, 0, 0x00, 0x00, 0x00, 0xFF),
     VTX(-25, -25, 0, 0, 2048, 0x00, 0x00, 0x00, 0xFF),
     VTX(25, -25, 0, 2048, 2048, 0x00, 0x00, 0x00, 0xFF),
     VTX(25, 25, 0, 2048, 0, 0x00, 0x00, 0x00, 0xFF),
 };
 
-static Gfx D_87A01200[] = {
+static Gfx gQuadDL[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_2CYCLE),
     gsDPSetRenderMode(AA_EN | Z_CMP | Z_UPD | CVG_DST_FULL | ZMODE_OPA | CVG_X_ALPHA | ALPHA_CVG_SEL | G_RM_PASS,
@@ -49,19 +49,19 @@ static Gfx D_87A01200[] = {
     gsDPSetTexturePersp(G_TP_PERSP),
     gsDPSetTextureLUT(G_TT_NONE),
     gsDPSetTextureFilter(G_TF_BILERP),
-    gsSPVertex(D_87A011C0, 4, 0),
+    gsSPVertex(gQuadVtx, 4, 0),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
 
-static Vtx D_87A01268[] = {
+static Vtx gColorRectVtx[] = {
     VTX(-50, 25, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-50, -25, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(50, -25, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(50, 25, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
 
-static Gfx D_87A012A8[] = {
+static Gfx gColorRectDL[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_2CYCLE),
     gsDPSetRenderMode(AA_EN | Z_CMP | Z_UPD | CVG_DST_FULL | ZMODE_OPA | CVG_X_ALPHA | ALPHA_CVG_SEL | G_RM_PASS,
@@ -79,16 +79,16 @@ static Gfx D_87A012A8[] = {
 
 // Is this real?
 static u8 pad_D_87A01300[0x30];
-static CameraNode* D_87A01330;
+static CameraNode* gProjectionInfo;
 
 void MiniCam_SetActive(CameraNode* arg0) {
-    D_87A01330 = arg0;
+    gProjectionInfo = arg0;
 }
 
 Gfx* MiniCam_ApplyProjection(Gfx* arg0) {
-    gSPPerspNormalize(arg0++, D_87A01330->perspective.unk_04);
-    gSPMatrix(arg0++, (u32)D_87A01330->perspective.projectionMatrix & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    gSPMatrix(arg0++, (u32)D_87A01330->view.fixedMatrix & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
+    gSPPerspNormalize(arg0++, gProjectionInfo->perspective.unk_04);
+    gSPMatrix(arg0++, (u32)gProjectionInfo->perspective.projectionMatrix & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(arg0++, (u32)gProjectionInfo->view.fixedMatrix & 0x1FFFFFFF, G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
 
     return arg0;
 }
@@ -109,7 +109,7 @@ Gfx* MiniGfx_DrawTexturedQuad(Gfx* arg0, Mtx* arg1, f32 arg2, f32 arg3, f32 arg4
                        G_TX_NOLOD);
 
     gSPMatrix(arg0++, temp_s1, G_MTX_PUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gSPDisplayList(arg0++, D_87A01200);
+    gSPDisplayList(arg0++, gQuadDL);
     gSPPopMatrix(arg0++, G_MTX_MODELVIEW);
 
     return arg0;
@@ -130,7 +130,7 @@ Gfx* MiniGfx_DrawVertexColoredQuad(Gfx* arg0, Mtx* arg1, f32 arg2, f32 arg3, f32
 
     ptr1 = temp_v0;
     for (i = 0; i < 4; i++, ptr1++, arg9 += 4) {
-        *ptr1 = D_87A01268[i];
+        *ptr1 = gColorRectVtx[i];
 
         ptr1->v.cn[0] = arg9[0];
         ptr1->v.cn[1] = arg9[1];
@@ -149,7 +149,7 @@ Gfx* MiniGfx_DrawVertexColoredQuad(Gfx* arg0, Mtx* arg1, f32 arg2, f32 arg3, f32
                        G_TX_NOLOD);
 
     gSPMatrix(arg0++, temp_s1, G_MTX_PUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    gSPDisplayList(arg0++, D_87A012A8);
+    gSPDisplayList(arg0++, gColorRectDL);
     gSPVertex(arg0++, temp_v0, 4, 0);
     gSP2Triangles(arg0++, 0, 1, 2, 0, 0, 2, 3, 0);
     gSPPopMatrix(arg0++, G_MTX_MODELVIEW);
@@ -210,7 +210,7 @@ void MiniGfx_DrawBackgroundStrips(s32 arg0) {
     gDisplayListHead = gfx;
 }
 
-void func_87A00DB8(s32 arg0) {
+void Gfx_DrawTilemap(s32 arg0) {
     Gfx* gfx = gDisplayListHead;
     s32 i;
     s32 j;
@@ -243,14 +243,14 @@ void func_87A00DB8(s32 arg0) {
 
 typedef void (*ret_func_87A010C8)(void);
 
-ret_func_87A010C8 func_87A010C8(void) {
-    return func_87A010C8;
+ret_func_87A010C8 MiniCam_GetResetFunc(void) {
+    return MiniCam_GetResetFunc;
 }
 
 s32 MiniSound_DispatchCommand(s32 arg0, s32 arg1, s32 arg2) {
     s32 ret = 0;
 
-    if (D_8780FC92 == 0) {
+    if (gResultFlag_Special == 0) {
         ret = Audio_DispatchSoundBankCommand(arg0, arg1, arg2);
     }
 

@@ -6,22 +6,22 @@
 #include "src/gfx_rect.h"
 #include "src/matrix.h"
 
-const char D_8690A520[] = "FREE BATTLE";
-const char D_8690A52C[] = "POK\xE9 CUP";
-const char D_8690A538[] = "POK\xE9 CUP2";
-const char D_8690A544[] = "PETIT CUP";
-const char D_8690A550[] = "PIKA CUP";
-const char D_8690A55C[] = "PRIME CUP";
-const char D_8690A568[] = "PEWTER GYM";
-const char D_8690A574[] = "CERULEAN GYM";
-const char D_8690A584[] = "VERMILION GYM";
-const char D_8690A594[] = "CELADON GYM";
-const char D_8690A5A0[] = "FUCHSIA GYM";
-const char D_8690A5AC[] = "SAFFRON GYM";
-const char D_8690A5B8[] = "CINNABAR GYM";
-const char D_8690A5C8[] = "VIRIDIAN GYM";
-const char D_8690A5D8[] = "VS ELITE FOUR";
-const char D_8690A5E8[] = "VS MEWTWO";
+const char gCupNameFreeBattle[] = "FREE BATTLE";
+const char gCupNameNintendoCup[] = "POK\xE9 CUP";
+const char gCupNameNintendoCupRound2[] = "POK\xE9 CUP2";
+const char gCupNamePetitCup[] = "PETIT CUP";
+const char gCupNamePikaCup[] = "PIKA CUP";
+const char gCupNamePrimeCup[] = "PRIME CUP";
+const char gCupNamePewterGym[] = "PEWTER GYM";
+const char gCupNameCeruleanGym[] = "CERULEAN GYM";
+const char gCupNameVermilionGym[] = "VERMILION GYM";
+const char gCupNameCeladonGym[] = "CELADON GYM";
+const char gCupNameFuchsiaGym[] = "FUCHSIA GYM";
+const char gCupNameSaffronGym[] = "SAFFRON GYM";
+const char gCupNameCinnabarGym[] = "CINNABAR GYM";
+const char gCupNameViridianGym[] = "VIRIDIAN GYM";
+const char gCupNameEliteFour[] = "VS ELITE FOUR";
+const char gCupNameMewtwo[] = "VS MEWTWO";
 
 extern u8 D_50002A0[];
 extern u8 D_50003F0[];
@@ -128,7 +128,7 @@ void func_86904BFC(void) {
 }
 
 void GalleryUI_DrawScrollingTextureRect(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, s16 arg6, s16 arg7) {
-    unk_D_800A7440 sp30;
+    ClipRect sp30;
 
     GfxRect_SetBounds(&sp30, arg0, arg1, (arg0 + arg2) - 1, (arg1 + arg3) - 1);
 
@@ -153,7 +153,7 @@ void Gallery_DrawHelpBalloonScrollTexture(s16 arg0, s16 arg1, s16 arg2, s16 arg3
     gDPLoadTextureTile(gDisplayListHead++, arg4, G_IM_FMT_IA, G_IM_SIZ_8b, arg2, 0, 0, 0, arg2 - 1, arg3 - 1, 0,
                        G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 3, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
 
-    GalleryUI_DrawScrollingTextureRect(arg0, arg1, arg2, arg3, D_8690B360.unk_02 << 5, 0, 0x400, 0x400);
+    GalleryUI_DrawScrollingTextureRect(arg0, arg1, arg2, arg3, gStagePanelAnimState.unk_02 << 5, 0, 0x400, 0x400);
 }
 
 void Gallery_DrawHelpBalloonBubble(u8* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4) {
@@ -193,7 +193,7 @@ void GalleryUI_DrawRotatedSprite(u8* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg
     spA8 = Gfx_AllocDisplayList(sizeof(MtxF) * 1);
     spA4 = Gfx_AllocDisplayList(sizeof(Vp) * 1);
 
-    Vec3s_SetComponents(&spD8, 0, 0, D_8690B360.unk_06);
+    Vec3s_SetComponents(&spD8, 0, 0, gStagePanelAnimState.unk_06);
 
     Vec3f_SetComponentsDuplicate(&spCC, (f32)arg1 + (arg3 / 2), (f32)arg2 + arg4, 0.0f);
     Vec3f_SetComponentsDuplicate(&spC0, 1.0f, 1.0f, 1.0f);
@@ -214,7 +214,7 @@ void GalleryUI_DrawRotatedSprite(u8* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg
     gSPDisplayList(gDisplayListHead++, gUiEnvTintTextureDL);
     gSPClearGeometryMode(gDisplayListHead++, G_ZBUFFER | G_LIGHTING);
 
-    if (D_8690B360.unk_06 == 0) {
+    if (gStagePanelAnimState.unk_06 == 0) {
         gDPSetTextureFilter(gDisplayListHead++, G_TF_POINT);
         gDPSetRenderMode(gDisplayListHead++, G_RM_TEX_EDGE, G_RM_TEX_EDGE2);
     } else {
@@ -238,7 +238,7 @@ void GalleryUI_DrawRotatedSprite(u8* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF);
 }
 
-void func_86905734(u8* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, u8 arg6) {
+void DrawRotatedSprite(u8* arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, u8 arg6) {
     s32 a1;
     s32 a2;
     s16 spF8[4];
@@ -505,10 +505,10 @@ void Gallery_DrawNicknameBanner(char* arg0) {
     UNUSED s16 pad2;
     s16 sp40;
 
-    if (D_8690A710->unk_014 != 0) {
+    if (gCameraParams->unk_014 != 0) {
         sp44 = Font_MeasureTextExtent(0x10, 0, arg0);
 
-        if (D_8690A710->unk_014 == 1) {
+        if (gCameraParams->unk_014 == 1) {
             GalleryUI_DrawNicknameRibbonSegment(&D_5001950, 0x3C, 0xAE, 0x22, 0x2B, 0x64, 0x2B, 0, 0, 0x22, 0x2B, 0x21, 0);
             GalleryUI_DrawNicknameRibbonSegment(&D_5001950, 0x5E, 0xAE, 0x22, 0x2B, 0x64, 0x2B, 0x22, 0, 0x44, 0x2B, 0x43, 0x22);
             GalleryUI_DrawNicknameRibbonSegment(&D_5001950, 0x80, 0xAE, 0x20, 0x2B, 0x64, 0x2B, 0x44, 0, 0x64, 0x2B, 0x63, 0x44);
@@ -547,12 +547,12 @@ void Gallery_DrawBackgroundSelectMenu(UNUSED s32 arg0) {
     s32 i;
     s32 var_v1;
 
-    if (D_8690B380 != 0) {
+    if (gCameraNavActiveFlag != 0) {
         Gallery_DrawHelpBalloonFrame(0x55, 0x20, 0x96, 0x8C, 0, 0, 0x8C, 0x64);
 
         gSPDisplayList(gDisplayListHead++, gUiEnvTintTextureDL);
 
-        if (D_8690B384 != 0) {
+        if (gCameraNavSubIndex != 0) {
             var_v1 = 0xFF;
         } else {
             var_v1 = 0x37;
@@ -562,7 +562,7 @@ void Gallery_DrawBackgroundSelectMenu(UNUSED s32 arg0) {
 
         Gfx_DrawTextureIa8(0x93, 0x20, 0x18, 0xF, &D_50017E8, 0x18, 0);
 
-        if ((D_8690B38C - 4) != D_8690B384) {
+        if ((gCameraNavMaxIndex - 4) != gCameraNavSubIndex) {
             var_v1 = 0xFF;
         } else {
             var_v1 = 0x37;
@@ -573,23 +573,23 @@ void Gallery_DrawBackgroundSelectMenu(UNUSED s32 arg0) {
         Gfx_DrawTextureIa8(0x93, 0x9C, 0x18, 0xF, &D_5001680, 0x18, 0);
 
         gSPDisplayList(gDisplayListHead++, gUiRestoreTextureDL);
-        gSPDisplayList(gDisplayListHead++, D_8006F5A0);
+        gSPDisplayList(gDisplayListHead++, gDL_PalettedIcon);
 
-        Gfx_DrawTextureRgba16Ia8(0x59, (D_8690B388 * 0x14) + 0x35, 0x18, 0xE, D_5000000, &D_50002A0, 0x18, 0x100000);
+        Gfx_DrawTextureRgba16Ia8(0x59, (gCameraNavTransition * 0x14) + 0x35, 0x18, 0xE, D_5000000, &D_50002A0, 0x18, 0x100000);
 
         gSPDisplayList(gDisplayListHead++, gUiRestoreTextureDL);
 
         Font_BeginTranslucentTextRendering();
         Font_SetActive(4, 0);
 
-        for (i = D_8690B384; i < D_8690B384 + 5; i++) {
-            if (D_8690B388 == (i - D_8690B384)) {
+        for (i = gCameraNavSubIndex; i < gCameraNavSubIndex + 5; i++) {
+            if (gCameraNavTransition == (i - gCameraNavSubIndex)) {
                 Gfx_SetEnvColor(0xFF, 0xFF, 0, 0xFF);
             } else {
                 Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
             }
-            Font_Printf(0xA0 - (Font_MeasureTextExtent(4, 0, D_86908C58[i]) / 2), ((i - D_8690B384) * 0x14) + 0x36,
-                          D_86908C58[i]);
+            Font_Printf(0xA0 - (Font_MeasureTextExtent(4, 0, gStagePanelLabelStrings[i]) / 2), ((i - gCameraNavSubIndex) * 0x14) + 0x36,
+                          gStagePanelLabelStrings[i]);
         }
 
         Font_EndTexturedTextRendering();
@@ -600,123 +600,123 @@ void Gallery_DrawBackgroundSelectMenu(UNUSED s32 arg0) {
 void Gallery_CameraDrawHelpBalloon(void) {
     s32 sp3C;
     s32 sp38;
-    Color_RGB8 sp34 = D_86908C98;
-    Color_RGB8 sp30 = D_86908C9C;
+    Color_RGB8 sp34 = gStagePanelGradientStartColor;
+    Color_RGB8 sp30 = gStagePanelGradientEndColor;
 
-    if (D_8690B348 >= 3) {
-        GalleryUI_DrawGradientQuad(0, 0, 0x140, 0xF0, D_8690B350.unk_04);
+    if (gStagePanelStateIndex >= 3) {
+        GalleryUI_DrawGradientQuad(0, 0, 0x140, 0xF0, gStagePanelFadeData.unk_04);
     }
 
-    if (D_8690B348 == 4) {
-        if (D_8690B350.unk_0E < 0x15) {
-            Ui_DrawGradientPanel(D_8690B350.unk_08, D_8690B350.unk_0A - (D_8690B350.unk_0E / 2), D_8690B350.unk_0C,
-                          D_8690B350.unk_0E, &sp34, &sp34);
+    if (gStagePanelStateIndex == 4) {
+        if (gStagePanelFadeData.unk_0E < 0x15) {
+            Ui_DrawGradientPanel(gStagePanelFadeData.unk_08, gStagePanelFadeData.unk_0A - (gStagePanelFadeData.unk_0E / 2), gStagePanelFadeData.unk_0C,
+                          gStagePanelFadeData.unk_0E, &sp34, &sp34);
         } else {
-            Ui_DrawGradientPanel(D_8690B350.unk_08, D_8690B350.unk_0A - (D_8690B350.unk_0E / 2), D_8690B350.unk_0C,
-                          D_8690B350.unk_0E, &sp34, &sp30);
+            Ui_DrawGradientPanel(gStagePanelFadeData.unk_08, gStagePanelFadeData.unk_0A - (gStagePanelFadeData.unk_0E / 2), gStagePanelFadeData.unk_0C,
+                          gStagePanelFadeData.unk_0E, &sp34, &sp30);
         }
 
-        if (D_8690B350.unk_0E >= 0x1F) {
+        if (gStagePanelFadeData.unk_0E >= 0x1F) {
             Font_BeginTranslucentTextRendering();
             Font_SetActive(4, 0);
             sp3C = Font_MeasureTextExtent(4, 0, Text_GetString(NULL, 0, gCameraHelpText, 0));
             sp38 = Text_GetString(NULL, 0, gCameraHelpText, 0);
-            Font_Printf((D_8690B350.unk_08 - (sp3C / 2)) + (D_8690B350.unk_0C / 2), D_8690B350.unk_0A - 8, sp38);
+            Font_Printf((gStagePanelFadeData.unk_08 - (sp3C / 2)) + (gStagePanelFadeData.unk_0C / 2), gStagePanelFadeData.unk_0A - 8, sp38);
             Font_EndTexturedTextRendering();
         }
     }
 }
 
 s16 GalleryUI_ClampReelDigitX(s16 arg0) {
-    if ((arg0 - D_8690B360.unk_04) <= (D_8690B360.unk_0C + 15.0f)) {
+    if ((arg0 - gStagePanelAnimState.unk_04) <= (gStagePanelAnimState.unk_0C + 15.0f)) {
         return 1000;
     }
-    return arg0 - D_8690B360.unk_04;
+    return arg0 - gStagePanelAnimState.unk_04;
 }
 
 void Gallery_DrawPhotoCounterReel(void) {
-    s16 sp4E = D_8690B360.unk_0C;
+    s16 sp4E = gStagePanelAnimState.unk_0C;
     char sp40[12];
     char sp34[12];
     s16 sp32;
     s16 sp24 = sp4E + 0x17;
 
-    if (D_8690B348 >= 2) {
+    if (gStagePanelStateIndex >= 2) {
         return;
     }
 
     Gallery_DrawHelpBalloonBubble(D_5000BA0, GalleryUI_ClampReelDigitX(sp24 + 8), 0x18, 8, 0x1E);
     Gallery_DrawHelpBalloonBubble(D_5000BA0, GalleryUI_ClampReelDigitX(sp24 + 0x10), 0x18, 8, 0x1E);
 
-    if (D_8690B348 == 0) {
-        if (D_8690B360.unk_00 == 0) {
-            sprintf(&sp40, "%d", 0x18 - D_8690B344);
+    if (gStagePanelStateIndex == 0) {
+        if (gStagePanelAnimState.unk_00 == 0) {
+            sprintf(&sp40, "%d", 0x18 - gStageSnapshotCount);
 
             Font_BeginTranslucentTextRendering();
             Font_SetActive(2, 0);
 
-            if ((0x18 - D_8690B344) >= 0xB) {
+            if ((0x18 - gStageSnapshotCount) >= 0xB) {
                 Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
             } else {
                 Gfx_SetEnvColor(0xFF, 0, 0, 0xFF);
             }
 
             sp32 = 0;
-            if ((0x18 - D_8690B344) < 0xA) {
+            if ((0x18 - gStageSnapshotCount) < 0xA) {
                 sp32 = 3;
             }
 
             Font_Printf(sp24 + sp32 + 9, 0x21, &sp40);
             Font_EndTexturedTextRendering();
         } else {
-            sprintf(&sp40, "%d", 0x19 - D_8690B344);
-            sprintf(&sp34, "%d", 0x18 - D_8690B344);
+            sprintf(&sp40, "%d", 0x19 - gStageSnapshotCount);
+            sprintf(&sp34, "%d", 0x18 - gStageSnapshotCount);
 
             Font_BeginTranslucentTextRendering();
             Font_SetActive(2, 0);
 
-            if ((0x19 - D_8690B344) >= 0xB) {
+            if ((0x19 - gStageSnapshotCount) >= 0xB) {
                 Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
             } else {
                 Gfx_SetEnvColor(0xFF, 0, 0, 0xFF);
             }
 
             sp32 = 0;
-            if ((0x18 - D_8690B344) < 0xA) {
+            if ((0x18 - gStageSnapshotCount) < 0xA) {
                 sp32 = 3;
             }
 
-            Font_Printf((sp24 - D_8690B360.unk_00) + sp32 + 0x1D, 0x21, &sp40);
+            Font_Printf((sp24 - gStagePanelAnimState.unk_00) + sp32 + 0x1D, 0x21, &sp40);
 
-            if ((0x18 - D_8690B344) >= 0xB) {
+            if ((0x18 - gStageSnapshotCount) >= 0xB) {
                 Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
             } else {
                 Gfx_SetEnvColor(0xFF, 0, 0, 0xFF);
             }
 
             sp32 = 0;
-            if ((0x18 - D_8690B344) < 0xA) {
+            if ((0x18 - gStageSnapshotCount) < 0xA) {
                 sp32 = 3;
             }
 
-            Font_Printf((sp24 - D_8690B360.unk_00) + sp32 + 9, 0x21, &sp34);
+            Font_Printf((sp24 - gStagePanelAnimState.unk_00) + sp32 + 9, 0x21, &sp34);
             Font_EndTexturedTextRendering();
         }
-    } else if (D_8690B360.unk_00 == 0) {
-        if (D_8690B344 != 0) {
-            sprintf(&sp40, "%d", 0x18 - D_8690B344);
+    } else if (gStagePanelAnimState.unk_00 == 0) {
+        if (gStageSnapshotCount != 0) {
+            sprintf(&sp40, "%d", 0x18 - gStageSnapshotCount);
 
             Font_BeginTranslucentTextRendering();
             Font_SetActive(2, 0);
 
-            if ((0x18 - D_8690B344) >= 0xB) {
+            if ((0x18 - gStageSnapshotCount) >= 0xB) {
                 Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
             } else {
                 Gfx_SetEnvColor(0xFF, 0, 0, 0xFF);
             }
 
             sp32 = 0;
-            if ((0x18 - D_8690B344) < 0xA) {
+            if ((0x18 - gStageSnapshotCount) < 0xA) {
                 sp32 = 3;
             }
 
@@ -724,37 +724,37 @@ void Gallery_DrawPhotoCounterReel(void) {
             Font_EndTexturedTextRendering();
         }
     } else {
-        sprintf(&sp40, "%d", 0x17 - D_8690B344);
-        sprintf(&sp34, "%d", 0x18 - D_8690B344);
+        sprintf(&sp40, "%d", 0x17 - gStageSnapshotCount);
+        sprintf(&sp34, "%d", 0x18 - gStageSnapshotCount);
 
         Font_BeginTranslucentTextRendering();
         Font_SetActive(2, 0);
 
-        if ((0x19 - D_8690B344) >= 0xB) {
+        if ((0x19 - gStageSnapshotCount) >= 0xB) {
             Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
         } else {
             Gfx_SetEnvColor(0xFF, 0, 0, 0xFF);
         }
 
         sp32 = 0;
-        if ((0x18 - D_8690B344) < 0xA) {
+        if ((0x18 - gStageSnapshotCount) < 0xA) {
             sp32 = 3;
         }
 
-        Font_Printf((sp24 + D_8690B360.unk_00 + sp32) - 0xB, 0x21, &sp40);
+        Font_Printf((sp24 + gStagePanelAnimState.unk_00 + sp32) - 0xB, 0x21, &sp40);
 
-        if ((0x18 - D_8690B344) >= 0xB) {
+        if ((0x18 - gStageSnapshotCount) >= 0xB) {
             Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
         } else {
             Gfx_SetEnvColor(0xFF, 0, 0, 0xFF);
         }
 
         sp32 = 0;
-        if ((0x18 - D_8690B344) < 0xA) {
+        if ((0x18 - gStageSnapshotCount) < 0xA) {
             sp32 = 3;
         }
 
-        Font_Printf(sp24 + D_8690B360.unk_00 + sp32 + 9, 0x21, &sp34);
+        Font_Printf(sp24 + gStagePanelAnimState.unk_00 + sp32 + 9, 0x21, &sp34);
         Font_EndTexturedTextRendering();
     }
 
@@ -766,10 +766,10 @@ void Gallery_DrawPhotoCounterReel(void) {
 }
 
 void Gallery_DrawPhotoCounterReelExit(void) {
-    s16 sp30 = D_8690B360.unk_0C;
+    s16 sp30 = gStagePanelAnimState.unk_0C;
     s16 sp2E;
 
-    if (D_8690B348 < 2) {
+    if (gStagePanelStateIndex < 2) {
         return;
     }
 
@@ -803,29 +803,29 @@ void Gallery_DrawPhotoCounterReelExit(void) {
 }
 
 void Gallery_DrawFrameMarkers(void) {
-    if (D_8690B348 == 0) {
-        func_86905734(&D_50011D0, D_8690B308.unk_00[0], D_8690B308.unk_00[4], 0x30, 0x19, 0, 0);
-        func_86905734(&D_50011D0, D_8690B308.unk_00[1], D_8690B308.unk_00[5], 0x30, 0x19, 0x4000, 1);
-        func_86905734(&D_50011D0, D_8690B308.unk_00[2], D_8690B308.unk_00[6], 0x30, 0x19, -0x8000, 1);
-        func_86905734(&D_50011D0, D_8690B308.unk_00[3], D_8690B308.unk_00[7], 0x30, 0x19, -0x4000, 1);
-        GalleryUI_DrawRotateArrowIcon(&D_5000C90, D_8690B308.unk_10, D_8690B308.unk_20, 0x18, 0x38, 0, 0);
-        GalleryUI_DrawRotateArrowIconMirrored(&D_5000C90, D_8690B308.unk_10, D_8690B308.unk_20, 0x18, 0x38, 0, 1);
-        GalleryUI_DrawRotateArrowIcon(&D_5000C90, D_8690B308.unk_14, D_8690B308.unk_24, 0x18, 0x38, 0x4000, 1);
-        GalleryUI_DrawRotateArrowIconMirrored(&D_5000C90, D_8690B308.unk_14, D_8690B308.unk_24, 0x18, 0x38, 0x4000, 1);
-        GalleryUI_DrawRotateArrowIcon(&D_5000C90, D_8690B308.unk_18, D_8690B308.unk_28, 0x18, 0x38, -0x8000, 1);
-        GalleryUI_DrawRotateArrowIconMirrored(&D_5000C90, D_8690B308.unk_18, D_8690B308.unk_28, 0x18, 0x38, -0x8000, 1);
-        GalleryUI_DrawRotateArrowIcon(&D_5000C90, D_8690B308.unk_1C, D_8690B308.unk_2C, 0x18, 0x38, -0x4000, 1);
-        GalleryUI_DrawRotateArrowIconMirrored(&D_5000C90, D_8690B308.unk_1C, D_8690B308.unk_2C, 0x18, 0x38, -0x4000, 1);
+    if (gStagePanelStateIndex == 0) {
+        DrawRotatedSprite(&D_50011D0, gStagePanelAnimData.unk_00[0], gStagePanelAnimData.unk_00[4], 0x30, 0x19, 0, 0);
+        DrawRotatedSprite(&D_50011D0, gStagePanelAnimData.unk_00[1], gStagePanelAnimData.unk_00[5], 0x30, 0x19, 0x4000, 1);
+        DrawRotatedSprite(&D_50011D0, gStagePanelAnimData.unk_00[2], gStagePanelAnimData.unk_00[6], 0x30, 0x19, -0x8000, 1);
+        DrawRotatedSprite(&D_50011D0, gStagePanelAnimData.unk_00[3], gStagePanelAnimData.unk_00[7], 0x30, 0x19, -0x4000, 1);
+        GalleryUI_DrawRotateArrowIcon(&D_5000C90, gStagePanelAnimData.unk_10, gStagePanelAnimData.unk_20, 0x18, 0x38, 0, 0);
+        GalleryUI_DrawRotateArrowIconMirrored(&D_5000C90, gStagePanelAnimData.unk_10, gStagePanelAnimData.unk_20, 0x18, 0x38, 0, 1);
+        GalleryUI_DrawRotateArrowIcon(&D_5000C90, gStagePanelAnimData.unk_14, gStagePanelAnimData.unk_24, 0x18, 0x38, 0x4000, 1);
+        GalleryUI_DrawRotateArrowIconMirrored(&D_5000C90, gStagePanelAnimData.unk_14, gStagePanelAnimData.unk_24, 0x18, 0x38, 0x4000, 1);
+        GalleryUI_DrawRotateArrowIcon(&D_5000C90, gStagePanelAnimData.unk_18, gStagePanelAnimData.unk_28, 0x18, 0x38, -0x8000, 1);
+        GalleryUI_DrawRotateArrowIconMirrored(&D_5000C90, gStagePanelAnimData.unk_18, gStagePanelAnimData.unk_28, 0x18, 0x38, -0x8000, 1);
+        GalleryUI_DrawRotateArrowIcon(&D_5000C90, gStagePanelAnimData.unk_1C, gStagePanelAnimData.unk_2C, 0x18, 0x38, -0x4000, 1);
+        GalleryUI_DrawRotateArrowIconMirrored(&D_5000C90, gStagePanelAnimData.unk_1C, gStagePanelAnimData.unk_2C, 0x18, 0x38, -0x4000, 1);
     }
 }
 
 void Gallery_DrawTutorialTextBox(void) {
-    if (D_8690B3C0.unk_00 != 0xFF) {
-        Gallery_DrawHelpBalloonFrame(0x3C, 0x9B - (D_8690B3C0.unk_0C / 2), D_8690B3C0.unk_08, D_8690B3C0.unk_0C, 0, 0, 0x9B, 0x7D);
+    if (gTutorialTextBoxState.unk_00 != 0xFF) {
+        Gallery_DrawHelpBalloonFrame(0x3C, 0x9B - (gTutorialTextBoxState.unk_0C / 2), gTutorialTextBoxState.unk_08, gTutorialTextBoxState.unk_0C, 0, 0, 0x9B, 0x7D);
         Font_BeginTranslucentTextRendering();
         Font_SetActive(2, 0);
         Font_SetLineHeight(0xC);
-        Font_Printf(0x46, 0x9F - (D_8690B3C0.unk_0C / 2), D_8690B3D0);
+        Font_Printf(0x46, 0x9F - (gTutorialTextBoxState.unk_0C / 2), gTutorialTextBoxCharBuffer);
         Font_EndTexturedTextRendering();
     }
 }

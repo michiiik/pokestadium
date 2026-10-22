@@ -37,11 +37,11 @@ void Audio_SetChannelVolume(s32 arg0, u32 arg1) {
     }
 
     if (arg0 & 1) {
-        D_80078E64 = var_a1;
+        gMusicChannel1MasterVolume = var_a1;
     }
 
     if (arg0 & 2) {
-        D_80078E60 = var_a1;
+        gMusicChannel2MasterVolume = var_a1;
     }
 
     Audio_QueueSetVolumeCommand(arg0, var_a1);
@@ -54,18 +54,18 @@ void Audio_SetMonoOutput(s32 arg0) {
 void Audio_SetPauseMixMode(u32 arg0) {
     switch (arg0) {
         case 1:
-            Audio_QueueFadeSoundCommand(D_80078E68, 3);
-            Audio_QueueSetVolumeCommand(2, D_80078E60 >> 1);
-            Audio_QueueSetVolumeCommand(1, D_80078E64 / 3);
-            D_80078E68 = Audio_PlaySoundEffectById(SFX_PAUSE);
-            Audio_QueueVoiceVolumeScale(D_80078E68, 0xFF);
+            Audio_QueueFadeSoundCommand(gMusicTransitionSfxId, 3);
+            Audio_QueueSetVolumeCommand(2, gMusicChannel2MasterVolume >> 1);
+            Audio_QueueSetVolumeCommand(1, gMusicChannel1MasterVolume / 3);
+            gMusicTransitionSfxId = Audio_PlaySoundEffectById(SFX_PAUSE);
+            Audio_QueueVoiceVolumeScale(gMusicTransitionSfxId, 0xFF);
             break;
 
         case 0:
-            Audio_QueueFadeSoundCommand(D_80078E68, 3);
-            Audio_QueueSetVolumeCommand(2, D_80078E60);
-            Audio_QueueSetVolumeCommand(1, D_80078E64);
-            D_80078E68 = Audio_PlaySoundEffectById(SFX_RESUME);
+            Audio_QueueFadeSoundCommand(gMusicTransitionSfxId, 3);
+            Audio_QueueSetVolumeCommand(2, gMusicChannel2MasterVolume);
+            Audio_QueueSetVolumeCommand(1, gMusicChannel1MasterVolume);
+            gMusicTransitionSfxId = Audio_PlaySoundEffectById(SFX_RESUME);
             break;
 
         case 2:
@@ -77,9 +77,9 @@ void Audio_SetPauseMixMode(u32 arg0) {
             break;
 
         case 4:
-            Audio_QueueFadeSoundCommand(D_80078E68, 3);
-            Audio_QueueSetVolumeCommand(2, D_80078E60);
-            Audio_QueueSetVolumeCommand(1, D_80078E64);
+            Audio_QueueFadeSoundCommand(gMusicTransitionSfxId, 3);
+            Audio_QueueSetVolumeCommand(2, gMusicChannel2MasterVolume);
+            Audio_QueueSetVolumeCommand(1, gMusicChannel1MasterVolume);
             break;
     }
 }
@@ -93,10 +93,10 @@ void Audio_BeginVolumeTransition(u32 arg0) {
 
     temp_v0 = osSetIntMask(1);
 
-    D_80077DD4 = D_80078E60;
-    D_80077DDC = D_80078E64;
-    D_80077DD8 = D_80077DD4 / arg0;
-    D_80077DE0 = D_80077DDC / arg0;
+    gMusicChannel2Volume = gMusicChannel2MasterVolume;
+    gMusicChannel1Volume = gMusicChannel1MasterVolume;
+    gMusicChannel2Step = gMusicChannel2Volume / arg0;
+    gMusicChannel1Step = gMusicChannel1Volume / arg0;
     mus_sound_effect_blocked = 1;
 
     osSetIntMask(temp_v0);
@@ -106,11 +106,11 @@ void Audio_ResetVolumeTransition(void) {
     u32 temp_v0 = osSetIntMask(1);
 
     mus_sound_effect_blocked = 0;
-    D_80077DD4 = 0.0f;
-    D_80077DDC = 0.0f;
+    gMusicChannel2Volume = 0.0f;
+    gMusicChannel1Volume = 0.0f;
 
     osSetIntMask(temp_v0);
 
-    Audio_QueueSetVolumeCommand(2, D_80078E60);
-    Audio_QueueSetVolumeCommand(1, D_80078E64);
+    Audio_QueueSetVolumeCommand(2, gMusicChannel2MasterVolume);
+    Audio_QueueSetVolumeCommand(1, gMusicChannel1MasterVolume);
 }

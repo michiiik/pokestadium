@@ -8,8 +8,8 @@ typedef struct unk_func_80016B30_arg0 {
     /* 0x06 */ s16 unk_06;
 } unk_func_80016B30_arg0; // size = 0x8
 
-static unk_D_800ABCC0 D_800ABCC0[2];
-static s32 D_800ABCF0;
+static unk_D_800ABCC0 gAnimChannels[2];
+static s32 gCurrentAnimChannelIdx;
 
 f32 ModelAnim_EvaluateTranslationChannel(unk_D_800ABCC0* arg0, s32 arg1) {
     f32 ret;
@@ -254,7 +254,7 @@ s32 ModelAnim_AdvanceCurveFrame(TransformAnimRaw* arg0, u16 arg1) {
 }
 
 void ModelAnim_ResetCurveContext(void) {
-    D_800ABCF0 = -1;
+    gCurrentAnimChannelIdx = -1;
 }
 
 void ModelAnim_BeginCurveContext(TransformAnimState* arg0, u16 arg1, s32 arg2) {
@@ -263,9 +263,9 @@ void ModelAnim_BeginCurveContext(TransformAnimState* arg0, u16 arg1, s32 arg2) {
 
     temp_s1 = arg0->data;
 
-    D_800ABCF0++;
-    if (D_800ABCF0 < 2) {
-        temp_s0 = &D_800ABCC0[D_800ABCF0];
+    gCurrentAnimChannelIdx++;
+    if (gCurrentAnimChannelIdx < 2) {
+        temp_s0 = &gAnimChannels[gCurrentAnimChannelIdx];
         if (arg0->data != NULL) {
             if (arg2 != 0) {
                 arg0->frameFixed = ModelAnim_AdvanceCurveFrame(arg0, arg1);
@@ -292,14 +292,14 @@ void ModelAnim_BeginCurveContext(TransformAnimState* arg0, u16 arg1, s32 arg2) {
 }
 
 void ModelAnim_EndCurveContext(void) {
-    if (D_800ABCF0 >= 0) {
-        D_800ABCF0--;
+    if (gCurrentAnimChannelIdx >= 0) {
+        gCurrentAnimChannelIdx--;
     }
 }
 
 void ModelAnim_EvaluateJointTransform(Vec3f* arg0, Vec3s* arg1, Vec3f* arg2, s32 arg3) {
-    if ((D_800ABCF0 >= 0) && (D_800ABCF0 < 2)) {
-        unk_D_800ABCC0* temp_s0 = &D_800ABCC0[D_800ABCF0];
+    if ((gCurrentAnimChannelIdx >= 0) && (gCurrentAnimChannelIdx < 2)) {
+        unk_D_800ABCC0* temp_s0 = &gAnimChannels[gCurrentAnimChannelIdx];
 
         if ((temp_s0->unk_00 == 1) && (arg3 >= 0) && (arg3 + 2 < temp_s0->unk_04->channelCount)) {
             if (temp_s0->unk_01 & 8) {

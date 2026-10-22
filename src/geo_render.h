@@ -3,12 +3,12 @@
 
 #include "global.h"
 
-typedef struct unk_D_800AB970 {
+typedef struct ScaleStack {
     /* 0x000 */ Vec3f unk_000[1];
     /* 0x00C */ char unk00C[0x174];
     /* 0x180 */ s32 unk_180;
     /* 0x184 */ char unk184[0xC];
-} unk_D_800AB970; // size = 0x190?
+} ScaleStack; // size = 0x190?
 
 typedef struct unk_D_800ABB00 {
     /* 0x00 */ void* unk_00;
@@ -16,7 +16,7 @@ typedef struct unk_D_800ABB00 {
     /* 0x08 */ char unk08[0x8];
 } unk_D_800ABB00; // size >= 0x10?
 
-typedef struct unk_D_800ABB28 {
+typedef struct LayerState {
     /* 0x00 */ s32 unk_00;
     /* 0x04 */ Gfx* unk_04;
     /* 0x08 */ Gfx* unk_08;
@@ -24,15 +24,15 @@ typedef struct unk_D_800ABB28 {
     /* 0x10 */ Color_RGBA8_u32 unk_10;
     /* 0x14 */ Color_RGBA8_u32 unk_14;
     /* 0x18 */ unk_D_86002F34_alt11_018* unk_18;
-    /* 0x1C */ struct unk_D_800ABB28* unk_1C;
+    /* 0x1C */ struct LayerState* unk_1C;
     /* 0x20 */ Gfx* unk_20;
     /* 0x24 */ u8 unk_24;
     /* 0x24 */ u8 unk_25;
     /* 0x24 */ u8 unk_26;
     /* 0x24 */ u8 unk_27;
-} unk_D_800ABB28; // size = 0x28
+} LayerState; // size = 0x28
 
-typedef struct unk_D_800ABB10 {
+typedef struct RenderState {
     /* 0x00 */ u8 unk_00;
     /* 0x01 */ u8 unk_01;
     /* 0x02 */ u8 unk_02;
@@ -40,19 +40,19 @@ typedef struct unk_D_800ABB10 {
     /* 0x04 */ Color_RGBA8_u32 unk_04;
     /* 0x08 */ Color_RGBA8_u32 unk_08;
     /* 0x0C */ unk_D_86002F34_alt11_018* unk_0C;
-    /* 0x10 */ unk_D_800ABB28* unk_10;
+    /* 0x10 */ LayerState* unk_10;
     /* 0x14 */ Gfx* unk_14;
-} unk_D_800ABB10; // size = 0x18?
+} RenderState; // size = 0x18?
 
-extern s32 D_8006F080;
-extern u16 D_8006F084;
-extern CameraNode* D_8006F088;
-extern unk_D_86002F34_alt1* D_8006F08C;
-extern unk_D_86002F34_alt1* D_8006F090;
-extern CameraNode* D_8006F094;
-extern unk_D_86002F34_alt1* D_8006F098;
-extern DisplayObject* D_8006F09C;
-extern unk_D_86002F34_alt11* D_8006F0A0;
+extern s32 gRenderFrameCounter;
+extern u16 gAnimationFrame;
+extern CameraNode* gCurrentCameraNode;
+extern unk_D_86002F34_alt1* gCurrentTextureNode;
+extern unk_D_86002F34_alt1* gCurrentLightNode;
+extern CameraNode* gActiveCameraNode;
+extern unk_D_86002F34_alt1* gActiveNode;
+extern DisplayObject* gDefaultGraphRoot;
+extern unk_D_86002F34_alt11* gActiveShadowContextNode;
 
 void GeoRender_InitMatrixStack(void);
 void GeoRender_CommitMatrix(void);
@@ -65,7 +65,7 @@ void GeoRender_ResetTransformStack(void);
 void GeoRender_PushScale(Vec3f* arg0);
 Vtx* GeoOverlay_BuildFadeQuad(CameraOverlay* arg0, CameraOrthographic* arg1);
 void GeoOverlay_DrawFadeQuad(CameraOverlay* arg0, CameraOrthographic* arg1);
-void func_80012870(Vtx* arg0, CameraOverlay* arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, s16 arg6, s16 arg7);
+void Graph_MakeRotatedVertex(Vtx* arg0, CameraOverlay* arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5, s16 arg6, s16 arg7);
 Vtx* GeoOverlay_BuildRotatingQuad(CameraOverlay* arg0);
 void GeoOverlay_DrawRotatingQuad(CameraOverlay* arg0, UNUSED CameraOrthographic* arg1);
 void GeoOverlay_Draw(CameraOverlay* arg0, CameraOrthographic* arg1);
@@ -81,7 +81,7 @@ void Geo_NodeBackground(GraphNode* arg0);
 void Geo_NodeClearDepth(UNUSED GraphNode* arg0);
 void Geo_NodeType9Empty(UNUSED GraphNode* arg0);
 void Geo_NodeFog(GraphNode* arg0);
-void func_80013D34(GraphNode* arg0);
+void Graph_AddLight(GraphNode* arg0);
 void Geo_NodeType12Empty(UNUSED GraphNode* arg0);
 void Geo_NodeAmbientLight(GraphNode* arg0);
 void Geo_NodeShadowContext(GraphNode* arg0);
@@ -110,13 +110,13 @@ void GeoRender_SetCombineMode(Gfx* arg0, arg1_func_81407874_014_000_010* arg1);
 void GeoRender_SyncMaterialState(void);
 void GeoRender_SetRenderMode(void);
 void GeoRender_ApplyMaterialState(void);
-void GeoRender_SetFogColor(unk_D_800ABB10* arg0);
-void GeoRender_RestoreRenderMode(UNUSED unk_D_800ABB10* arg0);
-void GeoRender_SetPrimitiveColor(unk_D_800ABB10* arg0);
-void GeoRender_SetCombineTableEntry(unk_D_800ABB10* arg0);
-void GeoRender_DisableTexture(UNUSED unk_D_800ABB10* arg0);
-void GeoRender_BindTexture(unk_D_800ABB10* arg0);
-void GeoRender_EnableTextureGeneration(UNUSED unk_D_800ABB10* arg0);
+void GeoRender_SetFogColor(RenderState* arg0);
+void GeoRender_RestoreRenderMode(UNUSED RenderState* arg0);
+void GeoRender_SetPrimitiveColor(RenderState* arg0);
+void GeoRender_SetCombineTableEntry(RenderState* arg0);
+void GeoRender_DisableTexture(UNUSED RenderState* arg0);
+void GeoRender_BindTexture(RenderState* arg0);
+void GeoRender_EnableTextureGeneration(UNUSED RenderState* arg0);
 void GeoRender_SelectMaterialSlot(s16 arg0);
 void GeoRender_SetTextureMode(s16 arg0);
 s16 GeoRender_NormalizeTextureFormat(s16 arg0);

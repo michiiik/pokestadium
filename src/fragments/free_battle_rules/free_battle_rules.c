@@ -14,49 +14,49 @@
 #include "src/memory.h"
 #include "src/stage_loader.h"
 
-typedef struct unk_D_84002D18 {
+typedef struct MenuSelection {
     /* 0x00 */ s16 unk_00;
     /* 0x02 */ s16 unk_02;
-} unk_D_84002D18; // size = 0x4
+} MenuSelection; // size = 0x4
 
-typedef struct unk_D_84002D28 {
+typedef struct RuleOptionWindow {
     /* 0x00 */ s16 unk_00;
     /* 0x02 */ s16 unk_02;
     /* 0x04 */ s16 unk_04;
     /* 0x06 */ s16 unk_06;
     /* 0x08 */ s16 unk_08;
-} unk_D_84002D28; // size >= 0xA
+} RuleOptionWindow; // size >= 0xA
 
-typedef struct unk_D_84002BE8 {
+typedef struct MenuEntry {
     /* 0x00 */ s16 unk_00;
     /* 0x02 */ s16 unk_02;
     /* 0x04 */ s16 unk_04;
     /* 0x06 */ s16 unk_06;
     /* 0x08 */ u8* unk_08;
     /* 0x0C */ u8* unk_0C;
-} unk_D_84002BE8; // size = 0x10
+} MenuEntry; // size = 0x10
 
-static char** D_84002D00;
-static char** D_84002D04;
+static char** gRuleMessageBank;
+static char** gOptionMessageBank;
 #if defined(VERSION_US_REV2)
 static s32 pad_D_84002D08_us_rev2;
 #endif
-static BinArchive* D_84002D08;
-static u8* D_84002D0C;
+static BinArchive* gRuleBackgroundArchive;
+static u8* gMenuBackgroundAtlas;
 static s32 pad_D_84002D10;
-static s16 D_84002D14;
-static s16 D_84002D16;
+static s16 gControllerInputMask;
+static s16 gRuleMenuState;
 #if defined(VERSION_US_REV2)
 static s32 pad_D_84002D18_us_rev2;
 #endif
-static unk_D_84002D18 D_84002D18;
+static MenuSelection gMenuSelection;
 static s32 pad_D_84002D1C;
-static s16 D_84002D20;
-static unk_D_84002D28 D_84002D28;
+static s16 gSelectedRuleOption;
+static RuleOptionWindow gRuleOptionWindow;
 
-static s16 D_84002BE0 = 2;
-static s16 D_84002BE4 = 0;
-static unk_D_84002BE8 D_84002BE8[11] = {
+static s16 gWindowAnimTimer = 2;
+static s16 gSelectedRuleValue = 0;
+static MenuEntry gMenuEntries[11] = {
     {
         1,
         0,
@@ -146,7 +146,7 @@ static unk_D_84002BE8 D_84002BE8[11] = {
         0x0300A5C0,
     },
 };
-static s16 D_84002C98[] = { 0, 3, 4, 5, 6, 0 };
+static s16 gRuleBattleIds[] = { 0, 3, 4, 5, 6, 0 };
 
 void FreeBattle_DrawHeaderImage(s16 arg0, s16 arg1) {
     gSPDisplayList(gDisplayListHead++, gUiEnvTintTextureDL);
@@ -168,7 +168,7 @@ void FreeBattle_DrawBannerImage(s16 arg0, s16 arg1) {
 }
 
 void FreeBattle_DrawTintedBar(s16 arg0, s16 arg1, s16 arg2, Color_RGBA8* arg3, Color_RGBA8* arg4) {
-    gSPDisplayList(gDisplayListHead++, D_8006F558);
+    gSPDisplayList(gDisplayListHead++, gDL_XluBorder);
     gDPSetEnvColor(gDisplayListHead++, arg3->r, arg3->g, arg3->b, 255);
     gDPSetPrimColor(gDisplayListHead++, 0, 0, arg4->r, arg4->g, arg4->b, 255);
 
@@ -190,16 +190,16 @@ void FreeBattle_DrawTitleBar(void) {
     Font_BeginTranslucentTextRendering();
     Font_SetActive(0x10, 0);
     Gfx_SetEnvColor(0, 0, 0, 0xFF);
-    Font_Printf(0x6A, 0x2C, Text_GetString(NULL, 0, D_84002D00, 0));
+    Font_Printf(0x6A, 0x2C, Text_GetString(NULL, 0, gRuleMessageBank, 0));
     Gfx_SetEnvColor(0xFF, 0xFF, 0x77, 0xFF);
-    Font_Printf(0x68, 0x2A, Text_GetString(NULL, 0, D_84002D00, 0));
+    Font_Printf(0x68, 0x2A, Text_GetString(NULL, 0, gRuleMessageBank, 0));
     Font_EndTexturedTextRendering();
 }
 
 void FreeBattle_DrawSelectionCorners(s16 arg0, s16 arg1, s16 arg2, s16 arg3) {
-    static s16 D_84002CA4 = 0;
+    static s16 gSelectionCornerAnimTimer = 0;
 
-    s16 sp56 = SINS(D_84002CA4) * 2;
+    s16 sp56 = SINS(gSelectionCornerAnimTimer) * 2;
     UNUSED s32 pad[2];
 
     gSPDisplayList(gDisplayListHead++, gUiEnvTintTextureDL);
@@ -212,7 +212,7 @@ void FreeBattle_DrawSelectionCorners(s16 arg0, s16 arg1, s16 arg2, s16 arg3) {
 
     gSPDisplayList(gDisplayListHead++, gUiRestoreTextureDL);
 
-    D_84002CA4 += 0x2000;
+    gSelectionCornerAnimTimer += 0x2000;
 }
 
 void FreeBattle_DrawPanelFrame(s16 arg0, s16 arg1, s16 arg2, s16 arg3) {
@@ -227,7 +227,7 @@ void FreeBattle_DrawPanelFrame(s16 arg0, s16 arg1, s16 arg2, s16 arg3) {
     Gfx_DrawTexturedRectClipped(arg0 + 4, (arg1 + arg3) - 5, arg2 - 8, 8, 0, 0, 0, 0x400, 0);
     Gfx_DrawTexturedRectClipped((arg0 + arg2) - 5, arg1 + 4, 8, arg3 - 8, 0, 0, 0x400, 0, 0);
 
-    gSPDisplayList(gDisplayListHead++, D_8006F470);
+    gSPDisplayList(gDisplayListHead++, gMenuDL_BackgroundFill);
 
     Gfx_FillRectRgb(arg0 + 4, arg1 + 4, arg2 - 8, arg3 - 8, 0x3C, 0x3C, 0xA0);
 
@@ -294,21 +294,21 @@ void FreeBattle_DrawSlicedFrame(s16 arg0, s16 arg1, s16 arg2, s16 arg3, u8 arg4,
 }
 
 s32 FreeBattle_IsRuleAvailable(s16 arg0) {
-    unk_D_84002BE8* ptr = &D_84002BE8[arg0];
+    MenuEntry* ptr = &gMenuEntries[arg0];
     s16 t = ptr->unk_00;
     s32 var_v1 = 0;
 
     if (arg0 < 4) {
-        if (D_84002D16 >= 2) {
-            var_v1 = arg0 == D_84002D18.unk_00;
+        if (gRuleMenuState >= 2) {
+            var_v1 = arg0 == gMenuSelection.unk_00;
         } else {
-            var_v1 = ptr->unk_00 == (ptr->unk_00 & D_84002D14);
+            var_v1 = ptr->unk_00 == (ptr->unk_00 & gControllerInputMask);
         }
     } else if (arg0 < 11) {
-        if (D_84002D16 >= 3) {
-            var_v1 = arg0 == (D_84002D18.unk_02 + 4);
+        if (gRuleMenuState >= 3) {
+            var_v1 = arg0 == (gMenuSelection.unk_02 + 4);
         } else {
-            s16 tmp = (~D_84002BE8[D_84002D18.unk_00].unk_00 & D_84002D14);
+            s16 tmp = (~gMenuEntries[gMenuSelection.unk_00].unk_00 & gControllerInputMask);
 
             var_v1 = ptr->unk_00 == (ptr->unk_00 & tmp);
         }
@@ -330,7 +330,7 @@ void FreeBattle_DrawRuleGrid(void) {
     s16 temp_s2;
     s16 temp_s3;
     s32 var_t1;
-    unk_D_84002BE8* ptr;
+    MenuEntry* ptr;
     s16 tmp1;
     s16 tmp2;
 
@@ -340,8 +340,8 @@ void FreeBattle_DrawRuleGrid(void) {
     gSPDisplayList(gDisplayListHead++, gUiEnvTintTextureDL);
 
     for (i = 0; i < 11; i++) {
-        temp_s2 = D_84002BE8[i].unk_04 + 0x64;
-        temp_s3 = D_84002BE8[i].unk_06 + 0x72;
+        temp_s2 = gMenuEntries[i].unk_04 + 0x64;
+        temp_s3 = gMenuEntries[i].unk_06 + 0x72;
 
         if (FreeBattle_IsRuleAvailable(i) != 0) {
             var_t1 = 0xFF;
@@ -351,9 +351,9 @@ void FreeBattle_DrawRuleGrid(void) {
 
         gDPSetEnvColor(gDisplayListHead++, var_t1, var_t1, var_t1, var_t1);
 
-        Gfx_DrawTextureRgba16(temp_s2, temp_s3, 0x24, 0x1A, D_84002BE8[i].unk_08, 0x24, 0);
-        if (D_84002BE8[i].unk_0C != NULL) {
-            Gfx_DrawTextureRgba16(temp_s2 + 0x30, temp_s3, 0x24, 0x1A, D_84002BE8[i].unk_0C, 0x24, 0);
+        Gfx_DrawTextureRgba16(temp_s2, temp_s3, 0x24, 0x1A, gMenuEntries[i].unk_08, 0x24, 0);
+        if (gMenuEntries[i].unk_0C != NULL) {
+            Gfx_DrawTextureRgba16(temp_s2 + 0x30, temp_s3, 0x24, 0x1A, gMenuEntries[i].unk_0C, 0x24, 0);
         }
     }
 
@@ -363,29 +363,29 @@ void FreeBattle_DrawRuleGrid(void) {
     Font_SetActive(0x10, 0);
 
     for (i = 0; i < 11; i++) {
-        if (D_84002BE8[i].unk_0C != NULL) {
-            FreeBattle_DrawRuleMark(D_84002BE8[i].unk_04 + 0x87, D_84002BE8[i].unk_06 + 0x73, i);
+        if (gMenuEntries[i].unk_0C != NULL) {
+            FreeBattle_DrawRuleMark(gMenuEntries[i].unk_04 + 0x87, gMenuEntries[i].unk_06 + 0x73, i);
         }
     }
 
     Font_SetActive(0x10, 0);
 
-    if ((D_84002D16 == 1) || (D_84002D16 == 2)) {
+    if ((gRuleMenuState == 1) || (gRuleMenuState == 2)) {
         Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
     } else {
         Gfx_SetEnvColor(0x78, 0x78, 0xC8, 0xFF);
     }
 
-    Font_Printf(0x64, 0x5A, Text_GetString(NULL, 0, D_84002D00, 1));
+    Font_Printf(0x64, 0x5A, Text_GetString(NULL, 0, gRuleMessageBank, 1));
     Font_EndTexturedTextRendering();
 
-    if (D_84002D16 == 1) {
-        ptr = &D_84002BE8[D_84002D18.unk_00];
+    if (gRuleMenuState == 1) {
+        ptr = &gMenuEntries[gMenuSelection.unk_00];
         tmp1 = ptr->unk_04 + 0x64;
         tmp2 = ptr->unk_06 + 0x72;
         FreeBattle_DrawSelectionCorners(tmp1 - 4, tmp2 - 2, ((ptr->unk_0C == NULL) ? 0x24 : 0x54) + 8, 0x1E);
-    } else if (D_84002D16 == 2) {
-        ptr = &D_84002BE8[D_84002D18.unk_02];
+    } else if (gRuleMenuState == 2) {
+        ptr = &gMenuEntries[gMenuSelection.unk_02];
         tmp1 = ptr[4].unk_04 + 0x64;
         tmp2 = ptr[4].unk_06 + 0x72;
         FreeBattle_DrawSelectionCorners(tmp1 - 4, tmp2 - 2, ((ptr[4].unk_0C == NULL) ? 0x24 : 0x54) + 8, 0x1E);
@@ -393,35 +393,35 @@ void FreeBattle_DrawRuleGrid(void) {
 }
 
 void FreeBattle_UpdateRuleRowSelect(void) {
-    s32 sp24 = D_84002D18.unk_00;
+    s32 sp24 = gMenuSelection.unk_00;
 
     if (BTN_IS_PRESSED(gPlayer1Controller, BTN_A)) {
         Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
-        D_84002D18.unk_02 = 0;
-        while (FreeBattle_IsRuleAvailable(D_84002D18.unk_02 + 4) == 0) {
-            D_84002D18.unk_02++;
+        gMenuSelection.unk_02 = 0;
+        while (FreeBattle_IsRuleAvailable(gMenuSelection.unk_02 + 4) == 0) {
+            gMenuSelection.unk_02++;
         }
-        D_84002D16 = 2;
+        gRuleMenuState = 2;
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_B)) {
         Audio_PlaySoundEffectById(SFX_MENU_BACK);
-        D_84002D16 = 8;
+        gRuleMenuState = 8;
     } else {
         do {
             if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DUP)) {
-                D_84002D18.unk_00 = (D_84002D18.unk_00 + 3) % 4;
+                gMenuSelection.unk_00 = (gMenuSelection.unk_00 + 3) % 4;
             } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DDOWN)) {
-                D_84002D18.unk_00 = (D_84002D18.unk_00 + 1) % 4;
+                gMenuSelection.unk_00 = (gMenuSelection.unk_00 + 1) % 4;
             }
-        } while (FreeBattle_IsRuleAvailable(D_84002D18.unk_00) == 0);
+        } while (FreeBattle_IsRuleAvailable(gMenuSelection.unk_00) == 0);
 
-        if (sp24 != D_84002D18.unk_00) {
+        if (sp24 != gMenuSelection.unk_00) {
             Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
         }
     }
 }
 
 void FreeBattle_UpdateRuleOptionSelect(void) {
-    s32 sp34 = D_84002D18.unk_02;
+    s32 sp34 = gMenuSelection.unk_02;
     s32 i;
     s32 var_a0;
     s32 var_s1;
@@ -429,11 +429,11 @@ void FreeBattle_UpdateRuleOptionSelect(void) {
 
     if (BTN_IS_PRESSED(gPlayer1Controller, BTN_A)) {
         Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
-        if (D_84002D18.unk_02 == 3) {
-            D_84002D16 = 5;
+        if (gMenuSelection.unk_02 == 3) {
+            gRuleMenuState = 5;
         } else {
-            D_84002D20 = 0;
-            D_84002D16 = 3;
+            gSelectedRuleOption = 0;
+            gRuleMenuState = 3;
         }
         return;
     }
@@ -441,13 +441,13 @@ void FreeBattle_UpdateRuleOptionSelect(void) {
     var_s4 = 0;
     if (BTN_IS_PRESSED(gPlayer1Controller, BTN_B)) {
         Audio_PlaySoundEffectById(SFX_MENU_BACK);
-        D_84002D18.unk_02 = -1;
-        D_84002D16 = 1;
+        gMenuSelection.unk_02 = -1;
+        gRuleMenuState = 1;
         return;
     }
 
-    var_a0 = D_84002D18.unk_02 / 4;
-    var_s1 = D_84002D18.unk_02 % 4;
+    var_a0 = gMenuSelection.unk_02 / 4;
+    var_s1 = gMenuSelection.unk_02 % 4;
 
     if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DLEFT) && (var_a0 == 1)) {
         var_a0 = 0;
@@ -472,28 +472,28 @@ void FreeBattle_UpdateRuleOptionSelect(void) {
         }
 
         if (i != 4) {
-            D_84002D18.unk_02 = var_a0 * 4 + var_s1;
+            gMenuSelection.unk_02 = var_a0 * 4 + var_s1;
         }
     }
 
-    if (sp34 != D_84002D18.unk_02) {
+    if (sp34 != gMenuSelection.unk_02) {
         Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
     }
 }
 
 void FreeBattle_ClearRuleSelection(void) {
-    D_84002D18.unk_00 = -1;
-    D_84002D18.unk_02 = -1;
+    gMenuSelection.unk_00 = -1;
+    gMenuSelection.unk_02 = -1;
 }
 
 s32 FreeBattle_SelectionHasSubrule(void) {
     s32 var_v1 = 0;
 
-    if ((D_84002D18.unk_00 != -1) && (D_84002BE8[D_84002D18.unk_00].unk_0C != 0)) {
+    if ((gMenuSelection.unk_00 != -1) && (gMenuEntries[gMenuSelection.unk_00].unk_0C != 0)) {
         var_v1 = 1;
     }
 
-    if ((D_84002D18.unk_02 != -1) && (D_84002BE8[D_84002D18.unk_02 + 4].unk_0C != 0)) {
+    if ((gMenuSelection.unk_02 != -1) && (gMenuEntries[gMenuSelection.unk_02 + 4].unk_0C != 0)) {
         var_v1 = 1;
     }
     return var_v1;
@@ -502,7 +502,7 @@ s32 FreeBattle_SelectionHasSubrule(void) {
 void FreeBattle_DrawLevelOptionLine(s16 arg0, s16 arg1, s16 arg2, char* arg3) {
     if ((arg2 != 0) && (FreeBattle_SelectionHasSubrule() != 0)) {
         Gfx_SetEnvColor(0x3C, 0x3C, 0x3C, 0xFF);
-    } else if (arg2 == D_84002D20) {
+    } else if (arg2 == gSelectedRuleOption) {
         Gfx_SetEnvColor(0xFF, 0xFF, 0, 0xFF);
     } else {
         Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
@@ -510,7 +510,7 @@ void FreeBattle_DrawLevelOptionLine(s16 arg0, s16 arg1, s16 arg2, char* arg3) {
     Font_Printf(arg0, arg1 + (arg2 * 0x18), arg3);
 }
 
-void func_84001AD8(void) {
+void FreeBattle_DummyFunc(void) {
 }
 
 void FreeBattle_DrawLevelSelectPanel(void) {
@@ -520,94 +520,94 @@ void FreeBattle_DrawLevelSelectPanel(void) {
     FreeBattle_DrawSlicedFrame(0x64, 0x10C, 0x1B0, 0x84, 0, 0, 0, 0xFF);
     Font_BeginTranslucentTextRendering();
     Font_SetActive(8, 0);
-    FreeBattle_DrawLevelOptionLine(0x94, 0x114, 0, Text_GetString(NULL, 0, D_84002D00, 2));
-    FreeBattle_DrawLevelOptionLine(0x94, 0x114, 1, Text_GetString(NULL, 0, D_84002D00, 3));
-    FreeBattle_DrawLevelOptionLine(0x94, 0x114, 2, Text_GetString(NULL, 0, D_84002D00, 6));
-    FreeBattle_DrawLevelOptionLine(0x94, 0x114, 3, Text_GetString(NULL, 0, D_84002D00, 7));
-    FreeBattle_DrawLevelOptionLine(0x94, 0x114, 4, Text_GetString(NULL, 0, D_84002D00, 8));
+    FreeBattle_DrawLevelOptionLine(0x94, 0x114, 0, Text_GetString(NULL, 0, gRuleMessageBank, 2));
+    FreeBattle_DrawLevelOptionLine(0x94, 0x114, 1, Text_GetString(NULL, 0, gRuleMessageBank, 3));
+    FreeBattle_DrawLevelOptionLine(0x94, 0x114, 2, Text_GetString(NULL, 0, gRuleMessageBank, 6));
+    FreeBattle_DrawLevelOptionLine(0x94, 0x114, 3, Text_GetString(NULL, 0, gRuleMessageBank, 7));
+    FreeBattle_DrawLevelOptionLine(0x94, 0x114, 4, Text_GetString(NULL, 0, gRuleMessageBank, 8));
     Font_SetActive(4, 0);
 
-    sprintf(sp2C, "%s1~100", Text_GetString(NULL, 0, D_84002D04, 0x15));
+    sprintf(sp2C, "%s1~100", Text_GetString(NULL, 0, gOptionMessageBank, 0x15));
     FreeBattle_DrawLevelOptionLine(0x1AE, 0x118, 0, sp2C);
-    sprintf(sp2C, "%s50~55", Text_GetString(NULL, 0, D_84002D04, 0x15));
+    sprintf(sp2C, "%s50~55", Text_GetString(NULL, 0, gOptionMessageBank, 0x15));
     FreeBattle_DrawLevelOptionLine(0x1AE, 0x118, 1, sp2C);
-    sprintf(sp2C, "%s25~30", Text_GetString(NULL, 0, D_84002D04, 0x15));
+    sprintf(sp2C, "%s25~30", Text_GetString(NULL, 0, gOptionMessageBank, 0x15));
     FreeBattle_DrawLevelOptionLine(0x1AE, 0x118, 2, sp2C);
-    sprintf(sp2C, "%s15~20", Text_GetString(NULL, 0, D_84002D04, 0x15));
+    sprintf(sp2C, "%s15~20", Text_GetString(NULL, 0, gOptionMessageBank, 0x15));
     FreeBattle_DrawLevelOptionLine(0x1AE, 0x118, 3, sp2C);
-    sprintf(sp2C, "%s1~100", Text_GetString(NULL, 0, D_84002D04, 0x15));
+    sprintf(sp2C, "%s1~100", Text_GetString(NULL, 0, gOptionMessageBank, 0x15));
     FreeBattle_DrawLevelOptionLine(0x1AE, 0x118, 4, sp2C);
 
     Font_SetActive(0x10, 0);
 
-    if (D_84002D16 == 3) {
+    if (gRuleMenuState == 3) {
         Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
     } else {
         Gfx_SetEnvColor(0x78, 0x78, 0xC8, 0xFF);
     }
 
-    Font_Printf(0x64, 0xF4, Text_GetString(NULL, 0, D_84002D00, 9));
+    Font_Printf(0x64, 0xF4, Text_GetString(NULL, 0, gRuleMessageBank, 9));
     Font_EndTexturedTextRendering();
 
-    if (D_84002D16 == 3) {
-        Ui_DrawAnimatedTextureMarker(0x6C, (D_84002D20 * 0x18) + 0x114);
+    if (gRuleMenuState == 3) {
+        Ui_DrawAnimatedTextureMarker(0x6C, (gSelectedRuleOption * 0x18) + 0x114);
     }
 }
 
 void FreeBattle_UpdateLevelSelect(void) {
     if (BTN_IS_PRESSED(gPlayer1Controller, BTN_A)) {
         Audio_PlaySoundEffectById(0x26);
-        D_84002D16 = 7;
+        gRuleMenuState = 7;
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_B)) {
         Audio_PlaySoundEffectById(SFX_MENU_BACK);
-        D_84002D20 = -1;
-        D_84002D16 = 2;
+        gSelectedRuleOption = -1;
+        gRuleMenuState = 2;
     } else if (FreeBattle_SelectionHasSubrule() == 0) {
         if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DUP)) {
             Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
-            D_84002D20 = (D_84002D20 + 4) % 5;
+            gSelectedRuleOption = (gSelectedRuleOption + 4) % 5;
         } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DDOWN)) {
             Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
-            D_84002D20 = (D_84002D20 + 1) % 5;
+            gSelectedRuleOption = (gSelectedRuleOption + 1) % 5;
         }
     }
 }
 
 void FreeBattle_ClearLevelSelection(void) {
-    D_84002D20 = -1;
+    gSelectedRuleOption = -1;
 }
 
 void FreeBattle_DrawConfirmLine(s16 arg0, char* arg1) {
-    if (arg0 == D_84002D28.unk_08) {
+    if (arg0 == gRuleOptionWindow.unk_08) {
         Gfx_SetEnvColor(0xFF, 0xFF, 0, 0xFF);
     } else {
         Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
     }
-    Font_Printf(D_84002D28.unk_00 + 0x34, D_84002D28.unk_02 + (arg0 * 0x1C) + 0x2B, arg1);
+    Font_Printf(gRuleOptionWindow.unk_00 + 0x34, gRuleOptionWindow.unk_02 + (arg0 * 0x1C) + 0x2B, arg1);
 }
 
 #if defined(VERSION_US_REV2)
 #pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/free_battle_rules/free_battle_rules/FreeBattle_DrawConfirmPanel.s")
 #else
 void FreeBattle_DrawConfirmPanel(void) {
-    if (D_84002D28.unk_04 > 0) {
-        s16 tmp = D_84002D28.unk_04 * 0x11;
+    if (gRuleOptionWindow.unk_04 > 0) {
+        s16 tmp = gRuleOptionWindow.unk_04 * 0x11;
 
-        Ui_DrawBorderedPanel(D_84002D28.unk_00, D_84002D28.unk_02 + (s16)((0x88 - tmp) / 2), 0x98, tmp, 0x2121);
-        if (D_84002D28.unk_04 == 8) {
+        Ui_DrawBorderedPanel(gRuleOptionWindow.unk_00, gRuleOptionWindow.unk_02 + (s16)((0x88 - tmp) / 2), 0x98, tmp, 0x2121);
+        if (gRuleOptionWindow.unk_04 == 8) {
             gSPDisplayList(gDisplayListHead++, gUiEnvTintTextureDL);
 
-            Gfx_DrawTextureRgba16(D_84002D28.unk_00 + 0xC, D_84002D28.unk_02 + 0xA, 0x24, 0x1A, D_3008880, 0x24, 0);
+            Gfx_DrawTextureRgba16(gRuleOptionWindow.unk_00 + 0xC, gRuleOptionWindow.unk_02 + 0xA, 0x24, 0x1A, D_3008880, 0x24, 0);
 
             gSPDisplayList(gDisplayListHead++, gUiRestoreTextureDL);
 
-            Ui_DrawAnimatedTextureMarker(D_84002D28.unk_00 + 0xC, D_84002D28.unk_02 + (D_84002D28.unk_08 * 0x1C) + 0x2B);
+            Ui_DrawAnimatedTextureMarker(gRuleOptionWindow.unk_00 + 0xC, gRuleOptionWindow.unk_02 + (gRuleOptionWindow.unk_08 * 0x1C) + 0x2B);
             Font_BeginTranslucentTextRendering();
             Font_SetActive(0x10, 0);
-            Font_Printf(D_84002D28.unk_00 + 0x30, D_84002D28.unk_02 + 0xB, Text_GetString(NULL, 0, D_84002D00, 0xA));
-            FreeBattle_DrawConfirmLine(0, Text_GetString(NULL, 0, D_84002D00, 0xB));
-            FreeBattle_DrawConfirmLine(1, Text_GetString(NULL, 0, D_84002D00, 0xC));
-            FreeBattle_DrawConfirmLine(2, Text_GetString(NULL, 0, D_84002D00, 0xD));
+            Font_Printf(gRuleOptionWindow.unk_00 + 0x30, gRuleOptionWindow.unk_02 + 0xB, Text_GetString(NULL, 0, gRuleMessageBank, 0xA));
+            FreeBattle_DrawConfirmLine(0, Text_GetString(NULL, 0, gRuleMessageBank, 0xB));
+            FreeBattle_DrawConfirmLine(1, Text_GetString(NULL, 0, gRuleMessageBank, 0xC));
+            FreeBattle_DrawConfirmLine(2, Text_GetString(NULL, 0, gRuleMessageBank, 0xD));
             Font_EndTexturedTextRendering();
         }
     }
@@ -615,45 +615,45 @@ void FreeBattle_DrawConfirmPanel(void) {
 #endif
 
 void FreeBattle_InitConfirmPanel(void) {
-    D_84002D28.unk_00 = 0x190;
-    D_84002D28.unk_02 = 0x64;
-    D_84002D28.unk_04 = 0;
-    D_84002D28.unk_08 = 1;
+    gRuleOptionWindow.unk_00 = 0x190;
+    gRuleOptionWindow.unk_02 = 0x64;
+    gRuleOptionWindow.unk_04 = 0;
+    gRuleOptionWindow.unk_08 = 1;
 }
 
 void FreeBattle_OpenConfirmPanel(void) {
-    D_84002BE0 = 2;
-    D_84002D28.unk_04++;
-    if (D_84002D28.unk_04 == 8) {
-        D_84002D16 = 4;
+    gWindowAnimTimer = 2;
+    gRuleOptionWindow.unk_04++;
+    if (gRuleOptionWindow.unk_04 == 8) {
+        gRuleMenuState = 4;
     }
 }
 
 void FreeBattle_CloseConfirmPanel(void) {
-    D_84002BE0 = 2;
-    D_84002D28.unk_04--;
-    if (D_84002D28.unk_04 == 0) {
-        D_84002D16 = D_84002D28.unk_06;
+    gWindowAnimTimer = 2;
+    gRuleOptionWindow.unk_04--;
+    if (gRuleOptionWindow.unk_04 == 0) {
+        gRuleMenuState = gRuleOptionWindow.unk_06;
     }
 }
 
 void FreeBattle_UpdateConfirmDialog(void) {
     if (BTN_IS_PRESSED(gPlayer1Controller, BTN_A)) {
-        D_84002BE4 = D_84002D28.unk_08;
-        D_84002D28.unk_06 = 3;
-        D_84002D20 = 0;
-        D_84002D16 = 6;
+        gSelectedRuleValue = gRuleOptionWindow.unk_08;
+        gRuleOptionWindow.unk_06 = 3;
+        gSelectedRuleOption = 0;
+        gRuleMenuState = 6;
         Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_B)) {
-        D_84002D28.unk_06 = 2;
-        D_84002D16 = 6;
+        gRuleOptionWindow.unk_06 = 2;
+        gRuleMenuState = 6;
         Audio_PlaySoundEffectById(SFX_MENU_BACK);
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DUP)) {
         Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
-        D_84002D28.unk_08 = (D_84002D28.unk_08 + 2) % 3;
+        gRuleOptionWindow.unk_08 = (gRuleOptionWindow.unk_08 + 2) % 3;
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DDOWN)) {
         Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
-        D_84002D28.unk_08 = (D_84002D28.unk_08 + 1) % 3;
+        gRuleOptionWindow.unk_08 = (gRuleOptionWindow.unk_08 + 1) % 3;
     }
 }
 
@@ -665,9 +665,9 @@ void FreeBattle_PollInputs(void) {
 
 void FreeBattle_DrawFrame(void) {
     BgStage_DrawFrame();
-    if (D_84002BE0 > 0) {
+    if (gWindowAnimTimer > 0) {
         FreeBattle_DrawPanelFrame(0x4C, 0x54, 0x1E8, 0x150);
-        D_84002BE0 -= 1;
+        gWindowAnimTimer -= 1;
     }
     FreeBattle_DrawRuleGrid();
     FreeBattle_DrawLevelSelectPanel();
@@ -684,7 +684,7 @@ void FreeBattle_FadeIn(void) {
         for (i = 0; i < 10; i++) {
             Controller_PollInputs();
             BgStage_DrawFrame();
-            Gfx_DrawTiledRgba16Image(D_84002D0C);
+            Gfx_DrawTiledRgba16Image(gMenuBackgroundAtlas);
             BgStage_AdvanceFrame();
         }
     }
@@ -698,7 +698,7 @@ void FreeBattle_FadeOut(void) {
     while (StageContext_GetFadeMode() != 1) {
         Controller_PollInputs();
         BgStage_DrawFrame();
-        Gfx_DrawTiledRgba16Image(D_84002D0C);
+        Gfx_DrawTiledRgba16Image(gMenuBackgroundAtlas);
         BgStage_AdvanceFrame();
     }
 
@@ -714,7 +714,7 @@ void FreeBattle_SlideInPanel(void) {
     for (i = 0x10; i < 0x170; i += 0x20) {
         FreeBattle_PollInputs();
         BgStage_DrawFrame();
-        Gfx_DrawTiledRgba16Image(D_84002D0C);
+        Gfx_DrawTiledRgba16Image(gMenuBackgroundAtlas);
         FreeBattle_DrawTitleBar();
         tmp = i;
         tmp = (0x150 - tmp) / 2;
@@ -729,7 +729,7 @@ void FreeBattle_SlideOutPanel(void) {
     for (i = 9; i >= 0; i--) {
         FreeBattle_PollInputs();
         BgStage_DrawFrame();
-        Gfx_DrawTiledRgba16Image(D_84002D0C);
+        Gfx_DrawTiledRgba16Image(gMenuBackgroundAtlas);
         FreeBattle_DrawTitleBar();
         FreeBattle_DrawPanelFrame(0x4C, (s16)((0x16C - (s16)(0xE + i * 0x23)) / 2) + 0x54, 0x1E8, 0xE + i * 0x23);
         BgStage_AdvanceFrame();
@@ -737,7 +737,7 @@ void FreeBattle_SlideOutPanel(void) {
 
     for (i = 0; i < 2; i++) {
         BgStage_DrawFrame();
-        Gfx_DrawTiledRgba16Image(D_84002D0C);
+        Gfx_DrawTiledRgba16Image(gMenuBackgroundAtlas);
         BgStage_AdvanceFrame();
     }
 }
@@ -750,27 +750,27 @@ void FreeBattle_ApplyRuleSelection(void) {
     TeamRoster* temp_v0;
     s32 i;
 
-    Session_SetMode(0, D_84002C98[D_84002D20], 0);
+    Session_SetMode(0, gRuleBattleIds[gSelectedRuleOption], 0);
 
     for (i = 0; i < 4; i++) {
-        if (D_84002BE8[D_84002D18.unk_00].unk_00 & (1 << i)) {
+        if (gMenuEntries[gMenuSelection.unk_00].unk_00 & (1 << i)) {
             sprintf(sp44, "%dP", i + 1);
             Team_AddTrainer(0, Trainer_Create(i, 0, sp44, Text_GetPlayerLabel(1)));
         }
     }
 
-    if (D_84002D18.unk_02 == 3) {
-        gSessionContext.aiDifficulty = D_84002BE4;
+    if (gMenuSelection.unk_02 == 3) {
+        gSessionContext.aiDifficulty = gSelectedRuleValue;
         temp_v0 = Trainer_Create(-1, 0, "COM", Text_GetPlayerLabel(3));
         Team_AddTrainer(1, temp_v0);
-        if (D_84002D18.unk_00 == 3) {
+        if (gMenuSelection.unk_00 == 3) {
             temp_v0->unk_001 = 2;
         } else {
             temp_v0->unk_001 = 3;
         }
     } else {
         for (i = 0; i < 4; i++) {
-            if (D_84002BE8[D_84002D18.unk_02 + 4].unk_00 & (1 << i)) {
+            if (gMenuEntries[gMenuSelection.unk_02 + 4].unk_00 & (1 << i)) {
                 sprintf(sp44, "%dP", i + 1);
                 Team_AddTrainer(1, Trainer_Create(i, 0, sp44, Text_GetPlayerLabel(1)));
             }
@@ -790,19 +790,19 @@ void FreeBattle_ApplyRuleSelection(void) {
 #endif
 
 s32 FreeBattle_RuleSelectLoop(void) {
-    D_84002D16 = 0;
+    gRuleMenuState = 0;
     Audio_PlayMusicIfChanged(0x2D);
     FreeBattle_ClearRuleSelection();
     FreeBattle_ClearLevelSelection();
     FreeBattle_InitConfirmPanel();
     FreeBattle_FadeIn();
     FreeBattle_SlideInPanel();
-    D_84002D16 = 1;
-    D_84002D18.unk_00 = 0;
+    gRuleMenuState = 1;
+    gMenuSelection.unk_00 = 0;
 
-    while ((D_84002D16 != 7) && (D_84002D16 != 8)) {
+    while ((gRuleMenuState != 7) && (gRuleMenuState != 8)) {
         FreeBattle_PollInputs();
-        switch (D_84002D16) {
+        switch (gRuleMenuState) {
             case 1:
                 FreeBattle_UpdateRuleRowSelect();
                 break;
@@ -825,7 +825,7 @@ s32 FreeBattle_RuleSelectLoop(void) {
         FreeBattle_DrawFrame();
     }
 
-    if (D_84002D16 == 8) {
+    if (gRuleMenuState == 8) {
         FreeBattle_SlideOutPanel();
         FreeBattle_FadeOut();
         return 0;
@@ -849,11 +849,11 @@ s32 FreeBattle_RuleSelectMain(s32 arg0, s32 arg1) {
     ASSET_LOAD(D_2000000, common_menu2_ui, 0);
     ASSET_LOAD(D_3000000, order_select_ui, 0);
     Text_InitStringTables();
-    D_84002D00 = Text_GetStringTable(0xF);
-    D_84002D04 = Text_GetStringTable(6);
-    D_84002D08 = ASSET_LOAD2(backgrounds, 1, 1);
-    D_84002D0C = BinArchive_GetFile(D_84002D08, 6);
-    D_84002D14 = Cont_GetControllerBits();
+    gRuleMessageBank = Text_GetStringTable(0xF);
+    gOptionMessageBank = Text_GetStringTable(6);
+    gRuleBackgroundArchive = ASSET_LOAD2(backgrounds, 1, 1);
+    gMenuBackgroundAtlas = BinArchive_GetFile(gRuleBackgroundArchive, 6);
+    gControllerInputMask = Cont_GetControllerBits();
     StageLoader_UpdateSegments();
     sp1C = FreeBattle_RuleSelectLoop();
     StageLoader_WaitForRetrace();

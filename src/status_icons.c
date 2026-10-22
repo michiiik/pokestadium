@@ -1,18 +1,18 @@
 /**
  * Pokemon species data. Despite the file name, the two icon-index helpers at the
- * bottom are the only code here; the bulk is the base stats table D_8006FF00
+ * bottom are the only code here; the bulk is the base stats table gSpeciesDisplayTable
  * (152 species, aliased as gBaseStats) plus the name tables it indexes:
  *
  *   .data    sPokemonNames   writable name slots, filled in at runtime
- *            D_8006FF00      152 species records, three fields per record
+ *            gSpeciesDisplayTable      152 species records, three fields per record
  *                            pointing at that species' name slot
  *   .rodata  sStatusNames    7 slots, indexed by Status_ToDisplayIconIndex()
  *            sTypeNames      16 slots, indexed by PokemonType_ToDisplayIndex()
  *            sMoveNames      165 move slots, never localised
- *            D_8007BB50..    item names, dead data
+ *            gItemNameMasterBall..    item names, dead data
  *
  * The Japanese build (VERSION_JP) has real text instead of placeholders: .data holds one
- * Pokedex entry per record ahead of D_8006FF00, and .rodata holds the species names and
+ * Pokedex entry per record ahead of gSpeciesDisplayTable, and .rodata holds the species names and
  * categories, sStatusNames and one array per type and move name.
  */
 #include "status_icons.h"
@@ -521,7 +521,7 @@ const char sMoveName162[0xC] = "きりさく";
 const char sMoveName163[0xC] = "みがわり";
 const char sMoveName164[0xC] = "わるあがき";
 
-// Pokedex entry texts, one per D_8006FF00 record; each record's unk_18 points at its
+// Pokedex entry texts, one per gSpeciesDisplayTable record; each record's unk_18 points at its
 // entry. Record 152 (the substitute doll) has one too.
 static char sPokedexText001[0x6C] = "せなかの　きゅうこんのような　ふくろは\nからだと　ともに　そだつ。なかには\nタネが　たくさん　はいっている。";
 static char sPokedexText002[0x68] = "せなかの　つぼみは　ようぶんを\nからだから　もらっているらしい。\nそだつと　おおきなはなが　さくという。";
@@ -676,7 +676,7 @@ static char sPokedexText150[0x70] = "いでんしの　くみかえで　うみ�
 static char sPokedexText151[0x74] = "ぜつめつしてしまったと　おもわれていた\nみなみアメリカの　まぼろしのポケモン。\nさいきん　みたひとが　ふえたという。";
 static char sPokedexText152[0x14] = "みがわりにんぎょう";
 
-unk_D_8006FF00 D_8006FF00[152] = {
+SpeciesDisplayParams gSpeciesDisplayTable[152] = {
     {
         0x01, 0x00, 1270,
         (char*) sSpeciesName001,
@@ -2049,7 +2049,7 @@ unk_D_8006FF00 D_8006FF00[152] = {
 
 #else
 // Pokemon name slots. Writable: ui_graphics fills these in at runtime via
-// HAL_Strcpy(D_8006FF00[i].name, ...); the shipped contents are placeholders.
+// HAL_Strcpy(gSpeciesDisplayTable[i].name, ...); the shipped contents are placeholders.
 static char sPokemonNames[152][0xC] = {
     "pmname_001", "pmname_002", "pmname_003", "pmname_004",
     "pmname_005", "pmname_006", "pmname_007", "pmname_008",
@@ -2091,7 +2091,7 @@ static char sPokemonNames[152][0xC] = {
     "pmname_149", "pmname_150", "pmname_151", "pmname_152",
 };
 
-unk_D_8006FF00 D_8006FF00[152] = {
+SpeciesDisplayParams gSpeciesDisplayTable[152] = {
     {
         0x01, 0x00, 1270,
         sPokemonNames[0],
@@ -3497,89 +3497,89 @@ const char sMoveNames[166][8] = {
 #endif
 
 // Item names. Dead data: nothing references these any more.
-const char D_8007BB50[0x10] = "マスターボール";
-const char D_8007BB60[0x10] = "ハイパーボール";
-const char D_8007BB70[0x10] = "スーパーボール";
-const char D_8007BB80[0x14] = "モンスターボール";
-const char D_8007BB94[0x10] = "タウンマップ";
-const char D_8007BBA4[0xC] = "じてんしゃ";
-const char D_8007BBB0[0xC] = "？？？？？";
-const char D_8007BBBC[0x10] = "サファリボール";
-const char D_8007BBCC[0x10] = "ポケモンずかん";
-const char D_8007BBDC[0xC] = "つきのいし";
-const char D_8007BBE8[0xC] = "どくけし";
-const char D_8007BBF4[0x10] = "やけどなおし";
-const char D_8007BC04[0x10] = "こおりなおし";
-const char D_8007BC14[0x10] = "ねむけざまし";
-const char D_8007BC24[0xC] = "まひなおし";
-const char D_8007BC30[0x14] = "かいふくのくすり";
-const char D_8007BC44[0x14] = "まんたんのくすり";
-const char D_8007BC58[0x14] = "すごいキズぐすり";
-const char D_8007BC6C[0x10] = "いいキズぐすり";
-const char D_8007BC7C[0xC] = "キズぐすり";
-const char D_8007BC88[0x10] = "グレーバッジ";
-const char D_8007BC98[0x10] = "ブルーバッジ";
-const char D_8007BCA8[0x10] = "オレンジバッジ";
-const char D_8007BCB8[0x14] = "レインボーバッジ";
-const char D_8007BCCC[0x10] = "ピンクバッジ";
-const char D_8007BCDC[0x10] = "ゴールドバッジ";
-const char D_8007BCEC[0x14] = "クリムゾンバッジ";
-const char D_8007BD00[0x10] = "グリーンバッジ";
-const char D_8007BD10[0x10] = "あなぬけのヒモ";
-const char D_8007BD20[0x14] = "むしよけスプレー";
-const char D_8007BD34[0x10] = "ひみつのコハク";
-const char D_8007BD44[0x10] = "ほのおのいし";
-const char D_8007BD54[0x10] = "かみなりのいし";
-const char D_8007BD64[0xC] = "みずのいし";
-const char D_8007BD70[0x10] = "マックスアップ";
-const char D_8007BD80[0xC] = "タウリン";
-const char D_8007BD8C[0x10] = "ブロムヘキシン";
-const char D_8007BD9C[0x10] = "インドメタシン";
-const char D_8007BDAC[0xC] = "リゾチウム";
-const char D_8007BDB8[0x10] = "ふしぎなアメ";
-const char D_8007BDC8[0x10] = "こうらのカセキ";
-const char D_8007BDD8[0x10] = "かいのカセキ";
-const char D_8007BDE8[0x10] = "ひみつのカギ";
-const char D_8007BDF8[0xC] = "？？？？？";
-const char D_8007BE04[0x10] = "ひきかえけん";
-const char D_8007BE14[0x10] = "ヨクアタール";
-const char D_8007BE24[0x10] = "リーフのいし";
-const char D_8007BE34[0xC] = "カードキー";
-const char D_8007BE40[0xC] = "きんのたま";
-const char D_8007BE4C[0x10] = "ポイントアップ";
-const char D_8007BE5C[0x14] = "ピッピにんぎょう";
-const char D_8007BE70[0x10] = "なんでもなおし";
-const char D_8007BE80[0x10] = "げんきのかけら";
-const char D_8007BE90[0x14] = "げんきのかたまり";
-const char D_8007BEA4[0x14] = "エフェクトガード";
-const char D_8007BEB8[0x14] = "シルバースプレー";
-const char D_8007BECC[0x14] = "ゴールドスプレー";
-const char D_8007BEE0[0x14] = "クリティカッター";
-const char D_8007BEF4[0x8] = "コイン";
-const char D_8007BEFC[0x10] = "おいしいみず";
-const char D_8007BF0C[0x10] = "サイコソーダ";
-const char D_8007BF1C[0x10] = "ミックスオレ";
-const char D_8007BF2C[0x10] = "ふねのチケット";
-const char D_8007BF3C[0x10] = "きんのいれば";
-const char D_8007BF4C[0x10] = "プラスパワー";
-const char D_8007BF5C[0x10] = "ディフェンダー";
-const char D_8007BF6C[0xC] = "スピーダー";
-const char D_8007BF78[0x14] = "スペシャルアップ";
-const char D_8007BF8C[0x10] = "コインケース";
-const char D_8007BF9C[0x10] = "おとどけもの";
-const char D_8007BFAC[0x14] = "ダウジングマシン";
-const char D_8007BFC0[0x10] = "シルフスコープ";
-const char D_8007BFD0[0x10] = "ポケモンのふえ";
-const char D_8007BFE0[0x14] = "エレベータのカギ";
-const char D_8007BFF4[0x14] = "がくしゅうそうち";
-const char D_8007C008[0x10] = "ボロのつりざお";
-const char D_8007C018[0x10] = "いいつりざお";
-const char D_8007C028[0x10] = "すごいつりざお";
-const char D_8007C038[0x10] = "ポイントアップ";
-const char D_8007C048[0x10] = "ピーピーエイド";
-const char D_8007C058[0x14] = "ピーピーリカバー";
-const char D_8007C06C[0x14] = "ピーピーエイダー";
-const char D_8007C080[0x14] = "ピーピーマックス";
+const char gItemNameMasterBall[0x10] = "マスターボール";
+const char gItemNameUltraBall[0x10] = "ハイパーボール";
+const char gItemNameGreatBall[0x10] = "スーパーボール";
+const char gItemNamePokeBall[0x14] = "モンスターボール";
+const char gItemNameTownMap[0x10] = "タウンマップ";
+const char gItemNameBicycle[0xC] = "じてんしゃ";
+const char gItemNameSurfboard[0xC] = "？？？？？";
+const char gItemNameSafariBall[0x10] = "サファリボール";
+const char gItemNamePokedex[0x10] = "ポケモンずかん";
+const char gItemNameMoonStone[0xC] = "つきのいし";
+const char gItemNameAntidote[0xC] = "どくけし";
+const char gItemNameBurnHeal[0x10] = "やけどなおし";
+const char gItemNameIceHeal[0x10] = "こおりなおし";
+const char gItemNameAwakening[0x10] = "ねむけざまし";
+const char gItemNameParlyzHeal[0xC] = "まひなおし";
+const char gItemNameFullRestore[0x14] = "かいふくのくすり";
+const char gItemNameMaxPotion[0x14] = "まんたんのくすり";
+const char gItemNameHyperPotion[0x14] = "すごいキズぐすり";
+const char gItemNameSuperPotion[0x10] = "いいキズぐすり";
+const char gItemNamePotion[0xC] = "キズぐすり";
+const char gItemNameBoulderBadge[0x10] = "グレーバッジ";
+const char gItemNameCascadeBadge[0x10] = "ブルーバッジ";
+const char gItemNameThunderBadge[0x10] = "オレンジバッジ";
+const char gItemNameRainbowBadge[0x14] = "レインボーバッジ";
+const char gItemNameSoulBadge[0x10] = "ピンクバッジ";
+const char gItemNameMarshBadge[0x10] = "ゴールドバッジ";
+const char gItemNameVolcanoBadge[0x14] = "クリムゾンバッジ";
+const char gItemNameEarthBadge[0x10] = "グリーンバッジ";
+const char gItemNameEscapeRope[0x10] = "あなぬけのヒモ";
+const char gItemNameRepel[0x14] = "むしよけスプレー";
+const char gItemNameOldAmber[0x10] = "ひみつのコハク";
+const char gItemNameFireStone[0x10] = "ほのおのいし";
+const char gItemNameThunderStone[0x10] = "かみなりのいし";
+const char gItemNameWaterStone[0xC] = "みずのいし";
+const char gItemNameHpUp[0x10] = "マックスアップ";
+const char gItemNameProtein[0xC] = "タウリン";
+const char gItemNameIron[0x10] = "ブロムヘキシン";
+const char gItemNameCarbos[0x10] = "インドメタシン";
+const char gItemNameCalcium[0xC] = "リゾチウム";
+const char gItemNameRareCandy[0x10] = "ふしぎなアメ";
+const char gItemNameDomeFossil[0x10] = "こうらのカセキ";
+const char gItemNameHelixFossil[0x10] = "かいのカセキ";
+const char gItemNameSecretKey[0x10] = "ひみつのカギ";
+const char gItemNameUnknown[0xC] = "？？？？？";
+const char gItemNameBikeVoucher[0x10] = "ひきかえけん";
+const char gItemNameXAccuracy[0x10] = "ヨクアタール";
+const char gItemNameLeafStone[0x10] = "リーフのいし";
+const char gItemNameCardKey[0xC] = "カードキー";
+const char gItemNameNugget[0xC] = "きんのたま";
+const char gItemNamePpUpUnusedSlot[0x10] = "ポイントアップ";
+const char gItemNamePokeDoll[0x14] = "ピッピにんぎょう";
+const char gItemNameFullHeal[0x10] = "なんでもなおし";
+const char gItemNameRevive[0x10] = "げんきのかけら";
+const char gItemNameMaxRevive[0x14] = "げんきのかたまり";
+const char gItemNameGuardSpec[0x14] = "エフェクトガード";
+const char gItemNameSuperRepel[0x14] = "シルバースプレー";
+const char gItemNameMaxRepel[0x14] = "ゴールドスプレー";
+const char gItemNameDireHit[0x14] = "クリティカッター";
+const char gItemNameCoin[0x8] = "コイン";
+const char gItemNameFreshWater[0x10] = "おいしいみず";
+const char gItemNameSodaPop[0x10] = "サイコソーダ";
+const char gItemNameLemonade[0x10] = "ミックスオレ";
+const char gItemNameSSTicket[0x10] = "ふねのチケット";
+const char gItemNameGoldTeeth[0x10] = "きんのいれば";
+const char gItemNameXAttack[0x10] = "プラスパワー";
+const char gItemNameXDefend[0x10] = "ディフェンダー";
+const char gItemNameXSpeed[0xC] = "スピーダー";
+const char gItemNameXSpecial[0x14] = "スペシャルアップ";
+const char gItemNameCoinCase[0x10] = "コインケース";
+const char gItemNameOaksParcel[0x10] = "おとどけもの";
+const char gItemNameItemfinder[0x14] = "ダウジングマシン";
+const char gItemNameSilphScope[0x10] = "シルフスコープ";
+const char gItemNamePokeFlute[0x10] = "ポケモンのふえ";
+const char gItemNameLiftKey[0x14] = "エレベータのカギ";
+const char gItemNameExpAll[0x14] = "がくしゅうそうち";
+const char gItemNameOldRod[0x10] = "ボロのつりざお";
+const char gItemNameGoodRod[0x10] = "いいつりざお";
+const char gItemNameSuperRod[0x10] = "すごいつりざお";
+const char gItemNamePpUp[0x10] = "ポイントアップ";
+const char gItemNameEther[0x10] = "ピーピーエイド";
+const char gItemNameMaxEther[0x14] = "ピーピーリカバー";
+const char gItemNameElixir[0x14] = "ピーピーエイダー";
+const char gItemNameMaxElixir[0x14] = "ピーピーマックス";
 const char D_8007C094[0x4] = "";
 const char D_8007C098[0x4] = "";
 const char D_8007C09C[0x4] = "";

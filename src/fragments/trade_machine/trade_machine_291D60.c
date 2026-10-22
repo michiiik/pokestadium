@@ -5,11 +5,11 @@
 #include "src/text_system.h"
 #include "src/audio_sfx.h"
 
-static unk_D_82F210E0 D_82F210E0;
-static unk_func_82F00838_sp30_00C* D_82F21120[2];
-static s16 D_82F21128;
-static s32 D_82F2112C;
-static s32 D_82F21130;
+static RentalMenuState gRentalMenuState;
+static unk_func_82F00838_sp30_00C* gRentalItemPtrs[2];
+static s16 gRentalMenuCursorIndex;
+static s32 gRentalMenuSaveDirection;
+static s32 gRentalMenuSaveSlotIndex;
 
 s32 Trade_WriteDeckAndCommitCart(unk_func_82F00838_sp30* arg0) {
     DeckHandle* sp24;
@@ -31,7 +31,7 @@ s32 Trade_WriteDeckAndCommitCart(unk_func_82F00838_sp30* arg0) {
     return var_v1;
 }
 
-s32 Trade_StepCartWriteSequence(unk_D_82F210E0* arg0) {
+s32 Trade_StepCartWriteSequence(RentalMenuState* arg0) {
     s32 i;
     unk_func_82F00838_sp30* ptr;
     unk_func_82F00838_sp30 sp30[2];
@@ -87,7 +87,7 @@ s32 Trade_StepCartWriteSequence(unk_D_82F210E0* arg0) {
 
 void Trade_InitSaveSequence(s32 arg0) {
     UNUSED s32 pad;
-    unk_D_82F210E0* ptr = &D_82F210E0;
+    RentalMenuState* ptr = &gRentalMenuState;
     s32 i;
     unk_func_82F00838_sp30 sp2C;
 
@@ -107,12 +107,12 @@ void Trade_InitSaveSequence(s32 arg0) {
 
     for (i = 0; i < 2; i++) {
         Trade_GetPickScreenSnapshot(i, &sp2C);
-        D_82F21120[i] = &sp2C.unk_0C[sp2C.unk_06];
+        gRentalItemPtrs[i] = &sp2C.unk_0C[sp2C.unk_06];
     }
 
-    D_82F21128 = 0;
-    D_82F2112C = 0;
-    D_82F21130 = 0;
+    gRentalMenuCursorIndex = 0;
+    gRentalMenuSaveDirection = 0;
+    gRentalMenuSaveSlotIndex = 0;
 
     for (i = 0; i < 2; i++) {
         ptr->unk_14[i].unk_00 = ptr->unk_14[i].unk_02 = 0;
@@ -140,9 +140,9 @@ void Trade_InitSaveSequence(s32 arg0) {
     }
 }
 
-void Trade_UpdateSaveSeqPanelSlideIn(unk_D_82F210E0* arg0) {
+void Trade_UpdateSaveSeqPanelSlideIn(RentalMenuState* arg0) {
     s32 i;
-    unk_D_82F20A40_00E* ptr;
+    PanelRect* ptr;
 
     arg0->unk_02--;
 
@@ -182,7 +182,7 @@ void Trade_UpdateSaveSeqPanelSlideIn(unk_D_82F210E0* arg0) {
     }
 }
 
-void Trade_UpdateSaveSeqMenuInput(unk_D_82F210E0* arg0) {
+void Trade_UpdateSaveSeqMenuInput(RentalMenuState* arg0) {
     s32 var_t0 = 0;
     s32 var_a2;
     s16 tmp;
@@ -193,16 +193,16 @@ void Trade_UpdateSaveSeqMenuInput(unk_D_82F210E0* arg0) {
         var_a2 = 2;
     }
 
-    tmp = D_82F21128;
-    if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DUP) && (D_82F21128 > 0)) {
-        D_82F21128--;
+    tmp = gRentalMenuCursorIndex;
+    if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DUP) && (gRentalMenuCursorIndex > 0)) {
+        gRentalMenuCursorIndex--;
     }
 
-    if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DDOWN) && (D_82F21128 < (var_a2 - 1))) {
-        D_82F21128++;
+    if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DDOWN) && (gRentalMenuCursorIndex < (var_a2 - 1))) {
+        gRentalMenuCursorIndex++;
     }
 
-    if (D_82F21128 != tmp) {
+    if (gRentalMenuCursorIndex != tmp) {
         var_t0 = 0;
         Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
     }
@@ -211,23 +211,23 @@ void Trade_UpdateSaveSeqMenuInput(unk_D_82F210E0* arg0) {
         var_t0 = 1;
     } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_B) && !(arg0->unk_04 & 1)) {
         var_t0 = 1;
-        D_82F21128 = 1;
+        gRentalMenuCursorIndex = 1;
     }
 
     if (var_t0 != 0) {
         if (arg0->unk_04 & 1) {
-            switch (D_82F21128) {
+            switch (gRentalMenuCursorIndex) {
                 case 0:
                     arg0->unk_00 = 5;
                     arg0->unk_02 = 0xA;
-                    D_82F21130 = 0;
+                    gRentalMenuSaveSlotIndex = 0;
                     Audio_PlaySoundEffectById(0x1D);
                     break;
 
                 case 1:
                     arg0->unk_00 = 5;
                     arg0->unk_02 = 0xA;
-                    D_82F21130 = 1;
+                    gRentalMenuSaveSlotIndex = 1;
                     Audio_PlaySoundEffectById(0x22);
                     break;
 
@@ -235,7 +235,7 @@ void Trade_UpdateSaveSeqMenuInput(unk_D_82F210E0* arg0) {
                     arg0->unk_00 = 8;
                     arg0->unk_02 = 0xA;
                     arg0->unk_04 &= ~4;
-                    D_82F21130 = 0;
+                    gRentalMenuSaveSlotIndex = 0;
                     Audio_PlaySoundEffectById(SFX_MENU_BACK);
                     break;
             }
@@ -243,11 +243,11 @@ void Trade_UpdateSaveSeqMenuInput(unk_D_82F210E0* arg0) {
             arg0->unk_00 = 8;
             arg0->unk_02 = 0xA;
             arg0->unk_04 &= ~6;
-            if (D_82F21128 == 0) {
-                D_82F2112C = 1;
+            if (gRentalMenuCursorIndex == 0) {
+                gRentalMenuSaveDirection = 1;
                 Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
             } else {
-                D_82F2112C = 0;
+                gRentalMenuSaveDirection = 0;
                 Audio_PlaySoundEffectById(SFX_MENU_BACK);
             }
         }
@@ -255,7 +255,7 @@ void Trade_UpdateSaveSeqMenuInput(unk_D_82F210E0* arg0) {
     }
 }
 
-void Trade_UpdateSaveSeqConfirmWait(unk_D_82F210E0* arg0) {
+void Trade_UpdateSaveSeqConfirmWait(RentalMenuState* arg0) {
     arg0->unk_02--;
     if (BTN_IS_PRESSED(gPlayer1Controller, BTN_A)) {
         arg0->unk_02 = 0;
@@ -267,7 +267,7 @@ void Trade_UpdateSaveSeqConfirmWait(unk_D_82F210E0* arg0) {
     }
 }
 
-void Trade_UpdateSaveSeqPanelClose(unk_D_82F210E0* arg0) {
+void Trade_UpdateSaveSeqPanelClose(RentalMenuState* arg0) {
     arg0->unk_02--;
     arg0->unk_24.unk_00 = 0xA2 - (arg0->unk_02 * 0) / 10;
     arg0->unk_24.unk_02 = 0x116 - ((arg0->unk_02 * -0x2E) / 10);
@@ -279,7 +279,7 @@ void Trade_UpdateSaveSeqPanelClose(unk_D_82F210E0* arg0) {
     }
 }
 
-void Trade_UpdateSaveSeqPanelReopen(unk_D_82F210E0* arg0) {
+void Trade_UpdateSaveSeqPanelReopen(RentalMenuState* arg0) {
     arg0->unk_02--;
     arg0->unk_24.unk_00 = 0xA2 - (arg0->unk_02 * 0) / 10;
     arg0->unk_24.unk_02 = 0x144 - ((arg0->unk_02 * 0x2E) / 10);
@@ -291,7 +291,7 @@ void Trade_UpdateSaveSeqPanelReopen(unk_D_82F210E0* arg0) {
     }
 }
 
-void Trade_UpdateSaveSeqBeginWrite(unk_D_82F210E0* arg0) {
+void Trade_UpdateSaveSeqBeginWrite(RentalMenuState* arg0) {
     arg0->unk_02--;
     arg0->unk_34.unk_00 = 0xCC - (arg0->unk_02 * 0) / 10;
     arg0->unk_34.unk_02 = 0x134 - ((arg0->unk_02 * -0x1C) / 10);
@@ -309,7 +309,7 @@ void Trade_UpdateSaveSeqBeginWrite(unk_D_82F210E0* arg0) {
     }
 }
 
-void Trade_UpdateSaveSeqWriteCarts(unk_D_82F210E0* arg0) {
+void Trade_UpdateSaveSeqWriteCarts(RentalMenuState* arg0) {
     s32 temp_v0;
     unk_func_82F00838_sp30 sp24;
 
@@ -367,8 +367,8 @@ void Trade_UpdateSaveSeqWriteCarts(unk_D_82F210E0* arg0) {
     }
 }
 
-void Trade_UpdateSaveSeqPanelSlideOut(unk_D_82F210E0* arg0) {
-    unk_D_82F20A40_00E* temp_v1;
+void Trade_UpdateSaveSeqPanelSlideOut(RentalMenuState* arg0) {
+    PanelRect* temp_v1;
     s32 i;
 
     arg0->unk_02--;
@@ -431,8 +431,8 @@ void Trade_DrawSaveSeqBoxThumbnail(s16 arg0, s16 arg1, s16 arg2) {
 #if defined(VERSION_US_REV2)
 #pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/trade_machine/trade_machine_291D60/Trade_DrawSaveSeqBoxPanels.s")
 #else
-void Trade_DrawSaveSeqBoxPanels(unk_D_82F210E0* arg0) {
-    unk_D_82F20A40_00E* var_s0;
+void Trade_DrawSaveSeqBoxPanels(RentalMenuState* arg0) {
+    PanelRect* var_s0;
     s32 sp74[2];
     unk_func_82F00838_sp30_00C* temp_s3;
     s32 i;
@@ -481,7 +481,7 @@ void Trade_DrawSaveSeqBoxPanels(unk_D_82F210E0* arg0) {
 
     for (i = 0; i < 2; i++) {
         if (sp74[i] != 0) {
-            temp_s3 = D_82F21120[i];
+            temp_s3 = gRentalItemPtrs[i];
             var_s0 = &arg0->unk_14[i];
             Font_SetActive(4, 0);
             Font_Printf(var_s0->unk_00 + 0xA, var_s0->unk_02 + 0x4A, "No.");
@@ -502,9 +502,9 @@ void Trade_DrawSaveSeqBoxPanels(unk_D_82F210E0* arg0) {
 }
 #endif
 
-void Trade_DrawSaveSeqMenuPanel(unk_D_82F210E0* arg0) {
+void Trade_DrawSaveSeqMenuPanel(RentalMenuState* arg0) {
     s32 i;
-    unk_D_82F20A40_00E* var_s4 = &arg0->unk_24;
+    PanelRect* var_s4 = &arg0->unk_24;
     Color_RGB8* var_v0;
     s16 temp_ft3;
     s16 arg2;
@@ -538,14 +538,14 @@ void Trade_DrawSaveSeqMenuPanel(unk_D_82F210E0* arg0) {
     }
 
     {
-        static s16 D_82F13F78 = 0;
+        static s16 gSaveSeqMenuMarkerAnim = 0;
 
-        temp_ft3 = SINS(D_82F13F78) * 3.0f;
+        temp_ft3 = SINS(gSaveSeqMenuMarkerAnim) * 3.0f;
 
         if (arg0->unk_04 & 1) {
-            Ui_DrawTextureMarker(var_s4->unk_00 + temp_ft3 + 0x10, var_s4->unk_02 + (D_82F21128 * 0x1C) + 0x14);
+            Ui_DrawTextureMarker(var_s4->unk_00 + temp_ft3 + 0x10, var_s4->unk_02 + (gRentalMenuCursorIndex * 0x1C) + 0x14);
         } else {
-            Ui_DrawTextureMarker(var_s4->unk_00 + temp_ft3 + 0x18, var_s4->unk_02 + (D_82F21128 * 0x1C) + 0x32);
+            Ui_DrawTextureMarker(var_s4->unk_00 + temp_ft3 + 0x18, var_s4->unk_02 + (gRentalMenuCursorIndex * 0x1C) + 0x32);
         }
 
         Font_BeginTranslucentTextRendering();
@@ -570,7 +570,7 @@ void Trade_DrawSaveSeqMenuPanel(unk_D_82F210E0* arg0) {
             for (i = 0; i < 2; i++) {
                 sp48[0] = Text_GetString(NULL, 0, gTradeStrings, 0x17);
                 sp48[1] = Text_GetString(NULL, 0, gTradeStrings, 0x18);
-                if (i != D_82F21128) {
+                if (i != gRentalMenuCursorIndex) {
                     Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
                 } else {
                     Gfx_SetEnvColor(0xFF, 0xFF, 0, 0xFF);
@@ -582,13 +582,13 @@ void Trade_DrawSaveSeqMenuPanel(unk_D_82F210E0* arg0) {
         }
 
         Font_EndTexturedTextRendering();
-        D_82F13F78 += 0x1000;
+        gSaveSeqMenuMarkerAnim += 0x1000;
     }
 }
 
-void Trade_DrawSaveSeqBannerPanel(unk_D_82F210E0* arg0) {
+void Trade_DrawSaveSeqBannerPanel(RentalMenuState* arg0) {
     s32 sp34;
-    unk_D_82F20A40_00E* temp_s0 = &arg0->unk_2C;
+    PanelRect* temp_s0 = &arg0->unk_2C;
 
     if ((arg0->unk_2C.unk_04 != 0x210) || (arg0->unk_2C.unk_06 != 0)) {
         Trade_DrawRoundedFrameLarge(temp_s0->unk_00, temp_s0->unk_02, temp_s0->unk_04, temp_s0->unk_06, 0x1E, 0x1E, 0x82, 0xFF);
@@ -604,8 +604,8 @@ void Trade_DrawSaveSeqBannerPanel(unk_D_82F210E0* arg0) {
     }
 }
 
-void Trade_DrawSaveSeqSubBanner(unk_D_82F210E0* arg0) {
-    unk_D_82F20A40_00E* temp_s0 = &arg0->unk_34;
+void Trade_DrawSaveSeqSubBanner(RentalMenuState* arg0) {
+    PanelRect* temp_s0 = &arg0->unk_34;
     char* sp40;
     UNUSED s32 pad;
     Color_RGB8 sp38 = { 0x64, 0x1E, 0x1E };
@@ -639,10 +639,10 @@ void Trade_DrawSaveSeqMessageBackdrop(s16 arg0, s16 arg1, s16 arg2, s16 arg3) {
 #define U64_NOP(x) ((u32)((u64)(x) | 0ULL))
 
 #if defined(VERSION_US_REV2)
-#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/trade_machine/trade_machine_291D60/func_82F0BEF8.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/fragments/trade_machine/trade_machine_291D60/RentalMenu_DrawMessage.s")
 #else
-void func_82F0BEF8(unk_D_82F210E0* arg0) {
-    static s16 D_82F13F88 = 0;
+void RentalMenu_DrawMessage(RentalMenuState* arg0) {
+    static s16 gSaveSeqMessageAnim = 0;
 
     s32 pad[2];
     char sp38[64];
@@ -700,24 +700,24 @@ void func_82F0BEF8(unk_D_82F210E0* arg0) {
     }
 
     Font_EndTexturedTextRendering();
-    D_82F13F88 += 0x800;
+    gSaveSeqMessageAnim += 0x800;
 }
 #endif
 
 s32 Trade_GetSaveSeqState(void) {
-    return D_82F210E0.unk_00;
+    return gRentalMenuState.unk_00;
 }
 
 s32 Trade_GetSaveDirection(void) {
-    return D_82F2112C;
+    return gRentalMenuSaveDirection;
 }
 
 s32 Trade_GetSaveSlotIndex(void) {
-    return D_82F21130;
+    return gRentalMenuSaveSlotIndex;
 }
 
 void Trade_ResetSaveSeq(void) {
-    unk_D_82F210E0* ptr = &D_82F210E0;
+    RentalMenuState* ptr = &gRentalMenuState;
     s32 i;
 
     ptr->unk_00 = 0;
@@ -725,9 +725,9 @@ void Trade_ResetSaveSeq(void) {
     ptr->unk_04 = 0;
 
     for (i = 0; i < 2; i++) {
-        D_82F210E0.unk_14[i].unk_00 = D_82F210E0.unk_14[i].unk_02 = 0;
-        D_82F210E0.unk_14[i].unk_04 = 0xC8;
-        D_82F210E0.unk_14[i].unk_06 = 0;
+        gRentalMenuState.unk_14[i].unk_00 = gRentalMenuState.unk_14[i].unk_02 = 0;
+        gRentalMenuState.unk_14[i].unk_04 = 0xC8;
+        gRentalMenuState.unk_14[i].unk_06 = 0;
     }
 
     ptr->unk_24.unk_00 = 0;
@@ -744,12 +744,12 @@ void Trade_ResetSaveSeq(void) {
     ptr->unk_2C.unk_02 = ptr->unk_34.unk_02 = 0;
 
     for (i = 0; i < 2; i++) {
-        D_82F21120[i] = NULL;
+        gRentalItemPtrs[i] = NULL;
     }
 }
 
 void Trade_UpdateSaveSeq(void) {
-    unk_D_82F210E0* ptr = &D_82F210E0;
+    RentalMenuState* ptr = &gRentalMenuState;
 
     if (ptr->unk_00 == 0) {
         return;
@@ -757,35 +757,35 @@ void Trade_UpdateSaveSeq(void) {
 
     switch (ptr->unk_00) {
         case 1:
-            Trade_UpdateSaveSeqPanelSlideIn(&D_82F210E0);
+            Trade_UpdateSaveSeqPanelSlideIn(&gRentalMenuState);
             break;
 
         case 2:
-            Trade_UpdateSaveSeqMenuInput(&D_82F210E0);
+            Trade_UpdateSaveSeqMenuInput(&gRentalMenuState);
             break;
 
         case 3:
-            Trade_UpdateSaveSeqConfirmWait(&D_82F210E0);
+            Trade_UpdateSaveSeqConfirmWait(&gRentalMenuState);
             break;
 
         case 4:
-            Trade_UpdateSaveSeqPanelClose(&D_82F210E0);
+            Trade_UpdateSaveSeqPanelClose(&gRentalMenuState);
             break;
 
         case 5:
-            Trade_UpdateSaveSeqPanelReopen(&D_82F210E0);
+            Trade_UpdateSaveSeqPanelReopen(&gRentalMenuState);
             break;
 
         case 6:
-            Trade_UpdateSaveSeqBeginWrite(&D_82F210E0);
+            Trade_UpdateSaveSeqBeginWrite(&gRentalMenuState);
             break;
 
         case 7:
-            Trade_UpdateSaveSeqWriteCarts(&D_82F210E0);
+            Trade_UpdateSaveSeqWriteCarts(&gRentalMenuState);
             break;
 
         case 8:
-            Trade_UpdateSaveSeqPanelSlideOut(&D_82F210E0);
+            Trade_UpdateSaveSeqPanelSlideOut(&gRentalMenuState);
             break;
     }
 }
@@ -794,19 +794,19 @@ void Trade_DrawSaveSeq(void) {
 #if defined(VERSION_US_REV2)
     static s32 D_82F13F8C_us_rev2 = 0;
 #endif
-    static s16 D_82F13F8C[] = { 0x32, 0x14A };
+    static s16 gPortPanelYOffsets[] = { 0x32, 0x14A };
 
-    unk_D_82F210E0* ptr = &D_82F210E0;
+    RentalMenuState* ptr = &gRentalMenuState;
     s32 i;
 
     if (ptr->unk_00 != 0) {
         if (ptr->unk_12 != 0) {
-            Trade_DrawSaveSeqBoxPanels(&D_82F210E0);
+            Trade_DrawSaveSeqBoxPanels(&gRentalMenuState);
         }
 
-        Trade_DrawSaveSeqMenuPanel(&D_82F210E0);
-        Trade_DrawSaveSeqBannerPanel(&D_82F210E0);
-        Trade_DrawSaveSeqSubBanner(&D_82F210E0);
+        Trade_DrawSaveSeqMenuPanel(&gRentalMenuState);
+        Trade_DrawSaveSeqBannerPanel(&gRentalMenuState);
+        Trade_DrawSaveSeqSubBanner(&gRentalMenuState);
 
         if (ptr->unk_04 & 2) {
             Trade_DrawBoxMachineTransferArrows(0x120, 0x8C);
@@ -814,9 +814,9 @@ void Trade_DrawSaveSeq(void) {
 
         if (ptr->unk_04 & 4) {
             for (i = 0; i < 2; i++) {
-                Trade_DrawPortInfoPanel(i, D_82F13F8C[i], 0x2A);
+                Trade_DrawPortInfoPanel(i, gPortPanelYOffsets[i], 0x2A);
             }
         }
-        func_82F0BEF8(&D_82F210E0);
+        RentalMenu_DrawMessage(&gRentalMenuState);
     }
 }

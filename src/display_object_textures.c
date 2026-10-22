@@ -12,18 +12,18 @@ typedef struct ret_func_unk_D_800ABE10 {
     /* 0x00 */ char unk00[0x3];
     /* 0x03 */ u8 unk_03;
     /* 0x04 */ char unk04[0x4];
-    /* 0x08 */ unk_D_86002F34** unk_08;
+    /* 0x08 */ ShadowContextNode** unk_08;
     /* 0x0C */ char unk0C[0x8];
     /* 0x14 */ func_unk_D_800ABE10 unk_14;
 } ret_func_unk_D_800ABE10;
 
 // .bss
-unk_D_800ABE10 D_800ABE10;
+unk_D_800ABE10 gAssetManager;
 
-void func_80018C40(unk_D_86002F34* arg0, arg1_func_80010CA8 arg1) {
+void GeoLayout_ConvertTextures(ShadowContextNode* arg0, arg1_func_80010CA8 arg1) {
     s32 i;
     s32 j;
-    unk_D_86002F34_018* var_s2 = arg0->unk_18;
+    GfxTextureInfo* var_s2 = arg0->unk_18;
     unk_D_86002F34_01C* var_s4 = arg0->unk_1C;
 
     for (i = 0; i < arg0->unk_24; i++, var_s2++) {
@@ -103,7 +103,7 @@ Fragment* Fragment_LoadFromRomRange(MainPoolState* arg0, s32 start, s32 end, PER
     return var_v1;
 }
 
-Fragment* Fragment_LoadFromLbaRange(MainPoolState* arg0, unk_func_800041C0* arg1, PERSSZP* arg2, u32 arg3) {
+Fragment* Fragment_LoadFromLbaRange(MainPoolState* arg0, StorageRange* arg1, PERSSZP* arg2, u32 arg3) {
     s32 sp3C;
     Fragment* sp38;
     PERSSZP* temp_s1;
@@ -114,8 +114,8 @@ Fragment* Fragment_LoadFromLbaRange(MainPoolState* arg0, unk_func_800041C0* arg1
     if (arg3 >= sp3C) {
         temp_s1 = arg1->unk_04 + (u8*)arg2;
 
-        Storage_QueueDiskTransfer(0, arg2, arg1->unk_00, arg1->unk_02, &D_800ABE10.unk_9EC, 0);
-        osRecvMesg(&D_800ABE10.unk_9EC, NULL, 1);
+        Storage_QueueDiskTransfer(0, arg2, arg1->unk_00, arg1->unk_02, &gAssetManager.unk_9EC, 0);
+        osRecvMesg(&gAssetManager.unk_9EC, NULL, 1);
 
         if (((u32*)temp_s1->magic)[0] == 'PERS' && (((u32*)temp_s1->magic)[1] == '-SZP')) {
             sp38 = Yay0_AllocAndDecompressFragment(arg0, arg2, temp_s1);
@@ -141,7 +141,7 @@ Fragment* BinArchive_LoadFileFromRomRange(MainPoolState* arg0, BinArchive* arg1,
 }
 
 Fragment* BinArchive_LoadFileFromLbaRange(MainPoolState* arg0, BinArchive* arg1, BinArchiveFile* arg2, u32 arg3, s32 arg4) {
-    unk_func_800041C0 sp1C;
+    StorageRange sp1C;
 
     Storage_SetByteRange(&sp1C, arg1->unk_04, arg2->offset, arg2->size);
     return Fragment_LoadFromLbaRange(arg0, &sp1C, arg3, arg4);
@@ -178,7 +178,7 @@ Fragment* BinArchive_LoadFileToPool(MainPoolState* arg0, BinArchive* arg1, s32 a
 
 s32 Fragment_ProcessGeoLayout(MemoryBlock* arg0, Fragment* arg1, arg1_func_80010CA8 arg2) {
     s32 i;
-    unk_D_86002F34* temp_v0_2;
+    ShadowContextNode* temp_v0_2;
     ret_func_unk_D_800ABE10* temp_v0;
     ret_func_unk_D_800ABE10* (*func)(s32, s32) = arg1;
 
@@ -191,7 +191,7 @@ s32 Fragment_ProcessGeoLayout(MemoryBlock* arg0, Fragment* arg1, arg1_func_80010
         if (temp_v0_2->node.type == 0xE) {
             temp_v0_2->unk_28 = arg1;
             if (arg2.raw != 0) {
-                func_80018C40(temp_v0_2, arg2);
+                GeoLayout_ConvertTextures(temp_v0_2, arg2);
             }
         }
         temp_v0->unk_08[i] = temp_v0_2;
@@ -216,7 +216,7 @@ void PokeIcon_LoadModelArchive(unk_func_80019600* arg0) {
     Fragment* sp24;
 
     sp28 = MainPool_InitState(arg0->pool, arg0->size);
-    sp24 = BinArchive_LoadFileToPool(sp28, D_800ABE10.unk_A04.unk_00, arg0->unk_02, D_800ABE10.unk_A04.unk_08, 0x28000);
+    sp24 = BinArchive_LoadFileToPool(sp28, gAssetManager.unk_A04.unk_00, arg0->unk_02, gAssetManager.unk_A04.unk_08, 0x28000);
 
     if (sp24 != NULL) {
         arg0->unk_08 = Fragment_ProcessGeoLayout(sp28, sp24, arg0->unk_18);
@@ -240,7 +240,7 @@ void PokeIcon_LoadMultipleModels(unk_func_80019600* arg0) {
     var_s0 = arg0->unk_0C;
 
     while (*var_s0 != -1) {
-        temp_v0 = BinArchive_LoadFileToPool(temp_s3, D_800ABE10.unk_A04.unk_04, *var_s0, D_800ABE10.unk_A04.unk_08, 0x28000);
+        temp_v0 = BinArchive_LoadFileToPool(temp_s3, gAssetManager.unk_A04.unk_04, *var_s0, gAssetManager.unk_A04.unk_08, 0x28000);
         if (temp_v0 == NULL) {
             break;
         }
@@ -261,7 +261,7 @@ void PokeIcon_ThreadMain(UNUSED void* arg0) {
     __osSetFpcCsr(0x01000C01);
 
     while (true) {
-        osRecvMesg(&D_800ABE10.unk_9D0, &sp34, 1);
+        osRecvMesg(&gAssetManager.unk_9D0, &sp34, 1);
 
         switch (sp34->unk_00) {
             case 1:
@@ -280,10 +280,10 @@ void PokeIcon_ThreadMain(UNUSED void* arg0) {
 }
 
 void PokeIcon_StartThread(void) {
-    osCreateMesgQueue(&D_800ABE10.unk_9D0, &D_800ABE10.unk_9B0, 8);
-    osCreateMesgQueue(&D_800ABE10.unk_9EC, &D_800ABE10.unk_9E8, 1);
-    osCreateThread(&D_800ABE10.unk_000, 7, PokeIcon_ThreadMain, NULL, &D_800ABE10.unk_9B0, 0xA);
-    osStartThread(&D_800ABE10.unk_000);
+    osCreateMesgQueue(&gAssetManager.unk_9D0, &gAssetManager.unk_9B0, 8);
+    osCreateMesgQueue(&gAssetManager.unk_9EC, &gAssetManager.unk_9E8, 1);
+    osCreateThread(&gAssetManager.unk_000, 7, PokeIcon_ThreadMain, NULL, &gAssetManager.unk_9B0, 0xA);
+    osStartThread(&gAssetManager.unk_000);
 }
 
 ModelLoadContext* PokeIcon_AllocFramebuffers(u32 flags) {
@@ -323,18 +323,18 @@ ModelLoadContext* PokeIcon_AllocFramebuffers(u32 flags) {
 #pragma GLOBAL_ASM("asm/us/nonmatchings/display_object_textures/PokeIcon_OpenModelArchives.s")
 #else
 void PokeIcon_OpenModelArchives(void) {
-    D_800ABE10.unk_A04.unk_00 = BinArchive_Open(0x920000, NULL, 1, 1);
+    gAssetManager.unk_A04.unk_00 = BinArchive_Open(0x920000, NULL, 1, 1);
     // The second archive's ROM offset moved between releases: 0x8CC000 in US 1.0, 0x8C8000 in
     // the Japanese release (yamls/<version>/rom.yaml, the unnamed bin segment that keeps the US
     // offset 8CC000 as its name). European releases place it elsewhere again (Spain: 0x8A8000)
     // and still build this file from assembly, so they need their own value here before the file
     // can be C for them.
 #if defined(VERSION_JP)
-    D_800ABE10.unk_A04.unk_04 = BinArchive_Open(0x8C8000, NULL, 1, 1);
+    gAssetManager.unk_A04.unk_04 = BinArchive_Open(0x8C8000, NULL, 1, 1);
 #else
-    D_800ABE10.unk_A04.unk_04 = BinArchive_Open(0x8CC000, NULL, 1, 1);
+    gAssetManager.unk_A04.unk_04 = BinArchive_Open(0x8CC000, NULL, 1, 1);
 #endif
-    D_800ABE10.unk_A04.unk_08 = main_pool_alloc(0x28000, 1);
+    gAssetManager.unk_A04.unk_08 = main_pool_alloc(0x28000, 1);
 }
 #endif
 
@@ -364,7 +364,7 @@ s32 PokeIcon_RequestFrameLoad(ModelLoadContext* arg0, u16 arg1, arg1_func_80010C
             if ((arg0->loadedModel != NULL) && (arg0->loadedModel->modelId == arg1) && (arg0->colorVariant.raw == sp18->unk_18.raw)) {
                 osSendMesg(sp18->unk_04, sp18, 1);
             } else {
-                osSendMesg(&D_800ABE10.unk_9D0, sp18, 1);
+                osSendMesg(&gAssetManager.unk_9D0, sp18, 1);
             }
 
             arg0->pendingLoads |= 1;
@@ -398,7 +398,7 @@ s32 PokeIcon_RequestBackgroundLoad(ModelLoadContext* arg0, s32 arg1, s32 arg2) {
             temp_v0->unk_10 = arg0->backgroundBuffer;
             temp_v0->unk_14 = 0x18000;
 
-            osSendMesg(&D_800ABE10.unk_9D0, temp_v0, 1);
+            osSendMesg(&gAssetManager.unk_9D0, temp_v0, 1);
 
             sp1C = 1;
             arg0->pendingLoads |= 2;
@@ -473,13 +473,13 @@ s32 PokeIcon_WaitBackgroundLoad(ModelLoadContext* arg0) {
     return PokeIcon_ApplyLoadResult(arg0, sp1C);
 }
 
-unk_D_86002F30* Model_LoadByArchiveIndex(s32 arg0) {
+ModelData* Model_LoadByArchiveIndex(s32 arg0) {
     Fragment* sp2C;
     arg1_func_80010CA8 sp28;
-    unk_D_86002F30* sp24 = NULL;
+    ModelData* sp24 = NULL;
     MemoryBlock* sp20;
 
-    sp2C = BinArchive_GetFile(D_800ABE10.unk_A04.unk_00, arg0 - 1);
+    sp2C = BinArchive_GetFile(gAssetManager.unk_A04.unk_00, arg0 - 1);
     if (sp2C != NULL) {
         sp20 = MainPool_AllocState(main_pool_get_available(), 0);
         sp28.raw = 0;
@@ -490,13 +490,13 @@ unk_D_86002F30* Model_LoadByArchiveIndex(s32 arg0) {
     return sp24;
 }
 
-unk_D_86002F30* Model_LoadForPokemon(BattleMon* arg0) {
+ModelData* Model_LoadForPokemon(BattleMon* arg0) {
     Fragment* sp2C;
     arg1_func_80010CA8 sp28;
-    unk_D_86002F30* sp24 = NULL;
+    ModelData* sp24 = NULL;
     MemoryBlock* sp20;
 
-    sp2C = BinArchive_GetFile(D_800ABE10.unk_A04.unk_00, arg0->unk_00.unk_00 - 1);
+    sp2C = BinArchive_GetFile(gAssetManager.unk_A04.unk_00, arg0->unk_00.unk_00 - 1);
     if (sp2C != NULL) {
         sp20 = MainPool_AllocState(main_pool_get_available(), 0);
         Model_ComputeSizeVariant(&sp28, arg0);
@@ -512,7 +512,7 @@ s32 Model_LoadWithScale(s32 arg0, s32 arg1) {
     s32 sp24 = 0;
     MemoryBlock* sp20;
 
-    sp2C = BinArchive_GetFile(D_800ABE10.unk_A04.unk_00, arg0 - 1);
+    sp2C = BinArchive_GetFile(gAssetManager.unk_A04.unk_00, arg0 - 1);
     if (sp2C != NULL) {
         sp20 = MainPool_AllocState(main_pool_get_available(), 0);
         sp28.raw = 0;
@@ -529,7 +529,7 @@ arg1_func_80019420* BattleAnim_LoadResourceTable(s32 arg0) {
     MemoryBlock* sp1C;
 
     sp20 = NULL;
-    sp24 = BinArchive_GetFile(D_800ABE10.unk_A04.unk_04, arg0);
+    sp24 = BinArchive_GetFile(gAssetManager.unk_A04.unk_04, arg0);
     if (sp24 != NULL) {
         sp1C = MainPool_AllocState(main_pool_get_available(), 0);
         sp20 = sp24->data;

@@ -51,7 +51,7 @@ static u32 gGeoLayoutStack[16];
 static GraphNode* gCurGraphNodeList[32];
 static s16 gCurGraphNodeIndex;
 static s16 gGeoLayoutStackIndex;
-static s16 D_800ABDFC;
+static s16 gGeoLayoutStackDepth;
 static s16 gGeoLayoutReturnIndex;
 static u8* gGeoLayoutCommand;
 

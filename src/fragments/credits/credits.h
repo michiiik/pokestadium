@@ -3,26 +3,26 @@
 
 #include "global.h"
 
-typedef struct unk_D_86A025A0 {
+typedef struct StagePhaseInfo {
     /* 0x00 */ s8 unk_00;
     /* 0x01 */ s8 unk_01;
     /* 0x02 */ u16 unk_02;
-} unk_D_86A025A0; // size = 0x4
+} StagePhaseInfo; // size = 0x4
 
-typedef struct unk_D_86A02750 {
+typedef struct CreditRoleEntry {
     /* 0x00 */ s32 unk_00;
     /* 0x04 */ char* unk_04[2];
-} unk_D_86A02750; // size = 0xC
+} CreditRoleEntry; // size = 0xC
 
-typedef struct unk_D_86A03014 {
+typedef struct CreditsRolePage {
     /* 0x00 */ u16 unk_00;
     /* 0x02 */ u16 unk_02;
     /* 0x04 */ u8 unk_04;
     /* 0x05 */ u8 unk_05;
-    /* 0x08 */ unk_D_86A02750* unk_08;
-} unk_D_86A03014; // size = 0xC
+    /* 0x08 */ CreditRoleEntry* unk_08;
+} CreditsRolePage; // size = 0xC
 
-typedef struct unk_D_86A03170 {
+typedef struct CameraPosition {
     /* 0x00 */ s16 unk_00;
     /* 0x02 */ s16 unk_02;
     /* 0x04 */ s8 unk_04;
@@ -32,9 +32,9 @@ typedef struct unk_D_86A03170 {
     /* 0x10 */ f32 unk_10;
     /* 0x14 */ f32 unk_14;
     /* 0x18 */ f32 unk_18;
-} unk_D_86A03170; // size = 0x1C
+} CameraPosition; // size = 0x1C
 
-typedef struct unk_D_86A04328 {
+typedef struct CreditsMovingCamera {
     /* 0x00 */ Vec3f unk_00;
     /* 0x0C */ f32 unk_0C;
     /* 0x10 */ f32 unk_10;
@@ -45,15 +45,15 @@ typedef struct unk_D_86A04328 {
     /* 0x2C */ f32 unk_2C;
     /* 0x30 */ f32 unk_30;
     /* 0x34 */ f32 unk_34;
-} unk_D_86A04328; // size = 0x38
+} CreditsMovingCamera; // size = 0x38
 
-extern unk_D_86A03170 D_86A03170[17][6];
+extern CameraPosition gStageCameraPositions[17][6];
 
-extern u16 D_86A05B50;
-extern char D_86A05B60;
-extern char D_86A05B64;
-extern char D_86A05B68;
-extern char D_86A05B6C;
+extern u16 gBorderFadeCycleCount;
+extern char gCreditsString00;
+extern char gCreditsMessageTable;
+extern char gCreditsString01;
+extern char gCreditsString01Len;
 extern char D_86A05B70;
 extern char D_86A05B74;
 extern char D_86A05B78;
@@ -425,21 +425,21 @@ extern char D_86A0612C;
 extern char D_86A06130;
 extern char D_86A06134;
 
-extern u8 D_86A06210;
-extern u8 D_86A06211;
+extern u8 gPhaseDelta;
+extern u8 gUnusedTimer1;
 
-extern Vec3f D_86A06248;
+extern Vec3f gCreditsCameraPivot;
 
 s32 Credits_BackgroundNodePostCallback(s32 arg0, GraphNode* arg1);
-void func_86A013C8(u8 arg0, u8 arg1, unk_D_86A03014* arg2);
-void func_86A01490(void);
+void MessageSequence_Init(u8 arg0, u8 arg1, CreditsRolePage* arg2);
+void Stage_UpdateLogic(void);
 void Credits_DrawRoleList(void);
 
 u16 Credits_GetRoleCount(void);
 
 void Credits_InitCameraKeyframeBlend(CameraNode*, u16, s8, u8);
 void Credits_StepCameraKeyframeBlend(void);
-void func_86A01CF0(s16*, s16*, s16*, CameraNode*, u16, s8, u8);
+void Camera_SetupForPhase(s16*, s16*, s16*, CameraNode*, u16, s8, u8);
 void Credits_StepCameraYawBlend(void);
 void Credits_SelectNextScene(s8*, u8*);
 

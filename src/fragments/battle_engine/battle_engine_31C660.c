@@ -92,7 +92,7 @@ void BattleAnim_CallbackOwnerModelTintPulseDetach(Particle* arg0) {
     }
 }
 
-void func_8433209C(void) {
+void BattleAnim_EmptyCallback(void) {
 }
 
 void BattleAnim_CallbackOwnerModelTintHoldFadeDetach(Particle* arg0) {

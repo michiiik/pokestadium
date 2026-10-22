@@ -4,15 +4,15 @@
 #include "global.h"
 #include "src/game_state.h"
 
-typedef struct unk_D_82305A28 {
+typedef struct EventBattleState {
     /* 0x00 */ u8 unk_00;
     /* 0x01 */ u8 unk_01;
     /* 0x02 */ s16 unk_02;
     /* 0x04 */ s16 unk_04;
     /* 0x06 */ s16 unk_06;
-} unk_D_82305A28; // size = 0x8
+} EventBattleState; // size = 0x8
 
-typedef struct unk_D_82305A50 {
+typedef struct RuleCard {
     /* 0x00 */ u8 unk_00;
     /* 0x01 */ u8 unk_01;
     /* 0x02 */ s16 unk_02;
@@ -25,7 +25,7 @@ typedef struct unk_D_82305A50 {
     /* 0x14 */ s16 unk_14;
     /* 0x16 */ s16 unk_16;
     /* 0x18 */ s16 unk_18;
-} unk_D_82305A50; // size = 0x1C
+} RuleCard; // size = 0x1C
 
 typedef struct SlidingPanel {
     /* 0x00 */ u8 unk_00;
@@ -35,7 +35,7 @@ typedef struct SlidingPanel {
     /* 0x06 */ s16 unk_06;
 } SlidingPanel; // size = 0x8
 
-typedef struct unk_D_82305A40 {
+typedef struct BattleSettings {
     /* 0x00 */ u8 unk_00;
     /* 0x00 */ u8 unk_01;
     /* 0x02 */ s16 unk_02;
@@ -44,9 +44,9 @@ typedef struct unk_D_82305A40 {
     /* 0x08 */ s16 unk_08;
     /* 0x0A */ s16 unk_0A;
     /* 0x0C */ s16 unk_0C;
-} unk_D_82305A40; // size = 0x10
+} BattleSettings; // size = 0x10
 
-typedef struct unk_D_82305AF8 {
+typedef struct TrainerCard {
     /* 0x0000 */ u8 unk_0000;
     /* 0x0001 */ u8 unk_0001;
     /* 0x0002 */ u8 unk_0002;
@@ -63,15 +63,15 @@ typedef struct unk_D_82305AF8 {
     /* 0x0018 */ char unk0018[0x8];
     /* 0x0020 */ BattleMon unk_0020[6];
     /* 0x0218 */ u8 unk_0218[6][0xC80];
-} unk_D_82305AF8; // size = 0x4D18
+} TrainerCard; // size = 0x4D18
 
-typedef struct unk_D_8230F528 {
+typedef struct OptionLabel {
     /* 0x00 */ u8 unk_00;
     /* 0x02 */ s16 unk_02;
     /* 0x04 */ s16 unk_04;
     /* 0x06 */ s16 unk_06;
     /* 0x08 */ char* unk_08;
-} unk_D_8230F528; // size = 0x0C
+} OptionLabel; // size = 0x0C
 
 typedef struct EventBattleModeEntry {
     /* 0x00 */ s16 unk_00;
@@ -88,6 +88,6 @@ typedef struct unk_D_82305978 {
     /* 0x06 */ s16 unk_06;
 } unk_D_82305978; // size = 0x8
 
-u8 EventBattle_CheckTeamLegality(unk_D_82305AF8* arg0, s16 arg1);
+u8 EventBattle_CheckTeamLegality(TrainerCard* arg0, s16 arg1);
 
 #endif // _FRAGMENT38_H_

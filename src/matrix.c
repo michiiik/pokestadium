@@ -29,10 +29,10 @@ Mtx gIdentityMtx = { {
     },
 } };
 
-Vec3f D_8006F050 = { 0.0f, 0.0f, 0.0f };
-Vec3s D_8006F05C = { 0, 0, 0 };
-Vec3f D_8006F064 = { 1.0f, 1.0f, 1.0f };
-u16 D_8006F070[] = { 1, 1, 1 };
+Vec3f gRootNodePosition = { 0.0f, 0.0f, 0.0f };
+Vec3s gZeroVec3s = { 0, 0, 0 };
+Vec3f gRootNodeScale = { 1.0f, 1.0f, 1.0f };
+u16 gRootNodeScaleDefault[] = { 1, 1, 1 };
 
 Color_RGBA8* Color_SetRGB(Color_RGBA8* dest, u8 r, u8 g, u8 b) {
     dest->r = r;
@@ -609,7 +609,7 @@ void MtxF_BuildTransform(MtxF* dest, Vec3f* local_position, Vec3s* rotate, Vec3f
     MtxF sp20;
 
     MtxF_ApplyScaleTransform(&sp60, basis, transform, local_position, 1.0f);
-    MtxF_SetRotationTranslationF(&sp20, &D_8006F050, rotate);
+    MtxF_SetRotationTranslationF(&sp20, &gRootNodePosition, rotate);
     MtxF_Multiply(&sp20, &sp20, &sp60);
     MtxF_ScaleRows(dest, &sp20, scale);
 }
@@ -921,7 +921,7 @@ u16 Color_AdjustRGB5551(u16 arg0, arg1_func_80010CA8 arg1) {
                 b = arg1.unk_03 + 8;
             }
 
-            sp24.z = (2.0f * (D_80073660[b][a] / 65535.0f)) - 1.0f;
+            sp24.z = (2.0f * (gBrightnessCurveTable[b][a] / 65535.0f)) - 1.0f;
         }
 
         arg0 = Color_HSVToRGB5551(&sp24);
@@ -961,7 +961,7 @@ u32 Color_AdjustRGBA8(u32 arg0, arg1_func_80010CA8 arg1) {
                 b = arg1.unk_03 + 8;
             }
 
-            sp2C.z = (2.0f * (D_80073660[b][a] / 65535.0f)) - 1.0f;
+            sp2C.z = (2.0f * (gBrightnessCurveTable[b][a] / 65535.0f)) - 1.0f;
         }
 
         Color_HSVToRGBA8(&arg, &sp2C, arg.a);

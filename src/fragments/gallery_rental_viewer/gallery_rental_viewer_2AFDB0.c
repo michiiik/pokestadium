@@ -11,7 +11,7 @@
 
 static unk_D_838067F0 D_838067F0;
 
-void Gallery_RentalViewerSaveBoxCursor(unk_D_83407B18_008* arg0) {
+void Gallery_RentalViewerSaveBoxCursor(GallerySelection* arg0) {
     arg0->unk_02 = D_838067F0.unk_001C;
     arg0->unk_04 = D_838067F0.unk_0020;
     arg0->unk_06 = D_838067F0.unk_0024;
@@ -33,7 +33,7 @@ s32 Gallery_RentalViewerGetLoadState(void) {
     return ret;
 }
 
-void Gallery_RentalViewerInitBoxPicker(s32 arg0, s32 arg1, unk_D_8380565C* arg2) {
+void Gallery_RentalViewerInitBoxPicker(s32 arg0, s32 arg1, RentalViewerBgData* arg2) {
     D_838067F0.unk_0000 = 0;
     D_838067F0.unk_0004 = arg0;
     D_838067F0.unk_0008 = arg1;
@@ -85,7 +85,7 @@ void Gallery_RentalViewerMarkMatchingPikachu(unk_D_838067F0* arg0, BattleMon* ar
     }
 }
 
-s32 Gallery_RentalViewerFillPage(unk_D_838067F0* arg0, unk_D_838067F0_0168* arg1, s32 arg2, unk_D_8380565C* arg3) {
+s32 Gallery_RentalViewerFillPage(unk_D_838067F0* arg0, unk_D_838067F0_0168* arg1, s32 arg2, RentalViewerBgData* arg3) {
     s32 i;
     s32 j;
     unk_D_838067F0_003C* temp_s3;
@@ -154,7 +154,7 @@ s32 Gallery_RentalViewerFillPage(unk_D_838067F0* arg0, unk_D_838067F0_0168* arg1
     return var_s4;
 }
 
-s32 Gallery_RentalViewerOpenBoxPicker(s32 arg0, unk_D_83407B18_008* arg1) {
+s32 Gallery_RentalViewerOpenBoxPicker(s32 arg0, GallerySelection* arg1) {
     unk_D_838067F0* ptr = &D_838067F0;
     unk_D_838067F0_0168* ptr2;
     s32 i;
@@ -243,9 +243,9 @@ void Gallery_RentalViewerConfirmMonSelect(unk_D_838067F0* arg0) {
 
     if (temp_a1->unk_00.unk_00 != 0) {
         arg0->unk_0000 = 7;
-        Gallery_CopyPhotoMonFromBattleMon(&D_83407AC8, temp_a1);
+        Gallery_CopyPhotoMonFromBattleMon(&gGallerySpecialSpecies, temp_a1);
         if ((temp_a1->unk_00.unk_00 == 0x19) && (temp_a1->unk_52 & 0x80)) {
-            D_83407AC8.unk_02 = 0x99;
+            gGallerySpecialSpecies.unk_02 = 0x99;
         }
         Audio_PlaySoundEffectById(0x20);
     } else {
@@ -557,11 +557,11 @@ void Gallery_RentalViewerDrawScrollbar(s32 arg0, s32 arg1, unk_D_838067F0* arg2)
         sp5C = (temp_a3 * 0xF0) / (var_v1 - 1);
     }
 
-    gSPDisplayList(gDisplayListHead++, D_8006F470);
+    gSPDisplayList(gDisplayListHead++, gMenuDL_BackgroundFill);
 
     Gfx_FillRectRgb(arg0, arg1, 0x18, 0x124, 0x3C, 0x3C, 0xA0);
 
-    gSPDisplayList(gDisplayListHead++, D_8006F558);
+    gSPDisplayList(gDisplayListHead++, gDL_XluBorder);
     gDPSetEnvColor(gDisplayListHead++, 130, 130, 220, 255);
     gDPSetPrimColor(gDisplayListHead++, 0, 0, 60, 60, 150, 255);
 
@@ -615,12 +615,12 @@ s32 Gallery_RentalViewerGetPageFillState(unk_D_838067F0_0168* arg0) {
 }
 
 void Gallery_RentalViewerDrawPageHeader(s32 arg0, s32 arg1, unk_D_838067F0_0168* arg2) {
-    static Color_RGB8 D_83805544[] = {
+    static Color_RGB8 gPageHeaderColors[] = {
         { 0xB4, 0x3C, 0x3C },
         { 0xBE, 0x96, 0x32 },
         { 0xAA, 0x3C, 0x96 },
     };
-    static Color_RGB8 D_83805550[] = {
+    static Color_RGB8 gPageHeaderShadowColors[] = {
         { 0x3C, 0x14, 0x14 },
         { 0x46, 0x32, 0x1E },
         { 0x50, 0x28, 0x3C },
@@ -631,9 +631,9 @@ void Gallery_RentalViewerDrawPageHeader(s32 arg0, s32 arg1, unk_D_838067F0_0168*
     s32 tmp;
     s32 temp_v0 = Gallery_RentalViewerGetPageFillState(arg2);
 
-    gSPDisplayList(gDisplayListHead++, D_8006F558);
-    gDPSetEnvColor(gDisplayListHead++, D_83805544[temp_v0].r, D_83805544[temp_v0].g, D_83805544[temp_v0].b, 255);
-    gDPSetPrimColor(gDisplayListHead++, 0, 0, D_83805550[temp_v0].r, D_83805550[temp_v0].g, D_83805550[temp_v0].b, 255);
+    gSPDisplayList(gDisplayListHead++, gDL_XluBorder);
+    gDPSetEnvColor(gDisplayListHead++, gPageHeaderColors[temp_v0].r, gPageHeaderColors[temp_v0].g, gPageHeaderColors[temp_v0].b, 255);
+    gDPSetPrimColor(gDisplayListHead++, 0, 0, gPageHeaderShadowColors[temp_v0].r, gPageHeaderShadowColors[temp_v0].g, gPageHeaderShadowColors[temp_v0].b, 255);
 
     Gfx_DrawTextureIa8(arg0, arg1, 8, 0x1C, &D_2000980, 8, 0);
     Gfx_DrawTextureIa8(arg0 + 0x184, arg1, 8, 0x1C, &D_2000A60, 8, 0);
@@ -698,7 +698,7 @@ void Gallery_RentalViewerDrawMonRow(s32 arg0, s32 arg1, unk_D_838067F0_0168* arg
     Font_EndTexturedTextRendering();
 }
 
-void func_838043F8(s32 arg0) {
+void SnapSelect_UpdateCameraState(s32 arg0) {
     unk_D_838067F0* ptr = &D_838067F0;
     s32 i;
     s32 spC4 = ptr->unk_000C;
@@ -722,7 +722,7 @@ void func_838043F8(s32 arg0) {
         Gfx_DrawTextureRgba16(spC4 + 0x1BA, spC0 + 0x20, 0x30, 0x18, D_2009900, 0x30, 0);
     }
 
-    gSPDisplayList(gDisplayListHead++, D_8006F470);
+    gSPDisplayList(gDisplayListHead++, gMenuDL_BackgroundFill);
 
     Gfx_FillRectRgb(spC4 + 0x1C, spC0 + 4, 8, 0x124, 0x32, 0x32, 0x32);
 

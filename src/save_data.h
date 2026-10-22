@@ -179,7 +179,7 @@ void GbSave_LoadBattleMonRecord(BattleMon* arg0, GbPokemonNamedRecord* arg1);
 void GbSave_SaveBattleMonRecord(BattleMon* arg0, GbPokemonNamedRecord* arg1);
 s32 Save_IsTypedRecordFlagSet(s32 arg0, s32 arg1, s16 arg2);
 void Save_MarkRecordDirty(s32 arg0, s32 arg1, s16 arg2);
-void func_8002667C(void);
+void Save_NoOp(void);
 void Save_CommitTypedRecord(s32 arg0, s32 arg1);
 void Save_InvalidateTypedRecord(s32 arg0, s32 arg1);
 void Save_RestoreTypedRecord(s32 arg0, s32 arg1);

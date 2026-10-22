@@ -2,15 +2,15 @@
 #include "src/model_animation.h"
 #include "src/matrix.h"
 
-typedef struct unk_D_843859E0 {
+typedef struct CameraPreset {
     /* 0x00 */ u8 unk_00;
     /* 0x04 */ f32 unk_04;
     /* 0x08 */ s16 unk_08;
     /* 0x0A */ s16 unk_0A;
     /* 0x0C */ f32 unk_0C;
-} unk_D_843859E0; // size = 0x10
+} CameraPreset; // size = 0x10
 
-static unk_D_843859E0 D_843859E0[] = {
+static CameraPreset gCameraPresets[] = {
     {
         0x00,
         2002.1199951171875f,
@@ -187,11 +187,11 @@ void BattleScene_IntroCameraStep0(CameraNode* arg0) {
     BattleScene_ResetCameraFrameCounter();
     arg0->perspective.verticalFieldOfView = 50.0f;
     if (BattleScene_AreBothParticipantModelsCompact() != 0) {
-        BattleScene_SetCameraAtFromPosition(arg0, D_84385B9C, 0, 0, 0.0f, 0.0f);
-        BattleScene_SetCameraEyeAndStoreAngles(arg0, D_84385B9C, 0x5B0, 0, 550.0f, 0.0f);
+        BattleScene_SetCameraAtFromPosition(arg0, gCameraCloseSettings, 0, 0, 0.0f, 0.0f);
+        BattleScene_SetCameraEyeAndStoreAngles(arg0, gCameraCloseSettings, 0x5B0, 0, 550.0f, 0.0f);
     } else {
-        BattleScene_SetCameraAtFromPosition(arg0, D_84385B90, 0, 0, 0.0f, 0.0f);
-        BattleScene_SetCameraEyeAndStoreAngles(arg0, D_84385B90, 0x5B0, 0, 550.0f, 0.0f);
+        BattleScene_SetCameraAtFromPosition(arg0, gCameraFarSettings, 0, 0, 0.0f, 0.0f);
+        BattleScene_SetCameraEyeAndStoreAngles(arg0, gCameraFarSettings, 0x5B0, 0, 550.0f, 0.0f);
     }
     arg0->view.eyePosition.z *= 0.6;
     sBattleScene.unk_00->unk_20++;
@@ -201,11 +201,11 @@ void BattleScene_IntroCameraStep2(CameraNode* arg0) {
     BattleScene_ResetCameraFrameCounter();
     arg0->perspective.verticalFieldOfView = 30.0f;
     if (BattleScene_AreBothParticipantModelsCompact() != 0) {
-        BattleScene_SetCameraAtFromPosition(arg0, D_84385B9C, 0, 0, 0.0f, 0.0f);
-        BattleScene_SetCameraEyeAndStoreAngles(arg0, D_84385B9C, 0x1A4E, 0, 1000.0f, 0.0f);
+        BattleScene_SetCameraAtFromPosition(arg0, gCameraCloseSettings, 0, 0, 0.0f, 0.0f);
+        BattleScene_SetCameraEyeAndStoreAngles(arg0, gCameraCloseSettings, 0x1A4E, 0, 1000.0f, 0.0f);
     } else {
-        BattleScene_SetCameraAtFromPosition(arg0, D_84385B90, 0, 0, 0.0f, 0.0f);
-        BattleScene_SetCameraEyeAndStoreAngles(arg0, D_84385B90, 0x1A4E, 0, 1000.0f, 0.0f);
+        BattleScene_SetCameraAtFromPosition(arg0, gCameraFarSettings, 0, 0, 0.0f, 0.0f);
+        BattleScene_SetCameraEyeAndStoreAngles(arg0, gCameraFarSettings, 0x1A4E, 0, 1000.0f, 0.0f);
     }
     sBattleScene.unk_00->unk_20++;
 }
@@ -263,7 +263,7 @@ void BattleScene_IntroCameraStep4Or6(CameraNode* arg0, s32 arg1) {
 
 void BattleScene_IntroCameraStep8Or10(CameraNode* arg0, s32 arg1) {
     UNUSED s32 pad[2];
-    unk_D_86B0C160* sp24;
+    DioramaAnimData* sp24;
     s32 var_a0;
     ActivePokemon* temp_s0;
 
@@ -273,13 +273,13 @@ void BattleScene_IntroCameraStep8Or10(CameraNode* arg0, s32 arg1) {
 
     if (BattleScene_SkipIntroIfFainted(temp_s0, arg0) == 0) {
         if (temp_s0->state.flags & 0x200) {
-            sp24 = &D_84384888[0];
+            sp24 = &gCameraFovyPresetSpecial[0];
         } else {
             var_a0 = BattleAnim_RandomRange(5);
             if (var_a0 >= 5) {
                 var_a0 = 0;
             }
-            sp24 = &D_843847EC[var_a0];
+            sp24 = &gCameraFovyPresetRandom[var_a0];
         }
         arg0->perspective.verticalFieldOfView = sp24->unk_30;
         BattleAnim_GetOwnerDefaultAnchorPosition(temp_s0, &gCameraPreset.unk_00);
@@ -326,20 +326,20 @@ void BattleScene_IntroCameraStep20(CameraNode* arg0) {
 
     BattleScene_ResetCameraFrameCounter();
     if (gSessionContext.mode == 0x10) {
-        var_v1 = D_843859E0[gSessionContext.ruleCategory].unk_00;
+        var_v1 = gCameraPresets[gSessionContext.ruleCategory].unk_00;
         if (gSessionContext.ruleCategory == 7) {
             var_v1 += gSessionContext.modeSelection;
         }
     } else {
-        var_v1 = D_843859E0[gSessionContext.mode].unk_00;
+        var_v1 = gCameraPresets[gSessionContext.mode].unk_00;
         if (gSessionContext.mode == 7) {
             var_v1 += gSessionContext.modeSelection;
         }
     }
-    arg0->perspective.verticalFieldOfView = D_843859E0[var_v1].unk_0C;
+    arg0->perspective.verticalFieldOfView = gCameraPresets[var_v1].unk_0C;
     Vec3f_SetComponentsDuplicate(&arg0->view.targetPosition, 0.0f, 10.0f, 0.0f);
-    Camera_ComputeEyeFromAngles(&arg0->view.targetPosition, &arg0->view.eyePosition, D_843859E0[var_v1].unk_04, D_843859E0[var_v1].unk_08,
-                  D_843859E0[var_v1].unk_0A);
+    Camera_ComputeEyeFromAngles(&arg0->view.targetPosition, &arg0->view.eyePosition, gCameraPresets[var_v1].unk_04, gCameraPresets[var_v1].unk_08,
+                  gCameraPresets[var_v1].unk_0A);
     sBattleScene.unk_00->unk_20++;
 }
 
@@ -369,14 +369,14 @@ void BattleScene_IntroCameraStep22Or24(CameraNode* arg0, s32 arg1) {
             var_v1 = (temp_s0->displayObject.objectType - 1) & 0xFF;
         }
 
-        tmp2 = (D_84384580[arg1]->coordinates.y + temp_s0->displayObject.position.y) + D_84384C30[var_v1].z;
-        tmp1 = ((D_84384580[arg1]->coordinates.z + D_84384C30[var_v1].y) * temp_s0->cameraOffsetScaleFactor) + temp_s0->displayObject.position.x;
+        tmp2 = (gStageCameraAnchorSet[arg1]->coordinates.y + temp_s0->displayObject.position.y) + gCameraOffsetTable[var_v1].z;
+        tmp1 = ((gStageCameraAnchorSet[arg1]->coordinates.z + gCameraOffsetTable[var_v1].y) * temp_s0->cameraOffsetScaleFactor) + temp_s0->displayObject.position.x;
 
         Vec3f_SetComponentsDuplicate(&arg0->view.targetPosition, tmp1, tmp2, temp_s0->displayObject.position.z);
 
-        tmp1 = D_84384580[sBattleScene.unk_00->unk_2C]->coordinates.x * D_84384C30[var_v1].x;
-        tmp4 = D_84384580[sBattleScene.unk_00->unk_2C]->unk_0C;
-        tmp3 = (temp_s0->cameraOffsetScaleFactor * D_84384580[sBattleScene.unk_00->unk_2C]->unk_0E) + BattleScene_GetParticipantFacingAngle(temp_s0);
+        tmp1 = gStageCameraAnchorSet[sBattleScene.unk_00->unk_2C]->coordinates.x * gCameraOffsetTable[var_v1].x;
+        tmp4 = gStageCameraAnchorSet[sBattleScene.unk_00->unk_2C]->unk_0C;
+        tmp3 = (temp_s0->cameraOffsetScaleFactor * gStageCameraAnchorSet[sBattleScene.unk_00->unk_2C]->unk_0E) + BattleScene_GetParticipantFacingAngle(temp_s0);
 
         Camera_ComputeEyeFromAngles(&arg0->view.targetPosition, &arg0->view.eyePosition, tmp1, tmp4, tmp3);
         sBattleScene.unk_00->unk_20++;

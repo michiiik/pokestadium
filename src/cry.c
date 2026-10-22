@@ -4,17 +4,17 @@
 #include "src/rom_device.h"
 #include "src/3D140.h"
 
-extern u8 D_80078400;
+extern u8 gAudioEffectId;
 
-typedef struct unk_D_80079070 {
+typedef struct AudioChannelConfig {
     /* 0x00 */ u8 unk_00;
     /* 0x01 */ u8 unk_01;
     /* 0x02 */ u8 unk_02;
     /* 0x03 */ u8 unk_03;
     /* 0x04 */ u8 unk_04;
-} unk_D_80079070; // size = 0x5
+} AudioChannelConfig; // size = 0x5
 
-static unk_D_80079070 D_80079070[151] = {
+static AudioChannelConfig gAudioChannelConfigTable[151] = {
     {
         0x01,
         0x01,
@@ -1074,7 +1074,7 @@ static unk_D_80079070 D_80079070[151] = {
     },
 };
 
-u8 D_80079364 = 0;
+u8 gAudioSeqLoadPending = 0;
 
 void Cry_Play(u32 species, u32 cry_mode) {
     UNUSED s32 pad[2];
@@ -1090,10 +1090,10 @@ void Cry_Play(u32 species, u32 cry_mode) {
         return;
     }
 
-    if (D_80079364 == 1) {
-        Rom_DmaRead(D_800FC704->seqArray[0].offset, D_800FC708, 0x4BC);
-        alSeqFileNew(D_800FC708, D_800FC704->seqArray[0].offset);
-        D_80079364 = 0;
+    if (gAudioSeqLoadPending == 1) {
+        Rom_DmaRead(gAudioSeqBank->seqArray[0].offset, gAudioSeqBuffer, 0x4BC);
+        alSeqFileNew(gAudioSeqBuffer, gAudioSeqBank->seqArray[0].offset);
+        gAudioSeqLoadPending = 0;
     }
 
     switch (cry_mode) {
@@ -1125,7 +1125,7 @@ void Cry_Play(u32 species, u32 cry_mode) {
                 species = 0x9D;
                 var_a3 = 0x3C;
             } else {
-                var_a3 = D_80079070[species - 1].unk_03;
+                var_a3 = gAudioChannelConfigTable[species - 1].unk_03;
             }
             sp24 = 0x30;
             break;
@@ -1135,10 +1135,10 @@ void Cry_Play(u32 species, u32 cry_mode) {
                 species = 0x9D;
                 var_a3 = 0x3C;
             } else {
-                var_a3 = D_80079070[species - 1].unk_03;
+                var_a3 = gAudioChannelConfigTable[species - 1].unk_03;
             }
             sp24 = 0x60;
-            Audio_PlayCommand(0x15, D_80078400, 0);
+            Audio_PlayCommand(0x15, gAudioEffectId, 0);
             break;
 
         case 4:
@@ -1146,16 +1146,16 @@ void Cry_Play(u32 species, u32 cry_mode) {
                 species = 0x9C;
                 var_a3 = 0x32;
             } else {
-                var_a3 = D_80079070[species - 1].unk_03;
+                var_a3 = gAudioChannelConfigTable[species - 1].unk_03;
             }
             sp24 = 0x70;
-            Audio_PlayCommand(0x15, D_80078400, 0);
+            Audio_PlayCommand(0x15, gAudioEffectId, 0);
             break;
 
         case 5:
-            if ((is_partner_pikachu != 0) && ((D_800FCB18[0] == NULL) || (D_800FCB18[1] == NULL) ||
-                                  (((D_800FCB18[0]->unk_15 & 7) == 0) && ((D_800FCB18[1]->unk_15 & 7) == 0) &&
-                                   !(D_800FCB18[0]->unk_15 & 0x20) && !(D_800FCB18[1]->unk_15 & 0x20)))) {
+            if ((is_partner_pikachu != 0) && ((gAudioInfoPtr[0] == NULL) || (gAudioInfoPtr[1] == NULL) ||
+                                  (((gAudioInfoPtr[0]->unk_15 & 7) == 0) && ((gAudioInfoPtr[1]->unk_15 & 7) == 0) &&
+                                   !(gAudioInfoPtr[0]->unk_15 & 0x20) && !(gAudioInfoPtr[1]->unk_15 & 0x20)))) {
                 species = 0x9A;
                 sp24 = 0x70;
             } else {
@@ -1164,9 +1164,9 @@ void Cry_Play(u32 species, u32 cry_mode) {
             break;
 
         case 6:
-            if ((is_partner_pikachu != 0) && (((D_800FCB18[0] == NULL) || (D_800FCB18[1] == NULL)) ||
-                                  (!(D_800FCB18[0]->unk_15 & 7) && !(D_800FCB18[1]->unk_15 & 7) &&
-                                   !(D_800FCB18[0]->unk_15 & 0x20) && !(D_800FCB18[1]->unk_15 & 0x20)))) {
+            if ((is_partner_pikachu != 0) && (((gAudioInfoPtr[0] == NULL) || (gAudioInfoPtr[1] == NULL)) ||
+                                  (!(gAudioInfoPtr[0]->unk_15 & 7) && !(gAudioInfoPtr[1]->unk_15 & 7) &&
+                                   !(gAudioInfoPtr[0]->unk_15 & 0x20) && !(gAudioInfoPtr[1]->unk_15 & 0x20)))) {
                 species = 0x9B;
                 sp24 = 0x70;
             } else {
@@ -1180,7 +1180,7 @@ void Cry_Play(u32 species, u32 cry_mode) {
                 sp24 = 0x70;
             } else {
                 sp24 = 0x60;
-                var_a3 = D_80079070[species - 1].unk_04;
+                var_a3 = gAudioChannelConfigTable[species - 1].unk_04;
             }
             break;
 
@@ -1235,7 +1235,7 @@ void Cry_Play(u32 species, u32 cry_mode) {
             break;
     }
 
-    AudioStream_Start(0, D_800FC708->seqArray[species - 1].offset, sp24, var_a3);
+    AudioStream_Start(0, gAudioSeqBuffer->seqArray[species - 1].offset, sp24, var_a3);
 }
 
 void Cry_PlayVariant4(u32 arg0) {

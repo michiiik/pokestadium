@@ -1,15 +1,15 @@
 #include "battle_engine.h"
 #include "src/gfx_buffer.h"
 
-static TexturedRibbonSheet D_843A22C0[40];
+static TexturedRibbonSheet gTexturedRibbonSheetPool[40];
 
-static Vtx D_84389690[] = {
+static Vtx gTexturedRibbonSheetQuadVtx[] = {
     VTX(-10, 0, -10, 2048, 0, 0xFF, 0xFF, 0xFF, 0xC8),
     VTX(10, 0, -10, 0, 0, 0xFF, 0xFF, 0xFF, 0xC8),
     VTX(-10, 0, 10, 2048, 2048, 0xFF, 0xFF, 0xFF, 0xC8),
     VTX(10, 0, 10, 0, 2048, 0xFF, 0xFF, 0xFF, 0xC8),
 };
-static Gfx D_843896D0[] = {
+static Gfx gTexturedRibbonSheetDL_NoTexture[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_1CYCLE),
     gsSPClearGeometryMode(G_ZBUFFER | G_SHADE | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN |
@@ -22,7 +22,7 @@ static Gfx D_843896D0[] = {
     gsDPSetColorDither(G_CD_NOISE),
     gsSPEndDisplayList(),
 };
-static Gfx D_84389720[] = {
+static Gfx gTexturedRibbonSheetDL_Textured[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_1CYCLE),
     gsSPClearGeometryMode(G_ZBUFFER | G_SHADE | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN |
@@ -33,7 +33,7 @@ static Gfx D_84389720[] = {
     gsDPSetRenderMode(G_RM_ZB_XLU_SURF, G_RM_ZB_XLU_SURF2),
     gsDPSetCombineMode(G_CC_BLENDIA, G_CC_BLENDIA),
     gsDPSetEnvColor(255, 255, 64, 255),
-    gsSPVertex(D_84389690, 4, 0),
+    gsSPVertex(gTexturedRibbonSheetQuadVtx, 4, 0),
     gsSP2Triangles(0, 2, 1, 0, 2, 3, 1, 0),
     gsSPEndDisplayList(),
 };
@@ -44,7 +44,7 @@ void TexturedRibbonSheet_Init(void) {
     s32 i;
     s32 j;
 
-    var_v0 = &D_843A22C0[0];
+    var_v0 = &gTexturedRibbonSheetPool[0];
     for (i = 0; i < 40; i++, var_v0++) {
         var_v0->unk_000 = 0;
         var_v0->unk_004 = 0;
@@ -86,7 +86,7 @@ void TexturedRibbonSheet_Start(f32 arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4,
     sp5C.y = -1.0f;
     sp5C.z = 0.0f;
 
-    var_v1 = &D_843A22C0[0];
+    var_v1 = &gTexturedRibbonSheetPool[0];
 
     for (i = 0; i < 40; i++, var_v1++) {
         if (var_v1->unk_000 == 0) {
@@ -178,7 +178,7 @@ void TexturedRibbonSheet_UpdateRecord(TexturedRibbonSheet* arg0) {
 s32 TexturedRibbonSheet_IsComplete(void) {
     s32 i;
     s32 var_s2 = 0;
-    TexturedRibbonSheet* var_s0 = &D_843A22C0[0];
+    TexturedRibbonSheet* var_s0 = &gTexturedRibbonSheetPool[0];
 
     for (i = 0; i < 40; i++, var_s0++) {
         if (var_s0->unk_000 == 1) {
@@ -216,7 +216,7 @@ Gfx* TexturedRibbonSheet_Draw(Gfx* arg0) {
     gDPLoadTextureBlock_4b(arg0++, sBattleAnimAssetPointers[0x10], G_IM_FMT_I, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
                            G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
 
-    var_s5 = &D_843A22C0[0];
+    var_s5 = &gTexturedRibbonSheetPool[0];
     for (i = 0; i < 40; i++, var_s5++) {
         if (var_s5->unk_000 == 1) {
             temp_s0 = &var_s5->unk_038[0];
@@ -238,7 +238,7 @@ Gfx* TexturedRibbonSheet_Draw(Gfx* arg0) {
             guMtxCatL(&spB8, temp_s1, temp_s1);
 
             gSPMatrix(arg0++, temp_s1, G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
-            gSPDisplayList(arg0++, D_84389720);
+            gSPDisplayList(arg0++, gTexturedRibbonSheetDL_Textured);
             gSPPopMatrix(arg0++, G_MTX_MODELVIEW);
 
             var_s5->unk_018 = Gfx_AllocDisplayList(sizeof(Vtx) * 20);
@@ -277,7 +277,7 @@ Gfx* TexturedRibbonSheet_Draw(Gfx* arg0) {
                 vtx = var_s5->unk_018;
 
                 for (k = 0; k < 9; k++) {
-                    gSPDisplayList(arg0++, D_843896D0);
+                    gSPDisplayList(arg0++, gTexturedRibbonSheetDL_NoTexture);
                     gSPVertex(arg0++, vtx, 4, 0);
                     gSP2Triangles(arg0++, 0, 1, 2, 0, 1, 3, 2, 0);
 

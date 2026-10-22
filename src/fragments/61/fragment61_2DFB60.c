@@ -109,7 +109,7 @@ void Rental_DrawBoxNameBanner(s16 arg0, s16 arg1, unk_D_838067F0_0168* arg2) {
 
     temp_v0 = Rental_GetBoxNameColorIndex(arg2);
 
-    gSPDisplayList(gDisplayListHead++, D_8006F558);
+    gSPDisplayList(gDisplayListHead++, gDL_XluBorder);
 
     gDPSetEnvColor(gDisplayListHead++, D_842115D0[temp_v0].r, D_842115D0[temp_v0].g, D_842115D0[temp_v0].b, 255);
     gDPSetPrimColor(gDisplayListHead++, 0, 0, D_842115DC[temp_v0].r, D_842115DC[temp_v0].g, D_842115DC[temp_v0].b, 255);
@@ -171,11 +171,11 @@ void Rental_DrawCarouselScrollbar(s16 arg0, s16 arg1, RentalCarouselState* arg2)
         sp5E = (temp_a3 * 0x98) / (var_v1 - 1);
     }
 
-    gSPDisplayList(gDisplayListHead++, D_8006F470);
+    gSPDisplayList(gDisplayListHead++, gMenuDL_BackgroundFill);
 
     Gfx_FillRectRgb(arg0, arg1, 0x18, 0xCC, 0x3C, 0x3C, 0xA0);
 
-    gSPDisplayList(gDisplayListHead++, D_8006F558);
+    gSPDisplayList(gDisplayListHead++, gDL_XluBorder);
 
     gDPSetEnvColor(gDisplayListHead++, 130, 130, 220, 255);
     gDPSetPrimColor(gDisplayListHead++, 0, 0, 60, 60, 150, 255);
@@ -278,7 +278,7 @@ void Rental_CarouselDraw(RentalCarouselState* arg0, s32 arg1) {
             Gfx_DrawTextureRgba16(spB0 + 0x1BA, temp_s7 + 0x6A, 0x30, 0x18, D_2009900, 0x30, 0);
         }
 
-        gSPDisplayList(gDisplayListHead++, D_8006F470);
+        gSPDisplayList(gDisplayListHead++, gMenuDL_BackgroundFill);
 
         Gfx_FillRectRgb(spB0 + 0x1C, temp_s7 + 4, 8, 0xCC, 0x32, 0x32, 0x32);
 

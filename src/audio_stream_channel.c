@@ -5,7 +5,7 @@
 // to 16 bytes before AudioStream_OpenChannel (0x800426E4 to 0x800426F0), a file boundary; the
 // US AudioStream_OpenChannel (0x800456D0) is already 16-byte aligned.
 
-void AudioStream_OpenChannel(unk_D_800FCED8* arg0, s32 arg1, s32 arg2) {
+void AudioStream_OpenChannel(GbAudioChannelState* arg0, s32 arg1, s32 arg2) {
     bzero(&arg0->unk_0000, sizeof(unk_D_800FCED8_0000));
 
     arg0->unk_0000.gsm.nrp = 0x28;
@@ -30,7 +30,7 @@ void AudioStream_OpenChannel(unk_D_800FCED8* arg0, s32 arg1, s32 arg2) {
     arg0->unk_25D2 = 2;
 }
 
-void AudioStream_RefillAndDecode(unk_D_800FCED8* arg0) {
+void AudioStream_RefillAndDecode(GbAudioChannelState* arg0) {
     s32 var_a2;
     s32 var_s2;
     u32 var_v1;
@@ -88,7 +88,7 @@ void AudioStream_RefillAndDecode(unk_D_800FCED8* arg0) {
     }
 }
 
-u32 AudioStream_ConsumeSamples(unk_D_800FCED8* arg0, u32 arg1) {
+u32 AudioStream_ConsumeSamples(GbAudioChannelState* arg0, u32 arg1) {
     u32 temp_v0;
     u32 var_a2;
 
@@ -109,12 +109,12 @@ u32 AudioStream_ConsumeSamples(unk_D_800FCED8* arg0, u32 arg1) {
     return 0;
 }
 
-void AudioStream_MarkLoaded(unk_D_800FCED8* arg0) {
+void AudioStream_MarkLoaded(GbAudioChannelState* arg0) {
     if (arg0->unk_25D1 == 2) {
         arg0->unk_25D1 = 3;
     }
 }
 
-void AudioStream_Abort(unk_D_800FCED8* arg0) {
+void AudioStream_Abort(GbAudioChannelState* arg0) {
     arg0->unk_25D1 = 4;
 }

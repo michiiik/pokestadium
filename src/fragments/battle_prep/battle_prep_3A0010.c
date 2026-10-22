@@ -10,7 +10,7 @@
 #include "src/memmap.h"
 #include "src/memory.h"
 
-static Vtx D_84B16AA0[] = {
+static Vtx gFragment63_BarVtx[] = {
     VTX(-64, 32, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),        VTX(-64, -32, 0, 0, 2048, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-32, -32, 0, 1024, 2048, 0xFF, 0xFF, 0xFF, 0xFF), VTX(-32, 32, 0, 1024, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-32, 32, 0, 1024, 0, 0xFF, 0xFF, 0xFF, 0xFF),     VTX(-32, -32, 0, 1024, 2048, 0xFF, 0xFF, 0xFF, 0xFF),
@@ -20,11 +20,11 @@ static Vtx D_84B16AA0[] = {
     VTX(32, 32, 0, 3072, 0, 0xFF, 0xFF, 0xFF, 0xFF),      VTX(32, -32, 0, 3072, 2048, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -32, 0, 4096, 2048, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(64, 32, 0, 4096, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Gfx D_84B16BA0[] = {
+static Gfx gFragment63_BarDL[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetCombineLERP(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, COMBINED, COMBINED, 0, PRIM_LOD_FRAC, 0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
-    gsSPVertex(D_84B16AA0, 16, 0),
+    gsSPVertex(gFragment63_BarVtx, 16, 0),
     gsDPLoadTextureTile(0x0F000000, G_IM_FMT_RGBA, G_IM_SIZ_16b, 128, 0, 0, 0, 31, 63, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
@@ -39,55 +39,55 @@ static Gfx D_84B16BA0[] = {
     gsSP2Triangles(12, 13, 14, 0, 12, 14, 15, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B16CC8[] = {
-    0x17000000, 0x00000000, 0x00000000,    0x00000000, D_84B16AA0, 0x05000000, 0x22050000,
-    0x00000000, 0x08000000, BattlePrepStarBurst_DrawStarIcon, D_84B16BA0, 0x06000000, 0x01000000,
+static u32 gFragment63_GeoLayoutStarBar[] = {
+    0x17000000, 0x00000000, 0x00000000,    0x00000000, gFragment63_BarVtx, 0x05000000, 0x22050000,
+    0x00000000, 0x08000000, BattlePrepStarBurst_DrawStarIcon, gFragment63_BarDL, 0x06000000, 0x01000000,
 };
-static u32 D_84B16CFC[] = {
-    0x17000000, 0x00000000, 0x00000000,    0x00000000, D_84B16AA0, 0x05000000, 0x22050000,
-    0x00000000, 0x08000000, BattlePrepStarBurst_DrawTrailIcon, D_84B16BA0, 0x06000000, 0x01000000,
+static u32 gFragment63_GeoLayoutTrailBar[] = {
+    0x17000000, 0x00000000, 0x00000000,    0x00000000, gFragment63_BarVtx, 0x05000000, 0x22050000,
+    0x00000000, 0x08000000, BattlePrepStarBurst_DrawTrailIcon, gFragment63_BarDL, 0x06000000, 0x01000000,
 };
-static Vtx D_84B16D30[] = {
+static Vtx gFragment63_SmallQuadVtx[] = {
     VTX(-16, 16, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-16, -16, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(16, -16, 0, 1024, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(16, 16, 0, 1024, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Gfx D_84B16D70[] = {
+static Gfx gFragment63_SmallQuadDL[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetCombineLERP(TEXEL0, 0, ENVIRONMENT, 0, 0, 0, 0, TEXEL0, 0, 0, 0, COMBINED, 0, 0, 0, COMBINED),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
-    gsSPVertex(D_84B16D30, 4, 0),
+    gsSPVertex(gFragment63_SmallQuadVtx, 4, 0),
     gsDPLoadTextureBlock_4b(0x0F000000, G_IM_FMT_I, 32, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP,
                             5, 5, G_TX_NOLOD, G_TX_NOLOD),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B16DD8[] = {
-    0x17000000, 0x00000000, 0x00000000,    0x00000000, D_84B16D30, 0x05000000, 0x22050000,
-    0x00000000, 0x08000000, BattlePrepStarBurst_DrawSparkParticle, D_84B16D70, 0x06000000, 0x01000000, 0x00000000,
+static u32 gFragment63_GeoLayoutSmallQuad[] = {
+    0x17000000, 0x00000000, 0x00000000,    0x00000000, gFragment63_SmallQuadVtx, 0x05000000, 0x22050000,
+    0x00000000, 0x08000000, BattlePrepStarBurst_DrawSparkParticle, gFragment63_SmallQuadDL, 0x06000000, 0x01000000, 0x00000000,
 };
-static Vtx D_84B16E10[] = {
+static Vtx gFragment63_IconVtx[] = {
     VTX(-16, 16, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-16, -16, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(16, -16, 0, 1024, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(16, 16, 0, 1024, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Gfx D_84B16E50[] = {
+static Gfx gFragment63_IconDL[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetCombineLERP(TEXEL0, 0, ENVIRONMENT, 0, TEXEL0, 0, ENVIRONMENT, 0, 0, 0, 0, COMBINED, 0, 0, 0, COMBINED),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
-    gsSPVertex(D_84B16E10, 4, 0),
+    gsSPVertex(gFragment63_IconVtx, 4, 0),
     gsDPLoadTextureBlock_4b(D_3024800, G_IM_FMT_I, 32, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, 5,
                             5, G_TX_NOLOD, G_TX_NOLOD),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B16EB8[] = {
-    0x17000000, 0x00000000, 0x00000000,    0x00000000, D_84B16E10, 0x05000000, 0x22050000,
-    0x00000000, 0x08000000, BattlePrepStarBurst_DrawRainbowParticle, D_84B16E50, 0x06000000, 0x01000000,
+static u32 gFragment63_GeoLayoutIcon[] = {
+    0x17000000, 0x00000000, 0x00000000,    0x00000000, gFragment63_IconVtx, 0x05000000, 0x22050000,
+    0x00000000, 0x08000000, BattlePrepStarBurst_DrawRainbowParticle, gFragment63_IconDL, 0x06000000, 0x01000000,
 };
-static Color_RGBA8 D_84B16EEC[] = { {
+static Color_RGBA8 gFragment63_FadeColors[] = { {
                                         0xFF,
                                         0x00,
                                         0x00,
@@ -118,12 +118,12 @@ static Color_RGBA8 D_84B16EEC[] = { {
                                         0x80,
                                     } };
 
-s32 BattlePrepStarBurst_DrawStarIcon(s32 arg0, unk_func_80011B94* arg1) {
-    unk_D_84B25AC0* temp_a0;
+s32 BattlePrepStarBurst_DrawStarIcon(s32 arg0, SimpleGfxNode* arg1) {
+    gStarBurstState* temp_a0;
     u8* var_a0;
 
     if (arg0 == 5) {
-        temp_a0 = (unk_D_84B25AC0*)D_8006F09C->node.callbackArg;
+        temp_a0 = (gStarBurstState*)gDefaultGraphRoot->node.callbackArg;
         if (temp_a0->unk_5A2 != 0) {
             var_a0 = D_3018800;
         } else {
@@ -139,7 +139,7 @@ s32 BattlePrepStarBurst_DrawStarIcon(s32 arg0, unk_func_80011B94* arg1) {
     return 0;
 }
 
-s32 BattlePrepStarBurst_DrawTrailIcon(s32 arg0, unk_func_80011B94* arg1) {
+s32 BattlePrepStarBurst_DrawTrailIcon(s32 arg0, SimpleGfxNode* arg1) {
     UNUSED s32 pad;
 
     if (arg0 == 5) {
@@ -152,11 +152,11 @@ s32 BattlePrepStarBurst_DrawTrailIcon(s32 arg0, unk_func_80011B94* arg1) {
     return 0;
 }
 
-s32 BattlePrepStarBurst_DrawSparkParticle(s32 arg0, unk_func_80011B94* arg1) {
+s32 BattlePrepStarBurst_DrawSparkParticle(s32 arg0, SimpleGfxNode* arg1) {
     unk_D_84B25AC0_000* temp_a0;
 
     if (arg0 == 5) {
-        temp_a0 = (unk_D_84B25AC0_000*)D_8006F09C->node.callbackArg;
+        temp_a0 = (unk_D_84B25AC0_000*)gDefaultGraphRoot->node.callbackArg;
 
         gDPPipeSync(gDisplayListHead++);
         gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a0->unk_0C & 0x1FFFFFFF);
@@ -168,7 +168,7 @@ s32 BattlePrepStarBurst_DrawSparkParticle(s32 arg0, unk_func_80011B94* arg1) {
     return 0;
 }
 
-void BattlePrepStarBurst_InitSparkSlot(unk_D_84B25AC0_000* arg0, unk_D_86002F34* arg1, s16 arg2, s16 arg3, s16 arg4) {
+void BattlePrepStarBurst_InitSparkSlot(unk_D_84B25AC0_000* arg0, ShadowContextNode* arg1, s16 arg2, s16 arg3, s16 arg4) {
     arg0->unk_04 = 0;
     arg0->unk_06 = arg4;
     arg0->unk_08.r = 0x50;
@@ -198,11 +198,11 @@ void BattlePrepStarBurst_UpdateSparkSlot(unk_D_84B25AC0_000* arg0) {
     }
 }
 
-s32 BattlePrepStarBurst_DrawRainbowParticle(s32 arg0, unk_func_80011B94* arg1) {
+s32 BattlePrepStarBurst_DrawRainbowParticle(s32 arg0, SimpleGfxNode* arg1) {
     unk_D_84B25AC0_0A0* temp_v1;
 
     if (arg0 == 5) {
-        temp_v1 = (unk_D_84B25AC0_0A0*)D_8006F09C->node.callbackArg;
+        temp_v1 = (unk_D_84B25AC0_0A0*)gDefaultGraphRoot->node.callbackArg;
 
         gDPPipeSync(gDisplayListHead++);
         gDPSetEnvColor(gDisplayListHead++, temp_v1->unk_0A.r, temp_v1->unk_0A.g, temp_v1->unk_0A.b, temp_v1->unk_0A.a);
@@ -213,7 +213,7 @@ s32 BattlePrepStarBurst_DrawRainbowParticle(s32 arg0, unk_func_80011B94* arg1) {
     return 0;
 }
 
-void BattlePrepStarBurst_InitRainbowParticle(unk_D_84B25AC0_0A0* arg0, unk_D_86002F34* arg1, s16 arg2, s16 arg3, s16 arg4) {
+void BattlePrepStarBurst_InitRainbowParticle(unk_D_84B25AC0_0A0* arg0, ShadowContextNode* arg1, s16 arg2, s16 arg3, s16 arg4) {
     arg0->unk_06 = 0;
     arg0->unk_04 = 0;
     arg0->unk_08 = arg4;
@@ -246,7 +246,7 @@ void BattlePrepStarBurst_SpawnFlashCopy(unk_D_84B25AC0_0A0* arg0, unk_D_84B25AC0
     Vec3f_SetComponentsDuplicate(&arg0->unk_00->scale, 0.5f, 0.5f, 0.5f);
 }
 
-void BattlePrepStarBurst_SpawnScatterParticle(unk_D_84B25AC0_0A0* arg0, unk_D_86002F34* arg1, Vec3f* arg2) {
+void BattlePrepStarBurst_SpawnScatterParticle(unk_D_84B25AC0_0A0* arg0, ShadowContextNode* arg1, Vec3f* arg2) {
     arg0->unk_06 = 0;
     arg0->unk_04 = 3;
     Color_SetRGBA(&arg0->unk_0A, 0xFF, 0xFF, 0xC8, 0xFF);
@@ -267,8 +267,8 @@ void BattlePrepStarBurst_UpdateRainbowGradientStep(unk_D_84B25AC0_0A0* arg0) {
     if (arg0->unk_06 < 0x10) {
         temp_fv0 = ((arg0->unk_06 * 0.5f) / 12.0f) + 0.3f;
 
-        color1 = &D_84B16EEC[arg0->unk_06 / 4];
-        color2 = &D_84B16EEC[arg0->unk_06 / 4 + 1];
+        color1 = &gFragment63_FadeColors[arg0->unk_06 / 4];
+        color2 = &gFragment63_FadeColors[arg0->unk_06 / 4 + 1];
 
         arg0->unk_0A.r = (((color2->r - color1->r) * (arg0->unk_06 % 4)) / 4) + color1->r;
         arg0->unk_0A.g = (((color2->g - color1->g) * (arg0->unk_06 % 4)) / 4) + color1->g;
@@ -352,7 +352,7 @@ void BattlePrepStarBurst_UpdateRainbowParticle(unk_D_84B25AC0_0A0* arg0) {
     }
 }
 
-void BattlePrepStarBurst_UpdateBurstEffect(unk_D_84B25AC0* arg0) {
+void BattlePrepStarBurst_UpdateBurstEffect(gStarBurstState* arg0) {
     s32 i;
     s32 j;
 
@@ -379,7 +379,7 @@ void BattlePrepStarBurst_UpdateBurstEffect(unk_D_84B25AC0* arg0) {
     }
 }
 
-void BattlePrepStarBurst_UpdateFlightArc(unk_D_84B25AC0* arg0) {
+void BattlePrepStarBurst_UpdateFlightArc(gStarBurstState* arg0) {
     s16 i;
     s16 var_s2;
 
@@ -437,7 +437,7 @@ void BattlePrepStarBurst_UpdateFlightArc(unk_D_84B25AC0* arg0) {
     }
 }
 
-void BattlePrepStarBurst_UpdateRainbowAftermath(unk_D_84B25AC0* arg0) {
+void BattlePrepStarBurst_UpdateRainbowAftermath(gStarBurstState* arg0) {
     s32 i;
     s32 j;
 
@@ -470,7 +470,7 @@ void BattlePrepStarBurst_UpdateRainbowAftermath(unk_D_84B25AC0* arg0) {
     }
 }
 
-void BattlePrepStarBurst_UpdateSparkAftermath(unk_D_84B25AC0* arg0) {
+void BattlePrepStarBurst_UpdateSparkAftermath(gStarBurstState* arg0) {
     arg0->unk_5A1++;
     if (arg0->unk_5A1 >= 4) {
         arg0->unk_5A8->position.y += arg0->unk_5A4;
@@ -489,7 +489,7 @@ void BattlePrepStarBurst_UpdateSparkAftermath(unk_D_84B25AC0* arg0) {
     }
 }
 
-void BattlePrepStarBurst_UpdateExitSlide(unk_D_84B25AC0* arg0) {
+void BattlePrepStarBurst_UpdateExitSlide(gStarBurstState* arg0) {
     if ((arg0->unk_5A1 < 0x14) && (arg0->unk_5A3 != 0) && (arg0->unk_5A1 < 7)) {
         arg0->unk_5A8->position.x += 40.0f;
     }
@@ -501,7 +501,7 @@ void BattlePrepStarBurst_UpdateExitSlide(unk_D_84B25AC0* arg0) {
     }
 }
 
-void BattlePrepStarBurst_UpdateFirstClearExit(unk_D_84B25AC0* arg0) {
+void BattlePrepStarBurst_UpdateFirstClearExit(gStarBurstState* arg0) {
     s32 tmp;
 
     if (arg0->unk_5A3 != 0) {
@@ -520,7 +520,7 @@ void BattlePrepStarBurst_UpdateFirstClearExit(unk_D_84B25AC0* arg0) {
     }
 }
 
-void BattlePrepStarBurst_Update(unk_D_84B25AC0* arg0) {
+void BattlePrepStarBurst_Update(gStarBurstState* arg0) {
     switch (arg0->unk_5A0) {
         case 1:
             BattlePrepStarBurst_UpdateBurstEffect(arg0);
@@ -548,7 +548,7 @@ void BattlePrepStarBurst_Update(unk_D_84B25AC0* arg0) {
     }
 }
 
-void BattlePrepStarBurst_Launch(unk_D_84B25AC0* arg0, DisplayObject* arg1, DisplayObject* arg2) {
+void BattlePrepStarBurst_Launch(gStarBurstState* arg0, DisplayObject* arg1, DisplayObject* arg2) {
     s32 i;
     s32 j;
 
@@ -596,7 +596,7 @@ void BattlePrepStarBurst_Launch(unk_D_84B25AC0* arg0, DisplayObject* arg1, Displ
     }
 }
 
-void BattlePrepStarBurst_StartExit(unk_D_84B25AC0* arg0) {
+void BattlePrepStarBurst_StartExit(gStarBurstState* arg0) {
     arg0->unk_5A1 = 0;
     if (arg0->unk_5A2 == -1) {
         arg0->unk_5A0 = 7;
@@ -618,7 +618,7 @@ void BattlePrepStarBurst_StartExit(unk_D_84B25AC0* arg0) {
     }
 }
 
-void BattlePrepStarBurst_Init(unk_D_84B25AC0* arg0, s8 arg1, s8 arg2) {
+void BattlePrepStarBurst_Init(gStarBurstState* arg0, s8 arg1, s8 arg2) {
     GraphNode* var_v0;
     MemoryBlock* temp_v0;
 
@@ -629,11 +629,11 @@ void BattlePrepStarBurst_Init(unk_D_84B25AC0* arg0, s8 arg1, s8 arg2) {
 
     temp_v0 = MainPool_AllocState(main_pool_get_available(), 0);
     if (arg2 == -1) {
-        arg0->unk_5B0 = process_geo_layout(temp_v0, D_84B16CFC);
+        arg0->unk_5B0 = process_geo_layout(temp_v0, gFragment63_GeoLayoutTrailBar);
     } else {
-        arg0->unk_5B0 = process_geo_layout(temp_v0, D_84B16CC8);
+        arg0->unk_5B0 = process_geo_layout(temp_v0, gFragment63_GeoLayoutStarBar);
     }
-    arg0->unk_5B4 = process_geo_layout(temp_v0, D_84B16DD8);
-    arg0->unk_5B8 = process_geo_layout(temp_v0, D_84B16EB8);
+    arg0->unk_5B4 = process_geo_layout(temp_v0, gFragment63_GeoLayoutSmallQuad);
+    arg0->unk_5B8 = process_geo_layout(temp_v0, gFragment63_GeoLayoutIcon);
     MainPool_FinalizeAllocation(temp_v0);
 }

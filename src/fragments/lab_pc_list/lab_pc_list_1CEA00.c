@@ -16,16 +16,16 @@
 #include "src/stage_loader.h"
 #include "src/fragments/pokemon_lab_support/pokemon_lab_support.h"
 
-char** D_8831A4C0;
-char** D_8831A4C4;
-char** D_8831A4C8;
-char** D_8831A4CC;
-char** D_8831A4D0;
-char** D_8831A4D4;
-char** D_8831A4D8;
+char** gLabPcListGbSaveIdLabelBank;
+char** gLabPcListColumnLabelsBank;
+char** gLabPcListItemDescriptionsBank;
+char** gMoveNamesTable;
+char** gLabPcListSpeciesNamesBank;
+char** gTypeNamesTable;
+char** gLabPcListItemNamesBank;
 s32 pad_D_8831A4DC[8];
 
-static Color_RGBA8 D_883171D0[] = {
+static Color_RGBA8 gLabPCListHeaderColors[] = {
     { 0x31, 0x48, 0x6B, 0xFF },
     { 0x47, 0x5E, 0x80, 0xFF },
     { 0x2B, 0x40, 0x5F, 0xFF },
@@ -51,7 +51,7 @@ s32 LabPCList_HeaderSelectIcon_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
     gDPSetRenderMode(gDisplayListHead++, G_RM_NOOP, G_RM_NOOP2);
 
     // clang-format off
-    temp_t2 = ((D_883171D0[0].r << 8) & 0xF800) | ((D_883171D0[0].g << 3) & 0x7C0) | ((D_883171D0[0].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
+    temp_t2 = ((gLabPCListHeaderColors[0].r << 8) & 0xF800) | ((gLabPCListHeaderColors[0].g << 3) & 0x7C0) | ((gLabPCListHeaderColors[0].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
     // clang-format on
 
     gDPSetFillColor(gDisplayListHead++, (temp_t2 << 0x10) | temp_t2);
@@ -67,7 +67,7 @@ s32 LabPCList_HeaderSelectIcon_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
     gDPSetTextureFilter(gDisplayListHead++, G_TF_POINT);
     gDPSetCombineMode(gDisplayListHead++, G_CC_DECALRGBA, G_CC_DECALRGBA);
 
-    gDPLoadTextureBlock(gDisplayListHead++, D_883176D8, G_IM_FMT_IA, G_IM_SIZ_8b, 32, 18, 0, G_TX_NOMIRROR | G_TX_WRAP,
+    gDPLoadTextureBlock(gDisplayListHead++, gLabPCListHeaderSelectIconTexture, G_IM_FMT_IA, G_IM_SIZ_8b, 32, 18, 0, G_TX_NOMIRROR | G_TX_WRAP,
                         G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
 
     gSPTextureRectangle(gDisplayListHead++, (arg1 + 4) << 2, (arg2 + 1) << 2, (arg1 + 0x22) << 2, (arg2 + 0x13) << 2,
@@ -98,7 +98,7 @@ s32 LabPCList_HeaderPokemon_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
     gDPSetRenderMode(gDisplayListHead++, G_RM_NOOP, G_RM_NOOP2);
 
     // clang-format off
-    temp_t2 = ((D_883171D0[1].r << 8) & 0xF800) | ((D_883171D0[1].g << 3) & 0x7C0) | ((D_883171D0[1].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
+    temp_t2 = ((gLabPCListHeaderColors[1].r << 8) & 0xF800) | ((gLabPCListHeaderColors[1].g << 3) & 0x7C0) | ((gLabPCListHeaderColors[1].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
     // clang-format on
 
     gDPSetFillColor(gDisplayListHead++, (temp_t2 << 0x10) | temp_t2);
@@ -109,7 +109,7 @@ s32 LabPCList_HeaderPokemon_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
     Gfx_SetEnvColor(D_883171E0.r, D_883171E0.g, D_883171E0.b, D_883171E0.a);
     Font_SetActive(4, 0);
 
-    sp1C = Text_GetString(NULL, 0, D_8831A4C4, 3);
+    sp1C = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 3);
     Font_Printf(((arg0->unk_14.unk_00 - Font_MeasureTextExtent(0, 0, sp1C)) / 2) + arg1, arg2 + 2, sp1C);
     Font_EndTexturedTextRendering();
 
@@ -138,7 +138,7 @@ s32 LabPCList_HeaderNickname_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
     gDPSetRenderMode(gDisplayListHead++, G_RM_NOOP, G_RM_NOOP2);
 
     // clang-format off
-    temp_t2 = ((D_883171D0[0].r << 8) & 0xF800) | ((D_883171D0[0].g << 3) & 0x7C0) | ((D_883171D0[0].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
+    temp_t2 = ((gLabPCListHeaderColors[0].r << 8) & 0xF800) | ((gLabPCListHeaderColors[0].g << 3) & 0x7C0) | ((gLabPCListHeaderColors[0].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
     // clang-format on
 
     gDPSetFillColor(gDisplayListHead++, (temp_t2 << 0x10) | temp_t2);
@@ -149,7 +149,7 @@ s32 LabPCList_HeaderNickname_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
     Gfx_SetEnvColor(D_883171E4.r, D_883171E4.g, D_883171E4.b, D_883171E4.a);
     Font_SetActive(4, 0);
 
-    sp1C = Text_GetString(NULL, 0, D_8831A4C4, 4);
+    sp1C = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 4);
     Font_Printf(((arg0->unk_14.unk_00 - Font_MeasureTextExtent(0, 0, sp1C)) / 2) + arg1, arg2 + 2, sp1C);
     Font_EndTexturedTextRendering();
     return 0;
@@ -177,7 +177,7 @@ s32 LabPCList_HeaderID_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
     gDPSetRenderMode(gDisplayListHead++, G_RM_NOOP, G_RM_NOOP2);
 
     // clang-format off
-    temp_t2 = ((D_883171D0[1].r << 8) & 0xF800) | ((D_883171D0[1].g << 3) & 0x7C0) | ((D_883171D0[1].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
+    temp_t2 = ((gLabPCListHeaderColors[1].r << 8) & 0xF800) | ((gLabPCListHeaderColors[1].g << 3) & 0x7C0) | ((gLabPCListHeaderColors[1].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
     // clang-format on
 
     gDPSetFillColor(gDisplayListHead++, (temp_t2 << 0x10) | temp_t2);
@@ -188,7 +188,7 @@ s32 LabPCList_HeaderID_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
     Gfx_SetEnvColor(D_883171E8.r, D_883171E8.g, D_883171E8.b, D_883171E8.a);
     Font_SetActive(4, 0);
 
-    sp1C = Text_GetString(NULL, 0, D_8831A4C4, 5);
+    sp1C = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 5);
     Font_Printf(((arg0->unk_14.unk_00 - Font_MeasureTextExtent(0, 0, sp1C)) / 2) + arg1, arg2 + 2, sp1C);
     Font_EndTexturedTextRendering();
     return 0;
@@ -216,7 +216,7 @@ s32 LabPCList_HeaderOT_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
     gDPSetRenderMode(gDisplayListHead++, G_RM_NOOP, G_RM_NOOP2);
 
     // clang-format off
-    temp_t2 = ((D_883171D0[0].r << 8) & 0xF800) | ((D_883171D0[0].g << 3) & 0x7C0) | ((D_883171D0[0].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
+    temp_t2 = ((gLabPCListHeaderColors[0].r << 8) & 0xF800) | ((gLabPCListHeaderColors[0].g << 3) & 0x7C0) | ((gLabPCListHeaderColors[0].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
     // clang-format on
 
     gDPSetFillColor(gDisplayListHead++, (temp_t2 << 0x10) | temp_t2);
@@ -227,7 +227,7 @@ s32 LabPCList_HeaderOT_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
     Gfx_SetEnvColor(D_883171EC.r, D_883171EC.g, D_883171EC.b, D_883171EC.a);
     Font_SetActive(4, 0);
 
-    sp1C = Text_GetString(NULL, 0, D_8831A4C4, 6);
+    sp1C = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 6);
     Font_Printf(((arg0->unk_14.unk_00 - Font_MeasureTextExtent(0, 0, sp1C)) / 2) + arg1, arg2 + 2, sp1C);
     Font_EndTexturedTextRendering();
     return 0;
@@ -255,7 +255,7 @@ s32 LabPCList_HeaderArea_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
     gDPSetRenderMode(gDisplayListHead++, G_RM_NOOP, G_RM_NOOP2);
 
     // clang-format off
-    temp_t2 = ((D_883171D0[1].r << 8) & 0xF800) | ((D_883171D0[1].g << 3) & 0x7C0) | ((D_883171D0[1].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
+    temp_t2 = ((gLabPCListHeaderColors[1].r << 8) & 0xF800) | ((gLabPCListHeaderColors[1].g << 3) & 0x7C0) | ((gLabPCListHeaderColors[1].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
     // clang-format on
 
     gDPSetFillColor(gDisplayListHead++, (temp_t2 << 0x10) | temp_t2);
@@ -266,7 +266,7 @@ s32 LabPCList_HeaderArea_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
     Gfx_SetEnvColor(D_883171F0.r, D_883171F0.g, D_883171F0.b, D_883171F0.a);
     Font_SetActive(4, 0);
 
-    sp1C = Text_GetString(NULL, 0, D_8831A4C4, 7);
+    sp1C = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 7);
     Font_Printf(((arg0->unk_14.unk_00 - Font_MeasureTextExtent(0, 0, sp1C)) / 2) + arg1, arg2 + 2, sp1C);
     Font_EndTexturedTextRendering();
     return 0;
@@ -294,7 +294,7 @@ s32 LabPCList_HeaderTypes_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
 
     {
         // clang-format off
-        s32 temp_t3 = ((D_883171D0[0].r << 8) & 0xF800) | ((D_883171D0[0].g << 3) & 0x7C0) | ((D_883171D0[0].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
+        s32 temp_t3 = ((gLabPCListHeaderColors[0].r << 8) & 0xF800) | ((gLabPCListHeaderColors[0].g << 3) & 0x7C0) | ((gLabPCListHeaderColors[0].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
         // clang-format on
         gDPSetFillColor(gDisplayListHead++, (temp_t3 << 0x10) | temp_t3);
         gDPFillRectangle(gDisplayListHead++, arg1, arg2, arg1 + 0x47, (arg2 + arg0->unk_14.unk_02) - 1);
@@ -302,7 +302,7 @@ s32 LabPCList_HeaderTypes_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
 
     {
         // clang-format off
-        s32 sp34 = ((D_883171D0[1].r << 8) & 0xF800) | ((D_883171D0[1].g * 8) & 0x7C0) | ((D_883171D0[1].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
+        s32 sp34 = ((gLabPCListHeaderColors[1].r << 8) & 0xF800) | ((gLabPCListHeaderColors[1].g * 8) & 0x7C0) | ((gLabPCListHeaderColors[1].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
         // clang-format on
         gDPSetFillColor(gDisplayListHead++, (sp34 << 0x10) | sp34);
         gDPFillRectangle(gDisplayListHead++, arg1 + 0x48, arg2, (arg1 + (u32)arg0->unk_14.unk_00) - 1,
@@ -313,10 +313,10 @@ s32 LabPCList_HeaderTypes_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
     Gfx_SetEnvColor(D_883171F4.r, D_883171F4.g, D_883171F4.b, D_883171F4.a);
     Font_SetActive(4, 0);
 
-    sp54 = Text_GetString(NULL, 0, D_8831A4C4, 8);
+    sp54 = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 8);
     Font_Printf(((0x48 - Font_MeasureTextExtent(0, 0, sp54)) / 2) + arg1, arg2 + 2, sp54);
 
-    sp54 = Text_GetString(NULL, 0, D_8831A4C4, 9);
+    sp54 = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 9);
     Font_Printf(((0x48 - Font_MeasureTextExtent(0, 0, sp54)) / 2) + arg1 + 0x48, arg2 + 2, sp54);
 
     Font_EndTexturedTextRendering();
@@ -345,7 +345,7 @@ s32 LabPCList_HeaderMoves_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
 
     {
         // clang-format off
-        s32 temp_t3 = ((D_883171D0[0].r << 8) & 0xF800) | ((D_883171D0[0].g << 3) & 0x7C0) | ((D_883171D0[0].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
+        s32 temp_t3 = ((gLabPCListHeaderColors[0].r << 8) & 0xF800) | ((gLabPCListHeaderColors[0].g << 3) & 0x7C0) | ((gLabPCListHeaderColors[0].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
         // clang-format on
 
         gDPSetFillColor(gDisplayListHead++, (temp_t3 << 0x10) | temp_t3);
@@ -354,7 +354,7 @@ s32 LabPCList_HeaderMoves_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
 
     {
         // clang-format off
-        s32 sp5C = ((D_883171D0[1].r << 8) & 0xF800) | ((D_883171D0[1].g << 3) & 0x7C0) | ((D_883171D0[1].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
+        s32 sp5C = ((gLabPCListHeaderColors[1].r << 8) & 0xF800) | ((gLabPCListHeaderColors[1].g << 3) & 0x7C0) | ((gLabPCListHeaderColors[1].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
         // clang-format on
 
         gDPSetFillColor(gDisplayListHead++, (sp5C << 0x10) | sp5C);
@@ -363,7 +363,7 @@ s32 LabPCList_HeaderMoves_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
 
     {
         // clang-format off
-        s32 temp_a2 = ((D_883171D0[0].r << 8) & 0xF800) | ((D_883171D0[0].g << 3) & 0x7C0) | ((D_883171D0[0].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
+        s32 temp_a2 = ((gLabPCListHeaderColors[0].r << 8) & 0xF800) | ((gLabPCListHeaderColors[0].g << 3) & 0x7C0) | ((gLabPCListHeaderColors[0].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
         // clang-format on
 
         gDPSetFillColor(gDisplayListHead++, (temp_a2 << 0x10) | temp_a2);
@@ -372,7 +372,7 @@ s32 LabPCList_HeaderMoves_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
 
     {
         // clang-format off
-        s32 temp_a0 = ((D_883171D0[1].r << 8) & 0xF800) | ((D_883171D0[1].g << 3) & 0x7C0) | ((D_883171D0[1].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
+        s32 temp_a0 = ((gLabPCListHeaderColors[1].r << 8) & 0xF800) | ((gLabPCListHeaderColors[1].g << 3) & 0x7C0) | ((gLabPCListHeaderColors[1].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
         // clang-format on
 
         gDPSetFillColor(gDisplayListHead++, (temp_a0 << 0x10) | temp_a0);
@@ -383,16 +383,16 @@ s32 LabPCList_HeaderMoves_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
     Gfx_SetEnvColor(D_883171F8.r, D_883171F8.g, D_883171F8.b, D_883171F8.a);
     Font_SetActive(4, 0);
 
-    temp_v0_16 = Text_GetString(NULL, 0, D_8831A4C4, 0xA);
+    temp_v0_16 = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0xA);
     Font_Printf(((0x69 - Font_MeasureTextExtent(0, 0, temp_v0_16)) / 2) + arg1, arg2 + 2, temp_v0_16);
 
-    temp_v0_16 = Text_GetString(NULL, 0, D_8831A4C4, 0xB);
+    temp_v0_16 = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0xB);
     Font_Printf(((0x69 - Font_MeasureTextExtent(0, 0, temp_v0_16)) / 2) + arg1 + 0x69, arg2 + 2, temp_v0_16);
 
-    temp_v0_16 = Text_GetString(NULL, 0, D_8831A4C4, 0xC);
+    temp_v0_16 = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0xC);
     Font_Printf(((0x69 - Font_MeasureTextExtent(0, 0, temp_v0_16)) / 2) + arg1 + 0xD2, arg2 + 2, temp_v0_16);
 
-    temp_v0_16 = Text_GetString(NULL, 0, D_8831A4C4, 0xD);
+    temp_v0_16 = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0xD);
     Font_Printf(((0x69 - Font_MeasureTextExtent(0, 0, temp_v0_16)) / 2) + arg1 + 0x13B, arg2 + 2, temp_v0_16);
 
     Font_EndTexturedTextRendering();
@@ -421,7 +421,7 @@ s32 LabPCList_HeaderLevel_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
     gDPSetRenderMode(gDisplayListHead++, G_RM_NOOP, G_RM_NOOP2);
 
     // clang-format off
-    temp_t2 = ((D_883171D0[0].r << 8) & 0xF800) | ((D_883171D0[0].g << 3) & 0x7C0) | ((D_883171D0[0].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
+    temp_t2 = ((gLabPCListHeaderColors[0].r << 8) & 0xF800) | ((gLabPCListHeaderColors[0].g << 3) & 0x7C0) | ((gLabPCListHeaderColors[0].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
     // clang-format on
 
     gDPSetFillColor(gDisplayListHead++, (temp_t2 << 0x10) | temp_t2);
@@ -432,7 +432,7 @@ s32 LabPCList_HeaderLevel_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
     Gfx_SetEnvColor(D_883171FC.r, D_883171FC.g, D_883171FC.b, D_883171FC.a);
     Font_SetActive(4, 0);
 
-    sp1C = Text_GetString(NULL, 0, D_8831A4C4, 0xE);
+    sp1C = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0xE);
     Font_Printf(((arg0->unk_14.unk_00 - Font_MeasureTextExtent(0, 0, sp1C)) / 2) + arg1, arg2 + 2, sp1C);
 
     Font_EndTexturedTextRendering();
@@ -461,7 +461,7 @@ s32 LabPCList_HeaderHp_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
     gDPSetRenderMode(gDisplayListHead++, G_RM_NOOP, G_RM_NOOP2);
 
     // clang-format off
-    temp_t2 = ((D_883171D0[1].r << 8) & 0xF800) | ((D_883171D0[1].g << 3) & 0x7C0) | ((D_883171D0[1].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
+    temp_t2 = ((gLabPCListHeaderColors[1].r << 8) & 0xF800) | ((gLabPCListHeaderColors[1].g << 3) & 0x7C0) | ((gLabPCListHeaderColors[1].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
     // clang-format on
 
     gDPSetFillColor(gDisplayListHead++, (temp_t2 << 0x10) | temp_t2);
@@ -472,7 +472,7 @@ s32 LabPCList_HeaderHp_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
     Gfx_SetEnvColor(D_88317200.r, D_88317200.g, D_88317200.b, D_88317200.a);
     Font_SetActive(4, 0);
 
-    sp1C = Text_GetString(NULL, 0, D_8831A4C4, 0xF);
+    sp1C = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0xF);
     Font_Printf(((arg0->unk_14.unk_00 - Font_MeasureTextExtent(0, 0, sp1C)) / 2) + arg1, arg2 + 2, sp1C);
 
     Font_EndTexturedTextRendering();
@@ -500,7 +500,7 @@ s32 LabPCList_HeaderAttack_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
     gDPSetRenderMode(gDisplayListHead++, G_RM_NOOP, G_RM_NOOP2);
 
     // clang-format off
-    temp_t2 = ((D_883171D0[0].r << 8) & 0xF800) | ((D_883171D0[0].g << 3) & 0x7C0) | ((D_883171D0[0].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
+    temp_t2 = ((gLabPCListHeaderColors[0].r << 8) & 0xF800) | ((gLabPCListHeaderColors[0].g << 3) & 0x7C0) | ((gLabPCListHeaderColors[0].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
     // clang-format on
 
     gDPSetFillColor(gDisplayListHead++, (temp_t2 << 0x10) | temp_t2);
@@ -510,7 +510,7 @@ s32 LabPCList_HeaderAttack_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
     Font_BeginTranslucentTextRendering();
     Gfx_SetEnvColor(D_88317204.r, D_88317204.g, D_88317204.b, D_88317204.a);
     Font_SetActive(4, 0);
-    Font_Printf(arg1 + 4, arg2 + 2, Text_GetString(NULL, 0, D_8831A4C4, 0x10));
+    Font_Printf(arg1 + 4, arg2 + 2, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x10));
     Font_EndTexturedTextRendering();
     return 0;
 }
@@ -537,7 +537,7 @@ s32 LabPCList_HeaderDefense_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
     gDPSetRenderMode(gDisplayListHead++, G_RM_NOOP, G_RM_NOOP2);
 
     // clang-format off
-    temp_t2 = ((D_883171D0[1].r << 8) & 0xF800) | ((D_883171D0[1].g << 3) & 0x7C0) | ((D_883171D0[1].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
+    temp_t2 = ((gLabPCListHeaderColors[1].r << 8) & 0xF800) | ((gLabPCListHeaderColors[1].g << 3) & 0x7C0) | ((gLabPCListHeaderColors[1].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
     // clang-format on
 
     gDPSetFillColor(gDisplayListHead++, (temp_t2 << 0x10) | temp_t2);
@@ -547,7 +547,7 @@ s32 LabPCList_HeaderDefense_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
     Font_BeginTranslucentTextRendering();
     Gfx_SetEnvColor(D_88317208.r, D_88317208.g, D_88317208.b, D_88317208.a);
     Font_SetActive(4, 0);
-    sp1C = Text_GetString(NULL, 0, D_8831A4C4, 0x11);
+    sp1C = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x11);
     Font_Printf(((arg0->unk_14.unk_00 - Font_MeasureTextExtent(0, 0, sp1C)) / 2) + arg1, arg2 + 2, sp1C);
     Font_EndTexturedTextRendering();
     return 0;
@@ -575,7 +575,7 @@ s32 LabPCList_HeaderSpeed_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
     gDPSetRenderMode(gDisplayListHead++, G_RM_NOOP, G_RM_NOOP2);
 
     // clang-format off
-    temp_t2 = ((D_883171D0[0].r << 8) & 0xF800) | ((D_883171D0[0].g << 3) & 0x7C0) | ((D_883171D0[0].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
+    temp_t2 = ((gLabPCListHeaderColors[0].r << 8) & 0xF800) | ((gLabPCListHeaderColors[0].g << 3) & 0x7C0) | ((gLabPCListHeaderColors[0].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
     // clang-format on
 
     gDPSetFillColor(gDisplayListHead++, (temp_t2 << 0x10) | temp_t2);
@@ -585,7 +585,7 @@ s32 LabPCList_HeaderSpeed_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
     Font_BeginTranslucentTextRendering();
     Gfx_SetEnvColor(D_8831720C.r, D_8831720C.g, D_8831720C.b, D_8831720C.a);
     Font_SetActive(4, 0);
-    sp1C = Text_GetString(NULL, 0, D_8831A4C4, 0x12);
+    sp1C = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x12);
     Font_Printf(((arg0->unk_14.unk_00 - Font_MeasureTextExtent(0, 0, sp1C)) / 2) + arg1, arg2 + 2, sp1C);
     Font_EndTexturedTextRendering();
     return 0;
@@ -613,7 +613,7 @@ s32 LabPCList_HeaderSpecial_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
     gDPSetRenderMode(gDisplayListHead++, G_RM_NOOP, G_RM_NOOP2);
 
     // clang-format off
-    temp_t2 = ((D_883171D0[1].r << 8) & 0xF800) | ((D_883171D0[1].g << 3) & 0x7C0) | ((D_883171D0[1].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
+    temp_t2 = ((gLabPCListHeaderColors[1].r << 8) & 0xF800) | ((gLabPCListHeaderColors[1].g << 3) & 0x7C0) | ((gLabPCListHeaderColors[1].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
     // clang-format on
 
     gDPSetFillColor(gDisplayListHead++, (temp_t2 << 0x10) | temp_t2);
@@ -623,7 +623,7 @@ s32 LabPCList_HeaderSpecial_Draw(WidgetNode* arg0, s32 arg1, s32 arg2) {
     Font_BeginTranslucentTextRendering();
     Gfx_SetEnvColor(D_88317210.r, D_88317210.g, D_88317210.b, D_88317210.a);
     Font_SetActive(4, 0);
-    sp1C = Text_GetString(NULL, 0, D_8831A4C4, 0x13);
+    sp1C = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x13);
     Font_Printf(((arg0->unk_14.unk_00 - Font_MeasureTextExtent(0, 0, sp1C)) / 2) + arg1, arg2 + 2, sp1C);
     Font_EndTexturedTextRendering();
     return 0;
@@ -682,7 +682,7 @@ s32 LabPCList_DrawCornerIcon(WidgetNode* arg0, s32 arg1, s32 arg2) {
     gDPSetAlphaCompare(gDisplayListHead++, G_AC_THRESHOLD);
     gDPSetTexturePersp(gDisplayListHead++, G_TP_NONE);
 
-    gDPLoadTextureBlock(gDisplayListHead++, D_883198A0, G_IM_FMT_RGBA, G_IM_SIZ_16b, 40, 28, 0,
+    gDPLoadTextureBlock(gDisplayListHead++, gLabPCListCornerIconTexture, G_IM_FMT_RGBA, G_IM_SIZ_16b, 40, 28, 0,
                         G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                         G_TX_NOLOD);
     gSPTextureRectangle(gDisplayListHead++, (arg1 + 0x100) << 2, (arg2 + 2) << 2, (arg1 + 0x127) << 2,
@@ -761,11 +761,11 @@ s32 LabPCList_DrawPageHeader(unk_func_88302D98* arg0, s32 arg1, s32 arg2) {
     s32 spE4;
 
     Text_SetNumberToken(1, arg0->unk_2C->unk_CD0 + 1);
-    Text_GetString(spF0, 0x20, D_8831A4C4, 2);
+    Text_GetString(spF0, 0x20, gLabPcListColumnLabelsBank, 2);
     Font_BeginTranslucentTextRendering();
     Gfx_SetEnvColor(D_88317218.r, D_88317218.g, D_88317218.b, D_88317218.a);
     Font_SetActive(8, 0);
-    spEC = Text_GetString(NULL, 0, D_8831A4C4, 1);
+    spEC = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 1);
     spE8 = Font_MeasureTextExtent(0, 0, spEC);
     Font_Printf(arg1 + 0x22, arg2 + 5, spEC);
     spE4 = 0x206 - Font_MeasureTextExtent(0, 0, spF0);
@@ -779,13 +779,13 @@ s32 LabPCList_DrawPageHeader(unk_func_88302D98* arg0, s32 arg1, s32 arg2) {
     gDPSetAlphaCompare(gDisplayListHead++, G_AC_THRESHOLD);
     gDPSetTexturePersp(gDisplayListHead++, G_TP_NONE);
 
-    gDPLoadTextureBlock(gDisplayListHead++, D_88317920, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 24, 0,
+    gDPLoadTextureBlock(gDisplayListHead++, gLabPCListHeaderLeftOrnamentTexture, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 24, 0,
                         G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                         G_TX_NOLOD);
     gSPTextureRectangle(gDisplayListHead++, (arg1 + 4) << 2, (arg2 + 3) << 2, (arg1 + 0x1D) << 2, (arg2 + 0x1A) << 2,
                         G_TX_RENDERTILE, 0, 0, 0x1000, 0x0400);
 
-    gDPLoadTextureBlock(gDisplayListHead++, D_88317F28, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 24, 0,
+    gDPLoadTextureBlock(gDisplayListHead++, gLabPCListHeaderTitleOrnamentTexture, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 24, 0,
                         G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                         G_TX_NOLOD);
     gSPTextureRectangle(gDisplayListHead++, ((arg1 + spE8) + 0x26) << 2, (arg2 + 3) << 2, ((arg1 + spE8) + 0x3F) << 2,
@@ -894,7 +894,7 @@ void LabPCList_BuildListScreen(unk_func_8830867C_02C* arg0, s32 arg1, s32 arg2, 
                    unk_func_8830867C_03C* arg7, unk_func_8830867C_040* arg8, unk_func_8830867C_044* arg9,
                    unk_func_8830867C_048* argA, unk_func_8830867C_04C* argB, unk_func_889000C4* argC,
                    FragmentEntry argD, unk_func_8830867C_054* argE, MemoryPool* argF, FontContext* arg10) {
-    static s32 D_8831721C[] = {
+    static s32 gLabPCListHeaderWidths[] = {
         0x0000005C,
         0x00000034,
         0x0000004C,
@@ -902,7 +902,7 @@ void LabPCList_BuildListScreen(unk_func_8830867C_02C* arg0, s32 arg1, s32 arg2, 
     static s32 D_88317228[] = { 0x38, 0x48, 0x48 };
     static s32 D_88317234[] = { 0x69, 0x69, 0x69, 0x69 };
     static s32 D_88317244[] = { 0x46, 0x46, 0x46, 0x46, 0x46, 0x46 };
-    static s32 D_8831725C[] = {
+    static s32 gLabPCListPageStarts[] = {
         0x00000000,
         0x00000006,
         0x0000000A,
@@ -922,14 +922,14 @@ void LabPCList_BuildListScreen(unk_func_8830867C_02C* arg0, s32 arg1, s32 arg2, 
     unk_func_8850BD40* sp5C;
     unk_func_88507D4C* sp58;
     unk_func_88507D4C* sp54;
-    unk_func_88503298* sp50;
+    WidgetVisibilityGate* sp50;
 
     LabPCList_InitDeckSlots(arg0, argF);
     PointerList_Allocate(&arg0->unk_03C, 0x1E6, argF);
     PointerList_Allocate(&arg0->unk_0CC, 0x1E6, argF);
     LabPCList_LoadAllBoxes(&arg0->unk_144);
 
-    arg0->unk_0DC = D_8831721C;
+    arg0->unk_0DC = gLabPCListHeaderWidths;
 
     LabPCList_FlattenEntries(&arg0->unk_03C, &arg0->unk_144);
     LabPCList_LoadDecks(arg0, argF);
@@ -950,7 +950,7 @@ void LabPCList_BuildListScreen(unk_func_8830867C_02C* arg0, s32 arg1, s32 arg2, 
     arg0->unk_CC8 = 0;
     arg0->unk_0D8 = 0;
     arg0->unk_CD0 = 0;
-    arg0->unk_CD4 = D_8831725C;
+    arg0->unk_CD4 = gLabPCListPageStarts;
     arg0->unk_0E0 = 0;
     arg0->unk_CD8 = argD;
     arg0->unk_CDC = argE;
@@ -979,7 +979,7 @@ void LabPCList_BuildListScreen(unk_func_8830867C_02C* arg0, s32 arg1, s32 arg2, 
     arg0->unk_02C->unk_00.unk_28 |= 0x400;
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_02C);
 
-    arg0->unk_030 = mem_pool_alloc(argF, sizeof(unk_func_8850B254));
+    arg0->unk_030 = mem_pool_alloc(argF, sizeof(DashedBorderFrame));
     ((func8850B254)Memmap_GetFragmentVaddr(WidgetTree_InitDashedBorderFrame))(arg0->unk_030, 0, 0, 0x228, 0x20, D_8831726C, D_88317270);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_02C, arg0->unk_030);
 
@@ -1078,7 +1078,7 @@ void LabPCList_BuildListScreen(unk_func_8830867C_02C* arg0, s32 arg1, s32 arg2, 
     LabPCList_SwitchColumnPage(arg0);
 
     arg0->unk_034 = mem_pool_alloc(argF, sizeof(unk_func_8830867C_02C_034));
-    ((func88506DCC)Memmap_GetFragmentVaddr(WidgetTree_InitScrollableGrid))(arg0->unk_034, 0, 0x4A, func_88304850, 0x228, 0x14, 0xE,
+    ((func88506DCC)Memmap_GetFragmentVaddr(WidgetTree_InitScrollableGrid))(arg0->unk_034, 0, 0x4A, LabPCList_DrawEntryCell, 0x228, 0x14, 0xE,
                                                            argF);
     ((func88506F1C)Memmap_GetFragmentVaddr(WidgetTree_BindScrollableGridPage))(arg0->unk_034, &arg0->unk_03C, argF);
     arg0->unk_034->unk_70 = arg0;
@@ -1103,7 +1103,7 @@ void LabPCList_BuildListScreen(unk_func_8830867C_02C* arg0, s32 arg1, s32 arg2, 
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_02C, arg0->unk_050);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_02C, arg0->unk_034);
 
-    sp50 = mem_pool_alloc(argF, sizeof(unk_func_88503298));
+    sp50 = mem_pool_alloc(argF, sizeof(WidgetVisibilityGate));
     ((func88503298)Memmap_GetFragmentVaddr(WidgetTree_InitVisibilityGateBridge))(sp50, arg0->unk_02C, arg3);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, sp50);
 
@@ -1116,7 +1116,7 @@ void LabPCList_BuildListScreen(unk_func_8830867C_02C* arg0, s32 arg1, s32 arg2, 
     arg0->unk_08C->unk_4C = 0x228;
     arg0->unk_08C->unk_50 = 0x13E;
 
-    arg0->unk_090 = mem_pool_alloc(argF, sizeof(unk_func_88509F48));
+    arg0->unk_090 = mem_pool_alloc(argF, sizeof(WidgetTree_MessagePanel));
     ((func88509F48)Memmap_GetFragmentVaddr(WidgetTree_InitMessagePanel))(arg0->unk_090, 0, 0, 0x228, 0x1A0, argF, arg10);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_090);
 
@@ -1125,7 +1125,7 @@ void LabPCList_BuildListScreen(unk_func_8830867C_02C* arg0, s32 arg1, s32 arg2, 
                                                            mem_pool_alloc(argF, sizeof(char) * 0x140), 0x10);
     arg0->unk_CCC->unk_3C = 0x20;
 
-    arg0->unk_0B8 = mem_pool_alloc(argF, sizeof(unk_func_8850CD44));
+    arg0->unk_0B8 = mem_pool_alloc(argF, sizeof(ChildWidgetGroup));
     ((func8850CD44)Memmap_GetFragmentVaddr(WidgetTree_InitChildWidgetGroup))(arg0->unk_0B8, 4, argF);
 
     arg0->unk_0BC = mem_pool_alloc(argF, sizeof(unk_func_882173EC));
@@ -1172,7 +1172,7 @@ void LabPCList_DrawTypeName(s32 arg0, s32 arg1, s32 arg2, u8* arg3, s32 arg4) {
         sp28 = Species_GetMoveSlot(arg3, arg4);
         if (sp28 != -1) {
             sp2C = ((func884000C4)Memmap_GetFragmentVaddr(LabPC_GetTypeColor))(sp28)->unk_04;
-            sp20 = Text_GetString(NULL, 0, D_8831A4D4, PokemonType_ToDisplayIndex(sp28));
+            sp20 = Text_GetString(NULL, 0, gTypeNamesTable, PokemonType_ToDisplayIndex(sp28));
         } else {
             return;
         }
@@ -1200,7 +1200,7 @@ void LabPCList_DrawMoveNameCell(s32 arg0, s32 arg1, s32 arg2, u8* arg3, s32 arg4
             sp2C = " ????? ";
         } else {
             sp28 = ((func884000C4)Memmap_GetFragmentVaddr(LabPC_GetTypeColor))(sp24->unk_00[1])->unk_04;
-            sp2C = Text_GetString(NULL, 0, D_8831A4CC, sp18[9] - 1);
+            sp2C = Text_GetString(NULL, 0, gMoveNamesTable, sp18[9] - 1);
         }
         Font_BeginTranslucentTextRendering();
         Font_SetActive(4, 0);
@@ -1210,9 +1210,9 @@ void LabPCList_DrawMoveNameCell(s32 arg0, s32 arg1, s32 arg2, u8* arg3, s32 arg4
     }
 }
 
-Color_RGBA8 D_8831727C = { 0xF0, 0x96, 0x96, 0xFF };
-Color_RGBA8 D_88317280 = { 0xF0, 0xD2, 0x8C, 0xFF };
-Color_RGBA8 D_88317284 = { 0x96, 0xDC, 0xB4, 0xFF };
+Color_RGBA8 gPartyLabelColor = { 0xF0, 0x96, 0x96, 0xFF };
+Color_RGBA8 gGbLabelColor = { 0xF0, 0xD2, 0x8C, 0xFF };
+Color_RGBA8 gN64LabelColor = { 0x96, 0xDC, 0xB4, 0xFF };
 
 void LabPCList_DrawAreaCell(s32 arg0, s32 arg1, s32 arg2, unk_func_88304850_arg2* arg3) {
     LabPCList_DrawLocationCaption(arg0, arg1, arg2, 0x14, *(s32*)arg3->unk_00[0], arg3->unk_00[1], 0xFF);
@@ -1263,7 +1263,7 @@ typedef struct unk_D_88317298 {
 } unk_D_88317298; // size = 0x8
 
 s32 LabPCList_CheckStatFilterRange(unk_func_8830867C_02C* arg0, unk_func_88304850_arg2* arg1) {
-    static unk_D_88317298 D_88317298[] = {
+    static unk_D_88317298 gStatFilterRanges[] = {
         { 0x19, 0x1E }, { 0xF, 0x14 }, { 0x32, 0x37 }, { 0x1, 0x1E }, { 0x1, 0x32 },
     };
 
@@ -1271,7 +1271,7 @@ s32 LabPCList_CheckStatFilterRange(unk_func_8830867C_02C* arg0, unk_func_8830485
     s32 sp18 = 0;
 
     if (LabPCList_HasFilterFlag(arg0, 0x20) != 0) {
-        ptr = &D_88317298[arg0->unk_C54.unk_2C];
+        ptr = &gStatFilterRanges[arg0->unk_C54.unk_2C];
         if (arg1->unk_2C < ptr->unk_00) {
             sp18 = 1;
         } else if (ptr->unk_04 < arg1->unk_2C) {
@@ -1281,10 +1281,10 @@ s32 LabPCList_CheckStatFilterRange(unk_func_8830867C_02C* arg0, unk_func_8830485
     return sp18;
 }
 
-void func_88304850(s32 arg0, s32 arg1, unk_func_88304850_arg2 *arg2, s32 arg3, s32 arg4, unk_func_8830867C_02C_034 *arg5)
+void LabPCList_DrawEntryCell(s32 arg0, s32 arg1, unk_func_88304850_arg2 *arg2, s32 arg3, s32 arg4, unk_func_8830867C_02C_034 *arg5)
 {
-  static Color_RGBA8 D_883172C0[] = {{0xF0, 0xF0, 0xF0, 0xFF}, {0xB2, 0xFF, 0xC3, 0xFF}, {0xFF, 0xB2, 0xC3, 0xFF}};
-  static Color_RGBA8 D_883172CC[][2] = {{{0x50, 0x51, 0x54, 0xFF}, {0x59, 0x5B, 0x5E, 0xFF}}, {{0x43, 0x44, 0x46, 0xFF}, {0x4B, 0x4C, 0x4F, 0xFF}}};
+  static Color_RGBA8 gStatFilterColors[] = {{0xF0, 0xF0, 0xF0, 0xFF}, {0xB2, 0xFF, 0xC3, 0xFF}, {0xFF, 0xB2, 0xC3, 0xFF}};
+  static Color_RGBA8 gStatCellColors[][2] = {{{0x50, 0x51, 0x54, 0xFF}, {0x59, 0x5B, 0x5E, 0xFF}}, {{0x43, 0x44, 0x46, 0xFF}, {0x4B, 0x4C, 0x4F, 0xFF}}};
   Color_RGBA8 spBC;
   Color_RGBA8 (*tbl)[2];
   unk_func_88304850_arg2 *mon;
@@ -1299,7 +1299,7 @@ void func_88304850(s32 arg0, s32 arg1, unk_func_88304850_arg2 *arg2, s32 arg3, s
   unk_func_8830867C_02C *temp_s5;
   temp_s5 = arg5->unk_70;
   spA8 = 0x13;
-  tbl = (Color_RGBA8 (*)[2]) D_883171D0;
+  tbl = (Color_RGBA8 (*)[2]) gLabPCListHeaderColors;
   temp_a0 = (arg3 & 1) * 8;
   var_s7 = ((temp_s5->unk_0AC->unk_2C->unk_30 & 2) ? (temp_s5->unk_0AC->unk_00.unk_10.unk_00 - temp_s5->unk_000.unk_10.unk_00) : (arg5->unk_00.unk_00.unk_14.unk_00)) + arg0;
   var_s1 = arg0 + 0x84;
@@ -1317,7 +1317,7 @@ void func_88304850(s32 arg0, s32 arg1, unk_func_88304850_arg2 *arg2, s32 arg3, s
   gDPFillRectangle(gDisplayListHead++, arg0 + 0x26, arg1, arg0 + 0x81, arg1 + spA8);
   var_s6 = temp_s5->unk_CD4[temp_s5->unk_CD0]; for (var_s1 = arg0 + 0x84; var_s1 < var_s7; var_s1 += ((s32 *) temp_s5->unk_0DC)[var_s6], var_s6++)
   {
-    temp_a0_2 = ((((((Color_RGBA8 *) (((u8 *) D_883172CC) + (temp_s7 * 8)))[var_s6 & 1].r << 8) & 0xF800) | ((((Color_RGBA8 *) (((u8 *) D_883172CC) + (temp_s7 * 8)))[var_s6 & 1].g << 3) & 0x7C0)) | ((((Color_RGBA8 *) (((u8 *) D_883172CC) + (temp_s7 * 8)))[var_s6 & 1].b >> 2) & 0x3E)) | 1;
+    temp_a0_2 = ((((((Color_RGBA8 *) (((u8 *) gStatCellColors) + (temp_s7 * 8)))[var_s6 & 1].r << 8) & 0xF800) | ((((Color_RGBA8 *) (((u8 *) gStatCellColors) + (temp_s7 * 8)))[var_s6 & 1].g << 3) & 0x7C0)) | ((((Color_RGBA8 *) (((u8 *) gStatCellColors) + (temp_s7 * 8)))[var_s6 & 1].b >> 2) & 0x3E)) | 1;
     gDPPipeSync(gDisplayListHead++);
     gDPSetFillColor(gDisplayListHead++, (temp_a0_2 << 0x10) | temp_a0_2);
     gDPFillRectangle(gDisplayListHead++, var_s1, arg1, (((s32 *) temp_s5->unk_0DC)[var_s6] + var_s1) - 1, arg1 + spA8);
@@ -1329,7 +1329,7 @@ void func_88304850(s32 arg0, s32 arg1, unk_func_88304850_arg2 *arg2, s32 arg3, s
     return;
   }
     Gfx_DrawNumberDigits(arg0 + 6, arg1 + 4, arg3 + 1, 3);
-    spBC = D_883172C0[LabPCList_CheckStatFilterRange(temp_s5, mon)];
+    spBC = gStatFilterColors[LabPCList_CheckStatFilterRange(temp_s5, mon)];
     if (arg4 & 4)
     {
       spBC.a = 0x4D;
@@ -1348,7 +1348,7 @@ void func_88304850(s32 arg0, s32 arg1, unk_func_88304850_arg2 *arg2, s32 arg3, s
     }
     else
     {
-      Font_Printf((arg0 + spA8) + 0x26, arg1 + 2, Text_GetString(NULL, 0, D_8831A4D0, mon->unk_08 - 1));
+      Font_Printf((arg0 + spA8) + 0x26, arg1 + 2, Text_GetString(NULL, 0, gLabPcListSpeciesNamesBank, mon->unk_08 - 1));
     }
     Font_EndTexturedTextRendering();
     var_s6 = temp_s5->unk_CD4[temp_s5->unk_CD0];
@@ -1517,7 +1517,7 @@ void LabPCList_ApplyFiltersAndSort(unk_func_8830867C_02C* arg0) {
         }
     }
 
-    PointerList_Sort(arg0->unk_034->unk_00.unk_2C, D_8831A1F8[arg0->unk_C54.unk_00]);
+    PointerList_Sort(arg0->unk_034->unk_00.unk_2C, gListSortComparators[arg0->unk_C54.unk_00]);
 }
 
 s32 LabPCList_CheckAnyDirty(unk_func_8830867C_02C* arg0) {
@@ -1610,7 +1610,7 @@ void LabPCList_PerformMoveMon(unk_func_8830867C_02C* arg0, unk_func_8830867C_02C
         Text_SetStringToken(0x25, sp50);
         BattleInfoWidget_FormatLocationName(sp30, sp88, sp84);
         Text_SetStringToken(0x28, sp30);
-        Text_GetString(arg0->unk_CCC->unk_40, 0x140, D_8831A4C4, 0x5C);
+        Text_GetString(arg0->unk_CCC->unk_40, 0x140, gLabPcListColumnLabelsBank, 0x5C);
         ((func8850A10C)Memmap_GetFragmentVaddr(WidgetTree_SetMessagePanelText))(arg0->unk_090, arg0->unk_CCC, 0, 0);
         ((func8850A3CC)Memmap_GetFragmentVaddr(WidgetTree_RunMessagePanelWithSound))(arg0->unk_090, arg2);
     } else {
@@ -1818,7 +1818,7 @@ void LabPCList_RunPartySelectionModal(unk_func_8830867C_02C* arg0, Controller* a
     arg0->unk_02C->unk_2C = 0xB;
 }
 
-void func_88305F28(unk_func_8830867C_02C* arg0) {
+void LabPCList_ApplyItemToMon(unk_func_8830867C_02C* arg0) {
     unk_func_8830867C_04C_030_02C_000_000* spDC;
     unk_func_8830867C_02C_0CC_000* spD8;
     s32 spD4;
@@ -1876,9 +1876,9 @@ void func_88305F28(unk_func_8830867C_02C* arg0) {
         if (spD4 == -1) {
             ((func88507C0C)Memmap_GetFragmentVaddr(WidgetTree_SetPagedGridSelectionWithOffset))(arg0->unk_034, spD0, spCC);
             Text_SetStringToken(0x1A, spD8->unk_38);
-            Text_SetStringToken(0x1D, Text_GetString(NULL, 0, D_8831A4CC, spBC - 1));
-            Text_SetStringToken(0x1E, Text_GetString(NULL, 0, D_8831A4CC, sp34->unk_11 - 1));
-            Text_GetString(arg0->unk_CCC->unk_40, 0x140, D_8831A4C4, 0x5D);
+            Text_SetStringToken(0x1D, Text_GetString(NULL, 0, gMoveNamesTable, spBC - 1));
+            Text_SetStringToken(0x1E, Text_GetString(NULL, 0, gMoveNamesTable, sp34->unk_11 - 1));
+            Text_GetString(arg0->unk_CCC->unk_40, 0x140, gLabPcListColumnLabelsBank, 0x5D);
             ((func8850A10C)Memmap_GetFragmentVaddr(WidgetTree_SetMessagePanelText))(arg0->unk_090, arg0->unk_CCC, 0, 0);
             ((func8850A3CC)Memmap_GetFragmentVaddr(WidgetTree_RunMessagePanelWithSound))(arg0->unk_090, gPlayer1Controller);
         } else {
@@ -1923,7 +1923,7 @@ void func_88305F28(unk_func_8830867C_02C* arg0) {
             Text_SetStringToken(0x1A, spD8->unk_38);
             Text_SetNumberToken(2, sp48);
             Text_SetNumberToken(3, sp44);
-            Text_GetString(arg0->unk_CCC->unk_40, 0x140, D_8831A4C4, 0x5E);
+            Text_GetString(arg0->unk_CCC->unk_40, 0x140, gLabPcListColumnLabelsBank, 0x5E);
             ((func8850A10C)Memmap_GetFragmentVaddr(WidgetTree_SetMessagePanelText))(arg0->unk_090, arg0->unk_CCC, 0, 0);
             ((func8850A3CC)Memmap_GetFragmentVaddr(WidgetTree_RunMessagePanelWithSound))(arg0->unk_090, gPlayer1Controller);
         } else {
@@ -1937,12 +1937,12 @@ s32 LabPCList_OpenListMenu(unk_func_8830867C_02C* arg0, Controller* arg1) {
     char* sp28[6];
     u32 sp24;
 
-    sp28[0] = Text_GetString(NULL, 0, D_8831A4C4, 0x17);
-    sp28[1] = Text_GetString(NULL, 0, D_8831A4C4, 0x18);
-    sp28[2] = Text_GetString(NULL, 0, D_8831A4C4, 0x19);
-    sp28[3] = Text_GetString(NULL, 0, D_8831A4C4, 0x1A);
-    sp28[4] = Text_GetString(NULL, 0, D_8831A4C4, 0x1B);
-    sp28[5] = Text_GetString(NULL, 0, D_8831A4C4, 0x1C);
+    sp28[0] = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x17);
+    sp28[1] = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x18);
+    sp28[2] = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x19);
+    sp28[3] = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x1A);
+    sp28[4] = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x1B);
+    sp28[5] = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x1C);
 
     BattleInfoWidget_SetLabels(arg0->unk_08C, sp28, 6);
 
@@ -1973,7 +1973,7 @@ s32 LabPCList_OpenListMenu(unk_func_8830867C_02C* arg0, Controller* arg1) {
         case 1:
             LabPCList_SaveFilterState(arg0);
             LabPCList_SetSortMode(arg0, 0x11);
-            PointerList_Sort(arg0->unk_034->unk_00.unk_2C, D_8831A1F8[arg0->unk_C54.unk_00]);
+            PointerList_Sort(arg0->unk_034->unk_00.unk_2C, gListSortComparators[arg0->unk_C54.unk_00]);
             ((func88507AE4)Memmap_GetFragmentVaddr(WidgetTree_SetScrollableGridIndex))(arg0->unk_034, 0);
             sp24 = 0;
             break;
@@ -1981,7 +1981,7 @@ s32 LabPCList_OpenListMenu(unk_func_8830867C_02C* arg0, Controller* arg1) {
         case 2:
             LabPCList_SaveFilterState(arg0);
             LabPCList_SetSortMode(arg0, 0x12);
-            PointerList_Sort(arg0->unk_034->unk_00.unk_2C, D_8831A1F8[arg0->unk_C54.unk_00]);
+            PointerList_Sort(arg0->unk_034->unk_00.unk_2C, gListSortComparators[arg0->unk_C54.unk_00]);
             ((func88507AE4)Memmap_GetFragmentVaddr(WidgetTree_SetScrollableGridIndex))(arg0->unk_034, 0);
             sp24 = 0;
             break;
@@ -2011,7 +2011,7 @@ s32 LabPCList_OpenListMenu(unk_func_8830867C_02C* arg0, Controller* arg1) {
 }
 
 s32 LabPCList_OpenRowMenu(unk_func_8830867C_02C* arg0, Controller* arg1) {
-    static char D_8831A500[0x20];
+    static char gRowMenuHeaderBuf[0x20];
 
     char* sp44[5];
     u32 sp40;
@@ -2028,15 +2028,15 @@ s32 LabPCList_OpenRowMenu(unk_func_8830867C_02C* arg0, Controller* arg1) {
         sp38 = 0x23;
     }
 
-    Text_SetStringToken(0x19, Text_GetString(NULL, 0, D_8831A4D0, sp3C->unk_08.unk_00 - 1));
-    Text_GetString(D_8831A500, 0x20, D_8831A4C4, sp38);
+    Text_SetStringToken(0x19, Text_GetString(NULL, 0, gLabPcListSpeciesNamesBank, sp3C->unk_08.unk_00 - 1));
+    Text_GetString(gRowMenuHeaderBuf, 0x20, gLabPcListColumnLabelsBank, sp38);
 
-    sp44[0] = D_8831A500;
+    sp44[0] = gRowMenuHeaderBuf;
     sp38 = (arg0->unk_C54.unk_04 & 0x10) ? (0x26) : (0x25);
-    sp44[1] = Text_GetString(NULL, 0, D_8831A4C4, sp38);
-    sp44[2] = Text_GetString(NULL, 0, D_8831A4C4, 0x27);
-    sp44[3] = Text_GetString(NULL, 0, D_8831A4C4, 0x28);
-    sp44[4] = Text_GetString(NULL, 0, D_8831A4C4, 0x29);
+    sp44[1] = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, sp38);
+    sp44[2] = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x27);
+    sp44[3] = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x28);
+    sp44[4] = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x29);
 
     BattleInfoWidget_SetLabels(arg0->unk_08C, sp44, 5);
 
@@ -2127,43 +2127,43 @@ typedef struct unk_D_883172F4 {
 } unk_D_883172F4; // size = 0x8
 
 s32 LabPCList_HandleColumnHeaderClick(unk_func_8830867C_02C* arg0, WidgetNode* arg1, s32 arg2, Controller* arg3) {
-    static s16 D_883172DC[] = {
+    static s16 gSortOptionStrings_Level[] = {
         0x001E,
         0x001F,
         0x0020,
         0x0000,
     };
-    static s16 D_883172E4[] = {
+    static s16 gSortOptionStrings_Stat[] = {
         0x001E,
         0x001F,
     };
-    static s16 D_883172E8[] = {
+    static s16 gSortOptionStrings_Id[] = {
         0x001D,
         0x0000,
     };
-    static s16 D_883172EC[] = {
+    static s16 gSortOptionStrings_AtoZ[] = {
         0x0021,
         0x0000,
     };
-    static s16 D_883172F0[] = {
+    static s16 gSortOptionStrings_Area[] = {
         0x0022,
         0x0000,
     };
-    static unk_D_883172F4 D_883172F4[] = {
+    static unk_D_883172F4 ColumnMenuOption[] = {
         {
-            D_883172EC,
+            gSortOptionStrings_AtoZ,
             0x00000001,
         },
         {
-            D_883172E8,
+            gSortOptionStrings_Id,
             0x00000001,
         },
         {
-            D_883172EC,
+            gSortOptionStrings_AtoZ,
             0x00000001,
         },
         {
-            D_883172F0,
+            gSortOptionStrings_Area,
             0x00000001,
         },
         {
@@ -2175,27 +2175,27 @@ s32 LabPCList_HandleColumnHeaderClick(unk_func_8830867C_02C* arg0, WidgetNode* a
             0x00000000,
         },
         {
-            D_883172DC,
+            gSortOptionStrings_Level,
             0x00000003,
         },
         {
-            D_883172E4,
+            gSortOptionStrings_Stat,
             0x00000002,
         },
         {
-            D_883172E4,
+            gSortOptionStrings_Stat,
             0x00000002,
         },
         {
-            D_883172E4,
+            gSortOptionStrings_Stat,
             0x00000002,
         },
         {
-            D_883172E4,
+            gSortOptionStrings_Stat,
             0x00000002,
         },
         {
-            D_883172E4,
+            gSortOptionStrings_Stat,
             0x00000002,
         },
     };
@@ -2205,11 +2205,11 @@ s32 LabPCList_HandleColumnHeaderClick(unk_func_8830867C_02C* arg0, WidgetNode* a
     s32 i;
     char* sp40[3];
 
-    for (i = 0; i < D_883172F4[arg2 - 2].unk_04; i++) {
-        sp40[i] = Text_GetString(NULL, 0, D_8831A4C4, D_883172F4[arg2 - 2].unk_00[i]);
+    for (i = 0; i < ColumnMenuOption[arg2 - 2].unk_04; i++) {
+        sp40[i] = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, ColumnMenuOption[arg2 - 2].unk_00[i]);
     }
 
-    BattleInfoWidget_SetLabels(arg0->unk_08C, sp40, D_883172F4[arg2 - 2].unk_04);
+    BattleInfoWidget_SetLabels(arg0->unk_08C, sp40, ColumnMenuOption[arg2 - 2].unk_04);
 
     arg0->unk_08C->unk_30 = arg1->unk_10;
     arg0->unk_08C->unk_34 = arg1->unk_14;
@@ -2269,7 +2269,7 @@ s32 LabPCList_HandleColumnHeaderClick(unk_func_8830867C_02C* arg0, WidgetNode* a
 
             LabPCList_SaveFilterState(arg0);
             LabPCList_SetSortMode(arg0, sp50);
-            PointerList_Sort(arg0->unk_034->unk_00.unk_2C, D_8831A1F8[arg0->unk_C54.unk_00]);
+            PointerList_Sort(arg0->unk_034->unk_00.unk_2C, gListSortComparators[arg0->unk_C54.unk_00]);
             ((func88507AE4)Memmap_GetFragmentVaddr(WidgetTree_SetScrollableGridIndex))(arg0->unk_034, 0);
             var_s0 = 0;
             break;
@@ -2303,7 +2303,7 @@ s32 LabPCList_HandleColumnHeaderClick(unk_func_8830867C_02C* arg0, WidgetNode* a
 
             LabPCList_SaveFilterState(arg0);
             LabPCList_SetSortMode(arg0, sp50);
-            PointerList_Sort(arg0->unk_034->unk_00.unk_2C, D_8831A1F8[arg0->unk_C54.unk_00]);
+            PointerList_Sort(arg0->unk_034->unk_00.unk_2C, gListSortComparators[arg0->unk_C54.unk_00]);
 
             ((func88507AE4)Memmap_GetFragmentVaddr(WidgetTree_SetScrollableGridIndex))(arg0->unk_034, 0);
             var_s0 = 0;
@@ -2540,7 +2540,7 @@ s32 LabPCList_HandleGridInput(unk_func_8830867C_02C_048* arg0, Controller* arg1,
 
                 if (BattleInfoWidget_RunItemMenuModal(arg0->unk_24->unk_0AC, arg1) == 1) {
                     Ui_SendMessageAndPollInput(NULL);
-                    func_88305F28(arg0->unk_24);
+                    LabPCList_ApplyItemToMon(arg0->unk_24);
                     LabPCList_ResetGridSelection(arg0);
                     LabPCList_SetGridInteractive(arg0->unk_24, 1);
                 } else {
@@ -2595,7 +2595,7 @@ s32 LabPCList_HandleGridInput(unk_func_8830867C_02C_048* arg0, Controller* arg1,
                     Ui_SendMessageAndPollInput(NULL);
                     Ui_SendMessageAndPollInput(NULL);
                     if (BattleInfoWidget_RunItemMenuModal(arg0->unk_24->unk_0AC, arg1) == 1) {
-                        func_88305F28(arg0->unk_24);
+                        LabPCList_ApplyItemToMon(arg0->unk_24);
                     }
                     Ui_SendMessageAndPollInput(NULL);
 
@@ -2970,7 +2970,7 @@ void LabPCList_BuildWidget(unk_func_8830867C* arg0, s32 arg1, s32 arg2, MemoryPo
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&arg0->unk_00.unk_00, &sp8C->unk_00);
 
     sp80 = mem_pool_alloc(arg3, sizeof(unk_func_88500EE4));
-    ((func88500EE4)Memmap_GetFragmentVaddr(WidgetTree_InitTintedTexture))(sp80, 0, 0, 0x280, 0x1E0, D_88318898, D_88317354,
+    ((func88500EE4)Memmap_GetFragmentVaddr(WidgetTree_InitTintedTexture))(sp80, 0, 0, 0x280, 0x1E0, gLabPCListBackgroundImage, D_88317354,
                                                            D_88317358);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&sp8C->unk_00, &sp80->unk_00.unk_00);
 
@@ -2981,11 +2981,11 @@ void LabPCList_BuildWidget(unk_func_8830867C* arg0, s32 arg1, s32 arg2, MemoryPo
 
     sp78 = mem_pool_alloc(arg3, sizeof(unk_func_88509A2C));
     ((func88509A2C)Memmap_GetFragmentVaddr(WidgetTree_InitSaveSlotLabel))(sp78, 0x38, 0x22, GbSave_GetActivePort(),
-                                                           Text_GetString(NULL, 0, D_8831A4C0, 0));
+                                                           Text_GetString(NULL, 0, gLabPcListGbSaveIdLabelBank, 0));
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&sp7C->unk_00.unk_00, &sp78->unk_00.unk_00);
 
     sp74 = mem_pool_alloc(arg3, sizeof(unk_func_88509E34));
-    ((func88509E34)Memmap_GetFragmentVaddr(WidgetTree_InitTextMessage))(sp74, 0, 0, Text_GetString(NULL, 0, D_8831A4C4, 0));
+    ((func88509E34)Memmap_GetFragmentVaddr(WidgetTree_InitTextMessage))(sp74, 0, 0, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0));
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(&sp7C->unk_00.unk_00, &sp74->unk_00.unk_00);
 
     sp88 = mem_pool_alloc(arg3, sizeof(WidgetNode));
@@ -3029,9 +3029,9 @@ void LabPCList_BuildWidget(unk_func_8830867C* arg0, s32 arg1, s32 arg2, MemoryPo
     arg0->unk_54.unk_14 = sp88;
     arg0->unk_6C = 0;
     arg0->unk_70 = arg6;
-    arg0->unk_74 = D_8831A4D0;
-    arg0->unk_78 = D_8831A4CC;
-    arg0->unk_7C = D_8831A4D4;
+    arg0->unk_74 = gLabPcListSpeciesNamesBank;
+    arg0->unk_78 = gMoveNamesTable;
+    arg0->unk_7C = gTypeNamesTable;
     arg0->unk_80 = arg7;
     arg0->unk_84 = arg8;
     arg0->unk_88 = arg9;
@@ -3114,20 +3114,20 @@ s32 LabPCList_ShowListScreen(UNUSED s32 arg0, UNUSED s32 arg1) {
 
     sp54 = Font_Init(0x1C, 0);
 
-    ASSET_LOAD(D_04000000, fragment29_misc_1, 0);
+    ASSET_LOAD(gRentalViewerIconTop, fragment29_misc_1, 0);
     FRAGMENT_LOAD(FRAGMENT_WIDGET_TREE);
     FRAGMENT_LOAD(FRAGMENT_POKEMON_LAB_SUPPORT);
     FRAGMENT_LOAD(FRAGMENT_LAB_UI_SUPPORT);
 
     Text_InitStringTables();
 
-    D_8831A4C0 = Text_GetStringTable(0x2A);
-    D_8831A4CC = Text_GetStringTable(0x25);
-    D_8831A4D0 = Text_GetStringTable(0x24);
-    D_8831A4D4 = Text_GetStringTable(0x26);
-    D_8831A4C4 = Text_GetStringTable(5);
-    D_8831A4D8 = Text_GetStringTable(0x27);
-    D_8831A4C8 = Text_GetStringTable(0xC);
+    gLabPcListGbSaveIdLabelBank = Text_GetStringTable(0x2A);
+    gMoveNamesTable = Text_GetStringTable(0x25);
+    gLabPcListSpeciesNamesBank = Text_GetStringTable(0x24);
+    gTypeNamesTable = Text_GetStringTable(0x26);
+    gLabPcListColumnLabelsBank = Text_GetStringTable(5);
+    gLabPcListItemNamesBank = Text_GetStringTable(0x27);
+    gLabPcListItemDescriptionsBank = Text_GetStringTable(0xC);
 
     sp40 = Text_GetStringTable(7);
     sp3C = Text_GetStringTable(6);

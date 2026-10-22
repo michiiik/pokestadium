@@ -25,7 +25,7 @@ void Audio_FadeCategories(s32 arg0, u32 arg1) {
 void Audio_FadeCategoriesAndStreams(s32 arg0) {
     s32 i;
 
-    D_8007840C = 0;
+    gAudioStadiumSfxEnabled = 0;
     AudioFrameUpdate(0);
     Audio_FadeCategories(3, arg0);
 

@@ -9,23 +9,23 @@
 
 unk_D_84390240 sBattleScene;
 static s32 pad_D_84390280;
-static s32 D_84390284;
-s32 D_84390288;
+static s32 gCurrentEntityIndex;
+s32 gBattleUpdateHPFlag;
 static s32 pad_D_84390290[4];
 
 void BattleScene_FinalPresentationFrameActiveOwner(CameraNode* arg0) {
     f32 sp3C;
 
     BattleScene_SetCameraClipPlanes(arg0, 20.0f, 12800.0f);
-    BattleAnim_GetOwnerDefaultAnchorPosition(sActivePokemon[D_84390284], &sBattleScene.unk_00->unk_D0);
-    sp3C = BattleScene_ScaleCameraDistance(sActivePokemon[D_84390284], 3.5f, 300.0f);
-    BattleScene_SetCameraAtFromAnchor(sActivePokemon[D_84390284], arg0, sBattleScene.unk_00->unk_D0, 0, BattleScene_GetParticipantFacingAngle(sActivePokemon[D_84390284]),
+    BattleAnim_GetOwnerDefaultAnchorPosition(sActivePokemon[gCurrentEntityIndex], &sBattleScene.unk_00->unk_D0);
+    sp3C = BattleScene_ScaleCameraDistance(sActivePokemon[gCurrentEntityIndex], 3.5f, 300.0f);
+    BattleScene_SetCameraAtFromAnchor(sActivePokemon[gCurrentEntityIndex], arg0, sBattleScene.unk_00->unk_D0, 0, BattleScene_GetParticipantFacingAngle(sActivePokemon[gCurrentEntityIndex]),
                   0.0f, 0.0f);
-    BattleScene_SetCameraEyeFromAt(arg0, 0, BattleScene_GetParticipantFacingAngle(sActivePokemon[D_84390284]), sp3C, 0.0f);
+    BattleScene_SetCameraEyeFromAt(arg0, 0, BattleScene_GetParticipantFacingAngle(sActivePokemon[gCurrentEntityIndex]), sp3C, 0.0f);
 
     if (sActivePokemon[0]) {}
     sBattleScene.unk_00->unk_20 += 1;
-    if (D_84390284) {}
+    if (gCurrentEntityIndex) {}
 }
 
 void BattleScene_FinalPresentationFrameOwner0(CameraNode* arg0) {
@@ -364,7 +364,7 @@ void BattleScene_UpdateOpponentVisibilityCulling(CameraNode* arg0) {
     }
 }
 
-void func_8432A414(void) {
+void BattleScene_UpdateCameraStateEmpty(void) {
 }
 
 void BattleScene_ShowBothOwners(void) {
@@ -397,9 +397,9 @@ void BattleScene_HideFaintedOwners(void) {
 
 void BattleScene_UpdateOwnerVisibilitySingle(CameraNode* arg0) {
     UNUSED s32 pad;
-    ActivePokemonState* sp40 = &D_84390204->state;
+    ActivePokemonState* sp40 = &gCurrentPlayer->state;
     s32 temp_lo;
-    ActivePokemonState* sp38 = &D_84390200->state;
+    ActivePokemonState* sp38 = &gOpponentPlayer->state;
     f32 sp34;
     s16 sp32;
     s16 sp30;
@@ -469,18 +469,18 @@ void BattleScene_UpdateOwnerVisibilitySingle(CameraNode* arg0) {
                                 BattleScene_HideOpponentOwner();
                             } else if (((sBattleScene.unk_00->unk_3C == 0) || (sBattleScene.unk_00->unk_3C == 1)) &&
                                        (sBattleScene.unk_00->unk_48 == 0) && (sBattleScene.unk_00->unk_1A != 1)) {
-                                Battle_ResetModelToIdleAnim(D_84390204);
-                                D_84390204->displayObject.lodFraction = 0;
+                                Battle_ResetModelToIdleAnim(gCurrentPlayer);
+                                gCurrentPlayer->displayObject.lodFraction = 0;
                             } else {
                                 if (sp40->flags & 0x4000) {
-                                    if ((D_84390204->displayObject.objectType != 0x32) &&
-                                        (D_84390204->displayObject.objectType != 0x33)) {
-                                        D_84390204->displayObject.lodFraction = 0;
+                                    if ((gCurrentPlayer->displayObject.objectType != 0x32) &&
+                                        (gCurrentPlayer->displayObject.objectType != 0x33)) {
+                                        gCurrentPlayer->displayObject.lodFraction = 0;
                                     } else {
-                                        D_84390204->displayObject.lodFraction = 0xFF;
+                                        gCurrentPlayer->displayObject.lodFraction = 0xFF;
                                     }
                                 } else {
-                                    D_84390204->displayObject.lodFraction = 0xFF;
+                                    gCurrentPlayer->displayObject.lodFraction = 0xFF;
                                 }
                                 BattleScene_HideActiveOwner();
                             }

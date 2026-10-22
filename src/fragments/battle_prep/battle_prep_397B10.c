@@ -9,51 +9,51 @@
 #include "src/memory.h"
 #include "src/util.h"
 
-s32 BattlePrep_BindCarouselSegment0(s32, unk_func_80011B94*);
-s32 BattlePrep_BindCarouselSegment1(s32, unk_func_80011B94*);
-s32 BattlePrep_BindCarouselSegment2(s32, unk_func_80011B94*);
+s32 BattlePrep_BindCarouselSegment0(s32, SimpleGfxNode*);
+s32 BattlePrep_BindCarouselSegment1(s32, SimpleGfxNode*);
+s32 BattlePrep_BindCarouselSegment2(s32, SimpleGfxNode*);
 s32 BattlePrep_CarouselDepthCallback(s32, unk_D_86002F34_alt5*);
-s32 BattlePrep_BindCarouselSegment3(s32, unk_func_80011B94*);
+s32 BattlePrep_BindCarouselSegment3(s32, SimpleGfxNode*);
 
-s32 BattlePrep_BadgeCarouselGeoCallback(s32, unk_func_80011B94*);
-s32 BattlePrep_BadgeCarouselGlowCallback(s32, unk_func_80011B94*);
-s32 BattlePrep_BadgeCarouselTextureCallback(s32, unk_func_80011B94*);
-s32 BattlePrep_BadgeCarouselGlowCallback2(s32, unk_func_80011B94*);
+s32 BattlePrep_BadgeCarouselGeoCallback(s32, SimpleGfxNode*);
+s32 BattlePrep_BadgeCarouselGlowCallback(s32, SimpleGfxNode*);
+s32 BattlePrep_BadgeCarouselTextureCallback(s32, SimpleGfxNode*);
+s32 BattlePrep_BadgeCarouselGlowCallback2(s32, SimpleGfxNode*);
 
-static u8 D_84B0FC40[] = {
+static u8 gBattleModeBackgroundIds[] = {
     0x00, 0x00, 0x00, 0x01, 0x02, 0x03,
 };
-static u8 D_84B0FC48[] = {
+static u8 gBattleSubModeBackgroundIds[] = {
     0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0C,
 };
-static u8* D_84B0FC54[] = {
+static u8* gBattleModeBackgroundTextures[] = {
     D_30339F0, D_3034FD0, D_30365B0, D_3037B90, D_3039170, D_303A750,
 };
-static u8* D_84B0FC6C[] = {
+static u8* gBattleSubModeBackgroundTextures[] = {
     D_303BD30, D_303D310, D_303E8F0, D_303FED0, D_30414B0, D_3042A90, D_3044070, D_3045650, D_3046C30,
 };
-static u8* D_84B0FC90[] = {
+static u8* gBattleSubModeExtraTextures[] = {
     D_3048210, D_3029270, D_3029670, D_3029A70, D_3029E70, D_302A270, D_302A670,
 };
-static u8* D_84B0FCAC[] = {
+static u8* gBattleModeExtraTextures[] = {
     D_3030A70,
     D_3031650,
     D_3032230,
     D_3032E10,
 };
-static Color_RGBA8 D_84B0FCBC[] = {
+static Color_RGBA8 gBattleModeBarColors[] = {
     { 0x1E, 0x8C, 0x1E, 0xFF }, { 0x1E, 0x8C, 0x1E, 0xFF }, { 0x1E, 0x8C, 0x1E, 0xFF }, { 0x50, 0x50, 0xFF, 0xFF },
     { 0xB4, 0x8C, 0x1E, 0xFF }, { 0x96, 0x1E, 0x1E, 0xFF }, { 0x64, 0x64, 0x82, 0xFF }, { 0x50, 0x50, 0xFF, 0xFF },
     { 0xC8, 0x78, 0x1E, 0xFF }, { 0x82, 0x32, 0xC8, 0xFF }, { 0xB4, 0x3C, 0xB4, 0xFF }, { 0xB4, 0x8C, 0x1E, 0xFF },
     { 0x96, 0x1E, 0x1E, 0xFF }, { 0x1E, 0x8C, 0x1E, 0xFF }, { 0xB4, 0x50, 0x1E, 0xFF }, { 0x1E, 0x3C, 0xA0, 0xFF },
 };
-static Color_RGBA8 D_84B0FCFC[] = {
+static Color_RGBA8 gBattleModeBarHighlightColors[] = {
     { 0xC8, 0xC8, 0x1E, 0xFF }, { 0xC8, 0xC8, 0x1E, 0xFF }, { 0xC8, 0xC8, 0x1E, 0xFF }, { 0x64, 0xDC, 0xDC, 0xFF },
     { 0xFF, 0xFF, 0xFF, 0xFF }, { 0xC8, 0xC8, 0x1E, 0xFF }, { 0xFF, 0xFF, 0xFF, 0xFF }, { 0x64, 0xDC, 0xDC, 0xFF },
     { 0xDC, 0xDC, 0x1E, 0xFF }, { 0xDC, 0x64, 0xDC, 0xFF }, { 0xFF, 0xC8, 0xFF, 0xFF }, { 0xFF, 0xFF, 0xFF, 0xFF },
     { 0xC8, 0x82, 0x82, 0xFF }, { 0xC8, 0xC8, 0x1E, 0xFF }, { 0xC8, 0xC8, 0x1E, 0xFF }, { 0x1E, 0xDC, 0x82, 0xFF },
 };
-static Vtx D_84B0FD40[] = {
+static Vtx gUIBarTopVerts[] = {
     VTX(-128, 48, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),      VTX(-128, 16, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, 16, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF), VTX(-64, 48, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, 48, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),    VTX(-64, 16, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
@@ -63,7 +63,7 @@ static Vtx D_84B0FD40[] = {
     VTX(64, 48, 0, 6144, 0, 0xFF, 0xFF, 0xFF, 0xFF),     VTX(64, 16, 0, 6144, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(128, 16, 0, 8192, 1024, 0xFF, 0xFF, 0xFF, 0xFF), VTX(128, 48, 0, 8192, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Vtx D_84B0FE40[] = {
+static Vtx gUIBarMiddleVerts[] = {
     VTX(-128, 16, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),    VTX(-128, -16, 0, 0, 2048, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, -16, 0, 2048, 2048, 0xFF, 0xFF, 0xFF, 0xFF), VTX(-64, 16, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, 16, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(-64, -16, 0, 2048, 2048, 0xFF, 0xFF, 0xFF, 0xFF),
@@ -73,7 +73,7 @@ static Vtx D_84B0FE40[] = {
     VTX(64, 16, 0, 6144, 1024, 0xFF, 0xFF, 0xFF, 0xFF),   VTX(64, -16, 0, 6144, 2048, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(128, -16, 0, 8192, 2048, 0xFF, 0xFF, 0xFF, 0xFF), VTX(128, 16, 0, 8192, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Vtx D_84B0FF40[] = {
+static Vtx gUIBarBottomVerts[] = {
     VTX(-128, -16, 0, 0, 2048, 0xFF, 0xFF, 0xFF, 0xFF),   VTX(-128, -48, 0, 0, 3072, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, -48, 0, 2048, 3072, 0xFF, 0xFF, 0xFF, 0xFF), VTX(-64, -16, 0, 2048, 2048, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, -16, 0, 2048, 2048, 0xFF, 0xFF, 0xFF, 0xFF), VTX(-64, -48, 0, 2048, 3072, 0xFF, 0xFF, 0xFF, 0xFF),
@@ -83,11 +83,11 @@ static Vtx D_84B0FF40[] = {
     VTX(64, -16, 0, 6144, 2048, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(64, -48, 0, 6144, 3072, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(128, -48, 0, 8192, 3072, 0xFF, 0xFF, 0xFF, 0xFF), VTX(128, -16, 0, 8192, 2048, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Gfx D_84B10040[] = {
+static Gfx gUIBarDisplayList[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_PASS2),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
-    gsSPVertex(D_84B0FD40, 16, 0),
+    gsSPVertex(gUIBarTopVerts, 16, 0),
     gsDPLoadTextureTile(0x0F000000, G_IM_FMT_RGBA, G_IM_SIZ_16b, 256, 0, 0, 0, 63, 31, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
@@ -100,7 +100,7 @@ static Gfx D_84B10040[] = {
     gsDPLoadTextureTile(0x0F000000, G_IM_FMT_RGBA, G_IM_SIZ_16b, 256, 0, 192, 0, 255, 31, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
     gsSP2Triangles(12, 13, 14, 0, 12, 14, 15, 0),
-    gsSPVertex(D_84B0FE40, 16, 0),
+    gsSPVertex(gUIBarMiddleVerts, 16, 0),
     gsDPLoadTextureTile(0x0F000000, G_IM_FMT_RGBA, G_IM_SIZ_16b, 256, 0, 0, 32, 63, 63, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
@@ -115,7 +115,7 @@ static Gfx D_84B10040[] = {
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                         G_TX_NOLOD),
     gsSP2Triangles(12, 13, 14, 0, 12, 14, 15, 0),
-    gsSPVertex(D_84B0FF40, 16, 0),
+    gsSPVertex(gUIBarBottomVerts, 16, 0),
     gsDPLoadTextureTile(0x0F000000, G_IM_FMT_RGBA, G_IM_SIZ_16b, 256, 0, 0, 64, 63, 95, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
@@ -132,29 +132,29 @@ static Gfx D_84B10040[] = {
     gsSP2Triangles(12, 13, 14, 0, 12, 14, 15, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B10378[] = {
-    0x17000000, 0x00000000, 0x00000000,    0x00000000, D_84B0FD40, 0x05000000, 0x22010000,
-    0x00000000, 0x08000000, BattlePrep_BindCarouselSegment0, D_84B10040, 0x06000000, 0x01000000, 0x00000000,
+static u32 gUIBarGeoLayout[] = {
+    0x17000000, 0x00000000, 0x00000000,    0x00000000, gUIBarTopVerts, 0x05000000, 0x22010000,
+    0x00000000, 0x08000000, BattlePrep_BindCarouselSegment0, gUIBarDisplayList, 0x06000000, 0x01000000, 0x00000000,
 };
-static Vtx D_84B103B0[] = {
+static Vtx gUIBarSmallTopVerts[] = {
     VTX(-100, 14, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),   VTX(-36, 14, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-36, 14, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF), VTX(36, 14, 0, 4352, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(36, 14, 0, 4352, 0, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(100, 14, 0, 6400, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Vtx D_84B10410[] = {
+static Vtx gUIBarSmallBottomVerts[] = {
     VTX(-100, -14, 0, 0, 896, 0xFF, 0xFF, 0xFF, 0xFF),   VTX(-36, -14, 0, 2048, 896, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-36, -14, 0, 2048, 896, 0xFF, 0xFF, 0xFF, 0xFF), VTX(36, -14, 0, 4352, 896, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(36, -14, 0, 4352, 896, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(100, -14, 0, 6400, 896, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Gfx D_84B10470[] = {
+static Gfx gUIBarSmallTopDisplayList[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, TEXEL0, 0, PRIM_LOD_FRAC, 0, 0, 0, 0, COMBINED, 0, 0, 0, COMBINED),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
-    gsSPVertex(D_84B103B0, 6, 0),
+    gsSPVertex(gUIBarSmallTopVerts, 6, 0),
     gsSPEndDisplayList(),
 };
-static Gfx D_84B10498[] = {
-    gsSPVertex(D_84B10410, 6, 6),
+static Gfx gUIBarSmallBottomDisplayList[] = {
+    gsSPVertex(gUIBarSmallBottomVerts, 6, 6),
     gsDPSetTextureImage(G_IM_FMT_IA, G_IM_SIZ_8b, 200, 0x0F000000),
     gsDPSetTile(G_IM_FMT_IA, G_IM_SIZ_8b, 8, 0x0000, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK,
                 G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD),
@@ -187,35 +187,35 @@ static Gfx D_84B10498[] = {
     gsSP2Triangles(4, 10, 11, 0, 4, 11, 5, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B10568[] = {
-    0x17000000, 0x0000000C, 0x00000000, 0x00000000, D_84B103B0, 0x05000000, 0x1B000000, 0x00000000,
-    0x00000000, 0x00120000, 0x05000000, 0x22050000, D_84B10470, 0x06000000, 0x06000000, 0x01000000,
+static u32 gUIBarSmallTopGeoLayout[] = {
+    0x17000000, 0x0000000C, 0x00000000, 0x00000000, gUIBarSmallTopVerts, 0x05000000, 0x1B000000, 0x00000000,
+    0x00000000, 0x00120000, 0x05000000, 0x22050000, gUIBarSmallTopDisplayList, 0x06000000, 0x06000000, 0x01000000,
 };
-static u32 D_84B105A8[] = {
-    0x17000000,    0x0000000C, 0x00000000, 0x00000000, D_84B103B0, 0x05000000, 0x1B000000,
+static u32 gUIBarSmallBottomGeoLayout[] = {
+    0x17000000,    0x0000000C, 0x00000000, 0x00000000, gUIBarSmallTopVerts, 0x05000000, 0x1B000000,
     0x00000000,    0x00000000, 0x00120000, 0x05000000, 0x22050000, 0x00000000, 0x08000000,
-    BattlePrep_BindCarouselSegment1, D_84B10498, 0x06000000, 0x06000000, 0x01000000, 0x00000000,
+    BattlePrep_BindCarouselSegment1, gUIBarSmallBottomDisplayList, 0x06000000, 0x06000000, 0x01000000, 0x00000000,
 };
-static Vtx D_84B105F8[] = {
+static Vtx gUIBarWideTopVerts[] = {
     VTX(86, 14, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),     VTX(114, 14, 0, 896, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-114, 14, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),   VTX(-50, 14, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-50, 14, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF), VTX(22, 14, 0, 4352, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(22, 14, 0, 4352, 0, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(86, 14, 0, 6400, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Vtx D_84B10678[] = {
+static Vtx gUIBarWideBottomVerts[] = {
     VTX(86, -14, 0, 0, 896, 0xFF, 0xFF, 0xFF, 0xFF),     VTX(114, -14, 0, 896, 896, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-114, -14, 0, 0, 896, 0xFF, 0xFF, 0xFF, 0xFF),   VTX(-50, -14, 0, 2048, 896, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-50, -14, 0, 2048, 896, 0xFF, 0xFF, 0xFF, 0xFF), VTX(22, -14, 0, 4352, 896, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(22, -14, 0, 4352, 896, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(86, -14, 0, 6400, 896, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Gfx D_84B106F8[] = {
+static Gfx gUIBarWideTopDisplayList[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
-    gsSPVertex(D_84B105F8, 8, 0),
+    gsSPVertex(gUIBarWideTopVerts, 8, 0),
     gsSPEndDisplayList(),
 };
-static Gfx D_84B10718[] = {
-    gsSPVertex(D_84B10678, 8, 8),
+static Gfx gUIBarWideBottomDisplayList[] = {
+    gsSPVertex(gUIBarWideBottomVerts, 8, 8),
     gsDPSetCombineLERP(0, 0, 0, TEXEL0, TEXEL0, 0, PRIM_LOD_FRAC, 0, 0, 0, 0, COMBINED, 0, 0, 0, COMBINED),
     gsDPLoadTextureBlock(D_3027890, G_IM_FMT_RGBA, G_IM_SIZ_16b, 28, 28, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                          G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
@@ -253,26 +253,26 @@ static Gfx D_84B10718[] = {
     gsSP2Triangles(6, 14, 15, 0, 6, 15, 7, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B10838[] = {
-    0x17000000, 0x00000010, 0x00000000, 0x00000000, D_84B105F8, 0x05000000, 0x1B000000, 0x00000000,
-    0x00000000, 0x00120000, 0x05000000, 0x22050000, D_84B106F8, 0x06000000, 0x06000000, 0x01000000,
+static u32 gUIBarWideTopGeoLayout[] = {
+    0x17000000, 0x00000010, 0x00000000, 0x00000000, gUIBarWideTopVerts, 0x05000000, 0x1B000000, 0x00000000,
+    0x00000000, 0x00120000, 0x05000000, 0x22050000, gUIBarWideTopDisplayList, 0x06000000, 0x06000000, 0x01000000,
 };
-static u32 D_84B10878[] = {
-    0x17000000,    0x00000010, 0x00000000, 0x00000000, D_84B105F8, 0x05000000, 0x1B000000,
+static u32 gUIBarWideBottomGeoLayout[] = {
+    0x17000000,    0x00000010, 0x00000000, 0x00000000, gUIBarWideTopVerts, 0x05000000, 0x1B000000,
     0x00000000,    0x00000000, 0x00120000, 0x05000000, 0x22050000, 0x00000000, 0x08000000,
-    BattlePrep_BindCarouselSegment1, D_84B10718, 0x06000000, 0x06000000, 0x01000000, 0x00000000,
+    BattlePrep_BindCarouselSegment1, gUIBarWideBottomDisplayList, 0x06000000, 0x06000000, 0x01000000, 0x00000000,
 };
-static Vtx D_84B108C8[] = {
+static Vtx gUIBarMidVerts[] = {
     VTX(-76, 10, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),     VTX(0, 10, 0, 2432, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 10, 0, 2432, 0, 0xFF, 0xFF, 0xFF, 0xFF),    VTX(76, 10, 0, 4864, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-76, -10, 0, 0, 640, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(0, -10, 0, 2432, 640, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -10, 0, 2432, 640, 0xFF, 0xFF, 0xFF, 0xFF), VTX(76, -10, 0, 4864, 640, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Gfx D_84B10948[] = {
+static Gfx gUIBarMidDisplayList[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, TEXEL0, 0, PRIM_LOD_FRAC, 0, 0, 0, 0, COMBINED, 0, 0, 0, COMBINED),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
-    gsSPVertex(D_84B108C8, 8, 0),
+    gsSPVertex(gUIBarMidVerts, 8, 0),
     gsDPSetTextureImage(G_IM_FMT_IA, G_IM_SIZ_8b, 152, 0x0F000000),
     gsDPSetTile(G_IM_FMT_IA, G_IM_SIZ_8b, 10, 0x0000, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK,
                 G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD),
@@ -295,12 +295,12 @@ static Gfx D_84B10948[] = {
     gsSP2Triangles(2, 6, 7, 0, 2, 7, 3, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B109F0[] = {
-    0x17000000,    0x00000008, 0x00000000, 0x00000000, D_84B108C8, 0x05000000, 0x1B000000,
+static u32 gUIBarMidGeoLayout[] = {
+    0x17000000,    0x00000008, 0x00000000, 0x00000000, gUIBarMidVerts, 0x05000000, 0x1B000000,
     0x00000000,    0x00000000, 0x00020000, 0x05000000, 0x22050000, 0x00000000, 0x08000000,
-    BattlePrep_BindCarouselSegment2, D_84B10948, 0x06000000, 0x06000000, 0x01000000, 0x00000000,
+    BattlePrep_BindCarouselSegment2, gUIBarMidDisplayList, 0x06000000, 0x06000000, 0x01000000, 0x00000000,
 };
-static Vtx D_84B10A40[] = {
+static Vtx gUIBarTwoLayerVerts[] = {
     VTX(-100, 14, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),      VTX(-36, 14, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-36, 14, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),    VTX(36, 14, 0, 4352, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(36, 14, 0, 4352, 0, 0xFF, 0xFF, 0xFF, 0xFF),     VTX(100, 14, 0, 6400, 0, 0xFF, 0xFF, 0xFF, 0xFF),
@@ -308,11 +308,11 @@ static Vtx D_84B10A40[] = {
     VTX(-36, -14, 0, 2048, 896, 0xFF, 0xFF, 0xFF, 0xFF), VTX(36, -14, 0, 4352, 896, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(36, -14, 0, 4352, 896, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(100, -14, 0, 6400, 896, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Gfx D_84B10B00[] = {
+static Gfx gUIBarTwoLayerDisplayList[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, TEXEL0, 0, PRIM_LOD_FRAC, 0, 0, 0, 0, COMBINED, 0, 0, 0, COMBINED),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
-    gsSPVertex(D_84B10A40, 12, 0),
+    gsSPVertex(gUIBarTwoLayerVerts, 12, 0),
     gsDPSetTextureImage(G_IM_FMT_IA, G_IM_SIZ_8b, 200, 0x0F000000),
     gsDPSetTile(G_IM_FMT_IA, G_IM_SIZ_8b, 8, 0x0000, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK,
                 G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD),
@@ -345,22 +345,22 @@ static Gfx D_84B10B00[] = {
     gsSP2Triangles(4, 10, 11, 0, 4, 11, 5, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B10BE8[] = {
-    0x17000000, 0x0000000C,    0x00000000, 0x00000000,    D_84B10A40, 0x05000000, 0x1B000000, 0x00000000,
+static u32 gUIBarTwoLayerGeoLayout[] = {
+    0x17000000, 0x0000000C,    0x00000000, 0x00000000,    gUIBarTwoLayerVerts, 0x05000000, 0x1B000000, 0x00000000,
     0x00000000, 0xFFEE0000,    0x08000000, BattlePrep_CarouselDepthCallback, 0x00000000, 0x05000000, 0x22050000, 0x00000000,
-    0x08000000, BattlePrep_BindCarouselSegment3, D_84B10B00, 0x06000000,    0x06000000, 0x06000000, 0x01000000, 0x00000000,
+    0x08000000, BattlePrep_BindCarouselSegment3, gUIBarTwoLayerDisplayList, 0x06000000,    0x06000000, 0x06000000, 0x01000000, 0x00000000,
 };
-static Vtx D_84B10C48[] = {
+static Vtx gUIBarMiniVerts[] = {
     VTX(-64, 16, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),      VTX(0, 16, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, 16, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),     VTX(64, 16, 0, 4096, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-64, -16, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(0, -16, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(0, -16, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF), VTX(64, -16, 0, 4096, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Gfx D_84B10CC8[] = {
+static Gfx gUIBarMiniDisplayList[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, TEXEL0, 0, PRIM_LOD_FRAC, 0, 0, 0, 0, COMBINED, 0, 0, 0, COMBINED),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
-    gsSPVertex(D_84B10C48, 8, 0),
+    gsSPVertex(gUIBarMiniVerts, 8, 0),
     gsDPSetTextureImage(G_IM_FMT_IA, G_IM_SIZ_8b, 128, 0x0F000000),
     gsDPSetTile(G_IM_FMT_IA, G_IM_SIZ_8b, 8, 0x0000, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK,
                 G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD),
@@ -383,16 +383,16 @@ static Gfx D_84B10CC8[] = {
     gsSP2Triangles(2, 6, 7, 0, 2, 7, 3, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B10D70[] = {
-    0x17000000, 0x00000008,    0x00000000, 0x00000000,    D_84B10C48, 0x05000000, 0x1B000000, 0x00000000,
+static u32 gUIBarMiniGeoLayout[] = {
+    0x17000000, 0x00000008,    0x00000000, 0x00000000,    gUIBarMiniVerts, 0x05000000, 0x1B000000, 0x00000000,
     0x00000000, 0xFFEE0000,    0x08000000, BattlePrep_CarouselDepthCallback, 0x00000000, 0x05000000, 0x22050000, 0x00000000,
-    0x08000000, BattlePrep_BindCarouselSegment3, D_84B10CC8, 0x06000000,    0x06000000, 0x06000000, 0x01000000, 0x00000000,
+    0x08000000, BattlePrep_BindCarouselSegment3, gUIBarMiniDisplayList, 0x06000000,    0x06000000, 0x06000000, 0x01000000, 0x00000000,
 };
-static Gfx D_84B10DD0[] = {
+static Gfx gUIBarMiniAltDisplayList[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, TEXEL0, 0, PRIM_LOD_FRAC, 0, 0, 0, 0, COMBINED, 0, 0, 0, COMBINED),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
-    gsSPVertex(D_84B10C48, 8, 0),
+    gsSPVertex(gUIBarMiniVerts, 8, 0),
     gsDPSetTextureImage(G_IM_FMT_IA, G_IM_SIZ_8b, 128, 0x0302FA70),
     gsDPSetTile(G_IM_FMT_IA, G_IM_SIZ_8b, 8, 0x0000, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK,
                 G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD),
@@ -415,11 +415,11 @@ static Gfx D_84B10DD0[] = {
     gsSP2Triangles(2, 6, 7, 0, 2, 7, 3, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B10E78[] = {
-    0x17000000, 0x00000008, 0x00000000, 0x00000000, D_84B10C48, 0x05000000, 0x1B000000, 0x00000000,
-    0x00000000, 0xFFEE0000, 0x05000000, 0x22050000, D_84B10DD0, 0x06000000, 0x06000000, 0x01000000,
+static u32 gUIBarMiniAltGeoLayout[] = {
+    0x17000000, 0x00000008, 0x00000000, 0x00000000, gUIBarMiniVerts, 0x05000000, 0x1B000000, 0x00000000,
+    0x00000000, 0xFFEE0000, 0x05000000, 0x22050000, gUIBarMiniAltDisplayList, 0x06000000, 0x06000000, 0x01000000,
 };
-static Vtx D_84B10EB8[] = {
+static Vtx gUIBarSpecialVerts[] = {
     VTX(-80, 16, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),        VTX(-16, 16, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-16, 16, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),     VTX(48, 16, 0, 4096, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(48, 16, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),         VTX(80, 16, 0, 1024, 0, 0xFF, 0xFF, 0xFF, 0xFF),
@@ -427,11 +427,11 @@ static Vtx D_84B10EB8[] = {
     VTX(-16, -16, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF), VTX(48, -16, 0, 4096, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(48, -16, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),     VTX(80, -16, 0, 1024, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Gfx D_84B10F78[] = {
+static Gfx gUIBarSpecialDisplayList[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetCombineLERP(TEXEL0, 0, SHADE, 0, TEXEL0, 0, PRIM_LOD_FRAC, 0, 0, 0, 0, COMBINED, 0, 0, 0, COMBINED),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
-    gsSPVertex(D_84B10EB8, 12, 0),
+    gsSPVertex(gUIBarSpecialVerts, 12, 0),
     gsDPSetTextureImage(G_IM_FMT_IA, G_IM_SIZ_8b, 128, 0x0F000000),
     gsDPSetTile(G_IM_FMT_IA, G_IM_SIZ_8b, 8, 0x0000, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK,
                 G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD),
@@ -457,12 +457,12 @@ static Gfx D_84B10F78[] = {
     gsSP2Triangles(4, 10, 11, 0, 4, 11, 5, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B11060[] = {
-    0x17000000, 0x0000000C,    0x00000000, 0x00000000,    D_84B10EB8, 0x05000000, 0x1B000000, 0x00000000,
+static u32 gUIBarSpecialGeoLayout[] = {
+    0x17000000, 0x0000000C,    0x00000000, 0x00000000,    gUIBarSpecialVerts, 0x05000000, 0x1B000000, 0x00000000,
     0x00000000, 0xFFEE0000,    0x08000000, BattlePrep_CarouselDepthCallback, 0x00000000, 0x05000000, 0x22050000, 0x00000000,
-    0x08000000, BattlePrep_BindCarouselSegment3, D_84B10F78, 0x06000000,    0x06000000, 0x01000000, 0x00000000, 0x00000000,
+    0x08000000, BattlePrep_BindCarouselSegment3, gUIBarSpecialDisplayList, 0x06000000,    0x06000000, 0x01000000, 0x00000000, 0x00000000,
 };
-static Vtx D_84B110C0[] = {
+static Vtx gUIBarBarSegmentVerts[] = {
     VTX(-32, 24, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),      VTX(-32, 0, 0, 0, 768, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(32, 0, 0, 2048, 768, 0xFF, 0xFF, 0xFF, 0xFF),   VTX(32, 24, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-32, 0, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),       VTX(-32, -24, 0, 0, 768, 0xFF, 0xFF, 0xFF, 0xFF),
@@ -472,7 +472,7 @@ static Vtx D_84B110C0[] = {
     VTX(-22, 0, 0, 128, 0, 0xFF, 0xFF, 0xFF, 0xFF),     VTX(-22, -22, 0, 128, 896, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(22, -22, 0, 1920, 896, 0xFF, 0xFF, 0xFF, 0xFF), VTX(22, 0, 0, 1920, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Vtx D_84B111C0[] = {
+static Vtx gUIBarBarSegmentDetailVerts[] = {
     VTX(-32, 24, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),      VTX(-32, 16, 0, 0, 256, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-24, 16, 0, 256, 256, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(-24, 24, 0, 256, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(24, 24, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),       VTX(24, 16, 0, 0, 256, 0xFF, 0xFF, 0xFF, 0xFF),
@@ -490,10 +490,10 @@ static Vtx D_84B111C0[] = {
     VTX(24, 16, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),       VTX(24, -16, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(32, -16, 0, 256, 0, 0xFF, 0xFF, 0xFF, 0xFF),    VTX(32, 16, 0, 256, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Gfx D_84B113C0[] = {
+static Gfx gUIBarBarSegmentDisplayList[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
-    gsSPVertex(D_84B110C0, 16, 0),
+    gsSPVertex(gUIBarBarSegmentVerts, 16, 0),
     gsDPSetCombineLERP(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, COMBINED, COMBINED, 0, PRIM_LOD_FRAC, 0),
     gsDPLoadTextureBlock(D_3010800, G_IM_FMT_RGBA, G_IM_SIZ_16b, 64, 24, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                          G_TX_NOMIRROR | G_TX_CLAMP, 6, 5, G_TX_NOLOD, G_TX_NOLOD),
@@ -511,12 +511,12 @@ static Gfx D_84B113C0[] = {
     gsSP2Triangles(12, 13, 14, 0, 12, 14, 15, 0),
     gsSPEndDisplayList(),
 };
-static Gfx D_84B114F8[] = {
+static Gfx gUIBarBarSegmentDetailDisplayList[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetCombineLERP(PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, ENVIRONMENT, 0, 0, 0, 0, COMBINED,
                        COMBINED, 0, PRIM_LOD_FRAC, 0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
-    gsSPVertex(D_84B111C0, 32, 0),
+    gsSPVertex(gUIBarBarSegmentDetailVerts, 32, 0),
     gsDPLoadTextureBlock(D_3018780, G_IM_FMT_IA, G_IM_SIZ_8b, 8, 8, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                          G_TX_NOMIRROR | G_TX_CLAMP, 3, 3, G_TX_NOLOD, G_TX_NOLOD),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
@@ -535,14 +535,14 @@ static Gfx D_84B114F8[] = {
     gsSP2Triangles(28, 29, 30, 0, 28, 30, 31, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B11640[] = {
-    0x17000000, 0x00000000, 0x00000000, 0x00000000,    D_84B110C0, 0x05000000, 0x1B000000,    0x00000000,
+static u32 gUIBarBarSegmentGeoLayout[] = {
+    0x17000000, 0x00000000, 0x00000000, 0x00000000,    gUIBarBarSegmentVerts, 0x05000000, 0x1B000000,    0x00000000,
     0x00000000, 0x00180000, 0x05000000, 0x22050000,    0x00000000, 0x08000000, BattlePrep_BadgeCarouselGeoCallback, 0x00000000,
     0x22050000, 0x00000000, 0x08000000, BattlePrep_BadgeCarouselGlowCallback, 0x00000000, 0x06000000, 0x1B000000,    0x00000000,
     0x00000000, 0xFFE80000, 0x05000000, 0x22050000,    0x00000000, 0x08000000, BattlePrep_BadgeCarouselGeoCallback, 0x00000001,
     0x22050000, 0x00000000, 0x08000000, BattlePrep_BadgeCarouselGlowCallback, 0x00000001, 0x06000000, 0x06000000,    0x01000000,
 };
-static Vtx D_84B116E0[] = {
+static Vtx gUIBarLargeVerts[] = {
     VTX(-32, 48, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),       VTX(-32, 16, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(32, 16, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(32, 48, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-32, 16, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),       VTX(-32, -16, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
@@ -550,7 +550,7 @@ static Vtx D_84B116E0[] = {
     VTX(-32, -16, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),      VTX(-32, -48, 0, 0, 1024, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(32, -48, 0, 2048, 1024, 0xFF, 0xFF, 0xFF, 0xFF), VTX(32, -16, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Vtx D_84B117A0[] = {
+static Vtx gUIBarLargeDetailVerts[] = {
     VTX(-32, 48, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),      VTX(-32, 40, 0, 0, 256, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-24, 40, 0, 256, 256, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(-24, 48, 0, 256, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(24, 48, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),       VTX(24, 40, 0, 0, 256, 0xFF, 0xFF, 0xFF, 0xFF),
@@ -568,10 +568,10 @@ static Vtx D_84B117A0[] = {
     VTX(27, 40, 0, 96, 0, 0xFF, 0xFF, 0xFF, 0xFF),      VTX(27, -40, 0, 96, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(32, -40, 0, 256, 0, 0xFF, 0xFF, 0xFF, 0xFF),    VTX(32, 40, 0, 256, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Gfx D_84B119A0[] = {
+static Gfx gUIBarLargeDisplayList[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
-    gsSPVertex(D_84B116E0, 20, 0),
+    gsSPVertex(gUIBarLargeVerts, 20, 0),
     gsDPSetCombineLERP(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, COMBINED, COMBINED, 0, PRIM_LOD_FRAC, 0),
     gsDPLoadTextureBlock(0x0F000000, G_IM_FMT_RGBA, G_IM_SIZ_16b, 64, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                          G_TX_NOMIRROR | G_TX_CLAMP, 6, 5, G_TX_NOLOD, G_TX_NOLOD),
@@ -584,12 +584,12 @@ static Gfx D_84B119A0[] = {
     gsSP2Triangles(8, 9, 10, 0, 8, 10, 11, 0),
     gsSPEndDisplayList(),
 };
-static Gfx D_84B11A88[] = {
+static Gfx gUIBarLargeDetailDisplayList[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetCombineLERP(PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, ENVIRONMENT, 0, 0, 0, 0, COMBINED,
                        COMBINED, 0, PRIM_LOD_FRAC, 0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
-    gsSPVertex(D_84B117A0, 32, 0),
+    gsSPVertex(gUIBarLargeDetailVerts, 32, 0),
     gsDPLoadTextureBlock(D_3018780, G_IM_FMT_IA, G_IM_SIZ_8b, 8, 8, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                          G_TX_NOMIRROR | G_TX_CLAMP, 3, 3, G_TX_NOLOD, G_TX_NOLOD),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
@@ -608,16 +608,16 @@ static Gfx D_84B11A88[] = {
     gsSP2Triangles(28, 29, 30, 0, 28, 30, 31, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B11BD0[] = {
-    0x17000000,    0x00000000, 0x00000000, 0x00000000, D_84B116E0, 0x05000000,    0x22050000, 0x00000000, 0x08000000,
-    BattlePrep_BadgeCarouselTextureCallback, D_84B119A0, 0x22050000, 0x00000000, 0x08000000, BattlePrep_BadgeCarouselGlowCallback2, D_84B11A88, 0x06000000, 0x01000000,
+static u32 gUIBarLargeGeoLayout[] = {
+    0x17000000,    0x00000000, 0x00000000, 0x00000000, gUIBarLargeVerts, 0x05000000,    0x22050000, 0x00000000, 0x08000000,
+    BattlePrep_BadgeCarouselTextureCallback, gUIBarLargeDisplayList, 0x22050000, 0x00000000, 0x08000000, BattlePrep_BadgeCarouselGlowCallback2, gUIBarLargeDetailDisplayList, 0x06000000, 0x01000000,
 };
 
-s32 BattlePrep_BindCarouselSegment0(s32 arg0, unk_func_80011B94* arg1) {
-    unk_D_84B259E8* temp_a0;
+s32 BattlePrep_BindCarouselSegment0(s32 arg0, SimpleGfxNode* arg1) {
+    gBadgeCarouselAnim* temp_a0;
 
     if (arg0 == 5) {
-        temp_a0 = (unk_D_84B259E8*)D_8006F09C->node.callbackArg;
+        temp_a0 = (gBadgeCarouselAnim*)gDefaultGraphRoot->node.callbackArg;
 
         gDPPipeSync(gDisplayListHead++);
         gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a0->unk_0C & 0x1FFFFFFF);
@@ -628,11 +628,11 @@ s32 BattlePrep_BindCarouselSegment0(s32 arg0, unk_func_80011B94* arg1) {
     return 0;
 }
 
-s32 BattlePrep_BindCarouselSegment1(s32 arg0, unk_func_80011B94* arg1) {
-    unk_D_84B259E8* temp_a0;
+s32 BattlePrep_BindCarouselSegment1(s32 arg0, SimpleGfxNode* arg1) {
+    gBadgeCarouselAnim* temp_a0;
 
     if (arg0 == 5) {
-        temp_a0 = (unk_D_84B259E8*)D_8006F09C->node.callbackArg;
+        temp_a0 = (gBadgeCarouselAnim*)gDefaultGraphRoot->node.callbackArg;
 
         gDPPipeSync(gDisplayListHead++);
         gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a0->unk_10[0] & 0x1FFFFFFF);
@@ -643,11 +643,11 @@ s32 BattlePrep_BindCarouselSegment1(s32 arg0, unk_func_80011B94* arg1) {
     return 0;
 }
 
-s32 BattlePrep_BindCarouselSegment3(s32 arg0, unk_func_80011B94* arg1) {
-    unk_D_84B259E8* temp_a0;
+s32 BattlePrep_BindCarouselSegment3(s32 arg0, SimpleGfxNode* arg1) {
+    gBadgeCarouselAnim* temp_a0;
 
     if (arg0 == 5) {
-        temp_a0 = (unk_D_84B259E8*)D_8006F09C->node.callbackArg;
+        temp_a0 = (gBadgeCarouselAnim*)gDefaultGraphRoot->node.callbackArg;
 
         gDPPipeSync(gDisplayListHead++);
         gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a0->unk_10[2] & 0x1FFFFFFF);
@@ -659,11 +659,11 @@ s32 BattlePrep_BindCarouselSegment3(s32 arg0, unk_func_80011B94* arg1) {
     return 0;
 }
 
-s32 BattlePrep_BindCarouselSegment2(s32 arg0, unk_func_80011B94* arg1) {
-    unk_D_84B259E8* temp_a0;
+s32 BattlePrep_BindCarouselSegment2(s32 arg0, SimpleGfxNode* arg1) {
+    gBadgeCarouselAnim* temp_a0;
 
     if (arg0 == 5) {
-        temp_a0 = (unk_D_84B259E8*)D_8006F09C->node.callbackArg;
+        temp_a0 = (gBadgeCarouselAnim*)gDefaultGraphRoot->node.callbackArg;
 
         gDPPipeSync(gDisplayListHead++);
         gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a0->unk_10[1] & 0x1FFFFFFF);
@@ -675,17 +675,17 @@ s32 BattlePrep_BindCarouselSegment2(s32 arg0, unk_func_80011B94* arg1) {
 }
 
 s32 BattlePrep_CarouselDepthCallback(s32 arg0, unk_D_86002F34_alt5* arg1) {
-    unk_D_84B259A8* temp_a0;
+    gBannerState* temp_a0;
 
     if (arg0 == 2) {
-        temp_a0 = (unk_D_84B259A8*)D_8006F09C->node.callbackArg;
+        temp_a0 = (gBannerState*)gDefaultGraphRoot->node.callbackArg;
 
-        arg1->unk_24.z = temp_a0->unk_02[(D_8006F09C->effectSlot - temp_a0->unk_20->effectSlot) - 9];
+        arg1->unk_24.z = temp_a0->unk_02[(gDefaultGraphRoot->effectSlot - temp_a0->unk_20->effectSlot) - 9];
     }
     return 0;
 }
 
-void BattlePrep_CarouselStepFirstItem(unk_D_84B259A8* arg0, s16 arg1) {
+void BattlePrep_CarouselStepFirstItem(gBannerState* arg0, s16 arg1) {
     if (arg1 == 0) {
         Audio_PlayCategory11SoundCommand(0x01100001, 0, 0);
     }
@@ -695,7 +695,7 @@ void BattlePrep_CarouselStepFirstItem(unk_D_84B259A8* arg0, s16 arg1) {
     }
 }
 
-void BattlePrep_CarouselStepNTSC(unk_D_84B259A8* arg0, s16 arg1) {
+void BattlePrep_CarouselStepNTSC(gBannerState* arg0, s16 arg1) {
     s32 i;
 
     if (arg1 == 2) {
@@ -723,7 +723,7 @@ void BattlePrep_CarouselStepNTSC(unk_D_84B259A8* arg0, s16 arg1) {
     }
 }
 
-void BattlePrep_CarouselStepPAL(unk_D_84B259A8* arg0, s16 arg1) {
+void BattlePrep_CarouselStepPAL(gBannerState* arg0, s16 arg1) {
     s32 i;
 
     if (arg1 == 2) {
@@ -751,7 +751,7 @@ void BattlePrep_CarouselStepPAL(unk_D_84B259A8* arg0, s16 arg1) {
     }
 }
 
-void BattlePrep_CarouselStepFinalNTSC(unk_D_84B259A8* arg0, s16 arg1) {
+void BattlePrep_CarouselStepFinalNTSC(gBannerState* arg0, s16 arg1) {
     UNUSED s32 pad;
     s32 i;
 
@@ -797,7 +797,7 @@ void BattlePrep_CarouselStepFinalNTSC(unk_D_84B259A8* arg0, s16 arg1) {
     }
 }
 
-void BattlePrep_CarouselStepFinalPAL(unk_D_84B259A8* arg0, s16 arg1) {
+void BattlePrep_CarouselStepFinalPAL(gBannerState* arg0, s16 arg1) {
     UNUSED s32 pad;
     s32 i;
 
@@ -844,7 +844,7 @@ void BattlePrep_CarouselStepFinalPAL(unk_D_84B259A8* arg0, s16 arg1) {
     }
 }
 
-void BattlePrep_UpdateCarousel(unk_D_84B259A8* arg0) {
+void BattlePrep_UpdateCarousel(gBannerState* arg0) {
     s32 i;
 
     if (osTvType == OS_TV_PAL) {
@@ -882,7 +882,7 @@ void BattlePrep_UpdateCarousel(unk_D_84B259A8* arg0) {
     arg0->unk_01++;
 }
 
-void BattlePrep_CarouselExitAnimation(unk_D_84B259A8* arg0) {
+void BattlePrep_CarouselExitAnimation(gBannerState* arg0) {
     s32 i;
 
     if (arg0->unk_01++ == 0) {
@@ -913,7 +913,7 @@ void BattlePrep_CarouselExitAnimation(unk_D_84B259A8* arg0) {
     }
 }
 
-void BattlePrep_CarouselEntryAnimation(unk_D_84B259A8* arg0) {
+void BattlePrep_CarouselEntryAnimation(gBannerState* arg0) {
     s32 i;
 
     if (arg0->unk_01 == 0) {
@@ -943,7 +943,7 @@ void BattlePrep_CarouselEntryAnimation(unk_D_84B259A8* arg0) {
     arg0->unk_01++;
 }
 
-void BattlePrep_UpdateCarouselState(unk_D_84B259A8* arg0) {
+void BattlePrep_UpdateCarouselState(gBannerState* arg0) {
     switch (arg0->unk_00) {
         case 1:
             BattlePrep_UpdateCarousel(arg0);
@@ -959,12 +959,12 @@ void BattlePrep_UpdateCarouselState(unk_D_84B259A8* arg0) {
     }
 }
 
-void BattlePrep_InitCarouselBanner(unk_D_84B259A8* arg0, s16 arg1, s16 arg2) {
+void BattlePrep_InitCarouselBanner(gBannerState* arg0, s16 arg1, s16 arg2) {
     Model_InitDisplayObject(arg0->unk_20, 0, 0, arg0->unk_24);
     Vec3f_SetComponentsDuplicate(&arg0->unk_20->position, arg1, arg2, -289.0f);
 }
 
-void BattlePrep_InitCarouselGymBadgeSlot(unk_D_84B259A8* arg0, s16 arg1, s16 arg2, s16 arg3) {
+void BattlePrep_InitCarouselGymBadgeSlot(gBannerState* arg0, s16 arg1, s16 arg2, s16 arg3) {
     s16 temp_s0;
     s16 sp2C;
 
@@ -990,7 +990,7 @@ void BattlePrep_InitCarouselGymBadgeSlot(unk_D_84B259A8* arg0, s16 arg1, s16 arg
     }
 }
 
-void BattlePrep_InitCarouselLeftIcon(unk_D_84B259A8* arg0, s16 arg1) {
+void BattlePrep_InitCarouselLeftIcon(gBannerState* arg0, s16 arg1) {
     s16 temp_v1 = arg1 + 9;
     s16 var_a1;
 
@@ -1010,7 +1010,7 @@ void BattlePrep_InitCarouselLeftIcon(unk_D_84B259A8* arg0, s16 arg1) {
     }
 }
 
-void BattlePrep_InitCarouselRightIcon(unk_D_84B259A8* arg0, s16 arg1) {
+void BattlePrep_InitCarouselRightIcon(gBannerState* arg0, s16 arg1) {
     s16 temp_v1 = arg1 + 9;
     s16 var_a1;
 
@@ -1030,7 +1030,7 @@ void BattlePrep_InitCarouselRightIcon(unk_D_84B259A8* arg0, s16 arg1) {
     }
 }
 
-void BattlePrep_InitCarouselCupIcon(unk_D_84B259A8* arg0, s16 arg1) {
+void BattlePrep_InitCarouselCupIcon(gBannerState* arg0, s16 arg1) {
     s16 temp_v1 = arg1 + 0xD;
     s16 var_a1;
 
@@ -1050,7 +1050,7 @@ void BattlePrep_InitCarouselCupIcon(unk_D_84B259A8* arg0, s16 arg1) {
     }
 }
 
-void BattlePrep_InitCarouselEntry(unk_D_84B259A8* arg0, DisplayObject* arg1) {
+void BattlePrep_InitCarouselEntry(gBannerState* arg0, DisplayObject* arg1) {
     s32 i;
 
     arg0->unk_20 = arg1;
@@ -1071,12 +1071,12 @@ void BattlePrep_InitCarouselEntry(unk_D_84B259A8* arg0, DisplayObject* arg1) {
     }
 }
 
-void BattlePrep_StartCarouselExit(unk_D_84B259A8* arg0) {
+void BattlePrep_StartCarouselExit(gBannerState* arg0) {
     arg0->unk_01 = 0;
     arg0->unk_00 = 3;
 }
 
-void BattlePrep_InitCarouselExit(unk_D_84B259A8* arg0, DisplayObject* arg1) {
+void BattlePrep_InitCarouselExit(gBannerState* arg0, DisplayObject* arg1) {
     s32 i;
 
     arg0->unk_20 = arg1;
@@ -1094,12 +1094,12 @@ void BattlePrep_InitCarouselExit(unk_D_84B259A8* arg0, DisplayObject* arg1) {
     }
 }
 
-void BattlePrep_LoadBannerAssets(unk_D_84B259A8* arg0) {
+void BattlePrep_LoadBannerAssets(gBannerState* arg0) {
     BinArchive* temp_a0 = ASSET_LOAD2(battle_headers, 1, 1);
 
     if (gSessionContext.mode == 7) {
-        arg0->unk_0C = BinArchive_GetFile(temp_a0, D_84B0FC48[gSessionContext.modeSelection]);
-        arg0->unk_10 = Util_ConvertAddrToVirtAddr(D_84B0FC6C[gSessionContext.modeSelection]);
+        arg0->unk_0C = BinArchive_GetFile(temp_a0, gBattleSubModeBackgroundIds[gSessionContext.modeSelection]);
+        arg0->unk_10 = Util_ConvertAddrToVirtAddr(gBattleSubModeBackgroundTextures[gSessionContext.modeSelection]);
 
         switch (gSessionContext.modeSelection) {
             default:
@@ -1119,9 +1119,9 @@ void BattlePrep_LoadBannerAssets(unk_D_84B259A8* arg0) {
                 break;
         }
     } else {
-        arg0->unk_0C = BinArchive_GetFile(temp_a0, D_84B0FC40[gSessionContext.mode - 1]);
-        arg0->unk_10 = Util_ConvertAddrToVirtAddr(D_84B0FC54[gSessionContext.mode - 1]);
-        arg0->unk_14 = Util_ConvertAddrToVirtAddr(D_84B0FCAC[gSessionContext.modeSelection]);
+        arg0->unk_0C = BinArchive_GetFile(temp_a0, gBattleModeBackgroundIds[gSessionContext.mode - 1]);
+        arg0->unk_10 = Util_ConvertAddrToVirtAddr(gBattleModeBackgroundTextures[gSessionContext.mode - 1]);
+        arg0->unk_14 = Util_ConvertAddrToVirtAddr(gBattleModeExtraTextures[gSessionContext.modeSelection]);
 
         switch (gSessionContext.roundOrDemoId) {
             default:
@@ -1139,12 +1139,12 @@ void BattlePrep_LoadBannerAssets(unk_D_84B259A8* arg0) {
     }
 
     if (gSessionContext.roundOrDemoId < 7) {
-        arg0->unk_1C = Util_ConvertAddrToVirtAddr(D_84B0FC90[gSessionContext.roundOrDemoId]);
+        arg0->unk_1C = Util_ConvertAddrToVirtAddr(gBattleSubModeExtraTextures[gSessionContext.roundOrDemoId]);
     }
 }
 
-void BattlePrep_AdjustBannerTextureOffset(unk_D_84B259A8* arg0) {
-    unk_D_86002F34* ptr;
+void BattlePrep_AdjustBannerTextureOffset(gBannerState* arg0) {
+    ShadowContextNode* ptr;
     s32 var_v0;
     s32 var_v1;
     u8* var_a0;
@@ -1177,19 +1177,19 @@ void BattlePrep_AdjustBannerTextureOffset(unk_D_84B259A8* arg0) {
     temp_a3[9].v.ob[0] = (temp_a3[9].v.ob[0] - var_v0) + 4;
 }
 
-void BattlePrep_LoadBannerGeoLayouts(unk_D_84B259A8* arg0) {
+void BattlePrep_LoadBannerGeoLayouts(gBannerState* arg0) {
     MemoryBlock* temp_v0;
 
     temp_v0 = MainPool_AllocState(main_pool_get_available(), 0);
-    arg0->unk_24 = process_geo_layout(temp_v0, D_84B10378);
-    arg0->unk_38 = process_geo_layout(temp_v0, D_84B10E78);
-    arg0->unk_34 = process_geo_layout(temp_v0, D_84B109F0);
+    arg0->unk_24 = process_geo_layout(temp_v0, gUIBarGeoLayout);
+    arg0->unk_38 = process_geo_layout(temp_v0, gUIBarMiniAltGeoLayout);
+    arg0->unk_34 = process_geo_layout(temp_v0, gUIBarMidGeoLayout);
     if (gSessionContext.inRound2 == 0) {
-        arg0->unk_28 = process_geo_layout(temp_v0, D_84B10568);
-        arg0->unk_2C = process_geo_layout(temp_v0, D_84B105A8);
+        arg0->unk_28 = process_geo_layout(temp_v0, gUIBarSmallTopGeoLayout);
+        arg0->unk_2C = process_geo_layout(temp_v0, gUIBarSmallBottomGeoLayout);
     } else {
-        arg0->unk_28 = process_geo_layout(temp_v0, D_84B10838);
-        arg0->unk_2C = process_geo_layout(temp_v0, D_84B10878);
+        arg0->unk_28 = process_geo_layout(temp_v0, gUIBarWideTopGeoLayout);
+        arg0->unk_2C = process_geo_layout(temp_v0, gUIBarWideBottomGeoLayout);
         BattlePrep_AdjustBannerTextureOffset(arg0);
     }
 
@@ -1197,29 +1197,29 @@ void BattlePrep_LoadBannerGeoLayouts(unk_D_84B259A8* arg0) {
         switch (gSessionContext.modeSelection) {
             default:
                 if (gSessionContext.roundOrDemoId < 4) {
-                    arg0->unk_30 = process_geo_layout(temp_v0, D_84B11060);
+                    arg0->unk_30 = process_geo_layout(temp_v0, gUIBarSpecialGeoLayout);
                 } else {
-                    arg0->unk_30 = process_geo_layout(temp_v0, D_84B10D70);
+                    arg0->unk_30 = process_geo_layout(temp_v0, gUIBarMiniGeoLayout);
                 }
                 break;
 
             case 8:
-                arg0->unk_30 = process_geo_layout(temp_v0, D_84B11060);
+                arg0->unk_30 = process_geo_layout(temp_v0, gUIBarSpecialGeoLayout);
                 break;
 
             case 9:
-                arg0->unk_30 = process_geo_layout(temp_v0, D_84B10D70);
+                arg0->unk_30 = process_geo_layout(temp_v0, gUIBarMiniGeoLayout);
                 break;
         }
     } else if (gSessionContext.roundOrDemoId < 7) {
-        arg0->unk_30 = process_geo_layout(temp_v0, D_84B11060);
+        arg0->unk_30 = process_geo_layout(temp_v0, gUIBarSpecialGeoLayout);
     } else {
-        arg0->unk_30 = process_geo_layout(temp_v0, D_84B10BE8);
+        arg0->unk_30 = process_geo_layout(temp_v0, gUIBarTwoLayerGeoLayout);
     }
     MainPool_FinalizeAllocation(temp_v0);
 }
 
-void BattlePrep_SetVertexGradientColors(unk_D_86002F34* arg0, Color_RGBA8* arg1, Color_RGBA8* arg2) {
+void BattlePrep_SetVertexGradientColors(ShadowContextNode* arg0, Color_RGBA8* arg1, Color_RGBA8* arg2) {
     Vtx* var_v0 = arg0->unk_20;
     s16 temp_v1 = arg0->unk_26 / 2;
     s16 i;
@@ -1239,7 +1239,7 @@ void BattlePrep_SetVertexGradientColors(unk_D_86002F34* arg0, Color_RGBA8* arg1,
     }
 }
 
-void BattlePrep_ApplyBannerColors(unk_D_84B259A8* arg0) {
+void BattlePrep_ApplyBannerColors(gBannerState* arg0) {
     UNUSED s32 pad[2];
     s16 var_v1;
 
@@ -1248,13 +1248,13 @@ void BattlePrep_ApplyBannerColors(unk_D_84B259A8* arg0) {
         var_v1 += gSessionContext.modeSelection;
     }
 
-    BattlePrep_SetVertexGradientColors(arg0->unk_28, &D_84B0FCBC[var_v1], &D_84B0FCFC[var_v1]);
-    BattlePrep_SetVertexGradientColors(arg0->unk_34, &D_84B0FCFC[var_v1], &D_84B0FCFC[var_v1]);
-    BattlePrep_SetVertexGradientColors(arg0->unk_30, &D_84B0FCFC[var_v1], &D_84B0FCBC[var_v1]);
-    BattlePrep_SetVertexGradientColors(arg0->unk_38, &D_84B0FCFC[var_v1], &D_84B0FCBC[var_v1]);
+    BattlePrep_SetVertexGradientColors(arg0->unk_28, &gBattleModeBarColors[var_v1], &gBattleModeBarHighlightColors[var_v1]);
+    BattlePrep_SetVertexGradientColors(arg0->unk_34, &gBattleModeBarHighlightColors[var_v1], &gBattleModeBarHighlightColors[var_v1]);
+    BattlePrep_SetVertexGradientColors(arg0->unk_30, &gBattleModeBarHighlightColors[var_v1], &gBattleModeBarColors[var_v1]);
+    BattlePrep_SetVertexGradientColors(arg0->unk_38, &gBattleModeBarHighlightColors[var_v1], &gBattleModeBarColors[var_v1]);
 }
 
-void BattlePrep_InitBannerScene(unk_D_84B259A8* arg0) {
+void BattlePrep_InitBannerScene(gBannerState* arg0) {
     arg0->unk_00 = 0;
     arg0->unk_01 = 0;
     BattlePrep_LoadBannerAssets(arg0);
@@ -1262,65 +1262,65 @@ void BattlePrep_InitBannerScene(unk_D_84B259A8* arg0) {
     BattlePrep_ApplyBannerColors(arg0);
 }
 
-s32 BattlePrep_BadgeCarouselGeoCallback(s32 arg0, unk_func_80011B94* arg1) {
-    unk_D_84B259E8* temp_a0;
+s32 BattlePrep_BadgeCarouselGeoCallback(s32 arg0, SimpleGfxNode* arg1) {
+    gBadgeCarouselAnim* temp_a0;
     s32 tmp;
     s32 tmp2;
 
     if (arg0 == 5) {
-        temp_a0 = (unk_D_84B259E8*)D_8006F09C->node.callbackArg;
-        tmp = ((D_8006F09C->effectSlot - temp_a0->unk_08->effectSlot) % 8) - 4;
+        temp_a0 = (gBadgeCarouselAnim*)gDefaultGraphRoot->node.callbackArg;
+        tmp = ((gDefaultGraphRoot->effectSlot - temp_a0->unk_08->effectSlot) % 8) - 4;
         tmp2 = (arg1->display_node_header.callbackArg * 4) + tmp;
 
         gDPPipeSync(gDisplayListHead++);
         gSPSegment(gDisplayListHead++, 0x0F, (u32)temp_a0->unk_10[tmp2] & 0x1FFFFFFF);
-        gSPDisplayList(gDisplayListHead++, D_84B113C0);
+        gSPDisplayList(gDisplayListHead++, gUIBarBarSegmentDisplayList);
 
         GeoRender_ApplyMaterialState();
     }
     return 0;
 }
 
-s32 BattlePrep_BadgeCarouselGlowCallback(s32 arg0, unk_func_80011B94* arg1) {
-    static s16 D_84B11C18 = 0;
+s32 BattlePrep_BadgeCarouselGlowCallback(s32 arg0, SimpleGfxNode* arg1) {
+    static s16 gBarHighlightAnimPhase = 0;
 
-    unk_D_84B259E8* temp_v0;
+    gBadgeCarouselAnim* temp_v0;
     s32 var_t1;
     s32 tmp;
     s32 tmp2;
 
     if (arg0 == 5) {
-        temp_v0 = (unk_D_84B259E8*)D_8006F09C->node.callbackArg;
-        tmp = ((D_8006F09C->effectSlot - temp_v0->unk_08->effectSlot) % 8) - 4;
+        temp_v0 = (gBadgeCarouselAnim*)gDefaultGraphRoot->node.callbackArg;
+        tmp = ((gDefaultGraphRoot->effectSlot - temp_v0->unk_08->effectSlot) % 8) - 4;
         tmp2 = tmp + arg1->display_node_header.callbackArg * 4;
 
         if ((temp_v0->unk_02 != 0) && ((tmp2 + 1) == gSessionContext.roundOrDemoId)) {
             // clang-format off
-            if (D_84B11C18 >= 0) { var_t1 = (s32)(SINS((s32)(SINS(D_84B11C18) * 16384.0f)) * 127.0f) + 0x7F;
+            if (gBarHighlightAnimPhase >= 0) { var_t1 = (s32)(SINS((s32)(SINS(gBarHighlightAnimPhase) * 16384.0f)) * 127.0f) + 0x7F;
             } else {
-                var_t1 = (s32)(SINS(D_84B11C18) * 127.0f) + 0x7F;
+                var_t1 = (s32)(SINS(gBarHighlightAnimPhase) * 127.0f) + 0x7F;
             }
             // clang-format on
 
             gDPPipeSync(gDisplayListHead++);
-            gDPSetPrimColor(gDisplayListHead++, 0, D_8006F09C->lodFraction, 200, 200, 30, var_t1);
+            gDPSetPrimColor(gDisplayListHead++, 0, gDefaultGraphRoot->lodFraction, 200, 200, 30, var_t1);
             gDPSetEnvColor(gDisplayListHead++, 200, 30, 30, var_t1);
-            gSPDisplayList(gDisplayListHead++, D_84B114F8);
+            gSPDisplayList(gDisplayListHead++, gUIBarBarSegmentDetailDisplayList);
 
             GeoRender_ApplyMaterialState();
-            D_84B11C18 += 0x800;
+            gBarHighlightAnimPhase += 0x800;
         }
     }
     return 0;
 }
 
-s32 BattlePrep_BadgeCarouselTextureCallback(s32 arg0, unk_func_80011B94* arg1) {
-    unk_D_84B259E8* temp_a0;
+s32 BattlePrep_BadgeCarouselTextureCallback(s32 arg0, SimpleGfxNode* arg1) {
+    gBadgeCarouselAnim* temp_a0;
     s32 tmp;
 
     if (arg0 == 5) {
-        temp_a0 = (unk_D_84B259E8*)D_8006F09C->node.callbackArg;
-        tmp = ((D_8006F09C->effectSlot - temp_a0->unk_08->effectSlot) % 8) - 4;
+        temp_a0 = (gBadgeCarouselAnim*)gDefaultGraphRoot->node.callbackArg;
+        tmp = ((gDefaultGraphRoot->effectSlot - temp_a0->unk_08->effectSlot) % 8) - 4;
 
         gDPPipeSync(gDisplayListHead++);
 
@@ -1332,33 +1332,33 @@ s32 BattlePrep_BadgeCarouselTextureCallback(s32 arg0, unk_func_80011B94* arg1) {
     return 0;
 }
 
-s32 BattlePrep_BadgeCarouselGlowCallback2(s32 arg0, unk_func_80011B94* arg1) {
-    static s16 D_84B11C1C = 0;
+s32 BattlePrep_BadgeCarouselGlowCallback2(s32 arg0, SimpleGfxNode* arg1) {
+    static s16 gSegmentHighlightAnimPhase = 0;
 
-    unk_D_84B259E8* temp_v0;
+    gBadgeCarouselAnim* temp_v0;
     s32 var_t1;
     s32 tmp;
 
     if (arg0 == 5) {
-        temp_v0 = (unk_D_84B259E8*)D_8006F09C->node.callbackArg;
-        tmp = ((D_8006F09C->effectSlot - temp_v0->unk_08->effectSlot) % 8);
+        temp_v0 = (gBadgeCarouselAnim*)gDefaultGraphRoot->node.callbackArg;
+        tmp = ((gDefaultGraphRoot->effectSlot - temp_v0->unk_08->effectSlot) % 8);
         tmp -= 4;
 
         if ((temp_v0->unk_02 != 0) && ((tmp + 1) == gSessionContext.roundOrDemoId)) {
             // clang-format off
-            if (D_84B11C1C >= 0) {                var_t1 = (s32)(SINS((s32)(SINS(D_84B11C1C) * 16384.0f)) * 127.0f)+ 0x7F;
+            if (gSegmentHighlightAnimPhase >= 0) {                var_t1 = (s32)(SINS((s32)(SINS(gSegmentHighlightAnimPhase) * 16384.0f)) * 127.0f)+ 0x7F;
             } else {
-                var_t1 = (s32)(SINS(D_84B11C1C) * 127.0f) + 0x7F;
+                var_t1 = (s32)(SINS(gSegmentHighlightAnimPhase) * 127.0f) + 0x7F;
             }
             // clang-format on
             gDPPipeSync(gDisplayListHead++);
 
-            gDPSetPrimColor(gDisplayListHead++, 0, D_8006F09C->lodFraction, 200, 200, 30, var_t1);
+            gDPSetPrimColor(gDisplayListHead++, 0, gDefaultGraphRoot->lodFraction, 200, 200, 30, var_t1);
             gDPSetEnvColor(gDisplayListHead++, 200, 30, 30, var_t1);
             gSPDisplayList(gDisplayListHead++, arg1->display_node_header.callbackArg);
 
             GeoRender_ApplyMaterialState();
-            D_84B11C1C += 0x800;
+            gSegmentHighlightAnimPhase += 0x800;
         }
     }
     return 0;
@@ -1379,7 +1379,7 @@ void BattlePrep_RenderBadgeGlowTexture(s32 arg0) {
     gSPDisplayList(gDisplayListHead++, gUiRestoreTextureDL);
 }
 
-void BattlePrep_ResetBadgeSlideSlots(unk_D_84B259E8* arg0) {
+void BattlePrep_ResetBadgeSlideSlots(gBadgeCarouselAnim* arg0) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
@@ -1391,7 +1391,7 @@ void BattlePrep_ResetBadgeSlideSlots(unk_D_84B259E8* arg0) {
     }
 }
 
-void BattlePrep_BadgeSlideInLeft(unk_D_84B259E8* arg0) {
+void BattlePrep_BadgeSlideInLeft(gBadgeCarouselAnim* arg0) {
     s32 i;
 
     arg0->unk_01++;
@@ -1406,7 +1406,7 @@ void BattlePrep_BadgeSlideInLeft(unk_D_84B259E8* arg0) {
     }
 }
 
-void BattlePrep_BadgeSlideInRight(unk_D_84B259E8* arg0) {
+void BattlePrep_BadgeSlideInRight(gBadgeCarouselAnim* arg0) {
     s32 i;
     s32 var_v0;
 
@@ -1425,7 +1425,7 @@ void BattlePrep_BadgeSlideInRight(unk_D_84B259E8* arg0) {
     }
 }
 
-void BattlePrep_BadgeRevealSpin(unk_D_84B259E8* arg0) {
+void BattlePrep_BadgeRevealSpin(gBadgeCarouselAnim* arg0) {
     s32 i;
     s32 var_a2;
 
@@ -1451,7 +1451,7 @@ void BattlePrep_BadgeRevealSpin(unk_D_84B259E8* arg0) {
         if (gSessionContext.mode == 7) {
             GfxImage_SetRenderTarget(&gDisplayListHead, arg0->unk_30[gSessionContext.roundOrDemoId - 1]);
 
-            gSPDisplayList(gDisplayListHead++, D_8006F4E0);
+            gSPDisplayList(gDisplayListHead++, gDL_CopyDecal);
 
             Gfx_DrawTextureRgba16(4, 0x24, 0x38, 0x1C, &arg0->unk_10[gSessionContext.roundOrDemoId - 1][0x208], 0x40, 0x200000);
             Gfx_DrawTextureRgba16(4, 0x40, 0x38, 0x1C, &arg0->unk_10[gSessionContext.roundOrDemoId - 1][0x1008], 0x40, 0x200000);
@@ -1464,7 +1464,7 @@ void BattlePrep_BadgeRevealSpin(unk_D_84B259E8* arg0) {
     }
 }
 
-void BattlePrep_BadgeHideSpin(unk_D_84B259E8* arg0) {
+void BattlePrep_BadgeHideSpin(gBadgeCarouselAnim* arg0) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
@@ -1481,7 +1481,7 @@ void BattlePrep_BadgeHideSpin(unk_D_84B259E8* arg0) {
     }
 }
 
-void BattlePrep_UpdateBadgeCarousel(unk_D_84B259E8* arg0) {
+void BattlePrep_UpdateBadgeCarousel(gBadgeCarouselAnim* arg0) {
     switch (arg0->unk_00) {
         case 1:
             BattlePrep_BadgeSlideInLeft(arg0);
@@ -1501,7 +1501,7 @@ void BattlePrep_UpdateBadgeCarousel(unk_D_84B259E8* arg0) {
     }
 }
 
-void BattlePrep_InitBadgeCarousel(unk_D_84B259E8* arg0, DisplayObject* arg1, s16 arg2) {
+void BattlePrep_InitBadgeCarousel(gBadgeCarouselAnim* arg0, DisplayObject* arg1, s16 arg2) {
     s32 i;
     s16 var_s2;
 
@@ -1534,10 +1534,10 @@ void BattlePrep_InitBadgeCarousel(unk_D_84B259E8* arg0, DisplayObject* arg1, s16
     }
 }
 
-void BattlePrep_RenderBadgeBackground(unk_D_84B259E8* arg0, s16 arg1, char* arg2) {
+void BattlePrep_RenderBadgeBackground(gBadgeCarouselAnim* arg0, s16 arg1, char* arg2) {
     GfxImage_SetRenderTarget(&gDisplayListHead, arg0->unk_30[arg1]);
 
-    gSPDisplayList(gDisplayListHead++, D_8006F4E0);
+    gSPDisplayList(gDisplayListHead++, gDL_CopyDecal);
 
     Gfx_DrawTextureRgba16(0, 0, 0x40, 0x20, D_3012000, 0x40, 0x200000);
     Gfx_DrawTextureRgba16(0, 0x20, 0x40, 0x20, D_3013000, 0x40, 0x200000);
@@ -1585,7 +1585,7 @@ s32 BattlePrep_Align64PoolBlock(s32* arg0) {
     return var_v1;
 }
 
-void BattlePrep_LoadBadgeTextures(unk_D_84B259E8* arg0, BinArchive* arg1, BinArchive* arg2) {
+void BattlePrep_LoadBadgeTextures(gBadgeCarouselAnim* arg0, BinArchive* arg1, BinArchive* arg2) {
     s16 i;
     s16 sp44;
     unk_func_84B067B4* temp_s5;
@@ -1659,7 +1659,7 @@ void BattlePrep_LoadBadgeTextures(unk_D_84B259E8* arg0, BinArchive* arg1, BinArc
     }
 }
 
-void BattlePrep_InitBadgeCarouselScene(unk_D_84B259E8* arg0, BinArchive* arg1, BinArchive* arg2) {
+void BattlePrep_InitBadgeCarouselScene(gBadgeCarouselAnim* arg0, BinArchive* arg1, BinArchive* arg2) {
     s32 i;
     MemoryBlock* temp_v0;
 
@@ -1674,9 +1674,9 @@ void BattlePrep_InitBadgeCarouselScene(unk_D_84B259E8* arg0, BinArchive* arg1, B
 
     temp_v0 = MainPool_AllocState(main_pool_get_available(), 0);
     if (gSessionContext.mode == 7) {
-        arg0->unk_0C = process_geo_layout(temp_v0, D_84B11BD0);
+        arg0->unk_0C = process_geo_layout(temp_v0, gUIBarLargeGeoLayout);
     } else {
-        arg0->unk_0C = process_geo_layout(temp_v0, D_84B11640);
+        arg0->unk_0C = process_geo_layout(temp_v0, gUIBarBarSegmentGeoLayout);
     }
 
     MainPool_FinalizeAllocation(temp_v0);

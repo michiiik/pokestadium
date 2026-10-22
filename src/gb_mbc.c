@@ -16,7 +16,7 @@
         return ret
 
 // Track ram banks for channels
-static u8 D_800AA670[16];
+static u8 gGbMbcRamBankMap[16];
 
 s32 osGbmbcRamEnable(OSPfs* pfs) {
   s32 i;
@@ -40,7 +40,7 @@ s32 osGbmbcRamEnable(OSPfs* pfs) {
 
   ERRCK(osGbpakReadWrite(pfs, OS_WRITE, MBC_RAM_ENABLE, buffer, BLOCKSIZE));
 
-  D_800AA670[pfs->channel] = RAM_BANK_NONE;
+  gGbMbcRamBankMap[pfs->channel] = RAM_BANK_NONE;
 
   ret = osGbpakGetStatus(pfs, &status);
   if ((ret == 0) && !(status & OS_GBPAK_POWER)) {
@@ -58,7 +58,7 @@ s32 osGbmbcSelectRamBank(OSPfs* pfs, u8 bank) {
 
     ret = osGbpakReadWrite(pfs, OS_WRITE, MBC_RAM_BANK_ADDRESS, buffer, BLOCKSIZE);
     if (ret == 0) {
-        D_800AA670[pfs->channel] = bank;
+        gGbMbcRamBankMap[pfs->channel] = bank;
     }
     return ret;
 }
@@ -72,7 +72,7 @@ s32 osGbmbcReadWrite(OSPfs* pfs, u16 flag, u32 address, u8* buffer, u32 size) {
     ERRCK(osGbpakGetStatus(pfs, &status));
 
     var_s2 = address >> 0xD;
-    if (var_s2 != D_800AA670[pfs->channel]) {
+    if (var_s2 != gGbMbcRamBankMap[pfs->channel]) {
         ERRCK(osGbmbcSelectRamBank(pfs, var_s2));
     }
     address &= 0x1FFF;

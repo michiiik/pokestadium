@@ -55,11 +55,11 @@ extern PokemonStats gBaseStats[];
 // Indexed by species ID - 1: Bulbasaur through Mew, then the Substitute doll.
 extern SpeciesData gSpeciesData[152];
 
-typedef struct unk_D_80071D88 {
+typedef struct TypeColorEntry {
     /* 0x00 */ char* type_name;
     /* 0x04 */ Color_RGBA8 color;
-} unk_D_80071D88; // size = 0x8
-extern unk_D_80071D88 D_80071D88[];
+} TypeColorEntry; // size = 0x8
+extern TypeColorEntry D_80071D88[];
 
 typedef struct GbPokemonRecord {
     /* 0x00 */ u8 unk_00;

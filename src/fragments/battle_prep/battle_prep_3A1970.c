@@ -10,7 +10,7 @@
 #include "src/memmap.h"
 #include "src/memory.h"
 
-static Vtx D_84B16F00[] = {
+static Vtx gBarVerticesLarge[] = {
     VTX(-66, 14, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),      VTX(-66, -2, 0, 0, 512, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(50, -2, 0, 3712, 512, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(50, 14, 0, 3712, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(50, 14, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),       VTX(50, -2, 0, 0, 512, 0xFF, 0xFF, 0xFF, 0xFF),
@@ -24,11 +24,11 @@ static Vtx D_84B16F00[] = {
     VTX(0, 10, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),     VTX(0, -10, 0, 2048, 640, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(64, -10, 0, 4096, 640, 0xFF, 0xFF, 0xFF, 0xFF), VTX(64, 10, 0, 4096, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Gfx D_84B17080[] = {
+static Gfx gBarDisplayListLarge[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetCombineLERP(TEXEL0, 0, ENVIRONMENT, 0, 0, 0, 0, TEXEL0, 0, 0, 0, COMBINED, 0, 0, 0, COMBINED),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
-    gsSPVertex(D_84B16F00, 24, 0),
+    gsSPVertex(gBarVerticesLarge, 24, 0),
     gsDPSetEnvColor(30, 115, 115, 255),
     gsDPLoadTextureBlock(D_3028030, G_IM_FMT_IA, G_IM_SIZ_8b, 16, 12, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                          G_TX_NOMIRROR | G_TX_CLAMP, 4, 4, G_TX_NOLOD, G_TX_NOLOD),
@@ -66,11 +66,11 @@ static Gfx D_84B17080[] = {
     gsSP2Triangles(20, 21, 22, 0, 20, 22, 23, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B17240[] = {
-    0x17000000, 0x00000000, 0x00000000, 0x00000000, D_84B16F00,
-    0x05000000, 0x22050000, D_84B17080, 0x06000000, 0x01000000,
+static u32 gBarGeoLayoutLarge[] = {
+    0x17000000, 0x00000000, 0x00000000, 0x00000000, gBarVerticesLarge,
+    0x05000000, 0x22050000, gBarDisplayListLarge, 0x06000000, 0x01000000,
 };
-static Vtx D_84B17268[] = {
+static Vtx gBarVerticesSmall[] = {
     VTX(-40, 16, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),      VTX(-40, -4, 0, 0, 640, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(24, -4, 0, 2048, 640, 0xFF, 0xFF, 0xFF, 0xFF),  VTX(24, 16, 0, 2048, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(24, 16, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),       VTX(24, -4, 0, 0, 640, 0xFF, 0xFF, 0xFF, 0xFF),
@@ -82,11 +82,11 @@ static Vtx D_84B17268[] = {
     VTX(-36, 12, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),      VTX(-36, -12, 0, 0, 768, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(36, -12, 0, 2304, 768, 0xFF, 0xFF, 0xFF, 0xFF), VTX(36, 12, 0, 2304, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Gfx D_84B173A8[] = {
+static Gfx gBarDisplayListSmall[] = {
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetCombineLERP(TEXEL0, 0, ENVIRONMENT, 0, 0, 0, 0, TEXEL0, 0, 0, 0, COMBINED, 0, 0, 0, COMBINED),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
-    gsSPVertex(D_84B17268, 20, 0),
+    gsSPVertex(gBarVerticesSmall, 20, 0),
     gsDPSetEnvColor(30, 115, 115, 255),
     gsDPLoadTextureBlock(D_3028030, G_IM_FMT_IA, G_IM_SIZ_8b, 16, 12, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                          G_TX_NOMIRROR | G_TX_CLAMP, 4, 4, G_TX_NOLOD, G_TX_NOLOD),
@@ -107,15 +107,15 @@ static Gfx D_84B173A8[] = {
     gsSP2Triangles(16, 17, 18, 0, 16, 18, 19, 0),
     gsSPEndDisplayList(),
 };
-static u32 D_84B17528[] = {
-    0x17000000, 0x00000000, 0x00000000, 0x00000000, D_84B17268,
-    0x05000000, 0x22050000, D_84B173A8, 0x06000000, 0x01000000,
+static u32 gBarGeoLayoutSmall[] = {
+    0x17000000, 0x00000000, 0x00000000, 0x00000000, gBarVerticesSmall,
+    0x05000000, 0x22050000, gBarDisplayListSmall, 0x06000000, 0x01000000,
 };
 
-void BattlePrep_TrophyModelIdle(unk_D_84B26640_010* arg0) {
+void BattlePrep_TrophyModelIdle(BarState* arg0) {
 }
 
-void BattlePrep_TrophyModelGrow(unk_D_84B26640_010* arg0) {
+void BattlePrep_TrophyModelGrow(BarState* arg0) {
     arg0->unk_01++;
     if (arg0->unk_01 == 8) {
         arg0->unk_00 = 0;
@@ -123,7 +123,7 @@ void BattlePrep_TrophyModelGrow(unk_D_84B26640_010* arg0) {
     Vec3f_SetComponentsDuplicate(&arg0->unk_04->scale, arg0->unk_01 * 0.125f, arg0->unk_01 * 0.125f, arg0->unk_01 * 0.125f);
 }
 
-void BattlePrep_TrophyModelShrink(unk_D_84B26640_010* arg0) {
+void BattlePrep_TrophyModelShrink(BarState* arg0) {
     arg0->unk_01--;
     if (arg0->unk_01 == 0) {
         arg0->unk_00 = 0;
@@ -133,7 +133,7 @@ void BattlePrep_TrophyModelShrink(unk_D_84B26640_010* arg0) {
     }
 }
 
-void BattlePrep_UpdateTrophyModel(unk_D_84B26640_010* arg0) {
+void BattlePrep_UpdateTrophyModel(BarState* arg0) {
     switch ((s8)arg0->unk_00) {
         case 1:
             BattlePrep_TrophyModelIdle(arg0);
@@ -149,7 +149,7 @@ void BattlePrep_UpdateTrophyModel(unk_D_84B26640_010* arg0) {
     }
 }
 
-void BattlePrep_StartTrophyModelGrow(unk_D_84B26640_010* arg0, DisplayObject* arg1) {
+void BattlePrep_StartTrophyModelGrow(BarState* arg0, DisplayObject* arg1) {
     arg0->unk_04 = arg1;
     arg0->unk_01 = 0;
     arg0->unk_00 = 2;
@@ -163,12 +163,12 @@ void BattlePrep_StartTrophyModelGrow(unk_D_84B26640_010* arg0, DisplayObject* ar
     Vec3f_SetComponentsDuplicate(&arg0->unk_04->scale, 0.1f, 0.1f, 0.1f);
 }
 
-void BattlePrep_StartTrophyModelShrink(unk_D_84B26640_010* arg0) {
+void BattlePrep_StartTrophyModelShrink(BarState* arg0) {
     arg0->unk_01 = 8;
     arg0->unk_00 = 3;
 }
 
-void BattlePrep_InitTrophyModel(unk_D_84B26640_010* arg0, u8 arg1) {
+void BattlePrep_InitTrophyModel(BarState* arg0, u8 arg1) {
     MemoryBlock* sp2C;
 
     arg0->unk_00 = 0;
@@ -177,9 +177,9 @@ void BattlePrep_InitTrophyModel(unk_D_84B26640_010* arg0, u8 arg1) {
 
     sp2C = MainPool_AllocState(main_pool_get_available(), 0);
     if (arg1 == 0) {
-        arg0->unk_08 = process_geo_layout(sp2C, D_84B17240);
+        arg0->unk_08 = process_geo_layout(sp2C, gBarGeoLayoutLarge);
     } else {
-        arg0->unk_08 = process_geo_layout(sp2C, D_84B17528);
+        arg0->unk_08 = process_geo_layout(sp2C, gBarGeoLayoutSmall);
     }
     MainPool_FinalizeAllocation(sp2C);
 }

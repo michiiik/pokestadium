@@ -6,11 +6,11 @@
 #include "libnumus/player.h"
 
 // .data
-u8 D_80078A10[3] = { 0xFF, 0xFF, 0xFF };
-u32 D_80078A14 = 0;
-s32 D_80078A18 = 0;
-u8 D_80078A1C[4] = { 0 };
-u8 D_80078A20[16] = { 0 };
+u8 gMoveSoundCache[3] = { 0xFF, 0xFF, 0xFF };
+u32 gMoveSoundCachePos = 0;
+s32 gCurrentSoundHandle = 0;
+u8 gSoundDurationScale[4] = { 0 };
+u8 gSpecialMoveSoundFlag[16] = { 0 };
 
 // Related to Partner Pikachu, probably makes it go Pika Pika
 s32 PlayMoveSoundEffect(UNUSED s32 side_index, u32 move_id, u32 species, u32 sound_kind) {
@@ -26,8 +26,8 @@ s32 PlayMoveSoundEffect(UNUSED s32 side_index, u32 move_id, u32 species, u32 sou
     u8 is_partner_pikachu;
 
     is_partner_pikachu = 0;
-    D_80078A20[0] = 0;
-    Audio_QueueFadeSoundCommand(D_80078A18, 0xA);
+    gSpecialMoveSoundFlag[0] = 0;
+    Audio_QueueFadeSoundCommand(gCurrentSoundHandle, 0xA);
 
     if (species == 0xC8) {
         is_partner_pikachu = 1;
@@ -45,38 +45,38 @@ s32 PlayMoveSoundEffect(UNUSED s32 side_index, u32 move_id, u32 species, u32 sou
     }
 
     for (i = 0; i < 3; i++) {
-        if (species == D_80078A10[i]) {
+        if (species == gMoveSoundCache[i]) {
             slot = i;
             goto found;
         }
     }
 
-    slot = D_80078A14 % 3;
-    D_80078A14++;
-    D_80078A10[slot] = species;
+    slot = gMoveSoundCachePos % 3;
+    gMoveSoundCachePos++;
+    gMoveSoundCache[slot] = species;
     if (is_partner_pikachu) {
         species = 0x97;
     }
     species--;
-    if (species < (D_800FC6FC->num_files - 1)) {
-        romAddr = ((u32*)D_800FC6FC)[species + 3];
-        size = ((u32*)D_800FC6FC)[species + 4] - romAddr;
+    if (species < (gMoveSoundArchive->num_files - 1)) {
+        romAddr = ((u32*)gMoveSoundArchive)[species + 3];
+        size = ((u32*)gMoveSoundArchive)[species + 4] - romAddr;
     } else {
-        romAddr = ((u32*)D_800FC6FC)[species + 3];
-        size = D_800FC6E8->seqArray[3].offset - romAddr;
+        romAddr = ((u32*)gMoveSoundArchive)[species + 3];
+        size = gMoveSoundSeqInfo->seqArray[3].offset - romAddr;
     }
-    Rom_DmaRead(romAddr, D_800FC6DC, size);
-    Audio_CopyDataWithCacheSync(D_800FC6DC, D_800FC6B0[slot], 0x3E8);
-    Audio_RelocateSoundBankTable(D_800FC6B0[slot]);
+    Rom_DmaRead(romAddr, gMoveSoundTempBuffer, size);
+    Audio_CopyDataWithCacheSync(gMoveSoundTempBuffer, gMoveSoundBankData[slot], 0x3E8);
+    Audio_RelocateSoundBankTable(gMoveSoundBankData[slot]);
     if (is_partner_pikachu) {
         species = 0x97;
     }
-    size = D_800FC700->seqArray[species].len;
+    size = gMoveSoundSeqTable->seqArray[species].len;
     if (size & 1) {
         size++;
     }
-    Rom_DmaRead((u32)D_800FC700->seqArray[species].offset, D_800FC6DC, size);
-    Audio_CopyDataWithCacheSync(D_800FC6DC, D_800FC6C0[slot], 0x44C);
+    Rom_DmaRead((u32)gMoveSoundSeqTable->seqArray[species].offset, gMoveSoundTempBuffer, size);
+    Audio_CopyDataWithCacheSync(gMoveSoundTempBuffer, gMoveSoundTables[slot], 0x44C);
 
 found:
     switch (sound_kind) {
@@ -103,33 +103,33 @@ found:
     if (sound_kind == 0xB) {
         move_id = 0;
     }
-    var_a0 = D_800FC6C0[slot]->entries;
+    var_a0 = gMoveSoundTables[slot]->entries;
     entry = &(var_a0 + move_id)->unk0[size];
     species = entry[0];
-    D_80078A1C[0] = entry[1];
+    gSoundDurationScale[0] = entry[1];
 
 block_38:
-    seq = D_800FC6B0[slot];
+    seq = gMoveSoundBankData[slot];
     temp_v0 = *seq;
     if (!is_partner_pikachu && (species >= temp_v0)) {
         return 0;
     }
     if (is_partner_pikachu) {
         if ((move_id == 0x2D) || (move_id == 0x2E)) {
-            D_80078A20[0] = 1;
+            gSpecialMoveSoundFlag[0] = 1;
         }
         if (species != 0) {
             Cry_Play(species, 0xA);
         }
         return 0;
     }
-    temp_v0 = Audio_PlaySoundEffect(D_800FC6AC, seq, species, 0x80, 0x80, -1);
-    D_80078A18 = temp_v0;
+    temp_v0 = Audio_PlaySoundEffect(gMoveSoundBankBase, seq, species, 0x80, 0x80, -1);
+    gCurrentSoundHandle = temp_v0;
     return temp_v0;
 }
 
 void Audio_FadeStoredSound(void) {
-  if (D_80078A1C[0] != 0) {
-      Audio_QueueFadeSoundCommand(D_80078A18, (s32)D_80078A1C[0]);
+  if (gSoundDurationScale[0] != 0) {
+      Audio_QueueFadeSoundCommand(gCurrentSoundHandle, (s32)gSoundDurationScale[0]);
   }
 }

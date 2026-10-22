@@ -124,12 +124,12 @@ static BattlePrepRuleWindowLayout gBattlePrepRuleWindowLayouts[] = {
 };
 
 void BattlePrep_DrawCursorArrow(BattlePrepRuleWindow* arg0, s16 arg1, s16 arg2) {
-    static s16 D_84B17604 = 0;
+    static s16 gCursorArrowAnimFrame = 0;
 
-    if (D_84B17604 < 6) {
-        arg1 = (arg1 + (D_84B17604 / 2));
+    if (gCursorArrowAnimFrame < 6) {
+        arg1 = (arg1 + (gCursorArrowAnimFrame / 2));
     } else {
-        arg1 = ((arg1 - (D_84B17604 / 2)) + 6);
+        arg1 = ((arg1 - (gCursorArrowAnimFrame / 2)) + 6);
     }
 
     gSPDisplayList(gDisplayListHead++, gUiEnvTintTextureDL);
@@ -142,7 +142,7 @@ void BattlePrep_DrawCursorArrow(BattlePrepRuleWindow* arg0, s16 arg1, s16 arg2) 
 
     gSPDisplayList(gDisplayListHead++, gUiRestoreTextureDL);
 
-    D_84B17604 = (D_84B17604 + 1) % 12;
+    gCursorArrowAnimFrame = (gCursorArrowAnimFrame + 1) % 12;
 }
 
 void BattlePrep_DrawRuleOption(BattlePrepRuleWindow* arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4, s8* arg5) {
@@ -293,7 +293,7 @@ void BattlePrep_DrawCastleRuleSummary(BattlePrepRuleWindow* arg0, BattlePrepRule
 #endif
 
 void BattlePrep_DrawRankBadge(s16 arg0, s16 arg1, BattleSessionTeams* arg2) {
-    static u8* D_84B17608[] = { D_3025950, D_30260A0, D_30267F0, D_3026F40 };
+    static u8* sRankBadgeTextures[] = { D_3025950, D_30260A0, D_30267F0, D_3026F40 };
 
     gSPDisplayList(gDisplayListHead++, gUiEnvTintTextureDL);
 
@@ -302,7 +302,7 @@ void BattlePrep_DrawRankBadge(s16 arg0, s16 arg1, BattleSessionTeams* arg2) {
             Gfx_DrawTextureRgba16(arg0 + 0x1A, arg1 + 3, 0x24, 0x1A, D_3025200, 0x24, 0);
             if (0) {}
         } else {
-            Gfx_DrawTextureRgba16(arg0 + 0x1A, arg1 + 3, 0x24, 0x1A, D_84B17608[arg2->teamMember[0]->unk_001], 0x24, 0);
+            Gfx_DrawTextureRgba16(arg0 + 0x1A, arg1 + 3, 0x24, 0x1A, sRankBadgeTextures[arg2->teamMember[0]->unk_001], 0x24, 0);
         }
 
         gSPDisplayList(gDisplayListHead++, gUiRestoreTextureDL);
@@ -310,11 +310,11 @@ void BattlePrep_DrawRankBadge(s16 arg0, s16 arg1, BattleSessionTeams* arg2) {
     }
 
     if (arg2->teamMember[0]->unk_001 < arg2->teamMember[1]->unk_001) {
-        Gfx_DrawTextureRgba16(arg0 + 6, arg1 + 3, 0x24, 0x1A, D_84B17608[arg2->teamMember[0]->unk_001], 0x24, 0);
-        Gfx_DrawTextureRgba16(arg0 + 0x30, arg1 + 3, 0x24, 0x1A, D_84B17608[arg2->teamMember[1]->unk_001], 0x24, 0);
+        Gfx_DrawTextureRgba16(arg0 + 6, arg1 + 3, 0x24, 0x1A, sRankBadgeTextures[arg2->teamMember[0]->unk_001], 0x24, 0);
+        Gfx_DrawTextureRgba16(arg0 + 0x30, arg1 + 3, 0x24, 0x1A, sRankBadgeTextures[arg2->teamMember[1]->unk_001], 0x24, 0);
     } else {
-        Gfx_DrawTextureRgba16(arg0 + 6, arg1 + 3, 0x24, 0x1A, D_84B17608[arg2->teamMember[1]->unk_001], 0x24, 0);
-        Gfx_DrawTextureRgba16(arg0 + 0x30, arg1 + 3, 0x24, 0x1A, D_84B17608[arg2->teamMember[0]->unk_001], 0x24, 0);
+        Gfx_DrawTextureRgba16(arg0 + 6, arg1 + 3, 0x24, 0x1A, sRankBadgeTextures[arg2->teamMember[1]->unk_001], 0x24, 0);
+        Gfx_DrawTextureRgba16(arg0 + 0x30, arg1 + 3, 0x24, 0x1A, sRankBadgeTextures[arg2->teamMember[0]->unk_001], 0x24, 0);
     }
 
     gSPDisplayList(gDisplayListHead++, gUiRestoreTextureDL);
@@ -326,11 +326,11 @@ void BattlePrep_DrawRankBadge(s16 arg0, s16 arg1, BattleSessionTeams* arg2) {
 }
 
 void BattlePrep_SetStreakColor(BattleSessionTeams* arg0) {
-    static s16 D_84B17618 = 0;
+    static s16 gStreakColorAnimFrame = 0;
 
     if (arg0->unk_1C == 1) {
-        Gfx_SetEnvColor(0xFF, (SINS((s32)(SINS(D_84B17618) * 16384.0f)) * 100.0f) + 155.0f, 0x37, 0xFF);
-        D_84B17618 += 0x400;
+        Gfx_SetEnvColor(0xFF, (SINS((s32)(SINS(gStreakColorAnimFrame) * 16384.0f)) * 100.0f) + 155.0f, 0x37, 0xFF);
+        gStreakColorAnimFrame += 0x400;
     } else {
         Gfx_SetEnvColor(0xFF, 0x37, 0x37, 0xFF);
     }

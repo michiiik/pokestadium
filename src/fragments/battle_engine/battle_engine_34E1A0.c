@@ -5,14 +5,14 @@
 
 static Trail40 sWaterSurface;
 
-static Lights2 D_84389300 = gdSPDefLights2(255, 255, 255, 255, 255, 255, 30, 30, 10, 255, 255, 255, 226, 30, 10);
-static Gfx D_84389328[] = {
+static Lights2 gTrail40Lights = gdSPDefLights2(255, 255, 255, 255, 255, 255, 30, 30, 10, 255, 255, 255, 226, 30, 10);
+static Gfx gTrail40DL[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_2CYCLE),
     gsSPClearGeometryMode(G_ZBUFFER | G_SHADE | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN |
                           G_TEXTURE_GEN_LINEAR | G_LOD | G_SHADING_SMOOTH | G_CLIPPING | 0x0040F9FA),
     gsSPSetGeometryMode(G_SHADE | G_LIGHTING | G_TEXTURE_GEN | G_SHADING_SMOOTH),
-    gsSPSetLights2(D_84389300),
+    gsSPSetLights2(gTrail40Lights),
     gsSPTexture(0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON),
     gsDPPipeSync(),
     gsDPSetCombineMode(G_CC_MODULATEIA, G_CC_MODULATEIA2),
@@ -22,7 +22,7 @@ static Gfx D_84389328[] = {
     gsDPSetRenderMode(G_RM_PASS, G_RM_XLU_SURF2),
     gsSPEndDisplayList(),
 };
-static Gfx D_843893A8[] = {
+static Gfx gTrail40ShadingDL[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_1CYCLE),
     gsSPClearGeometryMode(G_ZBUFFER | G_SHADE | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN |
@@ -325,7 +325,7 @@ Gfx* Trail40_Draw(Gfx* arg0) {
 
     gDPLoadTextureBlock(arg0++, sBattleAnimAssetPointers[0xA8], G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
                         G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
-    gSPDisplayList(arg0++, D_84389328);
+    gSPDisplayList(arg0++, gTrail40DL);
     gDPSetPrimColor(arg0++, 0, 0, 255, 255, 255, sWaterSurface.unk_0004);
     gSPMatrix(arg0++, sWaterSurface.unk_0010, G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
 

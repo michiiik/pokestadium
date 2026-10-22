@@ -3,8 +3,8 @@
 
 #include "global.h"
 
-extern s32 D_80078FA8;
-extern u32 D_80079014;
+extern s32 gBattleMusicHandle;
+extern u32 gCurrentSfxBankId;
 
 s32 Audio_PlayCategory2SoundCommand(s32 arg0, s32 arg1, s32 arg2);
 void Audio_StopCategory2SoundCommand(UNUSED s32 arg0, UNUSED s32 arg1, UNUSED s32 arg2);

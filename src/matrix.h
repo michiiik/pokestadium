@@ -4,10 +4,10 @@
 #include "global.h"
 
 extern Mtx gIdentityMtx;
-extern Vec3f D_8006F050;
-extern Vec3s D_8006F05C;
-extern Vec3f D_8006F064;
-extern u16 D_8006F070[];
+extern Vec3f gRootNodePosition;
+extern Vec3s gZeroVec3s;
+extern Vec3f gRootNodeScale;
+extern u16 gRootNodeScaleDefault[];
 
 Color_RGBA8* Color_SetRGB(Color_RGBA8* dest, u8 r, u8 g, u8 b);
 Color_RGBA8* Color_SetRGBA(Color_RGBA8* dest, u8 r, u8 g, u8 b, u8 alpha);

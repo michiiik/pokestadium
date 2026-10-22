@@ -14,12 +14,12 @@
 #include "stdarg.h"
 #include "moves.h"
 
-unk_D_843901A0* gBattleMessageQueues;
+BattleMessageBuffers* gBattleMessageQueues;
 
-static u8 D_84385990[] = { 0xE, 0x4A };
-static u8 D_84385994[] = { 0x60, 0x69, 0x75, 0x78, 0x85 };
-static u8 D_8438599C[] = { 0x61, 0x64, 0x66, 0x68, 0x8C };
-static u8 D_843859A4[] = {
+static u8 gMoveUsedMsgVariant0Moves[] = { 0xE, 0x4A };
+static u8 gMoveUsedMsgVariant1Moves[] = { 0x60, 0x69, 0x75, 0x78, 0x85 };
+static u8 gMoveUsedMsgVariant2Moves[] = { 0x61, 0x64, 0x66, 0x68, 0x8C };
+static u8 gMoveUsedMsgVariant3Moves[] = {
     1,    0xA,  0xB,  0x11, 0x13, 0x14, 0x15, 0x1E, 0x22, 0x23, 0x25, 0x27, 0x2B, 0x2C, 0x2D, 0x2E,
     0x2F, 0x40, 0x44, 0x46, 0x47, 0x51, 0x59, 0x5A, 0x5B, 0x5C, 0x67, 0x6A, 0x6B, 0x6E, 0x6F, 0x76,
     0x7A, 0x80, 0x84, 0x8B, 0x8D, 0x91, 0x94, 0x96, 0x97, 0x9A, 0x9C, 0x9F, 0xA3, 0xA4,
@@ -106,7 +106,7 @@ void Battle_QueueMessage(s8* arg0, s8 arg1) {
             Text_GetString(arg0 + 1, 0x40, sBattleMessagesTable, tmp - 0x49);
         }
     } else {
-        Text_GetString(arg0 + 1, 0x40, sBattleMessagesTable, D_84385BC0[arg1]);
+        Text_GetString(arg0 + 1, 0x40, sBattleMessagesTable, gMessageIdLookup[arg1]);
     }
 }
 
@@ -140,13 +140,13 @@ void Battle_QueueMoveCategoryUsedMessage(void) {
 
     sp18->unk_58 = sp18->moveCache.lastMove;
 
-    if (BattleScene_ByteArrayContains(sp18->moveCache.lastMove, D_84385990, 2) != 0) {
+    if (BattleScene_ByteArrayContains(sp18->moveCache.lastMove, gMoveUsedMsgVariant0Moves, 2) != 0) {
         sp1C = 0;
-    } else if (BattleScene_ByteArrayContains(sp18->moveCache.lastMove, D_84385994, 5) != 0) {
+    } else if (BattleScene_ByteArrayContains(sp18->moveCache.lastMove, gMoveUsedMsgVariant1Moves, 5) != 0) {
         sp1C = 1;
-    } else if (BattleScene_ByteArrayContains(sp18->moveCache.lastMove, D_8438599C, 5) != 0) {
+    } else if (BattleScene_ByteArrayContains(sp18->moveCache.lastMove, gMoveUsedMsgVariant2Moves, 5) != 0) {
         sp1C = 2;
-    } else if (BattleScene_ByteArrayContains(sp18->moveCache.lastMove, D_843859A4, 0x2E) != 0) {
+    } else if (BattleScene_ByteArrayContains(sp18->moveCache.lastMove, gMoveUsedMsgVariant3Moves, 0x2E) != 0) {
         sp1C = 3;
     } else {
         sp1C = 4;
@@ -210,13 +210,13 @@ void Battle_QueueMoveCategoryMessage(void) {
     UNUSED s32 pad;
     BattleMonRuntime* sp1C = &sActivePokemon[sBattleScene.unk_00->unk_2C]->state.runtime;
 
-    if (BattleScene_ByteArrayContains(sp1C->usedMove, D_84385990, 2) != 0) {
+    if (BattleScene_ByteArrayContains(sp1C->usedMove, gMoveUsedMsgVariant0Moves, 2) != 0) {
         sp24 = 0;
-    } else if (BattleScene_ByteArrayContains(sp1C->usedMove, D_84385994, 5) != 0) {
+    } else if (BattleScene_ByteArrayContains(sp1C->usedMove, gMoveUsedMsgVariant1Moves, 5) != 0) {
         sp24 = 1;
-    } else if (BattleScene_ByteArrayContains(sp1C->usedMove, D_8438599C, 5) != 0) {
+    } else if (BattleScene_ByteArrayContains(sp1C->usedMove, gMoveUsedMsgVariant2Moves, 5) != 0) {
         sp24 = 2;
-    } else if (BattleScene_ByteArrayContains(sp1C->usedMove, D_843859A4, 0x2E) != 0) {
+    } else if (BattleScene_ByteArrayContains(sp1C->usedMove, gMoveUsedMsgVariant3Moves, 0x2E) != 0) {
         sp24 = 3;
     } else {
         sp24 = 4;
@@ -255,13 +255,13 @@ void Battle_QueueMetronomeMoveMessage(void) {
 
     sp24 = &sActivePokemon[sBattleScene.unk_00->unk_2C]->state.runtime;
 
-    if (BattleScene_ByteArrayContains(sp24->usedMove, D_84385990, 2) != 0) {
+    if (BattleScene_ByteArrayContains(sp24->usedMove, gMoveUsedMsgVariant0Moves, 2) != 0) {
         sp2C = 0;
-    } else if (BattleScene_ByteArrayContains(sp24->usedMove, D_84385994, 5) != 0) {
+    } else if (BattleScene_ByteArrayContains(sp24->usedMove, gMoveUsedMsgVariant1Moves, 5) != 0) {
         sp2C = 1;
-    } else if (BattleScene_ByteArrayContains(sp24->usedMove, D_8438599C, 5) != 0) {
+    } else if (BattleScene_ByteArrayContains(sp24->usedMove, gMoveUsedMsgVariant2Moves, 5) != 0) {
         sp2C = 2;
-    } else if (BattleScene_ByteArrayContains(sp24->usedMove, D_843859A4, 0x2E) != 0) {
+    } else if (BattleScene_ByteArrayContains(sp24->usedMove, gMoveUsedMsgVariant3Moves, 0x2E) != 0) {
         sp2C = 3;
     } else {
         sp2C = 4;
@@ -518,7 +518,7 @@ void BattleBox_DrawMessage(unk_D_843901A0_4C8* arg0, s16 arg1, s16 arg2) {
 }
 
 s32 BattleBox_SelectMessage(unk_D_843901A0_4C8* arg0) {
-    unk_D_843901A0* temp_v0;
+    BattleMessageBuffers* temp_v0;
     s32 tmp;
 
     arg0->unk_10 = 0;
@@ -609,9 +609,9 @@ s32 BattleBox_SelectMessage(unk_D_843901A0_4C8* arg0) {
             break;
 
         case 14:
-            D_84390190.z = 0.0f;
-            D_84390190.x = 321.0f;
-            D_84390190.y = 160.0f;
+            gCameraPosition.z = 0.0f;
+            gCameraPosition.x = 321.0f;
+            gCameraPosition.y = 160.0f;
             arg0->unk_0C = sBattleScene.unk_00->unk_2C;
             arg0->unk_00 += 1;
             break;
@@ -734,7 +734,7 @@ void BattleScene_TickHudTimers(void) {
     if ((gSessionContext.timeLimitsEnabled != 0) && (sActivePokemon[1]->thumbnail.camera->viewport.x == 0x103) &&
         (sActivePokemon[0]->thumbnail.camera->viewport.x == 0x17)) {
         BattleHud_DrawBattleTimer(0x101, 0x64);
-        if (D_84390134 == 0) {
+        if (gBattleResultPhase == 0) {
             if (sp1C->unk_10 != 3) {
                 BattleHud_DrawParticipantTimer(0x46, 0x4D);
             }
@@ -747,8 +747,8 @@ void BattleScene_TickHudTimers(void) {
 }
 
 void Battle_InitMessageQueues(void) {
-    gBattleMessageQueues = main_pool_alloc(sizeof(unk_D_843901A0), 0);
-    bzero(gBattleMessageQueues, sizeof(unk_D_843901A0));
+    gBattleMessageQueues = main_pool_alloc(sizeof(BattleMessageBuffers), 0);
+    bzero(gBattleMessageQueues, sizeof(BattleMessageBuffers));
 }
 
 void BattleScene_ResetMessageQueue(void) {

@@ -4,21 +4,21 @@
 #include "global.h"
 #include "src/memory.h"
 
-typedef struct unk_func_80011B94 {
+typedef struct SimpleGfxNode {
     /* 0x00 */ DisplayNodeHeader display_node_header;
     /* 0x18 */ Gfx* gfx;
-} unk_func_80011B94; // size = 0x1C
+} SimpleGfxNode; // size = 0x1C
 
-typedef struct unk_D_8690A610_018 {
+typedef struct CreditsSceneData {
     /* 0x00 */ s16 unk_00;
     /* 0x02 */ s16 unk_02;
     /* 0x04 */ Color_RGBA8_u32 unk_04;
-} unk_D_8690A610_018; // size = 0x8
+} CreditsSceneData; // size = 0x8
 
-typedef struct unk_D_8690A610 {
+typedef struct FogRect {
     /* 0x00 */ DisplayNodeHeader node;
-    /* 0x18 */ unk_D_8690A610_018 unk_18;
-} unk_D_8690A610; // size = 0x20
+    /* 0x18 */ CreditsSceneData unk_18;
+} FogRect; // size = 0x20
 
 void GeoNode_Init(GraphNode* arg0, u8 arg1);
 void GeoNode_SetCallback(GraphNode* arg0, GraphNodeCallback arg1, void* arg2);
@@ -31,11 +31,11 @@ unk_D_86002F34_alt14* GeoNode_CreateOrtho(MainPoolState* arg0, unk_D_86002F34_al
 unk_D_86002F34_alt15* GeoNode_CreatePerspective(MainPoolState* arg0, unk_D_86002F34_alt15* arg1, s16 arg2);
 unk_D_86002F34_alt16* GeoNode_CreateBackground(MainPoolState* arg0, unk_D_86002F34_alt16* arg1, u8 arg2, u8 arg3, u8 arg4);
 unk_D_86002F34_alt17* GeoNode_CreateClearDepth(MainPoolState* arg0, unk_D_86002F34_alt17* arg1);
-unk_D_8690A610* GeoNode_CreateFog(s32 arg0, unk_D_8690A610* arg1, s16 arg2, s16 arg3, u8 r, u8 g, u8 b, u8 a);
+FogRect* GeoNode_CreateFog(s32 arg0, FogRect* arg1, s16 arg2, s16 arg3, u8 r, u8 g, u8 b, u8 a);
 unk_D_86002F34_alt18* GeoNode_CreateLight(MainPoolState* arg0, unk_D_86002F34_alt18* arg1, s16 arg2, s16 arg3, u8 r, u8 g, u8 b, u8 a);
 unk_D_86002F34_alt19* GeoNode_CreateAmbientLight(MainPoolState* arg0, unk_D_86002F34_alt19* arg1, u8 r, u8 g, u8 b);
-unk_D_86002F34* GeoNode_CreateShadowContext(MainPoolState* arg0, unk_D_86002F34* arg1, s32 arg2,
-                              unk_D_86002F34_018* arg3, s32 arg4, unk_D_86002F34_01C* arg5,
+ShadowContextNode* GeoNode_CreateShadowContext(MainPoolState* arg0, ShadowContextNode* arg1, s32 arg2,
+                              GfxTextureInfo* arg3, s32 arg4, unk_D_86002F34_01C* arg5,
                               s32 arg6, Vtx* arg7);
 unk_D_86002F34_alt12* GeoNode_CreateShadow(MainPoolState* arg0, unk_D_86002F34_alt12* arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5);
 unk_D_86002F34_alt20* GeoNode_CreateCullDistance(MainPoolState* arg0, unk_D_86002F34_alt20* arg1, s16 arg2, s16 arg3);
@@ -49,7 +49,7 @@ DisplayObject* GeoNode_CreateModelPart(MainPoolState* arg0, DisplayObject* arg1,
 unk_D_86002F34_alt8* GeoNode_CreateDisplayListMatrix(MainPoolState* arg0, unk_D_86002F34_alt8* arg1, s32 arg2, Gfx* arg3, MtxF* arg4);
 unk_D_86002F34_alt8* GeoNode_CreateDisplayListMatrixFromTransform(MainPoolState* arg0, unk_D_86002F34_alt8* arg1, s32 arg2, Gfx* arg3, Vec3f* arg4, Vec3s* arg5);
 unk_D_86002F34_alt9* GeoNode_CreateScale(MainPoolState* arg0, unk_D_86002F34_alt9* arg1, s32 arg2, Gfx* arg3, Vec3f* arg4, f32 arg5);
-unk_func_80011B94* GeoNode_CreateDisplayList(MainPoolState* arg0, unk_func_80011B94* arg1, s32 arg2, Gfx* arg3);
+SimpleGfxNode* GeoNode_CreateDisplayList(MainPoolState* arg0, SimpleGfxNode* arg1, s32 arg2, Gfx* arg3);
 unk_D_86002F34_alt10* GeoNode_CreateShadowTexture(MainPoolState* arg0, unk_D_86002F34_alt10* arg1, s16 arg2, s16 arg3, Gfx* arg4, s16 arg5, s16 arg6, u8 r, u8 g, u8 b, u8 a);
 unk_D_86002F34_alt23* GeoNode_CreateAnchor(MainPoolState* arg0, unk_D_86002F34_alt23* arg1, s16 arg2);
 unk_D_86002F34_alt24* GeoNode_CreateGroup(MainPoolState* arg0, unk_D_86002F34_alt24* arg1, s32 arg2, s16 arg3, s16 arg4, s16 arg5, s16 arg6, s16 arg7, s16 arg8, s32 arg9,

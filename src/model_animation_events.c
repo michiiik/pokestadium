@@ -1,8 +1,8 @@
 #include "model_animation_events.h"
 #include "src/util.h"
 
-static unk_D_800ABD00 D_800ABD00[2];
-static s32 D_800ABD20;
+static AnimStackEntry gAnimStack[2];
+static s32 gAnimStackDepth;
 
 s32 ModelAnim_ResolveEventIndex(s32 arg0, unk_func_80017540_arg1* arg1, s32 arg2) {
     unk_func_80017540_arg1* temp_v0 = &arg1[arg2];
@@ -37,17 +37,17 @@ s16 ModelAnim_AdvanceEventFrame(EventTrackState* arg0, u16 arg1) {
 }
 
 void ModelAnim_ResetEventContext(void) {
-    D_800ABD20 = -1;
+    gAnimStackDepth = -1;
 }
 
 void ModelAnim_BeginEventContext(EventTrackState* arg0, u16 arg1, s32 arg2) {
     EventTrackData* sp24;
-    unk_D_800ABD00* temp_s0;
+    AnimStackEntry* temp_s0;
 
     sp24 = arg0->data;
-    D_800ABD20++;
-    if (D_800ABD20 < 2) {
-        temp_s0 = &D_800ABD00[D_800ABD20];
+    gAnimStackDepth++;
+    if (gAnimStackDepth < 2) {
+        temp_s0 = &gAnimStack[gAnimStackDepth];
         if (arg0->data != NULL) {
             if (arg2 != 0) {
                 arg0->frame = ModelAnim_AdvanceEventFrame(arg0, arg1);
@@ -68,16 +68,16 @@ void ModelAnim_BeginEventContext(EventTrackState* arg0, u16 arg1, s32 arg2) {
 }
 
 void ModelAnim_EndEventContext(void) {
-    if (D_800ABD20 >= 0) {
-        D_800ABD20--;
+    if (gAnimStackDepth >= 0) {
+        gAnimStackDepth--;
     }
 }
 
 void ModelAnim_GetEventAtFrame(unk_D_86002F34_alt11_018** arg0, unk_D_86002F34_alt11_018* arg1, s32 arg2) {
-    unk_D_800ABD00* sp1C;
+    AnimStackEntry* sp1C;
 
-    if ((D_800ABD20 >= 0) && (D_800ABD20 < 2)) {
-        sp1C = &D_800ABD00[D_800ABD20];
+    if ((gAnimStackDepth >= 0) && (gAnimStackDepth < 2)) {
+        sp1C = &gAnimStack[gAnimStackDepth];
         if ((sp1C->unk_00 == 1) && (arg2 >= 0) && (arg2 < sp1C->unk_04->trackCount)) {
             *arg0 = &arg1[((u8*)sp1C->unk_0C)[ModelAnim_ResolveEventIndex(sp1C->unk_02, sp1C->unk_08, arg2)]];
         }

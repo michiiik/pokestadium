@@ -1,9 +1,9 @@
 #include "battle_engine.h"
 #include "src/gfx_buffer.h"
 
-static OwnerAnchoredFourStream D_843ACA10[4];
+static OwnerAnchoredFourStream gParticleSystems[4];
 
-static Gfx D_84389A00[] = {
+static Gfx gParticleBlendDL[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_1CYCLE),
     gsSPClearGeometryMode(G_ZBUFFER | G_SHADE | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN |
@@ -20,7 +20,7 @@ static Gfx D_84389A00[] = {
 void OwnerAnchoredFourStream_Init(void) {
     s32 i;
     s32 j;
-    OwnerAnchoredFourStream* var_v0 = &D_843ACA10[0];
+    OwnerAnchoredFourStream* var_v0 = &gParticleSystems[0];
     OwnerAnchoredFourStreamNode* var_a0;
 
     for (i = 0; i < 4; i++, var_v0++) {
@@ -60,7 +60,7 @@ void OwnerAnchoredFourStream_Start(f32 arg0, f32 arg1, f32 arg2, f32 arg3, f32 a
     sp58.y = arg4;
     sp58.z = arg5;
 
-    var_v1 = &D_843ACA10[0];
+    var_v1 = &gParticleSystems[0];
     for (i = 0; i < 4; i++, var_v1++) {
         if (var_v1->unk_000 == 0) {
             var_v1->unk_000 = 1;
@@ -160,7 +160,7 @@ void OwnerAnchoredFourStream_UpdateNodeChain(OwnerAnchoredFourStream* arg0) {
 
 s32 OwnerAnchoredFourStream_IsComplete(void) {
     s32 i;
-    OwnerAnchoredFourStream* var_s0 = &D_843ACA10[0];
+    OwnerAnchoredFourStream* var_s0 = &gParticleSystems[0];
 
     for (i = 0; i < 4; i++, var_s0++) {
         if (var_s0->unk_000 == 1) {
@@ -190,7 +190,7 @@ Gfx* OwnerAnchoredFourStream_Draw(Gfx* arg0) {
     Mtx spC0;
     s16 var_s3;
 
-    var_s5 = &D_843ACA10[0];
+    var_s5 = &gParticleSystems[0];
     for (i = 0; i < 4; i++, var_s5++) {
         if (var_s5->unk_000 == 1) {
             temp_s0 = &var_s5->unk_01C[0];
@@ -204,7 +204,7 @@ Gfx* OwnerAnchoredFourStream_Draw(Gfx* arg0) {
                 guMtxCatL(&spC0, temp_v0, temp_v0);
 
                 gSPMatrix(arg0++, temp_v0, G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
-                gSPDisplayList(arg0++, D_8438A980);
+                gSPDisplayList(arg0++, gParticleQuadDL);
                 gSPPopMatrix(arg0++, G_MTX_MODELVIEW);
             }
 
@@ -249,7 +249,7 @@ Gfx* OwnerAnchoredFourStream_Draw(Gfx* arg0) {
 
             var_s0 = var_s5->unk_014;
 
-            gSPDisplayList(arg0++, D_84389A00);
+            gSPDisplayList(arg0++, gParticleBlendDL);
 
             for (k = 0; k < 14; k++) {
                 gSPVertex(arg0++, var_s0, 4, 0);

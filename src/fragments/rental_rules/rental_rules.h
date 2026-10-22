@@ -4,7 +4,7 @@
 #include "global.h"
 #include "src/game_state.h"
 
-typedef struct unk_D_83003CE0 {
+typedef struct RentalRulesStringTable {
     /* 0x00 */ char* unk_00[29];
     /* 0x74 */ char* unk_74;
     /* 0x78 */ char* unk_78;
@@ -17,7 +17,7 @@ typedef struct unk_D_83003CE0 {
     /* 0x94 */ char* unk_94;
     /* 0x98 */ char* unk_98;
     /* 0x9C */ char unk_9C[100];
-} unk_D_83003CE0; // size = 0x100
+} RentalRulesStringTable; // size = 0x100
 
 typedef struct SpeciesQualificationStatus {
     /* 0x00 */ s16 species;
@@ -42,8 +42,8 @@ typedef struct QualifyingPokemonDisplay {
     /* 0x14 */ QualifyingPokemonDisplayRow rowBuffer[6]; // Circular buffer: 5 visible rows plus 1 scroll row.
 } QualifyingPokemonDisplay;                              // size = 0xD4
 
-extern unk_D_83003CE0 D_83003CE0;
-extern unk_D_83003CE0 D_83003DE0;
+extern RentalRulesStringTable gMenuStaticStrings;
+extern RentalRulesStringTable gMenuOptionStrings;
 
 extern char** sBattleModeLabels;
 

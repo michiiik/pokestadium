@@ -60,7 +60,7 @@ typedef struct unk_D_8122EEA8 {
 } unk_D_8122EEA8; // size = 0x4
 
 // Game Boy sound registers NR10 (0xFF10) through NR52 (0xFF26), mirrored in
-// D_8120EA70 (indexed by register address - 0xFF10).
+// gGbApuRegs (indexed by register address - 0xFF10).
 typedef struct GbApuRegs {
     /* 0x00 NR10 */ u32 : 1;
                     u32 sweepTime : 3;
@@ -127,10 +127,10 @@ typedef struct GbApuRegs {
     /* 0x17 */      u32 : 8;
 } GbApuRegs; // size = 0x18
 
-#define GB_APU_REGS (*(GbApuRegs*)D_8120EA70)
+#define GB_APU_REGS (*(GbApuRegs*)gGbApuRegs)
 
-// Capacity of the APU register-write queue (D_8122EEB0, created in GbApu_ResetChannels) and of
-// the D_8122C8D8 buffer that func_81208828 drains it into.
+// Capacity of the APU register-write queue (gGbAudioMesgQueue, created in GbApu_ResetChannels) and of
+// the gGbApuWriteQueue buffer that GbAudio_MixChannels drains it into.
 #if defined(VERSION_JP)
 #define GB_APU_WRITE_QUEUE_LEN 1800
 #else
@@ -151,26 +151,26 @@ typedef union GbApuMesg {
 
 extern u8 gGbMemoryMap[];
 extern u16 D_8120EA86;
-extern u32 D_8120EA80;
+extern u32 gGbApuNoiseRegs;
 
 // .bss
 s16 D_8122C790;
 s16 D_8122C792;
-u8* D_8122C794;
+u8* gGbAudioNoiseTable;
 GbApuChannelState gGbApuSquare1;
 GbApuChannelState gGbApuSquare2;
 GbApuChannelState gGbApuWave;
 GbApuChannelState gGbApuNoise;
-GbApuWrite D_8122C8D8[GB_APU_WRITE_QUEUE_LEN];
-u8 D_8122EE58[0x40];
+GbApuWrite gGbApuWriteQueue[GB_APU_WRITE_QUEUE_LEN];
+u8 gGbWaveRamMirror[0x40];
 s32 D_8122EE98;
 s32 D_8122EE9C;
 s32 D_8122EEA0;
 s32 D_8122EEA4;
-unk_D_8122EEA8 D_8122EEA8;
-OSMesgQueue D_8122EEB0;
+unk_D_8122EEA8 gGbApuStatusLatch;
+OSMesgQueue gGbAudioMesgQueue;
 OSMesg D_8122EEC8[GB_APU_WRITE_QUEUE_LEN + 1];
-typedef struct unk_D_81234690 {
+typedef struct GbApuConfig {
     /* 0x00 */ u8 pad0[2];
     /* 0x02 */ u16 unk_02;
     /* 0x04 */ s16 unk_04;
@@ -179,18 +179,18 @@ typedef struct unk_D_81234690 {
     /* 0x0A */ s16 unk_0A;
     /* 0x0C */ s16 unk_0C;
     /* 0x0E */ u8 pad0E[0x2A];
-} unk_D_81234690; // size = 0x38
+} GbApuConfig; // size = 0x38
 
-extern unk_D_81234690 D_81234690;
-extern volatile s32 D_812346C8;
+extern GbApuConfig gAudioConfig;
+extern volatile s32 gAudioTaskPending;
 extern s32 D_812346D0;
-extern s32 D_812346D4;
-extern s16* D_812346E0[3];
-extern s16 D_812346EC[3];
+extern s32 gAudioTaskId;
+extern s16* gApuSampleBuffers[3];
+extern s16 gApuInitValues[3];
 extern u32 D_812346F4;
-extern volatile u32 D_812346FC;
+extern volatile u32 gAudioInitFlag;
 
-void func_81209374(s32 numSamples, s16* out);
+void GbAudio_RenderStream(s32 numSamples, s16* out);
 
 #if defined(VERSION_JP)
 // Japanese-only audio code linked between osGbSetNextBuffer and this file
@@ -217,14 +217,14 @@ void func_81210390_jp(s32 cmd, s8 arg1);
 void func_812103F0_jp(void);
 #endif
 
-s32 D_8120EA60 = 0;
+s32 gGbApuActiveFlag = 0;
 u8 D_8120EA64[0xC] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
-u8 D_8120EA70[0x10] = {
+u8 gGbApuRegs[0x10] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
-// D_8120EA80 and D_8120EA86 are interior aliases (undefined_syms.ld).
+// gGbApuNoiseRegs and D_8120EA86 are interior aliases (undefined_syms.ld).
 u8 sGbApuRegs[0x40] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -233,33 +233,33 @@ u8 sGbApuRegs[0x40] = {
 };
 #if !defined(VERSION_JP)
 // Set by GbApu_SelectRegionClock: the divisor in GbApu_FreqToStep / GbApu_FreqToStep2x and the
-// time span func_81208828 spreads over one buffer. The Japanese build has no
+// time span GbAudio_MixChannels spreads over one buffer. The Japanese build has no
 // GbApu_SelectRegionClock and uses the constants 1500.0f and 17784.0f instead.
-f32 D_8120EAC0 = 1500.0f;
-s32 D_8120EAC4 = 17784;
+f32 gGbApuFreqToStepScale = 1500.0f;
+s32 gGbApuClockRate = 17784;
 #endif
-s32 D_8120EAC8 = 2048;
-s32 D_8120EACC = 16384;
-s32 D_8120EAD0 = 0;
-u16 D_8120EAD4[32] = {
+s32 gGbApuNoisePeriodMin = 2048;
+s32 gGbApuNoisePeriodMax = 16384;
+s32 gGbApuLastWriteTime = 0;
+u16 gGbNoiseFreqTable[32] = {
     0x1120, 0x0201, 0x1100, 0x0F50, 0x0800, 0x0723, 0x0800, 0x0922,
     0x0800, 0x0980, 0x1010, 0x0BA6, 0x0800, 0x0BA6, 0x0800, 0x0BA5,
     0x0800, 0x0800, 0x0800, 0x0800, 0x0800, 0x0800, 0x0800, 0x0800,
     0x0800, 0x0800, 0x0800, 0x0800, 0x0800, 0x0800, 0x0800, 0x0800,
 };
-u8 D_8120EB14[0x10] = {
+u8 gGbEnvStepTable[0x10] = {
     0x00, 0x01, 0x03, 0x06, 0x0A, 0x0E, 0x12, 0x15, 0x18, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20,
 };
-u8 D_8120EB24[0x4] = {
+u8 gGbWaveLevelTable[0x4] = {
     0x00, 0x20, 0x10, 0x08,
 };
-u8 D_8120EB28[0x10] = {
+u8 gGbNoiseStepTable15BitLfsr[0x10] = {
     0x00, 0x06, 0x0A, 0x0E, 0x11, 0x16, 0x1A, 0x1D, 0x20, 0x22, 0x24, 0x26, 0x28, 0x2B, 0x2E, 0x32,
 };
-u8 D_8120EB38[0x10] = {
+u8 gGbNoiseStepTable7BitLfsr[0x10] = {
     0x00, 0x06, 0x0A, 0x0E, 0x11, 0x16, 0x1A, 0x1D, 0x20, 0x22, 0x24, 0x26, 0x29, 0x2C, 0x2F, 0x34,
 };
-u32 D_8120EB48[9] = {
+u32 gGbNoisePeriodTable[9] = {
     0x00020000, 0x00010000, 0x00008000, 0x00005555,
     0x00004000, 0x00003333, 0x00002AAA, 0x00002492,
     0x12345678,
@@ -272,12 +272,12 @@ void func_81207330(void) {
 
 void GbApu_SetActiveFlag(void) {
     func_8121036C_jp(0xF1000000, 0);
-    D_8120EA60 = 1;
+    gGbApuActiveFlag = 1;
 }
 
 void GbApu_ClearActiveFlag(void) {
     func_8121036C_jp(0xF2000000, 0);
-    D_8120EA60 = 0;
+    gGbApuActiveFlag = 0;
 }
 
 // Scales channel arg0's unk_01C by arg2 percent: at once when arg1 == 0, otherwise as a ramp
@@ -340,11 +340,11 @@ void func_81207330(void) {
 }
 
 void GbApu_SetActiveFlag(void) {
-    D_8120EA60 = 1;
+    gGbApuActiveFlag = 1;
 }
 
 void GbApu_ClearActiveFlag(void) {
-    D_8120EA60 = 0;
+    gGbApuActiveFlag = 0;
 }
 
 void func_81207354(void) {
@@ -352,18 +352,18 @@ void func_81207354(void) {
 
 void GbApu_SelectRegionClock(s32 arg0) {
     if (arg0 == 0) {
-        D_8120EAC4 = 0x4578;
-        D_8120EAC0 = 1500.0f;
+        gGbApuClockRate = 0x4578;
+        gGbApuFreqToStepScale = 1500.0f;
         return;
     }
-    D_8120EAC4 = 0x8AF0;
-    D_8120EAC0 = 1500.0f;
+    gGbApuClockRate = 0x8AF0;
+    gGbApuFreqToStepScale = 1500.0f;
 }
 #endif
 
 void GbApu_SetNoisePeriodBounds(s32 arg0, s32 arg1) {
-    D_8120EAC8 = arg0;
-    D_8120EACC = arg1;
+    gGbApuNoisePeriodMin = arg0;
+    gGbApuNoisePeriodMax = arg1;
 }
 
 u32 GbApu_FreqToStep(u16 arg0) {
@@ -374,20 +374,20 @@ u32 GbApu_FreqToStep(u16 arg0) {
 #if defined(VERSION_JP)
   temp = ((65536.0f / (0x800 - arg0)) / 1500.0f) * 65536;
 #else
-  temp = ((65536.0f / (0x800 - arg0)) / D_8120EAC0) * 65536;
+  temp = ((65536.0f / (0x800 - arg0)) / gGbApuFreqToStepScale) * 65536;
 #endif
   return temp;
 }
 
-u32 func_81207494(u16 arg0, u16 arg1, u16 arg2) {
+u32 GbApu_SetupNoiseChannel(u16 arg0, u16 arg1, u16 arg2) {
     u32 temp;
     s32 temp2;
 
     D_8122EE98 = (arg1 * 16 + arg0) << 14;
-    temp = D_8120EB48[arg2];
+    temp = gGbNoisePeriodTable[arg2];
     temp2 = (f32)temp;
     temp = (temp2 / 48000.0f) * 24000.0f;
-    D_8120EAC8 = D_8120EAD4[arg0 * 2 + arg1];
+    gGbApuNoisePeriodMin = gGbNoiseFreqTable[arg0 * 2 + arg1];
     return temp;
 }
 
@@ -396,7 +396,7 @@ u32 GbApu_FreqToStep2x(u16 arg0) {
 #if defined(VERSION_JP)
   temp = ((131072.0f / (0x800 - arg0)) / 1500.0f) * 65536;
 #else
-  temp = ((131072.0f / (0x800 - arg0)) / D_8120EAC0) * 65536;
+  temp = ((131072.0f / (0x800 - arg0)) / gGbApuFreqToStepScale) * 65536;
 #endif
   return temp;
 }
@@ -404,7 +404,7 @@ u32 GbApu_FreqToStep2x(u16 arg0) {
 void func_81207690(void) {
 }
 
-s32 func_81207698(u32 arg0, s32 arg1) {
+s32 GbAudio_GetDutyVolume(u32 arg0, s32 arg1) {
     switch (arg0) {
     case 0:
         if ((arg1 >= 4) && (arg1 < 8)) {
@@ -430,9 +430,9 @@ s32 func_81207698(u32 arg0, s32 arg1) {
     case 5:
         break;
     case 6:
-        return (u8)(D_8122C794[arg1 + D_8122EE98] & 0x7F);
+        return (u8)(gGbAudioNoiseTable[arg1 + D_8122EE98] & 0x7F);
     case 7:
-        return (u8)(D_8122EE58[arg1] << 3);
+        return (u8)(gGbWaveRamMirror[arg1] << 3);
     }
 }
 
@@ -455,7 +455,7 @@ u16 GbApu_UpdateSquare1Channel(void) {
         gGbApuSquare1.unk_4C = 0U;
     }
     {
-        s32 temp_v0 = func_81207698(gGbApuSquare1.unk_3B, gGbApuSquare1.unk_08.unk_00);
+        s32 temp_v0 = GbAudio_GetDutyVolume(gGbApuSquare1.unk_3B, gGbApuSquare1.unk_08.unk_00);
         gGbApuSquare1.unk_08.unk_02 += gGbApuSquare1.unk_0C;
         gGbApuSquare1.unk_08.unk_02 &= 0x1FFFFF;
         if (gGbApuSquare1.unk_4C == 1) {
@@ -512,10 +512,10 @@ u16 GbApu_UpdateSquare1Channel(void) {
             default:
                 break;
             }
-        gGbApuSquare1.unk_20 = D_8120EB14[gGbApuSquare1.unk_2D];
+        gGbApuSquare1.unk_20 = gGbEnvStepTable[gGbApuSquare1.unk_2D];
         }
     } else {
-        gGbApuSquare1.unk_20 = D_8120EB14[gGbApuSquare1.unk_2D];
+        gGbApuSquare1.unk_20 = gGbEnvStepTable[gGbApuSquare1.unk_2D];
     }
     if (gGbApuSquare1.unk_18 == 1U) {
         if (gGbApuSquare1.unk_14 != 0) {
@@ -546,7 +546,7 @@ s32 GbApu_UpdateSquare2Channel(void) {
     } else {
         gGbApuSquare2.unk_4C = 0U;
     }
-    temp_v0 = func_81207698(gGbApuSquare2.unk_3B, gGbApuSquare2.unk_08.unk_00);
+    temp_v0 = GbAudio_GetDutyVolume(gGbApuSquare2.unk_3B, gGbApuSquare2.unk_08.unk_00);
     gGbApuSquare2.unk_08.unk_02 += gGbApuSquare2.unk_0C;
     gGbApuSquare2.unk_08.unk_02 &= 0x1FFFFF;
     if (gGbApuSquare2.unk_4C == 1) {
@@ -583,10 +583,10 @@ s32 GbApu_UpdateSquare2Channel(void) {
                 default:
                     break;
                 }
-            gGbApuSquare2.unk_20 = D_8120EB14[gGbApuSquare2.unk_2D];
+            gGbApuSquare2.unk_20 = gGbEnvStepTable[gGbApuSquare2.unk_2D];
         }
     } else {
-        gGbApuSquare2.unk_20 = D_8120EB14[gGbApuSquare2.unk_2D];
+        gGbApuSquare2.unk_20 = gGbEnvStepTable[gGbApuSquare2.unk_2D];
     }
     if (gGbApuSquare2.unk_18 == 1U) {
         if (gGbApuSquare2.unk_14 != 0) {
@@ -620,7 +620,7 @@ u16 GbApu_UpdateWaveChannel(void) {
                     gGbApuWave.unk_04 = 0x20;
                     gGbApuWave.unk_08.unk_02 = 0;
                     gGbApuWave.unk_0C = GbApu_FreqToStep(gGbApuWave.unk_10);
-                    gGbApuWave.unk_20 = D_8120EB24[gGbApuWave.unk_21];
+                    gGbApuWave.unk_20 = gGbWaveLevelTable[gGbApuWave.unk_21];
                 } else {
                     if (!(gGbApuWave.unk_04 & 7)) {
                         gGbApuWave.unk_3C--;
@@ -631,7 +631,7 @@ u16 GbApu_UpdateWaveChannel(void) {
             }
         }
     }
-    temp_a0 = func_81207698(7, gGbApuWave.unk_08.unk_00);
+    temp_a0 = GbAudio_GetDutyVolume(7, gGbApuWave.unk_08.unk_00);
     gGbApuWave.unk_08.unk_02 += gGbApuWave.unk_0C;
     gGbApuWave.unk_08.unk_02 &= 0x1FFFFF;
     if (gGbApuWave.unk_4C - 1 == 0) {
@@ -664,8 +664,8 @@ u16 func_81207C5C_Empty(void) {
     
 }
 
-u16 func_81207DF8(void) {
-    static s32 D_8120EB6C = 0;
+u16 GbAudio_StepNoiseChannel(void) {
+    static s32 sGbApuNoiseVolStepCounter = 0;
     u16 temp_v0;
     u32 var_a2;
 
@@ -687,20 +687,20 @@ u16 func_81207DF8(void) {
         gGbApuNoise.unk_20 = gGbApuNoise.unk_3C;
         gGbApuNoise.unk_0C = gGbApuNoise.unk_40;
     }
-    temp_v0 = func_81207698(6, gGbApuNoise.unk_08.unk_00);
+    temp_v0 = GbAudio_GetDutyVolume(6, gGbApuNoise.unk_08.unk_00);
     gGbApuNoise.unk_08.unk_02 += var_a2;
-    if (gGbApuNoise.unk_08.unk_00  >= (u32)D_8120EACC) {
-        gGbApuNoise.unk_08.unk_00  = D_8120EAC8;
+    if (gGbApuNoise.unk_08.unk_00  >= (u32)gGbApuNoisePeriodMax) {
+        gGbApuNoise.unk_08.unk_00  = gGbApuNoisePeriodMin;
     }
     temp_v0 *= gGbApuNoise.unk_3C;
-    if ((gGbApuNoise.unk_3C != gGbApuNoise.unk_20) && ((D_8120EB6C % 95) == 0)) {
+    if ((gGbApuNoise.unk_3C != gGbApuNoise.unk_20) && ((sGbApuNoiseVolStepCounter % 95) == 0)) {
         if (gGbApuNoise.unk_3C > gGbApuNoise.unk_20) {
             gGbApuNoise.unk_3C--;
         } else {
             gGbApuNoise.unk_3C++;
         }
     }
-    D_8120EB6C++;
+    sGbApuNoiseVolStepCounter++;
     if (gGbApuNoise.unk_28 != 0) {
         gGbApuNoise.unk_24++;
         if ((gGbApuNoise.unk_24 % (u32) gGbApuNoise.unk_28) == 0) {
@@ -719,12 +719,12 @@ u16 func_81207DF8(void) {
                 }
                 break;
             }
-            switch ((D_8120EA80 << 0x14) >> 0x1F) {                    /* switch 1; irregular */
+            switch ((gGbApuNoiseRegs << 0x14) >> 0x1F) {                    /* switch 1; irregular */
             case 0:                                 /* switch 1 */
-                gGbApuNoise.unk_20 = D_8120EB28[gGbApuNoise.unk_2D];
+                gGbApuNoise.unk_20 = gGbNoiseStepTable15BitLfsr[gGbApuNoise.unk_2D];
                 break;
             case 1:                                 /* switch 1 */
-                gGbApuNoise.unk_20 = D_8120EB38[gGbApuNoise.unk_2D];
+                gGbApuNoise.unk_20 = gGbNoiseStepTable7BitLfsr[gGbApuNoise.unk_2D];
                 break;
             }
         }
@@ -741,24 +741,24 @@ u16 func_81207DF8(void) {
     return (temp_v0 << 1);
 }
 
-// 0x8120EB70: the 8 bytes between func_81207DF8's static and D_8120EB78.
+// 0x8120EB70: the 8 bytes between GbAudio_StepNoiseChannel's static and gGbAudioMode.
 u8 D_8120EB70[0x8] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
-s32 D_8120EB78 = 0;
+s32 gGbAudioMode = 0;
 // A streamed sample: stream id (index into GB_AUDIO_STREAM_DATA/SIZE) and read position.
 typedef struct GbAudioStream {
     /* 0x0 */ s32 id;
     /* 0x4 */ s32 pos;
 } GbAudioStream; // size = 0x8
 
-// D_8120EB7C: pending stream to start; D_8120EB84: current stream; D_8120EB8C: previous
-// stream, kept playing (at D_8122869C) under the new one.
-GbAudioStream D_8120EB7C = { 0, 0 };
-GbAudioStream D_8120EB84 = { 0, 0 };
-GbAudioStream D_8120EB8C = { 0, 0 };
-u8 D_8120EB94[0x6B40] = {
+// gGbAudioStreamQueued: pending stream to start; gGbAudioStreamMain: current stream; gGbAudioStreamAlt: previous
+// stream, kept playing (at GbAudioStreamAltVolume) under the new one.
+GbAudioStream gGbAudioStreamQueued = { 0, 0 };
+GbAudioStream gGbAudioStreamMain = { 0, 0 };
+GbAudioStream gGbAudioStreamAlt = { 0, 0 };
+u8 gGbWaveTable0[0x6B40] = {
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x01, 0x06, 0x09, 0x09, 0x03, 0xFA,
     0xF5, 0xF5, 0x01, 0x08, 0x21, 0x02, 0xDA, 0xDC, 0xF0, 0x29, 0x37, 0x2B, 0xEF, 0xC2, 0xC6, 0xE4,
     0x24, 0x35, 0x26, 0xE6, 0xB3, 0xA3, 0xC8, 0x26, 0x50, 0x52, 0x11, 0xC5, 0x9A, 0xC6, 0x3F, 0x50,
@@ -2476,7 +2476,7 @@ u8 D_8120EB94[0x6B40] = {
     0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
     0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
-u8 D_812156D4[0x5AF0] = {
+u8 gGbWaveTable1[0x5AF0] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -3933,7 +3933,7 @@ u8 D_812156D4[0x5AF0] = {
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
-u8 D_8121B1C4[0x28D0] = {
+u8 gGbWaveTable2[0x28D0] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
     0xFE, 0xFE, 0xFE, 0xFD, 0xFD, 0xFD, 0xFE, 0xFE, 0xFF, 0x01, 0x03, 0x04, 0x05, 0x05, 0x05, 0x06,
     0x07, 0x09, 0x0C, 0x0F, 0x15, 0x1A, 0x1D, 0x1E, 0x1D, 0x1B, 0x19, 0x15, 0x10, 0x0B, 0x08, 0x09,
@@ -4588,7 +4588,7 @@ u8 D_8121B1C4[0x28D0] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
-u8 D_8121DA94[0x1AE0] = {
+u8 gGbWaveTable3[0x1AE0] = {
     0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0xFF, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0x00, 0x00,
@@ -5020,7 +5020,7 @@ u8 D_8121DA94[0x1AE0] = {
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
     0xFF, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
-u8 D_8121F574[0x4190] = {
+u8 gGbWaveTable4[0x4190] = {
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x01, 0x07, 0x0A, 0x0B, 0x03, 0xF9,
     0xF3, 0xF3, 0x01, 0x09, 0x28, 0x03, 0xD2, 0xD5, 0xED, 0x31, 0x41, 0x33, 0xEC, 0xB6, 0xBB, 0xDF,
     0x2B, 0x3F, 0x2D, 0xE1, 0xA4, 0x92, 0xBD, 0x2D, 0x60, 0x62, 0x14, 0xBA, 0x86, 0xBB, 0x4B, 0x60,
@@ -6071,7 +6071,7 @@ u8 D_8121F574[0x4190] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
-u8 D_81223704[0x3260] = {
+u8 gGbWaveTable5[0x3260] = {
     0x00, 0x07, 0x1E, 0x11, 0xAD, 0x9D, 0xCC, 0xF3, 0xF9, 0xCE, 0xA8, 0xB7, 0xEA, 0xDD, 0xD7, 0xDE,
     0xD9, 0xE0, 0xFA, 0x24, 0x3A, 0x57, 0x35, 0x18, 0x62, 0x7E, 0x5C, 0x31, 0x02, 0x26, 0x53, 0x40,
     0x3E, 0x36, 0x2E, 0x3C, 0x53, 0x4C, 0x30, 0x21, 0xCE, 0xAC, 0x91, 0x98, 0xC1, 0xCE, 0xBC, 0xBF,
@@ -6879,7 +6879,7 @@ u8 D_81223704[0x3260] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
-u8 D_81226964[0x1CE8] = {
+u8 gGbWaveTable6[0x1CE8] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF,
     0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0xFF,
     0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -7344,10 +7344,10 @@ u8 D_81226964[0x1CE8] = {
     0xFE, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00,
 };
-u8 D_8122864C[0x8] = {
+u8 gGbWaveSilence[0x8] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
-u8 D_81228654[0x24] = {
+u8 gGbAudioStreamData[0x24] = {
 #if defined(VERSION_US_REV2)
     0x81, 0x22, 0x86, 0xEC, 0x81, 0x22, 0x86, 0xEC, 0x81, 0x20, 0xEC, 0x34, 0x81, 0x21, 0x57, 0x74,
     0x81, 0x21, 0xB2, 0x64, 0x81, 0x21, 0xDB, 0x34, 0x81, 0x21, 0xF6, 0x14, 0x81, 0x22, 0x37, 0xA4,
@@ -7366,23 +7366,23 @@ u8 D_81228654[0x24] = {
     0x81, 0x22, 0x69, 0x64,
 #endif
 };
-u8 D_81228678[0x24] = {
+u8 gGbAudioStreamLengths[0x24] = {
     0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x6B, 0x40, 0x00, 0x00, 0x5A, 0xF0,
     0x00, 0x00, 0x28, 0xD0, 0x00, 0x00, 0x1A, 0xE0, 0x00, 0x00, 0x41, 0x90, 0x00, 0x00, 0x32, 0x60,
     0x00, 0x00, 0x1C, 0xE0,
 };
 
-#define GB_AUDIO_STREAM_DATA ((s8**)D_81228654)
-#define GB_AUDIO_STREAM_SIZE ((s32*)D_81228678)
+#define GB_AUDIO_STREAM_DATA ((s8**)gGbAudioStreamData)
+#define GB_AUDIO_STREAM_SIZE ((s32*)gGbAudioStreamLengths)
 
-void func_8120806C(u16 reg, u8 value) {
+void GbAudio_WriteReg(u16 reg, u8 value) {
     s32 pad;
     s32 i;
     s32 pad2;
 
     if ((reg == 0x26) && !(value & 0x80)) {
         for (i = 0x23; i != 0xF; i--) {
-            func_8120806C(i, 0);
+            GbAudio_WriteReg(i, 0);
         }
     }
 
@@ -7390,7 +7390,7 @@ void func_8120806C(u16 reg, u8 value) {
         return;
     }
 
-    D_8120EA70[reg - 0x10] = value;
+    gGbApuRegs[reg - 0x10] = value;
 
     switch (reg) {
         case 0x10:
@@ -7426,7 +7426,7 @@ void func_8120806C(u16 reg, u8 value) {
             gGbApuSquare1.unk_0C = GbApu_FreqToStep2x(gGbApuSquare1.unk_10);
             if ((s32)GB_APU_REGS.trigger1 == 1) {
                 gGbApuSquare1.unk_14 = gGbApuSquare1.unk_1C * 200;
-                gGbApuSquare1.unk_20 = D_8120EB14[gGbApuSquare1.unk_21];
+                gGbApuSquare1.unk_20 = gGbEnvStepTable[gGbApuSquare1.unk_21];
                 gGbApuSquare1.unk_24 = 0;
                 gGbApuSquare1.unk_30 = 0;
                 gGbApuSquare1.unk_2E = GB_APU_REGS.envDir1;
@@ -7463,7 +7463,7 @@ void func_8120806C(u16 reg, u8 value) {
             if ((s32)GB_APU_REGS.trigger2 == 1) {
                 gGbApuSquare2.unk_14 = gGbApuSquare2.unk_1C * 200;
                 gGbApuSquare2.unk_08.unk_02 = 0;
-                gGbApuSquare2.unk_20 = D_8120EB14[gGbApuSquare2.unk_21];
+                gGbApuSquare2.unk_20 = gGbEnvStepTable[gGbApuSquare2.unk_21];
                 gGbApuSquare2.unk_24 = 0;
                 gGbApuSquare2.unk_2E = GB_APU_REGS.envDir2;
                 gGbApuSquare2.unk_28 = GB_APU_REGS.envSweep2 * 800;
@@ -7483,7 +7483,7 @@ void func_8120806C(u16 reg, u8 value) {
             break;
         case 0x1C:
             gGbApuWave.unk_21 = GB_APU_REGS.level3;
-            gGbApuWave.unk_20 = D_8120EB24[gGbApuWave.unk_21];
+            gGbApuWave.unk_20 = gGbWaveLevelTable[gGbApuWave.unk_21];
             break;
         case 0x1D:
             gGbApuWave.unk_10 = GB_APU_REGS.freqLo3 | (GB_APU_REGS.freqHi3 << 8);
@@ -7517,8 +7517,8 @@ void func_8120806C(u16 reg, u8 value) {
         case 0x3D:
         case 0x3E:
         case 0x3F:
-            D_8122EE58[(reg - 0x30) * 2 + 0] = (D_8120EA70[reg - 0x10] >> 4) & 0xF;
-            D_8122EE58[(reg - 0x30) * 2 + 1] = D_8120EA70[reg - 0x10] & 0xF;
+            gGbWaveRamMirror[(reg - 0x30) * 2 + 0] = (gGbApuRegs[reg - 0x10] >> 4) & 0xF;
+            gGbWaveRamMirror[(reg - 0x30) * 2 + 1] = gGbApuRegs[reg - 0x10] & 0xF;
             break;
         case 0x20:
             gGbApuNoise.unk_1C = 0x40 - GB_APU_REGS.length4;
@@ -7531,7 +7531,7 @@ void func_8120806C(u16 reg, u8 value) {
             break;
         case 0x22:
             gGbApuNoise.unk_10 = GB_APU_REGS.shift4;
-            gGbApuNoise.unk_0C = func_81207494(GB_APU_REGS.shift4, GB_APU_REGS.width4, GB_APU_REGS.ratio4);
+            gGbApuNoise.unk_0C = GbApu_SetupNoiseChannel(GB_APU_REGS.shift4, GB_APU_REGS.width4, GB_APU_REGS.ratio4);
             if (gGbApuNoise.unk_00 == 0) {
                 gGbApuNoise.unk_40 = gGbApuNoise.unk_0C;
             }
@@ -7555,10 +7555,10 @@ void func_8120806C(u16 reg, u8 value) {
                 gGbApuNoise.unk_2D = gGbApuNoise.unk_21;
                 switch ((s32)GB_APU_REGS.width4) {
                     case 0:
-                        gGbApuNoise.unk_20 = D_8120EB28[gGbApuNoise.unk_2D];
+                        gGbApuNoise.unk_20 = gGbNoiseStepTable15BitLfsr[gGbApuNoise.unk_2D];
                         break;
                     case 1:
-                        gGbApuNoise.unk_20 = D_8120EB38[gGbApuNoise.unk_2D];
+                        gGbApuNoise.unk_20 = gGbNoiseStepTable7BitLfsr[gGbApuNoise.unk_2D];
                         break;
                 }
                 if ((gGbApuNoise.unk_00 == 0) || (gGbApuNoise.unk_3C < gGbApuNoise.unk_20)) {
@@ -7583,7 +7583,7 @@ void func_8120806C(u16 reg, u8 value) {
     }
 }
 
-void func_81208828(s32 numSamples, s16* out) {
+void GbAudio_MixChannels(s32 numSamples, s16* out) {
     s32 i;
     u32 sq1R;
     u32 sq1L;
@@ -7615,7 +7615,7 @@ void func_81208828(s32 numSamples, s16* out) {
     idx = 0;
     lastTime = 0;
     while (TRUE) {
-        if (osRecvMesg(&D_8122EEB0, (OSMesg*)&msg, OS_MESG_NOBLOCK) == -1) {
+        if (osRecvMesg(&gGbAudioMesgQueue, (OSMesg*)&msg, OS_MESG_NOBLOCK) == -1) {
             break;
         }
         if (first) {
@@ -7623,15 +7623,15 @@ void func_81208828(s32 numSamples, s16* out) {
             first = FALSE;
         }
         if (msg.time < lastTime) {
-            if (startTime < D_8120EAD0) {
-                osJamMesg(&D_8122EEB0, *(OSMesg*)&msg, OS_MESG_NOBLOCK);
+            if (startTime < gGbApuLastWriteTime) {
+                osJamMesg(&gGbAudioMesgQueue, *(OSMesg*)&msg, OS_MESG_NOBLOCK);
                 break;
             }
             startTime = 0;
-            D_8122C8D8[count++] = msg;
+            gGbApuWriteQueue[count++] = msg;
             lastTime = msg.time;
         } else {
-            D_8122C8D8[count++] = msg;
+            gGbApuWriteQueue[count++] = msg;
             lastTime = msg.time;
         }
     }
@@ -7640,7 +7640,7 @@ void func_81208828(s32 numSamples, s16* out) {
 #if defined(VERSION_JP)
     step = 17784.0f / (f32)numSamples;
 #else
-    step = (f32)D_8120EAC4 / (f32)numSamples;
+    step = (f32)gGbApuClockRate / (f32)numSamples;
 #endif
     if (numSamples < count) {
         flush = TRUE;
@@ -7655,15 +7655,15 @@ void func_81208828(s32 numSamples, s16* out) {
                 if (count == 0) {
                     break;
                 }
-                if (((s32)pos & 0xFFFF) < D_8122C8D8[idx].time) {
+                if (((s32)pos & 0xFFFF) < gGbApuWriteQueue[idx].time) {
                     break;
                 }
-                func_8120806C(D_8122C8D8[idx].reg, D_8122C8D8[idx].value);
+                GbAudio_WriteReg(gGbApuWriteQueue[idx].reg, gGbApuWriteQueue[idx].value);
                 count--;
                 idx++;
             }
-        } else if ((count != 0) && (((s32)pos & 0xFFFF) >= D_8122C8D8[idx].time)) {
-            func_8120806C(D_8122C8D8[idx].reg, D_8122C8D8[idx].value);
+        } else if ((count != 0) && (((s32)pos & 0xFFFF) >= gGbApuWriteQueue[idx].time)) {
+            GbAudio_WriteReg(gGbApuWriteQueue[idx].reg, gGbApuWriteQueue[idx].value);
             count--;
             idx++;
         }
@@ -7671,7 +7671,7 @@ void func_81208828(s32 numSamples, s16* out) {
         sq1 = GbApu_UpdateSquare1Channel();
         sq2 = GbApu_UpdateSquare2Channel();
         wave = GbApu_UpdateWaveChannel();
-        noise = func_81207DF8();
+        noise = GbAudio_StepNoiseChannel();
 
         noiseL = GB_APU_REGS.noiseLeft ? noise : 0;
         noiseR = GB_APU_REGS.noiseRight ? noise : 0;
@@ -7695,67 +7695,67 @@ void func_81208828(s32 numSamples, s16* out) {
     }
 
     while (count != 0) {
-        func_8120806C(D_8122C8D8[idx].reg, D_8122C8D8[idx].value);
+        GbAudio_WriteReg(gGbApuWriteQueue[idx].reg, gGbApuWriteQueue[idx].value);
         count--;
         idx++;
     }
 
-    D_8122EEA8.unk_00 = 0;
-    D_8122EEA8.unk_01 = 0;
-    D_8122EEA8.unk_02 = 0;
-    D_8122EEA8.unk_03 = 0;
+    gGbApuStatusLatch.unk_00 = 0;
+    gGbApuStatusLatch.unk_01 = 0;
+    gGbApuStatusLatch.unk_02 = 0;
+    gGbApuStatusLatch.unk_03 = 0;
 }
 
-void func_81208C08(u16 arg0, u8 arg1, u16 arg2) {
+void GbAudio_QueueWrite(u16 arg0, u8 arg1, u16 arg2) {
     s32 temp_v1;
 
     temp_v1 = arg0 + 0xFFFF0100;
-    osSendMesg(&D_8122EEB0, (temp_v1 << 0x18) | (arg1 << 0x10) | arg2, 0);
-    D_8120EAD0 = (s32) arg2;
+    osSendMesg(&gGbAudioMesgQueue, (temp_v1 << 0x18) | (arg1 << 0x10) | arg2, 0);
+    gGbApuLastWriteTime = (s32) arg2;
     switch (temp_v1) {
     case 20:
         if (arg1 & 0x80) {
-            D_8122EEA8.unk_00 = 2;
+            gGbApuStatusLatch.unk_00 = 2;
             return;
         }
     default:
         return;
     case 25:
         if (arg1 & 0x80) {
-            D_8122EEA8.unk_01 = 2;
+            gGbApuStatusLatch.unk_01 = 2;
             return;
         }
         break;
     case 30:
         if (arg1 & 0x80) {
-            D_8122EEA8.unk_02 = 2;
+            gGbApuStatusLatch.unk_02 = 2;
             return;
         }
         break;
     case 35:
         if (arg1 & 0x80) {
-            D_8122EEA8.unk_03 = 2;
+            gGbApuStatusLatch.unk_03 = 2;
             return;
         }
         break;
     case 38:
         if (!(arg1 & 1)) {
-            D_8122EEA8.unk_00 = 1;
+            gGbApuStatusLatch.unk_00 = 1;
         }
         if (!(arg1 & 2)) {
-            D_8122EEA8.unk_01 = 1;
+            gGbApuStatusLatch.unk_01 = 1;
         }
         if (!(arg1 & 4)) {
-            D_8122EEA8.unk_02 = 1;
+            gGbApuStatusLatch.unk_02 = 1;
         }
         if (!(arg1 & 8)) {
-            D_8122EEA8.unk_03 = 1;
+            gGbApuStatusLatch.unk_03 = 1;
         }
         if (!(arg1 & 0x80)) {
-            D_8122EEA8.unk_00 = 1;
-            D_8122EEA8.unk_01 = 1;
-            D_8122EEA8.unk_02 = 1;
-            D_8122EEA8.unk_03 = 1;
+            gGbApuStatusLatch.unk_00 = 1;
+            gGbApuStatusLatch.unk_01 = 1;
+            gGbApuStatusLatch.unk_02 = 1;
+            gGbApuStatusLatch.unk_03 = 1;
         }
         break;
     }
@@ -7768,9 +7768,9 @@ void GbApu_ResetChannels(void) {
   OSMesg sp20;
 
   osCreateMesgQueue(&sp24, &sp20, 1);
-  osCreateMesgQueue(&D_8122EEB0, D_8122EEC8, GB_APU_WRITE_QUEUE_LEN);
+  osCreateMesgQueue(&gGbAudioMesgQueue, D_8122EEC8, GB_APU_WRITE_QUEUE_LEN);
   for (i = 0x50; i > 0xF; i--) {
-      func_8120806C(i, 0);
+      GbAudio_WriteReg(i, 0);
   }
   gGbApuSquare1.unk_3C = 0;
   gGbApuSquare2.unk_3C = 0;
@@ -7783,12 +7783,12 @@ void GbApu_ResetChannels(void) {
 }
 
 void GbApu_Reset(s32 arg0) {
-  D_8122C794 = arg0;
+  gGbAudioNoiseTable = arg0;
   GbApu_ResetChannels();
 }
 
-void func_81208E4C(void) {
-    void* sp34 = D_812346E0[0];
+void GbApu_ResetWithFadeOut(void) {
+    void* sp34 = gApuSampleBuffers[0];
     f32 x = (f32) D_8122C790;
     f32 y = (f32) D_8122C792;
     f32 dx = x / 640.0f;
@@ -7820,23 +7820,23 @@ u8 GbMem_ReadIoRegister(u16 arg0) {
   u8 var_v1;
   u8 temp;
   if ((arg0 & 0xFFFF) == 0xFF26) {
-      if (D_8122EEA8.unk_00 != 0) {
-          var_v1 = (D_8122EEA8.unk_00 - 1) & 0xFF;
+      if (gGbApuStatusLatch.unk_00 != 0) {
+          var_v1 = (gGbApuStatusLatch.unk_00 - 1) & 0xFF;
       } else {
           var_v1 = gGbApuSquare1.unk_00;
       }
-      if (D_8122EEA8.unk_01 != 0) {
-          var_a0 = (D_8122EEA8.unk_01 - 1) & 0xFF;
+      if (gGbApuStatusLatch.unk_01 != 0) {
+          var_a0 = (gGbApuStatusLatch.unk_01 - 1) & 0xFF;
       } else {
           var_a0 = gGbApuSquare2.unk_00;
       }
-      if (D_8122EEA8.unk_02 != 0) {
-          var_a1 = (D_8122EEA8.unk_02 - 1) & 0xFF;
+      if (gGbApuStatusLatch.unk_02 != 0) {
+          var_a1 = (gGbApuStatusLatch.unk_02 - 1) & 0xFF;
       } else {
           var_a1 = gGbApuWave.unk_00;
       }
-      if (D_8122EEA8.unk_03 != 0) {
-          var_a2 = (D_8122EEA8.unk_03 - 1) & 0xFF;
+      if (gGbApuStatusLatch.unk_03 != 0) {
+          var_a2 = (gGbApuStatusLatch.unk_03 - 1) & 0xFF;
       } else {
           var_a2 = gGbApuNoise.unk_00;
       }
@@ -7846,7 +7846,7 @@ u8 GbMem_ReadIoRegister(u16 arg0) {
   return gGbMemoryMap[arg0 & 0xFFFF];
 }
 
-s32 func_81209078(void) {
+s32 GbAudio_Update(void) {
     u32 aiLen;
     s32 n;
     s32 idx;
@@ -7857,20 +7857,20 @@ s32 func_81209078(void) {
     s16* len;
     s16** bufPtr;
 
-    D_812346C8++;
+    gAudioTaskPending++;
 #if defined(VERSION_JP)
-    osSendMesg(D_812896A0_jp, (OSMesg)D_812346C8, OS_MESG_NOBLOCK);
+    osSendMesg(D_812896A0_jp, (OSMesg)gAudioTaskPending, OS_MESG_NOBLOCK);
 #endif
     D_812346D0 ^= 1;
-    D_812346D4++;
-    D_812346D4 %= 3;
-    idx = (D_812346D4 + 2) % 3;
+    gAudioTaskId++;
+    gAudioTaskId %= 3;
+    idx = (gAudioTaskId + 2) % 3;
     aiLen = osAiGetLength() >> 2;
 
-    if (D_812346FC < 16) {
-        len = &D_812346EC[idx];
+    if (gAudioInitFlag < 16) {
+        len = &gApuInitValues[idx];
         if (*len != 0) {
-            bufPtr = &D_812346E0[idx];
+            bufPtr = &gApuSampleBuffers[idx];
             if (osGbSetNextBuffer(*bufPtr, *len * 4) == -1) {
                 status = 0;
             } else {
@@ -7886,41 +7886,41 @@ s32 func_81209078(void) {
         }
     }
 
-    if (D_812346FC > 16) {
+    if (gAudioInitFlag > 16) {
         return 0;
     }
-    if (D_812346FC != 0) {
-        D_812346FC++;
+    if (gAudioInitFlag != 0) {
+        gAudioInitFlag++;
     }
 
-    idx = D_812346D4;
-    bufPtr = &D_812346E0[idx];
-    len = &D_812346EC[idx];
+    idx = gAudioTaskId;
+    bufPtr = &gApuSampleBuffers[idx];
+    len = &gApuInitValues[idx];
     buf = *bufPtr;
-    *len = ((D_81234690.unk_06 - aiLen + 0x80) & 0xFFF0) + 0x10;
-    if (*len < D_81234690.unk_0A) {
-        *len = D_81234690.unk_0A;
+    *len = ((gAudioConfig.unk_06 - aiLen + 0x80) & 0xFFF0) + 0x10;
+    if (*len < gAudioConfig.unk_0A) {
+        *len = gAudioConfig.unk_0A;
     }
-    if (D_81234690.unk_08 < *len) {
-        *len = D_81234690.unk_08;
+    if (gAudioConfig.unk_08 < *len) {
+        *len = gAudioConfig.unk_08;
     }
-    if (D_8120EB78 == 0) {
-        func_81208828(*len, buf);
+    if (gGbAudioMode == 0) {
+        GbAudio_MixChannels(*len, buf);
     } else {
-        func_81209374(*len, buf);
+        GbAudio_RenderStream(*len, buf);
     }
     osWritebackDCache(buf, *len * 4);
-    D_812346F4 = osGetCount() * (D_812346F4 + D_812346C8);
-    D_812346F4 = D_812346E0[idx][D_812346C8 & 0xFF] + D_812346F4;
+    D_812346F4 = osGetCount() * (D_812346F4 + gAudioTaskPending);
+    D_812346F4 = gApuSampleBuffers[idx][gAudioTaskPending & 0xFF] + D_812346F4;
     return 0;
 }
 
 void GbAudio_SetAlternateRendererEnabled(s32 arg0) {
-  D_8120EB78 = arg0;
+  gGbAudioMode = arg0;
 }
 
 void GbAudio_SetAlternateStreamId(s32 arg0) {
-  D_8120EB7C.id = arg0;
+  gGbAudioStreamQueued.id = arg0;
 }
 
 typedef struct GbStereoSample {
@@ -7928,8 +7928,8 @@ typedef struct GbStereoSample {
     /* 0x2 */ s16 right;
 } GbStereoSample; // size = 0x4
 
-void func_81209374(s32 numSamples, s16* out) {
-    static u32 D_8122869C = 0;
+void GbAudio_RenderStream(s32 numSamples, s16* out) {
+    static u32 GbAudioStreamAltVolume = 0;
 
     s32 i;
     s8* mainData;
@@ -7941,18 +7941,18 @@ void func_81209374(s32 numSamples, s16* out) {
 
     mainData = NULL;
     altData = NULL;
-    if (D_8120EB7C.id != 0) {
-        D_8120EB8C = D_8120EB84;
-        D_8120EB84 = D_8120EB7C;
-        D_8120EB84.pos = 0;
-        D_8120EB7C.id = 0;
-        D_8122869C = 0x400;
+    if (gGbAudioStreamQueued.id != 0) {
+        gGbAudioStreamAlt = gGbAudioStreamMain;
+        gGbAudioStreamMain = gGbAudioStreamQueued;
+        gGbAudioStreamMain.pos = 0;
+        gGbAudioStreamQueued.id = 0;
+        GbAudioStreamAltVolume = 0x400;
     }
-    if (D_8120EB84.id != 0) {
-        mainData = GB_AUDIO_STREAM_DATA[D_8120EB84.id];
-        mainEnd = GB_AUDIO_STREAM_SIZE[D_8120EB84.id];
+    if (gGbAudioStreamMain.id != 0) {
+        mainData = GB_AUDIO_STREAM_DATA[gGbAudioStreamMain.id];
+        mainEnd = GB_AUDIO_STREAM_SIZE[gGbAudioStreamMain.id];
     }
-    i = D_8120EB8C.id;
+    i = gGbAudioStreamAlt.id;
     if (i != 0) {
         altData = GB_AUDIO_STREAM_DATA[i];
         altEnd = GB_AUDIO_STREAM_SIZE[i];
@@ -7960,24 +7960,24 @@ void func_81209374(s32 numSamples, s16* out) {
 
     for (i = 0; i < numSamples; i++) {
         if (mainData != NULL) {
-            if (mainEnd == D_8120EB84.pos) {
-                D_8120EB84.id = 0;
+            if (mainEnd == gGbAudioStreamMain.pos) {
+                gGbAudioStreamMain.id = 0;
                 mainData = NULL;
                 a = 0;
             } else {
-                a = mainData[D_8120EB84.pos++];
+                a = mainData[gGbAudioStreamMain.pos++];
             }
         } else {
             a = 0;
         }
         if (altData != NULL) {
-            if (altEnd == D_8120EB8C.pos) {
-                D_8120EB8C.id = 0;
+            if (altEnd == gGbAudioStreamAlt.pos) {
+                gGbAudioStreamAlt.id = 0;
                 altData = NULL;
                 b = 0;
             } else {
-                b = altData[D_8120EB8C.pos++];
-                b = (s32)(b * D_8122869C) / 1024;
+                b = altData[gGbAudioStreamAlt.pos++];
+                b = (s32)(b * GbAudioStreamAltVolume) / 1024;
             }
         } else {
             b = 0;

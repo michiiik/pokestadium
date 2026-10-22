@@ -13,8 +13,8 @@ OSThread gIdleThread;
 u8 unk_8007F330[0x400];
 OSThread pThreads;
 u8 unk_8007F8E0[0x720];
-u8 D_80080000[0x18E0];
-LEODiskID D_800818E0;
+u8 gGameThreadStackHigh[0x18E0];
+LEODiskID gLeoDiskId;
 
 /**
  * Initialize hardware, start main thread, then idle.
@@ -29,7 +29,7 @@ void Idle_ThreadEntry(UNUSED void* unused) {
     Audio_StartThread();
     DisplayWorker_Initialize();
     SoftReset_CreateThread();
-    osCreateThread(&pThreads, 6, &Game_Thread, 0, &D_800818E0, 20);
+    osCreateThread(&pThreads, 6, &Game_Thread, 0, &gLeoDiskId, 20);
     osStartThread(&pThreads);
     osSetThreadPri(NULL, 0);
 

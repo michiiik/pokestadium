@@ -19,17 +19,17 @@ typedef enum IMAGE_FMT {
 	IMAGE_FMT_I    = 4,
 } IMAGE_FMT;
 
-typedef struct unk_D_80068BB0 {
+typedef struct FramebufferImage {
 	/* 0x00 */ u16 fmt;
 	/* 0x02 */ u16 size;
 	/* 0x04 */ u16 width;
 	/* 0x06 */ u16 height;
 	/* 0x08 */ u8* img_p;
-	/* 0x0C */ struct unk_D_80068BB0* depth_p;
+	/* 0x0C */ struct FramebufferImage* depth_p;
 } DepthBuffer; // size = 0x10
 
-unk_D_800A7440* GfxRect_SetBounds(unk_D_800A7440* arg0, s16 x1, s16 y1, s16 x2, s16 y2);
-s32 GfxRect_ClipToScissor(unk_D_800A7440* rectangle);
+ClipRect* GfxRect_SetBounds(ClipRect* arg0, s16 x1, s16 y1, s16 x2, s16 y2);
+s32 GfxRect_ClipToScissor(ClipRect* rectangle);
 void Gfx_SetScissorRect(Gfx** gfx_p, s16 x, s16 y, s16 width, s16 height);
 void Gfx_ApplyScissorRect(Gfx** gfx_p);
 void GfxImage_Initialize(DepthBuffer* arg0, s32 fmt, s32 size, s32 width, s32 height, u32 img_p);

@@ -23,7 +23,7 @@ static Gfx D_84389458[] = {
     gsSPEndDisplayList(),
 };
 
-static Gfx D_843894D8[] = {
+static Gfx gTrail40VariantDL_Unlit[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_1CYCLE),
     gsSPClearGeometryMode(G_ZBUFFER | G_SHADE | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN |

@@ -459,7 +459,7 @@ s32 Text_CompareGlyphCodes(u8* a0, u8* a1) {
     return 0;
 }
 #else
-static u16 D_80075690[0x100] = {
+static u16 gByteToTileIdTable[0x100] = {
     0,      0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF,
     0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF,
     0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0x7000, 0x7100, 0x7200, 0xFFFF, 0xFFFF, 0x7500, 0x7600, 0x7700, 0x7800, 0x7900,
@@ -489,26 +489,26 @@ void Text_ExpandGlyphCodes(u16* arg0, u8* a1) {
         temp_v1 = *arg1++;
         switch (temp_v1) {
             case 0xDF:
-                *arg0++ = D_80075690[temp_v1];
-                *arg0++ = D_80075690[temp_v1];
+                *arg0++ = gByteToTileIdTable[temp_v1];
+                *arg0++ = gByteToTileIdTable[temp_v1];
                 continue;
 
             case 0xBC:
-                *arg0++ = D_80075690[0x50] + 4;
-                *arg0++ = D_80075690[0x4B] + 4;
+                *arg0++ = gByteToTileIdTable[0x50] + 4;
+                *arg0++ = gByteToTileIdTable[0x4B] + 4;
                 continue;
 
             case 0xBD:
-                *arg0++ = D_80075690[0x4D] + 4;
-                *arg0++ = D_80075690[0x4E] + 4;
+                *arg0++ = gByteToTileIdTable[0x4D] + 4;
+                *arg0++ = gByteToTileIdTable[0x4E] + 4;
                 continue;
         }
-        *arg0++ = D_80075690[temp_v1];
+        *arg0++ = gByteToTileIdTable[temp_v1];
     } while (temp_v1 != 0);
 }
 
 s32 Text_CompareGlyphCodes(u8* arg0, u8* arg1) {
-    static u16 D_80075890[3] = { 0xFF00, 0xFFFC, 0xFFFF };
+    static u16 gStringCompareMasks[3] = { 0xFF00, 0xFFFC, 0xFFFF };
 
     u16 sp74[22];
     u16 sp48[22];
@@ -527,8 +527,8 @@ s32 Text_CompareGlyphCodes(u8* arg0, u8* arg1) {
         var_a0 = sp48;
 
         while (true) {
-            temp_a1 = D_80075890[i] & *var_v1++;
-            temp_a2 = D_80075890[i] & *var_a0++;
+            temp_a1 = gStringCompareMasks[i] & *var_v1++;
+            temp_a2 = gStringCompareMasks[i] & *var_a0++;
             temp_a3 = temp_a1 - temp_a2;
 
             if (temp_a3 != 0) {

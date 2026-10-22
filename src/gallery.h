@@ -5,20 +5,20 @@
 #include "model_renderer.h"
 #include "src/gfx_rect.h"
 
-typedef struct unk_D_83407AC8 {
+typedef struct PhotoMonSpecies {
     /* 0x00 */ u16 unk_00;
     /* 0x02 */ u8 unk_02;
     /* 0x03 */ s8 unk_03[11];
     /* 0x0E */ s8 unk_0E[11];
-} unk_D_83407AC8; // size >= 0x1A
+} PhotoMonSpecies; // size >= 0x1A
 
-typedef struct unk_D_83402EE0_070 {
+typedef struct PhotoMonData {
     /* 0x00 */ s16 unk_00;
     /* 0x02 */ u8 unk_02;
     /* 0x03 */ u8 unk_03[11];
     /* 0x0E */ u8 unk_0E[11];
     /* 0x19 */ char unk19[0x1];
-} unk_D_83402EE0_070; // size = 0x1A
+} PhotoMonData; // size = 0x1A
 
 typedef struct unk_D_83402EE0_00A {
     /* 0x00 */ u8 unk_00[7];
@@ -37,17 +37,17 @@ typedef struct unk_D_83402EE0 {
     /* 0x68 */ u32 unk_68;
     /* 0x6C */ u8 unk_6C;
     /* 0x6D */ char unk6D[3];
-    /* 0x70 */ unk_D_83402EE0_070 unk_70;
+    /* 0x70 */ PhotoMonData unk_70;
 } unk_D_83402EE0; // size = 0x8C
 
-typedef struct unk_D_83403C60 {
+typedef struct PhotoSceneData {
     /* 0x00 */ BattleMon unk_00;
     /* 0x54 */ char unk54[0x18];
     /* 0x6C */ u8 unk_6C;
     /* 0x6D */ char unk6D[0x3];
-    /* 0x70 */ unk_D_83407AC8 unk_70;
+    /* 0x70 */ PhotoMonSpecies unk_70;
     /* 0x8A */ char unk8A[0x2];
-} unk_D_83403C60; // size = 0x8C
+} PhotoSceneData; // size = 0x8C
 
 typedef struct unk_D_83403C60_050_00C {
     /* 0x00 */ s32 unk_00;
@@ -55,13 +55,13 @@ typedef struct unk_D_83403C60_050_00C {
     /* 0x08 */ s32 unk_08;
 } unk_D_83403C60_050_00C; // size = 0xC
 
-typedef struct unk_D_83406EB0 {
+typedef struct PhotoSceneControl {
     /* 0x00 */ char unk00[0x6C];
     /* 0x6C */ u8 unk_6C;
     /* 0x6D */ char unk6D[0x1F];
-} unk_D_83406EB0; // size = 0x8C
+} PhotoSceneControl; // size = 0x8C
 
-typedef struct unk_D_83407B00 {
+typedef struct GalleryCursor {
     /* 0x00 */ union {
                     struct {
                         s16 unk_00s;
@@ -76,7 +76,7 @@ typedef struct unk_D_83407B00 {
                     };
                     s32 unk_04;
                 };
-} unk_D_83407B00; // size = 0x8
+} GalleryCursor; // size = 0x8
 
 typedef struct unk_func_800314BC_temp_v4 {
     /* 0x00 */ s16 unk_00;
@@ -94,7 +94,7 @@ typedef struct unk_func_80031270_024 {
     /* 0x1C */ s32 unk_1C;
 } unk_func_80031270_024; // size = 0x20
 
-typedef struct unk_func_80031270 {
+typedef struct Camera {
     /* 0x00 */ u16 unk_00;
     /* 0x02 */ s16 unk_02;
     /* 0x04 */ s16 unk_04;
@@ -103,7 +103,7 @@ typedef struct unk_func_80031270 {
     /* 0x0C */ DepthBuffer* unk_0C;
     /* 0x10 */ ModelLoadContext* unk_10;
     /* 0x14 */ BinArchive* unk_14;
-    /* 0x18 */ unk_D_83403C60* unk_18;
+    /* 0x18 */ PhotoSceneData* unk_18;
     /* 0x1C */ GraphNode* unk_1C;
     /* 0x20 */ DisplayObject* unk_20;
     /* 0x24 */ unk_func_80031270_024* unk_24;
@@ -111,14 +111,14 @@ typedef struct unk_func_80031270 {
     /* 0x2C */ GraphNode* unk_2C;
     /* 0x30 */ GraphNode* unk_30;
     /* 0x34 */ s32 unk_34;
-} unk_func_80031270; // size = 0x38
+} Camera; // size = 0x38
 
 typedef struct unk_D_83407B38_0B0 {
     /* 0x00 */ s32 unk_00;
     /* 0x00 */ s32 unk_08;
 } unk_D_83407B38_0B0; // size >= 0xC
 
-typedef struct unk_D_83407B38 {
+typedef struct GallerySceneGrid {
     /* 0x00 */ s32 unk_00;
     /* 0x04 */ s32 unk_04;
     /* 0x08 */ s32 unk_08;
@@ -127,24 +127,24 @@ typedef struct unk_D_83407B38 {
     /* 0x14 */ s32 unk_14;
     /* 0x18 */ s32 unk_18;
     /* 0x1C */ s32 unk_1C;
-    /* 0x20 */ unk_func_80031270* unk_20[36];
-    /* 0xB0 */ unk_func_80031270* unk_B0;
-} unk_D_83407B38; // size = 0xB4
+    /* 0x20 */ Camera* unk_20[36];
+    /* 0xB0 */ Camera* unk_B0;
+} GallerySceneGrid; // size = 0xB4
 
-extern unk_D_83407B00 D_83407B30;
+extern GalleryCursor gGalleryMainSelection;
 
 void Gallery_Dispatch(void);
 void Gallery_ResetActiveScene(void);
 void Gallery_ClearPhotoRenderTarget(void);
-void Gallery_CopyPhotoMonFromBattleMon(unk_D_83402EE0_070*, BattleMon*);
-void Gallery_CopyBattleMonFromPhotoMon(BattleMon*, unk_D_83407AC8*);
-unk_func_80031270* Geo_CreateSceneInstance(s16, s16, DepthBuffer*, DepthBuffer*, ModelLoadContext*, BinArchive*, unk_D_83403C60*);
-u8* Gallery_ProcessSceneInstance(unk_func_80031270*);
-s32 Gallery_IsSceneReady(unk_func_80031270*);
-s32 Gallery_FindReadyScene(unk_func_80031270**, s32);
-unk_func_80031270* Gallery_GetActiveScene(void);
+void Gallery_CopyPhotoMonFromBattleMon(PhotoMonData*, BattleMon*);
+void Gallery_CopyBattleMonFromPhotoMon(BattleMon*, PhotoMonSpecies*);
+Camera* Geo_CreateSceneInstance(s16, s16, DepthBuffer*, DepthBuffer*, ModelLoadContext*, BinArchive*, PhotoSceneData*);
+u8* Gallery_ProcessSceneInstance(Camera*);
+s32 Gallery_IsSceneReady(Camera*);
+s32 Gallery_FindReadyScene(Camera**, s32);
+Camera* Gallery_GetActiveScene(void);
 void Gallery_ClearActiveScene(void);
-s32 Gallery_IsPhotoSpeciesValid(unk_D_83403C60*);
+s32 Gallery_IsPhotoSpeciesValid(PhotoSceneData*);
 f32 Math_AbsF32(f32);
 void Vec3f_CrossProductComponents(f32, f32, f32, f32, f32, f32, f32*, f32*, f32*);
 void Vec3f_NormalizeComponents(f32*, f32*, f32*);

@@ -2,7 +2,7 @@
 #include "dma.h"
 #include "rsp.h"
 
-extern s16 D_80083C1C;
+extern s16 gRspLeoInitSuccess;
 
 s32 Storage_QueueRomRead(s32 arg0, void* arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     struct UnkStruct80000E80* temp_v0;
@@ -101,7 +101,7 @@ s32 Storage_QueueDiskIdRead(s32 arg0, s32 arg1) {
     temp_v0 = Util_Malloc(0x2C);
     if (temp_v0 != NULL) {
         temp_v0->unk0 = 0xC;
-        temp_v0->unk20 = &D_800818E0;
+        temp_v0->unk20 = &gLeoDiskId;
         temp_v0->unk28 = arg0;
         Storage_QueueRequest(temp_v0, arg1);
     }
@@ -161,7 +161,7 @@ s32 Storage_QueueRtcWrite(void* arg0, s32 arg1, s32 arg2) {
 }
 
 s16 Storage_GetDiskStatus(void) {
-    return D_80083C1C;
+    return gRspLeoInitSuccess;
 }
 
 s32 Storage_QueueRtcRead(void* arg0, s32 arg1, s32 arg2) {

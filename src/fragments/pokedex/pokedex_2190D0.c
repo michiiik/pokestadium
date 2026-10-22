@@ -26,579 +26,579 @@ typedef struct unk_D_88826A88 {
     /* 0x5A */ s16 unk_5A;
 } unk_D_88826A88; // size = 0x5C
 
-typedef struct unk_D_88826CF0_004 {
+typedef struct MapMarkerPos {
     /* 0x00 */ s16 unk_00;
     /* 0x02 */ s16 unk_02;
     /* 0x04 */ s16 unk_04;
     /* 0x06 */ s16 unk_06;
-} unk_D_88826CF0_004; // size = 0x8
+} MapMarkerPos; // size = 0x8
 
-typedef struct unk_D_88826CF0 {
+typedef struct MapAreaMarker {
     /* 0x00 */ s16 unk_00;
     /* 0x02 */ s16 unk_02;
-    /* 0x04 */ unk_D_88826CF0_004* unk_04[1];
+    /* 0x04 */ MapMarkerPos* unk_04[1];
     /* 0x08 */ char unk08[0x10];
     /* 0x18 */ s16 unk_18[1];
     /* 0x1A */ char unk1A[0xA];
-} unk_D_88826CF0; // size = 0x24
+} MapAreaMarker; // size = 0x24
 
-typedef struct unk_D_88825ECC {
+typedef struct PokedexSubArea {
     /* 0x00 */ char unk_00[14];
     /* 0x0E */ s16 unk_0E;
-} unk_D_88825ECC; // size = 0x10
+} PokedexSubArea; // size = 0x10
 
 typedef struct unk_D_88826444 {
     /* 0x00 */ s16 unk_00;
     /* 0x00 */ s16 unk_02;
 } unk_D_88826444; // size = 0x4
 
-static unk_func_80011B94 D_888269C0;
-static unk_func_80011B94 D_888269E0;
-static unk_func_80011B94 D_88826A00;
-static unk_func_80011B94 D_88826A20;
-static char** D_88826A3C;
+static SimpleGfxNode D_888269C0;
+static SimpleGfxNode D_888269E0;
+static SimpleGfxNode D_88826A00;
+static SimpleGfxNode D_88826A20;
+static char** gPokedexTextBank;
 static s32 pad_D_88826A40;
-static GraphNode* D_88826A44;
+static GraphNode* gPokedexGraphNode;
 static char** D_88826A48;
-static s16 D_88826A4C;
-static s16 D_88826A4E;
-static s16 D_88826A50;
-static s16 D_88826A52;
-static s16 D_88826A54;
-static s16 D_88826A56;
-static s16 D_88826A58;
-static char D_88826A60[0x1E];
-static u16 D_88826A7E;
-static s16 D_88826A80;
+static s16 gMapPinToggle;
+static s16 gCurrentMapAreaId;
+static s16 gMapPrevAreaId;
+static s16 gMapZoomMode;
+static s16 gMapLabelState;
+static s16 gCurrentGameCategory;
+static s16 gMapSelectedSpeciesIndex;
+static char gCurrentAreaNameBuf[0x1E];
+static u16 gMapMarkerBlinkTimer;
+static s16 gCameraIsMoving;
 static unk_D_88826A88 D_88826A88[6];
-static s16 D_88826CB0;
-static s16 D_88826CB2;
-static s16 D_88826CB4;
+static s16 gMapAreaLabelBoxWidth;
+static s16 gMapInfoLabelBoxWidth;
+static s16 gMapInfoBoxWidthCopy;
 static s16 D_88826CB8[7];
 static s16 D_88826CC6;
 static s16 D_88826CC8;
 static s16 D_88826CCA;
 static s16 D_88826CCC;
-static s16 D_88826CCE;
+static s16 gMapLabelMaxWidth;
 static s16 D_88826CD0;
-static u8* D_88826CD4;
-static f32 D_88826CD8;
-static s32 D_88826CDC;
-static char* D_88826CE0;
-static char* D_88826CE4;
-static Mtx* D_88826CE8;
-static unk_D_88826CF0 D_88826CF0[36];
+static u8* gMapSpeciesIconImage;
+static f32 gCameraEaseSpeed;
+static s32 gCameraEaseFrames;
+static char* gTextLabelCount;
+static char* gTextLabelSeparator;
+static Mtx* gMapMatrix;
+static MapAreaMarker gMapAreaMarkers[36];
 
-static unk_D_88826CF0_004 D_88820250[3] = { { 0x13, 2, 4, 0x32 }, { 0x10, 2, 5, 0x32 }, { -1, -1, -1, -1 } };
-static unk_D_88826CF0_004 D_88820268[4] = {
+static MapMarkerPos PokedexRoute1EncounterTable[3] = { { 0x13, 2, 4, 0x32 }, { 0x10, 2, 5, 0x32 }, { -1, -1, -1, -1 } };
+static MapMarkerPos PokedexRoute2EncounterTable[4] = {
     { 0x000D, 0x0003, 0x0005, 0x000F },
     { 0x0013, 0x0002, 0x0005, 0x0028 },
     { 0x0010, 0x0003, 0x0005, 0x002D },
     { 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF },
 };
-static unk_D_88826CF0_004 D_88820288[5] = {
+static MapMarkerPos PokedexRoute22EncounterTable[5] = {
     { 0x15, 3, 5, 0xA }, { 0x20, 2, 4, 0x28 }, { 0x13, 2, 4, 0x2D }, { 0x1D, 3, 4, 5 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888202B0[6] = {
+static MapMarkerPos PokedexViridianForestEncounterTable[6] = {
     { 0xE, 4, 6, 0x28 }, { 0xD, 3, 5, 0x2D }, { 0x19, 3, 5, 5 }, { 0xB, 4, 4, 5 }, { 0xA, 3, 3, 5 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888202E0[4] = {
+static MapMarkerPos PokedexRoute3EncounterTable[4] = {
     { 0x27, 3, 7, 0xA },
     { 0x10, 6, 8, 0x2D },
     { 0x15, 5, 8, 0x2D },
     { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820300[5] = {
+static MapMarkerPos PokedexMtMoon1FEncounterTable[5] = {
     { 0x23, 8, 8, 1 }, { 0x4A, 8, 0xA, 0xF }, { 0x2E, 8, 8, 5 }, { 0x29, 6, 0xB, 0x4F }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820328[5] = {
+static MapMarkerPos PokedexMtMoonB1FEncounterTable[5] = {
     { 0x2E, 0xA, 0xA, 0xA }, { 0x4A, 7, 9, 0x1A }, { 0x23, 9, 9, 4 }, { 0x29, 7, 0xB, 0x3C }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820350[5] = {
+static MapMarkerPos PokedexMtMoonB2FEncounterTable[5] = {
     { 0x2E, 0xA, 0xC, 0xF }, { 0x4A, 9, 0xA, 0x1E }, { 0x29, 9, 0xC, 0x31 }, { 0x23, 0xA, 0xC, 6 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820378[4] = {
+static MapMarkerPos PokedexRoute4EncounterTable[4] = {
     { 0x17, 6, 0xC, 0x19 },
     { 0x15, 8, 0xC, 0x23 },
     { 0x13, 8, 0xC, 0x28 },
     { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820398[6] = {
+static MapMarkerPos PokedexRoute24EncounterTable[6] = {
     { 0x3F, 8, 0xC, 0xF },    { 0xD, 7, 7, 0x14 },      { 0xE, 8, 8, 0x14 },
     { 0x10, 0xC, 0xD, 0x14 }, { 0x2B, 0xC, 0xE, 0x19 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888203C8[8] = {
+static MapMarkerPos PokedexRoute25EncounterTable[8] = {
     { 0xA, 8, 8, 1 },    { 0x3F, 0xA, 0xC, 0xF },  { 0x10, 0xD, 0xD, 0xF }, { 0xD, 8, 8, 0x14 },
     { 0xE, 9, 9, 0x14 }, { 0x2B, 0xC, 0xE, 0x19 }, { 0xB, 7, 7, 4 },        { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820408[4] = {
+static MapMarkerPos D_88820408[4] = {
     { 0x17, 0xB, 0x11, 0x19 },
     { 0x15, 0xD, 0x11, 0x23 },
     { 0x13, 0xE, 0x11, 0x28 },
     { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820428[4] = {
+static MapMarkerPos D_88820428[4] = {
     { 0x38, 0xA, 0x10, 0x19 },
     { 0x2B, 0xD, 0x10, 0x23 },
     { 0x10, 0xD, 0x10, 0x28 },
     { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820448[4] = {
+static MapMarkerPos D_88820448[4] = {
     { 0x38, 0xA, 0x10, 0x19 },
     { 0x2B, 0xD, 0x10, 0x23 },
     { 0x10, 0xD, 0x10, 0x28 },
     { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820468[4] = {
+static MapMarkerPos D_88820468[4] = {
     { 0x60, 9, 0xF, 0x19 },
     { 0x15, 0xD, 0x11, 0x23 },
     { 0x17, 0xC, 0xF, 0x28 },
     { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820488[5] = {
+static MapMarkerPos D_88820488[5] = {
     { 0x42, 0xF, 0x11, 0xF },  { 0x4A, 0x10, 0x11, 0x19 }, { 0x5F, 0xD, 0xF, 5 },
     { 0x29, 0xF, 0x12, 0x37 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888204B0[5] = {
+static MapMarkerPos D_888204B0[5] = {
     { 0x42, 0xF, 0x11, 0xF }, { 0x4A, 0x10, 0x12, 0x1A }, { 0x29, 0x10, 0x12, 0x32 },
     { 0x5F, 0xD, 0x11, 9 },   { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888204D8[4] = {
+static MapMarkerPos D_888204D8[4] = {
     { 0x17, 0xB, 0x11, 0x19 },
     { 0x15, 0xD, 0x11, 0x23 },
     { 0x64, 0xE, 0x11, 0x28 },
     { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888204F8[5] = {
+static MapMarkerPos D_888204F8[5] = {
     { 0x30, 0x18, 0x1A, 0x14 }, { 0x2B, 0x16, 0x1A, 0x23 }, { 0x10, 0x17, 0x1B, 0x28 },
     { 0x2C, 0x1C, 0x1E, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820520[5] = {
+static MapMarkerPos D_88820520[5] = {
     { 0x17, 0x11, 0x13, 0x14 }, { 0x3A, 0xF, 0x12, 0x14 }, { 0x38, 0x12, 0x14, 0x1E },
     { 0x10, 0x12, 0x14, 0x1E }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820548[5] = {
+static MapMarkerPos D_88820548[5] = {
     { 0x3A, 0x12, 0x14, 0xA },  { 0x2B, 0x13, 0x16, 0x1E }, { 0x38, 0x11, 0x14, 0x1E },
     { 0x10, 0x13, 0x16, 0x1E }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820570[1] = { -1, -1, -1, -1 };
-static unk_D_88826CF0_004 D_88820578[1] = { -1, -1, -1, -1 };
-static unk_D_88826CF0_004 D_88820580[4] = {
+static MapMarkerPos D_88820570[1] = { -1, -1, -1, -1 };
+static MapMarkerPos D_88820578[1] = { -1, -1, -1, -1 };
+static MapMarkerPos D_88820580[4] = {
     { 0x5D, 0x19, 0x19, 1 },
     { 0x68, 0x14, 0x16, 9 },
     { 0x5C, 0x12, 0x18, 0x5A },
     { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888205A0[4] = {
+static MapMarkerPos D_888205A0[4] = {
     { 0x5D, 0x19, 0x19, 5 },
     { 0x5C, 0x12, 0x18, 0x56 },
     { 0x68, 0x14, 0x16, 9 },
     { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888205C0[4] = {
+static MapMarkerPos D_888205C0[4] = {
     { 0x5D, 0x19, 0x19, 5 },
     { 0x5C, 0x12, 0x18, 0x56 },
     { 0x68, 0x14, 0x16, 9 },
     { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888205E0[4] = {
+static MapMarkerPos D_888205E0[4] = {
     { 0x5D, 0x1A, 0x1C, 6 },
     { 0x5C, 0x13, 0x18, 0x55 },
     { 0x68, 0x16, 0x18, 9 },
     { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820600[4] = {
+static MapMarkerPos D_88820600[4] = {
     { 0x68, 0x16, 0x18, 0xA },
     { 0x5D, 0x1C, 0x1E, 0xF },
     { 0x5C, 0x14, 0x18, 0x4B },
     { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820620[6] = {
+static MapMarkerPos D_88820620[6] = {
     { 0x30, 0x18, 0x1A, 0x14 }, { 0x2B, 0x16, 0x1A, 0x23 }, { 0x10, 0x19, 0x1B, 0x23 },
     { 0x84, 0x19, 0x19, 5 },    { 0x2C, 0x1C, 0x1E, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820650[7] = {
+static MapMarkerPos D_88820650[7] = {
     { 0x84, 0x17, 0x17, 0xF }, { 0x10, 0x1A, 0x1A, 0x14 }, { 0x30, 0x18, 0x1A, 0x14 }, { 0x2B, 0x16, 0x1A, 0x23 },
     { 0x2C, 0x1E, 0x1E, 5 },   { 0x11, 0x1C, 0x1E, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820688[7] = {
+static MapMarkerPos D_88820688[7] = {
     { 0x10, 0x17, 0x17, 0xF }, { 0x84, 0x1A, 0x1A, 0x14 }, { 0x30, 0x1A, 0x1C, 0x14 }, { 0x2B, 0x16, 0x1A, 0x23 },
     { 0x11, 0x1C, 0x1E, 5 },   { 0x2C, 0x1E, 0x1E, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888206C0[5] = {
+static MapMarkerPos D_888206C0[5] = {
     { 0x54, 0x12, 0x16, 0x19 }, { 0x13, 0x12, 0x16, 0x1E }, { 0x15, 0x14, 0x16, 0x28 },
     { 0x14, 0x17, 0x19, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888206E8[5] = {
+static MapMarkerPos D_888206E8[5] = {
     { 0x54, 0x18, 0x1C, 0x19 }, { 0x14, 0x19, 0x1D, 0x1E }, { 0x15, 0x14, 0x16, 0x28 },
     { 0x16, 0x19, 0x1B, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820710[5] = {
+static MapMarkerPos D_88820710[5] = {
     { 0x16, 0x19, 0x1D, 0xF },  { 0x14, 0x19, 0x1D, 0x14 }, { 0x54, 0x18, 0x1C, 0x19 },
     { 0x15, 0x14, 0x16, 0x28 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820738[0xA] = {
+static MapMarkerPos D_88820738[0xA] = {
     { 0x71, 0x17, 0x17, 1 },    { 0x21, 0x1F, 0x1F, 0xA },  { 0x30, 0x16, 0x16, 0xF }, { 0x20, 0x16, 0x16, 0x14 },
     { 0x66, 0x18, 0x19, 0x14 }, { 0x6F, 0x19, 0x19, 0x14 }, { 0x7B, 0x17, 0x17, 4 },   { 0x2F, 0x1E, 0x1E, 5 },
     { 0x1E, 0x1F, 0x1F, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820788[0xA] = {
+static MapMarkerPos D_88820788[0xA] = {
     { 0x7B, 0x1C, 0x1C, 1 },    { 0x21, 0x21, 0x21, 0xA },  { 0x2E, 0x16, 0x16, 0xF }, { 0x66, 0x17, 0x19, 0x14 },
     { 0x54, 0x1A, 0x1A, 0x14 }, { 0x20, 0x18, 0x18, 0x14 }, { 0x73, 0x19, 0x19, 4 },   { 0x1D, 0x18, 0x18, 5 },
     { 0x2F, 0x19, 0x19, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888207D8[0xA] = {
+static MapMarkerPos D_888207D8[0xA] = {
     { 0x80, 0x1C, 0x1C, 1 },    { 0x21, 0x1E, 0x1E, 0xA },  { 0x2E, 0x17, 0x17, 0xF }, { 0x6F, 0x1A, 0x1A, 0x14 },
     { 0x20, 0x16, 0x16, 0x14 }, { 0x66, 0x19, 0x1B, 0x14 }, { 0x71, 0x1A, 0x1A, 4 },   { 0x31, 0x20, 0x20, 5 },
     { 0x1E, 0x1E, 0x1E, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820828[0xA] = {
+static MapMarkerPos D_88820828[0xA] = {
     { 0x73, 0x1C, 0x1C, 1 },    { 0x21, 0x21, 0x21, 0xA },  { 0x30, 0x17, 0x17, 0xF }, { 0x20, 0x19, 0x19, 0x14 },
     { 0x66, 0x18, 0x1A, 0x14 }, { 0x54, 0x1A, 0x1A, 0x14 }, { 0x80, 0x1A, 0x1A, 4 },   { 0x31, 0x1F, 0x1F, 5 },
     { 0x1D, 0x19, 0x19, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820878[2] = { { 0x48, 5, 0x28, 0x64 }, { -1, -1, -1, -1 } };
-static unk_D_88826CF0_004 D_88820888[2] = { { 0x48, 5, 0x28, 0x64 }, { -1, -1, -1, -1 } };
-static unk_D_88826CF0_004 D_88820898[9] = {
+static MapMarkerPos D_88820878[2] = { { 0x48, 5, 0x28, 0x64 }, { -1, -1, -1, -1 } };
+static MapMarkerPos D_88820888[2] = { { 0x48, 5, 0x28, 0x64 }, { -1, -1, -1, -1 } };
+static MapMarkerPos D_88820898[9] = {
     { 0x37, 0x26, 0x26, 1 },    { 0x29, 0x15, 0x15, 0xA },  { 0x5A, 0x1C, 0x1E, 0x13 },
     { 0x4F, 0x1E, 0x1E, 0x14 }, { 0x74, 0x1C, 0x1E, 0x14 }, { 0x56, 0x1E, 0x1E, 0x14 },
     { 0x2A, 0x1D, 0x1D, 5 },    { 0x36, 0x1C, 0x1C, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888208E0[8] = {
+static MapMarkerPos D_888208E0[8] = {
     { 0x75, 0x25, 0x25, 1 },    { 0x5A, 0x20, 0x20, 0xF },  { 0x4F, 0x1C, 0x1E, 0xF }, { 0x56, 0x1C, 0x1E, 0xF },
     { 0x78, 0x1E, 0x1E, 0x14 }, { 0x74, 0x1E, 0x20, 0x1E }, { 0x57, 0x26, 0x26, 4 },   { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820920[8] = {
+static MapMarkerPos D_88820920[8] = {
     { 0x50, 0x25, 0x25, 1 },    { 0x78, 0x1E, 0x1E, 0xA }, { 0x74, 0x1C, 0x1E, 0xF }, { 0x4F, 0x1E, 0x20, 0x1E },
     { 0x56, 0x1E, 0x20, 0x23 }, { 0x2A, 0x1E, 0x1E, 4 },   { 0x5A, 0x1C, 0x1C, 5 },   { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820960[7] = {
+static MapMarkerPos D_88820960[7] = {
     { 0x57, 0x25, 0x25, 1 },    { 0x5A, 0x1D, 0x1F, 0xF }, { 0x74, 0x1D, 0x1F, 0xF }, { 0x56, 0x1F, 0x21, 0x1E },
     { 0x4F, 0x1F, 0x21, 0x23 }, { 0x75, 0x27, 0x27, 4 },   { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820998[7] = {
+static MapMarkerPos D_88820998[7] = {
     { 0x2A, 0x20, 0x20, 1 },    { 0x56, 0x1D, 0x1F, 0xF }, { 0x4F, 0x1D, 0x1F, 0xF }, { 0x5A, 0x1F, 0x21, 0x1E },
     { 0x74, 0x1F, 0x21, 0x23 }, { 0x50, 0x27, 0x27, 4 },   { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888209D0[7] = {
+static MapMarkerPos D_888209D0[7] = {
     { 0x59, 0x27, 0x27, 1 },    { 0x3A, 0x22, 0x22, 0xA }, { 0x6E, 0x25, 0x25, 4 }, { 0x4D, 0x1C, 0x22, 0x28 },
     { 0x6D, 0x1E, 0x20, 0x28 }, { 0x58, 0x1E, 0x1E, 5 },   { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820A08[7] = {
+static MapMarkerPos D_88820A08[7] = {
     { 0x59, 0x25, 0x25, 1 },    { 0x3A, 0x20, 0x20, 0x14 }, { 0x4D, 0x1C, 0x20, 0x19 }, { 0x6E, 0x27, 0x27, 4 },
     { 0x6D, 0x1E, 0x22, 0x2D }, { 0x58, 0x1E, 0x1E, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820A40[7] = {
+static MapMarkerPos D_88820A40[7] = {
     { 0x59, 0x2A, 0x2A, 1 },    { 0x6E, 0x26, 0x28, 0xF }, { 0x3A, 0x21, 0x21, 0x14 }, { 0x4D, 0x20, 0x24, 0x18 },
     { 0x6D, 0x1F, 0x23, 0x23 }, { 0x58, 0x22, 0x22, 5 },   { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820A78[7] = {
+static MapMarkerPos D_88820A78[7] = {
     { 0x59, 0x2A, 0x2A, 1 }, { 0x6E, 0x28, 0x2A, 0xE },  { 0x4D, 0x20, 0x22, 0xF }, { 0x3A, 0x23, 0x23, 0xF },
     { 0x58, 0x23, 0x23, 5 }, { 0x6D, 0x1F, 0x21, 0x32 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820AB0[7] = {
+static MapMarkerPos D_88820AB0[7] = {
     { 0x72, 0x1C, 0x20, 0xA },  { 0x11, 0x1E, 0x20, 0xF }, { 0x14, 0x1E, 0x1E, 0xF }, { 0x13, 0x15, 0x17, 0x1E },
     { 0x10, 0x15, 0x17, 0x1E }, { 0x48, 5, 0x28, 0x64 },   { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820AE8[0xB] = {
+static MapMarkerPos D_88820AE8[0xB] = {
     { 0x84, 0x35, 0x35, 1 },   { 0x31, 0x31, 0x31, 0xA },  { 0x55, 0x31, 0x31, 0xA },  { 0x18, 0x34, 0x34, 0xA },
     { 0x52, 0x2E, 0x2E, 0xF }, { 0x61, 0x2E, 0x2E, 0x14 }, { 0x2A, 0x2E, 0x2E, 0x14 }, { 0x1A, 0x35, 0x35, 4 },
     { 0x40, 0x31, 0x31, 5 },   { 0x2F, 0x34, 0x34, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820B40[0xA] = {
+static MapMarkerPos D_88820B40[0xA] = {
     { 0x65, 0x34, 0x34, 0xA },  { 0x69, 0x34, 0x34, 0xA },  { 0x70, 0x34, 0x34, 0xA }, { 0x40, 0x33, 0x33, 0xF },
     { 0x55, 0x33, 0x33, 0x14 }, { 0x31, 0x33, 0x33, 0x14 }, { 0x71, 0x38, 0x38, 5 },   { 0x84, 0x37, 0x3C, 5 },
     { 0x28, 0x36, 0x36, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820B90[9] = {
+static MapMarkerPos D_88820B90[9] = {
     { 0x84, 0x3F, 0x43, 0xA },  { 0x71, 0x40, 0x40, 0xA }, { 0x2F, 0x40, 0x40, 0xA },
     { 0x1A, 0x40, 0x40, 0xA },  { 0x65, 0x37, 0x37, 0xF }, { 0x69, 0x37, 0x37, 0x14 },
     { 0x70, 0x37, 0x37, 0x14 }, { 0x18, 0x39, 0x39, 5 },   { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820BD8[6] = {
+static MapMarkerPos D_88820BD8[6] = {
     { 0x52, 0x20, 0x23, 0xA },  { 0x19, 0x14, 0x18, 0x19 }, { 0x51, 0x15, 0x17, 0x1E },
     { 0x64, 0x15, 0x17, 0x1E }, { 0x7D, 0x21, 0x24, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820C08[6] = {
+static MapMarkerPos D_88820C08[6] = {
     { 0x15, 0x1A, 0x1A, 0xF },  { 0x17, 0x1A, 0x1A, 0x14 }, { 0x16, 0x26, 0x2B, 0x19 },
     { 0x84, 0x21, 0x2B, 0x23 }, { 0x18, 0x29, 0x29, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820C38[9] = {
+static MapMarkerPos D_88820C38[9] = {
     { 0x4B, 0x2B, 0x2B, 1 },    { 0x29, 0x1A, 0x1A, 0xF },  { 0x42, 0x16, 0x16, 0x14 },
     { 0x4A, 0x18, 0x18, 0x14 }, { 0x5F, 0x24, 0x2A, 0x1E }, { 0x69, 0x28, 0x28, 4 },
     { 0x43, 0x29, 0x29, 5 },    { 0x2A, 0x28, 0x28, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820C80[9] = {
+static MapMarkerPos D_88820C80[9] = {
     { 0x31, 0x28, 0x28, 0xA },  { 0x29, 0x16, 0x16, 0xF },  { 0x42, 0x18, 0x18, 0x14 },
     { 0x4A, 0x1A, 0x1A, 0x14 }, { 0x5F, 0x2A, 0x2D, 0x14 }, { 0x2A, 0x29, 0x29, 5 },
     { 0x4B, 0x2B, 0x2B, 5 },    { 0x43, 0x2A, 0x2D, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820CC8[9] = {
+static MapMarkerPos D_88820CC8[9] = {
     { 0x69, 0x2B, 0x2B, 1 },    { 0x29, 0x16, 0x16, 0xF },  { 0x4A, 0x1A, 0x1A, 0x14 },
     { 0x42, 0x18, 0x18, 0x14 }, { 0x5F, 0x24, 0x2A, 0x1E }, { 0x43, 0x2A, 0x2A, 4 },
     { 0x4B, 0x29, 0x29, 5 },    { 0x2A, 0x29, 0x29, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820D10[3] = { { 0x33, 0x1D, 0x1F, 5 }, { 0x32, 0xF, 0x16, 0x5F }, { -1, -1, -1, -1 } };
-static unk_D_88826CF0_004* D_88820D28[] = {
+static MapMarkerPos D_88820D10[3] = { { 0x33, 0x1D, 0x1F, 5 }, { 0x32, 0xF, 0x16, 0x5F }, { -1, -1, -1, -1 } };
+static MapMarkerPos* gPokedexPosTable[] = {
     D_88820A08, D_88820A40, D_88820A78, D_88820788, D_888207D8, D_88820828, D_88820738, D_88820B40, D_88820B90,
-    D_88820CC8, D_888204B0, D_888208E0, D_88820920, D_88820960, D_88820998, D_888202B0, D_88820300, D_88820328,
-    D_88820350, D_88820D10, D_88820C80, D_88820488, D_88820BD8, D_88820898, D_88820C38, D_88820AE8, D_88820570,
-    D_88820578, D_88820580, D_888205A0, D_888205C0, D_888205E0, D_88820600, D_888209D0, D_88820250, D_88820268,
-    D_888202E0, D_88820378, D_88820428, D_88820448, D_88820548, D_88820520, D_88820408, D_888204D8, D_88820468,
+    D_88820CC8, D_888204B0, D_888208E0, D_88820920, D_88820960, D_88820998, PokedexViridianForestEncounterTable, PokedexMtMoon1FEncounterTable, PokedexMtMoonB1FEncounterTable,
+    PokedexMtMoonB2FEncounterTable, D_88820D10, D_88820C80, D_88820488, D_88820BD8, D_88820898, D_88820C38, D_88820AE8, D_88820570,
+    D_88820578, D_88820580, D_888205A0, D_888205C0, D_888205E0, D_88820600, D_888209D0, PokedexRoute1EncounterTable, PokedexRoute2EncounterTable,
+    PokedexRoute3EncounterTable, PokedexRoute4EncounterTable, D_88820428, D_88820448, D_88820548, D_88820520, D_88820408, D_888204D8, D_88820468,
     D_888204F8, D_88820620, D_88820650, D_88820688, D_888206C0, D_888206E8, D_88820710, D_88820878, D_88820888,
-    D_88820AB0, D_88820288, D_88820C08, D_88820398, D_888203C8,
+    D_88820AB0, PokedexRoute22EncounterTable, D_88820C08, PokedexRoute24EncounterTable, PokedexRoute25EncounterTable,
 };
-static unk_D_88826CF0_004 D_88820E14[3] = { { 0x13, 2, 4, 0x32 }, { 0x10, 2, 5, 0x32 }, { -1, -1, -1, -1 } };
-static unk_D_88826CF0_004 D_88820E2C[4] = {
+static MapMarkerPos D_88820E14[3] = { { 0x13, 2, 4, 0x32 }, { 0x10, 2, 5, 0x32 }, { -1, -1, -1, -1 } };
+static MapMarkerPos D_88820E2C[4] = {
     { 0x000A, 0x0003, 0x0005, 0x000F },
     { 0x0013, 0x0002, 0x0005, 0x0028 },
     { 0x0010, 0x0003, 0x0005, 0x002D },
     { 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF },
 };
-static unk_D_88826CF0_004 D_88820E4C[5] = {
+static MapMarkerPos D_88820E4C[5] = {
     { 0x15, 3, 5, 0xA }, { 0x1D, 2, 4, 0x28 }, { 0x13, 2, 4, 0x2D }, { 0x20, 3, 4, 5 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820E74[6] = {
+static MapMarkerPos D_88820E74[6] = {
     { 0xB, 4, 6, 0x28 }, { 0xA, 3, 5, 0x2D }, { 0xE, 4, 4, 5 }, { 0x19, 3, 5, 5 }, { 0xD, 3, 3, 5 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820EA4[4] = {
+static MapMarkerPos D_88820EA4[4] = {
     { 0x27, 3, 7, 0xA },
     { 0x10, 6, 8, 0x2D },
     { 0x15, 5, 8, 0x2D },
     { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820EC4[5] = {
+static MapMarkerPos D_88820EC4[5] = {
     { 0x23, 8, 8, 1 }, { 0x4A, 8, 0xA, 0xF }, { 0x2E, 8, 8, 5 }, { 0x29, 6, 0xB, 0x4F }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820EEC[5] = {
+static MapMarkerPos D_88820EEC[5] = {
     { 0x2E, 0xA, 0xA, 0xA }, { 0x4A, 7, 9, 0x1A }, { 0x23, 9, 9, 4 }, { 0x29, 7, 0xB, 0x3C }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820F14[5] = {
+static MapMarkerPos D_88820F14[5] = {
     { 0x2E, 0xA, 0xC, 0xF }, { 0x4A, 9, 0xA, 0x1E }, { 0x29, 9, 0xC, 0x31 }, { 0x23, 0xA, 0xC, 6 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820F3C[4] = {
+static MapMarkerPos D_88820F3C[4] = {
     { 0x1B, 6, 0xC, 0x19 },
     { 0x15, 8, 0xC, 0x23 },
     { 0x13, 8, 0xC, 0x28 },
     { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820F5C[6] = {
+static MapMarkerPos D_88820F5C[6] = {
     { 0x3F, 8, 0xC, 0xF },    { 0xB, 8, 8, 0x14 },      { 0xA, 7, 7, 0x14 },
     { 0x10, 0xC, 0xD, 0x14 }, { 0x45, 0xC, 0xE, 0x19 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820F8C[8] = {
+static MapMarkerPos D_88820F8C[8] = {
     { 0xD, 8, 8, 1 },    { 0x10, 0xD, 0xD, 0xF },  { 0x3F, 0xA, 0xC, 0xF }, { 0xA, 8, 8, 0x14 },
     { 0xB, 9, 9, 0x14 }, { 0x45, 0xC, 0xE, 0x19 }, { 0xE, 7, 7, 4 },        { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820FCC[4] = {
+static MapMarkerPos D_88820FCC[4] = {
     { 0x1B, 0xB, 0x11, 0x19 },
     { 0x15, 0xD, 0x11, 0x23 },
     { 0x13, 0xE, 0x11, 0x28 },
     { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88820FEC[4] = {
+static MapMarkerPos D_88820FEC[4] = {
     { 0x34, 0xA, 0x10, 0x19 },
     { 0x45, 0xD, 0x10, 0x23 },
     { 0x10, 0xD, 0x10, 0x28 },
     { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_8882100C[4] = {
+static MapMarkerPos D_8882100C[4] = {
     { 0x34, 0xA, 0x10, 0x19 },
     { 0x45, 0xD, 0x10, 0x23 },
     { 0x10, 0xD, 0x10, 0x28 },
     { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_8882102C[4] = {
+static MapMarkerPos D_8882102C[4] = {
     { 0x60, 9, 0xF, 0x19 },
     { 0x15, 0xD, 0x11, 0x23 },
     { 0x1B, 0xC, 0xF, 0x28 },
     { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_8882104C[5] = {
+static MapMarkerPos D_8882104C[5] = {
     { 0x42, 0xF, 0x11, 0xF },  { 0x4A, 0x10, 0x11, 0x19 }, { 0x5F, 0xD, 0xF, 5 },
     { 0x29, 0xF, 0x12, 0x37 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88821074[5] = {
+static MapMarkerPos D_88821074[5] = {
     { 0x42, 0xF, 0x11, 0xF }, { 0x4A, 0x10, 0x12, 0x1A }, { 0x29, 0x10, 0x12, 0x32 },
     { 0x5F, 0xD, 0x11, 9 },   { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_8882109C[4] = {
+static MapMarkerPos D_8882109C[4] = {
     { 0x1B, 0xB, 0x11, 0x19 },
     { 0x15, 0xD, 0x11, 0x23 },
     { 0x64, 0xE, 0x11, 0x28 },
     { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888210BC[5] = {
+static MapMarkerPos D_888210BC[5] = {
     { 0x30, 0x18, 0x1A, 0x14 }, { 0x45, 0x16, 0x1A, 0x23 }, { 0x10, 0x17, 0x1B, 0x28 },
     { 0x46, 0x1C, 0x1E, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888210E4[5] = {
+static MapMarkerPos D_888210E4[5] = {
     { 0x25, 0xF, 0x12, 0x14 },  { 0x1B, 0x11, 0x13, 0x14 }, { 0x34, 0x12, 0x14, 0x1E },
     { 0x10, 0x12, 0x14, 0x1E }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_8882110C[5] = {
+static MapMarkerPos D_8882110C[5] = {
     { 0x25, 0x12, 0x14, 0xA },  { 0x10, 0x13, 0x16, 0x1E }, { 0x45, 0x13, 0x16, 0x1E },
     { 0x34, 0x11, 0x14, 0x1E }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88821134[1] = { -1, -1, -1, -1 };
-static unk_D_88826CF0_004 D_8882113C[1] = { -1, -1, -1, -1 };
-static unk_D_88826CF0_004 D_88821144[4] = {
+static MapMarkerPos D_88821134[1] = { -1, -1, -1, -1 };
+static MapMarkerPos D_8882113C[1] = { -1, -1, -1, -1 };
+static MapMarkerPos D_88821144[4] = {
     { 0x5D, 0x19, 0x19, 1 },
     { 0x68, 0x14, 0x16, 9 },
     { 0x5C, 0x12, 0x18, 0x5A },
     { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88821164[4] = {
+static MapMarkerPos D_88821164[4] = {
     { 0x5D, 0x19, 0x19, 5 },
     { 0x5C, 0x12, 0x18, 0x56 },
     { 0x68, 0x14, 0x16, 9 },
     { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88821184[4] = {
+static MapMarkerPos D_88821184[4] = {
     { 0x5D, 0x19, 0x19, 5 },
     { 0x5C, 0x12, 0x18, 0x56 },
     { 0x68, 0x14, 0x16, 9 },
     { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888211A4[4] = {
+static MapMarkerPos D_888211A4[4] = {
     { 0x5D, 0x1A, 0x1C, 6 },
     { 0x5C, 0x13, 0x18, 0x55 },
     { 0x68, 0x16, 0x18, 9 },
     { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888211C4[4] = {
+static MapMarkerPos D_888211C4[4] = {
     { 0x68, 0x16, 0x18, 0xA },
     { 0x5D, 0x1C, 0x1E, 0xF },
     { 0x5C, 0x14, 0x18, 0x4B },
     { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888211E4[6] = {
+static MapMarkerPos D_888211E4[6] = {
     { 0x30, 0x18, 0x1A, 0x14 }, { 0x45, 0x16, 0x1A, 0x23 }, { 0x10, 0x19, 0x1B, 0x23 },
     { 0x46, 0x1C, 0x1E, 5 },    { 0x84, 0x19, 0x19, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88821214[7] = {
+static MapMarkerPos D_88821214[7] = {
     { 0x84, 0x17, 0x17, 0xF }, { 0x30, 0x18, 0x1A, 0x14 }, { 0x10, 0x1A, 0x1A, 0x14 }, { 0x45, 0x16, 0x1A, 0x23 },
     { 0x46, 0x1E, 0x1E, 5 },   { 0x11, 0x1C, 0x1E, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_8882124C[7] = {
+static MapMarkerPos D_8882124C[7] = {
     { 0x10, 0x17, 0x17, 0xF }, { 0x84, 0x1A, 0x1A, 0x14 }, { 0x30, 0x1A, 0x1C, 0x14 }, { 0x45, 0x16, 0x1A, 0x23 },
     { 0x11, 0x1C, 0x1E, 5 },   { 0x46, 0x1E, 0x1E, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88821284[5] = {
+static MapMarkerPos D_88821284[5] = {
     { 0x54, 0x12, 0x16, 0x19 }, { 0x13, 0x12, 0x16, 0x1E }, { 0x15, 0x14, 0x16, 0x28 },
     { 0x14, 0x17, 0x19, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888212AC[5] = {
+static MapMarkerPos D_888212AC[5] = {
     { 0x54, 0x18, 0x1C, 0x19 }, { 0x14, 0x19, 0x1D, 0x1E }, { 0x15, 0x14, 0x16, 0x28 },
     { 0x16, 0x19, 0x1B, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888212D4[5] = {
+static MapMarkerPos D_888212D4[5] = {
     { 0x16, 0x19, 0x1D, 0xF },  { 0x14, 0x19, 0x1D, 0x14 }, { 0x54, 0x18, 0x1C, 0x19 },
     { 0x15, 0x14, 0x16, 0x28 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888212FC[0xA] = {
+static MapMarkerPos D_888212FC[0xA] = {
     { 0x71, 0x17, 0x17, 1 },    { 0x1E, 0x1F, 0x1F, 0xA },  { 0x30, 0x16, 0x16, 0xF }, { 0x6F, 0x19, 0x19, 0x14 },
     { 0x1D, 0x16, 0x16, 0x14 }, { 0x66, 0x18, 0x19, 0x14 }, { 0x7F, 0x17, 0x17, 4 },   { 0x21, 0x1F, 0x1F, 5 },
     { 0x2F, 0x1E, 0x1E, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_8882134C[0xA] = {
+static MapMarkerPos D_8882134C[0xA] = {
     { 0x7F, 0x1C, 0x1C, 1 },    { 0x1E, 0x21, 0x21, 0xA },  { 0x2E, 0x16, 0x16, 0xF }, { 0x1D, 0x18, 0x18, 0x14 },
     { 0x66, 0x17, 0x19, 0x14 }, { 0x54, 0x1A, 0x1A, 0x14 }, { 0x73, 0x19, 0x19, 4 },   { 0x20, 0x18, 0x18, 5 },
     { 0x2F, 0x19, 0x19, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_8882139C[0xA] = {
+static MapMarkerPos D_8882139C[0xA] = {
     { 0x80, 0x1C, 0x1C, 1 },    { 0x1E, 0x1E, 0x1E, 0xA },  { 0x2E, 0x17, 0x17, 0xF }, { 0x6F, 0x1A, 0x1A, 0x14 },
     { 0x66, 0x19, 0x1B, 0x14 }, { 0x1D, 0x16, 0x16, 0x14 }, { 0x71, 0x1A, 0x1A, 4 },   { 0x31, 0x20, 0x20, 5 },
     { 0x21, 0x1E, 0x1E, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888213EC[0xA] = {
+static MapMarkerPos D_888213EC[0xA] = {
     { 0x73, 0x1C, 0x1C, 1 },    { 0x1E, 0x21, 0x21, 0xA },  { 0x30, 0x17, 0x17, 0xF }, { 0x54, 0x1A, 0x1A, 0x14 },
     { 0x1D, 0x19, 0x19, 0x14 }, { 0x66, 0x18, 0x1A, 0x14 }, { 0x80, 0x1A, 0x1A, 4 },   { 0x20, 0x19, 0x19, 5 },
     { 0x31, 0x1F, 0x1F, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_8882143C[2] = { { 0x48, 5, 0x28, 0x64 }, { -1, -1, -1, -1 } };
-static unk_D_88826CF0_004 D_8882144C[2] = { { 0x48, 5, 0x28, 0x64 }, { -1, -1, -1, -1 } };
-static unk_D_88826CF0_004 D_8882145C[9] = {
+static MapMarkerPos D_8882143C[2] = { { 0x48, 5, 0x28, 0x64 }, { -1, -1, -1, -1 } };
+static MapMarkerPos D_8882144C[2] = { { 0x48, 5, 0x28, 0x64 }, { -1, -1, -1, -1 } };
+static MapMarkerPos D_8882145C[9] = {
     { 0x50, 0x26, 0x26, 1 },    { 0x29, 0x15, 0x15, 0xA },  { 0x78, 0x1C, 0x1E, 0x13 },
     { 0x62, 0x1C, 0x1E, 0x14 }, { 0x56, 0x1E, 0x1E, 0x14 }, { 0x36, 0x1E, 0x1E, 0x14 },
     { 0x2A, 0x1D, 0x1D, 5 },    { 0x4F, 0x1C, 0x1C, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888214A4[8] = {
+static MapMarkerPos D_888214A4[8] = {
     { 0x63, 0x25, 0x25, 1 },    { 0x78, 0x20, 0x20, 0xF },  { 0x36, 0x1C, 0x1E, 0xF }, { 0x56, 0x1C, 0x1E, 0xF },
     { 0x5A, 0x1E, 0x1E, 0x14 }, { 0x62, 0x1E, 0x20, 0x1E }, { 0x57, 0x26, 0x26, 4 },   { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888214E4[8] = {
+static MapMarkerPos D_888214E4[8] = {
     { 0x37, 0x25, 0x25, 1 },    { 0x5A, 0x1E, 0x1E, 0xA }, { 0x62, 0x1C, 0x1E, 0xF }, { 0x36, 0x1E, 0x20, 0x1E },
     { 0x56, 0x1E, 0x20, 0x23 }, { 0x2A, 0x1E, 0x1E, 4 },   { 0x78, 0x1C, 0x1C, 5 },   { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88821524[7] = {
+static MapMarkerPos D_88821524[7] = {
     { 0x57, 0x25, 0x25, 1 },    { 0x62, 0x1D, 0x1F, 0xF }, { 0x78, 0x1D, 0x1F, 0xF }, { 0x56, 0x1F, 0x21, 0x1E },
     { 0x36, 0x1F, 0x21, 0x23 }, { 0x63, 0x27, 0x27, 4 },   { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_8882155C[7] = {
+static MapMarkerPos D_8882155C[7] = {
     { 0x2A, 0x20, 0x20, 1 },    { 0x36, 0x1D, 0x1F, 0xF }, { 0x56, 0x1D, 0x1F, 0xF }, { 0x78, 0x1F, 0x21, 0x1E },
     { 0x62, 0x1F, 0x21, 0x23 }, { 0x37, 0x27, 0x27, 4 },   { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88821594[7] = {
+static MapMarkerPos D_88821594[7] = {
     { 0x6E, 0x27, 0x27, 1 },    { 0x25, 0x22, 0x22, 0xA }, { 0x59, 0x25, 0x25, 4 }, { 0x4D, 0x1C, 0x22, 0x28 },
     { 0x58, 0x1E, 0x20, 0x28 }, { 0x6D, 0x1E, 0x1E, 5 },   { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888215CC[7] = {
+static MapMarkerPos D_888215CC[7] = {
     { 0x6E, 0x25, 0x25, 1 },    { 0x25, 0x20, 0x20, 0x14 }, { 0x4D, 0x1C, 0x20, 0x19 }, { 0x59, 0x27, 0x27, 4 },
     { 0x58, 0x1E, 0x22, 0x2D }, { 0x6D, 0x1E, 0x1E, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88821604[8] = {
+static MapMarkerPos D_88821604[8] = {
     { 0x6E, 0x2A, 0x2A, 1 },    { 0x7E, 0x22, 0x22, 0xA },  { 0x4D, 0x20, 0x24, 0xE }, { 0x59, 0x26, 0x28, 0xF },
     { 0x25, 0x21, 0x21, 0x14 }, { 0x58, 0x1F, 0x23, 0x23 }, { 0x6D, 0x22, 0x22, 5 },   { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88821644[8] = {
+static MapMarkerPos D_88821644[8] = {
     { 0x6E, 0x2A, 0x2A, 1 }, { 0x59, 0x28, 0x28, 0xA }, { 0x25, 0x23, 0x23, 0xF },  { 0x4D, 0x20, 0x22, 0xF },
     { 0x7E, 0x26, 0x26, 4 }, { 0x6D, 0x23, 0x23, 5 },   { 0x58, 0x1F, 0x21, 0x32 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88821684[7] = {
+static MapMarkerPos D_88821684[7] = {
     { 0x72, 0x1C, 0x20, 0xA },  { 0x11, 0x1E, 0x20, 0xF }, { 0x14, 0x1E, 0x1E, 0xF }, { 0x13, 0x15, 0x17, 0x1E },
     { 0x10, 0x15, 0x17, 0x1E }, { 0x48, 5, 0x28, 0x64 },   { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888216BC[0xB] = {
+static MapMarkerPos D_888216BC[0xB] = {
     { 0x84, 0x35, 0x35, 1 },   { 0x31, 0x31, 0x31, 0xA },  { 0x55, 0x31, 0x31, 0xA },  { 0x1C, 0x34, 0x34, 0xA },
     { 0x52, 0x2E, 0x2E, 0xF }, { 0x61, 0x2E, 0x2E, 0x14 }, { 0x2A, 0x2E, 0x2E, 0x14 }, { 0x1A, 0x35, 0x35, 4 },
     { 0x2F, 0x34, 0x34, 5 },   { 0x40, 0x31, 0x31, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88821714[0xA] = {
+static MapMarkerPos D_88821714[0xA] = {
     { 0x65, 0x34, 0x34, 0xA },  { 0x69, 0x34, 0x34, 0xA },  { 0x70, 0x34, 0x34, 0xA }, { 0x40, 0x33, 0x33, 0xF },
     { 0x55, 0x33, 0x33, 0x14 }, { 0x31, 0x33, 0x33, 0x14 }, { 0x71, 0x38, 0x38, 5 },   { 0x84, 0x37, 0x3C, 5 },
     { 0x28, 0x36, 0x36, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88821764[9] = {
+static MapMarkerPos D_88821764[9] = {
     { 0x1A, 0x40, 0x40, 0xA },  { 0x71, 0x40, 0x40, 0xA }, { 0x2F, 0x40, 0x40, 0xA },
     { 0x84, 0x3F, 0x43, 0xA },  { 0x65, 0x37, 0x37, 0xF }, { 0x69, 0x37, 0x37, 0x14 },
     { 0x70, 0x37, 0x37, 0x14 }, { 0x1C, 0x39, 0x39, 5 },   { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888217AC[6] = {
+static MapMarkerPos D_888217AC[6] = {
     { 0x52, 0x20, 0x23, 0xA },  { 0x19, 0x14, 0x18, 0x19 }, { 0x51, 0x15, 0x17, 0x1E },
     { 0x64, 0x15, 0x17, 0x1E }, { 0x1A, 0x21, 0x24, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888217DC[6] = {
+static MapMarkerPos D_888217DC[6] = {
     { 0x15, 0x1A, 0x1A, 0xF },  { 0x1B, 0x1A, 0x1A, 0x14 }, { 0x16, 0x26, 0x2B, 0x19 },
     { 0x84, 0x21, 0x2B, 0x23 }, { 0x1C, 0x29, 0x29, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_8882180C[9] = {
+static MapMarkerPos D_8882180C[9] = {
     { 0x4B, 0x2B, 0x2B, 1 },    { 0x29, 0x1A, 0x1A, 0xF },  { 0x42, 0x16, 0x16, 0x14 },
     { 0x4A, 0x18, 0x18, 0x14 }, { 0x5F, 0x24, 0x2A, 0x1E }, { 0x69, 0x28, 0x28, 4 },
     { 0x43, 0x29, 0x29, 5 },    { 0x2A, 0x28, 0x28, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88821854[9] = {
+static MapMarkerPos D_88821854[9] = {
     { 0x31, 0x28, 0x28, 0xA },  { 0x29, 0x16, 0x16, 0xF },  { 0x42, 0x18, 0x18, 0x14 },
     { 0x4A, 0x1A, 0x1A, 0x14 }, { 0x5F, 0x2A, 0x2D, 0x14 }, { 0x2A, 0x29, 0x29, 5 },
     { 0x4B, 0x2B, 0x2B, 5 },    { 0x43, 0x2A, 0x2D, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_8882189C[9] = {
+static MapMarkerPos D_8882189C[9] = {
     { 0x69, 0x2B, 0x2B, 1 },    { 0x29, 0x16, 0x16, 0xF },  { 0x4A, 0x1A, 0x1A, 0x14 },
     { 0x42, 0x18, 0x18, 0x14 }, { 0x5F, 0x24, 0x2A, 0x1E }, { 0x43, 0x2A, 0x2A, 4 },
     { 0x4B, 0x29, 0x29, 5 },    { 0x2A, 0x29, 0x29, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888218E4[3] = { { 0x33, 0x1D, 0x1F, 5 }, { 0x32, 0xF, 0x16, 0x5F }, { -1, -1, -1, -1 } };
-static unk_D_88826CF0_004* D_888218FC[] = {
+static MapMarkerPos D_888218E4[3] = { { 0x33, 0x1D, 0x1F, 5 }, { 0x32, 0xF, 0x16, 0x5F }, { -1, -1, -1, -1 } };
+static MapMarkerPos* gPokedexPosTableAlt[] = {
     D_888215CC, D_88821604, D_88821644, D_8882134C, D_8882139C, D_888213EC, D_888212FC, D_88821714, D_88821764,
     D_8882189C, D_88821074, D_888214A4, D_888214E4, D_88821524, D_8882155C, D_88820E74, D_88820EC4, D_88820EEC,
     D_88820F14, D_888218E4, D_88821854, D_8882104C, D_888217AC, D_8882145C, D_8882180C, D_888216BC, D_88821134,
@@ -608,317 +608,317 @@ static unk_D_88826CF0_004* D_888218FC[] = {
     D_88821684, D_88820E4C, D_888217DC, D_88820F5C, D_88820F8C,
 };
 
-static unk_D_88826CF0_004 D_888219E8[] = {
+static MapMarkerPos D_888219E8[] = {
     { 19, 2, 4, 50 },
     { 16, 2, 5, 50 },
     { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821A00[] = {
+static MapMarkerPos D_88821A00[] = {
     { 10, 3, 5, 15 },
     { 19, 2, 5, 40 },
     { 16, 3, 5, 45 },
     { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821A20[] = {
+static MapMarkerPos D_88821A20[] = {
     { 21, 3, 5, 10 }, { 32, 2, 4, 40 }, { 19, 2, 4, 45 }, { 29, 3, 4, 5 }, { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821A48[] = {
+static MapMarkerPos D_88821A48[] = {
     { 11, 4, 6, 40 }, { 10, 3, 5, 45 }, { 14, 4, 4, 5 }, { 25, 3, 5, 5 }, { 13, 3, 3, 5 }, { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821A78[] = {
+static MapMarkerPos D_88821A78[] = {
     { 39, 3, 7, 10 },
     { 16, 6, 8, 45 },
     { 21, 5, 8, 45 },
     { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821A98[] = {
+static MapMarkerPos D_88821A98[] = {
     { 35, 8, 8, 1 }, { 74, 8, 10, 15 }, { 46, 8, 8, 5 }, { 41, 6, 11, 79 }, { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821AC0[] = {
+static MapMarkerPos D_88821AC0[] = {
     { 46, 10, 10, 10 }, { 74, 7, 9, 26 }, { 35, 9, 9, 4 }, { 41, 7, 11, 60 }, { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821AE8[] = {
+static MapMarkerPos D_88821AE8[] = {
     { 46, 10, 12, 15 }, { 74, 9, 10, 30 }, { 41, 9, 12, 49 }, { 35, 10, 12, 6 }, { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821B10[] = {
+static MapMarkerPos D_88821B10[] = {
     { 27, 6, 12, 25 },
     { 21, 8, 12, 35 },
     { 19, 8, 12, 40 },
     { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821B30[] = {
+static MapMarkerPos D_88821B30[] = {
     { 63, 8, 12, 15 }, { 11, 8, 8, 20 }, { 10, 7, 7, 20 }, { 16, 12, 13, 20 }, { 43, 12, 14, 25 }, { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821B60[] = {
+static MapMarkerPos D_88821B60[] = {
     { 13, 8, 8, 1 },  { 63, 10, 12, 15 }, { 16, 13, 13, 15 }, { 10, 8, 8, 20 },
     { 11, 9, 9, 20 }, { 43, 12, 14, 25 }, { 14, 7, 7, 4 },    { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821BA0[] = {
+static MapMarkerPos D_88821BA0[] = {
     { 27, 11, 17, 25 },
     { 21, 13, 17, 35 },
     { 19, 14, 17, 40 },
     { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821BC0[] = {
+static MapMarkerPos D_88821BC0[] = {
     { 52, 10, 16, 25 },
     { 43, 13, 16, 35 },
     { 16, 13, 16, 40 },
     { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821BE0[] = {
+static MapMarkerPos D_88821BE0[] = {
     { 52, 10, 16, 25 },
     { 43, 13, 16, 35 },
     { 16, 13, 16, 40 },
     { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821C00[] = {
+static MapMarkerPos D_88821C00[] = {
     { 96, 9, 15, 25 },
     { 21, 13, 17, 35 },
     { 27, 12, 15, 40 },
     { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821C20[] = {
+static MapMarkerPos D_88821C20[] = {
     { 132, 18, 18, 10 }, { 66, 15, 17, 15 }, { 74, 16, 17, 25 },
     { 41, 15, 17, 45 },  { 95, 13, 15, 5 },  { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821C50[] = {
+static MapMarkerPos D_88821C50[] = {
     { 132, 18, 18, 10 }, { 66, 15, 17, 15 }, { 74, 16, 18, 26 },
     { 41, 16, 17, 40 },  { 95, 13, 17, 9 },  { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821C80[] = {
+static MapMarkerPos D_88821C80[] = {
     { 27, 11, 17, 25 },
     { 21, 13, 17, 35 },
     { 100, 14, 17, 40 },
     { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821CA0[] = {
+static MapMarkerPos D_88821CA0[] = {
     { 48, 24, 26, 20 }, { 43, 22, 26, 35 }, { 16, 23, 27, 40 }, { 44, 28, 30, 5 }, { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821CC8[] = {
+static MapMarkerPos D_88821CC8[] = {
     { 27, 17, 19, 20 }, { 58, 15, 18, 20 }, { 52, 18, 20, 30 }, { 16, 18, 20, 30 }, { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821CF0[] = {
+static MapMarkerPos D_88821CF0[] = {
     { 58, 18, 20, 10 }, { 43, 19, 22, 30 }, { 16, 19, 22, 30 }, { 52, 17, 20, 30 }, { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821D18[] = {
+static MapMarkerPos D_88821D18[] = {
     { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821D20[] = {
+static MapMarkerPos D_88821D20[] = {
     { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821D28[] = {
+static MapMarkerPos D_88821D28[] = {
     { 93, 25, 25, 1 },
     { 104, 20, 22, 9 },
     { 92, 18, 24, 90 },
     { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821D48[] = {
+static MapMarkerPos D_88821D48[] = {
     { 93, 25, 25, 5 },
     { 92, 18, 24, 86 },
     { 104, 20, 22, 9 },
     { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821D68[] = {
+static MapMarkerPos D_88821D68[] = {
     { 93, 25, 25, 5 },
     { 92, 18, 24, 86 },
     { 104, 20, 22, 9 },
     { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821D88[] = {
+static MapMarkerPos D_88821D88[] = {
     { 93, 26, 28, 6 },
     { 92, 19, 24, 85 },
     { 104, 22, 24, 9 },
     { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821DA8[] = {
+static MapMarkerPos D_88821DA8[] = {
     { 104, 22, 24, 10 },
     { 93, 28, 30, 15 },
     { 92, 20, 24, 75 },
     { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821DC8[] = {
+static MapMarkerPos D_88821DC8[] = {
     { 48, 24, 26, 20 }, { 43, 22, 26, 35 }, { 16, 25, 27, 35 },
     { 132, 25, 25, 5 }, { 44, 28, 30, 5 },  { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821DF8[] = {
+static MapMarkerPos D_88821DF8[] = {
     { 132, 23, 23, 15 }, { 16, 26, 26, 20 }, { 48, 24, 26, 20 }, { 43, 22, 26, 35 },
     { 44, 30, 30, 5 },   { 17, 28, 30, 5 },  { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821E30[] = {
+static MapMarkerPos D_88821E30[] = {
     { 16, 23, 23, 15 }, { 132, 26, 26, 20 }, { 48, 26, 28, 20 }, { 43, 22, 26, 35 },
     { 17, 28, 30, 5 },  { 44, 30, 30, 5 },   { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821E68[] = {
+static MapMarkerPos D_88821E68[] = {
     { 84, 18, 22, 25 }, { 19, 18, 22, 30 }, { 21, 20, 22, 40 }, { 20, 23, 25, 5 }, { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821E90[] = {
+static MapMarkerPos D_88821E90[] = {
     { 84, 24, 28, 25 }, { 20, 25, 29, 30 }, { 21, 20, 22, 40 }, { 22, 25, 27, 5 }, { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821EB8[] = {
+static MapMarkerPos D_88821EB8[] = {
     { 22, 25, 29, 15 }, { 20, 25, 29, 20 }, { 84, 24, 28, 25 }, { 21, 20, 22, 40 }, { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821EE0[] = {
+static MapMarkerPos D_88821EE0[] = {
     { 113, 23, 23, 1 },  { 33, 31, 31, 10 }, { 48, 22, 22, 15 }, { 32, 22, 22, 20 }, { 102, 24, 25, 20 },
     { 111, 25, 25, 20 }, { 123, 23, 23, 4 }, { 47, 30, 30, 5 },  { 30, 31, 31, 5 },  { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821F30[] = {
+static MapMarkerPos D_88821F30[] = {
     { 123, 28, 28, 1 },  { 33, 33, 33, 10 }, { 46, 22, 22, 15 }, { 84, 26, 26, 20 }, { 32, 24, 24, 20 },
     { 102, 23, 25, 20 }, { 108, 25, 25, 4 }, { 47, 25, 25, 5 },  { 29, 24, 24, 5 },  { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821F80[] = {
+static MapMarkerPos D_88821F80[] = {
     { 127, 28, 28, 1 },  { 33, 30, 30, 10 }, { 46, 23, 23, 15 }, { 111, 26, 26, 20 }, { 32, 22, 22, 20 },
     { 102, 25, 27, 20 }, { 113, 26, 26, 4 }, { 49, 32, 32, 5 },  { 30, 30, 30, 5 },   { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88821FD0[] = {
+static MapMarkerPos D_88821FD0[] = {
     { 108, 28, 28, 1 },  { 33, 33, 33, 10 }, { 48, 23, 23, 15 }, { 32, 25, 25, 20 }, { 84, 26, 26, 20 },
     { 102, 24, 26, 20 }, { 127, 26, 26, 4 }, { 49, 31, 31, 5 },  { 29, 25, 25, 5 },  { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88822020[] = {
+static MapMarkerPos D_88822020[] = {
     { 72, 5, 40, 100 },
     { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88822030[] = {
+static MapMarkerPos D_88822030[] = {
     { 72, 5, 40, 100 },
     { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88822040[] = {
+static MapMarkerPos D_88822040[] = {
     { 80, 38, 38, 1 },  { 41, 21, 21, 10 }, { 120, 28, 30, 19 }, { 98, 28, 30, 20 }, { 116, 30, 30, 20 },
     { 86, 30, 30, 20 }, { 42, 29, 29, 5 },  { 79, 28, 28, 5 },   { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88822088[] = {
+static MapMarkerPos D_88822088[] = {
     { 99, 37, 37, 1 },  { 116, 28, 30, 15 }, { 120, 32, 32, 15 }, { 86, 28, 30, 15 },
     { 90, 30, 30, 20 }, { 98, 30, 32, 30 },  { 87, 38, 38, 4 },   { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_888220C8[] = {
+static MapMarkerPos D_888220C8[] = {
     { 124, 37, 37, 1 }, { 90, 30, 30, 10 }, { 98, 28, 30, 15 }, { 116, 30, 32, 30 },
     { 86, 30, 32, 35 }, { 42, 30, 30, 4 },  { 120, 28, 28, 5 }, { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88822108[] = {
+static MapMarkerPos D_88822108[] = {
     { 87, 37, 37, 1 },   { 120, 29, 31, 15 }, { 98, 29, 31, 15 }, { 86, 31, 33, 30 },
     { 116, 31, 33, 35 }, { 99, 39, 39, 4 },   { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88822140[] = {
+static MapMarkerPos D_88822140[] = {
     { 42, 32, 32, 1 },  { 86, 29, 31, 15 }, { 116, 29, 31, 15 }, { 120, 31, 33, 30 },
     { 98, 31, 33, 35 }, { 124, 39, 39, 4 }, { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88822178[] = {
+static MapMarkerPos D_88822178[] = {
     { 110, 39, 39, 1 }, { 58, 34, 34, 10 }, { 89, 37, 37, 4 },  { 77, 28, 34, 40 },
     { 88, 30, 32, 40 }, { 109, 30, 30, 5 }, { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_888221B0[] = {
+static MapMarkerPos D_888221B0[] = {
     { 110, 37, 37, 1 }, { 58, 32, 32, 20 }, { 77, 28, 32, 25 }, { 89, 39, 39, 4 },
     { 88, 30, 34, 45 }, { 109, 30, 30, 5 }, { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_888221E8[] = {
+static MapMarkerPos D_888221E8[] = {
     { 110, 42, 42, 1 }, { 89, 38, 40, 15 }, { 58, 33, 33, 20 }, { 77, 32, 36, 24 },
     { 88, 31, 35, 35 }, { 109, 34, 34, 5 }, { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88822220[] = {
+static MapMarkerPos D_88822220[] = {
     { 110, 42, 42, 1 }, { 89, 38, 40, 14 }, { 77, 32, 34, 15 }, { 58, 35, 35, 15 },
     { 109, 35, 35, 5 }, { 88, 31, 33, 50 }, { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88822258[] = {
+static MapMarkerPos D_88822258[] = {
     { 114, 28, 32, 10 }, { 17, 30, 32, 15 }, { 20, 30, 30, 15 }, { 19, 21, 23, 30 },
     { 16, 21, 23, 30 },  { 72, 5, 40, 100 }, { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88822290[] = {
+static MapMarkerPos D_88822290[] = {
     { 132, 53, 53, 1 }, { 49, 49, 49, 10 }, { 28, 52, 52, 10 }, { 78, 49, 49, 10 },
     { 82, 46, 46, 15 }, { 97, 46, 46, 20 }, { 42, 46, 46, 20 }, { 26, 53, 53, 4 },
     { 64, 49, 49, 5 },  { 47, 52, 52, 5 },  { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_888222E8[] = {
+static MapMarkerPos D_888222E8[] = {
     { 101, 52, 52, 10 }, { 20, 52, 52, 10 }, { 112, 52, 52, 10 }, { 64, 51, 51, 15 }, { 85, 51, 51, 20 },
     { 49, 51, 51, 20 },  { 113, 56, 56, 5 }, { 40, 54, 54, 5 },   { 132, 55, 60, 5 }, { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88822338[] = {
+static MapMarkerPos D_88822338[] = {
     { 26, 64, 64, 10 },  { 35, 64, 64, 10 },  { 47, 64, 64, 10 }, { 132, 63, 67, 10 }, { 101, 55, 55, 15 },
     { 105, 55, 55, 20 }, { 112, 55, 55, 20 }, { 28, 57, 57, 5 },  { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88822380[] = {
+static MapMarkerPos D_88822380[] = {
     { 82, 32, 35, 10 },  { 25, 20, 24, 25 }, { 81, 21, 23, 30 },
     { 100, 21, 23, 30 }, { 26, 33, 36, 5 },  { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_888223B0[] = {
+static MapMarkerPos D_888223B0[] = {
     { 21, 26, 26, 15 },  { 27, 26, 26, 20 }, { 22, 38, 43, 25 },
     { 132, 33, 43, 35 }, { 28, 41, 41, 5 },  { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_888223E0[] = {
+static MapMarkerPos D_888223E0[] = {
     { 75, 43, 43, 1 },  { 41, 26, 26, 15 }, { 66, 22, 22, 20 }, { 74, 24, 24, 20 }, { 95, 36, 42, 30 },
     { 105, 40, 40, 4 }, { 67, 41, 41, 5 },  { 42, 40, 40, 5 },  { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88822428[] = {
+static MapMarkerPos D_88822428[] = {
     { 49, 40, 40, 10 }, { 41, 22, 22, 15 }, { 66, 24, 24, 20 }, { 74, 26, 26, 20 }, { 95, 42, 45, 20 },
     { 42, 41, 41, 5 },  { 75, 43, 43, 5 },  { 67, 42, 45, 5 },  { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_88822470[] = {
+static MapMarkerPos D_88822470[] = {
     { 105, 43, 43, 1 }, { 41, 22, 22, 15 }, { 74, 26, 26, 20 }, { 66, 24, 24, 20 }, { 95, 36, 42, 30 },
     { 67, 42, 42, 4 },  { 75, 41, 41, 5 },  { 42, 41, 41, 5 },  { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004 D_888224B8[] = {
+static MapMarkerPos D_888224B8[] = {
     { 51, 29, 31, 5 },
     { 50, 15, 22, 95 },
     { -1, -1, -1, -1 },
 };
 
-static unk_D_88826CF0_004* D_888224D0[] = {
+static MapMarkerPos* gPokedexPosTableExtra[] = {
     D_888221B0, D_888221E8, D_88822220, D_88821F30, D_88821F80, D_88821FD0, D_88821EE0, D_888222E8, D_88822338,
     D_88822470, D_88821C50, D_88822088, D_888220C8, D_88822108, D_88822140, D_88821A48, D_88821A98, D_88821AC0,
     D_88821AE8, D_888224B8, D_88822428, D_88821C20, D_88822380, D_88822040, D_888223E0, D_88822290, D_88821D18,
@@ -928,233 +928,233 @@ static unk_D_88826CF0_004* D_888224D0[] = {
     D_88822258, D_88821A20, D_888223B0, D_88821B30, D_88821B60,
 };
 
-static unk_D_88826CF0_004 D_888225BC[3] = { { 0x13, 2, 4, 0x1E }, { 0x10, 2, 7, 0x46 }, { -1, -1, -1, -1 } };
-static unk_D_88826CF0_004 D_888225D4[5] = {
+static MapMarkerPos D_888225BC[3] = { { 0x13, 2, 4, 0x1E }, { 0x10, 2, 7, 0x46 }, { -1, -1, -1, -1 } };
+static MapMarkerPos D_888225D4[5] = {
     { 0x001D, 0x0004, 0x0006, 0x000F }, { 0x0020, 0x0004, 0x0006, 0x000F }, { 0x0010, 0x0003, 0x0007, 0x0023 },
     { 0x0013, 0x0003, 0x0004, 0x0023 }, { 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF },
 };
-static unk_D_88826CF0_004 D_888225FC[6] = {
+static MapMarkerPos D_888225FC[6] = {
     { 0x13, 3, 3, 0xA },  { 0x15, 2, 6, 0xA },  { 0x38, 3, 5, 0x14 },
     { 0x20, 2, 4, 0x1E }, { 0x1D, 2, 4, 0x1E }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_8882262C[5] = {
+static MapMarkerPos D_8882262C[5] = {
     { 0x11, 9, 9, 1 }, { 0x10, 4, 8, 0x18 }, { 0xB, 4, 6, 0x19 }, { 0xA, 3, 6, 0x32 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822654[5] = {
+static MapMarkerPos D_88822654[5] = {
     { 0x13, 0xA, 0xC, 0xF }, { 0x38, 9, 9, 0xF }, { 0x1B, 8, 0xA, 0xF }, { 0x15, 8, 0xC, 0x37 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_8882267C[5] = {
+static MapMarkerPos D_8882267C[5] = {
     { 0x23, 0xB, 0xB, 1 }, { 0x4A, 0xA, 0xA, 0x14 }, { 0x1B, 0xC, 0xC, 4 }, { 0x29, 6, 0xB, 0x4B }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888226A4[5] = {
+static MapMarkerPos D_888226A4[5] = {
     { 0x2E, 9, 0xB, 0xA }, { 0x4A, 0xA, 0xB, 0x14 }, { 0x23, 0xA, 0xC, 5 }, { 0x29, 8, 0xB, 0x41 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888226CC[5] = {
+static MapMarkerPos D_888226CC[5] = {
     { 0x23, 9, 0xD, 0xA },    { 0x2E, 0xD, 0xD, 0xF }, { 0x4A, 0xB, 0xB, 0x14 },
     { 0x29, 0xA, 0xD, 0x37 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888226F4[5] = {
+static MapMarkerPos D_888226F4[5] = {
     { 0x13, 0xA, 0xC, 0xF }, { 0x38, 9, 9, 0xF }, { 0x1B, 8, 0xA, 0xF }, { 0x15, 8, 0xC, 0x37 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_8882271C[6] = {
+static MapMarkerPos D_8882271C[6] = {
     { 0x11, 0x11, 0x11, 1 },  { 0x30, 0xD, 0x10, 0xA }, { 0x10, 0xD, 0x11, 0x1D },
     { 0x45, 0xC, 0xE, 0x1E }, { 0x2B, 0xC, 0xE, 0x1E }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_8882274C[6] = {
+static MapMarkerPos D_8882274C[6] = {
     { 0x11, 0x11, 0x11, 1 },  { 0x30, 0xD, 0x10, 0xA }, { 0x10, 0xD, 0x11, 0x1D },
     { 0x45, 0xC, 0xE, 0x1E }, { 0x2B, 0xC, 0xE, 0x1E }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_8882277C[9] = {
+static MapMarkerPos D_8882277C[9] = {
     { 0x16, 0x13, 0x13, 1 },    { 0x15, 0x11, 0x11, 0xA },  { 0x13, 0x12, 0x12, 0xF },
     { 0x1D, 0x10, 0x12, 0x1E }, { 0x20, 0x10, 0x12, 0x1E }, { 0x14, 0x14, 0x14, 4 },
     { 0x21, 0x12, 0x12, 5 },    { 0x1E, 0x12, 0x12, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888227C4[6] = {
+static MapMarkerPos D_888227C4[6] = {
     { 0x27, 3, 7, 0xA },       { 0x3F, 7, 7, 0xF },     { 0x13, 0xE, 0x10, 0x1E },
     { 0x10, 0xF, 0x11, 0x28 }, { 0x11, 0x11, 0x11, 5 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888227F4[8] = {
+static MapMarkerPos D_888227F4[8] = {
     { 0x27, 3, 7, 0xA },     { 0x3F, 7, 7, 0xF },    { 0x13, 0xE, 0x10, 0x1E }, { 0x10, 0xF, 0x11, 0x28 },
     { 0x11, 0x11, 0x11, 5 }, { 0x37, 0xF, 0x14, 5 }, { 0x36, 0xF, 0xF, 0x5F },  { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822834[6] = {
+static MapMarkerPos D_88822834[6] = {
     { 0x14, 0x11, 0x11, 1 },   { 0x11, 0x12, 0x14, 0xA },  { 0x60, 0xF, 0x13, 0x18 },
     { 0x13, 0xF, 0x11, 0x1E }, { 0x10, 0x10, 0x12, 0x23 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822864[4] = {
+static MapMarkerPos D_88822864[4] = {
     { 0x42, 0x11, 0x15, 0xA },
     { 0x4A, 0x10, 0x14, 0x28 },
     { 0x29, 0xF, 0x15, 0x32 },
     { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822884[5] = {
+static MapMarkerPos D_88822884[5] = {
     { 0x5F, 0xE, 0x16, 0xA },   { 0x42, 0x12, 0x14, 0x14 }, { 0x4A, 0x11, 0x15, 0x1E },
     { 0x29, 0x14, 0x16, 0x28 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888228AC[7] = {
+static MapMarkerPos D_888228AC[7] = {
     { 0x1D, 0x11, 0x11, 0xA }, { 0x20, 0x11, 0x11, 0xA },  { 0x13, 0x12, 0x12, 0x14 }, { 0x42, 0x10, 0x12, 5 },
     { 0x14, 0x14, 0x14, 5 },   { 0x51, 0x10, 0x16, 0x32 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888228E4[0xA] = {
+static MapMarkerPos D_888228E4[0xA] = {
     { 0x11, 0x1C, 0x1C, 0xA }, { 0x10, 0x1C, 0x1C, 0xF }, { 0x2B, 0x19, 0x1B, 0x1E }, { 0x45, 0x19, 0x1B, 0x1E },
     { 0x2C, 0x1D, 0x1D, 5 },   { 0x53, 0x1A, 0x1F, 5 },   { 0x46, 0x1D, 0x1D, 5 },    { 0x50, 0xF, 0x14, 5 },
     { 0x4F, 0xF, 0xF, 0x5F },  { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822934[7] = {
+static MapMarkerPos D_88822934[7] = {
     { 0x27, 0x13, 0x18, 0xA },  { 0x11, 0x18, 0x18, 0xA }, { 0x13, 0x14, 0x14, 0xF }, { 0x3F, 0xF, 0x13, 0x14 },
     { 0x10, 0x14, 0x16, 0x28 }, { 0x40, 0x14, 0x1B, 5 },   { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_8882296C[6] = {
+static MapMarkerPos D_8882296C[6] = {
     { 0x27, 0x13, 0x18, 0xA }, { 0x11, 0x18, 0x18, 0xA },  { 0x13, 0x14, 0x14, 0xF },
     { 0x3F, 0xF, 0x1A, 0x19 }, { 0x10, 0x14, 0x16, 0x28 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_8882299C[1] = { -1, -1, -1, -1 };
-static unk_D_88826CF0_004 D_888229A4[1] = { -1, -1, -1, -1 };
-static unk_D_88826CF0_004 D_888229AC[3] = { { 0x5D, 0x14, 0x19, 5 }, { 0x5C, 0x12, 0x19, 0x5F }, { -1, -1, -1, -1 } };
-static unk_D_88826CF0_004 D_888229C4[3] = { { 0x5D, 0x14, 0x19, 5 }, { 0x5C, 0x12, 0x19, 0x5F }, { -1, -1, -1, -1 } };
-static unk_D_88826CF0_004 D_888229DC[4] = {
+static MapMarkerPos D_8882299C[1] = { -1, -1, -1, -1 };
+static MapMarkerPos D_888229A4[1] = { -1, -1, -1, -1 };
+static MapMarkerPos D_888229AC[3] = { { 0x5D, 0x14, 0x19, 5 }, { 0x5C, 0x12, 0x19, 0x5F }, { -1, -1, -1, -1 } };
+static MapMarkerPos D_888229C4[3] = { { 0x5D, 0x14, 0x19, 5 }, { 0x5C, 0x12, 0x19, 0x5F }, { -1, -1, -1, -1 } };
+static MapMarkerPos D_888229DC[4] = {
     { 0x5D, 0x16, 0x1B, 5 },
     { 0x68, 0x14, 0x14, 5 },
     { 0x5C, 0x15, 0x1B, 0x5A },
     { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888229FC[4] = {
+static MapMarkerPos D_888229FC[4] = {
     { 0x5D, 0x16, 0x1B, 5 },
     { 0x68, 0x16, 0x16, 5 },
     { 0x5C, 0x15, 0x1B, 0x5A },
     { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822A1C[4] = {
+static MapMarkerPos D_88822A1C[4] = {
     { 0x5D, 0x18, 0x1D, 5 },
     { 0x68, 0x18, 0x18, 5 },
     { 0x5C, 0x17, 0x1D, 0x5A },
     { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822A3C[0xA] = {
+static MapMarkerPos D_88822A3C[0xA] = {
     { 0x10, 0x1C, 0x1C, 0xA }, { 0x11, 0x1C, 0x1C, 0xF }, { 0x2B, 0x19, 0x1B, 0x1E }, { 0x45, 0x19, 0x1B, 0x1E },
     { 0x2C, 0x1D, 0x1D, 5 },   { 0x53, 0x1A, 0x1F, 5 },   { 0x46, 0x1D, 0x1D, 5 },    { 0x50, 0xF, 0x14, 5 },
     { 0x4F, 0xF, 0xF, 0x5F },  { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822A8C[8] = {
+static MapMarkerPos D_88822A8C[8] = {
     { 0x31, 0x1E, 0x1E, 1 },    { 0x11, 0x1E, 0x1E, 0xA }, { 0x30, 0x18, 0x1B, 0x13 }, { 0x2B, 0x1A, 0x1C, 0x1E },
     { 0x45, 0x1A, 0x1C, 0x1E }, { 0x46, 0x1E, 0x1E, 5 },   { 0x2C, 0x1E, 0x1E, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822ACC[8] = {
+static MapMarkerPos D_88822ACC[8] = {
     { 0x31, 0x1E, 0x1E, 1 },    { 0x11, 0x20, 0x20, 0xA }, { 0x30, 0x18, 0x1B, 0x13 }, { 0x2B, 0x1A, 0x1C, 0x1E },
     { 0x45, 0x1A, 0x1C, 0x1E }, { 0x46, 0x1E, 0x1E, 5 },   { 0x2C, 0x1E, 0x1E, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822B0C[6] = {
+static MapMarkerPos D_88822B0C[6] = {
     { 0x13, 0x17, 0x18, 0x19 }, { 0x15, 0x16, 0x17, 0x19 }, { 0x54, 0x16, 0x1A, 0x28 },
     { 0x16, 0x18, 0x18, 5 },    { 0x14, 0x19, 0x1A, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822B3C[5] = {
+static MapMarkerPos D_88822B3C[5] = {
     { 0x55, 0x1D, 0x1D, 1 },    { 0x4D, 0x1C, 0x20, 0x18 }, { 0x16, 0x1B, 0x1D, 0x19 },
     { 0x54, 0x1A, 0x1C, 0x32 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822B64[6] = {
+static MapMarkerPos D_88822B64[6] = {
     { 0x13, 0x17, 0x18, 0x19 }, { 0x15, 0x16, 0x17, 0x19 }, { 0x54, 0x16, 0x1A, 0x28 },
     { 0x16, 0x18, 0x18, 5 },    { 0x14, 0x19, 0x1A, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822B94[0xA] = {
+static MapMarkerPos D_88822B94[0xA] = {
     { 0x71, 7, 7, 1 },         { 0x21, 0x17, 0x17, 0xA }, { 0x6F, 0x14, 0x14, 0xA },  { 0x2F, 0x1B, 0x20, 0xF },
     { 0x66, 0x18, 0x18, 0xF }, { 0x20, 0xE, 0xE, 0x14 },  { 0x1D, 0x24, 0x24, 0x14 }, { 0x72, 0x16, 0x16, 4 },
     { 0x2E, 0x1B, 0x1B, 5 },   { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822BE4[0xA] = {
+static MapMarkerPos D_88822BE4[0xA] = {
     { 0x7B, 0xF, 0xF, 1 },      { 0x68, 0x13, 0x13, 0xA },  { 0x80, 0x15, 0x15, 0xA },  { 0x1E, 0x20, 0x20, 0xA },
     { 0x1D, 0x1D, 0x1D, 0x14 }, { 0x20, 0x15, 0x15, 0x14 }, { 0x66, 0x16, 0x1A, 0x14 }, { 0x71, 0x15, 0x15, 4 },
     { 0x69, 0x18, 0x18, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822C34[0xA] = {
+static MapMarkerPos D_88822C34[0xA] = {
     { 0x7F, 0xF, 0xF, 1 },     { 0x1E, 0x17, 0x17, 0xA }, { 0x6F, 0x19, 0x19, 0xA },  { 0x73, 0x1C, 0x21, 0xF },
     { 0x66, 0x14, 0x14, 0xF }, { 0x1D, 0xE, 0xE, 0x14 },  { 0x20, 0x24, 0x24, 0x14 }, { 0x7B, 0x19, 0x19, 4 },
     { 0x68, 0x10, 0x10, 5 },   { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822C84[0xA] = {
+static MapMarkerPos D_88822C84[0xA] = {
     { 0x72, 0x1B, 0x1B, 1 },    { 0x68, 0x13, 0x13, 0xA },  { 0x21, 0x20, 0x20, 0xA },  { 0x80, 0x15, 0x15, 0xA },
     { 0x1D, 0x15, 0x15, 0x14 }, { 0x20, 0x1D, 0x1D, 0x14 }, { 0x66, 0x16, 0x1A, 0x14 }, { 0x7F, 0x19, 0x19, 4 },
     { 0x69, 0x18, 0x18, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822CD4[2] = { { 0x48, 5, 0x28, 0x64 }, { -1, -1, -1, -1 } };
-static unk_D_88826CF0_004 D_88822CE4[2] = { { 0x48, 5, 0x28, 0x64 }, { -1, -1, -1, -1 } };
-static unk_D_88826CF0_004 D_88822CF4[5] = {
+static MapMarkerPos D_88822CD4[2] = { { 0x48, 5, 0x28, 0x64 }, { -1, -1, -1, -1 } };
+static MapMarkerPos D_88822CE4[2] = { { 0x48, 5, 0x28, 0x64 }, { -1, -1, -1, -1 } };
+static MapMarkerPos D_88822CF4[5] = {
     { 0x4F, 0x1C, 0x1E, 0xF }, { 0x62, 0x19, 0x1B, 0x23 }, { 0x29, 9, 0x24, 0x2D },
     { 0x2A, 0x1B, 0x24, 5 },   { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822D1C[7] = {
+static MapMarkerPos D_88822D1C[7] = {
     { 0x4F, 0x1D, 0x1D, 0xA }, { 0x2A, 0x1B, 0x1B, 0xA }, { 0x62, 0x1A, 0x1C, 0x1E }, { 0x29, 0x12, 0x24, 0x28 },
     { 0x56, 0x16, 0x1A, 5 },   { 0x63, 0x1C, 0x1C, 5 },   { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822D54[8] = {
+static MapMarkerPos D_88822D54[8] = {
     { 0x50, 0x1F, 0x1F, 1 },    { 0x56, 0x18, 0x18, 0xA },  { 0x63, 0x1C, 0x1C, 0xA }, { 0x2A, 0x1B, 0x24, 0xF },
     { 0x62, 0x1B, 0x1D, 0x19 }, { 0x29, 0x1B, 0x24, 0x23 }, { 0x4F, 0x1F, 0x1F, 4 },   { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822D94[9] = {
+static MapMarkerPos D_88822D94[9] = {
     { 0x63, 0x1E, 0x1E, 0xA },  { 0x56, 0x1A, 0x1E, 0xF },  { 0x2A, 0x1B, 0x1B, 0x14 },
     { 0x62, 0x1D, 0x1F, 0x14 }, { 0x29, 0x1B, 0x24, 0x1E }, { 0x57, 0x1C, 0x20, 5 },
     { 0x78, 0x1E, 0x1E, 0x1E }, { 0x48, 0x14, 0x28, 0x46 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822DDC[9] = {
+static MapMarkerPos D_88822DDC[9] = {
     { 0x63, 0x20, 0x20, 0xA },  { 0x62, 0x1E, 0x1E, 0xF },  { 0x56, 0x1C, 0x20, 0x14 },
     { 0x29, 0x24, 0x2D, 0x19 }, { 0x2A, 0x1B, 0x24, 0x19 }, { 0x57, 0x1E, 0x22, 5 },
     { 0x78, 0x1E, 0x1E, 0x1E }, { 0x48, 0x14, 0x28, 0x46 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822E24[5] = {
+static MapMarkerPos D_88822E24[5] = {
     { 0x58, 0x17, 0x1A, 0x14 }, { 0x3A, 0x1A, 0x26, 0x14 }, { 0x13, 0x22, 0x25, 0x1E },
     { 0x14, 0x22, 0x25, 0x1E }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822E4C[5] = {
+static MapMarkerPos D_88822E4C[5] = {
     { 0x13, 0x25, 0x28, 0x1E }, { 0x14, 0x25, 0x28, 0x1E }, { 0x58, 0x1A, 0x23, 0x23 },
     { 0x59, 0x23, 0x26, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822E74[5] = {
+static MapMarkerPos D_88822E74[5] = {
     { 0x13, 0x28, 0x2B, 0x1E }, { 0x14, 0x28, 0x2B, 0x1E }, { 0x58, 0x20, 0x26, 0x23 },
     { 0x59, 0x26, 0x29, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822E9C[5] = {
+static MapMarkerPos D_88822E9C[5] = {
     { 0x84, 0xC, 0x18, 0xA },   { 0x59, 0x29, 0x29, 0xA }, { 0x58, 0x23, 0x26, 0x28 },
     { 0x14, 0x25, 0x2E, 0x28 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822EC4[6] = {
+static MapMarkerPos D_88822EC4[6] = {
     { 0x11, 0xF, 0x13, 0xA },  { 0x13, 0xD, 0xF, 0x1E }, { 0x14, 0xF, 0xF, 5 },
     { 0x10, 0xB, 0x11, 0x37 }, { 0x48, 5, 0x28, 0x64 },  { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822EF4[9] = {
+static MapMarkerPos D_88822EF4[9] = {
     { 0x46, 0x37, 0x37, 0xA }, { 0x1C, 0x34, 0x34, 0xA },  { 0x2C, 0x37, 0x37, 0xA },
     { 0x4B, 0x2D, 0x2D, 0xF }, { 0x2A, 0x32, 0x37, 0x28 }, { 0x2F, 0x36, 0x36, 5 },
     { 0x84, 0x37, 0x3C, 5 },   { 0x31, 0x36, 0x36, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822F3C[9] = {
+static MapMarkerPos D_88822F3C[9] = {
     { 0x84, 0x3C, 0x3C, 0xA }, { 0x1C, 0x38, 0x38, 0xA },  { 0x6F, 0x32, 0x32, 0xA },
     { 0x4B, 0x32, 0x32, 0xF }, { 0x2A, 0x34, 0x39, 0x28 }, { 0x70, 0x3A, 0x3C, 5 },
     { 0x46, 0x3A, 0x3A, 5 },   { 0x2C, 0x3A, 0x3A, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822F84[8] = {
+static MapMarkerPos D_88822F84[8] = {
     { 0x70, 0x3E, 0x3E, 0xA },  { 0x6F, 0x34, 0x34, 0xA }, { 0x84, 0x3C, 0x41, 0xF }, { 0x4B, 0x37, 0x37, 0xF },
     { 0x2A, 0x36, 0x3B, 0x28 }, { 0x71, 0x38, 0x38, 5 },   { 0x6C, 0x32, 0x37, 5 },   { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822FC4[6] = {
+static MapMarkerPos D_88822FC4[6] = {
     { 0x58, 0x21, 0x25, 0xF },  { 0x64, 0x21, 0x25, 0x14 }, { 0x52, 0x21, 0x26, 0x14 },
     { 0x51, 0x1E, 0x23, 0x28 }, { 0x59, 0x21, 0x25, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88822FF4[6] = {
+static MapMarkerPos D_88822FF4[6] = {
     { 0x16, 0x28, 0x2D, 0xF },  { 0x38, 0x24, 0x29, 0x14 }, { 0x1E, 0x29, 0x2C, 0x1E },
     { 0x21, 0x29, 0x2C, 0x1E }, { 0x39, 0x29, 0x2E, 5 },    { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_88823024[7] = {
+static MapMarkerPos D_88823024[7] = {
     { 0x4B, 0x2C, 0x2C, 0xA }, { 0x5F, 0x2D, 0x2F, 0xA },  { 0x29, 0x2C, 0x2C, 0xA }, { 0x2A, 0x27, 0x27, 0xA },
     { 0x43, 0x27, 0x2A, 5 },   { 0x4A, 0x1F, 0x29, 0x37 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_8882305C[6] = {
+static MapMarkerPos D_8882305C[6] = {
     { 0x43, 0x2A, 0x2D, 0xA },  { 0x5F, 0x31, 0x31, 0xA },  { 0x4B, 0x29, 0x2F, 0xF },
     { 0x2A, 0x2C, 0x2C, 0x14 }, { 0x4A, 0x24, 0x2E, 0x2D }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_8882308C[5] = {
+static MapMarkerPos D_8882308C[5] = {
     { 0x5F, 0x2B, 0x2D, 0xA },  { 0x29, 0x27, 0x2C, 0x14 }, { 0x4B, 0x29, 0x2F, 5 },
     { 0x4A, 0x1A, 0x29, 0x41 }, { -1, -1, -1, -1 },
 };
-static unk_D_88826CF0_004 D_888230B4[3] = { { 0x33, 0x1D, 0x1F, 5 }, { 0x32, 0xF, 0x16, 0x5F }, { -1, -1, -1, -1 } };
-static unk_D_88826CF0_004* D_888230CC[] = {
+static MapMarkerPos D_888230B4[3] = { { 0x33, 0x1D, 0x1F, 5 }, { 0x32, 0xF, 0x16, 0x5F }, { -1, -1, -1, -1 } };
+static MapMarkerPos* D_888230CC[] = {
     D_88822E4C, D_88822E74, D_88822E9C, D_88822BE4, D_88822C34, D_88822C84, D_88822B94, D_88822F3C, D_88822F84,
     D_8882308C, D_88822884, D_88822D1C, D_88822D54, D_88822D94, D_88822DDC, D_8882262C, D_8882267C, D_888226A4,
     D_888226CC, D_888230B4, D_8882305C, D_88822864, D_88822FC4, D_88822CF4, D_88823024, D_88822EF4, D_8882299C,
@@ -1178,7 +1178,7 @@ static u8 D_888231C0[] = {
 static Gfx D_88823240[] = {
     gsSPEndDisplayList(),
 };
-static u8 D_88823248[] = {
+static u8 gMapLabelTailLeftTex[] = {
     0xFF, 0xFE, 0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x6B, 0x5B, 0x94,
     0xA5, 0x73, 0x9D, 0x73, 0x9D, 0x73, 0x9D, 0x73, 0x9D, 0x73, 0x9D, 0x73, 0x9D, 0x6B, 0x5B, 0x73, 0x9D, 0x4A, 0x53,
     0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x6B, 0x5B, 0x73, 0x9D, 0x4A, 0x53, 0x4A, 0x53, 0x4A,
@@ -1196,7 +1196,7 @@ static u8 D_88823248[] = {
 static Gfx D_88823338[] = {
     gsSPEndDisplayList(),
 };
-static u8 D_88823340[] = {
+static u8 gMapLabelTailRightTex[] = {
     0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x39, 0xCF, 0x18,
     0xC7, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE,
     0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0x73, 0x9D, 0x73, 0x9D, 0x73, 0x9D, 0x73, 0x9D, 0x73,
@@ -1236,10 +1236,10 @@ static u8 D_88823340[] = {
     0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x31,
     0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D,
 };
-static Gfx D_88823610[] = {
+static Gfx Pokedex_BgEndDL[] = {
     gsSPEndDisplayList(),
 };
-static u8 D_88823618[] = {
+static u8 gMapLabelTopBorderTex[] = {
     0x6B, 0x5B, 0x6B, 0x5B, 0x6B, 0x5B, 0x6B, 0x5B, 0x6B, 0x5B, 0x6B, 0x5B, 0x6B, 0x5B, 0x29, 0x4B, 0xC6, 0x31, 0xC6,
     0x31, 0xC6, 0x31, 0xC6, 0x31, 0xC6, 0x31, 0xBD, 0xEF, 0x94, 0xA5, 0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D,
     0x31, 0x8D, 0x31, 0x8D, 0x6B, 0x5B, 0xC6, 0x31, 0x29, 0x4B, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF,
@@ -1248,10 +1248,10 @@ static u8 D_88823618[] = {
     0x4B, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0x6B, 0x5B, 0xC6, 0x31, 0x29, 0x4B, 0xFF, 0xFE,
     0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0x6B, 0x5B, 0xC6, 0x31, 0x29, 0x4B,
 };
-static Gfx D_88823698[] = {
+static Gfx Pokedex_IconEndDL[] = {
     gsSPEndDisplayList(),
 };
-static u8 D_888236A0[] = {
+static u8 gMapLabelBottomBorderTex[] = {
     0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0x6B, 0x5B, 0xC6, 0x31, 0x29, 0x4B, 0xFF, 0xFE, 0xFF,
     0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0x6B, 0x5B, 0xC6, 0x31, 0x29, 0x4B, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE,
     0xFF, 0xFE, 0xFF, 0xFE, 0x6B, 0x5B, 0xC6, 0x31, 0x29, 0x4B, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF,
@@ -1260,10 +1260,10 @@ static u8 D_888236A0[] = {
     0x4B, 0xC6, 0x31, 0xC6, 0x31, 0xC6, 0x31, 0xC6, 0x31, 0xC6, 0x31, 0xC6, 0x31, 0x94, 0xA5, 0x29, 0x4B, 0x29, 0x4B,
     0x29, 0x4B, 0x29, 0x4B, 0x29, 0x4B, 0x29, 0x4B, 0x29, 0x4B, 0x29, 0x4B, 0x29, 0x4B,
 };
-static Gfx D_88823720[] = {
+static Gfx Pokedex_MapLabelBottomEndDL[] = {
     gsSPEndDisplayList(),
 };
-static u8 D_88823728[] = {
+static u8 gMapLabelLeftBorderTex[] = {
     0x6B, 0x5B, 0xC6, 0x31, 0x31, 0x8D, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0x6B, 0x5B, 0xC6,
     0x31, 0x31, 0x8D, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0x6B, 0x5B, 0xC6, 0x31, 0x31, 0x8D,
     0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0x6B, 0x5B, 0xC6, 0x31, 0x31, 0x8D, 0xFF, 0xFE, 0xFF,
@@ -1272,10 +1272,10 @@ static u8 D_88823728[] = {
     0x5B, 0x6B, 0x5B, 0x9C, 0xE7, 0xBD, 0xEF, 0xC6, 0x31, 0xC6, 0x31, 0xC6, 0x31, 0xC6, 0x31, 0xC6, 0x31, 0x6B, 0x5B,
     0x29, 0x4B, 0x29, 0x4B, 0x29, 0x4B, 0x29, 0x4B, 0x29, 0x4B, 0x29, 0x4B, 0x29, 0x4B,
 };
-static Gfx D_888237A8[] = {
+static Gfx Pokedex_MapLabelLeftEndDL[] = {
     gsSPEndDisplayList(),
 };
-static u8 D_888237B0[] = {
+static u8 gMapLabelRightBorderTex[] = {
     0x6B, 0x5B, 0x6B, 0x5B, 0x6B, 0x5B, 0x6B, 0x5B, 0x6B, 0x5B, 0x6B, 0x5B, 0x6B, 0x5B, 0x6B, 0x5B, 0x6B, 0x5B, 0xC6,
     0x31, 0xC6, 0x31, 0xC6, 0x31, 0xC6, 0x31, 0xC6, 0x31, 0xC6, 0x31, 0xC6, 0x31, 0x6B, 0x5B, 0xC6, 0x31, 0x31, 0x8D,
     0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x6B, 0x5B, 0xC6, 0x31, 0x31, 0x8D, 0xFF, 0xFE, 0xFF,
@@ -1284,10 +1284,10 @@ static u8 D_888237B0[] = {
     0xFE, 0x6B, 0x5B, 0xC6, 0x31, 0x31, 0x8D, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0x6B, 0x5B,
     0xC6, 0x31, 0x31, 0x8D, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE,
 };
-static Gfx D_88823830[] = {
+static Gfx Pokedex_MapLabelRightEndDL[] = {
     gsSPEndDisplayList(),
 };
-static u8 D_88823838[] = {
+static u8 gMapLabelTailBottomLeftTex[] = {
     0xFF, 0xFE, 0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x6B, 0x5B, 0x94,
     0xA5, 0x73, 0x9D, 0x73, 0x9D, 0x73, 0x9D, 0x73, 0x9D, 0x73, 0x9D, 0x73, 0x9D, 0x6B, 0x5B, 0x73, 0x9D, 0x4A, 0x53,
     0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x6B, 0x5B, 0x73, 0x9D, 0x4A, 0x53, 0x4A, 0x53, 0x4A,
@@ -1296,10 +1296,10 @@ static u8 D_88823838[] = {
     0x53, 0x6B, 0x5B, 0x73, 0x9D, 0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x6B, 0x5B,
     0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D,
 };
-static Gfx D_888238B8[] = {
+static Gfx Pokedex_MapLabelTailLeftEndDL[] = {
     gsSPEndDisplayList(),
 };
-static u8 D_888238C0[] = {
+static u8 gMapLabelTailBottomRightTex[] = {
     0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x4A, 0x53, 0x39, 0xCF, 0x18, 0xC7, 0xFF,
     0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF, 0xFE, 0x73, 0x9D, 0x73, 0x9D, 0x73, 0x9D,
     0x73, 0x9D, 0x73, 0x9D, 0x73, 0x9D, 0x73, 0x9D, 0x73, 0x9D, 0x29, 0x4B, 0x08, 0x43, 0xFF, 0xFE, 0xFF, 0xFE, 0xFF,
@@ -1315,7 +1315,7 @@ static u8 D_888238C0[] = {
     0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x31,
     0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D, 0x31, 0x8D,
 };
-static Gfx D_888239C0[] = {
+static Gfx Pokedex_MapLabelTailRightEndDL[] = {
     gsSPEndDisplayList(),
 };
 static u8 D_888239C8[] = {
@@ -1335,7 +1335,7 @@ static u8 D_888239C8[] = {
 static Gfx D_88823AA8[] = {
     gsSPEndDisplayList(),
 };
-static u8 D_88823AB0[] = {
+static u8 gPokedexLocationTexture[] = {
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
     0xFF, 0xFF, 0xFF, 0xCF, 0x90, 0x90, 0x90, 0x90, 0x90, 0xA0, 0xFF, 0xCF, 0xCF, 0xCF, 0xCF, 0xCF, 0xCF, 0xCF, 0xCF,
@@ -1499,10 +1499,10 @@ static u8 D_88823AB0[] = {
     0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x76, 0x7C, 0x8D, 0x8D, 0x7C, 0x75, 0x80, 0x80, 0x80, 0x80, 0x80, 0x70,
     0x70, 0x70, 0x70, 0x70, 0x70, 0x70, 0x70, 0x70, 0x70, 0x70, 0x70, 0x70, 0x80
 };
-static Gfx D_888246B0[] = {
+static Gfx Pokedex_LocationEndDL[] = {
     gsSPEndDisplayList(),
 };
-static u8 D_888246B8[] = {
+static u8 gPokedexLocationIcon[] = {
     0x84, 0x69, 0x84, 0x69, 0x84, 0x69, 0x84, 0x69, 0x84, 0x69, 0x84, 0x69, 0x84, 0x69, 0x84, 0x69, 0x84, 0x69, 0x84,
     0x69, 0x84, 0x69, 0x84, 0x69, 0x84, 0x69, 0x84, 0x69, 0x84, 0x69, 0x84, 0x69, 0x84, 0x69, 0x84, 0x69, 0x84, 0x69,
     0x84, 0x69, 0x84, 0x69, 0x84, 0x69, 0x84, 0x69, 0x84, 0x69, 0x84, 0x69, 0x84, 0x69, 0x84, 0x69, 0x84, 0x69, 0x84,
@@ -1641,7 +1641,7 @@ static u8 D_888246B8[] = {
     0xF7, 0xAD, 0xF7, 0xAD, 0xF7, 0xAD, 0xF7, 0xAD, 0xF7, 0xAD, 0xF7, 0xAD, 0xF7, 0xAD, 0xF7, 0xAD, 0xF7, 0xAD, 0xF7,
     0xAD, 0xF7, 0xAD, 0xF7, 0xAD, 0xF7, 0xAD, 0xF7,
 };
-static Gfx D_888250D8[] = {
+static Gfx Pokedex_SmallIconEndDL[] = {
     gsSPEndDisplayList(),
 };
 static u8 D_888250E0[] = {
@@ -1657,10 +1657,10 @@ static u8 D_888250E0[] = {
     0x6F, 0x5F, 0x5F, 0x6F, 0x6F, 0x5F, 0x5F, 0x3F, 0x09, 0x01, 0x00, 0x00, 0x00, 0x00, 0x09, 0x1C, 0x1C, 0x1C,
     0x1C, 0x1C, 0x1C, 0x1C, 0x1A, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
-static Gfx D_888251A0[] = {
+static Gfx Pokedex_MapPinEndDL[] = {
     gsSPEndDisplayList(),
 };
-static u8 D_888251A8[] = {
+static u8 gMapLabelBgTex[] = {
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 };
@@ -1677,54 +1677,54 @@ static Gfx D_888251C8[] = {
     gsDPSetFillColor(0xFFFFFFFF),
     gsSPEndDisplayList(),
 };
-static Vtx D_88825208[] = {
+static Vtx gPokedexBgVertices[] = {
     VTX(-24, 0, 2, 0, 4096, 0x00, 0x00, 0x7F, 0xFF),
     VTX(-24, 64, 2, 0, 0, 0x00, 0x00, 0x7F, 0xFF),
     VTX(24, 64, 2, 3072, 0, 0x00, 0x00, 0x7F, 0xFF),
     VTX(24, 0, 2, 3072, 4096, 0x00, 0x00, 0x7F, 0xFF),
 };
-static Gfx D_88825248[] = {
+static Gfx gPokedexBgTextureDL[] = {
     gsDPPipeSync(),
     gsSPClearGeometryMode(G_CULL_BACK | G_LIGHTING),
     gsSPSetGeometryMode(G_ZBUFFER),
     gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_MODULATEIA_PRIM2),
     gsSPTexture(0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON),
-    gsDPLoadTextureBlock(D_88823AB0, G_IM_FMT_IA, G_IM_SIZ_8b, 48, 64, 0, G_TX_MIRROR | G_TX_WRAP,
+    gsDPLoadTextureBlock(gPokedexLocationTexture, G_IM_FMT_IA, G_IM_SIZ_8b, 48, 64, 0, G_TX_MIRROR | G_TX_WRAP,
                          G_TX_MIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
     gsSPEndDisplayList(),
 };
-static Gfx D_888252B0[] = {
-    gsSPVertex(D_88825208, 4, 0),
+static Gfx gPokedexBgVertexDL[] = {
+    gsSPVertex(gPokedexBgVertices, 4, 0),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
-static Gfx D_888252C8[] = {
+static Gfx Pokedex_BgResetDL[] = {
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsSPSetGeometryMode(G_CULL_BACK | G_LIGHTING),
     gsSPEndDisplayList(),
 };
-static Vtx D_888252E0[] = {
+static Vtx gPokedexIconVertices[] = {
     VTX(-20, 24, -2, 0, 2304, 0x00, 0x00, 0x7F, 0xFF),
     VTX(-20, 62, -2, 0, 0, 0x00, 0x00, 0x7F, 0xFF),
     VTX(14, 62, -2, 2304, 0, 0x00, 0x00, 0x7F, 0xFF),
     VTX(14, 24, -2, 2304, 2304, 0x00, 0x00, 0x7F, 0xFF),
 };
-static Gfx D_88825320[] = {
+static Gfx gPokedexIconTextureDL[] = {
     gsDPPipeSync(),
     gsSPClearGeometryMode(G_CULL_BACK | G_LIGHTING),
     gsSPSetGeometryMode(G_ZBUFFER),
     gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_PASS2),
     gsSPTexture(0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON),
-    gsDPLoadTextureBlock(D_888246B8, G_IM_FMT_RGBA, G_IM_SIZ_16b, 36, 36, 0, G_TX_MIRROR | G_TX_WRAP,
+    gsDPLoadTextureBlock(gPokedexLocationIcon, G_IM_FMT_RGBA, G_IM_SIZ_16b, 36, 36, 0, G_TX_MIRROR | G_TX_WRAP,
                          G_TX_MIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD),
     gsSPEndDisplayList(),
 };
-static Gfx D_88825388[] = {
-    gsSPVertex(D_888252E0, 4, 0),
+static Gfx gPokedexIconVertexDL[] = {
+    gsSPVertex(gPokedexIconVertices, 4, 0),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
-static Gfx D_888253A0[] = {
+static Gfx Pokedex_IconResetDL[] = {
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsSPSetGeometryMode(G_CULL_BACK | G_LIGHTING),
     gsSPEndDisplayList(),
@@ -1751,7 +1751,7 @@ static Gfx D_888254E8[] = {
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSPEndDisplayList(),
 };
-static Gfx D_888254F8[] = {
+static Gfx Pokedex_MarkerLabelResetDL[] = {
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsSPSetGeometryMode(G_CULL_BACK | G_LIGHTING),
     gsSPEndDisplayList(),
@@ -1765,7 +1765,7 @@ static Gfx D_88825510[] = {
     gsSPTexture(0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON),
     gsSPEndDisplayList(),
 };
-static Gfx D_88825548[] = {
+static Gfx Pokedex_SmallIconResetDL[] = {
     gsDPSetCycleType(G_CYC_2CYCLE),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPSetTexturePersp(G_TP_PERSP),
@@ -1779,13 +1779,13 @@ static Gfx D_88825570[] = {
     gsDPSetTexturePersp(G_TP_NONE),
     gsSPEndDisplayList(),
 };
-static Gfx D_88825598[] = {
+static Gfx Pokedex_MapPinResetDL[] = {
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPSetTexturePersp(G_TP_PERSP),
     gsSPSetGeometryMode(G_ZBUFFER | G_CULL_BACK | G_LIGHTING),
     gsSPEndDisplayList(),
 };
-static Gfx D_888255B8[] = {
+static Gfx gPokedexSmallIconTextureDL[] = {
     gsDPPipeSync(),
     gsSPClearGeometryMode(G_ZBUFFER | G_CULL_BACK | G_LIGHTING),
     gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_MODULATEIA_PRIM2),
@@ -1802,7 +1802,7 @@ static Gfx D_88825628[] = {
     gsSPSetGeometryMode(G_ZBUFFER | G_CULL_BACK | G_LIGHTING),
     gsSPEndDisplayList(),
 };
-static Gfx D_88825648[] = {
+static Gfx gPokedexTextureTileDL[] = {
     gsDPPipeSync(),
     gsSPClearGeometryMode(G_ZBUFFER | G_CULL_BACK | G_LIGHTING),
     gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_MODULATEIA_PRIM2),
@@ -1881,7 +1881,7 @@ static Gfx D_88825AA8[] = {
     gsSPSetGeometryMode(G_ZBUFFER | G_CULL_BACK | G_LIGHTING),
     gsSPEndDisplayList(),
 };
-static u32 D_88825AE8[] = {
+static u32 gPokedexLocationStrings[] = {
     // のすみか
     0xA4CEA4B9,
     0xA4DFA4AB,
@@ -1919,7 +1919,7 @@ static u32 D_88825AE8[] = {
     0xA5EB0000,
     0xA1C10000,
 };
-static u32 D_88825B60[] = {
+static u32 gPokedexRarityStrings[] = {
     // かくりつ
     0xA4ABA4AF,
     0xA4EAA4C4,
@@ -1969,7 +1969,7 @@ static u32 D_88825B60[] = {
     0xA4C4A4AB,
     0xA4EB0000,
 };
-static char D_88825BFC[0x24][20] = {
+static char gPokedexAreaNames[0x24][20] = {
     // １ばんどうろ
     {
         0xA3, 0xB1, 0xA4, 0xD0, 0xA4, 0xF3, 0xA4, 0xC9, 0xA4, 0xA6,
@@ -2151,7 +2151,7 @@ static char D_88825BFC[0x24][20] = {
         0xA4, 0xA6, 0xA4, 0xAF, 0xA4, 0xC4, 0x00, 0x20, 0x20, 0x00,
     },
 };
-static unk_D_88825ECC D_88825ECC[] = {
+static PokedexSubArea gPokedexSubAreaNames[] = {
     // 　２Ｆ
     { {
           0xA1,
@@ -3172,9 +3172,9 @@ static unk_D_88825ECC D_88825ECC[] = {
       },
       0 },
 };
-static Vec3f D_8882627C = { 70.0f, -1020.0f, -390.0f };
-static Vec3f D_88826288 = { 70.0f, 2370.0f, 3260.0f };
-static Vec3f D_88826294[] = {
+static Vec3f gPokedexMapMinBound = { 70.0f, -1020.0f, -390.0f };
+static Vec3f gPokedexMapMaxBound = { 70.0f, 2370.0f, 3260.0f };
+static Vec3f gPokedexMapMarkerPositions[] = {
     { -1440.0f, 80.0f, 620.0f },    { -1450.0f, 70.0f, -260.0f },  { -1480.0f, 150.0f, -710.0f },
     { -1220.0f, 140.0f, -1230.0f }, { -850.0f, 120.0f, -1470.0f }, { -480.0f, 340.0f, -1730.0f },
     { 250.0f, 150.0f, -1680.0f },   { 690.0f, 100.0f, -2120.0f },  { 1190.0f, 40.0f, -2240.0f },
@@ -3188,7 +3188,7 @@ static Vec3f D_88826294[] = {
     { -1270.0f, 20.0f, 1580.0f },   { -1854.0f, 39.0f, -220.0f },  { -2130.0f, 70.0f, -920.0f },
     { -2140.0f, 140.0f, -1410.0f }, { 320.0f, 230.0f, -1980.0f },  { -920.0f, 240.0f, 2080.0f },
 };
-static unk_D_88826444 D_88826444[] = {
+static unk_D_88826444 gPokedexMapMarkerCoords[] = {
     {
         0x3,
         0x000A,
@@ -3334,20 +3334,20 @@ static unk_D_88826444 D_88826444[] = {
         0x000F,
     },
 };
-static s16 D_888264D4[] = {
+static s16 gPokedexMapAreaOrder[] = {
     1,    2,    3,    4,    5,    6,    7,    8,    9,    0xA,  0xB,  0x10, 0x11, 0xC,  0xD,  0x23, 0xE,  0xF,
     0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1F, 0x20, 0x21, 0x22, 0x24, 0x1E,
 };
-static s16 D_8882651C[] = {
+static s16 gPokedexMapAreaSequence[] = {
     1,    2,    3,    4,    5,    6,    7,    8,    9,    0xA,  0xB,  0xE,  0xF,  0x11, 0x12, 0xC,  0xD,  0x13,
     0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x24, 0x1F, 0x20, 0x21, 0x22, 0x10, 0x23,
 };
-static s16 D_88826564[] = {
+static s16 gPokedexSubAreaToAreaIndex[] = {
     0x1D, 0x1D, 0x1D, 0x19, 0x19, 0x19, 0x19, -1,   -1,   0x21, 0xC,  0x1B, 0x1B, 0x1B, 0x1B, 2,    5,    5, 5, 3,
     0x21, 0xC,  0x22, 0x1B, 0x21, -1,   0xE,  0xE,  0xE,  0xE,  0xE,  0xE,  0xE,  0x1D, 0,    1,    4,    6, 9, 0xA,
     0x10, 0xF,  0xB,  0xD,  0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x1A, 0x1C, 0x1E, 0x1F, 0x20, 7, 8, 0,
 };
-static u32 D_888265DC[] = {
+static u32 gPokedexMapAreaData[] = {
     0x0C000001, 0x05000000, 0x0B00003C, 0x00000000, 0x014000F0, 0xFE700000, 0x00000000, 0x00000C80,
     0x05000000, 0x0D000000, 0x05000000, 0x0E000000, 0x05000000, 0x10000000, 0x06000000, 0x1396C8FF,
     0x03D903ED, 0x14000000, 0x002D0019, 0xFFFFFF32, 0x16FFFFFF, 0x0F000003, 0x05000000, 0x00000000,
@@ -3361,9 +3361,9 @@ s32 Pokedex_FindNextMapArea(s32 arg0) {
     s32 a0 = arg0;
 
     for (i = 1; i < 36; i++) {
-        idx = D_8882651C[(arg0 + i) % 36] - 1;
-        if (D_88826CF0[idx].unk_00 == 1) {
-            return D_888264D4[idx] - 1;
+        idx = gPokedexMapAreaSequence[(arg0 + i) % 36] - 1;
+        if (gMapAreaMarkers[idx].unk_00 == 1) {
+            return gPokedexMapAreaOrder[idx] - 1;
         }
     }
     return a0;
@@ -3375,9 +3375,9 @@ s32 Pokedex_FindPrevMapArea(s32 arg0) {
     s32 a0 = arg0;
 
     for (i = 35; i > 0; i--) {
-        idx = D_8882651C[(arg0 + i) % 36] - 1;
-        if (D_88826CF0[idx].unk_00 == 1) {
-            return D_888264D4[idx] - 1;
+        idx = gPokedexMapAreaSequence[(arg0 + i) % 36] - 1;
+        if (gMapAreaMarkers[idx].unk_00 == 1) {
+            return gPokedexMapAreaOrder[idx] - 1;
         }
     }
     return a0;
@@ -3388,8 +3388,8 @@ void Pokedex_BuildMapMarkerDisplayList(void) {
 
     D_888269C0.gfx = temp_v0;
 
-    if (D_88826A4C == 1) {
-        gSPDisplayList(temp_v0++, D_88825648);
+    if (gMapPinToggle == 1) {
+        gSPDisplayList(temp_v0++, gPokedexTextureTileDL);
     }
     gSPEndDisplayList(temp_v0++);
 }
@@ -3408,25 +3408,25 @@ void Pokedex_BuildMapMarkersDisplayList(void) {
     Gfx* temp_v0;
     s32 j;
 
-    temp_s2 = D_88826A44->children;
+    temp_s2 = gPokedexGraphNode->children;
     ptr = &temp_s2->view;
 
     temp_v0 = Gfx_AllocDisplayList(sizeof(Gfx) * 36 * 25);
     D_888269E0.gfx = temp_v0;
-    D_88826CE8 = Gfx_AllocDisplayList(sizeof(Mtx) * 36);
-    var_s1 = D_88826CE8;
+    gMapMatrix = Gfx_AllocDisplayList(sizeof(Mtx) * 36);
+    var_s1 = gMapMatrix;
 
     MtxF_SetLookAt(&ptr->floatMatrix, &ptr->eyePosition, &ptr->targetPosition, 0);
     MtxF_ExtractScale(&sp124, &temp_s2->view.floatMatrix);
     guMtxF2L(sp124.mf, &spE0);
 
-    gSPDisplayList(temp_v0++, D_88825248);
+    gSPDisplayList(temp_v0++, gPokedexBgTextureDL);
 
     for (i = 0; i < 36; i++) {
-        vec = &D_88826294[i];
+        vec = &gPokedexMapMarkerPositions[i];
 
-        if (D_88826CF0[i].unk_00 == 1) {
-            if ((i + 1) == D_8882651C[D_88826A4E]) {
+        if (gMapAreaMarkers[i].unk_00 == 1) {
+            if ((i + 1) == gPokedexMapAreaSequence[gCurrentMapAreaId]) {
                 gDPSetPrimColor(temp_v0++, 0xFF, 0xFF, 255, 150, 100, 255);
                 guScale(&sp168, 8.0f, 8.0f, 8.0f);
             } else {
@@ -3438,37 +3438,37 @@ void Pokedex_BuildMapMarkersDisplayList(void) {
             guMtxCatL(&spE0, &sp1A8, var_s1);
 
             gSPMatrix(temp_v0++, var_s1, G_MTX_PUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-            gSPDisplayList(temp_v0++, D_888252B0);
+            gSPDisplayList(temp_v0++, gPokedexBgVertexDL);
             gSPPopMatrix(temp_v0++, G_MTX_MODELVIEW);
         }
         var_s1++;
     }
 
-    gSPDisplayList(temp_v0++, D_888252C8);
-    var_s1 = D_88826CE8;
-    gSPDisplayList(temp_v0++, D_88825320);
+    gSPDisplayList(temp_v0++, Pokedex_BgResetDL);
+    var_s1 = gMapMatrix;
+    gSPDisplayList(temp_v0++, gPokedexIconTextureDL);
 
     for (i = 0; i < 36; i++) {
-        if (D_88826CF0[i].unk_00 == 1) {
+        if (gMapAreaMarkers[i].unk_00 == 1) {
             gSPMatrix(temp_v0++, var_s1, G_MTX_PUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-            gSPDisplayList(temp_v0++, D_88825388);
+            gSPDisplayList(temp_v0++, gPokedexIconVertexDL);
             gSPPopMatrix(temp_v0++, G_MTX_MODELVIEW);
         }
         var_s1++;
     }
 
-    gSPDisplayList(temp_v0++, D_888253A0);
+    gSPDisplayList(temp_v0++, Pokedex_IconResetDL);
     gSPDisplayList(temp_v0++, D_888254B8);
 
     for (j = 0, var_t5 = 0x2580; j < 4; j++, var_t5 -= 0xC80) {
-        gDPLoadTextureTile(temp_v0++, var_t5 + D_88826CD4, G_IM_FMT_RGBA, G_IM_SIZ_16b, 80, 0, 0, 0, 80, 20, 0,
+        gDPLoadTextureTile(temp_v0++, var_t5 + gMapSpeciesIconImage, G_IM_FMT_RGBA, G_IM_SIZ_16b, 80, 0, 0, 0, 80, 20, 0,
                            G_TX_MIRROR | G_TX_CLAMP, G_TX_MIRROR | G_TX_CLAMP, 7, 5, G_TX_NOLOD, G_TX_NOLOD);
         gDPPipeSync(temp_v0++);
 
-        var_s1 = D_88826CE8;
+        var_s1 = gMapMatrix;
 
         for (i = 0; i < 36; i++) {
-            if (D_88826CF0[i].unk_00 == 1) {
+            if (gMapAreaMarkers[i].unk_00 == 1) {
                 gSPMatrix(temp_v0++, var_s1, G_MTX_PUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
                 gSPVertex(temp_v0++, &D_888253B8[j][0], 4, 0);
                 gSPDisplayList(temp_v0++, D_888254E8);
@@ -3478,7 +3478,7 @@ void Pokedex_BuildMapMarkersDisplayList(void) {
         }
     }
 
-    gSPDisplayList(temp_v0++, D_888254F8);
+    gSPDisplayList(temp_v0++, Pokedex_MarkerLabelResetDL);
     gSPEndDisplayList(temp_v0++);
 }
 
@@ -3493,15 +3493,15 @@ void Pokedex_BuildOverviewMarkersDisplayList(void) {
     temp_v0 = Gfx_AllocDisplayList(sizeof(Gfx) * 170);
     D_88826A20.gfx = temp_v0;
 
-    if (D_88826A4C == 1) {
-        gSPDisplayList(temp_v0++, D_888255B8);
+    if (gMapPinToggle == 1) {
+        gSPDisplayList(temp_v0++, gPokedexSmallIconTextureDL);
 
-        if ((D_88826A7E % 16) >= 8) {
+        if ((gMapMarkerBlinkTimer % 16) >= 8) {
             for (i = 0; i < 36; i++) {
-                if (D_88826CF0[i].unk_00 == 1) {
-                    temp_a0 = D_88826444[i].unk_00 * 8;
+                if (gMapAreaMarkers[i].unk_00 == 1) {
+                    temp_a0 = gPokedexMapMarkerCoords[i].unk_00 * 8;
                     temp_a0 = temp_a0 + 0x52;
-                    temp_v2 = D_88826444[i].unk_02 * 8;
+                    temp_v2 = gPokedexMapMarkerCoords[i].unk_02 * 8;
                     temp_v2 = temp_v2 + 0x32;
 
                     gDPPipeSync(temp_v0++);
@@ -3511,8 +3511,8 @@ void Pokedex_BuildOverviewMarkersDisplayList(void) {
             }
         }
 
-        temp_t1 = (D_88826444[D_8882651C[D_88826A4E] - 1].unk_00 * 8) + 0x4F;
-        temp_t2 = (D_88826444[D_8882651C[D_88826A4E] - 1].unk_02 * 8) + 0x2F;
+        temp_t1 = (gPokedexMapMarkerCoords[gPokedexMapAreaSequence[gCurrentMapAreaId] - 1].unk_00 * 8) + 0x4F;
+        temp_t2 = (gPokedexMapMarkerCoords[gPokedexMapAreaSequence[gCurrentMapAreaId] - 1].unk_02 * 8) + 0x2F;
 
         gDPSetPrimColor(temp_v0++, 0xFF, 0xFF, 150, 30, 0, 255);
 
@@ -3542,15 +3542,15 @@ Gfx* Pokedex_DrawMapPinIcon(Gfx* arg0, s16 arg1, s16 arg2) {
     gDPPipeSync(arg0++);
     gSPTextureRectangle(arg0++, arg1 << 2, arg2 << 2, (arg1 + 0xF) << 2, (arg2 + 0xB) << 2, G_TX_RENDERTILE, 0, 0,
                         0x0400, 0x0400);
-    gSPDisplayList(arg0++, D_88825598);
+    gSPDisplayList(arg0++, Pokedex_MapPinResetDL);
     return arg0;
 }
 
-Gfx* func_88805AEC(Gfx* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
-    u32 temp_v0 = strlen(D_88825BFC[D_88826A4E]) * 8;
+Gfx* Pokedex_DrawMapLabelBox(Gfx* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
+    u32 temp_v0 = strlen(gPokedexAreaNames[gCurrentMapAreaId]) * 8;
     s32 tmp;
     s32 y;
-    gDPLoadTextureBlock(arg0++, D_88823618, G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 8, 0, G_TX_MIRROR | G_TX_CLAMP,
+    gDPLoadTextureBlock(arg0++, gMapLabelTopBorderTex, G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 8, 0, G_TX_MIRROR | G_TX_CLAMP,
                         G_TX_MIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     y = arg2;
     tmp = arg1 + arg3;
@@ -3575,7 +3575,7 @@ Gfx* func_88805AEC(Gfx* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, 
             break;
     }
 
-    gDPLoadTextureBlock(arg0++, D_888236A0, G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 8, 0, G_TX_MIRROR | G_TX_CLAMP,
+    gDPLoadTextureBlock(arg0++, gMapLabelBottomBorderTex, G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 8, 0, G_TX_MIRROR | G_TX_CLAMP,
                         G_TX_MIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     y = arg2 + arg4;
     gSPTextureRectangle(arg0++, (tmp - 8) << 2, (y - 8) << 2, tmp << 2, y << 2, G_TX_RENDERTILE, 0, 0, 0x0400,
@@ -3584,7 +3584,7 @@ Gfx* func_88805AEC(Gfx* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, 
                         0, -0x0400, 0x0400);
     gSPTextureRectangle(arg0++, (tmp - 8) << 2, ((y - arg4) + 8) << 2, tmp << 2, (y - 8) << 2, G_TX_RENDERTILE, 0,
                         0, 0x0400, -0x0400);
-    gDPLoadTextureBlock(arg0++, D_88823728, G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 8, 0, G_TX_MIRROR | G_TX_CLAMP,
+    gDPLoadTextureBlock(arg0++, gMapLabelLeftBorderTex, G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 8, 0, G_TX_MIRROR | G_TX_CLAMP,
                         G_TX_MIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     // idk
     tmp = arg1;
@@ -3608,7 +3608,7 @@ Gfx* func_88805AEC(Gfx* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, 
     }
     switch (arg5) {
         case 2:
-            gDPLoadTextureBlock(arg0++, D_888237B0, G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 8, 0,
+            gDPLoadTextureBlock(arg0++, gMapLabelRightBorderTex, G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 8, 0,
                                 G_TX_MIRROR | G_TX_CLAMP, G_TX_MIRROR | G_TX_CLAMP,
                                 G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
             // dumb
@@ -3620,7 +3620,7 @@ Gfx* func_88805AEC(Gfx* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, 
             break;
     }
     if (arg6 == 1) {
-        switch (D_88826A56) {
+        switch (gCurrentGameCategory) {
             case 0:
                 gDPSetPrimColor(arg0++, 0xFF, 0xFF, 106, 40, 20, 200);
                 break;
@@ -3641,7 +3641,7 @@ Gfx* func_88805AEC(Gfx* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, 
                 break;
         }
 
-        gDPLoadTextureBlock(arg0++, D_888251A8, G_IM_FMT_IA, G_IM_SIZ_16b, 4, 4, 0, G_TX_MIRROR | G_TX_CLAMP,
+        gDPLoadTextureBlock(arg0++, gMapLabelBgTex, G_IM_FMT_IA, G_IM_SIZ_16b, 4, 4, 0, G_TX_MIRROR | G_TX_CLAMP,
                             G_TX_MIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
         gSPTextureRectangle(arg0++, (tmp + 2) << 2, (arg2 + 2) << 2, ((tmp + arg3) - 2) << 2,
                             ((arg2 + arg4) - 2) << 2, G_TX_RENDERTILE, 0, 0, 0x0400, 0x0400);
@@ -3654,7 +3654,7 @@ Gfx* func_88805AEC(Gfx* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, 
             break;
 
         case 1:
-            gDPLoadTextureBlock(arg0++, D_88823248, G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 15, 0, G_TX_MIRROR | G_TX_CLAMP,
+            gDPLoadTextureBlock(arg0++, gMapLabelTailLeftTex, G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 15, 0, G_TX_MIRROR | G_TX_CLAMP,
                                 G_TX_MIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
             // almost worse than the old fake
             tmp = arg1;
@@ -3662,7 +3662,7 @@ Gfx* func_88805AEC(Gfx* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, 
             arg4 = arg2 - 0xC;
             gSPTextureRectangle(arg0++, tmp << 2, arg4 << 2, arg3 << 2, (arg4 + 15) << 2,
                                 G_TX_RENDERTILE, 0, 0, 0x0400, 0x0400);
-            gDPLoadTextureBlock(arg0++, D_88823340, G_IM_FMT_RGBA, G_IM_SIZ_16b, 24, 15, 0, G_TX_MIRROR | G_TX_CLAMP,
+            gDPLoadTextureBlock(arg0++, gMapLabelTailRightTex, G_IM_FMT_RGBA, G_IM_SIZ_16b, 24, 15, 0, G_TX_MIRROR | G_TX_CLAMP,
                                 G_TX_MIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
             gSPTextureRectangle(arg0++, arg3 << 2, (y - 0xC) << 2,
                                 (arg3 + 0x18) << 2, (arg2 + 3) << 2, G_TX_RENDERTILE, 0, 0,
@@ -3670,12 +3670,12 @@ Gfx* func_88805AEC(Gfx* arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, 
             break;
 
         case 0:
-            gDPLoadTextureBlock(arg0++, D_88823838, G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 8, 0, G_TX_MIRROR | G_TX_CLAMP,
+            gDPLoadTextureBlock(arg0++, gMapLabelTailBottomLeftTex, G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 8, 0, G_TX_MIRROR | G_TX_CLAMP,
                                 G_TX_MIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
             arg4 = arg2 - 5;
             gSPTextureRectangle(arg0++, tmp << 2, arg4 << 2, (arg1 + 0x2E) << 2, (arg4 + 8) << 2, G_TX_RENDERTILE, 0,
                                 0, 0x0400, 0x0400);
-            gDPLoadTextureBlock(arg0++, D_888238C0, G_IM_FMT_RGBA, G_IM_SIZ_16b, 16, 8, 0, G_TX_MIRROR | G_TX_CLAMP,
+            gDPLoadTextureBlock(arg0++, gMapLabelTailBottomRightTex, G_IM_FMT_RGBA, G_IM_SIZ_16b, 16, 8, 0, G_TX_MIRROR | G_TX_CLAMP,
                                 G_TX_MIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
             gSPTextureRectangle(arg0++, (arg1 + 0x2E) << 2, (arg2 - 5) << 2, (arg1 + 0x3E) << 2, (arg2 + 3) << 2,
                                 G_TX_RENDERTILE, 0, 0, 0x0400, 0x0400);
@@ -3702,45 +3702,45 @@ void Pokedex_BuildMapLabelsDisplayList(void) {
 
     gSPDisplayList(temp_v0++, D_88825510);
 
-    temp_v0 = func_88805AEC(temp_v0, 0x1E, 0x14, D_88826CC8, 0x10, 2, 1);
+    temp_v0 = Pokedex_DrawMapLabelBox(temp_v0, 0x1E, 0x14, D_88826CC8, 0x10, 2, 1);
 
-    if (D_88826A54 == 1) {
-        if (D_88826CB2 > 0) {
-            sp46 = 0xA0 - (D_88826CB2 / 2);
-            sp44 = D_88826CB2;
-            temp_v0 = func_88805AEC(temp_v0, sp46, 0x78, D_88826CB2, 0x14, 2, 1);
+    if (gMapLabelState == 1) {
+        if (gMapInfoLabelBoxWidth > 0) {
+            sp46 = 0xA0 - (gMapInfoLabelBoxWidth / 2);
+            sp44 = gMapInfoLabelBoxWidth;
+            temp_v0 = Pokedex_DrawMapLabelBox(temp_v0, sp46, 0x78, gMapInfoLabelBoxWidth, 0x14, 2, 1);
         }
     } else {
-        if (D_88826A4C == 0) {
-            sp2C = D_8882651C[D_88826A4E] - 1;
-            temp_v0 = func_88805AEC(temp_v0, 0xB9, 0xD2, 0x73, 0x10, 2, 1);
-            if ((D_88826A52 == 1) && (sp2C >= 0) && (D_88826A80 == 0) && (D_88826CB0 > 0) && (D_88826CDC != 0)) {
-                temp_v0_2 = (D_88826CF0[sp2C].unk_02 * 0xA) - 0xA;
-                sp42 = 0x5A - D_88826CCE;
-                sp3E = D_88826CB0 + 0xA;
+        if (gMapPinToggle == 0) {
+            sp2C = gPokedexMapAreaSequence[gCurrentMapAreaId] - 1;
+            temp_v0 = Pokedex_DrawMapLabelBox(temp_v0, 0xB9, 0xD2, 0x73, 0x10, 2, 1);
+            if ((gMapZoomMode == 1) && (sp2C >= 0) && (gCameraIsMoving == 0) && (gMapAreaLabelBoxWidth > 0) && (gCameraEaseFrames != 0)) {
+                temp_v0_2 = (gMapAreaMarkers[sp2C].unk_02 * 0xA) - 0xA;
+                sp42 = 0x5A - gMapLabelMaxWidth;
+                sp3E = gMapAreaLabelBoxWidth + 0xA;
                 sp40 = 0xB4 - temp_v0_2;
                 sp3C = temp_v0_2 + 0x14;
-                temp_v0 = func_88805AEC(temp_v0, sp42, sp40, sp3E, sp3C, 2, 1);
+                temp_v0 = Pokedex_DrawMapLabelBox(temp_v0, sp42, sp40, sp3E, sp3C, 2, 1);
             }
         } else {
-            temp_v0 = func_88805AEC(func_88805AEC(temp_v0, 0x4F, 0x2F, 0x97, 0x86, 2, 0), 0x4F, 0xB5, 0x97, 0x10, 2, 1);
+            temp_v0 = Pokedex_DrawMapLabelBox(Pokedex_DrawMapLabelBox(temp_v0, 0x4F, 0x2F, 0x97, 0x86, 2, 0), 0x4F, 0xB5, 0x97, 0x10, 2, 1);
         }
-        temp_v0 = func_88805AEC(temp_v0, 0x50 - (D_88826CCA / 2), 0xD2, D_88826CCA + 0x14, 0x10, 2, 1);
+        temp_v0 = Pokedex_DrawMapLabelBox(temp_v0, 0x50 - (D_88826CCA / 2), 0xD2, D_88826CCA + 0x14, 0x10, 2, 1);
         D_88826CCC = D_88826CCA;
     }
 
-    gSPDisplayList(temp_v0++, D_88825548);
+    gSPDisplayList(temp_v0++, Pokedex_SmallIconResetDL);
 
-    if ((D_88826A54 == 0) && (D_88826A4C == 0)) {
+    if ((gMapLabelState == 0) && (gMapPinToggle == 0)) {
         temp_v0 = Pokedex_DrawMapPinIcon(temp_v0, 0xBC, 0xD5);
     }
-    if (D_88826A4C == 1) {
+    if (gMapPinToggle == 1) {
         temp_v0 = Pokedex_DrawMapPinIcon(temp_v0, 0x56, 0xB7);
     }
 
     gSPDisplayList(temp_v0++, D_88825A80);
 
-    if ((D_88826A54 == 1) && (D_88826CB2 > 0)) {
+    if ((gMapLabelState == 1) && (gMapInfoLabelBoxWidth > 0)) {
         gDPFillRectangle(temp_v0++, sp46 - 1, 119, sp46 + sp44 + 1, 141);
     }
 
@@ -3748,11 +3748,11 @@ void Pokedex_BuildMapLabelsDisplayList(void) {
     gDPFillRectangle(temp_v0++, 184, 209, 301, 227);
     gDPFillRectangle(temp_v0++, 29, 209, 151, 227);
 
-    if (D_88826A4C == 1) {
+    if (gMapPinToggle == 1) {
         gDPFillRectangle(temp_v0++, 79, 47, 232, 199);
     }
 
-    if ((D_88826A52 == 1) && (D_88826A80 == 0) && (D_88826CB0 > 0)) {
+    if ((gMapZoomMode == 1) && (gCameraIsMoving == 0) && (gMapAreaLabelBoxWidth > 0)) {
         gDPFillRectangle(temp_v0++, sp42 - 1, sp40 - 1, sp42 + sp3E + 1, sp40 + sp3C + 1);
     }
 
@@ -3761,15 +3761,15 @@ void Pokedex_BuildMapLabelsDisplayList(void) {
 }
 
 void Pokedex_ResetCameraEase(void) {
-    D_88826CD8 = 8.0f;
-    D_88826CDC = 0;
+    gCameraEaseSpeed = 8.0f;
+    gCameraEaseFrames = 0;
 }
 
 void Pokedex_UpdateCameraEaseSpeed(void) {
-    D_88826CD8 -= 0.5f;
-    if (D_88826CD8 < 1.0f) {
-        D_88826CD8 = 1.0f;
-        D_88826CDC++;
+    gCameraEaseSpeed -= 0.5f;
+    if (gCameraEaseSpeed < 1.0f) {
+        gCameraEaseSpeed = 1.0f;
+        gCameraEaseFrames++;
     }
 }
 
@@ -3791,42 +3791,42 @@ void Pokedex_EaseVec3Toward(Vec3f* arg0, Vec3f* arg1) {
     if (sp20 < 1.0f) {
         arg0->x = arg1->x;
     } else {
-        arg0->x += sp2C / D_88826CD8;
+        arg0->x += sp2C / gCameraEaseSpeed;
     }
 
     if (sp1C < 1.0f) {
         arg0->y = arg1->y;
     } else {
-        arg0->y += sp28 / D_88826CD8;
+        arg0->y += sp28 / gCameraEaseSpeed;
     }
 
     if (temp_fv0 < 1.0f) {
         arg0->z = arg1->z;
     } else {
-        arg0->z += sp24 / D_88826CD8;
+        arg0->z += sp24 / gCameraEaseSpeed;
     }
 
     if ((sp20 < 200.0f) && (sp1C < 200.0f) && (temp_fv0 < 200.0f)) {
-        D_88826A80 = 0;
+        gCameraIsMoving = 0;
     } else {
-        D_88826A80 = 1;
+        gCameraIsMoving = 1;
     }
 }
 
 void Pokedex_UpdateAreaMapFrame(void) {
     UNUSED s32 pad;
-    CameraNode* node = D_88826A44->children;
+    CameraNode* node = gPokedexGraphNode->children;
     Vec3f* vec;
     Vec3f sp28;
 
-    switch (D_88826A52) {
+    switch (gMapZoomMode) {
         case 0:
-            Pokedex_EaseVec3Toward(&node->view.targetPosition, &D_8882627C);
-            Pokedex_EaseVec3Toward(&node->view.eyePosition, &D_88826288);
+            Pokedex_EaseVec3Toward(&node->view.targetPosition, &gPokedexMapMinBound);
+            Pokedex_EaseVec3Toward(&node->view.eyePosition, &gPokedexMapMaxBound);
             break;
 
         case 1:
-            vec = &D_88826294[D_8882651C[D_88826A4E] - 1];
+            vec = &gPokedexMapMarkerPositions[gPokedexMapAreaSequence[gCurrentMapAreaId] - 1];
 
             sp28.x = vec->x;
             sp28.y = vec->y + 1000.0f;
@@ -3840,7 +3840,7 @@ void Pokedex_UpdateAreaMapFrame(void) {
     Pokedex_UpdateCameraEaseSpeed();
     node->perspective.nearPlane = 100.0f;
     node->perspective.farPlane = 12800.0f;
-    D_88826A7E++;
+    gMapMarkerBlinkTimer++;
 
     Pokedex_BuildMapMarkerDisplayList();
     Pokedex_BuildMapMarkersDisplayList();
@@ -3886,39 +3886,39 @@ s32 Pokedex_DrawAreaMapFrame(UNUSED u8 arg0) {
     s32 spB4;
     char sp94[32];
     char* temp_v0;
-    unk_D_88826CF0_004* temp_s2;
+    MapMarkerPos* temp_s2;
     s32 j;
     s32 idx;
 
-    spF4 = Text_GetString(NULL, 0, D_88826A3C, D_88826A4E + 0x13);
+    spF4 = Text_GetString(NULL, 0, gPokedexTextBank, gCurrentMapAreaId + 0x13);
     Pokedex_UpdateAreaMapFrame();
     GeoRender_AdvanceFrameCounter();
     BgStage_DrawFrame();
-    Geo_RenderRootNode(D_88826A44);
+    Geo_RenderRootNode(gPokedexGraphNode);
     Font_BeginTranslucentTextRendering();
     Font_SetActive(1, 0);
     Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
-    Text_SetStringToken(0x19, D_88826A60);
-    temp_v0 = Text_GetString(spD0, 0x20, D_88826A3C, 4);
+    Text_SetStringToken(0x19, gCurrentAreaNameBuf);
+    temp_v0 = Text_GetString(spD0, 0x20, gPokedexTextBank, 4);
     Font_Printf(0x23, 0x17, temp_v0);
     D_88826CC8 = Font_MeasureTextExtent(0, 0, temp_v0) + 0xA;
-    D_88826CB2 = 0;
-    D_88826CB0 = 0;
-    D_88826CCE = 0;
+    gMapInfoLabelBoxWidth = 0;
+    gMapAreaLabelBoxWidth = 0;
+    gMapLabelMaxWidth = 0;
     D_88826CD0 = 0;
-    if (D_88826A54 == 1) {
-        sprintf(D_88826A88[0].unk_00, "%s", Text_GetString(NULL, 0, D_88826A3C, 7));
-        D_88826CB2 = Font_MeasureTextExtent(0, 0, D_88826A88[0].unk_00) + 0x1E;
-        Font_Printf(0xAF - (D_88826CB2 / 2), 0x7D, "%s", D_88826A88[0].unk_00);
+    if (gMapLabelState == 1) {
+        sprintf(D_88826A88[0].unk_00, "%s", Text_GetString(NULL, 0, gPokedexTextBank, 7));
+        gMapInfoLabelBoxWidth = Font_MeasureTextExtent(0, 0, D_88826A88[0].unk_00) + 0x1E;
+        Font_Printf(0xAF - (gMapInfoLabelBoxWidth / 2), 0x7D, "%s", D_88826A88[0].unk_00);
     } else {
-        if (D_88826A4C == 0) {
-            temp_s0 = D_8882651C[D_88826A4E];
+        if (gMapPinToggle == 0) {
+            temp_s0 = gPokedexMapAreaSequence[gCurrentMapAreaId];
             temp_s0--;
-            Font_Printf(0xCB, 0xD5, " %s", Text_GetString(NULL, 0, D_88826A3C, 5));
-            if (D_88826A52 == 1) {
-                unk_D_88826CF0* ptr = &D_88826CF0[temp_s0];
+            Font_Printf(0xCB, 0xD5, " %s", Text_GetString(NULL, 0, gPokedexTextBank, 5));
+            if (gMapZoomMode == 1) {
+                MapAreaMarker* ptr = &gMapAreaMarkers[temp_s0];
 
-                if ((ptr->unk_00 == 1) && (D_88826A80 == 0)) {
+                if ((ptr->unk_00 == 1) && (gCameraIsMoving == 0)) {
                     s32 tmp = ptr->unk_02;
                     s32 x;
 
@@ -3930,65 +3930,65 @@ s32 Pokedex_DrawAreaMapFrame(UNUSED u8 arg0) {
                             temp_s4 = temp_s2->unk_04;
 
                             spB4 = Pokedex_GetCountTier(temp_s2->unk_06);
-                            temp_s0_2 = Text_GetString(NULL, 0, D_88826A3C, ptr->unk_18[i] + 0x38);
+                            temp_s0_2 = Text_GetString(NULL, 0, gPokedexTextBank, ptr->unk_18[i] + 0x38);
                             if (D_88826CC6 == 1) {
                                 if (temp_s1 == temp_s4) {
                                     if (tmp >= 2) {
                                         sprintf(D_88826A88[i].unk_2D, "%s", temp_s0_2);
-                                        sprintf(D_88826A88[i].unk_3C, "%s %2d", D_88826CE0, temp_s1);
-                                        sprintf(D_88826A88[i].unk_4B, "%s  %d%%  ", &D_88825B60, temp_s2->unk_06);
+                                        sprintf(D_88826A88[i].unk_3C, "%s %2d", gTextLabelCount, temp_s1);
+                                        sprintf(D_88826A88[i].unk_4B, "%s  %d%%  ", &gPokedexRarityStrings, temp_s2->unk_06);
                                     } else {
                                         sprintf(D_88826A88[i].unk_2D, "%s", temp_s0_2);
-                                        sprintf(D_88826A88[i].unk_3C, "%s %d", D_88826CE0, temp_s1);
-                                        sprintf(D_88826A88[i].unk_4B, "%s  %d%%  ", &D_88825B60, temp_s2->unk_06);
+                                        sprintf(D_88826A88[i].unk_3C, "%s %d", gTextLabelCount, temp_s1);
+                                        sprintf(D_88826A88[i].unk_4B, "%s  %d%%  ", &gPokedexRarityStrings, temp_s2->unk_06);
                                     }
                                 } else if (tmp >= 2) {
                                     sprintf(D_88826A88[i].unk_2D, "%s", temp_s0_2);
-                                    sprintf(D_88826A88[i].unk_3C, "%s %2d%s%2d", D_88826CE0, temp_s1, D_88826CE4,
+                                    sprintf(D_88826A88[i].unk_3C, "%s %2d%s%2d", gTextLabelCount, temp_s1, gTextLabelSeparator,
                                             temp_s4);
-                                    sprintf(D_88826A88[i].unk_4B, "%s  %d%%  ", &D_88825B60, temp_s2->unk_06);
+                                    sprintf(D_88826A88[i].unk_4B, "%s  %d%%  ", &gPokedexRarityStrings, temp_s2->unk_06);
                                 } else {
                                     sprintf(D_88826A88[i].unk_2D, "%s", temp_s0_2);
-                                    sprintf(D_88826A88[i].unk_3C, "%s %d%s%d", D_88826CE0, temp_s1, D_88826CE4,
+                                    sprintf(D_88826A88[i].unk_3C, "%s %d%s%d", gTextLabelCount, temp_s1, gTextLabelSeparator,
                                             temp_s4);
-                                    sprintf(D_88826A88[i].unk_4B, "%s  %d%%  ", &D_88825B60, temp_s2->unk_06);
+                                    sprintf(D_88826A88[i].unk_4B, "%s  %d%%  ", &gPokedexRarityStrings, temp_s2->unk_06);
                                 }
                             } else {
-                                sprintf(sp94, "%s", Text_GetString(NULL, 0, D_88826A3C, spB4 + 0xB));
+                                sprintf(sp94, "%s", Text_GetString(NULL, 0, gPokedexTextBank, spB4 + 0xB));
                                 if (temp_s1 == temp_s4) {
                                     sprintf(D_88826A88[i].unk_2D, "%s", temp_s0_2);
-                                    sprintf(D_88826A88[i].unk_3C, "%s %2d", D_88826CE0, temp_s1);
+                                    sprintf(D_88826A88[i].unk_3C, "%s %2d", gTextLabelCount, temp_s1);
                                     sprintf(D_88826A88[i].unk_4B, "%s", sp94);
                                 } else {
                                     sprintf(D_88826A88[i].unk_2D, "%s", temp_s0_2);
-                                    sprintf(D_88826A88[i].unk_3C, "%s %2d%s%2d", D_88826CE0, temp_s1, D_88826CE4,
+                                    sprintf(D_88826A88[i].unk_3C, "%s %2d%s%2d", gTextLabelCount, temp_s1, gTextLabelSeparator,
                                             temp_s4);
                                     sprintf(D_88826A88[i].unk_4B, "%s", sp94);
                                 }
                             }
 
-                            if (D_88826CB0 < D_88826CB2) {
-                                D_88826CB0 = D_88826CB2;
+                            if (gMapAreaLabelBoxWidth < gMapInfoLabelBoxWidth) {
+                                gMapAreaLabelBoxWidth = gMapInfoLabelBoxWidth;
                             }
 
                             temp_s0_3 = Font_MeasureTextExtent(0, 0, D_88826A88[i].unk_2D);
                             temp_v0_3 = Font_MeasureTextExtent(0, 0, D_88826A88[i].unk_4B);
-                            if (D_88826CCE < temp_s0_3) {
-                                D_88826CCE = temp_s0_3;
+                            if (gMapLabelMaxWidth < temp_s0_3) {
+                                gMapLabelMaxWidth = temp_s0_3;
                             }
                             if (D_88826CD0 < temp_v0_3) {
                                 D_88826CD0 = temp_v0_3;
                             }
 
-                            D_88826CB2 = D_88826CCE + D_88826CD0 + 0x64;
-                            D_88826CB0 = D_88826CB2;
-                            D_88826A88[i].unk_5A = D_88826CB2;
+                            gMapInfoLabelBoxWidth = gMapLabelMaxWidth + D_88826CD0 + 0x64;
+                            gMapAreaLabelBoxWidth = gMapInfoLabelBoxWidth;
+                            D_88826A88[i].unk_5A = gMapInfoLabelBoxWidth;
                         }
 
                         var_a1 = 0;
                         for (x = 0; x < 7; x++) {
                             for (j = 0; j < tmp; j++) {
-                                idx = D_88825ECC[ptr->unk_18[j]].unk_0E;
+                                idx = gPokedexSubAreaNames[ptr->unk_18[j]].unk_0E;
 
                                 if (idx == x) {
                                     D_88826CB8[var_a1] = j;
@@ -4001,12 +4001,12 @@ s32 Pokedex_DrawAreaMapFrame(UNUSED u8 arg0) {
                             }
                         }
 
-                        if (D_88826CDC != 0) {
+                        if (gCameraEaseFrames != 0) {
                             for (i = 0; i < tmp; i++) {
                                 temp_v0_3 = D_88826CB8[i];
 
                                 if (D_88826A88[temp_v0_3].unk_5A > 0) {
-                                    Font_Printf(0x64 - D_88826CCE, (((i * 0xA) - (tmp * 0xA)) + 0xC3), "%s",
+                                    Font_Printf(0x64 - gMapLabelMaxWidth, (((i * 0xA) - (tmp * 0xA)) + 0xC3), "%s",
                                                   D_88826A88[temp_v0_3].unk_2D);
                                     Font_Printf(0x6E, (((i * 0xA) - (tmp * 0xA)) + 0xC3), "%s",
                                                   D_88826A88[temp_v0_3].unk_3C);
@@ -4019,10 +4019,10 @@ s32 Pokedex_DrawAreaMapFrame(UNUSED u8 arg0) {
                 }
             }
         } else {
-            Font_Printf(0x65, 0xB8, " %s", Text_GetString(NULL, 0, D_88826A3C, 6));
+            Font_Printf(0x65, 0xB8, " %s", Text_GetString(NULL, 0, gPokedexTextBank, 6));
         }
 
-        if ((D_88826A80 == 0) || (D_88826A4E == D_88826A50)) {
+        if ((gCameraIsMoving == 0) || (gCurrentMapAreaId == gMapPrevAreaId)) {
             D_88826CCA = Font_MeasureTextExtent(0, 0, spF4);
             if (D_88826CCA == D_88826CCC) {
                 Font_Printf(0x5A - (D_88826CCA / 2), 0xD5, "%s", spF4);
@@ -4030,20 +4030,20 @@ s32 Pokedex_DrawAreaMapFrame(UNUSED u8 arg0) {
         }
     }
 
-    D_88826CB4 = D_88826CB2;
+    gMapInfoBoxWidthCopy = gMapInfoLabelBoxWidth;
     Font_EndTexturedTextRendering();
     return 0;
 }
 
 s32 Pokedex_CheckAreaMapExit(void) {
-    if ((gPlayer1Controller->buttonPressed & 0x4000) && (D_88826A52 == 0)) {
+    if ((gPlayer1Controller->buttonPressed & 0x4000) && (gMapZoomMode == 0)) {
         return -1;
     }
 
-    if (D_88826A54 == 0) {
+    if (gMapLabelState == 0) {
         if (gPlayer1Controller->buttonPressed & 0x10) {
-            D_88826A4C = (D_88826A4C + 1) & 1;
-            switch (D_88826A4C) {
+            gMapPinToggle = (gMapPinToggle + 1) & 1;
+            switch (gMapPinToggle) {
                 case 0:
                     Audio_PlaySoundEffectByIdWrapper(SFX_MENU_BACK);
                     break;
@@ -4054,31 +4054,31 @@ s32 Pokedex_CheckAreaMapExit(void) {
         }
 
         if (gPlayer1Controller->buttonPressed & 0x800) {
-            D_88826A50 = D_88826A4E;
-            D_88826A4E = Pokedex_FindNextMapArea(D_88826A4E);
-            if (D_88826A50 != D_88826A4E) {
+            gMapPrevAreaId = gCurrentMapAreaId;
+            gCurrentMapAreaId = Pokedex_FindNextMapArea(gCurrentMapAreaId);
+            if (gMapPrevAreaId != gCurrentMapAreaId) {
                 Audio_PlaySoundEffectByIdWrapper(SFX_MENU_SCROLL);
                 Pokedex_ResetCameraEase();
             }
         }
 
         if (gPlayer1Controller->buttonPressed & 0x400) {
-            D_88826A50 = D_88826A4E;
-            D_88826A4E = Pokedex_FindPrevMapArea(D_88826A4E);
-            if (D_88826A50 != D_88826A4E) {
+            gMapPrevAreaId = gCurrentMapAreaId;
+            gCurrentMapAreaId = Pokedex_FindPrevMapArea(gCurrentMapAreaId);
+            if (gMapPrevAreaId != gCurrentMapAreaId) {
                 Audio_PlaySoundEffectByIdWrapper(SFX_MENU_SCROLL);
                 Pokedex_ResetCameraEase();
             }
         }
 
-        switch (D_88826A52) {
+        switch (gMapZoomMode) {
             case 0:
                 if (gPlayer1Controller->buttonPressed & 0x8000) {
-                    D_88826A52 = 1;
-                    if (D_88826A4C == 1) {
-                        D_88826A4C = 0;
+                    gMapZoomMode = 1;
+                    if (gMapPinToggle == 1) {
+                        gMapPinToggle = 0;
                     }
-                    D_88826A50 = D_88826A4E;
+                    gMapPrevAreaId = gCurrentMapAreaId;
                     Audio_PlaySoundEffectByIdWrapper(SFX_ZOOM_IN);
                     Pokedex_ResetCameraEase();
                 }
@@ -4086,9 +4086,9 @@ s32 Pokedex_CheckAreaMapExit(void) {
 
             case 1:
                 if (gPlayer1Controller->buttonPressed & 0x4000) {
-                    D_88826A52 = 0;
-                    D_88826A80 = 1;
-                    D_88826A50 = D_88826A4E;
+                    gMapZoomMode = 0;
+                    gCameraIsMoving = 1;
+                    gMapPrevAreaId = gCurrentMapAreaId;
                     Audio_PlaySoundEffectByIdWrapper(SFX_ZOOM_OUT);
                     Pokedex_ResetCameraEase();
                 }
@@ -4098,33 +4098,33 @@ s32 Pokedex_CheckAreaMapExit(void) {
     return 0;
 }
 
-void func_88807D04(s32 arg0, MainPoolState* arg1, UNUSED s32 arg2, s32 arg3, s32 arg4, char* arg5, char** arg6) {
+void Pokedex_InitSpeciesAreaMap(s32 arg0, MainPoolState* arg1, UNUSED s32 arg2, s32 arg3, s32 arg4, char* arg5, char** arg6) {
     s32 i;
     CameraNode* ptr;
     MemoryBlock* sp4C;
-    unk_D_88826CF0_004* var_v1_2;
+    MapMarkerPos* var_v1_2;
 
     sp4C = MainPool_InitState(arg1, 0x70800);
-    D_88826A4C = 0;
-    D_88826A80 = 0;
-    D_88826A52 = 0;
-    D_88826CB4 = 0;
+    gMapPinToggle = 0;
+    gCameraIsMoving = 0;
+    gMapZoomMode = 0;
+    gMapInfoBoxWidthCopy = 0;
     D_88826CC6 = 0;
 
     for (i = 0; i < 36; i++) {
-        D_88826CF0[i].unk_00 = 0;
-        D_88826CF0[i].unk_02 = 0;
+        gMapAreaMarkers[i].unk_00 = 0;
+        gMapAreaMarkers[i].unk_02 = 0;
     }
 
     main_pool_push_state('MAPV');
-    D_88826A3C = arg6;
-    D_88826A58 = arg0 - 1;
-    sprintf(D_88826A60, "%s", arg5);
-    D_88826CE0 = Text_GetString(NULL, 0, D_88826A3C, 9);
-    D_88826CE4 = Text_GetString(NULL, 0, D_88826A3C, 0x37);
+    gPokedexTextBank = arg6;
+    gMapSelectedSpeciesIndex = arg0 - 1;
+    sprintf(gCurrentAreaNameBuf, "%s", arg5);
+    gTextLabelCount = Text_GetString(NULL, 0, gPokedexTextBank, 9);
+    gTextLabelSeparator = Text_GetString(NULL, 0, gPokedexTextBank, 0x37);
 
-    D_88826CD4 = main_pool_alloc(0x3200, 0);
-    Pokedex_LoadIcon(D_88826CD4, arg0);
+    gMapSpeciesIconImage = main_pool_alloc(0x3200, 0);
+    Pokedex_LoadIcon(gMapSpeciesIconImage, arg0);
 
     ASSET_LOAD(D_3000000, kanto_gb_map, 0);
     Fragment_LoadAndRelocateFromRomRange(sp4C, (((u32)&D_8C000000 & 0x0FF00000) >> 0x14) - 0x10, pokedex_area_model_ROM_START,
@@ -4132,25 +4132,25 @@ void func_88807D04(s32 arg0, MainPoolState* arg1, UNUSED s32 arg2, s32 arg3, s32
 
     D_88826A48 = BinArchive_GetFile(ASSET_LOAD2(_6EB340, 1, 1), 0);
     GeoNode_CreateDisplayList(NULL, &D_888269C0, 5, NULL);
-    D_88826A54 = 1;
+    gMapLabelState = 1;
 
     for (i = 0; i < 59; i++) {
-        if (D_88826564[i] >= 0) {
-            unk_D_88826CF0* temp_s0 = &D_88826CF0[D_8882651C[D_88826564[i]] - 1];
+        if (gPokedexSubAreaToAreaIndex[i] >= 0) {
+            MapAreaMarker* temp_s0 = &gMapAreaMarkers[gPokedexMapAreaSequence[gPokedexSubAreaToAreaIndex[i]] - 1];
 
-            D_88826A56 = GbSave_GameToCategoryIndex(GbSave_GetPortGame(GbSave_GetActivePort()));
+            gCurrentGameCategory = GbSave_GameToCategoryIndex(GbSave_GetPortGame(GbSave_GetActivePort()));
 
-            switch (D_88826A56) {
+            switch (gCurrentGameCategory) {
                 case 0:
-                    var_v1_2 = D_88820D28[i];
+                    var_v1_2 = gPokedexPosTable[i];
                     break;
 
                 case 1:
-                    var_v1_2 = D_888218FC[i];
+                    var_v1_2 = gPokedexPosTableAlt[i];
                     break;
 
                 case 2:
-                    var_v1_2 = D_888218FC[i];
+                    var_v1_2 = gPokedexPosTableAlt[i];
                     break;
 
                 case 3:
@@ -4167,11 +4167,11 @@ void func_88807D04(s32 arg0, MainPoolState* arg1, UNUSED s32 arg2, s32 arg3, s32
                     break;
                 }
 
-                if (D_88826A58 == var_v1_2->unk_00 - 1) {
+                if (gMapSelectedSpeciesIndex == var_v1_2->unk_00 - 1) {
                     temp_s0->unk_00 = 1;
                     temp_s0->unk_04[temp_s0->unk_02] = var_v1_2;
                     temp_s0->unk_18[temp_s0->unk_02] = i;
-                    D_88826A54 = 0;
+                    gMapLabelState = 0;
                     temp_s0->unk_02++;
                 }
                 var_v1_2++;
@@ -4179,15 +4179,15 @@ void func_88807D04(s32 arg0, MainPoolState* arg1, UNUSED s32 arg2, s32 arg3, s32
         }
     }
 
-    D_88826A4E = Pokedex_FindNextMapArea(0);
-    D_88826A50 = D_88826A4E;
+    gCurrentMapAreaId = Pokedex_FindNextMapArea(0);
+    gMapPrevAreaId = gCurrentMapAreaId;
     GeoNode_CreateDisplayList(NULL, &D_88826A20, 5, NULL);
     GeoNode_CreateDisplayList(NULL, &D_88826A00, 5, NULL);
     GeoNode_CreateDisplayList(NULL, &D_888269E0, 4, NULL);
-    D_88826A44 = process_geo_layout(sp4C, D_888265DC);
-    ptr = D_88826A44->children;
-    ptr->view.targetPosition = D_8882627C;
-    ptr->view.eyePosition = D_88826288;
+    gPokedexGraphNode = process_geo_layout(sp4C, gPokedexMapAreaData);
+    ptr = gPokedexGraphNode->children;
+    ptr->view.targetPosition = gPokedexMapMinBound;
+    ptr->view.eyePosition = gPokedexMapMaxBound;
 }
 
 void Pokedex_ExitAreaMapPool(void) {

@@ -13,8 +13,8 @@ typedef struct unk_D_800FD008 {
 } unk_D_800FD008; // size = 0x40
 
 // Each GB sound register is mirrored as a {value, dirty} byte pair.
-#define GB_REG(n) (((u8*)&D_800FD008.unk_00[n])[0])
-#define GB_REG_DIRTY(n) (((u8*)&D_800FD008.unk_00[n])[1])
+#define GB_REG(n) (((u8*)&gGbSoundRegs.unk_00[n])[0])
+#define GB_REG_DIRTY(n) (((u8*)&gGbSoundRegs.unk_00[n])[1])
 
 typedef struct unk_D_800FD068 {
     /* 0x00 */ u8* unk_00;
@@ -78,28 +78,28 @@ typedef struct unk_D_800FCF60 {
 } unk_D_800FCF60; // size = 0x30
 
 // .bss
-unk_D_800FCF60 D_800FCF60;
-unk_D_800FCF90 D_800FCF90;
-unk_D_800FCFB8 D_800FCFB8;
-unk_D_800FCFD8 D_800FCFD8;
+unk_D_800FCF60 gSquare1State;
+unk_D_800FCF90 gSquare2State;
+unk_D_800FCFB8 gNoiseState;
+unk_D_800FCFD8 gNoiseChannelState;
 u32 D_800FD004;
-unk_D_800FD008 D_800FD008;
+unk_D_800FD008 gGbSoundRegs;
 u8 D_800FD048[32];
-unk_D_800FD068 D_800FD068[199];
-u8 D_800FD6A0[8];
-u32 D_800FD6A8;
-u32 D_800FD6AC;
+unk_D_800FD068 gQueuedRegisterWrites[199];
+u8 gGbRegCache[8];
+u32 gQueuedWriteIndex;
+u32 gQueuedWriteAppendIndex;
 static u8 D_800FD6B0[0x30]; // pad
 u8 D_800FD6E0;
-u8 D_800FD6E1;
+u8 gGbMasterVolumeLeft;
 f32 D_800FD6E4;
 s32 D_800FD6E8;
 static u8 D_800FD6EC[0x4]; // pad
-u32 D_800FD6F0;
-u32 D_800FD6F4;
-s16 D_800FD6F8[0x1140];
-u32 D_800FF978;
-u8 D_800FF97C;
+u32 gMusicFadePos;
+u32 gOutputBufferPos;
+s16 gInterpolationHistory[0x1140];
+u32 gInterpolationPos;
+u8 gMusicEchoLevel;
 s32 D_800FF980;
 
 // Noise channel sample table: 8 rows (NR43 ratio) x 16 columns (NR43 shift clock).
@@ -108,15 +108,15 @@ typedef struct GbNoiseEntry {
     /* 0x4 */ f32 pitchStep;
 } GbNoiseEntry; // size = 0x8
 
-#define GB_NOISE_TABLE ((GbNoiseEntry(*)[16])D_80078A60)
+#define GB_NOISE_TABLE ((GbNoiseEntry(*)[16])gGbNoiseSampleTable)
 
-void func_80049A60(u32);
+void GbAudio_RenderSamples(u32);
 void GbAudio_ClearInterpolationHistory();
 void GbAudio_ClearOutputBuffer();
 
-// Looks like {u32 index, f32} pairs; only func_8004A89C references it, so the
+// Looks like {u32 index, f32} pairs; only GbAudio_RenderNoise references it, so the
 // element type is unconfirmed. Kept as raw words to stay byte-exact.
-u32 D_80078A60[0x100] = {
+u32 gGbNoiseSampleTable[0x100] = {
     0x00000000, 0x3F800000, 0x01000000, 0x3F800000,
     0x02000000, 0x3F800000, 0x03000000, 0x3F800000,
     0x04000000, 0x3F800000, 0x05000000, 0x3F800000,
@@ -182,17 +182,17 @@ u32 D_80078A60[0x100] = {
     0x0D000000, 0x40E00000, 0x0D000000, 0x41600000,
     0xFF000000, 0x3F800000, 0xFF000000, 0x3F800000,
 };
-s32 D_80078E60 = 0;
-s32 D_80078E64 = 0;
-s32 D_80078E68 = 0;
+s32 gMusicChannel2MasterVolume = 0;
+s32 gMusicChannel1MasterVolume = 0;
+s32 gMusicTransitionSfxId = 0;
 s32 D_80078E6C = 0; // unreferenced
-s32 D_80078E70 = 0;
-s32 D_80078E74 = 112;
-u8 D_80078E78 = 0x00;
-u8 D_80078E7C = 0x00;
+s32 gMusicHandle = 0;
+s32 gDefaultMusicVolume = 112;
+u8 gMusicStateFlag1 = 0x00;
+u8 gMusicStateFlag2 = 0x00;
 
-// D_80078E80 and D_80078E83/8B/93/9B/A3/AB/B3 are interior aliases
-// (undefined_syms.ld); variables.h already declares D_80078E80 as a u8.
+// gStadiumModeActive and D_80078E83/8B/93/9B/A3/AB/B3 are interior aliases
+// (undefined_syms.ld); variables.h already declares gStadiumModeActive as a u8.
 u8 sLoopPointTable[0x3C] = {
     0x00, 0x00, 0x00, 0x00, 0x02, 0x02, 0x02, 0x03, 0x03, 0x03, 0x04, 0x05,
     0x23, 0x23, 0x23, 0x25, 0x25, 0x25, 0x25, 0x0E, 0x23, 0x23, 0x23, 0x25,
@@ -201,46 +201,46 @@ u8 sLoopPointTable[0x3C] = {
     0x0C, 0x0C, 0x0C, 0x12, 0x0B, 0x0B, 0x0B, 0x0C, 0x0C, 0x0C, 0x12, 0x36,
 };
 // D_80078EBF is an interior alias.
-u8 D_80078EBC[0xC] = {
+u8 gBgmCategory12TrackIds[0xC] = {
     0x22, 0x22, 0x22, 0x24, 0x24, 0x24, 0x24, 0x24, 0x26, 0x00, 0x00, 0x00,
 };
-s32 D_80078EC8 = -1;
-s32 D_80078ECC = 0;
-u8 D_80078ED0 = 0x00;
-s32 D_80078ED4 = 0;
-s32 D_80078ED8 = 0;
-s32 D_80078EDC = 0;
+s32 gMusicFadeDuration = -1;
+s32 gCurrentBgmHandle = 0;
+u8 gBgmFadeState = 0x00;
+s32 gSpecialSequenceState = 0;
+s32 gSequenceMusicHandle1 = 0;
+s32 gSequenceMusicHandle2 = 0;
 
 void GbAudio_GenerateSamples(s16* arg0, s32 arg1, u32 arg2, f32 arg3) {
-    func_80049A60(arg2);
+    GbAudio_RenderSamples(arg2);
 }
 
 void GbAudio_QueueRegisterWrite(u16 arg0, u8 arg1, u16 arg2) {
-    D_800FD068[D_800FD6AC].unk_00 = (u8*)&D_800FD008.unk_00[(arg0 & 0xFF) - 0x10];
-    D_800FD068[D_800FD6AC].unk_04 = arg1;
-    D_800FD068[D_800FD6AC].unk_06 = arg2 + 1;
-    D_800FD6A0[arg0 & 0xFF] = arg1;
-    D_800FD6AC++;
-    D_800FD6AC %= 200;
-    D_800FD068[D_800FD6AC].unk_06 = 0;
+    gQueuedRegisterWrites[gQueuedWriteAppendIndex].unk_00 = (u8*)&gGbSoundRegs.unk_00[(arg0 & 0xFF) - 0x10];
+    gQueuedRegisterWrites[gQueuedWriteAppendIndex].unk_04 = arg1;
+    gQueuedRegisterWrites[gQueuedWriteAppendIndex].unk_06 = arg2 + 1;
+    gGbRegCache[arg0 & 0xFF] = arg1;
+    gQueuedWriteAppendIndex++;
+    gQueuedWriteAppendIndex %= 200;
+    gQueuedRegisterWrites[gQueuedWriteAppendIndex].unk_06 = 0;
 }
 
 u8 GbAudio_GetRegisterValue(u16 arg0) {
-    return D_800FD6A0[arg0 & 0xFF];
+    return gGbRegCache[arg0 & 0xFF];
 }
 
-void func_800498A8(u32 arg0, u8 arg1, u32 arg2) {
+void GbAudio_InitMusicPlayback(u32 arg0, u8 arg1, u32 arg2) {
     u32 temp_t3;
     u8* p;
     s32 i;
     D_800FD004 = arg0 >> 1;
     D_800FD6E4 = 1048576.0f / (f32) D_800FD004;
 
-    p = (u8*) &D_800FD008;
+    p = (u8*) &gGbSoundRegs;
     for (i = 0; i < 48; i++) {
        p[i * 2 + 1] = 1;
     }
-    p = (u8*) &D_800FD008;
+    p = (u8*) &gGbSoundRegs;
     p[0x00] = 8;
     p[0x02] = 0;
     p[0x04] = 0;
@@ -267,26 +267,26 @@ void func_800498A8(u32 arg0, u8 arg1, u32 arg2) {
     for (i = 0; i < 16; i++) {
         p[i * 2] = 0;
     }
-    D_800FD6AC = 0;
-    D_800FD068[0].unk_06 = 0;
-    D_800FD6A8 = 0;
-    D_800FCF60.unk_00 = 0;
-    D_800FCF60.unk_2C = 0;
+    gQueuedWriteAppendIndex = 0;
+    gQueuedRegisterWrites[0].unk_06 = 0;
+    gQueuedWriteIndex = 0;
+    gSquare1State.unk_00 = 0;
+    gSquare1State.unk_2C = 0;
 
-    D_800FCF90.unk_00 = 0;
-    D_800FCF90.unk_24 = 0;
+    gSquare2State.unk_00 = 0;
+    gSquare2State.unk_24 = 0;
 
-    D_800FCFB8.unk_00 = 0;
-    D_800FCFB8.unk_1C = 0;
+    gNoiseState.unk_00 = 0;
+    gNoiseState.unk_1C = 0;
 
-    D_800FCFD8.unk_00 = 0;
-    D_800FCFD8.unk_28 = 0;
-    D_800FCFD8.unk_04 = 0xFF;
+    gNoiseChannelState.unk_00 = 0;
+    gNoiseChannelState.unk_28 = 0;
+    gNoiseChannelState.unk_04 = 0xFF;
 
     GbAudio_ClearOutputBuffer();
     GbAudio_ClearInterpolationHistory();
 
-    D_800FF97C = arg1;
+    gMusicEchoLevel = arg1;
     D_800FF980 = arg2;
     D_800FF980 *= 2;
     if (D_800FF980 >= 0x1141U) {
@@ -296,11 +296,11 @@ void func_800498A8(u32 arg0, u8 arg1, u32 arg2) {
 }
 
 void GbAudio_ApplyQueuedWrites(u16);
-s16 func_80049DF0(void);
-s16 func_8004A474(void);
-s16 func_8004A89C(void);
+s16 GbAudio_RenderSquare1(void);
+s16 GbAudio_RenderSquare2(void);
+s16 GbAudio_RenderNoise(void);
 
-void func_80049A60(u32 arg0) {
+void GbAudio_RenderSamples(u32 arg0) {
     s32 pad[3];
     s16 sp4C[4];
     u32 i;
@@ -314,14 +314,14 @@ void func_80049A60(u32 arg0) {
     var_s4 = 1;
     arg0 >>= 1;
 
-    var_t = D_800FD6E1;
+    var_t = gGbMasterVolumeLeft;
     var_a0 = ((var_t & 1) ? -1 : 0) + ((var_t & 2) ? -1 : 0) + ((var_t & 8) ? -1 : 0);
 
-    if (D_800FD6F4 < D_800FD6F0) {
-        if ((0xB80 - (arg0 * 4)) < (D_800FD6F0 - D_800FD6F4)) {
+    if (gOutputBufferPos < gMusicFadePos) {
+        if ((0xB80 - (arg0 * 4)) < (gMusicFadePos - gOutputBufferPos)) {
             arg0++;
         }
-    } else if ((D_800FD6F4 - D_800FD6F0) < (arg0 * 4)) {
+    } else if ((gOutputBufferPos - gMusicFadePos) < (arg0 * 4)) {
         arg0++;
     }
 
@@ -330,18 +330,18 @@ void func_80049A60(u32 arg0) {
             GbAudio_ApplyQueuedWrites(var_s4);
         }
 
-        if (D_800FD008.unk_2C & 0x80) {
-            if (D_800FD008.unk_29 != 0) {
-                D_800FD6E0 = D_800FD008.unk_28 & 7;
-                D_800FD6E1 = (D_800FD008.unk_28 & 0x70) >> 4;
-                D_800FD008.unk_29 = 0;
+        if (gGbSoundRegs.unk_2C & 0x80) {
+            if (gGbSoundRegs.unk_29 != 0) {
+                D_800FD6E0 = gGbSoundRegs.unk_28 & 7;
+                gGbMasterVolumeLeft = (gGbSoundRegs.unk_28 & 0x70) >> 4;
+                gGbSoundRegs.unk_29 = 0;
             }
 
-            sp4C[0] = func_80049DF0();
-            sp4C[1] = func_8004A474();
-            sp4C[3] = func_8004A89C();
+            sp4C[0] = GbAudio_RenderSquare1();
+            sp4C[1] = GbAudio_RenderSquare2();
+            sp4C[3] = GbAudio_RenderNoise();
 
-            var_t = D_800FD008.unk_2A;
+            var_t = gGbSoundRegs.unk_2A;
             var_a0 =
                 ((u32)((sp4C[0] & ((var_t & 1) ? -1 : 0)) + (sp4C[1] & ((var_t & 2) ? -1 : 0)) +
                        (sp4C[3] & ((var_t & 8) ? -1 : 0))) >>
@@ -351,26 +351,26 @@ void func_80049A60(u32 arg0) {
             var_a0 = 0;
         }
 
-        if (D_800FF97C != 0) {
+        if (gMusicEchoLevel != 0) {
             if (1) {}
             if (1) {}
             if (1) {}
             if (1) {}
-            tmp = (f32)D_800FD6F8[((D_800FF978 - D_800FF980) + 0x1140) % 4416];
+            tmp = (f32)gInterpolationHistory[((gInterpolationPos - D_800FF980) + 0x1140) % 4416];
 
-            var_a0 += (s16)(((tmp - var_a0) * D_800FF97C) >> 8);
-            D_800FD6F8[D_800FF978++] = var_a0;
-            if (D_800FF978 >= 0x1140) {
-                D_800FF978 -= 0x1140;
+            var_a0 += (s16)(((tmp - var_a0) * gMusicEchoLevel) >> 8);
+            gInterpolationHistory[gInterpolationPos++] = var_a0;
+            if (gInterpolationPos >= 0x1140) {
+                gInterpolationPos -= 0x1140;
             }
         }
 
-        D_800FC6D8[D_800FD6F4 + 0] = var_a0;
-        D_800FC6D8[D_800FD6F4 + 1] = var_a0;
+        gMusicFadeBuffer[gOutputBufferPos + 0] = var_a0;
+        gMusicFadeBuffer[gOutputBufferPos + 1] = var_a0;
 
-        D_800FD6F4 += 2;
-        if (D_800FD6F4 >= 0xB80) {
-            D_800FD6F4 -= 0xB80;
+        gOutputBufferPos += 2;
+        if (gOutputBufferPos >= 0xB80) {
+            gOutputBufferPos -= 0xB80;
         }
 
         var_s4++;
@@ -379,17 +379,17 @@ void func_80049A60(u32 arg0) {
 }
 
 void GbAudio_ApplyQueuedWrites(u16 arg0) {
-    while (D_800FD068[D_800FD6A8].unk_06 >= arg0) {
-        D_800FD068[D_800FD6A8].unk_00[0] = D_800FD068[D_800FD6A8].unk_04;
-        D_800FD068[D_800FD6A8].unk_00[1] = 1;
-        D_800FD6A8++;
-        if (D_800FD6A8 >= 0xC8) {
-            D_800FD6A8 -= 0xC8;
+    while (gQueuedRegisterWrites[gQueuedWriteIndex].unk_06 >= arg0) {
+        gQueuedRegisterWrites[gQueuedWriteIndex].unk_00[0] = gQueuedRegisterWrites[gQueuedWriteIndex].unk_04;
+        gQueuedRegisterWrites[gQueuedWriteIndex].unk_00[1] = 1;
+        gQueuedWriteIndex++;
+        if (gQueuedWriteIndex >= 0xC8) {
+            gQueuedWriteIndex -= 0xC8;
         }
     }
 }
 
-s16 func_80049DF0(void) {
+s16 GbAudio_RenderSquare1(void) {
     s32 i;
     s32 changed;
     s32 nr14;
@@ -407,181 +407,181 @@ s16 func_80049DF0(void) {
 
     if (changed) {
         nr14 = GB_REG(4);
-        D_800FCF60.unk_04 = GB_REG(3) | (((u8)nr14 & 7) << 8);
-        D_800FCF60.unk_24 = ((0x800 - D_800FCF60.unk_04) * D_800FD004) >> 11;
+        gSquare1State.unk_04 = GB_REG(3) | (((u8)nr14 & 7) << 8);
+        gSquare1State.unk_24 = ((0x800 - gSquare1State.unk_04) * D_800FD004) >> 11;
         switch ((GB_REG(1) & 0xC0) >> 6) {
             case 0:
-                D_800FCF60.unk_18[1] = D_800FCF60.unk_24 >> 3;
-                if (D_800FCF60.unk_18[1] < 0x40) {
-                    D_800FCF60.unk_18[1] = 0x40;
+                gSquare1State.unk_18[1] = gSquare1State.unk_24 >> 3;
+                if (gSquare1State.unk_18[1] < 0x40) {
+                    gSquare1State.unk_18[1] = 0x40;
                 }
                 phase = 1;
-                D_800FCF60.unk_18[0] = D_800FCF60.unk_24 - D_800FCF60.unk_18[1];
+                gSquare1State.unk_18[0] = gSquare1State.unk_24 - gSquare1State.unk_18[1];
                 goto duty_done;
             case 1:
-                D_800FCF60.unk_18[1] = D_800FCF60.unk_24 >> 2;
-                if (D_800FCF60.unk_18[1] < 0x40) {
-                    D_800FCF60.unk_18[1] = 0x40;
+                gSquare1State.unk_18[1] = gSquare1State.unk_24 >> 2;
+                if (gSquare1State.unk_18[1] < 0x40) {
+                    gSquare1State.unk_18[1] = 0x40;
                 }
                 phase = 0;
-                D_800FCF60.unk_18[0] = D_800FCF60.unk_24 - D_800FCF60.unk_18[1];
+                gSquare1State.unk_18[0] = gSquare1State.unk_24 - gSquare1State.unk_18[1];
                 goto duty_done;
             case 2:
-                D_800FCF60.unk_18[1] = D_800FCF60.unk_24 >> 1;
-                if (D_800FCF60.unk_18[1] < 0x40) {
-                    D_800FCF60.unk_18[1] = 0x40;
+                gSquare1State.unk_18[1] = gSquare1State.unk_24 >> 1;
+                if (gSquare1State.unk_18[1] < 0x40) {
+                    gSquare1State.unk_18[1] = 0x40;
                 }
                 phase = 0;
-                D_800FCF60.unk_18[0] = D_800FCF60.unk_24 - D_800FCF60.unk_18[1];
+                gSquare1State.unk_18[0] = gSquare1State.unk_24 - gSquare1State.unk_18[1];
                 goto duty_done;
             case 3:
-                D_800FCF60.unk_18[0] = D_800FCF60.unk_24 >> 2;
-                if (D_800FCF60.unk_18[0] < 0x40) {
-                    D_800FCF60.unk_18[0] = 0x40;
+                gSquare1State.unk_18[0] = gSquare1State.unk_24 >> 2;
+                if (gSquare1State.unk_18[0] < 0x40) {
+                    gSquare1State.unk_18[0] = 0x40;
                 }
                 phase = 1;
-                D_800FCF60.unk_18[1] = D_800FCF60.unk_24 - D_800FCF60.unk_18[0];
+                gSquare1State.unk_18[1] = gSquare1State.unk_24 - gSquare1State.unk_18[0];
                 goto duty_done;
         }
-        D_800FCF60.unk_18[1] = 0;
+        gSquare1State.unk_18[1] = 0;
         phase = 1;
-        D_800FCF60.unk_18[0] = D_800FCF60.unk_24;
+        gSquare1State.unk_18[0] = gSquare1State.unk_24;
     duty_done:
 
         if (!(GB_REG(2) & 8) && !(GB_REG(2) & 0xF0)) {
-            D_800FCF60.unk_2C = 0;
-            D_800FD008.unk_2C &= 0xFFFE;
+            gSquare1State.unk_2C = 0;
+            gGbSoundRegs.unk_2C &= 0xFFFE;
             return 0;
         }
         if ((GB_REG(2) & 8) && !(GB_REG(2) & 0xF0) && !(GB_REG(2) & 7)) {
-            D_800FCF60.unk_2C = 0;
-            D_800FD008.unk_2C &= 0xFFFE;
+            gSquare1State.unk_2C = 0;
+            gGbSoundRegs.unk_2C &= 0xFFFE;
             return 0;
         }
 
         if (nr14 & 0x80) {
-            D_800FCF60.unk_00 = 0;
-            D_800FCF60.unk_2C = 1;
-            D_800FCF60.unk_1E = phase;
-            D_800FCF60.unk_1C = 0;
-            D_800FCF60.unk_20 = 0;
-            D_800FCF60.unk_0C = (u8)(GB_REG(2) & 0xF0) << 7;
+            gSquare1State.unk_00 = 0;
+            gSquare1State.unk_2C = 1;
+            gSquare1State.unk_1E = phase;
+            gSquare1State.unk_1C = 0;
+            gSquare1State.unk_20 = 0;
+            gSquare1State.unk_0C = (u8)(GB_REG(2) & 0xF0) << 7;
             if (GB_REG(2) & 7) {
                 if (GB_REG(2) & 8) {
-                    D_800FCF60.unk_0E = 0x800;
+                    gSquare1State.unk_0E = 0x800;
                 } else {
-                    D_800FCF60.unk_0E = -0x800;
+                    gSquare1State.unk_0E = -0x800;
                 }
-                D_800FCF60.unk_14 = D_800FCF60.unk_10 = (GB_REG(2) & 7) * D_800FD004;
+                gSquare1State.unk_14 = gSquare1State.unk_10 = (GB_REG(2) & 7) * D_800FD004;
             } else {
-                D_800FCF60.unk_0E = 0;
-                D_800FCF60.unk_10 = -1;
-                D_800FCF60.unk_14 = -1;
+                gSquare1State.unk_0E = 0;
+                gSquare1State.unk_10 = -1;
+                gSquare1State.unk_14 = -1;
             }
-            D_800FCF60.unk_08 = (((GB_REG(0) & 0x70) >> 4) * D_800FD004) >> 1;
-            if (D_800FCF60.unk_08 == 0) {
-                D_800FCF60.unk_08 = -1;
+            gSquare1State.unk_08 = (((GB_REG(0) & 0x70) >> 4) * D_800FD004) >> 1;
+            if (gSquare1State.unk_08 == 0) {
+                gSquare1State.unk_08 = -1;
             }
             if (nr14 & 0x40) {
-                D_800FCF60.unk_28 = ((0x40 - (GB_REG(1) & 0x3F)) * D_800FD004) >> 2;
+                gSquare1State.unk_28 = ((0x40 - (GB_REG(1) & 0x3F)) * D_800FD004) >> 2;
             } else {
-                D_800FCF60.unk_28 = -1;
+                gSquare1State.unk_28 = -1;
             }
             GB_REG(4) = nr14 & ~0x80;
         }
-        if (D_800FCF60.unk_2C == 0) {
+        if (gSquare1State.unk_2C == 0) {
             return 0;
         }
-    } else if (D_800FCF60.unk_2C == 0) {
+    } else if (gSquare1State.unk_2C == 0) {
         return 0;
     }
 
-    if (D_800FCF60.unk_28 < D_800FCF60.unk_00) {
-        D_800FCF60.unk_2C = 0;
-        D_800FD008.unk_2C &= 0xFFFE;
+    if (gSquare1State.unk_28 < gSquare1State.unk_00) {
+        gSquare1State.unk_2C = 0;
+        gGbSoundRegs.unk_2C &= 0xFFFE;
         return 0;
     }
 
-    if ((D_800FCF60.unk_08 - (D_800FCF60.unk_00 % D_800FCF60.unk_08)) <= 0x40) {
+    if ((gSquare1State.unk_08 - (gSquare1State.unk_00 % gSquare1State.unk_08)) <= 0x40) {
         if (!(GB_REG(0) & 8)) {
-            freq = (D_800FCF60.unk_04 + (D_800FCF60.unk_04 >> (GB_REG(0) & 7)));
+            freq = (gSquare1State.unk_04 + (gSquare1State.unk_04 >> (GB_REG(0) & 7)));
             if (freq >= 0x800) {
-                D_800FCF60.unk_2C = 0;
-                D_800FD008.unk_2C &= 0xFFFE;
+                gSquare1State.unk_2C = 0;
+                gGbSoundRegs.unk_2C &= 0xFFFE;
                 return 0;
             }
-            D_800FCF60.unk_04 = freq;
+            gSquare1State.unk_04 = freq;
         } else {
-            freq = (D_800FCF60.unk_04 - (D_800FCF60.unk_04 >> (GB_REG(0) & 7)));
+            freq = (gSquare1State.unk_04 - (gSquare1State.unk_04 >> (GB_REG(0) & 7)));
             if ((freq >= 0x800) || (freq < 0)) {
                 goto skip;
             }
-            D_800FCF60.unk_04 = freq;
+            gSquare1State.unk_04 = freq;
         }
-        D_800FCF60.unk_24 = ((0x800 - D_800FCF60.unk_04) * D_800FD004) >> 11;
+        gSquare1State.unk_24 = ((0x800 - gSquare1State.unk_04) * D_800FD004) >> 11;
         switch ((GB_REG(1) & 0xC0) >> 6) {
             case 0:
-                D_800FCF60.unk_18[1] = D_800FCF60.unk_24 >> 3;
-                if (D_800FCF60.unk_18[1] < 0x40) {
-                    D_800FCF60.unk_18[1] = 0x40;
+                gSquare1State.unk_18[1] = gSquare1State.unk_24 >> 3;
+                if (gSquare1State.unk_18[1] < 0x40) {
+                    gSquare1State.unk_18[1] = 0x40;
                 }
-                D_800FCF60.unk_18[0] = D_800FCF60.unk_24 - D_800FCF60.unk_18[1];
+                gSquare1State.unk_18[0] = gSquare1State.unk_24 - gSquare1State.unk_18[1];
                 break;
             case 1:
-                D_800FCF60.unk_18[1] = D_800FCF60.unk_24 >> 2;
-                if (D_800FCF60.unk_18[1] < 0x40) {
-                    D_800FCF60.unk_18[1] = 0x40;
+                gSquare1State.unk_18[1] = gSquare1State.unk_24 >> 2;
+                if (gSquare1State.unk_18[1] < 0x40) {
+                    gSquare1State.unk_18[1] = 0x40;
                 }
-                D_800FCF60.unk_18[0] = D_800FCF60.unk_24 - D_800FCF60.unk_18[1];
+                gSquare1State.unk_18[0] = gSquare1State.unk_24 - gSquare1State.unk_18[1];
                 break;
             case 2:
-                D_800FCF60.unk_18[1] = D_800FCF60.unk_24 >> 1;
-                if (D_800FCF60.unk_18[1] < 0x40) {
-                    D_800FCF60.unk_18[1] = 0x40;
+                gSquare1State.unk_18[1] = gSquare1State.unk_24 >> 1;
+                if (gSquare1State.unk_18[1] < 0x40) {
+                    gSquare1State.unk_18[1] = 0x40;
                 }
-                D_800FCF60.unk_18[0] = D_800FCF60.unk_24 - D_800FCF60.unk_18[1];
+                gSquare1State.unk_18[0] = gSquare1State.unk_24 - gSquare1State.unk_18[1];
                 break;
             case 3:
-                D_800FCF60.unk_18[0] = D_800FCF60.unk_24 >> 2;
-                if (D_800FCF60.unk_18[0] < 0x40) {
-                    D_800FCF60.unk_18[0] = 0x40;
+                gSquare1State.unk_18[0] = gSquare1State.unk_24 >> 2;
+                if (gSquare1State.unk_18[0] < 0x40) {
+                    gSquare1State.unk_18[0] = 0x40;
                 }
-                D_800FCF60.unk_18[1] = D_800FCF60.unk_24 - D_800FCF60.unk_18[0];
+                gSquare1State.unk_18[1] = gSquare1State.unk_24 - gSquare1State.unk_18[0];
                 break;
             default:
-                D_800FCF60.unk_18[1] = 0;
-                D_800FCF60.unk_18[0] = D_800FCF60.unk_24;
+                gSquare1State.unk_18[1] = 0;
+                gSquare1State.unk_18[0] = gSquare1State.unk_24;
         }
     }
 skip:
 
-    if (D_800FCF60.unk_14 < D_800FCF60.unk_00) {
-        D_800FCF60.unk_0C += D_800FCF60.unk_0E;
-        D_800FCF60.unk_14 += D_800FCF60.unk_10;
+    if (gSquare1State.unk_14 < gSquare1State.unk_00) {
+        gSquare1State.unk_0C += gSquare1State.unk_0E;
+        gSquare1State.unk_14 += gSquare1State.unk_10;
     }
-    while (D_800FCF60.unk_20 < D_800FCF60.unk_00) {
-        D_800FCF60.unk_1E ^= 1;
-        D_800FCF60.unk_20 += D_800FCF60.unk_18[D_800FCF60.unk_1E];
+    while (gSquare1State.unk_20 < gSquare1State.unk_00) {
+        gSquare1State.unk_1E ^= 1;
+        gSquare1State.unk_20 += gSquare1State.unk_18[gSquare1State.unk_1E];
     }
 
-    if (!(GB_REG(2) & 8) && (D_800FCF60.unk_0C < 0)) {
-        D_800FCF60.unk_2C = 0;
+    if (!(GB_REG(2) & 8) && (gSquare1State.unk_0C < 0)) {
+        gSquare1State.unk_2C = 0;
         return 0;
     }
-    if ((u16)D_800FCF60.unk_0C > 0x7800) {
-        D_800FCF60.unk_0C = 0x7800;
-        D_800FCF60.unk_0E = 0;
-        D_800FCF60.unk_14 = -1;
+    if ((u16)gSquare1State.unk_0C > 0x7800) {
+        gSquare1State.unk_0C = 0x7800;
+        gSquare1State.unk_0E = 0;
+        gSquare1State.unk_14 = -1;
     }
-    out = D_800FCF60.unk_0C;
-    if (D_800FCF60.unk_1E == 0) {
+    out = gSquare1State.unk_0C;
+    if (gSquare1State.unk_1E == 0) {
         out = -out;
     }
-    D_800FCF60.unk_00 += 0x40;
+    gSquare1State.unk_00 += 0x40;
     return out;
 }
 
-s16 func_8004A474(void) {
+s16 GbAudio_RenderSquare2(void) {
     s32 i;
     s32 changed;
     s32 nr24;
@@ -598,123 +598,123 @@ s16 func_8004A474(void) {
 
     if (changed) {
         nr24 = GB_REG(9);
-        D_800FCF90.unk_1C = ((0x800 - (GB_REG(8) | (((u8)nr24 & 7) << 8))) * D_800FD004) >> 11;
+        gSquare2State.unk_1C = ((0x800 - (GB_REG(8) | (((u8)nr24 & 7) << 8))) * D_800FD004) >> 11;
         switch ((GB_REG(6) & 0xC0) >> 6) {
             case 0:
-                D_800FCF90.unk_10[1] = D_800FCF90.unk_1C >> 3;
-                if (D_800FCF90.unk_10[1] < 0x40) {
-                    D_800FCF90.unk_10[1] = 0x40;
+                gSquare2State.unk_10[1] = gSquare2State.unk_1C >> 3;
+                if (gSquare2State.unk_10[1] < 0x40) {
+                    gSquare2State.unk_10[1] = 0x40;
                 }
                 phase = 1;
-                D_800FCF90.unk_10[0] = D_800FCF90.unk_1C - D_800FCF90.unk_10[1];
+                gSquare2State.unk_10[0] = gSquare2State.unk_1C - gSquare2State.unk_10[1];
                 goto duty_done;
             case 1:
-                D_800FCF90.unk_10[1] = D_800FCF90.unk_1C >> 2;
-                if (D_800FCF90.unk_10[1] < 0x40) {
-                    D_800FCF90.unk_10[1] = 0x40;
+                gSquare2State.unk_10[1] = gSquare2State.unk_1C >> 2;
+                if (gSquare2State.unk_10[1] < 0x40) {
+                    gSquare2State.unk_10[1] = 0x40;
                 }
                 phase = 0;
-                D_800FCF90.unk_10[0] = D_800FCF90.unk_1C - D_800FCF90.unk_10[1];
+                gSquare2State.unk_10[0] = gSquare2State.unk_1C - gSquare2State.unk_10[1];
                 goto duty_done;
             case 2:
-                D_800FCF90.unk_10[1] = D_800FCF90.unk_1C >> 1;
-                if (D_800FCF90.unk_10[1] < 0x40) {
-                    D_800FCF90.unk_10[1] = 0x40;
+                gSquare2State.unk_10[1] = gSquare2State.unk_1C >> 1;
+                if (gSquare2State.unk_10[1] < 0x40) {
+                    gSquare2State.unk_10[1] = 0x40;
                 }
                 phase = 0;
-                D_800FCF90.unk_10[0] = D_800FCF90.unk_1C - D_800FCF90.unk_10[1];
+                gSquare2State.unk_10[0] = gSquare2State.unk_1C - gSquare2State.unk_10[1];
                 goto duty_done;
             case 3:
-                D_800FCF90.unk_10[0] = D_800FCF90.unk_1C >> 2;
-                if (D_800FCF90.unk_10[0] < 0x40) {
-                    D_800FCF90.unk_10[0] = 0x40;
+                gSquare2State.unk_10[0] = gSquare2State.unk_1C >> 2;
+                if (gSquare2State.unk_10[0] < 0x40) {
+                    gSquare2State.unk_10[0] = 0x40;
                 }
                 phase = 1;
-                D_800FCF90.unk_10[1] = D_800FCF90.unk_1C - D_800FCF90.unk_10[0];
+                gSquare2State.unk_10[1] = gSquare2State.unk_1C - gSquare2State.unk_10[0];
                 goto duty_done;
         }
-        D_800FCF90.unk_10[1] = 0;
+        gSquare2State.unk_10[1] = 0;
         phase = 1;
-        D_800FCF90.unk_10[0] = D_800FCF90.unk_1C;
+        gSquare2State.unk_10[0] = gSquare2State.unk_1C;
     duty_done:
 
         if (!(GB_REG(7) & 8) && !(GB_REG(7) & 0xF0)) {
-            D_800FCF90.unk_24 = 0;
-            D_800FD008.unk_2C &= 0xFFFD;
+            gSquare2State.unk_24 = 0;
+            gGbSoundRegs.unk_2C &= 0xFFFD;
             return 0;
         }
         if ((GB_REG(7) & 8) && !(GB_REG(7) & 0xF0) && !(GB_REG(7) & 7)) {
-            D_800FCF90.unk_24 = 0;
-            D_800FD008.unk_2C &= 0xFFFD;
+            gSquare2State.unk_24 = 0;
+            gGbSoundRegs.unk_2C &= 0xFFFD;
             return 0;
         }
 
         if (nr24 & 0x80) {
-            D_800FCF90.unk_00 = 0;
-            D_800FCF90.unk_24 = 1;
-            D_800FCF90.unk_16 = phase;
-            D_800FCF90.unk_14 = 0;
-            D_800FCF90.unk_18 = 0;
-            D_800FCF90.unk_04 = ((GB_REG(7) & 0xF0) << 3) << 4;
+            gSquare2State.unk_00 = 0;
+            gSquare2State.unk_24 = 1;
+            gSquare2State.unk_16 = phase;
+            gSquare2State.unk_14 = 0;
+            gSquare2State.unk_18 = 0;
+            gSquare2State.unk_04 = ((GB_REG(7) & 0xF0) << 3) << 4;
             if (GB_REG(7) & 7) {
                 if (GB_REG(7) & 8) {
-                    D_800FCF90.unk_06 = 0x800;
+                    gSquare2State.unk_06 = 0x800;
                 } else {
-                    D_800FCF90.unk_06 = -0x800;
+                    gSquare2State.unk_06 = -0x800;
                 }
-                D_800FCF90.unk_0C = D_800FCF90.unk_08 = (GB_REG(7) & 7) * D_800FD004;
+                gSquare2State.unk_0C = gSquare2State.unk_08 = (GB_REG(7) & 7) * D_800FD004;
             } else {
-                D_800FCF90.unk_06 = 0;
-                D_800FCF90.unk_08 = -1;
-                D_800FCF90.unk_0C = -1;
+                gSquare2State.unk_06 = 0;
+                gSquare2State.unk_08 = -1;
+                gSquare2State.unk_0C = -1;
             }
             if (nr24 & 0x40) {
-                D_800FCF90.unk_20 = ((0x40 - (GB_REG(6) & 0x3F)) * D_800FD004) >> 2;
+                gSquare2State.unk_20 = ((0x40 - (GB_REG(6) & 0x3F)) * D_800FD004) >> 2;
             } else {
-                D_800FCF90.unk_20 = -1;
+                gSquare2State.unk_20 = -1;
             }
             GB_REG(9) = nr24 & ~0x80;
         }
-        if (D_800FCF90.unk_24 == 0) {
+        if (gSquare2State.unk_24 == 0) {
             return 0;
         }
-    } else if (D_800FCF90.unk_24 == 0) {
+    } else if (gSquare2State.unk_24 == 0) {
         return 0;
     }
 
-    if (D_800FCF90.unk_20 < D_800FCF90.unk_00) {
-        D_800FCF90.unk_24 = 0;
-        D_800FD008.unk_2C &= 0xFFFD;
+    if (gSquare2State.unk_20 < gSquare2State.unk_00) {
+        gSquare2State.unk_24 = 0;
+        gGbSoundRegs.unk_2C &= 0xFFFD;
         return 0;
     }
 
-    if (D_800FCF90.unk_0C < D_800FCF90.unk_00) {
-        D_800FCF90.unk_04 += D_800FCF90.unk_06;
-        D_800FCF90.unk_0C += D_800FCF90.unk_08;
+    if (gSquare2State.unk_0C < gSquare2State.unk_00) {
+        gSquare2State.unk_04 += gSquare2State.unk_06;
+        gSquare2State.unk_0C += gSquare2State.unk_08;
     }
-    while (D_800FCF90.unk_18 <= D_800FCF90.unk_00) {
-        D_800FCF90.unk_16 ^= 1;
-        D_800FCF90.unk_18 += D_800FCF90.unk_10[D_800FCF90.unk_16];
+    while (gSquare2State.unk_18 <= gSquare2State.unk_00) {
+        gSquare2State.unk_16 ^= 1;
+        gSquare2State.unk_18 += gSquare2State.unk_10[gSquare2State.unk_16];
     }
 
-    if (!(GB_REG(7) & 8) && (D_800FCF90.unk_04 < 0)) {
-        D_800FCF90.unk_24 = 0;
+    if (!(GB_REG(7) & 8) && (gSquare2State.unk_04 < 0)) {
+        gSquare2State.unk_24 = 0;
         return 0;
     }
-    if ((u16)D_800FCF90.unk_04 > 0x7800) {
-        D_800FCF90.unk_04 = 0x7800;
-        D_800FCF90.unk_06 = 0;
-        D_800FCF90.unk_0C = -1;
+    if ((u16)gSquare2State.unk_04 > 0x7800) {
+        gSquare2State.unk_04 = 0x7800;
+        gSquare2State.unk_06 = 0;
+        gSquare2State.unk_0C = -1;
     }
-    out = D_800FCF90.unk_04;
-    if (D_800FCF90.unk_16 == 0) {
+    out = gSquare2State.unk_04;
+    if (gSquare2State.unk_16 == 0) {
         out = -out;
     }
-    D_800FCF90.unk_00 += 0x40;
+    gSquare2State.unk_00 += 0x40;
     return out;
 }
 
-s16 func_8004A89C(void) {
+s16 GbAudio_RenderNoise(void) {
     s32 i;
     s32 nr43;
     s32 row;
@@ -741,117 +741,117 @@ s16 func_8004A89C(void) {
         entry = &GB_NOISE_TABLE[row][col];
         sampleId = entry->sampleId;
         if (sampleId == 0xFF) {
-            D_800FCFD8.unk_28 = 0;
+            gNoiseChannelState.unk_28 = 0;
             return 0;
         }
         if (GB_REG(0x12) & 8) {
             sampleId += 0x10;
         }
-        D_800FCFD8.unk_0C = GB_NOISE_TABLE[nr43 & 7][col].pitchStep;
-        if (sampleId != D_800FCFD8.unk_04) {
-            D_800FCFD8.unk_04 = sampleId;
-            ent = (unk_D_800FC6CC*)((u32*)D_800FC6CC + (D_800FCFD8.unk_04 << 1));
-            Rom_DmaRead(ent->unk_00, (u32)D_800FC6D0, ent->unk_04);
+        gNoiseChannelState.unk_0C = GB_NOISE_TABLE[nr43 & 7][col].pitchStep;
+        if (sampleId != gNoiseChannelState.unk_04) {
+            gNoiseChannelState.unk_04 = sampleId;
+            ent = (unk_D_800FC6CC*)((u32*)gAudioSeqTOC + (gNoiseChannelState.unk_04 << 1));
+            Rom_DmaRead(ent->unk_00, (u32)gAudioSfxDataBuffer, ent->unk_04);
         }
 
-        D_800FCFD8.unk_08 = 0;
-        D_800FCFD8.unk_10 = 0;
+        gNoiseChannelState.unk_08 = 0;
+        gNoiseChannelState.unk_10 = 0;
         if (!(GB_REG(0x11) & 8) && !(GB_REG(0x11) & 0xF0)) {
-            D_800FCFD8.unk_28 = 0;
-            D_800FD008.unk_2C &= 0xFFF7;
+            gNoiseChannelState.unk_28 = 0;
+            gGbSoundRegs.unk_2C &= 0xFFF7;
             return 0;
         }
         if ((GB_REG(0x11) & 8) && !(GB_REG(0x11) & 0xF0) && !(GB_REG(0x11) & 7)) {
-            D_800FCFD8.unk_28 = 0;
-            D_800FD008.unk_2C &= 0xFFF7;
+            gNoiseChannelState.unk_28 = 0;
+            gGbSoundRegs.unk_2C &= 0xFFF7;
             return 0;
         }
 
         nr44 = GB_REG(0x13);
         if (nr44 & 0x80) {
-            D_800FCFD8.unk_00 = 0;
-            D_800FCFD8.unk_28 = 1;
-            D_800FCFD8.unk_14 = (u8)(GB_REG(0x11) & 0xF0) * 0.05f;
+            gNoiseChannelState.unk_00 = 0;
+            gNoiseChannelState.unk_28 = 1;
+            gNoiseChannelState.unk_14 = (u8)(GB_REG(0x11) & 0xF0) * 0.05f;
             if (GB_REG(0x11) & 7) {
                 if (GB_REG(0x11) & 8) {
-                    D_800FCFD8.unk_18 = 0.05f;
+                    gNoiseChannelState.unk_18 = 0.05f;
                 } else {
-                    D_800FCFD8.unk_18 = -0.05f;
+                    gNoiseChannelState.unk_18 = -0.05f;
                 }
-                D_800FCFD8.unk_20 = D_800FCFD8.unk_1C = (GB_REG(0x11) & 7) * D_800FD004 * 4;
+                gNoiseChannelState.unk_20 = gNoiseChannelState.unk_1C = (GB_REG(0x11) & 7) * D_800FD004 * 4;
             } else {
-                D_800FCFD8.unk_1C = -1;
-                D_800FCFD8.unk_20 = -1;
-                D_800FCFD8.unk_18 = 0.0f;
+                gNoiseChannelState.unk_1C = -1;
+                gNoiseChannelState.unk_20 = -1;
+                gNoiseChannelState.unk_18 = 0.0f;
             }
             if (nr44 & 0x40) {
-                D_800FCFD8.unk_24 = (0x40 - (GB_REG(0x10) & 0x3F)) * D_800FD004;
+                gNoiseChannelState.unk_24 = (0x40 - (GB_REG(0x10) & 0x3F)) * D_800FD004;
             } else {
-                D_800FCFD8.unk_24 = -1;
+                gNoiseChannelState.unk_24 = -1;
             }
             GB_REG(0x13) = nr44 & 0xFF7F;
         }
-        if (D_800FCFD8.unk_28 == 0) {
+        if (gNoiseChannelState.unk_28 == 0) {
             return 0;
         }
-    } else if (D_800FCFD8.unk_28 == 0) {
+    } else if (gNoiseChannelState.unk_28 == 0) {
         return 0;
     }
 
-    if (D_800FCFD8.unk_24 < D_800FCFD8.unk_00) {
-        D_800FCFD8.unk_28 = 0;
-        D_800FD008.unk_2C &= 0xFFF7;
+    if (gNoiseChannelState.unk_24 < gNoiseChannelState.unk_00) {
+        gNoiseChannelState.unk_28 = 0;
+        gGbSoundRegs.unk_2C &= 0xFFF7;
         return 0;
     }
 
-    if (D_800FCFD8.unk_20 < D_800FCFD8.unk_00) {
-        D_800FCFD8.unk_20 += D_800FCFD8.unk_1C;
-        D_800FCFD8.unk_14 += D_800FCFD8.unk_18;
+    if (gNoiseChannelState.unk_20 < gNoiseChannelState.unk_00) {
+        gNoiseChannelState.unk_20 += gNoiseChannelState.unk_1C;
+        gNoiseChannelState.unk_14 += gNoiseChannelState.unk_18;
     }
 
-    ent = (unk_D_800FC6CC*)((u32*)D_800FC6CC + (D_800FCFD8.unk_04 << 1));
+    ent = (unk_D_800FC6CC*)((u32*)gAudioSeqTOC + (gNoiseChannelState.unk_04 << 1));
     if (1) {}
-    sample = ((s16*)D_800FC6D0)[D_800FCFD8.unk_08];
-    D_800FCFD8.unk_10 += 1.0f;
-    if (D_800FCFD8.unk_0C <= D_800FCFD8.unk_10) {
-        D_800FCFD8.unk_08++;
-        D_800FCFD8.unk_10 -= D_800FCFD8.unk_0C;
-        if (D_800FCFD8.unk_08 >= (ent->unk_04 >> 1)) {
-            D_800FCFD8.unk_08 = 0;
+    sample = ((s16*)gAudioSfxDataBuffer)[gNoiseChannelState.unk_08];
+    gNoiseChannelState.unk_10 += 1.0f;
+    if (gNoiseChannelState.unk_0C <= gNoiseChannelState.unk_10) {
+        gNoiseChannelState.unk_08++;
+        gNoiseChannelState.unk_10 -= gNoiseChannelState.unk_0C;
+        if (gNoiseChannelState.unk_08 >= (ent->unk_04 >> 1)) {
+            gNoiseChannelState.unk_08 = 0;
         }
     }
 
-    if (!(GB_REG(0x11) & 8) && (D_800FCFD8.unk_14 < 0.0f)) {
-        D_800FCFD8.unk_28 = 0;
+    if (!(GB_REG(0x11) & 8) && (gNoiseChannelState.unk_14 < 0.0f)) {
+        gNoiseChannelState.unk_28 = 0;
         return 0;
     }
-    if (D_800FCFD8.unk_14 > 0.75f) {
-        D_800FCFD8.unk_14 = 0.75f;
-        D_800FCFD8.unk_18 = 0.0f;
-        D_800FCFD8.unk_20 = -1;
+    if (gNoiseChannelState.unk_14 > 0.75f) {
+        gNoiseChannelState.unk_14 = 0.75f;
+        gNoiseChannelState.unk_18 = 0.0f;
+        gNoiseChannelState.unk_20 = -1;
     }
-    sample = sample * D_800FCFD8.unk_14;
-    D_800FCFD8.unk_00 += 0x100;
+    sample = sample * gNoiseChannelState.unk_14;
+    gNoiseChannelState.unk_00 += 0x100;
     return sample;
 }
 
 void GbAudio_ClearInterpolationHistory(void) {
     s32 i;
 
-    for (i = 0; i < ARRAY_COUNT(D_800FD6F8); i++) {
-        D_800FD6F8[i] = 0;
+    for (i = 0; i < ARRAY_COUNT(gInterpolationHistory); i++) {
+        gInterpolationHistory[i] = 0;
     }
-    D_800FF978 = 0;
+    gInterpolationPos = 0;
 }
 
 void GbAudio_ClearOutputBuffer(void) {
     s32 i;
 
     for (i = 0; i < 0xB80; i++) {
-        D_800FC6D8[i] = 0;
+        gMusicFadeBuffer[i] = 0;
     }
-    D_800FD6F0 = 0;
-    D_800FD6F4 = 0;
+    gMusicFadePos = 0;
+    gOutputBufferPos = 0;
 }
 
 void func_8004AD2C(void) {

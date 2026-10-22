@@ -60,17 +60,17 @@ f32 BattleAnim_Vec3fDistance(Vec3f arg0, Vec3f arg1) {
 }
 
 f32 BattleAnim_Distance2D(f32 arg0, f32 arg1, f32 arg2, f32 arg3) {
-    static f32 D_843900D0;
-    static f32 D_843900D4;
+    static f32 gDist2D_X;
+    static f32 gDist2D_Y;
 
-    D_843900D0 = SQ(arg0 - arg2);
-    D_843900D4 = SQ(arg1 - arg3);
+    gDist2D_X = SQ(arg0 - arg2);
+    gDist2D_Y = SQ(arg1 - arg3);
 
-    if (D_843900D0 + D_843900D4 == 0.0f) {
+    if (gDist2D_X + gDist2D_Y == 0.0f) {
         return 0.0f;
     }
 
-    return sqrtf(D_843900D0 + D_843900D4);
+    return sqrtf(gDist2D_X + gDist2D_Y);
 }
 
 s32 BattleAnim_RandomIntWithWarmup(f32 arg0) {
@@ -190,80 +190,80 @@ void BattleAnim_ApproachU16(u16* arg0, u16 arg1, s16 arg2) {
 }
 
 void Battle_ComputeSplineWeightsVariantA(f32* arg0, f32 arg1) {
-    static f32 D_843900D8;
-    static f32 D_843900DC;
-    static f32 D_843900E0;
+    static f32 gSplineA_T3;
+    static f32 gSplineA_T2;
+    static f32 gSplineA_InvT;
 
-    D_843900E0 = 1.0f - arg1;
-    D_843900DC = SQ(arg1);
-    D_843900D8 = D_843900DC * arg1;
+    gSplineA_InvT = 1.0f - arg1;
+    gSplineA_T2 = SQ(arg1);
+    gSplineA_T3 = gSplineA_T2 * arg1;
 
-    arg0[0] = (SQ(D_843900E0) * D_843900E0) / 6.0f;
-    arg0[1] = ((0.5f * D_843900D8) - D_843900DC) + 0.6666667f;
-    arg0[2] = (-0.5f * D_843900D8) + (0.5f * D_843900DC) + (0.5f * arg1) + 0.16666667f;
-    arg0[3] = D_843900D8 / 6.0;
+    arg0[0] = (SQ(gSplineA_InvT) * gSplineA_InvT) / 6.0f;
+    arg0[1] = ((0.5f * gSplineA_T3) - gSplineA_T2) + 0.6666667f;
+    arg0[2] = (-0.5f * gSplineA_T3) + (0.5f * gSplineA_T2) + (0.5f * arg1) + 0.16666667f;
+    arg0[3] = gSplineA_T3 / 6.0;
 }
 
 void Battle_ComputeSplineWeightsVariantB(f32* arg0, f32 arg1) {
-    static f32 D_843900E4;
-    static f32 D_843900E8;
-    static f32 D_843900EC;
+    static f32 gSplineB_T3;
+    static f32 gSplineB_T2;
+    static f32 gSplineB_InvT;
 
-    D_843900EC = 1.0 - arg1;
-    D_843900E8 = SQ(arg1);
-    D_843900E4 = D_843900E8 * arg1;
+    gSplineB_InvT = 1.0 - arg1;
+    gSplineB_T2 = SQ(arg1);
+    gSplineB_T3 = gSplineB_T2 * arg1;
 
-    arg0[0] = SQ(D_843900EC) * D_843900EC;
-    arg0[1] = (((21.0f * D_843900E4) / 12.0f) - (9.0f * D_843900E8 * 0.5f)) + (3.0f * arg1);
-    arg0[2] = ((-11.0f * D_843900E4) / 12.0f) + (3.0f * D_843900E8 * 0.5f);
-    arg0[3] = D_843900E4 / 6.0f;
+    arg0[0] = SQ(gSplineB_InvT) * gSplineB_InvT;
+    arg0[1] = (((21.0f * gSplineB_T3) / 12.0f) - (9.0f * gSplineB_T2 * 0.5f)) + (3.0f * arg1);
+    arg0[2] = ((-11.0f * gSplineB_T3) / 12.0f) + (3.0f * gSplineB_T2 * 0.5f);
+    arg0[3] = gSplineB_T3 / 6.0f;
 }
 
 void Battle_ComputeSplineWeightsVariantC(f32* arg0, f32 arg1) {
-    static f32 D_843900F0;
-    static f32 D_843900F4;
-    static f32 D_843900F8;
+    static f32 gSplineC_T3;
+    static f32 gSplineC_T2;
+    static f32 gSplineC_InvT;
 
-    D_843900F8 = 1.0f - arg1;
-    D_843900F4 = SQ(arg1);
-    D_843900F0 = D_843900F4 * arg1;
+    gSplineC_InvT = 1.0f - arg1;
+    gSplineC_T2 = SQ(arg1);
+    gSplineC_T3 = gSplineC_T2 * arg1;
 
-    arg0[0] = SQ(D_843900F8) * D_843900F8 * 0.25f;
-    arg0[1] = ((0.5833333f * D_843900F0) - (1.25f * D_843900F4)) + (arg1 * 0.25f) + 0.5833333f;
-    arg0[2] = (-0.5f * D_843900F0) + (0.5f * D_843900F4) + (0.5f * arg1) + 0.16666667f;
-    arg0[3] = D_843900F0 / 6.0f;
+    arg0[0] = SQ(gSplineC_InvT) * gSplineC_InvT * 0.25f;
+    arg0[1] = ((0.5833333f * gSplineC_T3) - (1.25f * gSplineC_T2)) + (arg1 * 0.25f) + 0.5833333f;
+    arg0[2] = (-0.5f * gSplineC_T3) + (0.5f * gSplineC_T2) + (0.5f * arg1) + 0.16666667f;
+    arg0[3] = gSplineC_T3 / 6.0f;
 }
 
 void Battle_ComputeSplineWeightsVariantD(f32* arg0, f32 arg1) {
-    static f32 D_843900FC;
-    static f32 D_84390100;
-    static f32 D_84390104;
-    static f32 D_84390108;
+    static f32 gSplineD_CB;
+    static f32 gSplineD_InvT;
+    static f32 gSplineD_InvT2;
+    static f32 gSplineD_InvT3;
 
-    D_84390100 = 1.0f - arg1;
-    D_84390104 = SQ(D_84390100);
-    D_84390108 = D_84390104 * D_84390100;
-    D_843900FC = CB(arg1);
+    gSplineD_InvT = 1.0f - arg1;
+    gSplineD_InvT2 = SQ(gSplineD_InvT);
+    gSplineD_InvT3 = gSplineD_InvT2 * gSplineD_InvT;
+    gSplineD_CB = CB(arg1);
 
-    arg0[0] = D_84390108 / 6.0f;
-    arg0[1] = (-0.5f * D_84390108) + (0.5f * D_84390104) + (0.5f * D_84390100) + 0.16666667f;
-    arg0[2] = (((7.0f * D_84390108) / 12.0f) - (5.0f * D_84390104 * 0.25f)) + (D_84390100 * 0.25f) + 0.5833333f;
-    arg0[3] = D_843900FC * 0.25f;
+    arg0[0] = gSplineD_InvT3 / 6.0f;
+    arg0[1] = (-0.5f * gSplineD_InvT3) + (0.5f * gSplineD_InvT2) + (0.5f * gSplineD_InvT) + 0.16666667f;
+    arg0[2] = (((7.0f * gSplineD_InvT3) / 12.0f) - (5.0f * gSplineD_InvT2 * 0.25f)) + (gSplineD_InvT * 0.25f) + 0.5833333f;
+    arg0[3] = gSplineD_CB * 0.25f;
 }
 
 void Battle_ComputeSplineWeightsVariantE(f32* arg0, f32 arg1) {
-    static f32 D_8439010C;
-    static f32 D_84390110;
-    static f32 D_84390114;
-    static f32 D_84390118;
+    static f32 gSplineE_CB;
+    static f32 gSplineE_InvT;
+    static f32 gSplineE_InvT2;
+    static f32 gSplineE_InvT3;
 
-    D_84390110 = 1.0f - arg1;
-    D_84390114 = SQ(D_84390110);
-    D_84390118 = D_84390114 * D_84390110;
-    D_8439010C = CB(arg1);
+    gSplineE_InvT = 1.0f - arg1;
+    gSplineE_InvT2 = SQ(gSplineE_InvT);
+    gSplineE_InvT3 = gSplineE_InvT2 * gSplineE_InvT;
+    gSplineE_CB = CB(arg1);
 
-    arg0[0] = D_84390118 / 6.0f;
-    arg0[1] = ((-11.0f * D_84390118) / 12.0f) + (3.0f * D_84390114 * 0.5f);
-    arg0[2] = (((21.0f * D_84390118) / 12.0f) - (9.0f * D_84390114 * 0.5f)) + (3.0f * D_84390110);
-    arg0[3] = D_8439010C;
+    arg0[0] = gSplineE_InvT3 / 6.0f;
+    arg0[1] = ((-11.0f * gSplineE_InvT3) / 12.0f) + (3.0f * gSplineE_InvT2 * 0.5f);
+    arg0[2] = (((21.0f * gSplineE_InvT3) / 12.0f) - (9.0f * gSplineE_InvT2 * 0.5f)) + (3.0f * gSplineE_InvT);
+    arg0[3] = gSplineE_CB;
 }

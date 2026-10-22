@@ -238,16 +238,16 @@ void BattleAnim_SetupEndEffects85And87GravityFallDelay(Particle* arg0) {
             Particle_Field1C_SetScaled_0B938(arg0, 0.12f);
             arg0->unk_5C.y = -((ParticleMath_RandomRange(0xA) * 0.1f) + 0.5f);
             Particle_Field38_AddYScaled_08E90(arg0, ParticleMath_RandomRange(0x28) + 0x1E);
-            Particle_SetRandomVelocityXSymmetric(arg0, 0x1E, 0);
-            Particle_SetRandomVelocityZSymmetric(arg0, 0x1E, 0);
+            Particle_SetRandomPositionXSymmetric(arg0, 0x1E, 0);
+            Particle_SetRandomPositionZSymmetric(arg0, 0x1E, 0);
             break;
 
         case 1:
             Particle_Field1C_SetScaled_0B938(arg0, 0.2f);
             arg0->unk_5C.y = -((ParticleMath_RandomRange(4) * 0.1f) + 0.2f);
             Particle_Field38_AddYScaled_08E90(arg0, ParticleMath_RandomSigned(0x14) + 0x1E);
-            Particle_SetRandomVelocityXSymmetric(arg0, 0xF, 5);
-            Particle_SetRandomVelocityZSymmetric(arg0, 0x14, 5);
+            Particle_SetRandomPositionXSymmetric(arg0, 0xF, 5);
+            Particle_SetRandomPositionZSymmetric(arg0, 0x14, 5);
             break;
     }
 
@@ -311,7 +311,7 @@ void BattleAnim_CallbackEndEffects85And87GravityFallDelay(Particle* arg0) {
     }
 }
 
-void func_84340AC4(void) {
+void BattleAnim_UnusedEmptyFunc(void) {
 }
 
 void BattleAnim_OrphanDescriptor2BAnd2EEmitterSequence(void) {
@@ -327,12 +327,12 @@ void BattleAnim_OrphanDescriptor2BAnd2EEmitterSequence(void) {
     BattleAnim_CreateEffectSlotForCurrentOwner(0, BattleAnim_CallbackOrphanDescriptor2EScatterFade, &gBattleAnimParticleDescriptors[0x2E], 0, 0x10, 2, 0, 0, 0);
 }
 
-void RegisterParticleEffect_ComplexMovement(void) {
+void BattleAnim_EndEffect26GravityScatterFallSequence(void) {
     BattleAnim_CreateRepeatingEffectSlotForCurrentOwner(0, 2, 0x14, BattleAnim_CallbackEndEffect26Descriptor2CGravityScatterFall, &gBattleAnimParticleDescriptors[0x2C], 0, 4, 0xE, 0, 0, 0);
     BattleAnim_EndEffect26DelayedDescriptor29ScatterSequence();
 }
 
-void RegisterParticleEffect_Burst(void) {
+void BattleAnim_EndEffect87GravityFallDelay(void) {
     BattleAnim_CreateRepeatingEffectSlotForCurrentOwner(0, 2, 5, BattleAnim_CallbackEndEffects85And87GravityFallDelay, &gBattleAnimParticleDescriptors[0x2D], 0, 1, 0xE, 0, 0, 1);
     BattleAnim_CreateRepeatingEffectSlotForCurrentOwner(0, 4, 5, BattleAnim_CallbackEndEffects85And87GravityFallDelay, &gBattleAnimParticleDescriptors[0x2D], 0, 1, 0xE, 0, 0, 1);
 }

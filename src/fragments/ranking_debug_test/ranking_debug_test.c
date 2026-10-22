@@ -11,15 +11,15 @@
 #include "src/stage_loader.h"
 #include "src/geo_layout.h"
 
-static u32 D_86D00530[] = {
+static u32 gMiniGeoLayout[] = {
     0x0C00FFFF, 0x05000000, 0x0B00001E,  0x00000000, 0x014000F0, 0x0000000F, 0x00000000, 0x00000000, 0x05000000,
     0x0D000000, 0x05000000, 0x0F000002,  0x05000000, 0x1F00FFFF, 0x00000000, 0x00000000, 0x00000000, 0x00640064,
     0x00640000, 0x05000000, 0x06000000,  0x06000000, 0x14000000, 0x002B0012, 0xFFFFFF32, 0x16FFFFFF, 0x0F000003,
-    0x05000000, 0x0A000000, &D_800AC840, 0x06000000, 0x06000000, 0x06000000, 0x06000000, 0x01000000, 0x00000000,
+    0x05000000, 0x0A000000, &gGraphRoot0, 0x06000000, 0x06000000, 0x06000000, 0x06000000, 0x01000000, 0x00000000,
 };
 
 void miniUnkInitCamera(void) {
-    D_87906054 = D_87906050->node.children;
+    gMiniCameraPtr = gMiniCameraStruct->node.children;
 
     miniCameraXRot = 0xA00;
     miniCameraYRot = 0;
@@ -44,7 +44,7 @@ void miniUnkDrawHUB(UNUSED s32 arg0) {
     BgStage_DrawFrame();
     GfxImage_FillCurrent(&gDisplayListHead, 1);
     GeoRender_AdvanceFrameCounter();
-    Geo_RenderRootNode(&D_87906050->node);
+    Geo_RenderRootNode(&gMiniCameraStruct->node);
 
     if (miniDebugMode != 0) {
         showDebuggCameraInfo();
@@ -110,7 +110,7 @@ void miniUnkInit(void) {
     UNUSED s32 pad[2];
     MemoryBlock* sp1C = MainPool_AllocState(main_pool_get_available(), 0);
 
-    D_87906050 = process_geo_layout(sp1C, &D_86D00530);
+    gMiniCameraStruct = process_geo_layout(sp1C, &gMiniGeoLayout);
     MainPool_FinalizeAllocation(sp1C);
     ModelRenderer_InitDisplayRoots();
     PokeIcon_OpenModelArchives();

@@ -2,9 +2,9 @@
 #include "src/gfx_buffer.h"
 #include "src/math_util.h"
 
-static OwnerLinkedFourStream D_843AB940[4];
+static OwnerLinkedFourStream gOwnerLinkedFourStreams[4];
 
-static Gfx D_843899B0[] = {
+static Gfx Gfx_ParticleRenderDL[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_1CYCLE),
     gsSPClearGeometryMode(G_ZBUFFER | G_SHADE | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN |
@@ -21,7 +21,7 @@ static Gfx D_843899B0[] = {
 void OwnerLinkedFourStream_Init(void) {
     s32 i;
     s32 j;
-    OwnerLinkedFourStream* var_a2 = &D_843AB940[0];
+    OwnerLinkedFourStream* var_a2 = &gOwnerLinkedFourStreams[0];
     OwnerLinkedFourStreamNode* var_v0;
 
     for (i = 0; i < 4; i++, var_a2++) {
@@ -57,7 +57,7 @@ void OwnerLinkedFourStream_Start(f32 arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg
     sp58.y = arg4;
     sp58.z = arg5;
 
-    var_v1 = &D_843AB940[0];
+    var_v1 = &gOwnerLinkedFourStreams[0];
     for (i = 0; i < 4; i++, var_v1++) {
         if (var_v1->unk_000 == 0) {
             var_v1->unk_000 = 1;
@@ -168,7 +168,7 @@ void OwnerLinkedFourStream_UpdateNodeChain(OwnerLinkedFourStream* arg0) {
 
 s32 OwnerLinkedFourStream_IsComplete(void) {
     s32 i;
-    OwnerLinkedFourStream* var_s0 = &D_843AB940[0];
+    OwnerLinkedFourStream* var_s0 = &gOwnerLinkedFourStreams[0];
 
     for (i = 0; i < 4; i++, var_s0++) {
         if (var_s0->unk_000 == 1) {
@@ -199,7 +199,7 @@ Gfx* OwnerLinkedFourStream_Draw(Gfx* arg0) {
     Mtx sp90;
     UNUSED s32 pad2;
 
-    var_s5 = &D_843AB940[0];
+    var_s5 = &gOwnerLinkedFourStreams[0];
     for (i = 0; i < 4; i++, var_s5++) {
         if (var_s5->unk_000 == 1) {
             temp_s0 = &var_s5->unk_038[0];
@@ -213,7 +213,7 @@ Gfx* OwnerLinkedFourStream_Draw(Gfx* arg0) {
                 guMtxCatL(&sp90, temp_v0, temp_v0);
 
                 gSPMatrix(arg0++, temp_v0, G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
-                gSPDisplayList(arg0++, D_8438A980);
+                gSPDisplayList(arg0++, gParticleQuadDL);
                 gSPPopMatrix(arg0++, G_MTX_MODELVIEW);
             }
 
@@ -258,7 +258,7 @@ Gfx* OwnerLinkedFourStream_Draw(Gfx* arg0) {
 
             var_s0 = var_s5->unk_018;
 
-            gSPDisplayList(arg0++, D_843899B0);
+            gSPDisplayList(arg0++, Gfx_ParticleRenderDL);
 
             for (k = 0; k < 14; k++) {
                 gSPVertex(arg0++, var_s0, 4, 0);

@@ -39,10 +39,10 @@ typedef struct MiniRockInfo {
 
 static MiniActor miniMetapods[4];
 static MiniActor miniMetapodRocks[20];
-static s16 D_86E08E40;
-static FontContext* D_86E08E44;
+static s16 gMetapodGameTimer;
+static FontContext* gMetapodTextObject;
 
-static u32 D_86E02FB0[] = {
+static u32 gMetapodModelTextureData[] = {
     0xE8E0CBB4, 0xAAAAAFB6, 0xB6AEABBC, 0xD6BBA5A5, 0xA6BCC4C9, 0xC3B5BBBB, 0xB8B5B9C0, 0xBDB9C3D7, 0xDED2CBBD,
     0xB9BBC8E6, 0xDEB2A7BB, 0xD6BAA5A5, 0xA5ADAEA9, 0xABB1BBCD, 0xD1CCCEDA, 0xDCD4D4D8, 0xDECEC9C0, 0xCCDEE3EF,
     0xE5B5A9AD, 0xB3AAA5A5, 0xA6A9ACAE, 0xB1B8C1E0, 0xF3E9DADC, 0xE8ECF0E9, 0xE5C2B4B4, 0xBAC6C5C1, 0xBBAFAFC9,
@@ -74,7 +74,7 @@ static u32 D_86E02FB0[] = {
     0xA5B0C1E4, 0xDBB7AFAC, 0xB1B2AEAD, 0xB2BED0E6,
 };
 
-static u32 D_86E033B0[] = {
+static u32 gMetapodFloorTextureData[] = {
     0x34BD34BD, 0x34BD34BD, 0x34FD34BD, 0x3CBD34FD, 0x3CFD3CFD, 0x3CFD34FD, 0x3CFD3CFD, 0x3CFD3CFD, 0x3CFD3CFD,
     0x3CFD3CFD, 0x3CFD3CFD, 0x3CFD3CFD, 0x3CFD3CFD, 0x3CFD3CFD, 0x3CFB3CFB, 0x3CFD3CFD, 0x3CFB3CFB, 0x3CFB3CFB,
     0x3D3B3CFB, 0x3D3B3D3B, 0x3D3B3D3B, 0x3D3B3D3B, 0x3D3B3D3B, 0x3D3B3D3B, 0x453B453B, 0x453B453B, 0x453B453B,
@@ -92,7 +92,7 @@ static u32 D_86E033B0[] = {
     0xC73DC73D, 0xC73DC73D,
 };
 
-static u32 D_86E035B0[] = {
+static u32 gMetapodRockTextureData[] = {
     0xA45BA45B, 0x9C179BD7, 0x93D593D5, 0x9C179C17, 0x9C199C19, 0x9C199C19, 0xA45BAC9D, 0xA45B9C19, 0x9C199C19,
     0x9C1993D7, 0x8B538351, 0x8B518B93, 0x93959C17, 0xA49BB4DF, 0xB4DFAC9F, 0xB4DFB521, 0xAC9DA45B, 0xA4599C17,
     0x9BD793D5, 0x93D593D5, 0x93D79BD7, 0x93D593D5, 0x9BD7A45B, 0xA45B9BD7, 0x93D79C19, 0xA45B9C19, 0x93958B51,
@@ -152,14 +152,14 @@ static u32 D_86E035B0[] = {
     0x72D172D1, 0x83538B53, 0x7B116A8F, 0x624F624F, 0x6A8F72D1, 0x7AD17B11, 0x83538B95, 0x93D793D9,
 };
 
-static unk_D_86002F34_018 D_86E03DB0[3] = {
+static GfxTextureInfo gMetapodTextureDefs[3] = {
     {
         0x04,
         unk_D_86002F34_018_GFX_TYPE_1,
         32,
         32,
         1024,
-        D_86E02FB0,
+        gMetapodModelTextureData,
     },
     {
         0x00,
@@ -167,7 +167,7 @@ static unk_D_86002F34_018 D_86E03DB0[3] = {
         4,
         64,
         256,
-        D_86E033B0,
+        gMetapodFloorTextureData,
     },
     {
         0x00,
@@ -175,10 +175,10 @@ static unk_D_86002F34_018 D_86E03DB0[3] = {
         32,
         32,
         1024,
-        D_86E035B0,
+        gMetapodRockTextureData,
     },
 };
-static Gfx D_86E03DD8[] = {
+static Gfx gMetapodTilingDL[] = {
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0x0000, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD,
                 G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD),
     gsDPLoadSync(),
@@ -189,7 +189,7 @@ static Gfx D_86E03DD8[] = {
     gsDPSetTileSize(G_TX_RENDERTILE, 0, 0, 0x007C, 0x007C),
     gsSPEndDisplayList(),
 };
-static Gfx D_86E03E10[] = {
+static Gfx gMetapodFloorTilingDL[] = {
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0x0000, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, 6, G_TX_NOLOD,
                 G_TX_NOMIRROR | G_TX_CLAMP, 2, G_TX_NOLOD),
     gsDPLoadSync(),
@@ -200,7 +200,7 @@ static Gfx D_86E03E10[] = {
     gsDPSetTileSize(G_TX_RENDERTILE, 0, 0, 0x000C, 0x00FC),
     gsSPEndDisplayList(),
 };
-static Gfx D_86E03E48[] = {
+static Gfx gMetapodModelTilingDL[] = {
     gsDPSetTile(G_IM_FMT_I, G_IM_SIZ_16b, 0, 0x0000, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD,
                 G_TX_NOMIRROR | G_TX_CLAMP, 5, G_TX_NOLOD),
     gsDPLoadSync(),
@@ -212,7 +212,7 @@ static Gfx D_86E03E48[] = {
     gsDPSetTileSize(G_TX_RENDERTILE, 0, 0, 0x017C, 0x037C),
     gsSPEndDisplayList(),
 };
-static Vtx D_86E03E88[] = {
+static Vtx gMetapodVertices1[] = {
     VTX(-2544, 844, -2221, 392, 3180, 0x4D, 0x73, 0x20, 0xFF),
     VTX(-1824, 587, -2393, 641, 3314, 0x4D, 0x73, 0x20, 0xFF),
     VTX(-1848, 250, -2970, 633, 3759, 0x5E, 0x2F, 0x04, 0xFF),
@@ -246,7 +246,7 @@ static Vtx D_86E03E88[] = {
     VTX(3792, 1101, -4141, 3064, 4864, 0xCC, 0xAA, 0x6F, 0xFF),
     VTX(4028, 1471, -5000, 3049, 5453, 0xCC, 0xAA, 0x6F, 0xFF),
 };
-static Vtx D_86E04088[] = {
+static Vtx gMetapodVertices2[] = {
     VTX(-749, 250, -5106, 1152, 5759, 0xBF, 0xA2, 0x7D, 0xFF),
     VTX(566, 791, -6840, 1841, 7000, 0x9D, 0xDF, 0xCC, 0xFF),
     VTX(-243, 675, -6701, 1561, 6892, 0x9D, 0xDF, 0xCC, 0xFF),
@@ -280,7 +280,7 @@ static Vtx D_86E04088[] = {
     VTX(1990, 250, -937, 2419, 2288, 0xBD, 0x97, 0x5E, 0xFF),
     VTX(3500, 250, -937, 2941, 2288, 0x84, 0x5E, 0x3E, 0xFF),
 };
-static Vtx D_86E04288[] = {
+static Vtx gMetapodVertices3[] = {
     VTX(-2206, 587, -1462, 389, 2594, 0x2D, 0x46, 0x09, 0xFF),
     VTX(-2452, 806, -984, 823, 2288, 0x4D, 0x73, 0x20, 0xFF),
     VTX(-1230, 250, -938, 1126, 2288, 0xBD, 0x97, 0x5E, 0xFF),
@@ -314,7 +314,7 @@ static Vtx D_86E04288[] = {
     VTX(1824, 362, -3604, 2458, 4448, 0x5E, 0x2F, 0x04, 0xFF),
     VTX(1032, 250, -3085, 1896, 3948, 0xCC, 0xAA, 0x6F, 0xFF),
 };
-static Vtx D_86E04488[] = {
+static Vtx gMetapodVertices4[] = {
     VTX(-1848, 250, -2970, 633, 3759, 0x5E, 0x2F, 0x04, 0xFF),
     VTX(-3500, 250, -2780, 62, 3612, 0xCC, 0xAA, 0x6F, 0xFF),
     VTX(-2544, 844, -2221, 392, 3180, 0x4D, 0x73, 0x20, 0xFF),
@@ -348,13 +348,13 @@ static Vtx D_86E04488[] = {
     VTX(1752, 1031, -2893, 2361, 3948, 0x4F, 0x73, 0x3E, 0xFF),
     VTX(3624, 1310, -2586, 2526, 3462, 0x4F, 0x73, 0x3E, 0xFF),
 };
-static Vtx D_86E04688[] = {
+static Vtx gMetapodFloorVertices[] = {
     VTX(-250, 0, 250, 0, 2880, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(250, 0, 250, 128, 2880, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(250, 620, 250, 128, 0, 0xFF, 0xFF, 0xFF, 0xFF),
     VTX(-250, 620, 250, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF),
 };
-static Vtx D_86E046C8[] = {
+static Vtx gMetapodRockVertices[] = {
     VTX(-206, -33, 80, 0, 974, 0x8E, 0xF2, 0x20, 0xFF),    VTX(-111, 68, 137, 233, 556, 0xAC, 0x30, 0x46, 0xFF),
     VTX(-159, 120, 14, 116, 339, 0x9D, 0x40, 0x11, 0xFF),  VTX(-82, -45, 202, 305, 1024, 0xDB, 0xE4, 0x6E, 0xFF),
     VTX(-25, 125, 193, 447, 318, 0xEE, 0x40, 0x63, 0xFF),  VTX(185, -19, -121, 968, 917, 0x5C, 0xD9, 0xBE, 0xFF),
@@ -364,8 +364,8 @@ static Vtx D_86E046C8[] = {
     VTX(146, 21, 169, 871, 749, 0x52, 0x0C, 0x56, 0xFF),   VTX(121, 184, 54, 809, 73, 0x3D, 0x5F, 0x27, 0xFF),
     VTX(-60, 191, 78, 361, 46, 0xD7, 0x69, 0x27, 0xFF),    VTX(-181, 22, -65, 61, 744, 0x9A, 0x00, 0xC2, 0xFF),
 };
-static Gfx D_86E047C8[] = {
-    gsSPVertex(D_86E046C8, 16, 0),
+static Gfx gMetapodRockDL[] = {
+    gsSPVertex(gMetapodRockVertices, 16, 0),
     gsSPSetGeometryMode(G_CULL_BACK),
     gsSP2Triangles(0, 1, 2, 0, 1, 3, 4, 0),
     gsSP2Triangles(5, 6, 7, 0, 8, 9, 10, 0),
@@ -381,13 +381,13 @@ static Gfx D_86E047C8[] = {
     gsSP1Triangle(4, 13, 14, 0),
     gsSPEndDisplayList(),
 };
-static Gfx D_86E04840[] = {
-    gsSPClearGeometryMode(G_LIGHTING),      gsSPVertex(D_86E04688, 4, 0),    gsSPSetGeometryMode(G_CULL_BACK),
+static Gfx gMetapodFloorDL[] = {
+    gsSPClearGeometryMode(G_LIGHTING),      gsSPVertex(gMetapodFloorVertices, 4, 0),    gsSPSetGeometryMode(G_CULL_BACK),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0), gsSPSetGeometryMode(G_LIGHTING), gsSPEndDisplayList(),
 };
-static Gfx D_86E04870[] = {
+static Gfx gMetapodModelDL[] = {
     gsSPClearGeometryMode(G_LIGHTING),
-    gsSPVertex(D_86E03E88, 32, 0),
+    gsSPVertex(gMetapodVertices1, 32, 0),
     gsSPSetGeometryMode(G_CULL_BACK),
     gsSP2Triangles(0, 1, 2, 0, 3, 4, 5, 0),
     gsSP2Triangles(6, 7, 8, 0, 6, 8, 9, 0),
@@ -399,7 +399,7 @@ static Gfx D_86E04870[] = {
     gsSP2Triangles(1, 27, 28, 0, 2, 1, 28, 0),
     gsSP2Triangles(29, 9, 30, 0, 29, 30, 31, 0),
     gsSP1Triangle(15, 21, 16, 0),
-    gsSPVertex(D_86E04088, 32, 0),
+    gsSPVertex(gMetapodVertices2, 32, 0),
     gsSP2Triangles(0, 1, 2, 0, 0, 2, 3, 0),
     gsSP2Triangles(4, 5, 6, 0, 7, 8, 9, 0),
     gsSP2Triangles(7, 9, 10, 0, 11, 12, 13, 0),
@@ -408,7 +408,7 @@ static Gfx D_86E04870[] = {
     gsSP2Triangles(22, 23, 24, 0, 22, 24, 25, 0),
     gsSP2Triangles(23, 26, 27, 0, 23, 27, 28, 0),
     gsSP2Triangles(28, 27, 29, 0, 30, 31, 18, 0),
-    gsSPVertex(D_86E04288, 32, 0),
+    gsSPVertex(gMetapodVertices3, 32, 0),
     gsSP2Triangles(0, 1, 2, 0, 3, 4, 2, 0),
     gsSP2Triangles(2, 1, 5, 0, 6, 7, 8, 0),
     gsSP2Triangles(9, 10, 11, 0, 12, 13, 11, 0),
@@ -421,7 +421,7 @@ static Gfx D_86E04870[] = {
     gsSP2Triangles(11, 24, 26, 0, 17, 20, 18, 0),
     gsSP2Triangles(19, 27, 28, 0, 29, 30, 31, 0),
     gsSP1Triangle(31, 8, 29, 0),
-    gsSPVertex(D_86E04488, 32, 0),
+    gsSPVertex(gMetapodVertices4, 32, 0),
     gsSP2Triangles(0, 1, 2, 0, 3, 4, 5, 0),
     gsSP2Triangles(6, 7, 8, 0, 6, 8, 9, 0),
     gsSP2Triangles(10, 11, 12, 0, 12, 9, 10, 0),
@@ -437,32 +437,32 @@ static Gfx D_86E04870[] = {
     gsSPEndDisplayList(),
 };
 
-static u32 D_86E049F8[] = {
+static u32 gMetapodGfxSequence[] = {
     0x09000000, 0x05000000, 0x1D030100, 0x00000000, 0x00000000, 0x00000000, 0x00010000, 0x00010000, 0x00010000,
     0x05000000, 0x1D020101, 0x0000FF06, 0x00000000, 0x00000000, 0x0000CCCC, 0x00010000, 0x00010000, 0x05000000,
-    0x2303FFFF, D_86E03E48, 0x0000FFFF, 0xFFFFFFFF, 0x22010000, D_86E04870, 0x1D010102, 0x03F400E0, 0xFB500000,
-    0x00000000, 0x00014000, 0x00010000, 0x00010000, 0x05000000, 0x2301FFFF, D_86E03DD8, 0x0002FFFF, 0xFFFFFFFF,
-    0x22010000, D_86E047C8, 0x06000000, 0x1D000103, 0x000000FA, 0xE3D40000, 0x00000000, 0x00117869, 0x0005FADE,
-    0x00010000, 0x05000000, 0x2306FFFF, D_86E03E10, 0x0001FFFF, 0xFFFFFFFF, 0x22010000, D_86E04840, 0x06000000,
+    0x2303FFFF, gMetapodModelTilingDL, 0x0000FFFF, 0xFFFFFFFF, 0x22010000, gMetapodModelDL, 0x1D010102, 0x03F400E0, 0xFB500000,
+    0x00000000, 0x00014000, 0x00010000, 0x00010000, 0x05000000, 0x2301FFFF, gMetapodTilingDL, 0x0002FFFF, 0xFFFFFFFF,
+    0x22010000, gMetapodRockDL, 0x06000000, 0x1D000103, 0x000000FA, 0xE3D40000, 0x00000000, 0x00117869, 0x0005FADE,
+    0x00010000, 0x05000000, 0x2306FFFF, gMetapodFloorTilingDL, 0x0001FFFF, 0xFFFFFFFF, 0x22010000, gMetapodFloorDL, 0x06000000,
     0x06000000, 0x06000000, 0x06000000, 0x04000000,
 };
 
-static u32 D_86E04AE0[] = {
-    0x17000003, 0x00000094, D_86E03DB0, 0x00000000, D_86E03E88, 0x05000000, 0x1C000000, 0x00001999,
-    0x00001999, 0x00001999, 0x05000000, 0x03000000, D_86E049F8, 0x06000000, 0x06000000, 0x01000000,
+static u32 gMetapodGfxRoot[] = {
+    0x17000003, 0x00000094, gMetapodTextureDefs, 0x00000000, gMetapodVertices1, 0x05000000, 0x1C000000, 0x00001999,
+    0x00001999, 0x00001999, 0x05000000, 0x03000000, gMetapodGfxSequence, 0x06000000, 0x06000000, 0x01000000,
 };
 
-static s16 D_86E04B20 = 0;
-static s16 D_86E04B24 = 1;
-static s16 D_86E04B28 = 0;
+static s16 gRockWaveIndex = 0;
+static s16 gRocksPerWave = 1;
+static s16 gMetapodWaveTimer = 0;
 static MiniActor* miniMetapodPtr = miniMetapods;
 static MiniActor* miniRockPtr = miniMetapodRocks;
-static u32 D_86E04B34[] = {
+static u32 gMetapodSceneGraph[] = {
     0x0C00FFFF, 0x05000000, 0x0B00001E, 0x00000000, 0x014000F0, 0xFFE20032, 0x00000000,  0x00000000,
     0x05000000, 0x0D000000, 0x05000000, 0x14000000, 0x002B0012, 0xFFFFFF32, 0x16FFFFFF,  0x0F000003,
     0x05000000, 0x1F00FFFF, 0x00000000, 0x00000000, 0xFFFE0000, 0x00640064, 0x00640000,  0x05000000,
-    0x00000000, D_86E04AE0, 0x06000000, 0x06000000, 0x05000000, 0x0A000000, &D_800AC840, 0x06000000,
-    0x06000000, 0x06000000, 0x03000000, D_87806398, 0x06000000, 0x01000000,
+    0x00000000, gMetapodGfxRoot, 0x06000000, 0x06000000, 0x05000000, 0x0A000000, &gGraphRoot0, 0x06000000,
+    0x06000000, 0x06000000, 0x03000000, gFragment2_1GeoLayout, 0x06000000, 0x01000000,
 };
 static Vec3f miniMetapodInfo[] = {
     { -54.0f, 0.0f, 0.0f },
@@ -476,10 +476,10 @@ static MiniRockInfo miniRockInfos[] = {
     { { 18.0f, 0.0f, -300.0f }, { 0, 0, 0 }, 20, 40, 0 },
     { { 54.0f, 0.0f, -300.0f }, { 0, 0, 0 }, 20, 40, 0 },
 };
-static unk_func_87801684 D_86E04C5C[] = {
+static AnimFrame gMetapodTutoAButtonIconAnim[] = {
     { D_0303ED80, 0xE }, { D_0303F180, 2 }, { D_0303F580, 6 }, { D_0303F180, 2 }, { NULL, 0 },
 };
-static unk_func_87801684 D_86E04C84[] = {
+static AnimFrame gMetapodTutoStartButtonIconAnim[] = {
     { D_03040580, 0x12 }, { D_03040980, 2 }, { D_03040D80, 8 }, { D_03040980, 2 }, { NULL, 0 },
 };
 
@@ -544,7 +544,7 @@ void MetapodGame_PlaySoundEvent(s16 arg0, s16 arg1) {
         case 14:
             Audio_FadeCategories(1, arg1);
             Audio_FadeCategories(2, arg1);
-            D_8790604A = 1;
+            gMetapodAudioMuted = 1;
             break;
 
         case 15:
@@ -557,13 +557,13 @@ void MetapodGame_PlaySoundEvent(s16 arg0, s16 arg1) {
     }
 
     if (var_s0 != 0) {
-        D_87903DBC++;
+        gMiniGameSoundDispatchCount++;
         Audio_DispatchSoundBankCommand(var_s0, sp28, sp24);
     }
 }
 
 void MetapodGame_PlaySoundEventGuarded(s16 arg0, s16 arg1) {
-    if (D_8790604A == 0) {
+    if (gMetapodAudioMuted == 0) {
         MetapodGame_PlaySoundEvent(arg0, arg1);
     }
 }
@@ -595,7 +595,7 @@ void miniInitMetapodPlayer(MiniActor* metapod, s32 arg1) {
     ModelAnim_ClearEventTrack(&metapod->unk_000);
     metapod->unk_000.textureMode = 0;
     miniActorUpdateTransform(metapod);
-    metapod->isComp = D_879060C4[arg1];
+    metapod->isComp = gMiniHudColors[arg1];
 }
 
 void miniInitMetapodPlayers(void) {
@@ -1076,8 +1076,8 @@ void miniInitRocks(void) {
         }
     }
 
-    D_86E04B20 = 0;
-    D_86E04B24 = 1;
+    gRockWaveIndex = 0;
+    gRocksPerWave = 1;
 }
 
 void MetapodGame_ScheduleRockWave(void) {
@@ -1116,7 +1116,7 @@ void MetapodGame_ScheduleRockWave(void) {
             var_s1 = 0;
             miniRockPtr = &miniMetapodRocks[i * 5];
 
-            for (j = 0; j < D_86E04B24; j++) {
+            for (j = 0; j < gRocksPerWave; j++) {
                 miniInitRock(miniRockPtr, i);
 
                 miniRockPtr->mainState = 1;
@@ -1130,7 +1130,7 @@ void MetapodGame_ScheduleRockWave(void) {
 }
 
 void MetapodGame_LaunchRock(MiniActor* rock) {
-    s16 temp_v1 = (D_86E04B20 * 4) + 0x28;
+    s16 temp_v1 = (gRockWaveIndex * 4) + 0x28;
     s16 temp_a1 = rock->collidingActorId;
 
     rock->unk_29E = temp_v1 - 1;
@@ -1159,7 +1159,7 @@ void miniRockStateMachine(MiniActor* rock) {
     s16 temp_a1 = rock->collidingActorId;
     Vec3f sp3C;
 
-    if ((D_87903DA8 != 0) || (miniMetapods[temp_a1].miniHealth == 0)) {
+    if ((gMiniGameTimer1 != 0) || (miniMetapods[temp_a1].miniHealth == 0)) {
         switch (rock->mainState) {
             case 1:
                 rock->mainState = 0;
@@ -1289,7 +1289,7 @@ void miniUpdateRocksPositions(void) {
 }
 
 void MetapodGame_InitCamera(void) {
-    D_87906054 = D_87906050->node.children;
+    gMiniCameraPtr = gMiniCameraStruct->node.children;
 
     miniCameraXRot = -0x200;
     miniCameraYRot = 0;
@@ -1323,10 +1323,10 @@ void MetapodGame_UpdateRockWaveScheduler(void) {
     s32 var_a2;
 
     miniRockPtr = miniMetapodRocks;
-    switch (D_86E04B28) {
+    switch (gMetapodWaveTimer) {
         case 1:
             MetapodGame_ScheduleRockWave();
-            D_86E04B28++;
+            gMetapodWaveTimer++;
             break;
 
         case 2:
@@ -1340,18 +1340,18 @@ void MetapodGame_UpdateRockWaveScheduler(void) {
             }
 
             if (var_a2 != 0) {
-                if (D_87903DA8 != 0) {
-                    D_86E04B28 = 0;
+                if (gMiniGameTimer1 != 0) {
+                    gMetapodWaveTimer = 0;
                     return;
                 }
 
-                D_86E04B28 = 1;
-                D_86E04B20++;
-                if (D_86E04B20 >= 5) {
-                    D_86E04B20 = 0;
-                    D_86E04B24++;
-                    if (D_86E04B24 >= 6) {
-                        D_86E04B24 = 1;
+                gMetapodWaveTimer = 1;
+                gRockWaveIndex++;
+                if (gRockWaveIndex >= 5) {
+                    gRockWaveIndex = 0;
+                    gRocksPerWave++;
+                    if (gRocksPerWave >= 6) {
+                        gRocksPerWave = 1;
                     }
                 }
             }
@@ -1446,7 +1446,7 @@ s32 MetapodGame_CheckWinCondition(void) {
     }
 
     if (var_t3 != 0) {
-        D_87903DA8 = 1;
+        gMiniGameTimer1 = 1;
     }
     return var_t3;
 }
@@ -1466,7 +1466,7 @@ s32 MetapodGame_PlayWinnerAnimations(void) {
     return var_s3;
 }
 
-void func_86E01EB0(void) {
+void MetapodGame_UpdateMetapodStates(void) {
     s32 i;
 
     miniMetapodPtr = miniMetapods;
@@ -1526,7 +1526,7 @@ void miniMetapodMinigameStateMachine(void) {
 
         case 3:
             if (MetapodGame_UpdateStartCountdown() != 0) {
-                D_86E04B28 = 1;
+                gMetapodWaveTimer = 1;
                 minigameInputLock = 1;
                 miniTutoScreenState = 0;
                 minigameState++;
@@ -1560,15 +1560,15 @@ void miniMetapodMinigameStateMachine(void) {
             break;
 
         case 7:
-            if (D_8780FC96 != 0) {
+            if (gResultExitPending != 0) {
                 minigameState++;
-                D_87903DAC = 1;
+                gMiniGameTimer2 = 1;
             }
             break;
     }
 
     Widget_CountdownUpdate();
-    func_86E01EB0();
+    MetapodGame_UpdateMetapodStates();
 }
 
 void MetapodGame_UpdateParticleFx(void) {
@@ -1591,7 +1591,7 @@ void miniDrawMetapodHeads(void) {
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, miniHudTransparency);
 
     for (i = 0, tmp = 0x26; i < 4; tmp += 0x4A, i++) {
-        if (D_879060C4[i] == 0) {
+        if (gMiniHudColors[i] == 0) {
             Widget_DrawPlayerIcon(i, tmp, 0xD6, 0.7f); //  draw player icon
         } else {
             Widget_DrawPlayerIcon(-1 - i, tmp, 0xD6, 0.7f); //  draw player icon
@@ -1614,44 +1614,44 @@ void MetapodGame_DrawTutorialText(void) {
     Font_SetLineHeight(0xC);
     Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
     Gfx_SetPrimColor(0xF9, 0xF4, 0, 0xFF);
-    Font_Printf(0xA0 - (Text_MeasureStringWidth(D_86E08E44, Text_GetString(NULL, 0, D_87806330, 0x44)) / 2), 0x20,
-                  Text_GetString(NULL, 0, D_87806330, 0x44));
+    Font_Printf(0xA0 - (Text_MeasureStringWidth(gMetapodTextObject, Text_GetString(NULL, 0, gMinigameNamesBank, 0x44)) / 2), 0x20,
+                  Text_GetString(NULL, 0, gMinigameNamesBank, 0x44));
     Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
     Gfx_SetPrimColor(0xFF, 0xFF, 0xFF, 0xFF);
-    Font_Printf(0x28, 0x34, Text_GetString(NULL, 0, D_87806330, 0x45));
-    Font_Printf(0x28, 0x58, Text_GetString(NULL, 0, D_87806330, 0x46));
-    Font_Printf(0x28, 0x7C, Text_GetString(NULL, 0, D_87806330, 0x47));
-    Font_Printf(0x28, 0x94, Text_GetString(NULL, 0, D_87806330, 0x48));
+    Font_Printf(0x28, 0x34, Text_GetString(NULL, 0, gMinigameNamesBank, 0x45));
+    Font_Printf(0x28, 0x58, Text_GetString(NULL, 0, gMinigameNamesBank, 0x46));
+    Font_Printf(0x28, 0x7C, Text_GetString(NULL, 0, gMinigameNamesBank, 0x47));
+    Font_Printf(0x28, 0x94, Text_GetString(NULL, 0, gMinigameNamesBank, 0x48));
     Gfx_SetEnvColor(0xC8, 0xC8, 0xFF, 0xFF);
     Gfx_SetPrimColor(0x50, 0x50, 0xFF, 0xFF);
-    Widget_MeasureLabelBox(&sp38, &sp34, Text_GetString(NULL, 0, D_87806330, 0x45), Text_GetString(NULL, 0, D_87806330, 0x5F),
+    Widget_MeasureLabelBox(&sp38, &sp34, Text_GetString(NULL, 0, gMinigameNamesBank, 0x45), Text_GetString(NULL, 0, gMinigameNamesBank, 0x5F),
                   0xC);
-    Font_Printf(sp38 + 0x28, sp34 + 0x34, Text_GetString(NULL, 0, D_87806330, 0x5F));
-    Widget_MeasureLabelBox(&sp38, &sp34, Text_GetString(NULL, 0, D_87806330, 0x46), Text_GetString(NULL, 0, D_87806330, 0x5F),
+    Font_Printf(sp38 + 0x28, sp34 + 0x34, Text_GetString(NULL, 0, gMinigameNamesBank, 0x5F));
+    Widget_MeasureLabelBox(&sp38, &sp34, Text_GetString(NULL, 0, gMinigameNamesBank, 0x46), Text_GetString(NULL, 0, gMinigameNamesBank, 0x5F),
                   0xC);
-    Font_Printf(sp38 + 0x28, sp34 + 0x58, Text_GetString(NULL, 0, D_87806330, 0x5F));
-    Font_Printf(0x8B, 0xB2, Text_GetString(NULL, 0, D_87806330, 0x5C));
-    Font_Printf(0x8B, 0xC8, Text_GetString(NULL, 0, D_87806330, 0x5C));
+    Font_Printf(sp38 + 0x28, sp34 + 0x58, Text_GetString(NULL, 0, gMinigameNamesBank, 0x5F));
+    Font_Printf(0x8B, 0xB2, Text_GetString(NULL, 0, gMinigameNamesBank, 0x5C));
+    Font_Printf(0x8B, 0xC8, Text_GetString(NULL, 0, gMinigameNamesBank, 0x5C));
     Gfx_SetEnvColor(0xC8, 0xC8, 0xFF, 0xFF);
     Gfx_SetPrimColor(0x50, 0x50, 0xFF, 0xFF);
-    Font_Printf(0xA2, 0xB2, Text_GetString(NULL, 0, D_87806330, 0x49));
+    Font_Printf(0xA2, 0xB2, Text_GetString(NULL, 0, gMinigameNamesBank, 0x49));
     Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
     Gfx_SetPrimColor(0xFF, 0x80, 0x80, 0xFF);
-    Font_Printf(0xA2, 0xC8, Text_GetString(NULL, 0, D_87806330, 0x14));
+    Font_Printf(0xA2, 0xC8, Text_GetString(NULL, 0, gMinigameNamesBank, 0x14));
     Font_DisableTwoCycleTexturing();
     Font_EndTexturedTextRendering();
 }
 
 void MetapodGame_DrawTutorialScreen(void) {
-    switch (D_87903DCC) {
+    switch (gMiniTutoTimer2) {
         case 3:
             MetapodGame_DrawTutorialText();
 
             gSPDisplayList(gDisplayListHead++, gUiEnvTintTextureDL);
 
             Widget_DrawSplitBanner(2, 0x19, 0xA6);
-            Widget_DrawAnimIcon16(0x74, 0xB0, D_86E04C5C);
-            Widget_DrawAnimIcon16C(0x74, 0xC6, D_86E04C84);
+            Widget_DrawAnimIcon16(0x74, 0xB0, gMetapodTutoAButtonIconAnim);
+            Widget_DrawAnimIcon16C(0x74, 0xC6, gMetapodTutoStartButtonIconAnim);
 
             gSPDisplayList(gDisplayListHead++, gUiRestoreTextureDL);
             break;
@@ -1691,15 +1691,15 @@ void MetapodGame_DrawFrame(s32 arg0) {
     BgStage_DrawFrame();
     GfxImage_FillCurrent(&gDisplayListHead, 0xA6BF);
 
-    if (D_8780FC94 == 0) {
+    if (gResultMenuVisible == 0) {
         GeoRender_AdvanceFrameCounter();
     }
 
-    Geo_RenderRootNode(&D_87906050->node);
+    Geo_RenderRootNode(&gMiniCameraStruct->node);
     MiniFx_DrawParticles();
 
     if (miniDebugMode == false) {
-        if (D_8780FC98 == 0) {
+        if (gResultConfirmPressed == 0) {
             miniMetapodDrawPlayerHUBs(arg0);
         }
         Widget_PauseMenuUpdate();
@@ -1715,10 +1715,10 @@ void metapodMinigameInit(void) {
     StageLoader_RunFrames(0xA);
     StageFade_StartFromOpaque(0x10);
     miniTutoScreenState = 3;
-    miniDifficulty = D_8780FA38;
+    miniDifficulty = gMinigameComDifficulty;
 }
 
-void func_86E0296C(void) {
+void MetapodGame_NoOp(void) {
 }
 
 void miniMetapodTutoScreenControls(void) {
@@ -1728,7 +1728,7 @@ void miniMetapodTutoScreenControls(void) {
             minigameState = 1;
             miniShowHUB = 1;
             MetapodGame_PlaySoundEventGuarded(0xB, 0);
-        } else if ((D_8780FA2A == 0) && (BTN_IS_PRESSED(gPlayer1Controller, BTN_B))) {
+        } else if ((gMenuCursorX == 0) && (BTN_IS_PRESSED(gPlayer1Controller, BTN_B))) {
             MetapodGame_PlaySoundEventGuarded(0xD, 0);
             Widget_PauseMenuTrigger(2);
         }
@@ -1746,7 +1746,7 @@ void MetapodGame_LockPlayerInputOnPress(void) {
 void MetapodGame_MainLoop(void) {
     s32 var_s1 = 1;
 
-    D_87903DBC = 0;
+    gMiniGameSoundDispatchCount = 0;
 
     MiniFx_Init();
     hideMiniGameHUD();
@@ -1755,15 +1755,15 @@ void MetapodGame_MainLoop(void) {
         MiniActor_ReadControllerInputs();
 
         if (minigameState == 0) {
-            D_87906042 += 1;
-            if (D_87906042 < 0) {
-                D_87906042 = 0;
+            gMiniGameIdleTimer += 1;
+            if (gMiniGameIdleTimer < 0) {
+                gMiniGameIdleTimer = 0;
             }
         }
 
         miniMetapodTutoScreenControls();
 
-        if (D_8780FC94 == 0) {
+        if (gResultMenuVisible == 0) {
             Particle_UpdateFrameCounters();
             miniMetapodMinigameStateMachine();
             miniUpdateMetapods();
@@ -1777,7 +1777,7 @@ void MetapodGame_MainLoop(void) {
             MetapodGame_LockPlayerInputOnPress();
         }
 
-        if ((D_87903DAC != 0) || (D_8780FC92 != 0)) {
+        if ((gMiniGameTimer2 != 0) || (gResultFlag_Special != 0)) {
             var_s1 = 0;
         }
 
@@ -1789,7 +1789,7 @@ void MetapodGame_ShowResultText(void) {
     s32 i;
 
     StageFade_StartFromTransparent(0x1E);
-    if (D_86E08E40 != 0) {
+    if (gMetapodGameTimer != 0) {
         MetapodGame_PlaySoundEventGuarded(0xF, 0x1E);
     } else {
         MetapodGame_PlaySoundEventGuarded(0xE, 0x1E);
@@ -1813,11 +1813,11 @@ void MetapodGame_LoadAssets(void) {
 
     s32 i;
     MemoryBlock* temp_v0;
-    unk_D_86002F30* temp_s1_2;
+    ModelData* temp_s1_2;
     s32 randN;
 
     temp_v0 = MainPool_AllocState(main_pool_get_available(), 0);
-    D_87906050 = process_geo_layout(temp_v0, D_86E04B34);
+    gMiniCameraStruct = process_geo_layout(temp_v0, gMetapodSceneGraph);
     MainPool_FinalizeAllocation(temp_v0);
     ModelRenderer_InitDisplayRoots();
 
@@ -1832,8 +1832,8 @@ void MetapodGame_LoadAssets(void) {
     PokeIcon_OpenModelArchives();
 
     for (i = 0; i < 4; i++) {
-        randN = D_8780FA68[i] - 1;
-        if (D_8780FA68[i] == 0) {
+        randN = gMenuOptionFlags[i] - 1;
+        if (gMenuOptionFlags[i] == 0) {
             randN = Rand_Range(2);
         }
 
@@ -1864,16 +1864,16 @@ s32 metapodMinigameLoad(s32 arg0, s32 arg1) {
     StageContext* sp24;
 
     if (arg0 == 1) {
-        D_86E08E40 = 1;
+        gMetapodGameTimer = 1;
     } else {
-        D_86E08E40 = 0;
+        gMetapodGameTimer = 0;
     }
 
     main_pool_push_state('MINI');
 
     Gfx_InitDisplayListBuffers(0x40000, 0);
     sp24 = StageContext_Allocate(0, 1, 3, 1, 2, 1);
-    D_86E08E44 = Font_Init(0x16, 0);
+    gMetapodTextObject = Font_Init(0x16, 0);
 
     ASSET_LOAD(D_1000000, common_menu1_ui, 0);
     FRAGMENT_LOAD(FRAGMENT_PARTICLE_DATA_LIBRARY);
@@ -1885,8 +1885,8 @@ s32 metapodMinigameLoad(s32 arg0, s32 arg1) {
     MetapodGame_MainLoop(); //	tutorial screen ?
     MetapodGame_ShowResultText();
     StageContext_Deactivate();
-    Font_Free(); //	main_pool_try_free(D_800AC870);
-    Gfx_FreeDisplayListBuffers(); //	main_pool_try_free(D_800A7428.unk4); main_pool_try_free(D_800A7428.unk0);
+    Font_Free(); //	main_pool_try_free(gFontManager);
+    Gfx_FreeDisplayListBuffers(); //	main_pool_try_free(gDLBuffers.unk4); main_pool_try_free(gDLBuffers.unk0);
 
     main_pool_pop_state('MINI');
 

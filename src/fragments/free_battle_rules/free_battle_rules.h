@@ -18,7 +18,7 @@ void FreeBattle_UpdateRuleOptionSelect(void);
 void FreeBattle_ClearRuleSelection(void);
 s32 FreeBattle_SelectionHasSubrule(void);
 void FreeBattle_DrawLevelOptionLine(s16 arg0, s16 arg1, s16 arg2, char* arg3);
-void func_84001AD8(void);
+void FreeBattle_DummyFunc(void);
 void FreeBattle_DrawLevelSelectPanel(void);
 void FreeBattle_UpdateLevelSelect(void);
 void FreeBattle_ClearLevelSelection(void);

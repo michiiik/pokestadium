@@ -8,43 +8,43 @@
 #include "src/cry.h"
 #include "src/matrix.h"
 
-ActivePokemon* D_84390200;
-ActivePokemon* D_84390204;
-static f32 D_84390208;
+ActivePokemon* gOpponentPlayer;
+ActivePokemon* gCurrentPlayer;
+static f32 gBattleUnusedFloat;
 static s32 pad_D_84390210[4];
-static s32 D_84390220;
-static s32 D_84390224;
-static s32 D_84390228;
+static s32 gPlayer0ReadyFlag;
+static s32 gPlayer1ReadyFlag;
+static s32 gBattleUnusedInt;
 s32 sMultihitCount;
 s32 sMultihitCountdown;
-s32 D_84390234;
+s32 gInitialMoveIndex;
 
-u8 D_84385B70[] = {
+u8 gCameraShotPoolTiming20[] = {
     0x00, 0x03, 0x02, 0x06, 0x07,
 };
-u8 D_84385B78[] = {
+u8 gCameraShotPoolTiming21[] = {
     0x00,
     0x02,
     0x06,
     0x07,
 };
-u8 D_84385B7C[] = {
+u8 gCameraShotPoolTiming22[] = {
     0x02,
     0x06,
     0x07,
 };
-u8 D_84385B80[] = {
+u8 gCameraShotPoolTiming23[] = {
     0x04, 0x05, 0x08, 0x09, 0x0A, 0x0B,
 };
-u8 D_84385B88[] = {
+u8 gCameraShotPoolTiming24[] = {
     0x05,
     0x09,
     0x0A,
     0x0B,
 };
-u16 D_84385B8C = 0x5F92;
-Vec3f D_84385B90 = { 0.0f, 100.0f, 0.0f };
-Vec3f D_84385B9C = { 0.0f, 10.0f, 0.0f };
+u16 gAnimFlagMask = 0x5F92;
+Vec3f gCameraFarSettings = { 0.0f, 100.0f, 0.0f };
+Vec3f gCameraCloseSettings = { 0.0f, 10.0f, 0.0f };
 
 void BattleScene_ApplyModelAnimationSlot5A(ActivePokemon* arg0) {
     ActivePokemonState* ptr = &arg0->state;
@@ -288,7 +288,7 @@ void BattleScene_ClearInactiveOwnerAnimationFlags(void) {
     }
 }
 
-void func_8431FCC4(void) {
+void BattleScene_NullHandler(void) {
 }
 
 s32 BattleScene_AnimateDisplayedHpToRuntime(ActivePokemon* arg0) {
@@ -298,7 +298,7 @@ s32 BattleScene_AnimateDisplayedHpToRuntime(ActivePokemon* arg0) {
     UNUSED s16 pad;
     s16 sp30;
 
-    if (D_84390288 != 0) {
+    if (gBattleUpdateHPFlag != 0) {
         return 1;
     }
 
@@ -308,11 +308,11 @@ s32 BattleScene_AnimateDisplayedHpToRuntime(ActivePokemon* arg0) {
 
     temp_fs0 = temp_s1->unk_28 / 90.0f;
     sp30 = BattleScene_GetParticipantSideIndex(arg0);
-    D_843900A8[sp30] = Math_StepToF(D_843900A8[BattleScene_GetParticipantSideIndex(arg0)], temp_s1->unk_0C, temp_fs0, temp_fs0);
-    temp_s2->unk_02 = D_843900A8[BattleScene_GetParticipantSideIndex(arg0)];
+    gPlayerScaleFactors[sp30] = Math_StepToF(gPlayerScaleFactors[BattleScene_GetParticipantSideIndex(arg0)], temp_s1->unk_0C, temp_fs0, temp_fs0);
+    temp_s2->unk_02 = gPlayerScaleFactors[BattleScene_GetParticipantSideIndex(arg0)];
     if (temp_s2->unk_02 == temp_s1->unk_0C) {
-        temp_fs0 = D_843900A8[BattleScene_GetParticipantSideIndex(arg0)] - temp_s2->unk_02;
-        D_843900A8[BattleScene_GetParticipantSideIndex(arg0)] -= temp_fs0;
+        temp_fs0 = gPlayerScaleFactors[BattleScene_GetParticipantSideIndex(arg0)] - temp_s2->unk_02;
+        gPlayerScaleFactors[BattleScene_GetParticipantSideIndex(arg0)] -= temp_fs0;
         if (arg0->displayObject.objectType == 0x98) {
             return 1;
         }
@@ -471,7 +471,7 @@ s32 BattleScene_PrepareReplacementTransition(void) {
             sBattleScene.unk_00->unk_38 = 0x12;
         } else {
             BattleAnim_GetOwnerDefaultAnchorPosition(sActivePokemon[sBattleScene.unk_00->unk_2C], &gCameraPreset.unk_00);
-            BattleScene_LoadCameraPreset(&D_843848F0, sBattleScene.unk_00->unk_DC, sActivePokemon[sBattleScene.unk_00->unk_2C]);
+            BattleScene_LoadCameraPreset(&gCameraPresetAngled, sBattleScene.unk_00->unk_DC, sActivePokemon[sBattleScene.unk_00->unk_2C]);
             sBattleScene.unk_00->unk_38 = 0xB;
         }
         return 1;
@@ -484,7 +484,7 @@ void BattleScene_BeginBattlePhase(void) {
     ActivePokemonState* sp1C = &sActivePokemon[0]->state;
     ActivePokemonState* sp18 = &sActivePokemon[1]->state;
 
-    if ((BattleScene_IsPresentationCountdownComplete() == 0) && (D_84390134 != 1)) {
+    if ((BattleScene_IsPresentationCountdownComplete() == 0) && (gBattleResultPhase != 1)) {
         AudioFrameUpdate(1);
     }
 
@@ -617,7 +617,7 @@ void BattleScene_CleanupActionAndAdvance(void) {
 }
 
 s32 BattleScene_HandleFaintStatusCompletion(void) {
-    BattleMonRuntime* temp_v0 = &D_84390200->state.runtime;
+    BattleMonRuntime* temp_v0 = &gOpponentPlayer->state.runtime;
 
     if (((temp_v0->unk_4D & 0x80) || (temp_v0->unk_15 & 0x18)) && ((temp_v0->usedMove & 0xF0) == 0xF0)) {
         BattleAnim_ClearRockThrowingMoveFlag(sActivePokemon[sBattleScene.unk_00->unk_2C]);
@@ -633,7 +633,7 @@ s32 BattleScene_HandleFaintStatusCompletion(void) {
 }
 
 void BattleScene_CompleteActionPhase(void) {
-    if ((sBattleScene.unk_00->unk_34 == 0) && ((D_84390200->state.runtime.usedMove & 0xF0) != 0xF0)) {
+    if ((sBattleScene.unk_00->unk_34 == 0) && ((gOpponentPlayer->state.runtime.usedMove & 0xF0) != 0xF0)) {
         BattleAnim_ClearRockThrowingMoveFlag(sActivePokemon[sBattleScene.unk_00->unk_2C]);
         Audio_FadeAndClearStoredSounds();
         BattleScene_ResetAnimationStep();
@@ -651,7 +651,7 @@ void BattleScene_CompleteActionPhase(void) {
 }
 
 void BattleScene_ResolveDisplayedHpCompletion(CameraNode* arg0) {
-    if ((D_84390220 == 1) && (D_84390224 == 1)) {
+    if ((gPlayer0ReadyFlag == 1) && (gPlayer1ReadyFlag == 1)) {
         if (Battle_GetActiveMonHp(sActivePokemon[sBattleScene.unk_00->unk_2C]) == 0) {
             BattleScene_SwitchActiveSideAndSetPhase(arg0);
         } else if (Battle_GetActiveMonHp(sActivePokemon[!sBattleScene.unk_00->unk_2C]) == 0) {
@@ -665,8 +665,8 @@ void BattleScene_ResolveDisplayedHpCompletion(CameraNode* arg0) {
 void BattleScene_UpdateDisplayedHpAndTransition(CameraNode* arg0) {
     BattleMonRuntime* sp1C = &sActivePokemon[sBattleScene.unk_00->unk_2C]->state.runtime;
 
-    D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[0]);
-    D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[1]);
+    gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[0]);
+    gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[1]);
     BattleScene_ClearPhaseFlag();
     BattleScene_ResetCameraFrameCounter();
 
@@ -686,7 +686,7 @@ void BattleScene_UpdateDisplayedHpAndTransition(CameraNode* arg0) {
 }
 
 void BattleScene_WaitForDisplayedHpAnimations(CameraNode* arg0) {
-    if ((D_84390220 == 1) && (D_84390224 == 1)) {
+    if ((gPlayer0ReadyFlag == 1) && (gPlayer1ReadyFlag == 1)) {
         BattleBox_Close();
         BattleScene_UpdateDisplayedHpAndTransition(arg0);
     }
@@ -697,18 +697,18 @@ s32 BattleScene_ActionPresentationTransitionCheck(void) {
         case 7:
         case 38:
         case 39:
-            BattleScene_EnterStateRow(D_84390204, 3);
+            BattleScene_EnterStateRow(gCurrentPlayer, 3);
             return BattleScene_TransitionToPhase(0x25);
 
         case 30:
-            BattleScene_EnterStateRow(D_84390204, 3);
+            BattleScene_EnterStateRow(gCurrentPlayer, 3);
             return BattleScene_TransitionToPhase(0x25);
 
         case 28:
             return BattleScene_TransitionToPhase(0x25);
 
         case 21:
-            BattleScene_EnterStateRow(D_84390204, 3);
+            BattleScene_EnterStateRow(gCurrentPlayer, 3);
             return BattleScene_TransitionToPhase(0x25);
 
         case 15:
@@ -721,23 +721,23 @@ s32 BattleScene_ActionPresentationTransitionCheck(void) {
             return BattleScene_TransitionToPhase(0x25);
 
         case 29:
-            BattleScene_EnterStateRow(D_84390204, 3);
+            BattleScene_EnterStateRow(gCurrentPlayer, 3);
             return BattleScene_TransitionToPhase(0x25);
 
         case 12:
-            BattleScene_EnterStateRow(D_84390204, 8);
+            BattleScene_EnterStateRow(gCurrentPlayer, 8);
             return BattleScene_TransitionToPhase(0x25);
 
         case 13:
-            BattleScene_EnterStateRow(D_84390204, 8);
+            BattleScene_EnterStateRow(gCurrentPlayer, 8);
             return BattleScene_TransitionToPhase(0x25);
 
         case 14:
-            BattleScene_EnterStateRow(D_84390204, 8);
+            BattleScene_EnterStateRow(gCurrentPlayer, 8);
             return BattleScene_TransitionToPhase(0x25);
 
         case 17:
-            BattleScene_EnterStateRow(D_84390204, 9);
+            BattleScene_EnterStateRow(gCurrentPlayer, 9);
             return BattleScene_TransitionToPhase(0x25);
 
         case 31:
@@ -776,9 +776,9 @@ s32 BattleScene_PrepareResidualStatusPresentation(void) {
 void BattleScene_UpdateActiveOwnerPointers(void) {
     s32 idx;
 
-    D_84390204 = sActivePokemon[sBattleScene.unk_00->unk_2C];
+    gCurrentPlayer = sActivePokemon[sBattleScene.unk_00->unk_2C];
     idx = sBattleScene.unk_00->unk_2C == 0;
-    D_84390200 = sActivePokemon[idx];
+    gOpponentPlayer = sActivePokemon[idx];
 }
 
 void BattleScene_InitializeBattlePresentation(CameraNode* arg0) {
@@ -844,7 +844,7 @@ void BattleScene_SendOutPresentationFinalize(CameraNode* arg0) {
     Vec3f_SetComponentsDuplicate(&sActivePokemon[sBattleScene.unk_00->unk_2C]->displayObject.scale, 1.0f, 1.0f, 1.0f);
     sActivePokemon[sBattleScene.unk_00->unk_2C]->displayObject.position.y = BattleScene_GetParticipantModelHeight(sActivePokemon[sBattleScene.unk_00->unk_2C]);
     BattleAnim_GetOwnerDefaultAnchorPosition(sActivePokemon[sBattleScene.unk_00->unk_2C], &gCameraPreset.unk_00);
-    BattleScene_LoadCameraPreset(&D_84384AF8, arg0, sActivePokemon[sBattleScene.unk_00->unk_2C]);
+    BattleScene_LoadCameraPreset(&gCameraPresetSendOutPushIn, arg0, sActivePokemon[sBattleScene.unk_00->unk_2C]);
     BattleScene_ApplyCameraPreset(arg0, sActivePokemon[sBattleScene.unk_00->unk_2C], 1);
     Audio_StartBattleMusicSequence();
     sBattleScene.unk_00->unk_20 = 6;
@@ -1028,15 +1028,15 @@ void BattleScene_SetupSendOutOwnerShot(CameraNode* arg0) {
             sp3B = 0x97;
         }
 
-        sp44 = (D_84384580[sBattleScene.unk_00->unk_2C]->coordinates.y + temp_s0->displayObject.position.y) + D_84384C30[sp3B].z;
-        sp40 = ((D_84384580[sBattleScene.unk_00->unk_2C]->coordinates.z + D_84384C30[sp3B].y) * temp_s0->cameraOffsetScaleFactor) +
+        sp44 = (gStageCameraAnchorSet[sBattleScene.unk_00->unk_2C]->coordinates.y + temp_s0->displayObject.position.y) + gCameraOffsetTable[sp3B].z;
+        sp40 = ((gStageCameraAnchorSet[sBattleScene.unk_00->unk_2C]->coordinates.z + gCameraOffsetTable[sp3B].y) * temp_s0->cameraOffsetScaleFactor) +
                temp_s0->displayObject.position.x;
 
         Vec3f_SetComponentsDuplicate(&arg0->view.targetPosition, sp40, sp44, temp_s0->displayObject.position.z);
 
-        sp40 = D_84384580[sBattleScene.unk_00->unk_2C]->coordinates.x * D_84384C30[sp3B].x;
-        sp3E = D_84384580[sBattleScene.unk_00->unk_2C]->unk_0C;
-        tmp1 = (temp_s0->cameraOffsetScaleFactor * D_84384580[sBattleScene.unk_00->unk_2C]->unk_0E) + BattleScene_GetParticipantFacingAngle(temp_s0);
+        sp40 = gStageCameraAnchorSet[sBattleScene.unk_00->unk_2C]->coordinates.x * gCameraOffsetTable[sp3B].x;
+        sp3E = gStageCameraAnchorSet[sBattleScene.unk_00->unk_2C]->unk_0C;
+        tmp1 = (temp_s0->cameraOffsetScaleFactor * gStageCameraAnchorSet[sBattleScene.unk_00->unk_2C]->unk_0E) + BattleScene_GetParticipantFacingAngle(temp_s0);
         Camera_ComputeEyeFromAngles(&arg0->view.targetPosition, &arg0->view.eyePosition, sp40, sp3E, tmp1);
         sBattleScene.unk_00->unk_20++;
     }
@@ -1220,14 +1220,14 @@ void BattleScene_InitializeIntroCamera(CameraNode* arg0) {
         sp24 = 2;
     }
 
-    BattleAnim_Vec3fCopy(&gCameraPreset.unk_00, &D_84385B90);
-    BattleScene_LoadCameraPresetUnscaled(&D_84384B2C[sp24], arg0);
-    BattleScene_ApplyCameraPreset(arg0, D_84390204, 0);
+    BattleAnim_Vec3fCopy(&gCameraPreset.unk_00, &gCameraFarSettings);
+    BattleScene_LoadCameraPresetUnscaled(&gBattleIntroCameraPresetTable[sp24], arg0);
+    BattleScene_ApplyCameraPreset(arg0, gCurrentPlayer, 0);
     sBattleScene.unk_00->unk_20++;
 }
 
 void BattleScene_AdvanceIntroCamera(CameraNode* arg0) {
-    if (BattleScene_AnimateCameraPreset(arg0, D_84390204, 0, 1) != 0) {
+    if (BattleScene_AnimateCameraPreset(arg0, gCurrentPlayer, 0, 1) != 0) {
         BattleScene_SetPhase(arg0, 2);
     }
 }
@@ -1250,8 +1250,8 @@ void BattleScene_SetMonMoveResourceFlag(ActivePokemon* arg0) {
 
 void BattleScene_PrepareMoveResourcePresentation(UNUSED CameraNode* arg0) {
     BattleAnim_CleanupEffects(2);
-    BattleScene_SetMonMoveResourceFlag(D_84390204);
-    BattleScene_LoadMoveResourceList(D_84390204);
+    BattleScene_SetMonMoveResourceFlag(gCurrentPlayer);
+    BattleScene_LoadMoveResourceList(gCurrentPlayer);
 }
 
 void BattleScene_SelectActionCameraPreset(CameraNode* arg0) {
@@ -1277,32 +1277,32 @@ void BattleScene_SelectActionCameraPreset(CameraNode* arg0) {
 
     switch (var_t0) {
         case 20:
-            BattleScene_SelectCameraPreset(D_84390204, arg0,
-                          sBattleScene.unk_00->unk_50 = D_84385B70[BattleAnim_RandomIntWithWarmup(ARRAY_COUNT(D_84385B70))], 1);
+            BattleScene_SelectCameraPreset(gCurrentPlayer, arg0,
+                          sBattleScene.unk_00->unk_50 = gCameraShotPoolTiming20[BattleAnim_RandomIntWithWarmup(ARRAY_COUNT(gCameraShotPoolTiming20))], 1);
             break;
 
         case 21:
-            BattleScene_SelectCameraPreset(D_84390204, arg0,
-                          sBattleScene.unk_00->unk_50 = D_84385B78[BattleAnim_RandomIntWithWarmup(ARRAY_COUNT(D_84385B78))], 1);
+            BattleScene_SelectCameraPreset(gCurrentPlayer, arg0,
+                          sBattleScene.unk_00->unk_50 = gCameraShotPoolTiming21[BattleAnim_RandomIntWithWarmup(ARRAY_COUNT(gCameraShotPoolTiming21))], 1);
             break;
 
         case 22:
-            BattleScene_SelectCameraPreset(D_84390204, arg0,
-                          sBattleScene.unk_00->unk_50 = D_84385B7C[BattleAnim_RandomIntWithWarmup(ARRAY_COUNT(D_84385B7C))], 1);
+            BattleScene_SelectCameraPreset(gCurrentPlayer, arg0,
+                          sBattleScene.unk_00->unk_50 = gCameraShotPoolTiming22[BattleAnim_RandomIntWithWarmup(ARRAY_COUNT(gCameraShotPoolTiming22))], 1);
             break;
 
         case 23:
-            BattleScene_SelectCameraPreset(D_84390204, arg0,
-                          sBattleScene.unk_00->unk_50 = D_84385B80[BattleAnim_RandomIntWithWarmup(ARRAY_COUNT(D_84385B80))], 1);
+            BattleScene_SelectCameraPreset(gCurrentPlayer, arg0,
+                          sBattleScene.unk_00->unk_50 = gCameraShotPoolTiming23[BattleAnim_RandomIntWithWarmup(ARRAY_COUNT(gCameraShotPoolTiming23))], 1);
             break;
 
         case 24:
-            BattleScene_SelectCameraPreset(D_84390204, arg0,
-                          sBattleScene.unk_00->unk_50 = D_84385B88[BattleAnim_RandomIntWithWarmup(ARRAY_COUNT(D_84385B88))], 1);
+            BattleScene_SelectCameraPreset(gCurrentPlayer, arg0,
+                          sBattleScene.unk_00->unk_50 = gCameraShotPoolTiming24[BattleAnim_RandomIntWithWarmup(ARRAY_COUNT(gCameraShotPoolTiming24))], 1);
             break;
 
         default:
-            BattleScene_SelectCameraPreset(D_84390204, arg0, sBattleScene.unk_00->unk_50 = var_t0, 1);
+            BattleScene_SelectCameraPreset(gCurrentPlayer, arg0, sBattleScene.unk_00->unk_50 = var_t0, 1);
             if (sp18->flags & 0x4000) {
                 arg0->view.targetPosition.y = 0.0f;
             }
@@ -1337,7 +1337,7 @@ s32 BattleScene_AdvanceActionPresentationSetup(CameraNode* arg0) {
 }
 
 void BattleScene_ActionSetupCameraStep(CameraNode* arg0) {
-    ActivePokemonState* sp1C = &D_84390204->state;
+    ActivePokemonState* sp1C = &gCurrentPlayer->state;
 
     BattleAnim_ApproachF(&arg0->perspective.verticalFieldOfView, 30.0f, 0.05f);
 
@@ -1347,15 +1347,15 @@ void BattleScene_ActionSetupCameraStep(CameraNode* arg0) {
             BattleScene_CleanupParticipantEffectMode(sActivePokemon[1]);
 
             if ((BattleScene_PrepareReplacementTransition() == 0) && (BattleScene_PrepareResidualStatusPresentation() == 0)) {
-                Battle_ClearOpponentHopFlagAndSyncMove(D_84390204);
+                Battle_ClearOpponentHopFlagAndSyncMove(gCurrentPlayer);
                 BattleScene_PrepareMoveResourcePresentation(arg0);
                 BattleScene_SetPhaseFlag();
 
-                if ((sBattleScene.unk_00->unk_34 == 1) && (D_84390200->unk_4C8 == 1)) {
-                    BattleScene_ResetOwnerPresentationFlags(D_84390200);
+                if ((sBattleScene.unk_00->unk_34 == 1) && (gOpponentPlayer->unk_4C8 == 1)) {
+                    BattleScene_ResetOwnerPresentationFlags(gOpponentPlayer);
                 }
 
-                BattleAnim_GetOwnerDefaultAnchorPosition(D_84390204, &gCameraPreset.unk_00);
+                BattleAnim_GetOwnerDefaultAnchorPosition(gCurrentPlayer, &gCameraPreset.unk_00);
 
                 if (sp1C->flags & 0x4000) {
                     gCameraPreset.unk_00.y = 15.000001f;
@@ -1366,27 +1366,27 @@ void BattleScene_ActionSetupCameraStep(CameraNode* arg0) {
 
                     if ((sBattleScene.unk_00->unk_48 == 0x1C) || (sBattleScene.unk_00->unk_48 == 0x11) ||
                         (sBattleScene.unk_00->unk_48 == 0x1F)) {
-                        BattleScene_SelectCameraFollowPreset(D_84390204, arg0, 3);
+                        BattleScene_SelectCameraFollowPreset(gCurrentPlayer, arg0, 3);
                     } else {
-                        BattleScene_SelectCameraFollowPreset(D_84390204, arg0, 4);
+                        BattleScene_SelectCameraFollowPreset(gCurrentPlayer, arg0, 4);
                     }
 
                     if (sp1C->flags & 0x4000) {
                         arg0->view.targetPosition.y = 15.000001f;
                     }
-                    Battle_ResetModelToIdleAnim(D_84390204);
+                    Battle_ResetModelToIdleAnim(gCurrentPlayer);
                 } else if ((sBattleScene.unk_00->unk_48 == 0x1C) || (sBattleScene.unk_00->unk_48 == 0x11) ||
                            (sBattleScene.unk_00->unk_48 == 0x1F)) {
-                    BattleScene_LoadCameraPreset(&D_8438498C, arg0, D_84390204);
+                    BattleScene_LoadCameraPreset(&gCameraPresetStraightOn, arg0, gCurrentPlayer);
                 } else {
-                    BattleScene_LoadCameraPreset(&D_843848F0, arg0, D_84390204);
+                    BattleScene_LoadCameraPreset(&gCameraPresetAngled, arg0, gCurrentPlayer);
                 }
             }
             break;
 
         case 1:
-            if (BattleAnim_TryRegisterAssetTables(D_84390204) != 0) {
-                D_84390234 = sMultihitCountdown = sMultihitCount;
+            if (BattleAnim_TryRegisterAssetTables(gCurrentPlayer) != 0) {
+                gInitialMoveIndex = sMultihitCountdown = sMultihitCount;
                 BattleBox_Open(0);
                 BattleScene_ResetCameraFrameCounter();
                 sBattleScene.unk_00->unk_3C += 1;
@@ -1409,7 +1409,7 @@ void BattleScene_ActionSetupCameraStep(CameraNode* arg0) {
                         sBattleScene.unk_00->unk_20 = 1;
                     }
                 }
-            } else if (BattleScene_AnimateCameraPreset(arg0, D_84390204, 1, 1) != 0) {
+            } else if (BattleScene_AnimateCameraPreset(arg0, gCurrentPlayer, 1, 1) != 0) {
                 BattleScene_ResetCameraFov(arg0);
                 if (BattleScene_AdvanceActionPresentationSetup(arg0) != 0) {
                     sBattleScene.unk_00->unk_20 = 1;
@@ -1428,51 +1428,51 @@ void BattleScene_RefreshActionCameraPreset(CameraNode* arg0) {
         switch (temp_v0) {
             case 20:
                 do {
-                    temp_t0 = D_84385B70[BattleAnim_RandomIntWithWarmup(5.0f)];
+                    temp_t0 = gCameraShotPoolTiming20[BattleAnim_RandomIntWithWarmup(5.0f)];
                 } while (temp_t0 == sBattleScene.unk_00->unk_50);
                 sBattleScene.unk_00->unk_50 = temp_t0;
-                BattleScene_SelectCameraPreset(D_84390204, arg0, sBattleScene.unk_00->unk_50, 1);
+                BattleScene_SelectCameraPreset(gCurrentPlayer, arg0, sBattleScene.unk_00->unk_50, 1);
                 break;
 
             case 21:
                 do {
-                    temp_t0 = D_84385B78[BattleAnim_RandomIntWithWarmup(4.0f)];
+                    temp_t0 = gCameraShotPoolTiming21[BattleAnim_RandomIntWithWarmup(4.0f)];
                 } while (temp_t0 == sBattleScene.unk_00->unk_50);
                 sBattleScene.unk_00->unk_50 = temp_t0;
-                BattleScene_SelectCameraPreset(D_84390204, arg0, sBattleScene.unk_00->unk_50, 1);
+                BattleScene_SelectCameraPreset(gCurrentPlayer, arg0, sBattleScene.unk_00->unk_50, 1);
                 break;
 
             case 22:
                 do {
-                    temp_t0 = D_84385B7C[BattleAnim_RandomIntWithWarmup(3.0f)];
+                    temp_t0 = gCameraShotPoolTiming22[BattleAnim_RandomIntWithWarmup(3.0f)];
                 } while (temp_t0 == sBattleScene.unk_00->unk_50);
                 sBattleScene.unk_00->unk_50 = temp_t0;
-                BattleScene_SelectCameraPreset(D_84390204, arg0, sBattleScene.unk_00->unk_50, 1);
+                BattleScene_SelectCameraPreset(gCurrentPlayer, arg0, sBattleScene.unk_00->unk_50, 1);
                 break;
 
             case 23:
                 do {
-                    temp_t0 = D_84385B80[BattleAnim_RandomIntWithWarmup(6.0f)];
+                    temp_t0 = gCameraShotPoolTiming23[BattleAnim_RandomIntWithWarmup(6.0f)];
                 } while (temp_t0 == sBattleScene.unk_00->unk_50);
                 sBattleScene.unk_00->unk_50 = temp_t0;
                 if (1) {}
                 if (1) {}
                 if (1) {}
                 if (1) {}
-                BattleScene_SelectCameraPreset(D_84390204, arg0, sBattleScene.unk_00->unk_50, 1);
+                BattleScene_SelectCameraPreset(gCurrentPlayer, arg0, sBattleScene.unk_00->unk_50, 1);
                 break;
 
             case 24:
                 do {
-                    temp_t0 = D_84385B88[BattleAnim_RandomIntWithWarmup(4.0f)];
+                    temp_t0 = gCameraShotPoolTiming24[BattleAnim_RandomIntWithWarmup(4.0f)];
                 } while (temp_t0 == sBattleScene.unk_00->unk_50);
                 sBattleScene.unk_00->unk_50 = temp_t0;
-                BattleScene_SelectCameraPreset(D_84390204, arg0, sBattleScene.unk_00->unk_50, 1);
+                BattleScene_SelectCameraPreset(gCurrentPlayer, arg0, sBattleScene.unk_00->unk_50, 1);
                 break;
 
             default:
                 if (temp_v0 != sBattleScene.unk_00->unk_50) {
-                    BattleScene_SelectCameraPreset(D_84390204, arg0, temp_v0, 1);
+                    BattleScene_SelectCameraPreset(gCurrentPlayer, arg0, temp_v0, 1);
                 }
                 break;
         }
@@ -1502,44 +1502,44 @@ void BattleScene_SelectActionCameraPresetFromTiming(CameraNode* arg0, s32 arg1) 
 
         switch (sp18) {
             case 20:
-                sBattleScene.unk_00->unk_50 = D_84385B70[BattleAnim_RandomIntWithWarmup(ARRAY_COUNT(D_84385B70))];
+                sBattleScene.unk_00->unk_50 = gCameraShotPoolTiming20[BattleAnim_RandomIntWithWarmup(ARRAY_COUNT(gCameraShotPoolTiming20))];
                 if (sp18 != sBattleScene.unk_00->unk_50) {
-                    BattleScene_SelectCameraPreset(D_84390204, arg0, sBattleScene.unk_00->unk_50, 1);
+                    BattleScene_SelectCameraPreset(gCurrentPlayer, arg0, sBattleScene.unk_00->unk_50, 1);
                 }
                 break;
 
             case 21:
-                sBattleScene.unk_00->unk_50 = D_84385B78[BattleAnim_RandomIntWithWarmup(ARRAY_COUNT(D_84385B78))];
+                sBattleScene.unk_00->unk_50 = gCameraShotPoolTiming21[BattleAnim_RandomIntWithWarmup(ARRAY_COUNT(gCameraShotPoolTiming21))];
                 if (sp18 != sBattleScene.unk_00->unk_50) {
-                    BattleScene_SelectCameraPreset(D_84390204, arg0, sBattleScene.unk_00->unk_50, 1);
+                    BattleScene_SelectCameraPreset(gCurrentPlayer, arg0, sBattleScene.unk_00->unk_50, 1);
                 }
                 break;
 
             case 22:
-                sBattleScene.unk_00->unk_50 = D_84385B7C[BattleAnim_RandomIntWithWarmup(ARRAY_COUNT(D_84385B7C))];
+                sBattleScene.unk_00->unk_50 = gCameraShotPoolTiming22[BattleAnim_RandomIntWithWarmup(ARRAY_COUNT(gCameraShotPoolTiming22))];
                 if (sp18 != sBattleScene.unk_00->unk_50) {
-                    BattleScene_SelectCameraPreset(D_84390204, arg0, sBattleScene.unk_00->unk_50, 1);
+                    BattleScene_SelectCameraPreset(gCurrentPlayer, arg0, sBattleScene.unk_00->unk_50, 1);
                 }
                 break;
 
             case 23:
-                sBattleScene.unk_00->unk_50 = D_84385B80[BattleAnim_RandomIntWithWarmup(ARRAY_COUNT(D_84385B80))];
+                sBattleScene.unk_00->unk_50 = gCameraShotPoolTiming23[BattleAnim_RandomIntWithWarmup(ARRAY_COUNT(gCameraShotPoolTiming23))];
                 if (sp18 != sBattleScene.unk_00->unk_50) {
-                    BattleScene_SelectCameraPreset(D_84390204, arg0, sBattleScene.unk_00->unk_50, 1);
+                    BattleScene_SelectCameraPreset(gCurrentPlayer, arg0, sBattleScene.unk_00->unk_50, 1);
                 }
                 break;
 
             case 24:
-                sBattleScene.unk_00->unk_50 = D_84385B88[BattleAnim_RandomIntWithWarmup(ARRAY_COUNT(D_84385B88))];
+                sBattleScene.unk_00->unk_50 = gCameraShotPoolTiming24[BattleAnim_RandomIntWithWarmup(ARRAY_COUNT(gCameraShotPoolTiming24))];
                 if (sp18 != sBattleScene.unk_00->unk_50) {
-                    BattleScene_SelectCameraPreset(D_84390204, arg0, sBattleScene.unk_00->unk_50, 1);
+                    BattleScene_SelectCameraPreset(gCurrentPlayer, arg0, sBattleScene.unk_00->unk_50, 1);
                 }
                 break;
 
             default:
                 if (sp18 != sBattleScene.unk_00->unk_50) {
                     if (1) {}
-                    BattleScene_SelectCameraPreset(D_84390204, arg0, sp18, 1);
+                    BattleScene_SelectCameraPreset(gCurrentPlayer, arg0, sp18, 1);
                 }
                 break;
         }
@@ -1562,13 +1562,13 @@ s32 BattleScene_ApplyActionCameraMode(CameraNode* arg0, s32 arg1) {
         case 9:
         case 10:
         case 11:
-            BattleScene_AnimateCameraPresetToOwner(arg0, D_84390204);
+            BattleScene_AnimateCameraPresetToOwner(arg0, gCurrentPlayer);
             sp18 = 1;
             break;
 
         default:
-            if ((D_84390204->animationFlags1 != 6) && (D_84390204->animationFlags1 != 4) && (arg1 != 0)) {
-                BattleScene_ReframeAndRecomputeDistance(arg0, D_84390204);
+            if ((gCurrentPlayer->animationFlags1 != 6) && (gCurrentPlayer->animationFlags1 != 4) && (arg1 != 0)) {
+                BattleScene_ReframeAndRecomputeDistance(arg0, gCurrentPlayer);
             }
             break;
     }
@@ -1576,8 +1576,8 @@ s32 BattleScene_ApplyActionCameraMode(CameraNode* arg0, s32 arg1) {
 }
 
 void BattleScene_CleanupActionPresentation(UNUSED CameraNode* arg0) {
-    BattleScene_CleanupParticipantHideFlag(D_84390204);
-    Battle_ClearRuntimeFlags(D_84390204, 0x10);
+    BattleScene_CleanupParticipantHideFlag(gCurrentPlayer);
+    Battle_ClearRuntimeFlags(gCurrentPlayer, 0x10);
     if (BattleScene_ActionPresentationCleanupCheck() == 0) {
         sBattleScene.unk_00->unk_20 = 2;
     }
@@ -1585,7 +1585,7 @@ void BattleScene_CleanupActionPresentation(UNUSED CameraNode* arg0) {
 }
 
 s32 BattleScene_WaitForActionCameraDuration(UNUSED CameraNode* arg0) {
-    if (BattleScene_AdvanceCameraFrameCounter(BattleScene_GetCameraShotDuration(D_84390204)) != 0) {
+    if (BattleScene_AdvanceCameraFrameCounter(BattleScene_GetCameraShotDuration(gCurrentPlayer)) != 0) {
         return 1;
     }
     return 0;
@@ -1604,7 +1604,7 @@ void BattleScene_ActionSetupAnimationDefault(CameraNode* arg0) {
 
         case 1:
             BattleScene_ApplyActionCameraMode(arg0, 1);
-            if (Battle_IsRowAnimationSettled(D_84390204, 0x32) != 0) {
+            if (Battle_IsRowAnimationSettled(gCurrentPlayer, 0x32) != 0) {
                 BattleScene_ResetCameraFrameCounter();
                 BattleScene_ClearPhaseFlag();
                 BattleScene_CleanupActionPresentation(arg0);
@@ -1616,8 +1616,8 @@ void BattleScene_ActionSetupAnimationDefault(CameraNode* arg0) {
 void BattleScene_ActionSetupAnimationVariantA(CameraNode* arg0) {
     switch (sBattleScene.unk_00->unk_3C) {
         case 0:
-            BattleScene_ReframeAndRecomputeDistance(arg0, D_84390204);
-            if (Battle_IsRowAnimationSettled(D_84390204, 0x32) != 0) {
+            BattleScene_ReframeAndRecomputeDistance(arg0, gCurrentPlayer);
+            if (Battle_IsRowAnimationSettled(gCurrentPlayer, 0x32) != 0) {
                 BattleScene_SaveCameraFov(arg0);
                 sMultihitCountdown--;
                 BattleScene_RefreshActionCameraPreset(arg0);
@@ -1634,7 +1634,7 @@ void BattleScene_ActionSetupAnimationVariantA(CameraNode* arg0) {
             break;
 
         case 1:
-            BattleScene_ReframeAndRecomputeDistance(arg0, D_84390204);
+            BattleScene_ReframeAndRecomputeDistance(arg0, gCurrentPlayer);
             BattleScene_ResetCameraFrameCounter();
             BattleScene_ClearPhaseFlag();
             sBattleScene.unk_00->unk_48 = 0;
@@ -1648,16 +1648,16 @@ void BattleScene_ActionSetupAnimationVariantB(CameraNode* arg0) {
     switch (sBattleScene.unk_00->unk_3C) {
         case 0:
             if (BattleScene_AdvanceCameraFrameCounter(0xF) != 0) {
-                BattleAnim_QueueEffectList(7, D_84390204);
+                BattleAnim_QueueEffectList(7, gCurrentPlayer);
                 BattleScene_ResetCameraFrameCounter();
                 BattleScene_SetPhaseFlag();
-                BattleScene_SelectCameraFollowPreset(D_84390204, arg0, 3);
+                BattleScene_SelectCameraFollowPreset(gCurrentPlayer, arg0, 3);
             }
             break;
 
         case 1:
-            BattleScene_ReframeAndRecomputeDistance(arg0, D_84390204);
-            if (Battle_IsRowAnimationSettled(D_84390204, 0x1E) != 0) {
+            BattleScene_ReframeAndRecomputeDistance(arg0, gCurrentPlayer);
+            if (Battle_IsRowAnimationSettled(gCurrentPlayer, 0x1E) != 0) {
                 BattleScene_ResetCameraFrameCounter();
                 BattleScene_ClearPhaseFlag();
                 BattleScene_CleanupActionPresentation(arg0);
@@ -1668,23 +1668,23 @@ void BattleScene_ActionSetupAnimationVariantB(CameraNode* arg0) {
 
 void BattleScene_ActionSetupAnimationVariantC(CameraNode* arg0) {
     UNUSED s32 pad;
-    BattleMonRuntime* sp18 = &D_84390204->state.runtime;
+    BattleMonRuntime* sp18 = &gCurrentPlayer->state.runtime;
 
-    BattleScene_GetParticipantSideIndex(D_84390204);
+    BattleScene_GetParticipantSideIndex(gCurrentPlayer);
 
     switch (sBattleScene.unk_00->unk_3C) {
         case 0:
             BattleScene_ResetCameraFrameCounter();
             BattleScene_SetPhaseFlag();
-            Vec3f_SetComponentsDuplicate(&gCameraPreset.unk_00, D_84390204->cameraOffsetScaleFactor * -175.0f, 25.0f, 0.0f);
-            BattleScene_LoadCameraPreset(&D_84384958, arg0, D_84390204);
-            if ((D_84390204->displayObject.objectType != 0x33) && (D_84390204->displayObject.objectType != 0x32)) {
-                BattleAnim_PlayMoveEffectScript(D_84390204, sp18->usedMove);
+            Vec3f_SetComponentsDuplicate(&gCameraPreset.unk_00, gCurrentPlayer->cameraOffsetScaleFactor * -175.0f, 25.0f, 0.0f);
+            BattleScene_LoadCameraPreset(&gCameraPresetAttackerSide, arg0, gCurrentPlayer);
+            if ((gCurrentPlayer->displayObject.objectType != 0x33) && (gCurrentPlayer->displayObject.objectType != 0x32)) {
+                BattleAnim_PlayMoveEffectScript(gCurrentPlayer, sp18->usedMove);
             }
             break;
 
         case 1:
-            if (BattleScene_AnimateCameraPreset(arg0, D_84390204, 1, 0) != 0) {
+            if (BattleScene_AnimateCameraPreset(arg0, gCurrentPlayer, 1, 0) != 0) {
                 BattleScene_ResetCameraFrameCounter();
                 BattleScene_ClearPhaseFlag();
                 BattleScene_CleanupActionPresentation(arg0);
@@ -1698,13 +1698,13 @@ void BattleScene_ActionSetupAnimationVariantD(CameraNode* arg0) {
         case 0:
             BattleScene_ResetCameraFrameCounter();
             BattleScene_SetPhaseFlag();
-            BattleAnim_GetOwnerDefaultAnchorPosition(D_84390204, &gCameraPreset.unk_00);
-            BattleScene_LoadCameraPreset(&D_84384924, arg0, D_84390204);
+            BattleAnim_GetOwnerDefaultAnchorPosition(gCurrentPlayer, &gCameraPreset.unk_00);
+            BattleScene_LoadCameraPreset(&gCameraPresetOwnerAnchor, arg0, gCurrentPlayer);
             break;
 
         case 1:
-            BattleScene_AnimateCameraPresetToOwner(arg0, D_84390204);
-            if (Battle_IsRowAnimationSettled(D_84390204, 0x1E) != 0) {
+            BattleScene_AnimateCameraPresetToOwner(arg0, gCurrentPlayer);
+            if (Battle_IsRowAnimationSettled(gCurrentPlayer, 0x1E) != 0) {
                 BattleScene_ResetCameraFrameCounter();
                 BattleScene_ClearPhaseFlag();
                 BattleScene_CleanupActionPresentation(arg0);
@@ -1772,7 +1772,7 @@ s32 BattleScene_IsSpecialOwnerAnimation(ActivePokemon* arg0) {
 void BattleScene_CompleteHpUpdateTransition(CameraNode* arg0, s32* arg1, s32* arg2) {
     if ((*arg1 == 1) && (*arg2 == 1)) {
         BattleBox_Close();
-        Battle_ResetModelToIdleAnim(D_84390204);
+        Battle_ResetModelToIdleAnim(gCurrentPlayer);
         sBattleScene.unk_00->unk_1A = 0;
         BattleScene_ResetCameraFrameCounter();
         BattleScene_ResetCameraSubstepCounter();
@@ -1785,23 +1785,23 @@ void BattleScene_CompleteHpUpdateTransition(CameraNode* arg0, s32* arg1, s32* ar
 void BattleScene_RunBasicHpTransition(CameraNode* arg0) {
     switch (sBattleScene.unk_00->unk_3C) {
         case 0:
-            if (BattleScene_AdvanceOwnerAnimation98(D_84390200) == 0) {
-                BattleScene_SelectCameraShot(D_84390200, arg0, 0);
+            if (BattleScene_AdvanceOwnerAnimation98(gOpponentPlayer) == 0) {
+                BattleScene_SelectCameraShot(gOpponentPlayer, arg0, 0);
                 BattleScene_ResetCameraFrameCounter();
                 BattleScene_SetPhaseFlag();
-                BattleScene_EnterStateRow(D_84390204, 0xE);
-                BattleScene_CleanupOpponentSpecialAnimFlag(D_84390200);
-                Battle_ApplyAnimStateEffects(D_84390200);
+                BattleScene_EnterStateRow(gCurrentPlayer, 0xE);
+                BattleScene_CleanupOpponentSpecialAnimFlag(gOpponentPlayer);
+                Battle_ApplyAnimStateEffects(gOpponentPlayer);
                 BattleBox_Open(1);
             }
             break;
 
         case 1:
-            BattleScene_FrameCamera(arg0, D_84390200);
-            if ((BattleScene_IsOpponentRowCheckpointReached(D_84390200) != 0) || (BattleScene_AdvanceCameraFrameCounter(0x5A) != 0)) {
-                D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(D_84390200);
-                D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(D_84390204);
-                BattleScene_CompleteHpUpdateTransition(arg0, &D_84390220, &D_84390224);
+            BattleScene_FrameCamera(arg0, gOpponentPlayer);
+            if ((BattleScene_IsOpponentRowCheckpointReached(gOpponentPlayer) != 0) || (BattleScene_AdvanceCameraFrameCounter(0x5A) != 0)) {
+                gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(gOpponentPlayer);
+                gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(gCurrentPlayer);
+                BattleScene_CompleteHpUpdateTransition(arg0, &gPlayer0ReadyFlag, &gPlayer1ReadyFlag);
             }
             break;
     }
@@ -1812,65 +1812,65 @@ void BattleScene_RunConditionalHpTransition(CameraNode* arg0) {
 
     switch (sBattleScene.unk_00->unk_3C) {
         case 0:
-            if (BattleScene_AdvanceOwnerAnimation98(D_84390200) == 0) {
-                Battle_ApplyAnimStateEffects(D_84390200);
-                BattleScene_SelectCameraShot(D_84390200, arg0, 0);
+            if (BattleScene_AdvanceOwnerAnimation98(gOpponentPlayer) == 0) {
+                Battle_ApplyAnimStateEffects(gOpponentPlayer);
+                BattleScene_SelectCameraShot(gOpponentPlayer, arg0, 0);
                 BattleScene_ResetCameraFrameCounter();
                 BattleScene_SetPhaseFlag();
-                BattleScene_EnterStateRow(D_84390204, 0xB);
-                BattleScene_CleanupOpponentSpecialAnimFlag(D_84390200);
+                BattleScene_EnterStateRow(gCurrentPlayer, 0xB);
+                BattleScene_CleanupOpponentSpecialAnimFlag(gOpponentPlayer);
                 BattleBox_Open(1);
             }
             break;
 
         case 1:
-            BattleScene_FrameCamera(arg0, D_84390200);
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(D_84390200);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(D_84390204);
-            sp1C = BattleScene_GetOpponentEffectCheckpoint(D_84390204);
-            if ((sp1C == 2) && ((BattleScene_IsOpponentRowCheckpointReached(D_84390200) != 0) || (BattleScene_AdvanceCameraFrameCounter(0x64) != 0))) {
-                BattleScene_CompleteHpUpdateTransition(arg0, &D_84390220, &D_84390224);
+            BattleScene_FrameCamera(arg0, gOpponentPlayer);
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(gOpponentPlayer);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(gCurrentPlayer);
+            sp1C = BattleScene_GetOpponentEffectCheckpoint(gCurrentPlayer);
+            if ((sp1C == 2) && ((BattleScene_IsOpponentRowCheckpointReached(gOpponentPlayer) != 0) || (BattleScene_AdvanceCameraFrameCounter(0x64) != 0))) {
+                BattleScene_CompleteHpUpdateTransition(arg0, &gPlayer0ReadyFlag, &gPlayer1ReadyFlag);
             } else if (sp1C == 1) {
-                BattleScene_CompleteHpUpdateTransition(arg0, &D_84390220, &D_84390224);
+                BattleScene_CompleteHpUpdateTransition(arg0, &gPlayer0ReadyFlag, &gPlayer1ReadyFlag);
             }
             break;
     }
 }
 
 void BattleScene_RunMoveEffectEndHpTransition(CameraNode* arg0) {
-    BattleMonRuntime* sp34 = &D_84390204->state.runtime;
+    BattleMonRuntime* sp34 = &gCurrentPlayer->state.runtime;
     UNUSED s32 pad;
     UNUSED s16 pad2;
     s16 sp2C;
 
     switch (sBattleScene.unk_00->unk_3C) {
         case 0:
-            if (BattleScene_AdvanceOwnerAnimation98(D_84390200) == 0) {
-                Battle_ApplyAnimStateEffects(D_84390200);
-                BattleScene_SelectCameraShot(D_84390200, arg0, 0);
+            if (BattleScene_AdvanceOwnerAnimation98(gOpponentPlayer) == 0) {
+                Battle_ApplyAnimStateEffects(gOpponentPlayer);
+                BattleScene_SelectCameraShot(gOpponentPlayer, arg0, 0);
                 BattleScene_ResetCameraFrameCounter();
                 BattleScene_SetPhaseFlag();
-                BattleScene_CleanupOpponentSpecialAnimFlag(D_84390200);
+                BattleScene_CleanupOpponentSpecialAnimFlag(gOpponentPlayer);
                 BattleBox_Open(1);
-                sp2C = Battle_GetSideAnimTableFieldB(D_84390200);
-                BattleAnim_QueueMoveEffectEnd(sp34->usedMove, D_84390204, D_84390200, sp2C, Battle_GetSideAnimTableFieldC(D_84390200));
-                BattleScene_SetParticipantModelFlags(D_84390200, 0x10, 0);
+                sp2C = Battle_GetSideAnimTableFieldB(gOpponentPlayer);
+                BattleAnim_QueueMoveEffectEnd(sp34->usedMove, gCurrentPlayer, gOpponentPlayer, sp2C, Battle_GetSideAnimTableFieldC(gOpponentPlayer));
+                BattleScene_SetParticipantModelFlags(gOpponentPlayer, 0x10, 0);
             }
             break;
 
         case 1:
-            BattleScene_FrameCamera(arg0, D_84390200);
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(D_84390200);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(D_84390204);
-            if ((BattleScene_IsOpponentRowCheckpointReached(D_84390200) != 0) || (BattleScene_AdvanceCameraFrameCounter(0x5A) != 0)) {
-                BattleScene_CompleteHpUpdateTransition(arg0, &D_84390220, &D_84390224);
+            BattleScene_FrameCamera(arg0, gOpponentPlayer);
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(gOpponentPlayer);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(gCurrentPlayer);
+            if ((BattleScene_IsOpponentRowCheckpointReached(gOpponentPlayer) != 0) || (BattleScene_AdvanceCameraFrameCounter(0x5A) != 0)) {
+                BattleScene_CompleteHpUpdateTransition(arg0, &gPlayer0ReadyFlag, &gPlayer1ReadyFlag);
             }
             break;
     }
 }
 
 void BattleScene_RunActionEffectHpTransition(CameraNode* arg0) {
-    BattleMonRuntime* sp24 = &D_84390200->state.runtime;
+    BattleMonRuntime* sp24 = &gOpponentPlayer->state.runtime;
     UNUSED s32 pad;
     s32 sp1C;
     s32 temp_v0;
@@ -1878,130 +1878,130 @@ void BattleScene_RunActionEffectHpTransition(CameraNode* arg0) {
 
     switch (sBattleScene.unk_00->unk_3C) {
         case 0:
-            if (BattleScene_AdvanceOwnerAnimation98(D_84390200) == 0) {
-                BattleScene_StopSpecialOwnerAnimation(D_84390204);
+            if (BattleScene_AdvanceOwnerAnimation98(gOpponentPlayer) == 0) {
+                BattleScene_StopSpecialOwnerAnimation(gCurrentPlayer);
                 BattleBox_Open(1);
                 BattleScene_ResetCameraFrameCounter();
                 BattleScene_SetPhaseFlag();
-                BattleScene_SetDamageShakeAmplitude(D_84390200);
+                BattleScene_SetDamageShakeAmplitude(gOpponentPlayer);
                 if (sBattleScene.unk_00->unk_1A == 3) {
-                    BattleScene_EnterStateRow(D_84390204, 0xB);
+                    BattleScene_EnterStateRow(gCurrentPlayer, 0xB);
                 } else {
-                    BattleScene_EnterStateRow(D_84390204, 4);
+                    BattleScene_EnterStateRow(gCurrentPlayer, 4);
                 }
-                BattleScene_SelectCameraShot(D_84390200, arg0, 0);
-                Battle_ApplyAnimStateEffects(D_84390200);
-                BattleScene_CleanupOpponentSpecialAnimFlag(D_84390200);
-                BattleAnim_ClearFreezeStatusAnimationIfThawed(D_84390200);
+                BattleScene_SelectCameraShot(gOpponentPlayer, arg0, 0);
+                Battle_ApplyAnimStateEffects(gOpponentPlayer);
+                BattleScene_CleanupOpponentSpecialAnimFlag(gOpponentPlayer);
+                BattleAnim_ClearFreezeStatusAnimationIfThawed(gOpponentPlayer);
             }
             break;
 
         case 1:
             if (BattleScene_AdvanceCameraFrameCounter(5) != 0) {
-                BattleScene_ResetOwnerPresentationFlags(D_84390204);
+                BattleScene_ResetOwnerPresentationFlags(gCurrentPlayer);
                 sBattleScene.unk_00->unk_3C++;
             }
             break;
 
         case 2:
             BattleScene_ResetAnimationStep();
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(D_84390200);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(D_84390204);
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(gOpponentPlayer);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(gCurrentPlayer);
             if (sp24->unk_0C != 0) {
-                if (BattleScene_IsOpponentRowCheckpointReached(D_84390200) != 0) {
+                if (BattleScene_IsOpponentRowCheckpointReached(gOpponentPlayer) != 0) {
                     sBattleScene.unk_00->unk_3C = 4;
-                } else if (BattleScene_IsRowAnimWaitComplete(D_84390200, 2) != 0) {
+                } else if (BattleScene_IsRowAnimWaitComplete(gOpponentPlayer, 2) != 0) {
                     sBattleScene.unk_00->unk_3C = 5;
-                } else if (BattleScene_FrameCamera(arg0, D_84390200) != 0) {
+                } else if (BattleScene_FrameCamera(arg0, gOpponentPlayer) != 0) {
                     sBattleScene.unk_00->unk_3C = 3;
                 }
-            } else if (BattleScene_FrameCamera(arg0, D_84390200) != 0) {
+            } else if (BattleScene_FrameCamera(arg0, gOpponentPlayer) != 0) {
                 sBattleScene.unk_00->unk_3C = 4;
             }
             break;
 
         case 3:
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(D_84390200);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(D_84390204);
-            BattleScene_FrameCamera(arg0, D_84390200);
-            if (BattleScene_IsOpponentRowCheckpointReached(D_84390200) != 0) {
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(gOpponentPlayer);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(gCurrentPlayer);
+            BattleScene_FrameCamera(arg0, gOpponentPlayer);
+            if (BattleScene_IsOpponentRowCheckpointReached(gOpponentPlayer) != 0) {
                 sBattleScene.unk_00->unk_3C++;
-            } else if (BattleScene_IsRowAnimWaitComplete(D_84390200, 0xF) != 0) {
+            } else if (BattleScene_IsRowAnimWaitComplete(gOpponentPlayer, 0xF) != 0) {
                 sBattleScene.unk_00->unk_3C++;
             }
             break;
 
         case 4:
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(D_84390200);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(D_84390204);
-            temp_v0 = BattleScene_FrameCamera(arg0, D_84390200);
-            if ((D_84390220 == 1) && (D_84390224 == 1) && (temp_v0 != 0) && (BattleScene_AdvanceCameraFrameCounter(0xF) != 0)) {
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(gOpponentPlayer);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(gCurrentPlayer);
+            temp_v0 = BattleScene_FrameCamera(arg0, gOpponentPlayer);
+            if ((gPlayer0ReadyFlag == 1) && (gPlayer1ReadyFlag == 1) && (temp_v0 != 0) && (BattleScene_AdvanceCameraFrameCounter(0xF) != 0)) {
                 sBattleScene.unk_00->unk_3C = 6;
             }
             break;
 
         case 5:
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(D_84390200);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(D_84390204);
-            sp1C = BattleScene_FrameCamera(arg0, D_84390200);
-            if ((BattleScene_IsSpecialOwnerAnimation(D_84390204) != 0) && ((sTypeEffectiveness < 0xA) || (sBattleMoveFailed != 0)) &&
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(gOpponentPlayer);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(gCurrentPlayer);
+            sp1C = BattleScene_FrameCamera(arg0, gOpponentPlayer);
+            if ((BattleScene_IsSpecialOwnerAnimation(gCurrentPlayer) != 0) && ((sTypeEffectiveness < 0xA) || (sBattleMoveFailed != 0)) &&
                 !(sp24->unk_15 & 0x20)) {
                 var_a0 = 0x5A;
             } else {
                 var_a0 = 0xF;
             }
 
-            if ((D_84390220 == 1) && (D_84390224 == 1) && (sp1C != 0) && (BattleScene_AdvanceCameraFrameCounter(var_a0) != 0)) {
+            if ((gPlayer0ReadyFlag == 1) && (gPlayer1ReadyFlag == 1) && (sp1C != 0) && (BattleScene_AdvanceCameraFrameCounter(var_a0) != 0)) {
                 sBattleScene.unk_00->unk_3C++;
             }
             break;
 
         case 6:
-            if (BattleScene_AdvanceOwnerAnimationAndClearFlags(D_84390200) == 0) {
-                D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(D_84390200);
-                D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(D_84390204);
-                BattleScene_FrameCamera(arg0, D_84390200);
-                BattleScene_CompleteHpUpdateTransition(arg0, &D_84390220, &D_84390224);
+            if (BattleScene_AdvanceOwnerAnimationAndClearFlags(gOpponentPlayer) == 0) {
+                gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(gOpponentPlayer);
+                gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(gCurrentPlayer);
+                BattleScene_FrameCamera(arg0, gOpponentPlayer);
+                BattleScene_CompleteHpUpdateTransition(arg0, &gPlayer0ReadyFlag, &gPlayer1ReadyFlag);
             }
             break;
     }
 }
 
-void func_84324404(void) {
+void BattleScene_NoopStub1(void) {
 }
 
-void func_8432440C(void) {
+void BattleScene_NoopStub2(void) {
 }
 
 void BattleScene_RunRepeatedHitHpTransition(CameraNode* arg0) {
-    BattleMonRuntime* sp24 = &D_84390204->state.runtime;
-    MovePresentationCue* temp_v1 = &sSideBattleCues[BattleScene_GetParticipantSideIndex(D_84390200)]->moveCues[sp24->usedMove - 1];
+    BattleMonRuntime* sp24 = &gCurrentPlayer->state.runtime;
+    MovePresentationCue* temp_v1 = &sSideBattleCues[BattleScene_GetParticipantSideIndex(gOpponentPlayer)]->moveCues[sp24->usedMove - 1];
     volatile s32 sp1C;
     s32 temp_v0_2;
 
-    if (D_84390200->displayObject.objectType == 0x98) {
+    if (gOpponentPlayer->displayObject.objectType == 0x98) {
         sp1C = 0xF;
     } else if (temp_v1->frameCounter == 0xFF) {
-        sp1C = D_84390204->displayObject.transformAnim.data->endFrame - temp_v1->unk_06;
+        sp1C = gCurrentPlayer->displayObject.transformAnim.data->endFrame - temp_v1->unk_06;
     } else {
         sp1C = temp_v1->frameCounter - temp_v1->unk_06;
     }
 
     switch (sBattleScene.unk_00->unk_3C) {
         case 0:
-            if (BattleScene_AdvanceOwnerAnimation98(D_84390200) == 0) {
+            if (BattleScene_AdvanceOwnerAnimation98(gOpponentPlayer) == 0) {
                 BattleScene_ResetAnimationStep();
-                BattleScene_SetDamageShakeAmplitude(D_84390200);
-                BattleScene_EnterStateRow(D_84390204, 4);
+                BattleScene_SetDamageShakeAmplitude(gOpponentPlayer);
+                BattleScene_EnterStateRow(gCurrentPlayer, 4);
                 sMultihitCountdown--;
-                BattleScene_SelectCameraShot(D_84390200, arg0, sMultihitCountdown + 1);
+                BattleScene_SelectCameraShot(gOpponentPlayer, arg0, sMultihitCountdown + 1);
                 if (sMultihitCountdown < 0) {
-                    BattleScene_SelectCameraShot(D_84390200, arg0, sMultihitCountdown + 1);
-                    BattleScene_FrameCamera(arg0, D_84390200);
-                    Battle_ApplyAnimStateEffects(D_84390200);
+                    BattleScene_SelectCameraShot(gOpponentPlayer, arg0, sMultihitCountdown + 1);
+                    BattleScene_FrameCamera(arg0, gOpponentPlayer);
+                    Battle_ApplyAnimStateEffects(gOpponentPlayer);
                     BattleScene_ResetCameraFrameCounter();
                     sBattleScene.unk_00->unk_3C = 2;
-                    BattleScene_CleanupOpponentSpecialAnimFlag(D_84390200);
+                    BattleScene_CleanupOpponentSpecialAnimFlag(gOpponentPlayer);
                     BattleBox_Open(1);
                 } else {
                     sBattleScene.unk_00->unk_3C++;
@@ -2010,7 +2010,7 @@ void BattleScene_RunRepeatedHitHpTransition(CameraNode* arg0) {
             break;
 
         case 1:
-            BattleScene_ReframeAndRecomputeDistance(arg0, D_84390200);
+            BattleScene_ReframeAndRecomputeDistance(arg0, gOpponentPlayer);
             if (BattleScene_AdvanceCameraFrameCounter(sp1C) != 0) {
                 Audio_FadeAndClearStoredSounds();
                 BattleAnim_CleanupEffects(1);
@@ -2019,70 +2019,70 @@ void BattleScene_RunRepeatedHitHpTransition(CameraNode* arg0) {
             break;
 
         case 2:
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(D_84390200);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(D_84390204);
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(gOpponentPlayer);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(gCurrentPlayer);
 
             if (sp24->unk_0C != 0) {
-                if (BattleScene_IsOpponentRowCheckpointReached(D_84390200) != 0) {
+                if (BattleScene_IsOpponentRowCheckpointReached(gOpponentPlayer) != 0) {
                     sBattleScene.unk_00->unk_3C = 5;
                 }
 
-                if (BattleScene_IsRowAnimWaitComplete(D_84390200, 0xF) != 0) {
+                if (BattleScene_IsRowAnimWaitComplete(gOpponentPlayer, 0xF) != 0) {
                     sBattleScene.unk_00->unk_3C = 5;
                 }
 
-                if (BattleScene_FrameCamera(arg0, D_84390200) != 0) {
+                if (BattleScene_FrameCamera(arg0, gOpponentPlayer) != 0) {
                     sBattleScene.unk_00->unk_3C = 4;
                 }
-            } else if (BattleScene_FrameCamera(arg0, D_84390200) != 0) {
+            } else if (BattleScene_FrameCamera(arg0, gOpponentPlayer) != 0) {
                 BattleScene_ResetCameraFrameCounter();
                 sBattleScene.unk_00->unk_3C = 5;
             }
             break;
 
         case 3:
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(D_84390200);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(D_84390204);
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(gOpponentPlayer);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(gCurrentPlayer);
 
-            if (BattleScene_IsOpponentRowCheckpointReached(D_84390200) != 0) {
+            if (BattleScene_IsOpponentRowCheckpointReached(gOpponentPlayer) != 0) {
                 sBattleScene.unk_00->unk_3C = 5;
             }
 
-            if (BattleScene_FrameCamera(arg0, D_84390200) != 0) {
+            if (BattleScene_FrameCamera(arg0, gOpponentPlayer) != 0) {
                 sBattleScene.unk_00->unk_3C = 9;
             }
             break;
 
         case 4:
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(D_84390200);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(D_84390204);
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(gOpponentPlayer);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(gCurrentPlayer);
 
-            if (BattleScene_IsOpponentRowCheckpointReached(D_84390200) != 0) {
+            if (BattleScene_IsOpponentRowCheckpointReached(gOpponentPlayer) != 0) {
                 sBattleScene.unk_00->unk_3C = 5;
             }
 
-            BattleScene_FrameCamera(arg0, D_84390200);
+            BattleScene_FrameCamera(arg0, gOpponentPlayer);
 
-            if (BattleScene_IsRowAnimWaitComplete(D_84390200, 0xF) != 0) {
+            if (BattleScene_IsRowAnimWaitComplete(gOpponentPlayer, 0xF) != 0) {
                 sBattleScene.unk_00->unk_3C++;
             }
             break;
 
         case 5:
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(D_84390200);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(D_84390204);
-            temp_v0_2 = BattleScene_FrameCamera(arg0, D_84390200);
-            if ((D_84390220 == 1) && (D_84390224 == 1) && (temp_v0_2 != 0) && (BattleScene_AdvanceCameraFrameCounter(0xF) != 0)) {
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(gOpponentPlayer);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(gCurrentPlayer);
+            temp_v0_2 = BattleScene_FrameCamera(arg0, gOpponentPlayer);
+            if ((gPlayer0ReadyFlag == 1) && (gPlayer1ReadyFlag == 1) && (temp_v0_2 != 0) && (BattleScene_AdvanceCameraFrameCounter(0xF) != 0)) {
                 sBattleScene.unk_00->unk_3C++;
             }
             break;
 
         case 6:
-            if (BattleScene_AdvanceOwnerAnimationAndClearFlags(D_84390200) == 0) {
-                D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(D_84390200);
-                D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(D_84390204);
-                BattleScene_FrameCamera(arg0, D_84390200);
-                BattleScene_CompleteHpUpdateTransition(arg0, &D_84390220, &D_84390224);
+            if (BattleScene_AdvanceOwnerAnimationAndClearFlags(gOpponentPlayer) == 0) {
+                gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(gOpponentPlayer);
+                gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(gCurrentPlayer);
+                BattleScene_FrameCamera(arg0, gOpponentPlayer);
+                BattleScene_CompleteHpUpdateTransition(arg0, &gPlayer0ReadyFlag, &gPlayer1ReadyFlag);
             }
             break;
     }
@@ -2139,7 +2139,7 @@ void BattleScene_Phase3(CameraNode* arg0) {
 s32 BattleScene_PhaseSelectMoveAnim(void) {
     BattleScene_ApplyActionCameraMode(sBattleScene.unk_00->unk_DC, 0);
 
-    if (BattleScene_AdvanceCameraFrameCounter(BattleScene_GetCameraShotDuration(D_84390204)) == 0) {
+    if (BattleScene_AdvanceCameraFrameCounter(BattleScene_GetCameraShotDuration(gCurrentPlayer)) == 0) {
         return 0;
     }
 
@@ -2148,7 +2148,7 @@ s32 BattleScene_PhaseSelectMoveAnim(void) {
     }
 
     if (sBattleScene.unk_00->unk_48 == 0x1B) {
-        QueuePlayerDefeatMessage(BattleScene_GetParticipantDisplayPlayerNumber(D_84390204));
+        QueuePlayerDefeatMessage(BattleScene_GetParticipantDisplayPlayerNumber(gCurrentPlayer));
     }
 
     switch (sBattleScene.unk_00->unk_48) {
@@ -2202,8 +2202,8 @@ s32 BattleScene_PhaseSelectMoveAnim(void) {
 }
 
 void BattleScene_Phase7(CameraNode* arg0) {
-    BattleMonRuntime* sp1C = &D_84390204->state.runtime;
-    MovePresentationCue* sp18 = &sSideBattleCues[BattleScene_GetParticipantSideIndex(D_84390204)]->moveCues[sp1C->usedMove - 1];
+    BattleMonRuntime* sp1C = &gCurrentPlayer->state.runtime;
+    MovePresentationCue* sp18 = &sSideBattleCues[BattleScene_GetParticipantSideIndex(gCurrentPlayer)]->moveCues[sp1C->usedMove - 1];
 
     switch (sBattleScene.unk_00->unk_20) {
         case 0:
@@ -2212,41 +2212,41 @@ void BattleScene_Phase7(CameraNode* arg0) {
             BattleScene_ResetCameraFrameCounter();
             BattleScene_ResetCameraSubstepCounter();
             if (sp18->animationDuration < 0x15) {
-                Battle_ApplyAnimStateEffects(D_84390204);
+                Battle_ApplyAnimStateEffects(gCurrentPlayer);
             }
             sBattleScene.unk_00->unk_20++;
             break;
 
         case 1:
             BattleScene_ApplyActionCameraMode(arg0, 1);
-            if (D_84390204->animationTimer == (sp18->animationDuration + 1)) {
-                Battle_ApplyAnimStateEffects(D_84390204);
+            if (gCurrentPlayer->animationTimer == (sp18->animationDuration + 1)) {
+                Battle_ApplyAnimStateEffects(gCurrentPlayer);
             }
 
-            if (D_84390204->animationTimer >= (sp18->animationDuration + 0xA)) {
-                D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
-                D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
+            if (gCurrentPlayer->animationTimer >= (sp18->animationDuration + 0xA)) {
+                gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
+                gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
             }
 
-            if ((D_84390204->animationTimer == (sp18->animationDuration + 0x12)) && (sp1C->usedMove == 0x64)) {
+            if ((gCurrentPlayer->animationTimer == (sp18->animationDuration + 0x12)) && (sp1C->usedMove == 0x64)) {
                 BattleBox_Open(0xF);
             }
 
-            if (Battle_IsRowAnimationSettled(D_84390204, 0x3C) != 0) {
+            if (Battle_IsRowAnimationSettled(gCurrentPlayer, 0x3C) != 0) {
                 BattleScene_ResetCameraFrameCounter();
                 sBattleScene.unk_00->unk_20++;
             }
             break;
 
         case 2:
-            if (D_84390204->animationTimer == (sp18->animationDuration + 1)) {
-                Battle_ApplyAnimStateEffects(D_84390204);
+            if (gCurrentPlayer->animationTimer == (sp18->animationDuration + 1)) {
+                Battle_ApplyAnimStateEffects(gCurrentPlayer);
             }
             BattleScene_ApplyActionCameraMode(arg0, 1);
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
-            if ((D_84390220 == 1) && (D_84390224 == 1) && (BattleScene_AdvanceCameraFrameCounter(0xF) != 0)) {
-                if ((D_84390200->state.runtime.usedMove & 0xF0) == 0xF0) {
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
+            if ((gPlayer0ReadyFlag == 1) && (gPlayer1ReadyFlag == 1) && (BattleScene_AdvanceCameraFrameCounter(0xF) != 0)) {
+                if ((gOpponentPlayer->state.runtime.usedMove & 0xF0) == 0xF0) {
                     sBattleScene.unk_00->unk_34 = 3;
                 }
                 BattleScene_ResetCameraFrameCounter();
@@ -2261,24 +2261,24 @@ void BattleScene_Phase38(CameraNode* arg0) {
     switch (sBattleScene.unk_00->unk_20) {
         case 0:
             BattleScene_SaveCameraFov(arg0);
-            BattleScene_SetCameraOwnerShot(arg0, D_84390204);
-            BattleScene_UpdateCameraModelOffset(D_84390204, arg0);
-            Battle_ApplyAnimStateEffects(D_84390204);
+            BattleScene_SetCameraOwnerShot(arg0, gCurrentPlayer);
+            BattleScene_UpdateCameraModelOffset(gCurrentPlayer, arg0);
+            Battle_ApplyAnimStateEffects(gCurrentPlayer);
             BattleScene_ResetCameraFrameCounter();
             BattleScene_ResetCameraSubstepCounter();
             sBattleScene.unk_00->unk_20++;
             break;
 
         case 1:
-            if (Battle_IsRowAnimationSettled(D_84390204, 0x3C) != 0) {
+            if (Battle_IsRowAnimationSettled(gCurrentPlayer, 0x3C) != 0) {
                 sBattleScene.unk_00->unk_20 += 1;
             }
             break;
 
         case 2:
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
-            if ((D_84390200->state.runtime.usedMove & 0xF0) == 0xF0) {
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
+            if ((gOpponentPlayer->state.runtime.usedMove & 0xF0) == 0xF0) {
                 sBattleScene.unk_00->unk_34 = 3;
             }
             BattleScene_ResetCameraFrameCounter();
@@ -2292,7 +2292,7 @@ void BattleScene_Phase27(CameraNode* arg0) {
     switch (sBattleScene.unk_00->unk_20) {
         case 0:
             BattleScene_SaveCameraFov(arg0);
-            Battle_ApplyAnimStateEffects(D_84390204);
+            Battle_ApplyAnimStateEffects(gCurrentPlayer);
             BattleScene_SelectActionCameraPresetFromTiming(arg0, 0);
             BattleScene_ResetCameraFrameCounter();
             sBattleScene.unk_00->unk_20++;
@@ -2307,9 +2307,9 @@ void BattleScene_Phase27(CameraNode* arg0) {
 
         case 2:
             BattleScene_ApplyActionCameraMode(arg0, 1);
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
-            if ((D_84390200->state.runtime.usedMove & 0xF0) == 0xF0) {
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
+            if ((gOpponentPlayer->state.runtime.usedMove & 0xF0) == 0xF0) {
                 sBattleScene.unk_00->unk_34 = 3;
             }
             BattleScene_ResetCameraFrameCounter();
@@ -2320,50 +2320,50 @@ void BattleScene_Phase27(CameraNode* arg0) {
 }
 
 void BattleScene_Phase30(CameraNode* arg0) {
-    BattleMonRuntime* sp1C = &D_84390200->state.runtime;
+    BattleMonRuntime* sp1C = &gOpponentPlayer->state.runtime;
 
     switch (sBattleScene.unk_00->unk_20) {
         case 0:
-            Battle_ClearRuntimeFlags(D_84390204, 0x1800);
+            Battle_ClearRuntimeFlags(gCurrentPlayer, 0x1800);
             BattleScene_SaveCameraFov(arg0);
             BattleScene_ResetCameraFrameCounter();
             BattleScene_SelectActionCameraPresetFromTiming(arg0, 0);
-            Battle_ApplyAnimStateEffects(D_84390204);
+            Battle_ApplyAnimStateEffects(gCurrentPlayer);
             BattleScene_ResetCameraFrameCounter();
             sBattleScene.unk_00->unk_20++;
             break;
 
         case 1:
             BattleScene_ApplyActionCameraMode(arg0, 1);
-            if (Battle_IsRowAnimationSettled(D_84390204, 0x3C) != 0) {
+            if (Battle_IsRowAnimationSettled(gCurrentPlayer, 0x3C) != 0) {
                 BattleScene_ResetCameraFrameCounter();
                 sBattleScene.unk_00->unk_20++;
             }
             break;
 
         case 2:
-            if (BattleScene_AdvanceOwnerAnimation98(D_84390200) == 0) {
+            if (BattleScene_AdvanceOwnerAnimation98(gOpponentPlayer) == 0) {
                 BattleAnim_CleanupEffects(1);
                 Audio_FadeAndClearStoredSounds();
-                BattleScene_SelectCameraShot(D_84390200, arg0, BattleAnim_RandomRange(2));
-                BattleScene_EnterStateRow(D_84390204, 4);
+                BattleScene_SelectCameraShot(gOpponentPlayer, arg0, BattleAnim_RandomRange(2));
+                BattleScene_EnterStateRow(gCurrentPlayer, 4);
                 BattleScene_ResetCameraFrameCounter();
                 sBattleScene.unk_00->unk_20++;
             }
             break;
 
         case 3:
-            if (BattleScene_AdvanceOwnerAnimationAndClearFlags(D_84390200) == 0) {
-                BattleScene_ReframeAndRecomputeDistance(arg0, D_84390200);
+            if (BattleScene_AdvanceOwnerAnimationAndClearFlags(gOpponentPlayer) == 0) {
+                BattleScene_ReframeAndRecomputeDistance(arg0, gOpponentPlayer);
                 if (sBattleScene.unk_00->unk_14 == 0) {
                     BattleBox_Open(1);
                 }
-                D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
-                D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
+                gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
+                gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
                 if (BattleScene_AdvanceCameraFrameCounter(0x32) != 0) {
                     sBattleScene.unk_00->unk_20 += 1;
                 }
-                if (BattleScene_IsOpponentRowCheckpointReached(D_84390200) != 0) {
+                if (BattleScene_IsOpponentRowCheckpointReached(gOpponentPlayer) != 0) {
                     BattleScene_ResetCameraFrameCounter();
                     sBattleScene.unk_00->unk_20++;
                 }
@@ -2371,17 +2371,17 @@ void BattleScene_Phase30(CameraNode* arg0) {
             break;
 
         case 4:
-            BattleScene_ReframeAndRecomputeDistance(arg0, D_84390200);
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
-            if ((D_84390224 == 1) && (D_84390220 == 1)) {
+            BattleScene_ReframeAndRecomputeDistance(arg0, gOpponentPlayer);
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
+            if ((gPlayer1ReadyFlag == 1) && (gPlayer0ReadyFlag == 1)) {
                 if (sp1C->unk_0C != 0) {
                     BattleAnim_CleanupEffects(1);
                     Audio_FadeAndClearStoredSounds();
-                    BattleScene_SelectCameraFollowPreset(D_84390204, arg0, 3);
+                    BattleScene_SelectCameraFollowPreset(gCurrentPlayer, arg0, 3);
                     sBattleScene.unk_00->unk_20++;
                 } else {
-                    if ((D_84390200->state.runtime.usedMove & 0xF0) == 0xF0) {
+                    if ((gOpponentPlayer->state.runtime.usedMove & 0xF0) == 0xF0) {
                         sBattleScene.unk_00->unk_34 = 3;
                     }
                     BattleScene_ResetCameraFrameCounter();
@@ -2392,10 +2392,10 @@ void BattleScene_Phase30(CameraNode* arg0) {
             break;
 
         case 5:
-            BattleScene_SelectCameraFollowPreset(D_84390204, arg0, 3);
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
-            if ((D_84390200->state.runtime.usedMove & 0xF0) == 0xF0) {
+            BattleScene_SelectCameraFollowPreset(gCurrentPlayer, arg0, 3);
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
+            if ((gOpponentPlayer->state.runtime.usedMove & 0xF0) == 0xF0) {
                 sBattleScene.unk_00->unk_34 = 3;
             }
             BattleScene_ResetCameraFrameCounter();
@@ -2409,8 +2409,8 @@ void BattleScene_Phase28(CameraNode* arg0) {
     switch (sBattleScene.unk_00->unk_20) {
         case 0:
             BattleScene_SaveCameraFov(arg0);
-            Battle_ApplyAnimStateEffects(D_84390204);
-            BattleScene_SelectCameraFollowPreset(D_84390204, arg0, 3);
+            Battle_ApplyAnimStateEffects(gCurrentPlayer);
+            BattleScene_SelectCameraFollowPreset(gCurrentPlayer, arg0, 3);
             BattleScene_ResetCameraFrameCounter();
             sBattleScene.unk_00->unk_20 += 1;
             break;
@@ -2422,9 +2422,9 @@ void BattleScene_Phase28(CameraNode* arg0) {
             break;
 
         case 2:
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
-            if ((D_84390200->state.runtime.usedMove & 0xF0) == 0xF0) {
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
+            if ((gOpponentPlayer->state.runtime.usedMove & 0xF0) == 0xF0) {
                 sBattleScene.unk_00->unk_34 = 3;
             }
             BattleScene_ResetCameraFrameCounter();
@@ -2436,60 +2436,60 @@ void BattleScene_Phase28(CameraNode* arg0) {
 
 void BattleScene_Phase15(CameraNode* arg0) {
     UNUSED s32 pad[3];
-    BattleMonRuntime* sp30 = &D_84390204->state.runtime;
-    BattleMonRuntime* sp2C = &D_84390200->state.runtime;
-    ActivePokemonState* sp28 = &D_84390204->state;
-    ActivePokemonState* sp24 = &D_84390200->state;
+    BattleMonRuntime* sp30 = &gCurrentPlayer->state.runtime;
+    BattleMonRuntime* sp2C = &gOpponentPlayer->state.runtime;
+    ActivePokemonState* sp28 = &gCurrentPlayer->state;
+    ActivePokemonState* sp24 = &gOpponentPlayer->state;
 
     switch (sBattleScene.unk_00->unk_20) {
         case 0:
             BattleScene_SelectActionCameraPresetFromTiming(arg0, 0);
-            BattleScene_RecenterCameraOnOwner(arg0, D_84390204);
+            BattleScene_RecenterCameraOnOwner(arg0, gCurrentPlayer);
             if (sp30->unk_4D & 0x10) {
                 if (sp2C->unk_4E & 8) {
-                    sp28->model = D_84390204->sessionTeams->displayModel = sp24->unk_BE;
-                } else if (D_84390200->sessionTeams->displayModel == 0x98) {
-                    sp28->model = D_84390204->sessionTeams->displayModel = sp2C->id;
+                    sp28->model = gCurrentPlayer->sessionTeams->displayModel = sp24->unk_BE;
+                } else if (gOpponentPlayer->sessionTeams->displayModel == 0x98) {
+                    sp28->model = gCurrentPlayer->sessionTeams->displayModel = sp2C->id;
                 } else {
-                    sp28->model = D_84390204->sessionTeams->displayModel = D_84390200->sessionTeams->displayModel;
+                    sp28->model = gCurrentPlayer->sessionTeams->displayModel = gOpponentPlayer->sessionTeams->displayModel;
                 }
             } else if (sp2C->unk_4E & 8) {
-                D_84390204->sessionTeams->displayModel = sp24->unk_BE;
-            } else if (D_84390200->sessionTeams->displayModel == 0x98) {
-                D_84390204->sessionTeams->displayModel = sp2C->id;
+                gCurrentPlayer->sessionTeams->displayModel = sp24->unk_BE;
+            } else if (gOpponentPlayer->sessionTeams->displayModel == 0x98) {
+                gCurrentPlayer->sessionTeams->displayModel = sp2C->id;
             } else {
-                D_84390204->sessionTeams->displayModel = D_84390200->sessionTeams->displayModel;
+                gCurrentPlayer->sessionTeams->displayModel = gOpponentPlayer->sessionTeams->displayModel;
             }
-            D_84390204->sessionTeams->unk_04 = &D_84390204->teamRoster->pokemonPicked[D_84390204->state.rosterIndex];
-            D_84390204->sessionTeams->uniqueStatusFlags |= 0x80;
+            gCurrentPlayer->sessionTeams->unk_04 = &gCurrentPlayer->teamRoster->pokemonPicked[gCurrentPlayer->state.rosterIndex];
+            gCurrentPlayer->sessionTeams->uniqueStatusFlags |= 0x80;
             sBattleScene.unk_00->unk_20 += 1;
             break;
 
         case 1:
-            BattleScene_RecenterCameraOnOwner(arg0, D_84390204);
-            if (D_84390204->sessionTeams->uniqueStatusFlags & 0x10) {
-                D_84390204->sessionTeams->uniqueStatusFlags &= ~0x90;
-                Battle_LoadOwnerModelForSpecies(D_84390204);
-                BattleThumbnail_TickOwnerCameraFraming(D_84390204);
-                BattleAnim_PlayMoveEffectScript(D_84390204, sp30->usedMove);
-                BattleAnim_PlaySpeciesReactionSound(D_84390204, sp30, 0);
+            BattleScene_RecenterCameraOnOwner(arg0, gCurrentPlayer);
+            if (gCurrentPlayer->sessionTeams->uniqueStatusFlags & 0x10) {
+                gCurrentPlayer->sessionTeams->uniqueStatusFlags &= ~0x90;
+                Battle_LoadOwnerModelForSpecies(gCurrentPlayer);
+                BattleThumbnail_TickOwnerCameraFraming(gCurrentPlayer);
+                BattleAnim_PlayMoveEffectScript(gCurrentPlayer, sp30->usedMove);
+                BattleAnim_PlaySpeciesReactionSound(gCurrentPlayer, sp30, 0);
                 sBattleScene.unk_00->unk_20 += 1;
             }
             break;
 
         case 2:
-            BattleScene_RecenterCameraOnOwner(arg0, D_84390204);
-            BattleAnim_PlaySpeciesReactionSound(D_84390204, sp30, 0);
-            BattleScene_EnterStateRow(D_84390204, 0x12);
+            BattleScene_RecenterCameraOnOwner(arg0, gCurrentPlayer);
+            BattleAnim_PlaySpeciesReactionSound(gCurrentPlayer, sp30, 0);
+            BattleScene_EnterStateRow(gCurrentPlayer, 0x12);
             sBattleScene.unk_00->unk_20 += 1;
             break;
 
         case 3:
-            BattleScene_RecenterCameraOnOwner(arg0, D_84390204);
-            D_84390204->thumbnail.camera->node.flags |= 1;
-            D_84390204->thumbnail.displayObject.node.flags |= 1;
-            BattleThumbnail_TriggerOwnerModelAnimation(D_84390204);
-            if (BattleScene_IsRowWaitComplete(D_84390204, 0x32) != 0) {
+            BattleScene_RecenterCameraOnOwner(arg0, gCurrentPlayer);
+            gCurrentPlayer->thumbnail.camera->node.flags |= 1;
+            gCurrentPlayer->thumbnail.displayObject.node.flags |= 1;
+            BattleThumbnail_TriggerOwnerModelAnimation(gCurrentPlayer);
+            if (BattleScene_IsRowWaitComplete(gCurrentPlayer, 0x32) != 0) {
                 BattleScene_ResetAnimationStep();
                 BattleScene_UpdateDisplayedHpAndTransition(arg0);
             }
@@ -2504,10 +2504,10 @@ void BattleScene_Phase25(CameraNode* arg0) {
     switch (sBattleScene.unk_00->unk_20) {
         case 0:
             BattleScene_SaveCameraFov(arg0);
-            BattleAnim_PlayMoveEffectScript(D_84390204, sp1C->usedMove);
+            BattleAnim_PlayMoveEffectScript(gCurrentPlayer, sp1C->usedMove);
             BattleScene_SelectActionCameraPresetFromTiming(arg0, 0);
             if (!(sp18->flags & 0x800)) {
-                Battle_MakeSubstitute(D_84390204);
+                Battle_MakeSubstitute(gCurrentPlayer);
             }
             sBattleScene.unk_00->unk_20 += 1;
             break;
@@ -2515,20 +2515,20 @@ void BattleScene_Phase25(CameraNode* arg0) {
         case 1:
             BattleScene_ApplyActionCameraMode(arg0, 0);
             if (!(sp18->flags & 0x800)) {
-                BattleScene_ResetOwnerModelIfLoaded(D_84390204);
+                BattleScene_ResetOwnerModelIfLoaded(gCurrentPlayer);
             }
-            if (BattleAnim_IsSessionBusy(D_84390204) == 0) {
-                BattleAnim_PlaySpeciesReactionSound(D_84390204, sp1C, 0);
-                BattleScene_SelectCameraFollowPreset(D_84390204, arg0, 3);
+            if (BattleAnim_IsSessionBusy(gCurrentPlayer) == 0) {
+                BattleAnim_PlaySpeciesReactionSound(gCurrentPlayer, sp1C, 0);
+                BattleScene_SelectCameraFollowPreset(gCurrentPlayer, arg0, 3);
                 BattleScene_ResetCameraFrameCounter();
                 sBattleScene.unk_00->unk_20 += 1;
             }
             break;
 
         case 2:
-            BattleScene_SelectCameraFollowPreset(D_84390204, arg0, 3);
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
+            BattleScene_SelectCameraFollowPreset(gCurrentPlayer, arg0, 3);
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
             if (BattleScene_AdvanceCameraFrameCounter(0x2E) != 0) {
                 sBattleScene.unk_00->unk_20 += 1;
             }
@@ -2536,11 +2536,11 @@ void BattleScene_Phase25(CameraNode* arg0) {
 
         case 3:
             if (!(sp18->flags & 0x800)) {
-                Battle_SetRuntimeFlags(D_84390204, 0x800);
+                Battle_SetRuntimeFlags(gCurrentPlayer, 0x800);
             }
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
-            if ((D_84390200->state.runtime.usedMove & 0xF0) == 0xF0) {
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
+            if ((gOpponentPlayer->state.runtime.usedMove & 0xF0) == 0xF0) {
                 sBattleScene.unk_00->unk_34 = 3;
             }
             BattleScene_ResetAnimationStep();
@@ -2559,7 +2559,7 @@ void BattleScene_Phase29(CameraNode* arg0) {
     switch (sBattleScene.unk_00->unk_20) {
         case 0:
             BattleScene_SaveCameraFov(arg0);
-            Battle_ApplyAnimStateEffects(D_84390204);
+            Battle_ApplyAnimStateEffects(gCurrentPlayer);
             BattleScene_SelectActionCameraPresetFromTiming(arg0, 0);
             BattleScene_ResetCameraFrameCounter();
             BattleScene_ResetCameraSubstepCounter();
@@ -2568,21 +2568,21 @@ void BattleScene_Phase29(CameraNode* arg0) {
 
         case 1:
             BattleScene_ApplyActionCameraMode(arg0, 1);
-            if (Battle_IsRowAnimationSettled(D_84390204, 0x3C) != 0) {
-                BattleScene_EndStatusAnimationsAndCommit(D_84390200);
+            if (Battle_IsRowAnimationSettled(gCurrentPlayer, 0x3C) != 0) {
+                BattleScene_EndStatusAnimationsAndCommit(gOpponentPlayer);
                 sBattleScene.unk_00->unk_20 += 1;
             }
             break;
 
         case 2:
             BattleScene_ApplyActionCameraMode(arg0, 1);
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
-            if ((D_84390200->state.runtime.usedMove & 0xF0) == 0xF0) {
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
+            if ((gOpponentPlayer->state.runtime.usedMove & 0xF0) == 0xF0) {
                 sBattleScene.unk_00->unk_34 = 3;
             }
-            Vec3f_SetComponentsDuplicate(&D_84390204->displayObject.scale, 1.0f, 1.0f, 1.0f);
-            Vec3f_SetComponentsDuplicate(&D_84390200->displayObject.scale, 1.0f, 1.0f, 1.0f);
+            Vec3f_SetComponentsDuplicate(&gCurrentPlayer->displayObject.scale, 1.0f, 1.0f, 1.0f);
+            Vec3f_SetComponentsDuplicate(&gOpponentPlayer->displayObject.scale, 1.0f, 1.0f, 1.0f);
             BattleScene_ResetCameraFrameCounter();
             BattleScene_ResetAnimationStep();
             BattleScene_WaitForDisplayedHpAnimations(arg0);
@@ -2599,41 +2599,41 @@ void BattleScene_Phase12(CameraNode* arg0) {
         case 0:
             BattleScene_ResetCameraFrameCounter();
             BattleScene_ClearPhaseFlag();
-            BattleScene_SelectCameraFollowPreset(D_84390204, arg0, 3);
-            BattleScene_ApproachCameraTargetFromOwner(arg0, D_84390204);
-            Battle_SetRuntimeFlags(D_84390204, 0x200);
+            BattleScene_SelectCameraFollowPreset(gCurrentPlayer, arg0, 3);
+            BattleScene_ApproachCameraTargetFromOwner(arg0, gCurrentPlayer);
+            Battle_SetRuntimeFlags(gCurrentPlayer, 0x200);
             sBattleScene.unk_00->unk_20 += 1;
             break;
 
         case 1:
-            if (D_84390204->displayObject.position.y >= 100.0f) {
-                BattleAnim_GetOwnerDefaultAnchorPosition(D_84390204, &sp3C);
-                sp3C.y += BattleAnim_GetOwnerModelHeight(D_84390204);
-                D_84390208 = BattleScene_ScaleCameraDistance(D_84390204, 3.0f, 500.0f);
-                BattleScene_SetCameraEyeFromPosition(arg0, sp3C, 0x11C6, BattleScene_GetParticipantFacingAngle(D_84390204) - (D_84390204->cameraOffsetScaleFactor * 0x754E),
-                              D_84390208, BattleAnim_GetOwnerModelHeight(D_84390204));
+            if (gCurrentPlayer->displayObject.position.y >= 100.0f) {
+                BattleAnim_GetOwnerDefaultAnchorPosition(gCurrentPlayer, &sp3C);
+                sp3C.y += BattleAnim_GetOwnerModelHeight(gCurrentPlayer);
+                gBattleUnusedFloat = BattleScene_ScaleCameraDistance(gCurrentPlayer, 3.0f, 500.0f);
+                BattleScene_SetCameraEyeFromPosition(arg0, sp3C, 0x11C6, BattleScene_GetParticipantFacingAngle(gCurrentPlayer) - (gCurrentPlayer->cameraOffsetScaleFactor * 0x754E),
+                              gBattleUnusedFloat, BattleAnim_GetOwnerModelHeight(gCurrentPlayer));
                 Vec3f_SetComponentsDuplicate(&sp3C, 0.0f, 200.0f, 0.0f);
                 BattleAnim_Vec3fCopy(&arg0->view.targetPosition, &sp3C);
                 BattleAnim_CleanupEffects(2);
-                ModelAnim_SetAnimation(&D_84390204->displayObject, sp4C->id);
+                ModelAnim_SetAnimation(&gCurrentPlayer->displayObject, sp4C->id);
                 arg0->perspective.verticalFieldOfView = 60.0f;
                 sBattleScene.unk_00->unk_20 += 1;
             } else {
-                BattleScene_ApproachCameraTargetFromOwner(arg0, D_84390204);
+                BattleScene_ApproachCameraTargetFromOwner(arg0, gCurrentPlayer);
             }
             break;
 
         case 2:
             BattleAnim_ApproachF(&arg0->perspective.verticalFieldOfView, 60.0f, 0.2f);
-            if (D_84390204->displayObject.position.y >= 200.0f) {
+            if (gCurrentPlayer->displayObject.position.y >= 200.0f) {
                 sBattleScene.unk_00->unk_20 += 1;
             }
             break;
 
         case 3:
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
-            if ((D_84390220 == 1) && (D_84390224 == 1) && (BattleScene_AdvanceCameraFrameCounterUntil(0x1E) != 0)) {
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
+            if ((gPlayer0ReadyFlag == 1) && (gPlayer1ReadyFlag == 1) && (BattleScene_AdvanceCameraFrameCounterUntil(0x1E) != 0)) {
                 Battle_SetRuntimeFlags(sActivePokemon[sBattleScene.unk_00->unk_2C], 4);
                 BattleAnim_ClearEffectStateFlag();
                 BattleScene_ResetCameraFrameCounter();
@@ -2648,52 +2648,52 @@ void BattleScene_Phase13(CameraNode* arg0) {
     UNUSED s32 pad;
     f32 sp28;
     UNUSED s16 pad2;
-    u16 sp24 = D_84385B8C;
+    u16 sp24 = gAnimFlagMask;
 
     switch (sBattleScene.unk_00->unk_20) {
         case 0:
             BattleScene_SaveCameraFov(arg0);
             BattleScene_ResetCameraFrameCounter();
             BattleScene_ClearPhaseFlag();
-            BattleScene_SelectCameraFollowPreset(D_84390204, arg0, 3);
+            BattleScene_SelectCameraFollowPreset(gCurrentPlayer, arg0, 3);
             sBattleScene.unk_00->unk_20 += 1;
             break;
 
         case 1:
-            if (D_84390204->animationFlags2 == 2) {
-                BattleScene_UpdateCameraVerticalFraming(arg0, D_84390204);
-                D_84390204->displayObject.node.renderFlags &= 0xFFBF;
+            if (gCurrentPlayer->animationFlags2 == 2) {
+                BattleScene_UpdateCameraVerticalFraming(arg0, gCurrentPlayer);
+                gCurrentPlayer->displayObject.node.renderFlags &= 0xFFBF;
             }
 
-            if ((D_84390204->displayObject.objectType == 0x32) || (D_84390204->displayObject.objectType == 0x33)) {
-                if (BattleScene_IsRowWaitComplete(D_84390204, 0x1E) != 0) {
+            if ((gCurrentPlayer->displayObject.objectType == 0x32) || (gCurrentPlayer->displayObject.objectType == 0x33)) {
+                if (BattleScene_IsRowWaitComplete(gCurrentPlayer, 0x1E) != 0) {
                     BattleBox_Close();
-                    Battle_SetRuntimeFlags(D_84390204, 0x4000);
-                    D_84390204->displayObject.node.renderFlags &= 0xFFDF;
+                    Battle_SetRuntimeFlags(gCurrentPlayer, 0x4000);
+                    gCurrentPlayer->displayObject.node.renderFlags &= 0xFFDF;
                     sBattleScene.unk_00->unk_20 += 1;
                 }
-            } else if (BattleAnim_IsAssetLoadBusy(D_84390204) == 0) {
-                if (BattleScene_ByteArrayContains(D_84390204->displayObject.objectType, (u8*)&sp24, 2) != 0) {
+            } else if (BattleAnim_IsAssetLoadBusy(gCurrentPlayer) == 0) {
+                if (BattleScene_ByteArrayContains(gCurrentPlayer->displayObject.objectType, (u8*)&sp24, 2) != 0) {
                     sp28 = 10.0f;
                 } else {
                     sp28 = 3.5f;
                 }
 
-                if (D_84390204->displayObject.position.y <= (-BattleAnim_GetOwnerModelHeight(D_84390204) * sp28)) {
-                    Battle_SetRuntimeFlags(D_84390204, 0x4000);
-                    D_84390204->displayObject.node.renderFlags &= 0xFFDF;
+                if (gCurrentPlayer->displayObject.position.y <= (-BattleAnim_GetOwnerModelHeight(gCurrentPlayer) * sp28)) {
+                    Battle_SetRuntimeFlags(gCurrentPlayer, 0x4000);
+                    gCurrentPlayer->displayObject.node.renderFlags &= 0xFFDF;
                     sBattleScene.unk_00->unk_20 += 1;
                 }
             }
             break;
 
         case 2:
-            if ((D_84390204->displayObject.objectType != 0x32) && (D_84390204->displayObject.objectType != 0x33)) {
-                D_84390204->displayObject.node.renderFlags |= 0x40;
+            if ((gCurrentPlayer->displayObject.objectType != 0x32) && (gCurrentPlayer->displayObject.objectType != 0x33)) {
+                gCurrentPlayer->displayObject.node.renderFlags |= 0x40;
             }
-            BattleScene_UpdateCameraVerticalFraming(arg0, D_84390204);
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
+            BattleScene_UpdateCameraVerticalFraming(arg0, gCurrentPlayer);
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
             BattleScene_ResetAnimationStep();
             BattleScene_WaitForDisplayedHpAnimations(arg0);
             break;
@@ -2707,15 +2707,15 @@ void BattleScene_Phase14(CameraNode* arg0) {
             BattleScene_SaveCameraFov(arg0);
             BattleScene_ResetCameraFrameCounter();
             BattleScene_ResetCameraSubstepCounter();
-            Battle_ApplyAnimStateEffects(D_84390204);
+            Battle_ApplyAnimStateEffects(gCurrentPlayer);
             sBattleScene.unk_00->unk_20 += 1;
             break;
 
         case 1:
             BattleScene_ApplyActionCameraMode(arg0, 1);
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
-            if (BattleScene_IsMoveKeyedRowWaitComplete(D_84390204, 0x1E) != 0) {
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
+            if (BattleScene_IsMoveKeyedRowWaitComplete(gCurrentPlayer, 0x1E) != 0) {
                 BattleScene_ResetAnimationStep();
                 BattleScene_WaitForDisplayedHpAnimations(arg0);
             }
@@ -2730,7 +2730,7 @@ void BattleScene_Phase17(CameraNode* arg0) {
         case 0:
             BattleScene_ResetCameraFrameCounter();
             BattleScene_SaveCameraFov(arg0);
-            Battle_ApplyAnimStateEffects(D_84390204);
+            Battle_ApplyAnimStateEffects(gCurrentPlayer);
             if (!(sp1C->flags & 2)) {
                 BattleScene_SelectActionCameraPresetFromTiming(arg0, 0);
             }
@@ -2738,16 +2738,16 @@ void BattleScene_Phase17(CameraNode* arg0) {
             break;
 
         case 1:
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
             if (BattleScene_AdvanceCameraFrameCounter(0x3C) != 0) {
                 sBattleScene.unk_00->unk_20 += 1;
             }
             break;
 
         case 2:
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
             BattleScene_ResetAnimationStep();
             BattleScene_WaitForDisplayedHpAnimations(arg0);
             break;
@@ -2759,9 +2759,9 @@ void BattleScene_PhaseFaint(CameraNode* arg0) {
 
     switch (sBattleScene.unk_00->unk_20) {
         case 0:
-            if (BattleScene_AdvanceOwnerAnimation98(D_84390204) == 0) {
+            if (BattleScene_AdvanceOwnerAnimation98(gCurrentPlayer) == 0) {
                 BattleBox_Open(2);
-                BattleScene_ResetOwnerPresentationFlags(D_84390204);
+                BattleScene_ResetOwnerPresentationFlags(gCurrentPlayer);
                 sBattleScene.unk_00->unk_20 += 1;
             }
             break;
@@ -2769,35 +2769,35 @@ void BattleScene_PhaseFaint(CameraNode* arg0) {
         case 1:
             BattleScene_ResetAnimationStep();
             BattleScene_ClearStateTickCallbacks();
-            BattleScene_EnterStateRow(D_84390204, 0xF);
-            BattleScene_SelectCameraShot(D_84390204, arg0, 3);
-            BattleScene_SetDamageShakeAmplitude(D_84390204);
-            BattleAnim_QueueEffectList(8, D_84390204);
+            BattleScene_EnterStateRow(gCurrentPlayer, 0xF);
+            BattleScene_SelectCameraShot(gCurrentPlayer, arg0, 3);
+            BattleScene_SetDamageShakeAmplitude(gCurrentPlayer);
+            BattleAnim_QueueEffectList(8, gCurrentPlayer);
             sBattleScene.unk_00->unk_20 += 1;
             break;
 
         case 2:
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
-            BattleScene_FrameCamera(arg0, D_84390204);
-            if (BattleScene_IsRowZeroCheckpointReached(D_84390204) != 0) {
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
+            BattleScene_FrameCamera(arg0, gCurrentPlayer);
+            if (BattleScene_IsRowZeroCheckpointReached(gCurrentPlayer) != 0) {
                 sBattleScene.unk_00->unk_20 += 1;
-            } else if (BattleScene_IsRowWaitComplete(D_84390204, 0x32) != 0) {
+            } else if (BattleScene_IsRowWaitComplete(gCurrentPlayer, 0x32) != 0) {
                 sBattleScene.unk_00->unk_20 += 1;
             }
             break;
 
         case 3:
-            BattleScene_FrameCamera(arg0, D_84390204);
-            if (BattleScene_AdvanceOwnerAnimationAndClearFlags(D_84390204) == 0) {
+            BattleScene_FrameCamera(arg0, gCurrentPlayer);
+            if (BattleScene_AdvanceOwnerAnimationAndClearFlags(gCurrentPlayer) == 0) {
                 sBattleScene.unk_00->unk_20 += 1;
             }
             break;
 
         case 4:
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
-            BattleScene_FrameCamera(arg0, D_84390204);
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
+            BattleScene_FrameCamera(arg0, gCurrentPlayer);
             BattleScene_ResetAnimationStep();
             BattleScene_UpdateDisplayedHpAndTransition(arg0);
             break;
@@ -2808,23 +2808,23 @@ void BattleScene_Phase31(CameraNode* arg0) {
     switch (sBattleScene.unk_00->unk_20) {
         case 0:
             BattleScene_SaveCameraFov(arg0);
-            Battle_ApplyAnimStateEffects(D_84390204);
-            D_84390204->unk_4C8 = 1;
+            Battle_ApplyAnimStateEffects(gCurrentPlayer);
+            gCurrentPlayer->unk_4C8 = 1;
             BattleScene_ResetCameraFrameCounter();
             sBattleScene.unk_00->unk_20 += 1;
             break;
 
         case 1:
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
             if (BattleScene_AdvanceCameraFrameCounter(0x3C) != 0) {
                 sBattleScene.unk_00->unk_20 += 1;
             }
             break;
 
         case 2:
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
             BattleScene_ResetAnimationStep();
             BattleScene_WaitForDisplayedHpAnimations(arg0);
             break;
@@ -2859,14 +2859,14 @@ void BattleScene_Phase16(CameraNode* arg0) {
             break;
 
         case 1:
-            if (BattleScene_AdvanceOwnerAnimation98(D_84390204) == 0) {
-                Battle_ResetModelToIdleAnim(D_84390204);
+            if (BattleScene_AdvanceOwnerAnimation98(gCurrentPlayer) == 0) {
+                Battle_ResetModelToIdleAnim(gCurrentPlayer);
                 BattleAnim_CleanupEffects(1);
-                BattleScene_EnterStateRow(D_84390204, 0xF);
-                BattleScene_SelectCameraShot(D_84390204, arg0, 3);
-                BattleScene_SetDamageShakeAmplitude(D_84390204);
+                BattleScene_EnterStateRow(gCurrentPlayer, 0xF);
+                BattleScene_SelectCameraShot(gCurrentPlayer, arg0, 3);
+                BattleScene_SetDamageShakeAmplitude(gCurrentPlayer);
                 BattleScene_ResetAnimationStep();
-                ModelAnim_SetAnimation(&D_84390204->displayObject, sp1C->id);
+                ModelAnim_SetAnimation(&gCurrentPlayer->displayObject, sp1C->id);
                 sBattleScene.unk_00->unk_20 += 1;
             }
             break;
@@ -2878,16 +2878,16 @@ void BattleScene_Phase16(CameraNode* arg0) {
             break;
 
         case 3:
-            if (BattleScene_AdvanceOwnerAnimationAndClearFlags(D_84390204) == 0) {
+            if (BattleScene_AdvanceOwnerAnimationAndClearFlags(gCurrentPlayer) == 0) {
                 BattleBox_Close();
                 sBattleScene.unk_00->unk_20 += 1;
             }
             break;
 
         case 4:
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
-            if ((D_84390220 != 0) && (D_84390224 != 0)) {
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
+            if ((gPlayer0ReadyFlag != 0) && (gPlayer1ReadyFlag != 0)) {
                 BattleScene_ResetAnimationStep();
                 BattleScene_UpdateDisplayedHpAndTransition(arg0);
             }
@@ -2896,42 +2896,42 @@ void BattleScene_Phase16(CameraNode* arg0) {
 }
 
 void BattleScene_PhaseMoveFailedMessage(CameraNode* arg0) {
-    ActivePokemonState* sp1C = &D_84390200->state;
+    ActivePokemonState* sp1C = &gOpponentPlayer->state;
 
     switch (sBattleScene.unk_00->unk_20) {
         case 0:
-            if (BattleScene_AdvanceOwnerAnimation98(D_84390200) == 0) {
+            if (BattleScene_AdvanceOwnerAnimation98(gOpponentPlayer) == 0) {
                 BattleBox_Open(2);
-                BattleScene_StopSpecialOwnerAnimation(D_84390204);
+                BattleScene_StopSpecialOwnerAnimation(gCurrentPlayer);
                 BattleScene_ResetCameraFov(arg0);
                 BattleAnim_CleanupEffects(1);
 
                 if (sp1C->flags & 0x200) {
-                    BattleScene_SelectCameraShot(D_84390200, arg0, D_84390228 = 2);
+                    BattleScene_SelectCameraShot(gOpponentPlayer, arg0, gBattleUnusedInt = 2);
                 } else {
-                    if (D_84390200->displayObject.objectType == 0xF) {
-                        BattleScene_SelectCameraShot(D_84390200, arg0, 0);
+                    if (gOpponentPlayer->displayObject.objectType == 0xF) {
+                        BattleScene_SelectCameraShot(gOpponentPlayer, arg0, 0);
                     }
-                    BattleScene_SelectCameraShot(D_84390200, arg0, D_84390228 = BattleAnim_RandomRange(2));
+                    BattleScene_SelectCameraShot(gOpponentPlayer, arg0, gBattleUnusedInt = BattleAnim_RandomRange(2));
                 }
 
-                BattleScene_EnterStateRow(D_84390204, 0xC);
+                BattleScene_EnterStateRow(gCurrentPlayer, 0xC);
                 BattleScene_ResetCameraFrameCounter();
                 BattleAnim_UpdateMoveFailedFlag();
                 sBattleScene.unk_00->unk_20 += 1;
-                BattleScene_CleanupOpponentAnimationFlags(D_84390200);
+                BattleScene_CleanupOpponentAnimationFlags(gOpponentPlayer);
             }
             break;
 
         case 1:
-            if ((D_84390200->displayObject.objectType == 0xF) && !(sp1C->flags & 0x200)) {
-                BattleScene_FrameCamera(arg0, D_84390200);
+            if ((gOpponentPlayer->displayObject.objectType == 0xF) && !(sp1C->flags & 0x200)) {
+                BattleScene_FrameCamera(arg0, gOpponentPlayer);
             }
 
             if (BattleScene_AdvanceCameraFrameCounter(0x32) != 0) {
                 BattleBox_Close();
-                BattleScene_ResetOwnerPresentationFlags(D_84390204);
-                BattleScene_CleanupParticipantEffectMode(D_84390204);
+                BattleScene_ResetOwnerPresentationFlags(gCurrentPlayer);
+                BattleScene_CleanupParticipantEffectMode(gCurrentPlayer);
                 BattleScene_ClearPhaseFlag();
                 BattleScene_ResetCameraFrameCounter();
                 BattleScene_ResetAnimationStep();
@@ -2947,17 +2947,17 @@ void BattleScene_PhaseAttackHit(CameraNode* arg0) {
 
     switch (sBattleScene.unk_00->unk_20) {
         case 0:
-            Battle_StopBeingGoldAfterHarden(D_84390204);
+            Battle_StopBeingGoldAfterHarden(gCurrentPlayer);
             BattleScene_SetCameraOwnerStandardShot(arg0, sActivePokemon[sBattleScene.unk_00->unk_2C]);
             BattleScene_ResetAnimationStep();
-            BattleScene_CleanupParticipantEffectMode(D_84390204);
+            BattleScene_CleanupParticipantEffectMode(gCurrentPlayer);
             BattleAnim_CleanupEffects(2);
             sBattleScene.unk_00->unk_20 += 1;
             break;
 
         case 1:
             if (BattleScene_AdvanceOwnerAnimation(sActivePokemon[sBattleScene.unk_00->unk_2C]) == 0) {
-                Battle_ResetModelToIdleAnim(D_84390204);
+                Battle_ResetModelToIdleAnim(gCurrentPlayer);
                 Audio_FadeAndClearStoredSounds();
                 BattleAnim_CleanupEffects(1);
                 BattleScene_SetCameraOwnerStandardShot(arg0, sActivePokemon[sBattleScene.unk_00->unk_2C]);
@@ -2968,9 +2968,9 @@ void BattleScene_PhaseAttackHit(CameraNode* arg0) {
                     sp24->unk_0C = sp24->unk_0E;
                     sp20->unk_0C = sp20->unk_0E;
                     if (sp24->unk_15 & 0x10) {
-                        BattleAnim_QueueEffectList(6, D_84390204);
+                        BattleAnim_QueueEffectList(6, gCurrentPlayer);
                     } else {
-                        BattleAnim_QueueEffectList(5, D_84390204);
+                        BattleAnim_QueueEffectList(5, gCurrentPlayer);
                     }
                     sBattleScene.unk_00->unk_20 += 1;
                 } else {
@@ -2978,7 +2978,7 @@ void BattleScene_PhaseAttackHit(CameraNode* arg0) {
                     Audio_PlayCommand(0x22, 0, 0);
                     sp24->unk_0C = sp24->unk_10;
                     sp20->unk_0C = sp20->unk_10;
-                    BattleAnim_QueueEffectList(0xA, D_84390204);
+                    BattleAnim_QueueEffectList(0xA, gCurrentPlayer);
                     BattleScene_ResetCameraFrameCounter();
                     sBattleScene.unk_00->unk_20 = 3;
                 }
@@ -2987,10 +2987,10 @@ void BattleScene_PhaseAttackHit(CameraNode* arg0) {
 
         case 2:
             BattleScene_SetCameraOwnerStandardShot(arg0, sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
 
-            if ((D_84390220 == 1) && (D_84390224 == 1) && (BattleScene_AdvanceCameraFrameCounterUntil(0x32) != 0)) {
+            if ((gPlayer0ReadyFlag == 1) && (gPlayer1ReadyFlag == 1) && (BattleScene_AdvanceCameraFrameCounterUntil(0x32) != 0)) {
                 BattleScene_ResetCameraFrameCounter();
                 if (Battle_GetActiveMonHp(sActivePokemon[sBattleScene.unk_00->unk_2C]) == 0) {
                     BattleScene_ClearPhaseFlag();
@@ -3001,7 +3001,7 @@ void BattleScene_PhaseAttackHit(CameraNode* arg0) {
                     Audio_PlayCommand(0x22, 0, 0);
                     sp24->unk_0C = sp24->unk_10;
                     sp20->unk_0C = sp20->unk_10;
-                    BattleAnim_QueueEffectList(0xA, D_84390204);
+                    BattleAnim_QueueEffectList(0xA, gCurrentPlayer);
                     sBattleScene.unk_00->unk_20 += 1;
                 } else {
                     sBattleScene.unk_00->unk_20 = 4;
@@ -3011,17 +3011,17 @@ void BattleScene_PhaseAttackHit(CameraNode* arg0) {
 
         case 3:
             BattleScene_SetCameraOwnerStandardShot(arg0, sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
 
-            if ((BattleScene_AdvanceCameraFrameCounterUntil(0x32) != 0) && (D_84390220 == 1) && (D_84390224 == 1)) {
+            if ((BattleScene_AdvanceCameraFrameCounterUntil(0x32) != 0) && (gPlayer0ReadyFlag == 1) && (gPlayer1ReadyFlag == 1)) {
                 sBattleScene.unk_00->unk_20 += 1;
                 BattleScene_ResetCameraFrameCounter();
             }
             break;
 
         case 4:
-            if (BattleScene_AdvanceOwnerAnimationAndClearFlags(D_84390200) == 0) {
+            if (BattleScene_AdvanceOwnerAnimationAndClearFlags(gOpponentPlayer) == 0) {
                 sBattleScene.unk_00->unk_20 += 1;
             }
             break;
@@ -3029,8 +3029,8 @@ void BattleScene_PhaseAttackHit(CameraNode* arg0) {
         case 5:
             BattleScene_ResetAnimationStep();
             BattleScene_SetCameraOwnerStandardShot(arg0, sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
             BattleScene_ResolveDisplayedHpCompletion(arg0);
             break;
     }
@@ -3042,7 +3042,7 @@ void BattleScene_PhaseDrainDamage(CameraNode* arg0) {
 
     switch (sBattleScene.unk_00->unk_20) {
         case 0:
-            BattleScene_CleanupParticipantEffectMode(D_84390204);
+            BattleScene_CleanupParticipantEffectMode(gCurrentPlayer);
             BattleAnim_CleanupEffects(2);
             BattleScene_SetCameraOwnerWideShot(arg0, sActivePokemon[sBattleScene.unk_00->unk_2C]);
             sBattleScene.unk_00->unk_20 += 1;
@@ -3050,10 +3050,10 @@ void BattleScene_PhaseDrainDamage(CameraNode* arg0) {
 
         case 1:
             if (BattleScene_AdvanceOwnerAnimation(sActivePokemon[sBattleScene.unk_00->unk_2C]) == 0) {
-                Battle_ResetModelToIdleAnim(D_84390204);
+                Battle_ResetModelToIdleAnim(gCurrentPlayer);
                 Audio_FadeAndClearStoredSounds();
                 BattleAnim_CleanupEffects(1);
-                BattleAnim_QueueEffectList(9, D_84390204);
+                BattleAnim_QueueEffectList(9, gCurrentPlayer);
                 BattleScene_ResetCameraFrameCounter();
                 BattleScene_SetCameraOwnerWideShot(arg0, sActivePokemon[sBattleScene.unk_00->unk_2C]);
                 sp1C->unk_0C = sp1C->unk_12;
@@ -3065,27 +3065,27 @@ void BattleScene_PhaseDrainDamage(CameraNode* arg0) {
 
         case 2:
             if (BattleScene_ApproachCloseCameraShot(arg0, sActivePokemon[sBattleScene.unk_00->unk_2C]) != 0) {
-                BattleScene_SelectCameraShot(D_84390204, arg0, 3);
-                BattleScene_StartHitCueAnimation(D_84390204);
-                BattleAnim_PlayBattleSequenceById(D_84390204, 0x1F);
-                BattleScene_SetDamageShakeAmplitude(D_84390204);
+                BattleScene_SelectCameraShot(gCurrentPlayer, arg0, 3);
+                BattleScene_StartHitCueAnimation(gCurrentPlayer);
+                BattleAnim_PlayBattleSequenceById(gCurrentPlayer, 0x1F);
+                BattleScene_SetDamageShakeAmplitude(gCurrentPlayer);
                 sBattleScene.unk_00->unk_20 += 1;
             }
             break;
 
         case 3:
-            if (BattleScene_AdvanceOwnerAnimationAndClearFlags(D_84390200) == 0) {
-                BattleScene_FrameCamera(arg0, D_84390204);
+            if (BattleScene_AdvanceOwnerAnimationAndClearFlags(gOpponentPlayer) == 0) {
+                BattleScene_FrameCamera(arg0, gCurrentPlayer);
                 sBattleScene.unk_00->unk_20 += 1;
             }
             break;
 
         case 4:
             BattleScene_ResetAnimationStep();
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
-            BattleScene_FrameCamera(arg0, D_84390204);
-            if ((D_84390220 == 1) && (D_84390224 == 1) && (BattleScene_AdvanceCameraFrameCounterUntil(0x3C) != 0)) {
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
+            BattleScene_FrameCamera(arg0, gCurrentPlayer);
+            if ((gPlayer0ReadyFlag == 1) && (gPlayer1ReadyFlag == 1) && (BattleScene_AdvanceCameraFrameCounterUntil(0x3C) != 0)) {
                 BattleScene_UpdateDisplayedHpAndTransition(arg0);
             }
             break;
@@ -3095,15 +3095,15 @@ void BattleScene_PhaseDrainDamage(CameraNode* arg0) {
 void BattleScene_Phase10(CameraNode* arg0) {
     switch (sBattleScene.unk_00->unk_20) {
         case 0:
-            BattleScene_CleanupParticipantEffectMode(D_84390204);
+            BattleScene_CleanupParticipantEffectMode(gCurrentPlayer);
             if (BattleScene_AdvanceOwnerAnimation(sActivePokemon[sBattleScene.unk_00->unk_2C]) == 0) {
-                Battle_ResetModelToIdleAnim(D_84390204);
+                Battle_ResetModelToIdleAnim(gCurrentPlayer);
                 Audio_FadeAndClearStoredSounds();
                 BattleAnim_CleanupEffects(1);
                 BattleScene_ResetCameraFrameCounter();
-                BattleAnim_QueueEffectList6(3, D_84390200);
+                BattleAnim_QueueEffectList6(3, gOpponentPlayer);
                 Audio_PlayCommand(0x23, 0, 0);
-                BattleScene_SetCameraOwnerStandardShot(arg0, D_84390200);
+                BattleScene_SetCameraOwnerStandardShot(arg0, gOpponentPlayer);
                 BattleBox_Open(7);
                 sBattleScene.unk_00->unk_20 += 1;
             }
@@ -3128,14 +3128,14 @@ void BattleScene_PhaseAttackHitRecoil(CameraNode* arg0) {
 
     switch (sBattleScene.unk_00->unk_20) {
         case 0:
-            BattleScene_CleanupParticipantEffectMode(D_84390204);
+            BattleScene_CleanupParticipantEffectMode(gCurrentPlayer);
             BattleAnim_CleanupEffects(2);
             sBattleScene.unk_00->unk_20 += 1;
             break;
 
         case 1:
             if (BattleScene_AdvanceOwnerAnimation(sActivePokemon[sBattleScene.unk_00->unk_2C]) == 0) {
-                Battle_ResetModelToIdleAnim(D_84390204);
+                Battle_ResetModelToIdleAnim(gCurrentPlayer);
                 Audio_FadeAndClearStoredSounds();
                 BattleAnim_CleanupEffects(1);
                 BattleScene_SetCameraOwnerStandardShot(arg0, sActivePokemon[sBattleScene.unk_00->unk_2C]);
@@ -3146,16 +3146,16 @@ void BattleScene_PhaseAttackHitRecoil(CameraNode* arg0) {
                     sp24->unk_0C = sp24->unk_0E;
                     sp20->unk_0C = sp20->unk_0E;
                     if (sp24->unk_15 & 0x10) {
-                        BattleAnim_QueueEffectList(6, D_84390204);
+                        BattleAnim_QueueEffectList(6, gCurrentPlayer);
                     } else {
-                        BattleAnim_QueueEffectList(5, D_84390204);
+                        BattleAnim_QueueEffectList(5, gCurrentPlayer);
                     }
                     sBattleScene.unk_00->unk_20 += 1;
                 } else {
                     BattleBox_Open(5);
                     sp24->unk_0C = sp24->unk_10;
                     sp20->unk_0C = sp20->unk_10;
-                    BattleAnim_QueueEffectList(0xA, D_84390204);
+                    BattleAnim_QueueEffectList(0xA, gCurrentPlayer);
                     sBattleScene.unk_00->unk_20 = 3;
                 }
             }
@@ -3163,9 +3163,9 @@ void BattleScene_PhaseAttackHitRecoil(CameraNode* arg0) {
 
         case 2:
             BattleScene_SetCameraOwnerStandardShot(arg0, sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
-            if ((D_84390220 == 1) && (D_84390224 == 1) && (BattleScene_AdvanceCameraFrameCounterUntil(0x32) != 0)) {
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
+            if ((gPlayer0ReadyFlag == 1) && (gPlayer1ReadyFlag == 1) && (BattleScene_AdvanceCameraFrameCounterUntil(0x32) != 0)) {
                 BattleScene_ResetCameraFrameCounter();
                 if (Battle_GetActiveMonHp(sActivePokemon[sBattleScene.unk_00->unk_2C]) == 0) {
                     BattleScene_ClearPhaseFlag();
@@ -3175,7 +3175,7 @@ void BattleScene_PhaseAttackHitRecoil(CameraNode* arg0) {
                     Audio_PlayCommand(0x22, 0, 0);
                     sp24->unk_0C = sp24->unk_10;
                     sp20->unk_0C = sp20->unk_10;
-                    BattleAnim_QueueEffectList(0xA, D_84390204);
+                    BattleAnim_QueueEffectList(0xA, gCurrentPlayer);
                     sBattleScene.unk_00->unk_20 += 1;
                 } else {
                     sBattleScene.unk_00->unk_20 = 4;
@@ -3185,16 +3185,16 @@ void BattleScene_PhaseAttackHitRecoil(CameraNode* arg0) {
 
         case 3:
             BattleScene_SetCameraOwnerStandardShot(arg0, sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
-            if ((BattleScene_AdvanceCameraFrameCounterUntil(0x32) != 0) && (D_84390220 == 1) && (D_84390224 == 1)) {
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
+            if ((BattleScene_AdvanceCameraFrameCounterUntil(0x32) != 0) && (gPlayer0ReadyFlag == 1) && (gPlayer1ReadyFlag == 1)) {
                 sBattleScene.unk_00->unk_20 += 1;
                 BattleScene_ResetCameraFrameCounter();
             }
             break;
 
         case 4:
-            if (BattleScene_AdvanceOwnerAnimationAndClearFlags(D_84390200) == 0) {
+            if (BattleScene_AdvanceOwnerAnimationAndClearFlags(gOpponentPlayer) == 0) {
                 sBattleScene.unk_00->unk_20 += 1;
             }
             break;
@@ -3202,8 +3202,8 @@ void BattleScene_PhaseAttackHitRecoil(CameraNode* arg0) {
         case 5:
             BattleScene_ResetAnimationStep();
             BattleScene_SetCameraOwnerStandardShot(arg0, sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390224 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
+            gPlayer1ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[!sBattleScene.unk_00->unk_2C]);
             BattleScene_ResolveDisplayedHpCompletion(arg0);
             break;
     }
@@ -3215,13 +3215,13 @@ void BattleScene_PhaseCheckFaintedEndTurn(CameraNode* arg0) {
 
     switch (sBattleScene.unk_00->unk_20) {
         case 0:
-            BattleScene_CleanupParticipantEffectMode(D_84390204);
+            BattleScene_CleanupParticipantEffectMode(gCurrentPlayer);
             BattleAnim_CleanupEffects(2);
             sBattleScene.unk_00->unk_20 += 1;
             break;
 
         case 1:
-            Battle_ResetModelToIdleAnim(D_84390204);
+            Battle_ResetModelToIdleAnim(gCurrentPlayer);
             Audio_FadeAndClearStoredSounds();
             BattleAnim_CleanupEffects(1);
             BattleScene_CameraShotTargetClose(arg0, sActivePokemon[sBattleScene.unk_00->unk_2C]);
@@ -3233,10 +3233,10 @@ void BattleScene_PhaseCheckFaintedEndTurn(CameraNode* arg0) {
 
         case 2:
             BattleScene_CameraShotTargetClose(arg0, sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390220 = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
-            D_84390224 = 1;
+            gPlayer0ReadyFlag = BattleScene_AnimateDisplayedHpToRuntime(sActivePokemon[sBattleScene.unk_00->unk_2C]);
+            gPlayer1ReadyFlag = 1;
 
-            if ((D_84390220 == 1) && (D_84390224 == 1) && (BattleScene_AdvanceCameraFrameCounterUntil(0x32) != 0)) {
+            if ((gPlayer0ReadyFlag == 1) && (gPlayer1ReadyFlag == 1) && (BattleScene_AdvanceCameraFrameCounterUntil(0x32) != 0)) {
                 BattleScene_ResetCameraFrameCounter();
                 if (Battle_GetActiveMonHp(sActivePokemon[sBattleScene.unk_00->unk_2C]) == 0) {
                     BattleScene_ClearPhaseFlag();
@@ -3317,7 +3317,7 @@ void BattleScene_PhaseWithdrawFainted(CameraNode* arg0) {
                 temp_s0->sessionTeams->uniqueStatusFlags &= ~0x90;
                 Battle_LoadOwnerModelForSwitchIn(temp_s0);
                 BattleThumbnail_TickOwnerCameraFraming(temp_s0);
-                D_843900A8[sBattleScene.unk_00->unk_2C] = temp_s0->state.runtime.unk_0C;
+                gPlayerScaleFactors[sBattleScene.unk_00->unk_2C] = temp_s0->state.runtime.unk_0C;
                 BattleAnim_QueueEffectList3(3, temp_s0, temp_s0, 0xFF, 0xFF);
                 Audio_PlayCommand(2, 0, 0);
                 BattleScene_RebindParticipantToSide(temp_s0, sp34->unk_2C);
@@ -3416,7 +3416,7 @@ void BattleScene_PhaseWithdrawSwitch(CameraNode* arg0) {
                 temp_s0->sessionTeams->uniqueStatusFlags &= ~0x90;
                 Battle_LoadOwnerModelForSwitchIn(temp_s0);
                 BattleThumbnail_TickOwnerCameraFraming(temp_s0);
-                D_843900A8[BattleScene_GetParticipantSideIndex(temp_s0)] = temp_s0->state.runtime.unk_0C;
+                gPlayerScaleFactors[BattleScene_GetParticipantSideIndex(temp_s0)] = temp_s0->state.runtime.unk_0C;
                 Audio_PlayCommand(2, 0, 0);
                 BattleScene_RebindParticipantToSide(temp_s0, sp3C->unk_2C);
                 BattleScene_ResetCameraFrameCounter();

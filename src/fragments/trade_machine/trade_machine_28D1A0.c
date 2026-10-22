@@ -8,11 +8,11 @@
 #include "src/audio_sfx.h"
 #include "src/memory.h"
 
-static unk_D_82F20A10 D_82F20A10;
-static s16 D_82F20A38;
+static TradeInfoBoxState gTradeInfoBoxState;
+static s16 gResultOptionIndex;
 
-void Trade_OpenInfoBox(unk_D_82F144D0* arg0, u8* arg1, s16 arg2, s16 arg3) {
-    unk_D_82F20A10* ptr = &D_82F20A10;
+void Trade_OpenInfoBox(PickerState* arg0, u8* arg1, s16 arg2, s16 arg3) {
+    TradeInfoBoxState* ptr = &gTradeInfoBoxState;
 
     main_pool_push_state('BBRD');
 
@@ -35,7 +35,7 @@ void Trade_OpenInfoBox(unk_D_82F144D0* arg0, u8* arg1, s16 arg2, s16 arg3) {
     Audio_PlaySoundEffectById(SFX_PANEL_OPEN);
 }
 
-void Trade_UpdateInfoBoxOpenIn(unk_D_82F20A10* arg0) {
+void Trade_UpdateInfoBoxOpenIn(TradeInfoBoxState* arg0) {
     arg0->unk_10--;
     arg0->unk_04 = 0x38 - (((0x38 - arg0->unk_08) * arg0->unk_10) / 6);
     arg0->unk_06 = 0x70 - (((0x70 - arg0->unk_0A) * arg0->unk_10) / 6);
@@ -44,12 +44,12 @@ void Trade_UpdateInfoBoxOpenIn(unk_D_82F20A10* arg0) {
     if (arg0->unk_10 <= 0) {
         arg0->unk_00 = 2;
         arg0->unk_02 = 4;
-        D_82F20A38 = 0;
+        gResultOptionIndex = 0;
     }
 }
 
-void Trade_UpdateInfoBoxChoose(unk_D_82F20A10* arg0) {
-    static Controller** D_82F13C10[] = {
+void Trade_UpdateInfoBoxChoose(TradeInfoBoxState* arg0) {
+    static Controller** gTradeControllerList[] = {
         &gPlayer1Controller,
         &gPlayer1Controller,
         &gPlayer1Controller,
@@ -61,25 +61,25 @@ void Trade_UpdateInfoBoxChoose(unk_D_82F20A10* arg0) {
     Controller* temp_a3;
 
     arg0->unk_1C = PokeIcon_RenderPreview(arg0->unk_24);
-    temp_a3 = *D_82F13C10[arg0->unk_18->unk_000E];
+    temp_a3 = *gTradeControllerList[arg0->unk_18->unk_000E];
     var_t0 = 0;
-    tmp = D_82F20A38;
+    tmp = gResultOptionIndex;
 
     if (temp_a3->buttonPressed & 0x200) {
-        D_82F20A38--;
-        if (D_82F20A38 < 0) {
-            D_82F20A38 = 0;
+        gResultOptionIndex--;
+        if (gResultOptionIndex < 0) {
+            gResultOptionIndex = 0;
         }
     }
 
     if (temp_a3->buttonPressed & 0x100) {
-        D_82F20A38++;
-        if (D_82F20A38 >= 2) {
-            D_82F20A38 = 1;
+        gResultOptionIndex++;
+        if (gResultOptionIndex >= 2) {
+            gResultOptionIndex = 1;
         }
     }
 
-    if (D_82F20A38 != tmp) {
+    if (gResultOptionIndex != tmp) {
         Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
         var_t0 = 0;
     }
@@ -88,7 +88,7 @@ void Trade_UpdateInfoBoxChoose(unk_D_82F20A10* arg0) {
         var_t0 = 1;
     } else if (temp_a3->buttonPressed & 0x4000) {
         var_t0 = 1;
-        D_82F20A38 = 1;
+        gResultOptionIndex = 1;
     }
 
     if (var_t0 != 0) {
@@ -96,7 +96,7 @@ void Trade_UpdateInfoBoxChoose(unk_D_82F20A10* arg0) {
         arg0->unk_02 = -1;
         arg0->unk_10 = 6;
         arg0->unk_1C = 0;
-        if (D_82F20A38 == 0) {
+        if (gResultOptionIndex == 0) {
             arg0->unk_18->unk_0020 = 1;
             Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
         } else {
@@ -106,7 +106,7 @@ void Trade_UpdateInfoBoxChoose(unk_D_82F20A10* arg0) {
     }
 }
 
-void Trade_UpdateInfoBoxCloseOut(unk_D_82F20A10* arg0) {
+void Trade_UpdateInfoBoxCloseOut(TradeInfoBoxState* arg0) {
     arg0->unk_10--;
     arg0->unk_04 = arg0->unk_08 - (((arg0->unk_08 - 0x38) * arg0->unk_10) / 6);
     arg0->unk_06 = arg0->unk_0A - (((arg0->unk_0A - 0x70) * arg0->unk_10) / 6);
@@ -141,7 +141,7 @@ void Trade_DrawFilledFrame(s16 arg0, s16 arg1, s16 arg2, s16 arg3, u8 arg4, u8 a
     Gfx_DrawTexturedRectClipped(arg0 + 8, (arg1 + arg3) - 8, arg2 - 0x10, 8, 0, 0, 0, 0x400, 0);
     Gfx_DrawTexturedRectClipped((arg0 + arg2) - 8, arg1 + 8, 8, arg3 - 0x10, 0, 0, 0x400, 0, 0);
 
-    gSPDisplayList(gDisplayListHead++, D_8006F4C0);
+    gSPDisplayList(gDisplayListHead++, gDL_FillCycle);
 
     Trade_DrawSolidFillRect(arg0 + 8, arg1 + 8, arg2 - 0x10, arg3 - 0x10, arg4, arg5, arg6);
 
@@ -170,7 +170,7 @@ void Trade_DrawMovingSheen(s16 arg0, s16 arg1, s32 arg2) {
 }
 
 void Trade_DrawNumberTwoDigits(s16 arg0, s16 arg1, s16 arg2) {
-    static u8* D_82F13C20[] = {
+    static u8* gDigitSpriteTable[] = {
         D_302F6E0, D_302F740, D_302F7A0, D_302F800, D_302F860, D_302F8C0, D_302F928, D_302F988, D_302F9E8, D_302FA48,
     };
 
@@ -186,7 +186,7 @@ void Trade_DrawNumberTwoDigits(s16 arg0, s16 arg1, s16 arg2) {
         s32 temp_lo = arg2 / var_s0;
 
         if ((temp_lo != 0) || (var_s4 != 0) || (i == 1)) {
-            Gfx_DrawTextureIa8(arg0, arg1, 8, 0xC, D_82F13C20[temp_lo], 8, 0);
+            Gfx_DrawTextureIa8(arg0, arg1, 8, 0xC, gDigitSpriteTable[temp_lo], 8, 0);
             var_s4 = 1;
         }
 
@@ -205,14 +205,14 @@ s32 Trade_IsMoveInvalid(s32 arg0) {
     return var_v1;
 }
 
-void Trade_DrawInfoBox(unk_D_82F20A10* arg0) {
+void Trade_DrawInfoBox(TradeInfoBoxState* arg0) {
     static Color_RGBA8 D_82F13C48 = { 0xFF, 0xFF, 0xFF, 0xFF };
-    static Color_RGB8 D_82F13C4C = { 0x82, 0x1E, 0x1E };
+    static Color_RGB8 gColorRedDarkRGB8 = { 0x82, 0x1E, 0x1E };
     static Color_RGB8 D_82F13C50 = { 0x96, 0x64, 0x1E };
     static s16 D_82F13C54[] = { 0x122, 0x136, 0x1C, 8 };
     static s16 D_82F13C5C[] = { 0xD3, 0xED, 0x107, 0xED };
     static s16 D_82F13C64[] = { 0x15E, 0x1BA };
-    static u8* D_82F13C68[] = {
+    static u8* gMoveIconTextureTable[] = {
         D_303E330, D_303FC30, D_3040590, D_3040270, D_303F910, D_303F5F0, D_3040590, D_303FF50,
         D_3040BD0, D_303E650, D_303E970, D_303EFB0, D_303F2D0, D_30408B0, D_303EC90, D_3040EF0,
     };
@@ -238,7 +238,7 @@ void Trade_DrawInfoBox(unk_D_82F20A10* arg0) {
 
     if ((arg0->unk_0C == 0x210) && (arg0->unk_0E == 0x148)) {
         if (arg0->unk_18->unk_0010 == 0) {
-            var_v0 = &D_82F13C4C;
+            var_v0 = &gColorRedDarkRGB8;
         } else {
             var_v0 = &D_82F13C50;
         }
@@ -253,7 +253,7 @@ void Trade_DrawInfoBox(unk_D_82F20A10* arg0) {
         Trade_DrawFilledFrame(arg0->unk_04, arg0->unk_06 + 0x124, 0x210, 0x24, 0x28, 0x28, 0x64);
         BattleHud_DrawHpBarTexture(arg0->unk_04 + 0x140, arg0->unk_06 + 0x5A, 0x94, sp11C->unk_02, sp11C->unk_26);
 
-        gSPDisplayList(gDisplayListHead++, D_8006F4E0);
+        gSPDisplayList(gDisplayListHead++, gDL_CopyDecal);
 
         Gfx_DrawTextureRgba16(arg0->unk_04 + 0xF8, arg0->unk_06 + 0xD0, 0x1C, 0x1A, D_302DE68, 0x1C, 0x200000);
         Gfx_DrawTextureRgba16(arg0->unk_04 + 0xE2, arg0->unk_06 + 0xEA, 0x1C, 0x1A, D_302E9C8, 0x1C, 0x200000);
@@ -267,7 +267,7 @@ void Trade_DrawInfoBox(unk_D_82F20A10* arg0) {
 
             if (Trade_IsMoveInvalid(sp11C->unk_09[i]) == 0) {
                 Gfx_DrawTextureRgba16(D_82F13C54[i] + arg0->unk_04, D_82F13C5C[i] + arg0->unk_06, 0x14, 0x14,
-                              D_82F13C68[gMoveDisplayInfo[sp11C->unk_09[i] - 1].unk_01], 0x14, 0x200000);
+                              gMoveIconTextureTable[gMoveDisplayInfo[sp11C->unk_09[i] - 1].unk_01], 0x14, 0x200000);
             }
         }
 
@@ -301,10 +301,10 @@ void Trade_DrawInfoBox(unk_D_82F20A10* arg0) {
         Font_SetActive(0x10, 0);
         Font_Printf(arg0->unk_04 + 0x10, arg0->unk_06 + 6, sp11C->unk_30);
         Font_SetActive(0x10, 0);
-        Font_Printf(arg0->unk_04 + 0xA0, arg0->unk_06 + 6, "%s%d", Text_GetString(NULL, 0, D_82F13B74, 0x15),
+        Font_Printf(arg0->unk_04 + 0xA0, arg0->unk_06 + 6, "%s%d", Text_GetString(NULL, 0, gTradeMoveMenuStringsBank, 0x15),
                       sp11C->unk_24);
         Font_SetActive(8, 0);
-        Font_Printf(arg0->unk_04 + 0x12E, arg0->unk_06 + 8, "%s%03d", Text_GetString(NULL, 0, D_82F13B74, 0x16),
+        Font_Printf(arg0->unk_04 + 0x12E, arg0->unk_06 + 8, "%s%03d", Text_GetString(NULL, 0, gTradeMoveMenuStringsBank, 0x16),
                       sp11C->unk_00.unk_00);
         Font_SetActive(8, 0);
         Font_Printf(arg0->unk_04 + 0x19C, arg0->unk_06 + 8, Trade_GetSpeciesName(sp11C->unk_00.unk_00));
@@ -329,7 +329,7 @@ void Trade_DrawInfoBox(unk_D_82F20A10* arg0) {
 
         Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
         Font_SetActive(8, 0);
-        Font_Printf(arg0->unk_04 + 0x144, arg0->unk_06 + 0x44, Text_GetString(NULL, 0, D_82F13B74, 8));
+        Font_Printf(arg0->unk_04 + 0x144, arg0->unk_06 + 0x44, Text_GetString(NULL, 0, gTradeMoveMenuStringsBank, 8));
         Font_SetActive(8, 0);
         sprintf(sp94, "%d", sp11C->unk_26);
         Font_Printf((arg0->unk_04 - Font_MeasureTextExtent(0, 0, sp94)) + 0x1D0, arg0->unk_06 + 0x44, sp94);
@@ -403,8 +403,8 @@ void Trade_DrawInfoBox(unk_D_82F20A10* arg0) {
                     sp60[j] = Font_MeasureTextExtent(0, 0, sp8C[j]);
                 }
 
-                Trade_DrawSelectionCorners((D_82F13C64[D_82F20A38] + arg0->unk_04) - 8, arg0->unk_06 + 0x128,
-                              sp60[D_82F20A38] + 0x10, 0x1E);
+                Trade_DrawSelectionCorners((D_82F13C64[gResultOptionIndex] + arg0->unk_04) - 8, arg0->unk_06 + 0x128,
+                              sp60[gResultOptionIndex] + 0x10, 0x1E);
             }
         }
 
@@ -417,45 +417,45 @@ void Trade_DrawInfoBox(unk_D_82F20A10* arg0) {
 }
 
 void Trade_ResetInfoBox(void) {
-    D_82F20A10.unk_00 = 0;
-    D_82F20A10.unk_04 = 0;
-    D_82F20A10.unk_06 = 0;
-    D_82F20A10.unk_0C = 0;
-    D_82F20A10.unk_0E = 0;
-    D_82F20A10.unk_10 = 0;
-    D_82F20A10.unk_14 = NULL;
-    D_82F20A10.unk_18 = NULL;
-    D_82F20A10.unk_1C = 0;
-    D_82F20A10.unk_20 = NULL;
-    D_82F20A10.unk_24 = NULL;
+    gTradeInfoBoxState.unk_00 = 0;
+    gTradeInfoBoxState.unk_04 = 0;
+    gTradeInfoBoxState.unk_06 = 0;
+    gTradeInfoBoxState.unk_0C = 0;
+    gTradeInfoBoxState.unk_0E = 0;
+    gTradeInfoBoxState.unk_10 = 0;
+    gTradeInfoBoxState.unk_14 = NULL;
+    gTradeInfoBoxState.unk_18 = NULL;
+    gTradeInfoBoxState.unk_1C = 0;
+    gTradeInfoBoxState.unk_20 = NULL;
+    gTradeInfoBoxState.unk_24 = NULL;
 }
 
 void Trade_UpdateInfoBox(void) {
-    unk_D_82F20A10* ptr = &D_82F20A10;
+    TradeInfoBoxState* ptr = &gTradeInfoBoxState;
 
     if (ptr->unk_00) {
         switch (ptr->unk_00) {
             case 1:
-                Trade_UpdateInfoBoxOpenIn(&D_82F20A10);
+                Trade_UpdateInfoBoxOpenIn(&gTradeInfoBoxState);
                 break;
 
             case 2:
-                Trade_UpdateInfoBoxChoose(&D_82F20A10);
+                Trade_UpdateInfoBoxChoose(&gTradeInfoBoxState);
                 break;
 
             case 3:
-                Trade_UpdateInfoBoxCloseOut(&D_82F20A10);
+                Trade_UpdateInfoBoxCloseOut(&gTradeInfoBoxState);
                 break;
         }
     }
 }
 
 void Trade_DrawInfoBoxIfActive(void) {
-    if (D_82F20A10.unk_00 != 0) {
-        Trade_DrawInfoBox(&D_82F20A10);
+    if (gTradeInfoBoxState.unk_00 != 0) {
+        Trade_DrawInfoBox(&gTradeInfoBoxState);
     }
 }
 
 s32 Trade_GetInfoBoxState(void) {
-    return D_82F20A10.unk_00;
+    return gTradeInfoBoxState.unk_00;
 }

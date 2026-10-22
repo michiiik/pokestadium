@@ -15,89 +15,89 @@
 extern const char sStatusNames[7][4];
 extern const char sTypeNames[17][4];
 extern const char sMoveNames[166][8];
-extern const char D_8007BB50[];
-extern const char D_8007BB60[];
-extern const char D_8007BB70[];
-extern const char D_8007BB80[];
-extern const char D_8007BB94[];
-extern const char D_8007BBA4[];
-extern const char D_8007BBB0[];
-extern const char D_8007BBBC[];
-extern const char D_8007BBCC[];
-extern const char D_8007BBDC[];
-extern const char D_8007BBE8[];
-extern const char D_8007BBF4[];
-extern const char D_8007BC04[];
-extern const char D_8007BC14[];
-extern const char D_8007BC24[];
-extern const char D_8007BC30[];
-extern const char D_8007BC44[];
-extern const char D_8007BC58[];
-extern const char D_8007BC6C[];
-extern const char D_8007BC7C[];
-extern const char D_8007BC88[];
-extern const char D_8007BC98[];
-extern const char D_8007BCA8[];
-extern const char D_8007BCB8[];
-extern const char D_8007BCCC[];
-extern const char D_8007BCDC[];
-extern const char D_8007BCEC[];
-extern const char D_8007BD00[];
-extern const char D_8007BD10[];
-extern const char D_8007BD20[];
-extern const char D_8007BD34[];
-extern const char D_8007BD44[];
-extern const char D_8007BD54[];
-extern const char D_8007BD64[];
-extern const char D_8007BD70[];
-extern const char D_8007BD80[];
-extern const char D_8007BD8C[];
-extern const char D_8007BD9C[];
-extern const char D_8007BDAC[];
-extern const char D_8007BDB8[];
-extern const char D_8007BDC8[];
-extern const char D_8007BDD8[];
-extern const char D_8007BDE8[];
-extern const char D_8007BDF8[];
-extern const char D_8007BE04[];
-extern const char D_8007BE14[];
-extern const char D_8007BE24[];
-extern const char D_8007BE34[];
-extern const char D_8007BE40[];
-extern const char D_8007BE4C[];
-extern const char D_8007BE5C[];
-extern const char D_8007BE70[];
-extern const char D_8007BE80[];
-extern const char D_8007BE90[];
-extern const char D_8007BEA4[];
-extern const char D_8007BEB8[];
-extern const char D_8007BECC[];
-extern const char D_8007BEE0[];
-extern const char D_8007BEF4[];
-extern const char D_8007BEFC[];
-extern const char D_8007BF0C[];
-extern const char D_8007BF1C[];
-extern const char D_8007BF2C[];
-extern const char D_8007BF3C[];
-extern const char D_8007BF4C[];
-extern const char D_8007BF5C[];
-extern const char D_8007BF6C[];
-extern const char D_8007BF78[];
-extern const char D_8007BF8C[];
-extern const char D_8007BF9C[];
-extern const char D_8007BFAC[];
-extern const char D_8007BFC0[];
-extern const char D_8007BFD0[];
-extern const char D_8007BFE0[];
-extern const char D_8007BFF4[];
-extern const char D_8007C008[];
-extern const char D_8007C018[];
-extern const char D_8007C028[];
-extern const char D_8007C038[];
-extern const char D_8007C048[];
-extern const char D_8007C058[];
-extern const char D_8007C06C[];
-extern const char D_8007C080[];
+extern const char gItemNameMasterBall[];
+extern const char gItemNameUltraBall[];
+extern const char gItemNameGreatBall[];
+extern const char gItemNamePokeBall[];
+extern const char gItemNameTownMap[];
+extern const char gItemNameBicycle[];
+extern const char gItemNameSurfboard[];
+extern const char gItemNameSafariBall[];
+extern const char gItemNamePokedex[];
+extern const char gItemNameMoonStone[];
+extern const char gItemNameAntidote[];
+extern const char gItemNameBurnHeal[];
+extern const char gItemNameIceHeal[];
+extern const char gItemNameAwakening[];
+extern const char gItemNameParlyzHeal[];
+extern const char gItemNameFullRestore[];
+extern const char gItemNameMaxPotion[];
+extern const char gItemNameHyperPotion[];
+extern const char gItemNameSuperPotion[];
+extern const char gItemNamePotion[];
+extern const char gItemNameBoulderBadge[];
+extern const char gItemNameCascadeBadge[];
+extern const char gItemNameThunderBadge[];
+extern const char gItemNameRainbowBadge[];
+extern const char gItemNameSoulBadge[];
+extern const char gItemNameMarshBadge[];
+extern const char gItemNameVolcanoBadge[];
+extern const char gItemNameEarthBadge[];
+extern const char gItemNameEscapeRope[];
+extern const char gItemNameRepel[];
+extern const char gItemNameOldAmber[];
+extern const char gItemNameFireStone[];
+extern const char gItemNameThunderStone[];
+extern const char gItemNameWaterStone[];
+extern const char gItemNameHpUp[];
+extern const char gItemNameProtein[];
+extern const char gItemNameIron[];
+extern const char gItemNameCarbos[];
+extern const char gItemNameCalcium[];
+extern const char gItemNameRareCandy[];
+extern const char gItemNameDomeFossil[];
+extern const char gItemNameHelixFossil[];
+extern const char gItemNameSecretKey[];
+extern const char gItemNameUnknown[];
+extern const char gItemNameBikeVoucher[];
+extern const char gItemNameXAccuracy[];
+extern const char gItemNameLeafStone[];
+extern const char gItemNameCardKey[];
+extern const char gItemNameNugget[];
+extern const char gItemNamePpUpUnusedSlot[];
+extern const char gItemNamePokeDoll[];
+extern const char gItemNameFullHeal[];
+extern const char gItemNameRevive[];
+extern const char gItemNameMaxRevive[];
+extern const char gItemNameGuardSpec[];
+extern const char gItemNameSuperRepel[];
+extern const char gItemNameMaxRepel[];
+extern const char gItemNameDireHit[];
+extern const char gItemNameCoin[];
+extern const char gItemNameFreshWater[];
+extern const char gItemNameSodaPop[];
+extern const char gItemNameLemonade[];
+extern const char gItemNameSSTicket[];
+extern const char gItemNameGoldTeeth[];
+extern const char gItemNameXAttack[];
+extern const char gItemNameXDefend[];
+extern const char gItemNameXSpeed[];
+extern const char gItemNameXSpecial[];
+extern const char gItemNameCoinCase[];
+extern const char gItemNameOaksParcel[];
+extern const char gItemNameItemfinder[];
+extern const char gItemNameSilphScope[];
+extern const char gItemNamePokeFlute[];
+extern const char gItemNameLiftKey[];
+extern const char gItemNameExpAll[];
+extern const char gItemNameOldRod[];
+extern const char gItemNameGoodRod[];
+extern const char gItemNameSuperRod[];
+extern const char gItemNamePpUp[];
+extern const char gItemNameEther[];
+extern const char gItemNameMaxEther[];
+extern const char gItemNameElixir[];
+extern const char gItemNameMaxElixir[];
 
 SpeciesData gSpeciesData[152] = {
     { 1, 45, 49, 49, 45, 65, 22, 3, 45, 64, {33, 45, 0, 0}, 3, {0xA4, 0x03, 0x38, 0xC0, 0x03, 0x08, 0x06}, 0 },
@@ -254,7 +254,7 @@ SpeciesData gSpeciesData[152] = {
     { 152, 100, 100, 100, 100, 100, 2, 4, 45, 64, {1, 0, 0, 0}, 3, {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}, 0xFF },
 };
 
-unk_D_80071D88 sStatusDisplayInfo[8] = {
+TypeColorEntry sStatusDisplayInfo[8] = {
     { NULL, { 0x00, 0x00, 0x00, 0x00 } },
     { (char*) sStatusNames[0], { 0xFF, 0xFF, 0xFF, 0xFF } },
     { (char*) sStatusNames[1], { 0x4D, 0x4D, 0x4D, 0xFF } },
@@ -265,7 +265,7 @@ unk_D_80071D88 sStatusDisplayInfo[8] = {
     { (char*) sStatusNames[6], { 0xFF, 0xFF, 0x00, 0xFF } },
 };
 
-unk_D_80071D88 D_80071D88[17] = {
+TypeColorEntry D_80071D88[17] = {
     { (char*) sTypeNames[0], { 0xF0, 0xF0, 0xF0, 0xFF } },
     { (char*) sTypeNames[1], { 0xF0, 0x96, 0x32, 0xFF } },
     { (char*) sTypeNames[2], { 0x50, 0x96, 0xF0, 0xFF } },
@@ -535,31 +535,31 @@ MoveData gMoveData[165] = {
     {165, 48, 50, 0, 0xFF, 10},
 };
 
-char* D_80072EE0[84] = {
-    (char*) D_8007BB50, (char*) D_8007BB60, (char*) D_8007BB70, (char*) D_8007BB80,
-    (char*) D_8007BB94, (char*) D_8007BBA4, (char*) D_8007BBB0, (char*) D_8007BBBC,
-    (char*) D_8007BBCC, (char*) D_8007BBDC, (char*) D_8007BBE8, (char*) D_8007BBF4,
-    (char*) D_8007BC04, (char*) D_8007BC14, (char*) D_8007BC24, (char*) D_8007BC30,
-    (char*) D_8007BC44, (char*) D_8007BC58, (char*) D_8007BC6C, (char*) D_8007BC7C,
-    (char*) D_8007BC88, (char*) D_8007BC98, (char*) D_8007BCA8, (char*) D_8007BCB8,
-    (char*) D_8007BCCC, (char*) D_8007BCDC, (char*) D_8007BCEC, (char*) D_8007BD00,
-    (char*) D_8007BD10, (char*) D_8007BD20, (char*) D_8007BD34, (char*) D_8007BD44,
-    (char*) D_8007BD54, (char*) D_8007BD64, (char*) D_8007BD70, (char*) D_8007BD80,
-    (char*) D_8007BD8C, (char*) D_8007BD9C, (char*) D_8007BDAC, (char*) D_8007BDB8,
-    (char*) D_8007BDC8, (char*) D_8007BDD8, (char*) D_8007BDE8, (char*) D_8007BDF8,
-    (char*) D_8007BE04, (char*) D_8007BE14, (char*) D_8007BE24, (char*) D_8007BE34,
-    (char*) D_8007BE40, (char*) D_8007BE4C, (char*) D_8007BE5C, (char*) D_8007BE70,
-    (char*) D_8007BE80, (char*) D_8007BE90, (char*) D_8007BEA4, (char*) D_8007BEB8,
-    (char*) D_8007BECC, (char*) D_8007BEE0, (char*) D_8007BEF4, (char*) D_8007BEFC,
-    (char*) D_8007BF0C, (char*) D_8007BF1C, (char*) D_8007BF2C, (char*) D_8007BF3C,
-    (char*) D_8007BF4C, (char*) D_8007BF5C, (char*) D_8007BF6C, (char*) D_8007BF78,
-    (char*) D_8007BF8C, (char*) D_8007BF9C, (char*) D_8007BFAC, (char*) D_8007BFC0,
-    (char*) D_8007BFD0, (char*) D_8007BFE0, (char*) D_8007BFF4, (char*) D_8007C008,
-    (char*) D_8007C018, (char*) D_8007C028, (char*) D_8007C038, (char*) D_8007C048,
-    (char*) D_8007C058, (char*) D_8007C06C, (char*) D_8007C080, NULL,
+char* gItemNames[84] = {
+    (char*) gItemNameMasterBall, (char*) gItemNameUltraBall, (char*) gItemNameGreatBall, (char*) gItemNamePokeBall,
+    (char*) gItemNameTownMap, (char*) gItemNameBicycle, (char*) gItemNameSurfboard, (char*) gItemNameSafariBall,
+    (char*) gItemNamePokedex, (char*) gItemNameMoonStone, (char*) gItemNameAntidote, (char*) gItemNameBurnHeal,
+    (char*) gItemNameIceHeal, (char*) gItemNameAwakening, (char*) gItemNameParlyzHeal, (char*) gItemNameFullRestore,
+    (char*) gItemNameMaxPotion, (char*) gItemNameHyperPotion, (char*) gItemNameSuperPotion, (char*) gItemNamePotion,
+    (char*) gItemNameBoulderBadge, (char*) gItemNameCascadeBadge, (char*) gItemNameThunderBadge, (char*) gItemNameRainbowBadge,
+    (char*) gItemNameSoulBadge, (char*) gItemNameMarshBadge, (char*) gItemNameVolcanoBadge, (char*) gItemNameEarthBadge,
+    (char*) gItemNameEscapeRope, (char*) gItemNameRepel, (char*) gItemNameOldAmber, (char*) gItemNameFireStone,
+    (char*) gItemNameThunderStone, (char*) gItemNameWaterStone, (char*) gItemNameHpUp, (char*) gItemNameProtein,
+    (char*) gItemNameIron, (char*) gItemNameCarbos, (char*) gItemNameCalcium, (char*) gItemNameRareCandy,
+    (char*) gItemNameDomeFossil, (char*) gItemNameHelixFossil, (char*) gItemNameSecretKey, (char*) gItemNameUnknown,
+    (char*) gItemNameBikeVoucher, (char*) gItemNameXAccuracy, (char*) gItemNameLeafStone, (char*) gItemNameCardKey,
+    (char*) gItemNameNugget, (char*) gItemNamePpUpUnusedSlot, (char*) gItemNamePokeDoll, (char*) gItemNameFullHeal,
+    (char*) gItemNameRevive, (char*) gItemNameMaxRevive, (char*) gItemNameGuardSpec, (char*) gItemNameSuperRepel,
+    (char*) gItemNameMaxRepel, (char*) gItemNameDireHit, (char*) gItemNameCoin, (char*) gItemNameFreshWater,
+    (char*) gItemNameSodaPop, (char*) gItemNameLemonade, (char*) gItemNameSSTicket, (char*) gItemNameGoldTeeth,
+    (char*) gItemNameXAttack, (char*) gItemNameXDefend, (char*) gItemNameXSpeed, (char*) gItemNameXSpecial,
+    (char*) gItemNameCoinCase, (char*) gItemNameOaksParcel, (char*) gItemNameItemfinder, (char*) gItemNameSilphScope,
+    (char*) gItemNamePokeFlute, (char*) gItemNameLiftKey, (char*) gItemNameExpAll, (char*) gItemNameOldRod,
+    (char*) gItemNameGoodRod, (char*) gItemNameSuperRod, (char*) gItemNamePpUp, (char*) gItemNameEther,
+    (char*) gItemNameMaxEther, (char*) gItemNameElixir, (char*) gItemNameMaxElixir, NULL,
 };
 
-s8 D_80073030[0x100] = {
+s8 gGen1DecodeTable[0x100] = {
     32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
     32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
     32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
@@ -584,7 +584,7 @@ s8 D_80073030[0x100] = {
     54, 55, 56, 57,
 };
 
-u8 D_80073130[0x100] = {
+u8 gGen1EncodeTable[0x100] = {
 #if defined(VERSION_US_REV2)
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -636,7 +636,7 @@ u8 D_80073130[0x100] = {
 #else
 // The Japanese .data (EUC-JP move comments and name tables) is assembled from
 // asm/jp/data/gb_data.data.s; these are the tables the code below reads.
-extern char* D_80072EE0[84];
+extern char* gItemNames[84];
 // The trainer name "トレーナー" substituted for the Game Boy name code 0x5D.
 // D_80076FD0_jp in the .data blob points here.
 const char D_80080CC0_jp[] = "トレーナー";
@@ -760,7 +760,7 @@ char* Text_UntranscodeName(char* arg0, char* arg1) {
             memcpy(arg0, temp_s1, strlen(temp_s1) + 1);
             arg0 += strlen(temp_s1);
         } else {
-            *arg0++ = D_80073030[*arg1];
+            *arg0++ = gGen1DecodeTable[*arg1];
         }
         arg1++;
     }
@@ -783,7 +783,7 @@ char* Text_TranscodeName(char* arg0, char* arg1) {
         *arg0++ = ']';
     } else {
         while (*sp18 != 0) {
-            *arg0++ = D_80073130[*sp18++];
+            *arg0++ = gGen1EncodeTable[*sp18++];
         }
     }
 
@@ -820,20 +820,20 @@ char* Text_CopySpeciesName(char* arg0, s32 arg1) {
 
 char* Text_GetTmHmName(s32 arg0, char* arg1) {
     // "ひでんマシン%02d"
-    static const char D_0007CCA0[] = { 164, 210, 164, 199, 164, 243, 165, 222, 165, 183,
+    static const char gHiddenMachineFormat[] = { 164, 210, 164, 199, 164, 243, 165, 222, 165, 183,
                                        165, 243, 37, 48, 50, 100, 0, 0, 0, 0 };
     // "わざマシン%02d"
-    static const char D_0007CCB4[] = { 164, 239, 164, 182, 165, 222, 165, 183,
+    static const char gMoveMachineFormat[] = { 164, 239, 164, 182, 165, 222, 165, 183,
                                        165, 243, 37, 48, 50, 100, 0, 0 };
 
     if ((arg0 > 0) && (arg0 < 84)) {
-        HAL_Strcpy(arg1, D_80072EE0[arg0 - 1]);
+        HAL_Strcpy(arg1, gItemNames[arg0 - 1]);
     } else if ((arg0 >= 196) && (arg0 < 201)) {
-        sprintf(arg1, D_0007CCA0, arg0 - 195, arg0);
+        sprintf(arg1, gHiddenMachineFormat, arg0 - 195, arg0);
     } else if ((arg0 >= 201) && (arg0 < 0xFF)) {
-        sprintf(arg1, D_0007CCB4, arg0 - 200, arg0);
+        sprintf(arg1, gMoveMachineFormat, arg0 - 200, arg0);
     } else {
-        HAL_Strcpy(arg1, D_80072EE0[6]);
+        HAL_Strcpy(arg1, gItemNames[6]);
     }
 
     return arg1;
@@ -1058,7 +1058,7 @@ u32 Pokemon_ExpForLevel(s32 arg0, u16 arg1) {
 #if defined(VERSION_JP)
 // The Japanese gb_data object continues with pokemon_stats.c's functions from
 // Pokemon_LevelFromExp through Deck_WriteEntries: Pokemon_LevelFromExp starts at ROM 0x22F18
-// and the packed table D_80073230 at 0x77DD4, neither 16-byte aligned, so they cannot start an
+// and the packed table gTmHmMoveIdTable at 0x77DD4, neither 16-byte aligned, so they cannot start an
 // object. The JP pokemon_stats object starts at GbSave_HasPlayerNameMarker (ROM 0x238B0), and
 // its .rodata (the cartridge title strings) at 0x81930.
 //@src/pokemon_stats.c

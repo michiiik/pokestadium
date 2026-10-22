@@ -2,20 +2,20 @@
 #include "src/input.h"
 #include "src/controller.h"
 
-u16 D_87B000C0 = 0;
-u16 D_87B000C4 = 0x0069;
-u8 D_87B000C8 = 0;
-u8 D_87B000CC = 0;
-u8 D_87B000D0 = 0;
-u8 D_87B000D4 = 0;
+u16 gDrowzeeFrameCounter = 0;
+u16 gDrowzeeStartCountdown = 0x0069;
+u8 gDrowzeeGameIsOver = 0;
+u8 gDrowzeePauseTriggered = 0;
+u8 gDrowzeeTutorialPage = 0;
+u8 gDrowzeeWinnerCount = 0;
 
-FontContext* D_87B000E0;
-unk_D_86002F30* D_87B000E4;
-unk_D_86002F34* D_87B000E8;
-CameraNode* D_87B000EC;
-s16 D_87B000F0;
-s16 D_87B000F2;
-s16 D_87B000F4;
+FontContext* gCurrentTextObject;
+ModelData* gDrowzeeModelTemp;
+ShadowContextNode* gDrowzeeStageRoot;
+CameraNode* gDrowzeeCamera;
+s16 gDrowzeeCamDist;
+s16 gDrowzeeCamRotationY;
+s16 gDrowzeeCamDistance;
 
 void MiniGame_ReadInputs(void) {
     Cont_StartReadInputs();

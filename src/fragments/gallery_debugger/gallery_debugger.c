@@ -8,28 +8,28 @@
 #include "src/memory.h"
 #include "src/stage_loader.h"
 
-typedef struct unk_D_839006B0 {
+typedef struct GalleryBlockEntry {
     /* 0x00 */ BattleMon unk_00;
     /* 0x54 */ char unk54[0x38];
-} unk_D_839006B0; // size = 0x8C
+} GalleryBlockEntry; // size = 0x8C
 
-typedef struct unk_D_83902700 {
+typedef struct GalleryMenuState {
     /* 0x00 */ s32 unk_00;
     /* 0x04 */ char unk04[0x70];
-} unk_D_83902700; // size >= 0x74
+} GalleryMenuState; // size >= 0x74
 
-static unk_D_839006B0 D_839006B0[37];
-static unk_D_839006B0 D_83901AF0[22];
-static void* D_839026F8;
-static s32 D_839026FC;
-static unk_D_83902700 D_83902700;
-static s32 D_83902774;
+static GalleryBlockEntry gGalleryLoadData[37];
+static GalleryBlockEntry gGallerySaveData[22];
+static void* gGalleryBackgroundTexture;
+static s32 gGalleryState;
+static GalleryMenuState gGalleryMenuState;
+static s32 gGalleryPfsError;
 
-static Gfx D_83900630[] = {
+static Gfx gGalleryGfxList0[] = {
     gsSPEndDisplayList(),
 };
 
-static Gfx D_83900638[] = {
+static Gfx gGalleryGfxList1[] = {
     gsSPEndDisplayList(),
 };
 
@@ -45,16 +45,16 @@ void GalleryDebugger_LoadControllerPak(void) {
 void GalleryDebugger_LoadDeckEntries(void) {
     s32 i;
 
-    D_839026FC = 0;
-    D_83902700.unk_00 = 0;
+    gGalleryState = 0;
+    gGalleryMenuState.unk_00 = 0;
     Save_EnsureBankLoaded(2);
 
     for (i = 0; i < 36; i++) {
-        Deck_ReadSaveEntry(0x16, 0, i, &D_839006B0[i]);
+        Deck_ReadSaveEntry(0x16, 0, i, &gGalleryLoadData[i]);
     }
 
     for (i = 0; i < 21; i++) {
-        Deck_ReadSaveEntry(0x17, 0, i, &D_83901AF0[i]);
+        Deck_ReadSaveEntry(0x17, 0, i, &gGallerySaveData[i]);
     }
 
     func_83900020();
@@ -64,11 +64,11 @@ void GalleryDebugger_SaveDeckEntries(void) {
     s32 i;
 
     for (i = 0; i < 36; i++) {
-        Save_WriteTypedRecord(0x16, 0, i, &D_839006B0[i]);
+        Save_WriteTypedRecord(0x16, 0, i, &gGalleryLoadData[i]);
     }
 
     for (i = 0; i < 21; i++) {
-        Save_WriteTypedRecord(0x17, 0, i, &D_83901AF0[i]);
+        Save_WriteTypedRecord(0x17, 0, i, &gGallerySaveData[i]);
     }
 
     Save_CommitBankRecords(2);
@@ -76,7 +76,7 @@ void GalleryDebugger_SaveDeckEntries(void) {
 }
 
 void GalleryDebugger_DrawMenu(void) {
-    static char* D_83900640[] = { "Load Controller Pak", "Save Controller Pak", "Quit" };
+    static char* gGalleryMenuOptions[] = { "Load Controller Pak", "Save Controller Pak", "Quit" };
 
     s32 i;
     s32 sp30;
@@ -90,49 +90,49 @@ void GalleryDebugger_DrawMenu(void) {
 
     for (i = 0; i < 3; i++) {
         s32 tmp = i * 0x16;
-        if (i != D_83902700.unk_00) {
+        if (i != gGalleryMenuState.unk_00) {
             Gfx_SetEnvColor(0xFF, 0xFF, 0xFF, 0xFF);
         } else {
             Gfx_SetEnvColor(0xFF, 0xFF, 0, 0xFF);
         }
-        Font_Printf(0x78, 0x82 + tmp, D_83900640[i]);
+        Font_Printf(0x78, 0x82 + tmp, gGalleryMenuOptions[i]);
     }
 
-    Font_Printf(sp30, 0xC8, "PFS ERROR : %d", D_83902774);
+    Font_Printf(sp30, 0xC8, "PFS ERROR : %d", gGalleryPfsError);
     Font_EndTexturedTextRendering();
 }
 
 void GalleryDebugger_DrawFrame(void) {
     BgStage_DrawFrame();
-    Gfx_DrawTiledRgba16Image(D_839026F8);
+    Gfx_DrawTiledRgba16Image(gGalleryBackgroundTexture);
     GalleryDebugger_DrawMenu();
     BgStage_AdvanceFrame();
 }
 
 s32 GalleryDebugger_HandleMenuInput(void) {
     s32 var_a2 = 0;
-    s32 temp_a1 = D_83902700.unk_00;
+    s32 temp_a1 = gGalleryMenuState.unk_00;
 
     if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DUP)) {
-        D_83902700.unk_00--;
-        if (D_83902700.unk_00 < 0) {
-            D_83902700.unk_00 = 0;
+        gGalleryMenuState.unk_00--;
+        if (gGalleryMenuState.unk_00 < 0) {
+            gGalleryMenuState.unk_00 = 0;
         }
     }
 
     if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DDOWN)) {
-        D_83902700.unk_00++;
-        if (D_83902700.unk_00 >= 3) {
-            D_83902700.unk_00 = 2;
+        gGalleryMenuState.unk_00++;
+        if (gGalleryMenuState.unk_00 >= 3) {
+            gGalleryMenuState.unk_00 = 2;
         }
     }
 
-    if (temp_a1 != D_83902700.unk_00) {
-        D_83902774 = 0;
+    if (temp_a1 != gGalleryMenuState.unk_00) {
+        gGalleryPfsError = 0;
     }
 
     if (BTN_IS_PRESSED(gPlayer1Controller, BTN_A)) {
-        switch (D_83902700.unk_00) {
+        switch (gGalleryMenuState.unk_00) {
             case 0:
                 GalleryDebugger_LoadControllerPak();
                 var_a2 = 0;
@@ -155,16 +155,16 @@ s32 GalleryDebugger_HandleMenuInput(void) {
 s32 GalleryDebugger_UpdateFadeState(void) {
     s32 sp1C = 1;
 
-    switch (D_839026FC) {
+    switch (gGalleryState) {
         case 0:
             if (StageContext_GetFadeMode() == 0) {
-                D_839026FC = 1;
+                gGalleryState = 1;
             }
             break;
 
         case 1:
             if (GalleryDebugger_HandleMenuInput() != 0) {
-                D_839026FC = 2;
+                gGalleryState = 2;
                 StageFade_StartFromTransparent(0xF);
             }
             break;
@@ -202,7 +202,7 @@ s32 GalleryDebugger_Main(s32 arg0, s32 arg1) {
     Font_Init(0x18, 0);
     ASSET_LOAD(D_1000000, common_menu1_ui, 0);
     ASSET_LOAD(D_3000000, gallery_ui, 0);
-    D_839026F8 = BinArchive_GetFile(ASSET_LOAD2(backgrounds, 1, 1), 0x14);
+    gGalleryBackgroundTexture = BinArchive_GetFile(ASSET_LOAD2(backgrounds, 1, 1), 0x14);
     GalleryDebugger_LoadDeckEntries();
     StageContext_Activate(sp24);
     GalleryDebugger_MenuLoop();

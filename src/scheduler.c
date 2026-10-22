@@ -3,7 +3,7 @@
 #include "src/DDC0.h"
 #include "src/profiler.h"
 
-unk_D_800A62E0 D_800A62E0;
+unk_D_800A62E0 gRspTaskManager;
 
 void Sched_ResetTaskState(UnkStruct80001380* arg0) {
     osWritebackDCacheAll();
@@ -145,25 +145,25 @@ s32 Sched_TryReceiveClientQueue(UnkStruct80083CA0_2* arg0) {
 }
 
 void Sched_PromotePendingTasks(void) {
-    if ((D_800A62E0.unk_A18 == NULL) && (D_800A62E0.unk_A20 != NULL)) {
-        D_800A62E0.unk_A18 = D_800A62E0.unk_A20;
-        D_800A62E0.unk_A20 = NULL;
+    if ((gRspTaskManager.unk_A18 == NULL) && (gRspTaskManager.unk_A20 != NULL)) {
+        gRspTaskManager.unk_A18 = gRspTaskManager.unk_A20;
+        gRspTaskManager.unk_A20 = NULL;
     }
 
-    if ((D_800A62E0.unk_A1C == NULL) && (D_800A62E0.unk_A24 != NULL)) {
-        D_800A62E0.unk_A1C = D_800A62E0.unk_A24;
-        D_800A62E0.unk_A24 = NULL;
+    if ((gRspTaskManager.unk_A1C == NULL) && (gRspTaskManager.unk_A24 != NULL)) {
+        gRspTaskManager.unk_A1C = gRspTaskManager.unk_A24;
+        gRspTaskManager.unk_A24 = NULL;
     }
 }
 
-void func_80004DB4(void) {
+void Sched_NoOp(void) {
 }
 
 void Sched_NotifyClients(u32 arg0) {
-    unk_D_800AA660* var_s0 = D_800A62E0.unk_A10;
+    GbEmuState* var_s0 = gRspTaskManager.unk_A10;
 
     while (var_s0 != NULL) {
-        if (D_800A62E0.unk_A38 == 0) {
+        if (gRspTaskManager.unk_A38 == 0) {
             if (var_s0->unk_01DC != 2) {
                 osSendMesg(&var_s0->queue1, arg0, 0);
             }
@@ -184,23 +184,23 @@ UnkStruct80001380* Sched_TryStartTask(UnkStruct80001380* arg0) {
 }
 
 void Sched_StartPendingTask(void) {
-    if (D_800A62E0.unk_A14 == NULL) {
-        D_800A62E0.unk_A14 = Sched_TryStartTask(D_800A62E0.unk_A1C);
+    if (gRspTaskManager.unk_A14 == NULL) {
+        gRspTaskManager.unk_A14 = Sched_TryStartTask(gRspTaskManager.unk_A1C);
     }
 }
 
 s32 Sched_TryYieldActiveTask(void) {
     s32 ret = 0;
 
-    if (D_800A62E0.unk_A14 != NULL) {
-        ret = Sched_RequestTaskYield(D_800A62E0.unk_A14);
+    if (gRspTaskManager.unk_A14 != NULL) {
+        ret = Sched_RequestTaskYield(gRspTaskManager.unk_A14);
     }
 
     return ret;
 }
 
 void Sched_HandlePreNMI(void) {
-    unk_D_800AA660* var_s0 = D_800A62E0.unk_A10;
+    GbEmuState* var_s0 = gRspTaskManager.unk_A10;
 
     while (var_s0 != NULL) {
         if (var_s0->unk_01DC == 0) {
@@ -208,7 +208,7 @@ void Sched_HandlePreNMI(void) {
         }
         var_s0 = var_s0->unk_01D8;
     }
-    D_800A62E0.unk_A38 = 1;
+    gRspTaskManager.unk_A38 = 1;
     Audio_FadeOutForShutdown();
     Game_ResetStorageDevice();
 }
@@ -216,12 +216,12 @@ void Sched_HandlePreNMI(void) {
 void Sched_HandleRetrace(void) {
     UnkStruct80001380* var_v0;
 
-    D_800A62E0.time = osGetTime();
-    D_800A62E0.unk_A34++;
+    gRspTaskManager.time = osGetTime();
+    gRspTaskManager.unk_A34++;
 
-    if ((D_800A62E0.unk_A38 > 0) && (D_800A62E0.unk_A38 < 0x1E)) {
-        D_800A62E0.unk_A38++;
-        if (D_800A62E0.unk_A38 == 0x1A) {
+    if ((gRspTaskManager.unk_A38 > 0) && (gRspTaskManager.unk_A38 < 0x1E)) {
+        gRspTaskManager.unk_A38++;
+        if (gRspTaskManager.unk_A38 == 0x1A) {
             while (osAfterPreNMI() != 0) {
                 IO_WRITE(SP_STATUS_REG, 0x8000);
             }
@@ -229,59 +229,59 @@ void Sched_HandleRetrace(void) {
     }
 
     Sched_PromotePendingTasks();
-    func_80004DB4();
+    Sched_NoOp();
 
-    if (D_800A62E0.unk_A18 != NULL) {
-        if (D_800A62E0.unk_A14 == NULL) {
-            D_800A62E0.unk_A14 = Sched_TryStartTask(D_800A62E0.unk_A18);
+    if (gRspTaskManager.unk_A18 != NULL) {
+        if (gRspTaskManager.unk_A14 == NULL) {
+            gRspTaskManager.unk_A14 = Sched_TryStartTask(gRspTaskManager.unk_A18);
         } else {
             Sched_TryYieldActiveTask();
         }
-    } else if ((D_800A62E0.unk_A1C != NULL) && (D_800A62E0.unk_A14 == NULL)) {
-        D_800A62E0.unk_A14 = Sched_TryStartTask(D_800A62E0.unk_A1C);
+    } else if ((gRspTaskManager.unk_A1C != NULL) && (gRspTaskManager.unk_A14 == NULL)) {
+        gRspTaskManager.unk_A14 = Sched_TryStartTask(gRspTaskManager.unk_A1C);
     }
 
     Sched_NotifyClients('VTRE');
 }
 
 void Sched_HandleRspEvent(void) {
-    UnkStruct80001380* sp24 = D_800A62E0.unk_A14;
-    s32 tmp = Sched_HandleRspCompletion(D_800A62E0.unk_A14);
+    UnkStruct80001380* sp24 = gRspTaskManager.unk_A14;
+    s32 tmp = Sched_HandleRspCompletion(gRspTaskManager.unk_A14);
 
-    D_800A62E0.unk_A14 = NULL;
+    gRspTaskManager.unk_A14 = NULL;
 
     if (tmp) {
-        D_800A62E0.unk_A14 = Sched_TryStartTask(D_800A62E0.unk_A18);
+        gRspTaskManager.unk_A14 = Sched_TryStartTask(gRspTaskManager.unk_A18);
     }
 
     if (sp24->unk_1C == 3) {
         switch (sp24->task.t.type) {
             case M_AUDTASK:
-                D_800A62E0.unk_A18 = 0;
-                D_800A62E0.unk_A28 = 0;
-                D_800A62E0.unk_A14 = Sched_TryStartTask(D_800A62E0.unk_A1C);
+                gRspTaskManager.unk_A18 = 0;
+                gRspTaskManager.unk_A28 = 0;
+                gRspTaskManager.unk_A14 = Sched_TryStartTask(gRspTaskManager.unk_A1C);
                 break;
 
             case M_GFXTASK:
-                if (D_800A62E0.unk_A1C->unk_1E == 2) {
-                    D_800A62E0.unk_A1C = NULL;
-                    D_800A62E0.unk_A2C = 0;
+                if (gRspTaskManager.unk_A1C->unk_1E == 2) {
+                    gRspTaskManager.unk_A1C = NULL;
+                    gRspTaskManager.unk_A2C = 0;
                 }
                 break;
 
             case 4:
-                D_800A62E0.unk_A1C = NULL;
-                D_800A62E0.unk_A30 = 0;
+                gRspTaskManager.unk_A1C = NULL;
+                gRspTaskManager.unk_A30 = 0;
                 break;
         }
     }
 }
 
 void Sched_HandleRdpEvent(void) {
-    Sched_HandleRdpCompletion(D_800A62E0.unk_A1C);
-    if (D_800A62E0.unk_A1C->unk_1C == 3) {
-        D_800A62E0.unk_A1C = NULL;
-        D_800A62E0.unk_A2C = 0;
+    Sched_HandleRdpCompletion(gRspTaskManager.unk_A1C);
+    if (gRspTaskManager.unk_A1C->unk_1C == 3) {
+        gRspTaskManager.unk_A1C = NULL;
+        gRspTaskManager.unk_A2C = 0;
     }
 }
 
@@ -289,14 +289,14 @@ void Sched_ThreadEntry(void* arg0) {
     s32 sp24;
 
     __osSetFpcCsr(0x01000C01);
-    osCreateMesgQueue(&D_800A62E0.queue, D_800A62E0.stack, 0x10);
-    osViSetEvent(&D_800A62E0.queue, 0x66, 1);
-    osSetEventMesg(4, &D_800A62E0.queue, 0x64);
-    osSetEventMesg(9, &D_800A62E0.queue, 0x65);
-    osSetEventMesg(0xE, &D_800A62E0.queue, 0x68);
+    osCreateMesgQueue(&gRspTaskManager.queue, gRspTaskManager.stack, 0x10);
+    osViSetEvent(&gRspTaskManager.queue, 0x66, 1);
+    osSetEventMesg(4, &gRspTaskManager.queue, 0x64);
+    osSetEventMesg(9, &gRspTaskManager.queue, 0x65);
+    osSetEventMesg(0xE, &gRspTaskManager.queue, 0x68);
 
     while (true) {
-        osRecvMesg(&D_800A62E0.queue, &sp24, 1);
+        osRecvMesg(&gRspTaskManager.queue, &sp24, 1);
 
         switch (sp24) {
             case 0x66:
@@ -323,26 +323,26 @@ void Sched_ThreadEntry(void* arg0) {
 }
 
 void Sched_Init(void) {
-    D_800A62E0.unk_A10 = NULL;
-    D_800A62E0.unk_A14 = NULL;
-    D_800A62E0.unk_A18 = 0;
-    D_800A62E0.unk_A1C = NULL;
-    D_800A62E0.unk_A20 = NULL;
-    D_800A62E0.unk_A24 = NULL;
-    D_800A62E0.unk_A28 = 0;
-    D_800A62E0.unk_A2C = 0;
-    osCreateThread(&D_800A62E0.thread, 3, Sched_ThreadEntry, NULL, D_800A62E0.stack, 0x64);
-    osStartThread(&D_800A62E0.thread);
+    gRspTaskManager.unk_A10 = NULL;
+    gRspTaskManager.unk_A14 = NULL;
+    gRspTaskManager.unk_A18 = 0;
+    gRspTaskManager.unk_A1C = NULL;
+    gRspTaskManager.unk_A20 = NULL;
+    gRspTaskManager.unk_A24 = NULL;
+    gRspTaskManager.unk_A28 = 0;
+    gRspTaskManager.unk_A2C = 0;
+    osCreateThread(&gRspTaskManager.thread, 3, Sched_ThreadEntry, NULL, gRspTaskManager.stack, 0x64);
+    osStartThread(&gRspTaskManager.thread);
 }
 
-void Sched_AddClient(unk_D_800AA660* arg0) {
-    unk_D_800AA660* var_v1;
-    unk_D_800AA660* var_a1;
+void Sched_AddClient(GbEmuState* arg0) {
+    GbEmuState* var_v1;
+    GbEmuState* var_a1;
 
-    if (D_800A62E0.unk_A10 == NULL) {
-        D_800A62E0.unk_A10 = arg0;
+    if (gRspTaskManager.unk_A10 == NULL) {
+        gRspTaskManager.unk_A10 = arg0;
     } else {
-        var_v1 = D_800A62E0.unk_A10;
+        var_v1 = gRspTaskManager.unk_A10;
         var_a1 = var_v1->unk_01D8;
 
         while (var_a1 != NULL) {
@@ -354,9 +354,9 @@ void Sched_AddClient(unk_D_800AA660* arg0) {
     arg0->unk_01D8 = NULL;
 }
 
-void Sched_RemoveClient(unk_D_800AA660* arg0) {
-    unk_D_800AA660** var_v0 = &D_800A62E0.unk_A10;
-    unk_D_800AA660* var_v1 = D_800A62E0.unk_A10;
+void Sched_RemoveClient(GbEmuState* arg0) {
+    GbEmuState** var_v0 = &gRspTaskManager.unk_A10;
+    GbEmuState* var_v1 = gRspTaskManager.unk_A10;
 
     while (var_v1 != NULL) {
         if (var_v1 == arg0) {
@@ -374,24 +374,24 @@ void Sched_SubmitTask(UnkStruct80001380* arg0, s32 arg1) {
 
         switch (arg0->task.t.type) {
             case 2:
-                D_800A62E0.unk_A20 = arg0;
+                gRspTaskManager.unk_A20 = arg0;
                 break;
 
             case 1:
-                if ((arg1 != 0) && (D_800A62E0.unk_A1C == NULL)) {
-                    D_800A62E0.unk_A1C = arg0;
-                    D_800A62E0.unk_A24 = NULL;
-                    osSendMesg(&D_800A62E0.queue, 0x67, 0);
+                if ((arg1 != 0) && (gRspTaskManager.unk_A1C == NULL)) {
+                    gRspTaskManager.unk_A1C = arg0;
+                    gRspTaskManager.unk_A24 = NULL;
+                    osSendMesg(&gRspTaskManager.queue, 0x67, 0);
                 } else {
-                    D_800A62E0.unk_A24 = arg0;
+                    gRspTaskManager.unk_A24 = arg0;
                 }
                 break;
 
             case 4:
-                if (D_800A62E0.unk_A1C == NULL) {
-                    D_800A62E0.unk_A1C = arg0;
-                    D_800A62E0.unk_A24 = NULL;
-                    osSendMesg(&D_800A62E0.queue, 0x67, 0);
+                if (gRspTaskManager.unk_A1C == NULL) {
+                    gRspTaskManager.unk_A1C = arg0;
+                    gRspTaskManager.unk_A24 = NULL;
+                    osSendMesg(&gRspTaskManager.queue, 0x67, 0);
                 }
                 break;
         }

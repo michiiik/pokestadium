@@ -3,21 +3,21 @@
 #include "src/stage_loader.h"
 #include "src/fragments/minigame_actor_framework/minigame_actor_framework.h"
 
-static s16 D_8690B600;
-static s16 D_8690B602;
-static f32 D_8690B604;
-static s16 D_8690B608;
-static s16 D_8690B60A;
-static f32 D_8690B60C;
-static f32 D_8690B610;
-static Vec3f D_8690B618;
+static s16 gCameraRotationY;
+static s16 gCameraRotationX;
+static f32 gCameraDistance;
+static s16 gCameraRotationXTemp;
+static s16 gCameraRotationYTemp;
+static f32 gHorizontalDist;
+static f32 gGalleryCameraTimer;
+static Vec3f gCameraInitialPos;
 
 f32 GalleryCamera_Distance3D(Vec3f arg0, Vec3f arg1) {
     return sqrtf(SQ(arg1.x - arg0.x) + SQ(arg1.y - arg0.y) + SQ(arg1.z - arg0.z));
 }
 
 f32 GalleryCamera_ComputeZoomDistance(f32 arg0) {
-    f32 temp_fv1 = (D_8690B2F8.unk_00 + D_8690A708) * arg0;
+    f32 temp_fv1 = (gCameraConfig.unk_00 + gCameraZoomOffset) * arg0;
 
     if (temp_fv1 > 400.0f) {
         return 400.0f;
@@ -29,36 +29,36 @@ f32 GalleryCamera_DistanceXZ(Vec3f arg0, Vec3f arg1) {
     return sqrtf(SQ(arg1.x - arg0.x) + SQ(arg1.z - arg0.z));
 }
 
-void func_8690232C(void) {
+void GalleryCamera_NullUpdate(void) {
 }
 
 void GalleryCamera_InitFreeView(void) {
-    D_87906054 = D_87906050->node.children;
-    D_8690B600 = 0;
-    D_8690B602 = 0;
-    D_8690B604 = GalleryCamera_ComputeZoomDistance(4.0f);
+    gMiniCameraPtr = gMiniCameraStruct->node.children;
+    gCameraRotationY = 0;
+    gCameraRotationX = 0;
+    gCameraDistance = GalleryCamera_ComputeZoomDistance(4.0f);
 
-    if (D_8690B2F8.unk_08 != 0.0f) {
-        D_87906054->view.targetPosition.y = D_8690B2F8.unk_08;
+    if (gCameraConfig.unk_08 != 0.0f) {
+        gMiniCameraPtr->view.targetPosition.y = gCameraConfig.unk_08;
     } else {
-        D_87906054->view.targetPosition.y = D_8690B2F8.unk_04 + D_8690B2F8.unk_0C;
+        gMiniCameraPtr->view.targetPosition.y = gCameraConfig.unk_04 + gCameraConfig.unk_0C;
     }
 
-    Camera_ComputeEyeFromAngles(&D_87906054->view.targetPosition, &D_87906054->view.eyePosition, D_8690B604, D_8690B600, D_8690B602);
+    Camera_ComputeEyeFromAngles(&gMiniCameraPtr->view.targetPosition, &gMiniCameraPtr->view.eyePosition, gCameraDistance, gCameraRotationY, gCameraRotationX);
 
-    if (D_87906054->view.eyePosition.y < 12.0f) {
-        D_87906054->view.eyePosition.y = 12.5f;
-        Vec3f_CalculateDistanceAngles(&D_87906054->view.targetPosition, &D_87906054->view.eyePosition, &D_8690B604, &D_8690B600, &D_8690B602);
+    if (gMiniCameraPtr->view.eyePosition.y < 12.0f) {
+        gMiniCameraPtr->view.eyePosition.y = 12.5f;
+        Vec3f_CalculateDistanceAngles(&gMiniCameraPtr->view.targetPosition, &gMiniCameraPtr->view.eyePosition, &gCameraDistance, &gCameraRotationY, &gCameraRotationX);
     }
 
-    D_87906054->perspective.nearPlane = 20.0f;
-    D_87906054->perspective.farPlane = 10000.0f;
-    D_87906054->perspective.verticalFieldOfView = 40.0f;
-    D_8690A710->unk_008 = 40.0f;
+    gMiniCameraPtr->perspective.nearPlane = 20.0f;
+    gMiniCameraPtr->perspective.farPlane = 10000.0f;
+    gMiniCameraPtr->perspective.verticalFieldOfView = 40.0f;
+    gCameraParams->unk_008 = 40.0f;
 
-    D_8690B610 = 0.0f;
+    gGalleryCameraTimer = 0.0f;
 
-    Vec3f_SetComponentsDuplicate(&D_8690B618, D_87906054->view.targetPosition.x, D_87906054->view.targetPosition.y, D_87906054->view.targetPosition.z);
+    Vec3f_SetComponentsDuplicate(&gCameraInitialPos, gMiniCameraPtr->view.targetPosition.x, gMiniCameraPtr->view.targetPosition.y, gMiniCameraPtr->view.targetPosition.z);
 }
 
 void GalleryCamera_DebugAdjustZoomOffset(void) {
@@ -66,65 +66,65 @@ void GalleryCamera_DebugAdjustZoomOffset(void) {
 
     if (gPlayer2Controller->stickMag != 0.0f) {
         if (gPlayer2Controller->stickY >= 0.0f) {
-            D_8690A708 += gPlayer2Controller->stickMag / 400.0f;
+            gCameraZoomOffset += gPlayer2Controller->stickMag / 400.0f;
         } else {
-            D_8690A708 -= gPlayer2Controller->stickMag / 400.0f;
+            gCameraZoomOffset -= gPlayer2Controller->stickMag / 400.0f;
         }
 
-        temp_fv1 = 10.0f - D_8690B2F8.unk_00;
-        if (D_8690A708 < temp_fv1) {
-            D_8690A708 = temp_fv1;
+        temp_fv1 = 10.0f - gCameraConfig.unk_00;
+        if (gCameraZoomOffset < temp_fv1) {
+            gCameraZoomOffset = temp_fv1;
         }
 
-        if (D_8690A708 > 60.0f) {
-            D_8690A708 = 60.0f;
+        if (gCameraZoomOffset > 60.0f) {
+            gCameraZoomOffset = 60.0f;
         }
     }
 
-    HAL_Printf(0x14, 0x14, "OFFSET %6.2f", D_8690A708);
+    HAL_Printf(0x14, 0x14, "OFFSET %6.2f", gCameraZoomOffset);
 }
 
 void GalleryCamera_ResetFreeView(void) {
-    D_8690B600 = 0;
-    D_8690B602 = 0;
-    D_8690B604 = GalleryCamera_ComputeZoomDistance(4.0f);
-    D_87906054->view.targetPosition.x = 0.0f;
-    D_87906054->view.targetPosition.z = 0.0f;
+    gCameraRotationY = 0;
+    gCameraRotationX = 0;
+    gCameraDistance = GalleryCamera_ComputeZoomDistance(4.0f);
+    gMiniCameraPtr->view.targetPosition.x = 0.0f;
+    gMiniCameraPtr->view.targetPosition.z = 0.0f;
 
-    if (D_8690B2F8.unk_08 != 0) {
-        D_87906054->view.targetPosition.y = D_8690B2F8.unk_08;
+    if (gCameraConfig.unk_08 != 0) {
+        gMiniCameraPtr->view.targetPosition.y = gCameraConfig.unk_08;
     } else {
-        D_87906054->view.targetPosition.y = D_8690B2F8.unk_04 + D_8690B2F8.unk_0C;
+        gMiniCameraPtr->view.targetPosition.y = gCameraConfig.unk_04 + gCameraConfig.unk_0C;
     }
 
-    Camera_ComputeEyeFromAngles(&D_87906054->view.targetPosition, &D_87906054->view.eyePosition, D_8690B604, D_8690B600, D_8690B602);
+    Camera_ComputeEyeFromAngles(&gMiniCameraPtr->view.targetPosition, &gMiniCameraPtr->view.eyePosition, gCameraDistance, gCameraRotationY, gCameraRotationX);
 
-    if (D_87906054->view.eyePosition.y < 12.0f) {
-        D_87906054->view.eyePosition.y = 12.5f;
-        Vec3f_CalculateDistanceAngles(&D_87906054->view.targetPosition, &D_87906054->view.eyePosition, &D_8690B604, &D_8690B600, &D_8690B602);
+    if (gMiniCameraPtr->view.eyePosition.y < 12.0f) {
+        gMiniCameraPtr->view.eyePosition.y = 12.5f;
+        Vec3f_CalculateDistanceAngles(&gMiniCameraPtr->view.targetPosition, &gMiniCameraPtr->view.eyePosition, &gCameraDistance, &gCameraRotationY, &gCameraRotationX);
     }
 
-    D_87906054->perspective.nearPlane = 20.0f;
-    D_87906054->perspective.farPlane = 10000.0f;
-    D_87906054->perspective.verticalFieldOfView = 40.0f;
-    D_8690A710->unk_008 = 40.0f;
-    D_8690B610 = 0.0f;
+    gMiniCameraPtr->perspective.nearPlane = 20.0f;
+    gMiniCameraPtr->perspective.farPlane = 10000.0f;
+    gMiniCameraPtr->perspective.verticalFieldOfView = 40.0f;
+    gCameraParams->unk_008 = 40.0f;
+    gGalleryCameraTimer = 0.0f;
 
-    Vec3f_SetComponentsDuplicate(&D_8690B618, D_87906054->view.targetPosition.x, D_87906054->view.targetPosition.y, D_87906054->view.targetPosition.z);
+    Vec3f_SetComponentsDuplicate(&gCameraInitialPos, gMiniCameraPtr->view.targetPosition.x, gMiniCameraPtr->view.targetPosition.y, gMiniCameraPtr->view.targetPosition.z);
 }
 
 s32 GalleryCamera_UpdateZoomFov(void) {
-    if (D_8690B390.buttonPressed & 0x10) {
-        if (D_8690A710->unk_008 == 25.0f) {
-            D_8690A710->unk_008 = 40.0f;
+    if (gControllerInput.buttonPressed & 0x10) {
+        if (gCameraParams->unk_008 == 25.0f) {
+            gCameraParams->unk_008 = 40.0f;
         } else {
-            D_8690A710->unk_008 = 25.0f;
+            gCameraParams->unk_008 = 25.0f;
         }
     }
 
-    D_87906054->perspective.verticalFieldOfView = Math_StepToF(D_87906054->perspective.verticalFieldOfView, D_8690A710->unk_008, 1.5f, 1.5f);
+    gMiniCameraPtr->perspective.verticalFieldOfView = Math_StepToF(gMiniCameraPtr->perspective.verticalFieldOfView, gCameraParams->unk_008, 1.5f, 1.5f);
 
-    if (D_87906054->perspective.verticalFieldOfView == D_8690A710->unk_008) {
+    if (gMiniCameraPtr->perspective.verticalFieldOfView == gCameraParams->unk_008) {
         return 0;
     }
     return 1;
@@ -150,66 +150,66 @@ void GalleryCamera_OrbitAtPoint(s16 arg0) {
     UNUSED s32 pad2;
 
     Vec3f_SetComponentsDuplicate(&sp38, 0, 0.0f, 0.0f);
-    Vec3f_CalculateDistanceAngles(&sp38, &D_87906054->view.eyePosition, &D_8690B60C, &D_8690B608, &D_8690B60A);
-    Vec3f_SetComponentsDuplicate(&sp50, D_87906054->view.targetPosition.x, 0.0f, D_87906054->view.targetPosition.z);
-    Vec3s_SetComponents(&sp68, 0, D_8690B60A + arg0, 0);
-    Vec3f_SetComponentsDuplicate(&sp5C, D_8690A710->unk_004 * 4.0f, 0.0f, 0.0f);
-    MtxF_SetRotationAndTransformTranslation(&sp70, &D_87906054->view.targetPosition, &sp68);
+    Vec3f_CalculateDistanceAngles(&sp38, &gMiniCameraPtr->view.eyePosition, &gHorizontalDist, &gCameraRotationXTemp, &gCameraRotationYTemp);
+    Vec3f_SetComponentsDuplicate(&sp50, gMiniCameraPtr->view.targetPosition.x, 0.0f, gMiniCameraPtr->view.targetPosition.z);
+    Vec3s_SetComponents(&sp68, 0, gCameraRotationYTemp + arg0, 0);
+    Vec3f_SetComponentsDuplicate(&sp5C, gCameraParams->unk_004 * 4.0f, 0.0f, 0.0f);
+    MtxF_SetRotationAndTransformTranslation(&sp70, &gMiniCameraPtr->view.targetPosition, &sp68);
     GalleryCamera_RotateVecByMatrix(&sp5C, &sp70);
 
     sp50.x += sp5C.x;
     sp50.z += sp5C.z;
 
-    D_87906054->view.targetPosition.x = sp50.x;
-    D_87906054->view.targetPosition.z = sp50.z;
+    gMiniCameraPtr->view.targetPosition.x = sp50.x;
+    gMiniCameraPtr->view.targetPosition.z = sp50.z;
 
-    Vec3f_CalculateDistanceAngles(&sp38, &D_87906054->view.targetPosition, &D_8690B60C, &D_8690B608, &D_8690B60A);
-    D_8690B60C = GalleryCamera_DistanceXZ(sp38, D_87906054->view.targetPosition);
-    if ((GalleryCamera_ComputeZoomDistance(1.9f) - 1.0f) <= D_8690B60C) {
-        Camera_ComputeEyeFromAngles(&sp38, &sp50, GalleryCamera_ComputeZoomDistance(1.9f) - 1.0f, 0, D_8690B60A);
-        D_87906054->view.targetPosition.x = sp50.x;
-        D_87906054->view.targetPosition.z = sp50.z;
+    Vec3f_CalculateDistanceAngles(&sp38, &gMiniCameraPtr->view.targetPosition, &gHorizontalDist, &gCameraRotationXTemp, &gCameraRotationYTemp);
+    gHorizontalDist = GalleryCamera_DistanceXZ(sp38, gMiniCameraPtr->view.targetPosition);
+    if ((GalleryCamera_ComputeZoomDistance(1.9f) - 1.0f) <= gHorizontalDist) {
+        Camera_ComputeEyeFromAngles(&sp38, &sp50, GalleryCamera_ComputeZoomDistance(1.9f) - 1.0f, 0, gCameraRotationYTemp);
+        gMiniCameraPtr->view.targetPosition.x = sp50.x;
+        gMiniCameraPtr->view.targetPosition.z = sp50.z;
     }
-    Vec3f_CalculateDistanceAngles(&D_87906054->view.targetPosition, &D_87906054->view.eyePosition, &D_8690B604, &D_8690B600, &D_8690B602);
+    Vec3f_CalculateDistanceAngles(&gMiniCameraPtr->view.targetPosition, &gMiniCameraPtr->view.eyePosition, &gCameraDistance, &gCameraRotationY, &gCameraRotationX);
 }
 
 void GalleryCamera_HandleDPadInput(void) {
-    if (((D_8690B390.buttonDown & 8) | (D_8690B390.buttonDown & 4) | (D_8690B390.buttonDown & 2) |
-         (D_8690B390.buttonDown & 1)) != 0) {
-        D_8690A710->unk_004 = Math_StepToF(D_8690A710->unk_004, 1.0f, 0.2f, 0.2f);
+    if (((gControllerInput.buttonDown & 8) | (gControllerInput.buttonDown & 4) | (gControllerInput.buttonDown & 2) |
+         (gControllerInput.buttonDown & 1)) != 0) {
+        gCameraParams->unk_004 = Math_StepToF(gCameraParams->unk_004, 1.0f, 0.2f, 0.2f);
     } else {
-        D_8690A710->unk_004 = Math_StepToF(D_8690A710->unk_004, 0.0f, 0.2f, 0.2f);
+        gCameraParams->unk_004 = Math_StepToF(gCameraParams->unk_004, 0.0f, 0.2f, 0.2f);
     }
 
-    if ((D_8690B390.buttonDown & 8) && (D_87906054->view.targetPosition.y < 300.0f)) {
-        D_87906054->view.targetPosition.y += 4.0f * D_8690A710->unk_004;
-        Vec3f_CalculateDistanceAngles(&D_87906054->view.targetPosition, &D_87906054->view.eyePosition, &D_8690B604, &D_8690B600, &D_8690B602);
-        if (D_8690B600 < -0x38E3) {
-            D_87906054->view.targetPosition.y -= 4.0f * D_8690A710->unk_004;
+    if ((gControllerInput.buttonDown & 8) && (gMiniCameraPtr->view.targetPosition.y < 300.0f)) {
+        gMiniCameraPtr->view.targetPosition.y += 4.0f * gCameraParams->unk_004;
+        Vec3f_CalculateDistanceAngles(&gMiniCameraPtr->view.targetPosition, &gMiniCameraPtr->view.eyePosition, &gCameraDistance, &gCameraRotationY, &gCameraRotationX);
+        if (gCameraRotationY < -0x38E3) {
+            gMiniCameraPtr->view.targetPosition.y -= 4.0f * gCameraParams->unk_004;
         }
-        Vec3f_CalculateDistanceAngles(&D_87906054->view.targetPosition, &D_87906054->view.eyePosition, &D_8690B604, &D_8690B600, &D_8690B602);
-    } else if ((D_8690B390.buttonDown & 4) && (D_87906054->view.targetPosition.y > 5.0f)) {
-        D_87906054->view.targetPosition.y -= 4.0f * D_8690A710->unk_004;
-        Vec3f_CalculateDistanceAngles(&D_87906054->view.targetPosition, &D_87906054->view.eyePosition, &D_8690B604, &D_8690B600, &D_8690B602);
-        if (D_8690B600 >= 0x38E4) {
-            D_87906054->view.targetPosition.y += 4.0f * D_8690A710->unk_004;
+        Vec3f_CalculateDistanceAngles(&gMiniCameraPtr->view.targetPosition, &gMiniCameraPtr->view.eyePosition, &gCameraDistance, &gCameraRotationY, &gCameraRotationX);
+    } else if ((gControllerInput.buttonDown & 4) && (gMiniCameraPtr->view.targetPosition.y > 5.0f)) {
+        gMiniCameraPtr->view.targetPosition.y -= 4.0f * gCameraParams->unk_004;
+        Vec3f_CalculateDistanceAngles(&gMiniCameraPtr->view.targetPosition, &gMiniCameraPtr->view.eyePosition, &gCameraDistance, &gCameraRotationY, &gCameraRotationX);
+        if (gCameraRotationY >= 0x38E4) {
+            gMiniCameraPtr->view.targetPosition.y += 4.0f * gCameraParams->unk_004;
         }
-        Vec3f_CalculateDistanceAngles(&D_87906054->view.targetPosition, &D_87906054->view.eyePosition, &D_8690B604, &D_8690B600, &D_8690B602);
+        Vec3f_CalculateDistanceAngles(&gMiniCameraPtr->view.targetPosition, &gMiniCameraPtr->view.eyePosition, &gCameraDistance, &gCameraRotationY, &gCameraRotationX);
     }
 
-    if (D_87906054->view.targetPosition.y > 200.0f) {
-        D_87906054->view.targetPosition.y = 200.0f;
-        Vec3f_CalculateDistanceAngles(&D_87906054->view.targetPosition, &D_87906054->view.eyePosition, &D_8690B604, &D_8690B600, &D_8690B602);
+    if (gMiniCameraPtr->view.targetPosition.y > 200.0f) {
+        gMiniCameraPtr->view.targetPosition.y = 200.0f;
+        Vec3f_CalculateDistanceAngles(&gMiniCameraPtr->view.targetPosition, &gMiniCameraPtr->view.eyePosition, &gCameraDistance, &gCameraRotationY, &gCameraRotationX);
     }
 
-    if (D_87906054->view.targetPosition.y < 5.0f) {
-        D_87906054->view.targetPosition.y = 5.0f;
-        Vec3f_CalculateDistanceAngles(&D_87906054->view.targetPosition, &D_87906054->view.eyePosition, &D_8690B604, &D_8690B600, &D_8690B602);
+    if (gMiniCameraPtr->view.targetPosition.y < 5.0f) {
+        gMiniCameraPtr->view.targetPosition.y = 5.0f;
+        Vec3f_CalculateDistanceAngles(&gMiniCameraPtr->view.targetPosition, &gMiniCameraPtr->view.eyePosition, &gCameraDistance, &gCameraRotationY, &gCameraRotationX);
     }
 
-    if (D_8690B390.buttonDown & 1) {
+    if (gControllerInput.buttonDown & 1) {
         GalleryCamera_OrbitAtPoint(0);
-    } else if (D_8690B390.buttonDown & 2) {
+    } else if (gControllerInput.buttonDown & 2) {
         GalleryCamera_OrbitAtPoint(-0x8000);
     }
 }
@@ -227,7 +227,7 @@ void GalleryCamera_ClampToBoundaryCircle(Vec3f* arg0, Vec3f* arg1, Vec3f arg2, f
     f32 sp34;
     f32 sp54;
 
-    sp70 = D_86908C20;
+    sp70 = gCameraClampCenter;
 
     if (arg0->x == arg1->x) {
         sp7C.x = arg0->x;
@@ -288,7 +288,7 @@ void GalleryCamera_ClampToBoundaryCircle(Vec3f* arg0, Vec3f* arg1, Vec3f arg2, f
 
     Vec3f_SetComponentsDuplicate(arg0, arg1->x, arg1->y, arg1->z);
     Vec3f_SetComponentsDuplicate(arg1, sp7C.x, sp7C.y, sp7C.z);
-    Vec3f_CalculateDistanceAngles(&D_87906054->view.targetPosition, arg1, &D_8690B604, &D_8690B600, &D_8690B602);
+    Vec3f_CalculateDistanceAngles(&gMiniCameraPtr->view.targetPosition, arg1, &gCameraDistance, &gCameraRotationY, &gCameraRotationX);
 }
 
 void GalleryCamera_ClampAtToBoundaryCircle(Vec3f* arg0, Vec3f* arg1, Vec3f arg2, f32 arg3) {
@@ -304,13 +304,13 @@ void GalleryCamera_ClampAtToBoundaryCircle(Vec3f* arg0, Vec3f* arg1, Vec3f arg2,
     f32 sp2C;
     f32 sp44;
 
-    sp60 = D_86908C2C;
+    sp60 = gCameraClampCenterMode;
     sp2C = arg1->x;
     tmp.z = arg3;
-    if (D_87906054->view.targetPosition.x == sp2C) {
-        tmp.x = D_87906054->view.targetPosition.x;
+    if (gMiniCameraPtr->view.targetPosition.x == sp2C) {
+        tmp.x = gMiniCameraPtr->view.targetPosition.x;
     } else {
-        sp5C = (arg1->z - D_87906054->view.targetPosition.z) / (arg1->x - D_87906054->view.targetPosition.x);
+        sp5C = (arg1->z - gMiniCameraPtr->view.targetPosition.z) / (arg1->x - gMiniCameraPtr->view.targetPosition.x);
         sp58 = arg1->z - (arg1->x * sp5C);
 
         sp44 = (((SQ(arg2.x) + SQ(sp58)) - ((2 * arg2.z) * sp58)) + SQ(arg2.z)) - SQ(arg3);
@@ -340,7 +340,7 @@ void GalleryCamera_ClampAtToBoundaryCircle(Vec3f* arg0, Vec3f* arg1, Vec3f arg2,
     tmp.y = arg0->y;
 
     Vec3f_SetComponentsDuplicate(arg1, tmp.x, tmp.y, tmp.z);
-    Vec3f_CalculateDistanceAngles(&D_87906054->view.targetPosition, arg1, &D_8690B604, &D_8690B600, &D_8690B602);
+    Vec3f_CalculateDistanceAngles(&gMiniCameraPtr->view.targetPosition, arg1, &gCameraDistance, &gCameraRotationY, &gCameraRotationX);
 }
 
 void GalleryCamera_ClampHeight(Vec3f* arg0, Vec3f* arg1, f32 arg2, f32 arg3, s32 arg4) {
@@ -364,12 +364,12 @@ void GalleryCamera_ClampHeight(Vec3f* arg0, Vec3f* arg1, f32 arg2, f32 arg3, s32
     }
 
     arg1->y = arg2;
-    Vec3f_CalculateDistanceAngles(&D_87906054->view.targetPosition, arg1, &D_8690B604, &D_8690B600, &D_8690B602);
+    Vec3f_CalculateDistanceAngles(&gMiniCameraPtr->view.targetPosition, arg1, &gCameraDistance, &gCameraRotationY, &gCameraRotationX);
 }
 
 void GalleryCamera_ClampEyeToPanBounds(Vec3f* arg0, Vec3f* arg1) {
     UNUSED s32 pad[2];
-    Vec3f sp3C = D_86908C38;
+    Vec3f sp3C = gCameraConstraintCenter;
     f32 sp38;
 
     if (arg1->y < 12.0f) {
@@ -389,14 +389,14 @@ void GalleryCamera_ClampEyeToPanBounds(Vec3f* arg0, Vec3f* arg1) {
         GalleryCamera_ClampToBoundaryCircle(arg0, arg1, sp3C, 399.0f, 1);
     }
 
-    if (GalleryCamera_DistanceXZ(D_87906054->view.targetPosition, *arg1) < 30.0f) {
-        GalleryCamera_ClampToBoundaryCircle(arg0, arg1, D_87906054->view.targetPosition, 30.1f, 1);
+    if (GalleryCamera_DistanceXZ(gMiniCameraPtr->view.targetPosition, *arg1) < 30.0f) {
+        GalleryCamera_ClampToBoundaryCircle(arg0, arg1, gMiniCameraPtr->view.targetPosition, 30.1f, 1);
     }
 }
 
 void GalleryCamera_ClampOrbitBounds(Vec3f* arg0, Vec3f* arg1, s32 arg2) {
     UNUSED s32 pad[2];
-    Vec3f sp3C = D_86908C44;
+    Vec3f sp3C = gCameraConstraintCenterMode;
     f32 sp38;
 
     if (arg2 == 0) {
@@ -427,8 +427,8 @@ void GalleryCamera_ClampOrbitBounds(Vec3f* arg0, Vec3f* arg1, s32 arg2) {
             GalleryCamera_ClampToBoundaryCircle(arg0, arg1, sp3C, 399.0f, 0);
         }
 
-        if (GalleryCamera_DistanceXZ(D_87906054->view.targetPosition, *arg1) < 30.0f) {
-            GalleryCamera_ClampToBoundaryCircle(arg0, arg1, D_87906054->view.targetPosition, 30.1f, 0);
+        if (GalleryCamera_DistanceXZ(gMiniCameraPtr->view.targetPosition, *arg1) < 30.0f) {
+            GalleryCamera_ClampToBoundaryCircle(arg0, arg1, gMiniCameraPtr->view.targetPosition, 30.1f, 0);
         }
     } else {
         sp38 = GalleryCamera_ComputeZoomDistance(1.9f);
@@ -440,8 +440,8 @@ void GalleryCamera_ClampOrbitBounds(Vec3f* arg0, Vec3f* arg1, s32 arg2) {
             GalleryCamera_ClampAtToBoundaryCircle(arg0, arg1, sp3C, 399.0f);
         }
 
-        if (GalleryCamera_DistanceXZ(D_87906054->view.targetPosition, *arg1) < 30.0f) {
-            GalleryCamera_ClampAtToBoundaryCircle(arg0, arg1, D_87906054->view.targetPosition, 30.1f);
+        if (GalleryCamera_DistanceXZ(gMiniCameraPtr->view.targetPosition, *arg1) < 30.0f) {
+            GalleryCamera_ClampAtToBoundaryCircle(arg0, arg1, gMiniCameraPtr->view.targetPosition, 30.1f);
         }
     }
 }
@@ -452,47 +452,47 @@ void GalleryCamera_HandleFreeMoveInput(void) {
     UNUSED s32 pad;
     f32 mag;
 
-    if (D_8690B390.stickMag != 0.0f) {
-        Vec3f_SetComponentsDuplicate(&sp44, D_87906054->view.eyePosition.x, D_87906054->view.eyePosition.y, D_87906054->view.eyePosition.z);
-        if (D_8690B390.stickY >= 0.0f) {
-            mag = -(D_8690B390.stickMag / 6.0f);
-            Camera_ComputeEyeFromAngles(&D_87906054->view.eyePosition, &sp38, mag, D_8690B600, D_8690B602);
+    if (gControllerInput.stickMag != 0.0f) {
+        Vec3f_SetComponentsDuplicate(&sp44, gMiniCameraPtr->view.eyePosition.x, gMiniCameraPtr->view.eyePosition.y, gMiniCameraPtr->view.eyePosition.z);
+        if (gControllerInput.stickY >= 0.0f) {
+            mag = -(gControllerInput.stickMag / 6.0f);
+            Camera_ComputeEyeFromAngles(&gMiniCameraPtr->view.eyePosition, &sp38, mag, gCameraRotationY, gCameraRotationX);
         } else {
-            mag = D_8690B390.stickMag / 6.0f;
-            Camera_ComputeEyeFromAngles(&D_87906054->view.eyePosition, &sp38, mag, D_8690B600, D_8690B602);
+            mag = gControllerInput.stickMag / 6.0f;
+            Camera_ComputeEyeFromAngles(&gMiniCameraPtr->view.eyePosition, &sp38, mag, gCameraRotationY, gCameraRotationX);
         }
-        D_8690B604 = GalleryCamera_Distance3D(D_87906054->view.targetPosition, sp38);
+        gCameraDistance = GalleryCamera_Distance3D(gMiniCameraPtr->view.targetPosition, sp38);
         GalleryCamera_ClampEyeToPanBounds(&sp44, &sp38);
-        Vec3f_SetComponentsDuplicate(&D_87906054->view.eyePosition, sp38.x, sp38.y, sp38.z);
+        Vec3f_SetComponentsDuplicate(&gMiniCameraPtr->view.eyePosition, sp38.x, sp38.y, sp38.z);
     }
 
-    if (D_8690B390.buttonDown & 0x200) {
-        D_8690B602 -= 0x100;
+    if (gControllerInput.buttonDown & 0x200) {
+        gCameraRotationX -= 0x100;
     }
 
-    if (D_8690B390.buttonDown & 0x100) {
-        D_8690B602 += 0x100;
+    if (gControllerInput.buttonDown & 0x100) {
+        gCameraRotationX += 0x100;
     }
 
-    if (D_8690B390.buttonDown & 0x300) {
-        Vec3f_SetComponentsDuplicate(&sp44, D_87906054->view.eyePosition.x, D_87906054->view.eyePosition.y, D_87906054->view.eyePosition.z);
-        Camera_ComputeEyeFromAngles(&D_87906054->view.targetPosition, &sp38, D_8690B604, D_8690B600, D_8690B602);
+    if (gControllerInput.buttonDown & 0x300) {
+        Vec3f_SetComponentsDuplicate(&sp44, gMiniCameraPtr->view.eyePosition.x, gMiniCameraPtr->view.eyePosition.y, gMiniCameraPtr->view.eyePosition.z);
+        Camera_ComputeEyeFromAngles(&gMiniCameraPtr->view.targetPosition, &sp38, gCameraDistance, gCameraRotationY, gCameraRotationX);
         GalleryCamera_ClampOrbitBounds(&sp44, &sp38, 1);
-        Vec3f_SetComponentsDuplicate(&D_87906054->view.eyePosition, sp38.x, sp38.y, sp38.z);
+        Vec3f_SetComponentsDuplicate(&gMiniCameraPtr->view.eyePosition, sp38.x, sp38.y, sp38.z);
     }
 
-    if (D_8690B390.buttonDown & 0x800) {
-        D_8690B600 += 0x100;
+    if (gControllerInput.buttonDown & 0x800) {
+        gCameraRotationY += 0x100;
     }
 
-    if (D_8690B390.buttonDown & 0x400) {
-        D_8690B600 -= 0x100;
+    if (gControllerInput.buttonDown & 0x400) {
+        gCameraRotationY -= 0x100;
     }
 
-    if (D_8690B390.buttonDown & 0xC00) {
-        Vec3f_SetComponentsDuplicate(&sp44, D_87906054->view.eyePosition.x, D_87906054->view.eyePosition.y, D_87906054->view.eyePosition.z);
-        Camera_ComputeEyeFromAngles(&D_87906054->view.targetPosition, &sp38, D_8690B604, D_8690B600, D_8690B602);
+    if (gControllerInput.buttonDown & 0xC00) {
+        Vec3f_SetComponentsDuplicate(&sp44, gMiniCameraPtr->view.eyePosition.x, gMiniCameraPtr->view.eyePosition.y, gMiniCameraPtr->view.eyePosition.z);
+        Camera_ComputeEyeFromAngles(&gMiniCameraPtr->view.targetPosition, &sp38, gCameraDistance, gCameraRotationY, gCameraRotationX);
         GalleryCamera_ClampOrbitBounds(&sp44, &sp38, 0);
-        Vec3f_SetComponentsDuplicate(&D_87906054->view.eyePosition, sp38.x, sp38.y, sp38.z);
+        Vec3f_SetComponentsDuplicate(&gMiniCameraPtr->view.eyePosition, sp38.x, sp38.y, sp38.z);
     }
 }

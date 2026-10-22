@@ -5,7 +5,7 @@
 #include "src/matrix.h"
 #include "src/math_util.h"
 
-static f32 D_84387B00[] = {
+static f32 gSpeciesScaleTable[] = {
     0.0f, 1.0f,  1.0f,  1.3f, 0.8f, 0.9f, 1.3f,  0.8f,  1.0f,  0.9f,  0.6f, 1.2f,  1.2f, 0.6f,  0.9f, 1.5f, 0.8f,
     1.5f, 1.5f,  0.8f,  1.0f, 0.8f, 1.0f, 0.65f, 1.1f,  0.75f, 0.8f,  0.8f, 0.8f,  0.8f, 1.0f,  1.0f, 0.8f, 1.2f,
     1.0f, 0.8f,  1.25f, 1.0f, 1.5f, 0.8f, 1.0f,  1.0f,  0.8f,  0.8f,  1.2f, 1.35f, 0.9f, 1.2f,  1.2f, 1.1f, 0.7f,
@@ -16,7 +16,7 @@ static f32 D_84387B00[] = {
     1.1f, 1.0f,  1.2f,  1.0f, 0.8f, 1.2f, 1.2f,  1.2f,  1.2f,  1.2f,  1.2f, 1.35f, 1.2f, 0.8f,  0.8f, 1.2f, 0.9f,
     1.0f, 1.2f,  1.0f,  1.2f, 1.0f, 1.1f, 1.5f,  1.55f, 1.5f,  1.6f,  1.6f, 1.75f, 1.6f, 1.5f,  1.6f, 1.0f,
 };
-static f32 D_84387D60[] = {
+static f32 gParticleYOffsetTable[] = {
     0.0f,   0.0f,   -8.0f, 0.0f,   -5.0f,  0.0f,   -10.0f, 0.0f,   -10.0f, 0.0f,   0.0f,   0.0f,   0.0f,   0.0f,
     -35.0f, 0.0f,   0.0f,  0.0f,   0.0f,   0.0f,   -10.0f, 0.0f,   0.0f,   -10.0f, -10.0f, -10.0f, -5.0f,  0.0f,
     -10.0f, -10.0f, 0.0f,  -10.0f, 0.0f,   0.0f,   -10.0f, 0.0f,   0.0f,   0.0f,   -15.0f, 0.0f,   0.0f,   0.0f,
@@ -478,7 +478,7 @@ Gfx* BattleAnim_BuildAnimatedTileDisplayListFromStruct(Gfx* arg0, arg1_func_8434
 }
 
 void Gfx_SetParticlePrimEnvColors(Gfx* arg0) {
-    Particle* temp_v0 = BattleAnim_GetOwnerContextParticle(D_8006F09C);
+    Particle* temp_v0 = BattleAnim_GetOwnerContextParticle(gDefaultGraphRoot);
 
     gDPPipeSync(arg0++);
 
@@ -511,7 +511,7 @@ void Gfx_DrawParticleTextureWithParams(Gfx* arg0, arg1_func_8434E21C* arg1, UNUS
     s16 sp2A;
     s32 temp_v0_2;
 
-    sp40 = BattleAnim_GetOwnerContextParticle(D_8006F09C);
+    sp40 = BattleAnim_GetOwnerContextParticle(gDefaultGraphRoot);
     temp_v0_2 = Particle_FieldCE_GetS32_0C040(sp40);
     var_a2 = 0x80;
 
@@ -573,7 +573,7 @@ void Gfx_DrawParticleTextureWithParams(Gfx* arg0, arg1_func_8434E21C* arg1, UNUS
 void ParticleEffect_AllocateGfxAndDraw(s32 arg0, arg1_func_84344CE8* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 30);
-        Gfx_DrawParticleTextureWithParams(arg1->unk_18, arg1->unk_14, D_8006F084);
+        Gfx_DrawParticleTextureWithParams(arg1->unk_18, arg1->unk_14, gAnimationFrame);
     }
 }
 
@@ -1477,7 +1477,7 @@ void BattleAnim_BuildReflectiveTextureDisplayList(Gfx* arg0, s32 arg1, u16 arg2)
 void BattleAnim_AllocateReflectiveTextureDisplayList(s32 arg0, arg1_func_84344CE8* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 30);
-        BattleAnim_BuildReflectiveTextureDisplayList(arg1->unk_18, arg1->unk_14, D_8006F084);
+        BattleAnim_BuildReflectiveTextureDisplayList(arg1->unk_18, arg1->unk_14, gAnimationFrame);
     }
 }
 
@@ -1487,8 +1487,8 @@ void BattleAnim_ApplyEffect125ModelScaleOffset(Particle* arg0) {
     s32 temp_v0 = BattleAnim_GetOwnerSpecies(arg0->unk_10);
 
     if (temp_v0 < 0x98) {
-        sp24 = D_84387B00[temp_v0];
-        sp20 = D_84387D60[temp_v0];
+        sp24 = gSpeciesScaleTable[temp_v0];
+        sp20 = gParticleYOffsetTable[temp_v0];
     }
 
     switch (temp_v0) {
@@ -1548,7 +1548,7 @@ void BattleAnim_CallbackStartEffect125ModelBurstEmitter(Particle* arg0) {
 }
 
 void BattleAnim_BuildEffect125DisplayList(Gfx* arg0, u16 arg1) {
-    DisplayObject* tmp = D_8006F09C;
+    DisplayObject* tmp = gDefaultGraphRoot;
 
     gDPPipeSync(arg0++);
 
@@ -1563,7 +1563,7 @@ void BattleAnim_BuildEffect125DisplayList(Gfx* arg0, u16 arg1) {
 void BattleAnim_AllocateEffect125DisplayList(s32 arg0, arg1_func_84344CE8* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 10);
-        BattleAnim_BuildEffect125DisplayList(arg1->unk_18, D_8006F084);
+        BattleAnim_BuildEffect125DisplayList(arg1->unk_18, gAnimationFrame);
     }
 }
 
@@ -1863,7 +1863,7 @@ void BattleAnim_CallbackEndEffect23Descriptor4AAnimatedFade_InitParticle(Particl
     Particle_Field1C_SetScaled_0B938(arg0, 1.2f);
     Particle_SetScaleSpeed(arg0, 1.0f);
     Particle_SetScaleTarget(arg0, 0.02f);
-    Particle_SetRandomVelocityXYZ(arg0, 5, 0xF, 0xF);
+    Particle_SetRandomPositionXYZ(arg0, 5, 0xF, 0xF);
     Particle_Field38_AddYScaled_08E90(arg0, 10.0f);
     Particle_Field74_SetScaled_0AD8C(arg0, (ParticleMath_RandomRange(0xA) * 0.5f) + 8.0f);
     ParticleGfx_RecolorPrimEnvFromPalettePair(arg0, sp22);
@@ -1916,7 +1916,7 @@ void ParticleEffect_RegisterAll(void) {
 }
 
 void ParticleEffect_DrawNode(Gfx* arg0, s32 arg1, u16 arg2) {
-    Particle* temp_v0 = BattleAnim_GetOwnerContextParticle(D_8006F09C);
+    Particle* temp_v0 = BattleAnim_GetOwnerContextParticle(gDefaultGraphRoot);
 
     gDPPipeSync(arg0++);
     gDPSetPrimColor(arg0++, 0, 0x80, 255, 255, 255, temp_v0->prim_a);
@@ -1929,11 +1929,11 @@ void ParticleEffect_DrawNode(Gfx* arg0, s32 arg1, u16 arg2) {
 void ParticleEffect_CreateNodeDL(s32 arg0, arg1_func_84344CE8* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 30);
-        ParticleEffect_DrawNode(arg1->unk_18, arg1->unk_14, D_8006F084);
+        ParticleEffect_DrawNode(arg1->unk_18, arg1->unk_14, gAnimationFrame);
     }
 }
 
-void ParticleEffect_DrawNodeVariant(Gfx* arg0, arg1_func_8434E21C* arg1, UNUSED u16 arg2) {
+void ParticleEffect_DrawNodeNoPrimColor(Gfx* arg0, arg1_func_8434E21C* arg1, UNUSED u16 arg2) {
     arg0 = BattleAnim_BuildAnimatedTileDisplayListFromStruct(arg0, arg1, 0x40, 6, -4, 0xF, 0, 0, -5, 5, 0, 0);
 
     gSPEndDisplayList(arg0++);
@@ -1942,7 +1942,7 @@ void ParticleEffect_DrawNodeVariant(Gfx* arg0, arg1_func_8434E21C* arg1, UNUSED 
 void ParticleEffect_CreateNodeVariantDL(s32 arg0, arg1_func_84344CE8* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 30);
-        ParticleEffect_DrawNodeVariant(arg1->unk_18, arg1->unk_14, D_8006F084);
+        ParticleEffect_DrawNodeNoPrimColor(arg1->unk_18, arg1->unk_14, gAnimationFrame);
     }
 }
 
@@ -1955,7 +1955,7 @@ void ParticleEffect_DrawSimpleOffsetTileNoCamera(Gfx* arg0, u8* arg1, UNUSED u16
 void ParticleEffect_CreateSimpleOffsetTileNoCameraDL(s32 arg0, arg1_func_84344CE8* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 30);
-        ParticleEffect_DrawSimpleOffsetTileNoCamera(arg1->unk_18, arg1->unk_14, D_8006F084);
+        ParticleEffect_DrawSimpleOffsetTileNoCamera(arg1->unk_18, arg1->unk_14, gAnimationFrame);
     }
 }
 
@@ -2149,7 +2149,7 @@ void BattleAnim_CallbackEndEffect21ModelAnimWait(Particle* arg0) {
 }
 
 void BattleAnim_BuildEffect49DisplayList(Gfx* arg0, UNUSED s32 arg1, UNUSED u16 arg2) {
-    Particle* temp_v0 = BattleAnim_GetOwnerContextParticle(D_8006F09C);
+    Particle* temp_v0 = BattleAnim_GetOwnerContextParticle(gDefaultGraphRoot);
 
     gDPPipeSync(arg0++);
 
@@ -2162,7 +2162,7 @@ void BattleAnim_BuildEffect49DisplayList(Gfx* arg0, UNUSED s32 arg1, UNUSED u16 
 void BattleAnim_AllocateEffect49DisplayList(s32 arg0, arg1_func_84344CE8* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 30);
-        BattleAnim_BuildEffect49DisplayList(arg1->unk_18, arg1->unk_14, D_8006F084);
+        BattleAnim_BuildEffect49DisplayList(arg1->unk_18, arg1->unk_14, gAnimationFrame);
     }
 }
 
@@ -2266,7 +2266,7 @@ void ParticleEffect_RegisterLargeExplosionAndEffects(void) {
 
 void BattleAnim_BuildEffect63DisplayList(Gfx* arg0, s32 arg1, u16 arg2) {
     UNUSED s32 pad;
-    Particle* sp28 = BattleAnim_GetOwnerContextParticle(D_8006F09C);
+    Particle* sp28 = BattleAnim_GetOwnerContextParticle(gDefaultGraphRoot);
 
     ParticleGfx_SetAnimatedTileSizeOnList(arg0++, 1, 0x28, 0x20, 0x20);
     ParticleGfx_SetAnimatedAuxTileSizeOnList(arg0++, -1, 0x1E, 0x20, 0x20);
@@ -2282,12 +2282,12 @@ void BattleAnim_BuildEffect63DisplayList(Gfx* arg0, s32 arg1, u16 arg2) {
 void BattleAnim_AllocateEffect63DisplayList(s32 arg0, arg1_func_84344CE8* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 30);
-        BattleAnim_BuildEffect63DisplayList(arg1->unk_18, arg1->unk_14, D_8006F084);
+        BattleAnim_BuildEffect63DisplayList(arg1->unk_18, arg1->unk_14, gAnimationFrame);
     }
 }
 
 void BattleAnim_BuildEffect75DisplayList(Gfx* arg0, UNUSED s32 arg1, UNUSED u16 arg2) {
-    Particle* temp_v0 = BattleAnim_GetOwnerContextParticle(D_8006F09C);
+    Particle* temp_v0 = BattleAnim_GetOwnerContextParticle(gDefaultGraphRoot);
 
     gDPPipeSync(arg0++);
 
@@ -2300,7 +2300,7 @@ void BattleAnim_BuildEffect75DisplayList(Gfx* arg0, UNUSED s32 arg1, UNUSED u16 
 void BattleAnim_AllocateEffect75DisplayList(s32 arg0, arg1_func_84344CE8* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 30);
-        BattleAnim_BuildEffect75DisplayList(arg1->unk_18, arg1->unk_14, D_8006F084);
+        BattleAnim_BuildEffect75DisplayList(arg1->unk_18, arg1->unk_14, gAnimationFrame);
     }
 }
 
@@ -2498,7 +2498,7 @@ void BattleAnim_CallbackStartEffects63And75Model38FadeIn(Particle* arg0) {
 }
 
 void Gfx_DrawParticleAlpha(Gfx* arg0, s32 arg1, u16 arg2) {
-    Particle* temp_v0 = BattleAnim_GetOwnerContextParticle(D_8006F09C);
+    Particle* temp_v0 = BattleAnim_GetOwnerContextParticle(gDefaultGraphRoot);
 
     gDPPipeSync(arg0++);
 
@@ -2513,12 +2513,12 @@ void Gfx_DrawParticleAlpha(Gfx* arg0, s32 arg1, u16 arg2) {
 void Particle_CreateDisplayList_Alpha(s32 arg0, arg1_func_84344CE8* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 30);
-        Gfx_DrawParticleAlpha(arg1->unk_18, arg1->unk_14, D_8006F084);
+        Gfx_DrawParticleAlpha(arg1->unk_18, arg1->unk_14, gAnimationFrame);
     }
 }
 
 void Gfx_DrawParticleTexture4b(Gfx* arg0, u8* arg1, UNUSED u16 arg2) {
-    Particle* temp_v0 = BattleAnim_GetOwnerContextParticle(D_8006F09C);
+    Particle* temp_v0 = BattleAnim_GetOwnerContextParticle(gDefaultGraphRoot);
 
     gDPPipeSync(arg0++);
 
@@ -2537,12 +2537,12 @@ void Gfx_DrawParticleTexture4b(Gfx* arg0, u8* arg1, UNUSED u16 arg2) {
 void Particle_CreateDisplayList_Texture4b(s32 arg0, arg1_func_84344CE8* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 30);
-        Gfx_DrawParticleTexture4b(arg1->unk_18, arg1->unk_14, D_8006F084);
+        Gfx_DrawParticleTexture4b(arg1->unk_18, arg1->unk_14, gAnimationFrame);
     }
 }
 
-void Gfx_DrawParticleGreenPrim(Gfx* arg0, u8* arg1, UNUSED u16 arg2) {
-    Particle* temp_v0 = BattleAnim_GetOwnerContextParticle(D_8006F09C);
+void Gfx_DrawParticleYellowAlphaFromPrimG(Gfx* arg0, u8* arg1, UNUSED u16 arg2) {
+    Particle* temp_v0 = BattleAnim_GetOwnerContextParticle(gDefaultGraphRoot);
 
     gDPPipeSync(arg0++);
 
@@ -2561,7 +2561,7 @@ void Gfx_DrawParticleGreenPrim(Gfx* arg0, u8* arg1, UNUSED u16 arg2) {
 void Particle_CreateDisplayList_GreenPrim(s32 arg0, arg1_func_84344CE8* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 30);
-        Gfx_DrawParticleGreenPrim(arg1->unk_18, arg1->unk_14, D_8006F084);
+        Gfx_DrawParticleYellowAlphaFromPrimG(arg1->unk_18, arg1->unk_14, gAnimationFrame);
     }
 }
 
@@ -2638,7 +2638,7 @@ void BattleAnim_CallbackStartEffect10Model60AlphaFadeIn(Particle* arg0) {
 }
 
 void Gfx_DrawParticleCyanEnv(Gfx* arg0, arg1_func_8434E21C* arg1, UNUSED u16 arg2) {
-    BattleAnim_GetOwnerContextParticle(D_8006F09C);
+    BattleAnim_GetOwnerContextParticle(gDefaultGraphRoot);
 
     gDPPipeSync(arg0++);
     gDPSetEnvColor(arg0++, 155, 255, 255, 255);
@@ -2651,12 +2651,12 @@ void Gfx_DrawParticleCyanEnv(Gfx* arg0, arg1_func_8434E21C* arg1, UNUSED u16 arg
 void Particle_CreateDisplayList_CyanEnv(s32 arg0, arg1_func_84344CE8* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 30);
-        Gfx_DrawParticleCyanEnv(arg1->unk_18, arg1->unk_14, D_8006F084);
+        Gfx_DrawParticleCyanEnv(arg1->unk_18, arg1->unk_14, gAnimationFrame);
     }
 }
 
-void Gfx_DrawParticleBluePrim(Gfx* arg0, arg1_func_8434E21C* arg1, UNUSED u16 arg2) {
-    Particle* temp_v0 = BattleAnim_GetOwnerContextParticle(D_8006F09C);
+void Gfx_DrawParticleCyanAlphaFromPrimA(Gfx* arg0, arg1_func_8434E21C* arg1, UNUSED u16 arg2) {
+    Particle* temp_v0 = BattleAnim_GetOwnerContextParticle(gDefaultGraphRoot);
 
     gDPPipeSync(arg0++);
     gDPSetPrimColor(arg0++, 0, 0x80, 255, 255, 255, temp_v0->prim_a);
@@ -2670,7 +2670,7 @@ void Gfx_DrawParticleBluePrim(Gfx* arg0, arg1_func_8434E21C* arg1, UNUSED u16 ar
 void Particle_CreateDisplayList_BluePrim(s32 arg0, arg1_func_84344CE8* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 30);
-        Gfx_DrawParticleBluePrim(arg1->unk_18, arg1->unk_14, D_8006F084);
+        Gfx_DrawParticleCyanAlphaFromPrimA(arg1->unk_18, arg1->unk_14, gAnimationFrame);
     }
 }
 
@@ -2799,7 +2799,7 @@ void BattleAnim_CallbackStartEffects50And82Descriptor48AnimatedScaleFade_InitPar
 
     Particle_FieldAC_GetS16_0C038(arg0);
     sp34 = Particle_FieldCF_GetS16_0C058(arg0);
-    Particle_SetRandomVelocityXYZ(arg0, 5, 5, 5);
+    Particle_SetRandomPositionXYZ(arg0, 5, 5, 5);
     Particle_Field1C_SetScaled_0B938(arg0, 1.5f);
     Particle_Field74_SetScaled_0AD8C(arg0, 1.5f);
     sp2C.x = ParticleMath_RandomRange(0x2000) - 0x1000;
@@ -2855,7 +2855,7 @@ void BattleAnim_CallbackStartEffects50And82Descriptor4AAnimatedVerticalFade_Init
     sp24 = Particle_FieldCF_GetS16_0C058(arg0);
     Particle_FieldCE_GetS32_0C040(arg0);
     Particle_Field1C_SetScaled_0B938(arg0, 1.0f);
-    Particle_SetRandomVelocityXYZ(arg0, 0xF, 0xF, 0x14);
+    Particle_SetRandomPositionXYZ(arg0, 0xF, 0xF, 0x14);
     Particle_Field74_SetScaled_0AD8C(arg0, (ParticleMath_RandomRange(0x32) * 0.02f) + 1.0f);
     ParticleGfx_RecolorPrimEnvFromPalettePair(arg0, sp24);
     Particle_SetPrimAlpha(arg0, 0x80);
@@ -2893,7 +2893,7 @@ void BattleAnim_CallbackStartEffects50And82Descriptor4AAnimatedVerticalFade(Part
 }
 
 void Gfx_DrawParticleCustomColors(Gfx* arg0, arg1_func_8434E21C* arg1, UNUSED u16 arg2) {
-    Particle* temp_v0 = BattleAnim_GetOwnerContextParticle(D_8006F09C);
+    Particle* temp_v0 = BattleAnim_GetOwnerContextParticle(gDefaultGraphRoot);
 
     gDPPipeSync(arg0++);
 
@@ -2910,7 +2910,7 @@ void Gfx_DrawParticleCustomColors(Gfx* arg0, arg1_func_8434E21C* arg1, UNUSED u1
 void Particle_CreateDisplayList_CustomColors(s32 arg0, arg1_func_84344CE8* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 30);
-        Gfx_DrawParticleCustomColors(arg1->unk_18, arg1->unk_14, D_8006F084);
+        Gfx_DrawParticleCustomColors(arg1->unk_18, arg1->unk_14, gAnimationFrame);
     }
 }
 
@@ -3046,7 +3046,7 @@ void BattleAnim_CallbackEndEffects81And82Descriptor4AAnimatedColorFade_InitParti
     Particle_Field1C_SetScaled_0B938(arg0, 1.2f);
     Particle_SetScaleSpeed(arg0, 1.0f);
     Particle_SetScaleTarget(arg0, 0.02f);
-    Particle_SetRandomVelocityXYZ(arg0, 5, 0xF, 0xF);
+    Particle_SetRandomPositionXYZ(arg0, 5, 0xF, 0xF);
     Particle_Field38_AddYScaled_08E90(arg0, 10.0f);
     Particle_Field74_SetScaled_0AD8C(arg0, (ParticleMath_RandomRange(0xA) * 0.5f) + 8.0f);
     ParticleGfx_RecolorPrim(arg0, 0x19);
@@ -3100,7 +3100,7 @@ void BattleAnim_CallbackEndEffects81And82Descriptor4FAnimatedPaletteFade_InitPar
     Particle_Field1C_SetScaled_0B938(arg0, 1.0f);
     Particle_SetScaleSpeed(arg0, 0.5f);
     Particle_SetScaleTarget(arg0, 0.01f);
-    Particle_SetRandomVelocityXYZ(arg0, 0xA, 0, 0xF);
+    Particle_SetRandomPositionXYZ(arg0, 0xA, 0, 0xF);
     Particle_Field38_AddXZFromField94Y_08ED0(arg0, 10.0f);
     Particle_Field38_AddYScaled_08E90(arg0, 5.0f);
     Particle_Field74_SetScaled_0AD8C(arg0, (ParticleMath_RandomRange(0xA) * 0.5f) + 8.0f);
@@ -3183,7 +3183,7 @@ void BattleAnim_EndEffects81And82TintRampAndModelScaleFade(void) {
     BattleAnim_SpawnOwnerModelTintRampDetach(0x30, 0x10, 0xC8, 0xB4, 6);
 }
 
-void func_84348C6C(UNUSED s32 arg0, UNUSED s32 arg1) {
+void ParticleEffect_NoopStub1(UNUSED s32 arg0, UNUSED s32 arg1) {
 }
 
 void ParticleEffect_Noop(UNUSED s32 arg0, UNUSED s32 arg1) {
@@ -3269,7 +3269,7 @@ void BattleAnim_CallbackStartEffects71And74And111SpecialModelColorCycle(Particle
 }
 
 void Gfx_DrawParticleFromTempColors(Gfx* arg0, s32 arg1, u16 arg2) {
-    Particle* temp_v0 = BattleAnim_GetOwnerContextParticle(D_8006F09C);
+    Particle* temp_v0 = BattleAnim_GetOwnerContextParticle(gDefaultGraphRoot);
 
     gDPPipeSync(arg0++);
 
@@ -3284,7 +3284,7 @@ void Gfx_DrawParticleFromTempColors(Gfx* arg0, s32 arg1, u16 arg2) {
 void Particle_CreateDisplayList_TempColors(s32 arg0, arg1_func_84344CE8* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 30);
-        Gfx_DrawParticleFromTempColors(arg1->unk_18, arg1->unk_14, D_8006F084);
+        Gfx_DrawParticleFromTempColors(arg1->unk_18, arg1->unk_14, gAnimationFrame);
     }
 }
 
@@ -3312,7 +3312,7 @@ void BattleAnim_EndEffect83TintRampAndDescriptor34Burst(void) {
 }
 
 void Gfx_DrawParticleDualTileDiagonal4(Gfx* arg0, u8* arg1, UNUSED u16 arg2) {
-    BattleAnim_GetOwnerContextParticle(D_8006F09C);
+    BattleAnim_GetOwnerContextParticle(gDefaultGraphRoot);
     arg0 = BattleAnim_BuildAnimatedTileDisplayList(arg0, arg1, 0x20, 5, -4, -4, 0xD, 6, 4, 4, 0xF, 1);
 
     gSPEndDisplayList(arg0++);
@@ -3321,12 +3321,12 @@ void Gfx_DrawParticleDualTileDiagonal4(Gfx* arg0, u8* arg1, UNUSED u16 arg2) {
 void Particle_CreateDisplayList_DualTileDiagonal4(s32 arg0, arg1_func_84344CE8* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 30);
-        Gfx_DrawParticleDualTileDiagonal4(arg1->unk_18, arg1->unk_14, D_8006F084);
+        Gfx_DrawParticleDualTileDiagonal4(arg1->unk_18, arg1->unk_14, gAnimationFrame);
     }
 }
 
 void Gfx_DrawParticleDualTileAntiDiagonal1(Gfx* arg0, u8* arg1, UNUSED u16 arg2) {
-    BattleAnim_GetOwnerContextParticle(D_8006F09C);
+    BattleAnim_GetOwnerContextParticle(gDefaultGraphRoot);
     arg0 = BattleAnim_BuildAnimatedTileDisplayList(arg0, arg1, 0x20, 5, 1, -1, 0xE, 0xE, -1, 1, 2, 2);
 
     gSPEndDisplayList(arg0++);
@@ -3335,7 +3335,7 @@ void Gfx_DrawParticleDualTileAntiDiagonal1(Gfx* arg0, u8* arg1, UNUSED u16 arg2)
 void Particle_CreateDisplayList_DualTileAntiDiagonal1(s32 arg0, arg1_func_84344CE8* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 30);
-        Gfx_DrawParticleDualTileAntiDiagonal1(arg1->unk_18, arg1->unk_14, D_8006F084);
+        Gfx_DrawParticleDualTileAntiDiagonal1(arg1->unk_18, arg1->unk_14, gAnimationFrame);
     }
 }
 
@@ -3543,7 +3543,7 @@ void BattleAnim_CallbackEndEffect7ModelScaleAlphaFade(Particle* arg0) {
 
 void Gfx_DrawParticlePaletteBased(Gfx* arg0, u8* arg1, UNUSED u16 arg2) {
     UNUSED s32 pad[2];
-    s16 sp2E = Particle_FieldCF_GetS16_0C058(BattleAnim_GetOwnerContextParticle(D_8006F09C));
+    s16 sp2E = Particle_FieldCF_GetS16_0C058(BattleAnim_GetOwnerContextParticle(gDefaultGraphRoot));
     u8 sp2D;
     u8 sp2C;
     u8 sp2B;
@@ -3603,13 +3603,13 @@ void Gfx_DrawParticlePaletteBased(Gfx* arg0, u8* arg1, UNUSED u16 arg2) {
 void Gfx_ParticlePaletteCallback(s32 arg0, arg1_func_84344CE8* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 30);
-        Gfx_DrawParticlePaletteBased(arg1->unk_18, arg1->unk_14, D_8006F084);
+        Gfx_DrawParticlePaletteBased(arg1->unk_18, arg1->unk_14, gAnimationFrame);
     }
 }
 
 void Gfx_ParticlePaletteDL(Gfx* arg0, UNUSED arg1_func_8434E21C* arg1, UNUSED u16 arg2) {
-    DisplayObject* sp24 = D_8006F09C;
-    s32 tmp = BattleAnim_GetOwnerContextParticle(D_8006F09C);
+    DisplayObject* sp24 = gDefaultGraphRoot;
+    s32 tmp = BattleAnim_GetOwnerContextParticle(gDefaultGraphRoot);
     UNUSED u8 sp1F;
     UNUSED u8 sp1E;
     u8 sp1D;
@@ -3668,7 +3668,7 @@ void Gfx_ParticlePaletteDL(Gfx* arg0, UNUSED arg1_func_8434E21C* arg1, UNUSED u1
 void Gfx_ParticlePaletteColorOnlyCallback(s32 arg0, arg1_func_84344CE8* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 30);
-        Gfx_ParticlePaletteDL(arg1->unk_18, arg1->unk_14, D_8006F084);
+        Gfx_ParticlePaletteDL(arg1->unk_18, arg1->unk_14, gAnimationFrame);
     }
 }
 
@@ -3796,7 +3796,7 @@ f32 BattleAnim_GetSpeciesScaleAndApplyYOffset(Particle* arg0) {
 }
 
 void Gfx_ParticleTextureTileCallback(Gfx* arg0, arg1_func_8434E21C* arg1, UNUSED u16 arg2) {
-    BattleAnim_GetOwnerContextParticle(D_8006F09C);
+    BattleAnim_GetOwnerContextParticle(gDefaultGraphRoot);
     arg0 = BattleAnim_BuildAnimatedTileDisplayListFromStruct(arg0, arg1, 0x20, 5, 0, 0, 1, 1, 0, -3, 1, 1);
 
     gSPEndDisplayList(arg0++);
@@ -3805,12 +3805,12 @@ void Gfx_ParticleTextureTileCallback(Gfx* arg0, arg1_func_8434E21C* arg1, UNUSED
 void Gfx_ParticleTextureTileAllocCallback(s32 arg0, arg1_func_84344CE8* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 30);
-        Gfx_ParticleTextureTileCallback(arg1->unk_18, arg1->unk_14, D_8006F084);
+        Gfx_ParticleTextureTileCallback(arg1->unk_18, arg1->unk_14, gAnimationFrame);
     }
 }
 
 void Gfx_ParticleRedPrimCallback(Gfx* arg0, UNUSED arg1_func_8434E21C* arg1, UNUSED u16 arg2) {
-    Particle* temp_v0 = BattleAnim_GetOwnerContextParticle(D_8006F09C);
+    Particle* temp_v0 = BattleAnim_GetOwnerContextParticle(gDefaultGraphRoot);
 
     gDPPipeSync(arg0++);
 
@@ -3821,7 +3821,7 @@ void Gfx_ParticleRedPrimCallback(Gfx* arg0, UNUSED arg1_func_8434E21C* arg1, UNU
 void Gfx_ParticleRedPrimAllocCallback(s32 arg0, arg1_func_84344CE8* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 30);
-        Gfx_ParticleRedPrimCallback(arg1->unk_18, arg1->unk_14, D_8006F084);
+        Gfx_ParticleRedPrimCallback(arg1->unk_18, arg1->unk_14, gAnimationFrame);
     }
 }
 
@@ -3880,7 +3880,7 @@ void Gfx_PokemonPortraitCallback(Gfx* arg0, u8 arg1, UNUSED u16 arg2) {
     u8* var_a3;
     s32 idx = arg1 * 0xB48;
 
-    if (BattleScene_GetParticipantSideIndex(BattleAnim_GetOwnerContextParticle(D_8006F09C)->unk_10) == 0) {
+    if (BattleScene_GetParticipantSideIndex(BattleAnim_GetOwnerContextParticle(gDefaultGraphRoot)->unk_10) == 0) {
         var_a3 = sSide1PokemonThumbnailImage + idx;
     } else {
         var_a3 = sSide2PokemonThumbnailImage + idx;
@@ -3895,7 +3895,7 @@ void Gfx_PokemonPortraitCallback(Gfx* arg0, u8 arg1, UNUSED u16 arg2) {
 void Gfx_PokemonPortraitAllocCallback(s32 arg0, arg1_func_84344CE8* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 30);
-        Gfx_PokemonPortraitCallback(arg1->unk_18, arg1->unk_14, D_8006F084);
+        Gfx_PokemonPortraitCallback(arg1->unk_18, arg1->unk_14, gAnimationFrame);
     }
 }
 
@@ -4085,7 +4085,7 @@ void Gfx_PaletteParticleDL(Gfx* arg0, u8* arg1, UNUSED u16 arg2) {
     s16 var_t2;
     s16 var_t1;
 
-    spC8 = BattleAnim_GetOwnerContextParticle(D_8006F09C);
+    spC8 = BattleAnim_GetOwnerContextParticle(gDefaultGraphRoot);
     temp_v0_2 = Particle_FieldCD_GetU8_0C048(spC8);
     var_s1 = 0x20;
     var_t1 = 5;
@@ -4300,7 +4300,7 @@ void Gfx_PaletteParticleDL(Gfx* arg0, u8* arg1, UNUSED u16 arg2) {
 void Gfx_PaletteParticleDLCallback(s32 arg0, arg1_func_84344CE8* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 30);
-        Gfx_PaletteParticleDL(arg1->unk_18, arg1->unk_14, D_8006F084);
+        Gfx_PaletteParticleDL(arg1->unk_18, arg1->unk_14, gAnimationFrame);
     }
 }
 
@@ -4425,7 +4425,7 @@ void BattleAnim_CallbackEndEffect60Model42AnimC2RotationYFollow(Particle* arg0) 
 }
 
 void Gfx_WaterAnimPrimEnvDL(Gfx* arg0, u8 arg1, UNUSED u16 arg2) {
-    Particle* temp_v0 = BattleAnim_GetOwnerContextParticle(D_8006F09C);
+    Particle* temp_v0 = BattleAnim_GetOwnerContextParticle(gDefaultGraphRoot);
 
     switch (arg1) {
         case 0:
@@ -4449,7 +4449,7 @@ void Gfx_WaterAnimPrimEnvDL(Gfx* arg0, u8 arg1, UNUSED u16 arg2) {
 void Gfx_WaterAnimPrimEnvDLCallback(s32 arg0, arg1_func_84344CE8* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 30);
-        Gfx_WaterAnimPrimEnvDL(arg1->unk_18, arg1->unk_14, D_8006F084);
+        Gfx_WaterAnimPrimEnvDL(arg1->unk_18, arg1->unk_14, gAnimationFrame);
     }
 }
 
@@ -4484,7 +4484,7 @@ void ParticleEffect_WaterAnimFireworkModel42RotationFollow(void) {
 }
 
 void Gfx_WaterAnimDL(Gfx* arg0, u8* arg1, UNUSED u16 arg2) {
-    Particle* temp_v0 = BattleAnim_GetOwnerContextParticle(D_8006F09C);
+    Particle* temp_v0 = BattleAnim_GetOwnerContextParticle(gDefaultGraphRoot);
 
     gDPPipeSync(arg0++);
     gDPSetPrimColor(arg0++, 0, 0x80, 100, 200, 255, temp_v0->prim_a);
@@ -4505,7 +4505,7 @@ void Gfx_WaterAnimDL(Gfx* arg0, u8* arg1, UNUSED u16 arg2) {
 void Gfx_WaterAnimDLCallback(s32 arg0, arg1_func_84344CE8* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 30);
-        Gfx_WaterAnimDL(arg1->unk_18, arg1->unk_14, D_8006F084);
+        Gfx_WaterAnimDL(arg1->unk_18, arg1->unk_14, gAnimationFrame);
     }
 }
 
@@ -4702,7 +4702,7 @@ void BattleAnim_CallbackStartEffect49EndEffect66ModelFadeIn(Particle* arg0) {
 
 void Gfx_SimpleNodeDL(Gfx* arg0, arg1_func_8434E21C* arg1, UNUSED u16 arg2) {
     UNUSED s32 pad;
-    Particle* sp48 = BattleAnim_GetOwnerContextParticle(D_8006F09C);
+    Particle* sp48 = BattleAnim_GetOwnerContextParticle(gDefaultGraphRoot);
     UNUSED s16 pad2;
     s16 sp44;
     s16 sp42;
@@ -4729,7 +4729,7 @@ void Gfx_SimpleNodeDL(Gfx* arg0, arg1_func_8434E21C* arg1, UNUSED u16 arg2) {
 void Gfx_SimpleNodeDLCallback(s32 arg0, arg1_func_84344CE8* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 30);
-        Gfx_SimpleNodeDL(arg1->unk_18, arg1->unk_14, D_8006F084);
+        Gfx_SimpleNodeDL(arg1->unk_18, arg1->unk_14, gAnimationFrame);
     }
 }
 
@@ -4847,7 +4847,7 @@ void ParticleEffect_InitSmoke(void) {
     BattleAnim_CreateRepeatingEffectSlotForCurrentOwner(0, 1, 0xC, BattleAnim_CallbackSharedAnimatedVerticalFade, &gBattleAnimParticleDescriptors[0x3D], 0, 1, 9, 0, 0x16, 5);
 }
 
-void ParticleEffect_PlaySoundAndReset(void) {
+void ParticleEffect_InitModelAnimWaitAndDelegate(void) {
     BattleAnim_CreateEffectSlotForCurrentOwner(0, BattleAnim_CallbackInitModelAnimWait, &gDefaultParticleDescriptor, 0, 1, 9, 0, 0x13, 0);
     BattleAnim_SetSpawnDelay(4);
     BattleAnim_EndEffect25Descriptor13DelegateSequence();
@@ -4871,7 +4871,7 @@ void ParticleEffect_DrawQuad(Gfx* arg0, arg1_func_8434E21C* arg1, UNUSED u16 arg
     UNUSED s16 pad2;
     s16 var_t5;
 
-    temp_v0 = BattleAnim_GetOwnerContextParticle(D_8006F09C);
+    temp_v0 = BattleAnim_GetOwnerContextParticle(gDefaultGraphRoot);
     var_t1 = 0x96;
     var_t2 = 0xFF;
     var_s1 = 0x20;
@@ -4973,7 +4973,7 @@ void ParticleEffect_DrawQuad(Gfx* arg0, arg1_func_8434E21C* arg1, UNUSED u16 arg
 void ParticleEffect_AllocateDisplayList(s32 arg0, arg1_func_84344CE8* arg1) {
     if (arg0 == 2) {
         arg1->unk_18 = Gfx_AllocDisplayList(sizeof(Gfx) * 30);
-        ParticleEffect_DrawQuad(arg1->unk_18, arg1->unk_14, D_8006F084);
+        ParticleEffect_DrawQuad(arg1->unk_18, arg1->unk_14, gAnimationFrame);
     }
 }
 
@@ -5084,11 +5084,11 @@ void BattleAnim_CallbackEndEffect79DefaultDescriptorPaletteFade(Particle* arg0) 
     }
 }
 
-void ParticleEffect_CreateColorVariant(void) {
+void BattleAnim_EndEffect79ModelPaletteFade(void) {
     BattleAnim_CreateEffectSlotForCurrentOwner(0, BattleAnim_CallbackEndEffect79DefaultDescriptorPaletteFade, &gDefaultParticleDescriptor, 0, 1, 0xA, 0, 0x1F, 0);
 }
 
-void ParticleEffect_SetMode(void) {
+void BattleAnim_StartEffect45GlobalTintFade(void) {
     BattleAnim_SpawnGlobalTintColorFadeDetach(0, 8, 0x22);
 }
 

@@ -5,15 +5,15 @@
 #include "src/audio_commands.h"
 #include "src/audio_data.h"
 
-static s32 D_80078A30 = 0;
+static s32 gLastSfxHandle = 0;
 static s32 scroll_sfx = 0;
 static s32 back_sfx = 0;
 static s32 confirm_sfx = 0;
-static s32 D_80078A40 = 0;
-static s32 D_80078A44 = 0;
-static s32 D_80078A48 = 0;
-static s32 D_80078A4C = 0;
-static u8 D_80078A50 = 0;
+static s32 gSfxHandle_MenuScreenOpen = 0;
+static s32 gSfxHandle_MenuError = 0;
+static s32 gSfxHandle_GalleryCameraShutter = 0;
+static s32 gSfxHandle_GalleryCameraExit = 0;
+static u8 gSfx3CCooldown = 0;
 
 s32 Audio_PlaySoundEffectById(u32 sfx) {
     u32 temp_v0_3;
@@ -33,12 +33,12 @@ s32 Audio_PlaySoundEffectById(u32 sfx) {
     }
 
     if (sfx == SFX_TITLE_START) {
-        if (!(D_800FC820 & 0x80000000)) {
+        if (!(gAudioDMAFlags & 0x80000000)) {
             return 0;
         }
-        D_80078A30 = Audio_PlaySoundEffect(D_800FF9C0, D_800FC688, SFX_TITLE_START, 0x70, 0x80, -1);
-        Audio_QueueFadeSoundCommand(D_80078E70, 0x28);
-        return D_80078A30;
+        gLastSfxHandle = Audio_PlaySoundEffect(gSfxBankSpecial, gSfxTable, SFX_TITLE_START, 0x70, 0x80, -1);
+        Audio_QueueFadeSoundCommand(gMusicHandle, 0x28);
+        return gLastSfxHandle;
     }
 
     if (sfx == 0x30) {
@@ -46,14 +46,14 @@ s32 Audio_PlaySoundEffectById(u32 sfx) {
     }
 
     if (sfx == SFX_CAMERA_TEXT) {
-        if (D_80078A50 != 0) {
-            D_80078A50++;
-            if (D_80078A50 > 0) {
-                D_80078A50 = 0;
+        if (gSfx3CCooldown != 0) {
+            gSfx3CCooldown++;
+            if (gSfx3CCooldown > 0) {
+                gSfx3CCooldown = 0;
             }
             return 0;
         }
-        D_80078A50++;
+        gSfx3CCooldown++;
         if (1) {}
         sfx = 5;
         sp24 = -12.0f;
@@ -109,24 +109,24 @@ s32 Audio_PlaySoundEffectById(u32 sfx) {
             break;
 
         case SFX_PANEL_OPEN:
-            Audio_QueueFadeSoundCommand(D_80078A40, 0x14);
+            Audio_QueueFadeSoundCommand(gSfxHandle_MenuScreenOpen, 0x14);
             break;
 
         case SFX_MENU_ERROR:
-            Audio_QueueFadeSoundCommand(D_80078A44, 2);
+            Audio_QueueFadeSoundCommand(gSfxHandle_MenuError, 2);
             break;
 
         case SFX_PHOTO_CAPTURE:
-            Audio_QueueFadeSoundCommand(D_80078A48, 2);
+            Audio_QueueFadeSoundCommand(gSfxHandle_GalleryCameraShutter, 2);
             sp28 = 0xA0;
             break;
 
         case SFX_CAMERA_FULL:
-            Audio_QueueFadeSoundCommand(D_80078A48, 2);
+            Audio_QueueFadeSoundCommand(gSfxHandle_GalleryCameraShutter, 2);
             break;
 
         case SFX_CAMERA_EXIT:
-            Audio_QueueFadeSoundCommand(D_80078A4C, 2);
+            Audio_QueueFadeSoundCommand(gSfxHandle_GalleryCameraExit, 2);
             break;
 
         case SFX_N64_LOGO:
@@ -148,51 +148,51 @@ s32 Audio_PlaySoundEffectById(u32 sfx) {
             break;
 
         case SFX_AREA_CURSOR:
-            D_80078A30 = Audio_PlayDirectSoundCommand(0x01000001, 0, 0);
-            return D_80078A30;
+            gLastSfxHandle = Audio_PlayDirectSoundCommand(0x01000001, 0, 0);
+            return gLastSfxHandle;
 
         case 0x33:
-            D_80078A30 = Audio_PlayDirectSoundCommand(0x01000002, 0, 0);
-            return D_80078A30;
+            gLastSfxHandle = Audio_PlayDirectSoundCommand(0x01000002, 0, 0);
+            return gLastSfxHandle;
 
         default:
             return 0;
     }
 
-    D_80078A30 = Audio_PlaySoundEffect(D_800FC68C, D_800FC688, sfx, sp28, 0x80, -1);
+    gLastSfxHandle = Audio_PlaySoundEffect(gSfxBankStandard, gSfxTable, sfx, sp28, 0x80, -1);
     if (sp24 != 0.0f) {
-        Audio_QueueVoiceDetune(D_80078A30, sp24);
+        Audio_QueueVoiceDetune(gLastSfxHandle, sp24);
     }
 
     switch (sfx) {
         case SFX_MENU_SCROLL:
-            scroll_sfx = D_80078A30;
+            scroll_sfx = gLastSfxHandle;
             break;
 
         case SFX_MENU_CONFIRM:
-            confirm_sfx = D_80078A30;
+            confirm_sfx = gLastSfxHandle;
             break;
 
         case SFX_MENU_BACK:
-            back_sfx = D_80078A30;
+            back_sfx = gLastSfxHandle;
             break;
 
         case SFX_PANEL_OPEN:
-            D_80078A40 = D_80078A30;
+            gSfxHandle_MenuScreenOpen = gLastSfxHandle;
             break;
 
         case SFX_MENU_ERROR:
-            D_80078A44 = D_80078A30;
+            gSfxHandle_MenuError = gLastSfxHandle;
             break;
 
         case SFX_PHOTO_CAPTURE:
-            D_80078A48 = D_80078A30;
+            gSfxHandle_GalleryCameraShutter = gLastSfxHandle;
             break;
 
         case SFX_CAMERA_FULL:
-            D_80078A4C = D_80078A30;
+            gSfxHandle_GalleryCameraExit = gLastSfxHandle;
             break;
     }
 
-    return D_80078A30;
+    return gLastSfxHandle;
 }

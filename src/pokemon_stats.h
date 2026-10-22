@@ -30,27 +30,27 @@ typedef struct GbSavePortSnapshot {
 } GbSavePortSnapshot; // size >= 0x1A3
 #endif
 
-typedef struct unk_func_800228F0 {
+typedef struct SpeciesRecord {
     /* 0x00 */ u8 unk_00;
     /* 0x01 */ u8 unk_01;
     /* 0x02 */ u16 unk_02;
     /* 0x04 */ char unk_04[16];
     /* 0x14 */ char unk_14[16];
-} unk_func_800228F0; // size >= 0x28
+} SpeciesRecord; // size >= 0x28
 
 u16 Pokemon_LevelFromExp(s32 arg0, u32 arg1);
 void Pokemon_PrepareBattleMon(BattleMon* arg0);
 void Pokemon_SetDisplayNameFromOt(BattleMon* arg0);
-s32 VictoryPalace_LoadSpeciesRecord(unk_func_800228F0*, u16);
+s32 VictoryPalace_LoadSpeciesRecord(SpeciesRecord*, u16);
 void VictoryPalace_SaveSpeciesRecord(BattleMon* arg0, s16 arg1, u8 arg2);
 s32 GbSave_PlayerIdentityMatches(u16* arg0, GbSavePlayerIdentity* arg1);
 u8 Move_GetIdFromTableIndex(s32 tm_hm_index);
 u8 Species_ToInternalIndex(s32 arg0);
 s32 Species_FromInternalIndex(s32 arg0);
-u8 func_80022A88(s32 arg0);
-u8 func_80022A98(s32 arg0);
-s32 func_80022AA8(s32 arg0);
-s32 func_80022ACC(s32 arg0);
+u8 Species_GetMoveData(s32 arg0);
+u8 Species_GetEvolutionData(s32 arg0);
+s32 Species_GetEggGroup(s32 arg0);
+s32 Species_GetGrowthRate(s32 arg0);
 void Deck_InitializeSaveBackend(DeckHandle* arg0);
 void Deck_InitializeBoxBackend(DeckHandle* arg0);
 DeckHandle* Deck_Open(s32 arg0, s32 arg1, s32 arg2, s32 arg3);

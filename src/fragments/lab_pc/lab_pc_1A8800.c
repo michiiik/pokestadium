@@ -10,17 +10,17 @@
 #include "src/memory.h"
 #include "src/stage_loader.h"
 
-static char** D_88224F90;
-static char** D_88224F94;
+static char** gLabPcMenuGbSaveIdLabelBank;
+static char** gFragment23CommonStringBank;
 
-static u16 D_88217BF0[4] = { 6, 7, 8, 9 };
-static Color_RGBA8 D_88217BF8 = { 0xA0, 0x96, 0x64, 0xFF };
-static u16 D_88217BFC[4] = { 2, 3, 4, 5 };
-static Color_RGBA8 D_88217C04 = { 0x64, 0x96, 0xB4, 0xFF };
-static Color_RGBA8 D_88217C08 = { 0x3C, 0x64, 0x78, 0xFF };
-static Color_RGBA8 D_88217C0C = { 0xA0, 0x96, 0x64, 0xFF };
+static u16 gFragment23DescriptionStringIds[4] = { 6, 7, 8, 9 };
+static Color_RGBA8 gFragment23ButtonColor = { 0xA0, 0x96, 0x64, 0xFF };
+static u16 gFragment23OptionStringIds[4] = { 2, 3, 4, 5 };
+static Color_RGBA8 gFragment23PanelGradientStart = { 0x64, 0x96, 0xB4, 0xFF };
+static Color_RGBA8 gFragment23PanelGradientEnd = { 0x3C, 0x64, 0x78, 0xFF };
+static Color_RGBA8 gFragment23ButtonHighlightColor = { 0xA0, 0x96, 0x64, 0xFF };
 
-void LabPC_BuildMenuTitleLabel(unk_func_88503298* arg0, s32 arg1, s32 arg2, MemoryPool* arg3) {
+void LabPC_BuildMenuTitleLabel(WidgetVisibilityGate* arg0, s32 arg1, s32 arg2, MemoryPool* arg3) {
     s32 i;
     s32 temp_v0;
     s32 var_s1;
@@ -28,14 +28,14 @@ void LabPC_BuildMenuTitleLabel(unk_func_88503298* arg0, s32 arg1, s32 arg2, Memo
 
     var_s1 = 0;
     for (i = 0; i < 4; i++) {
-        temp_v0 = Font_MeasureTextExtent(0x10, 0, Text_GetString(NULL, 0, D_88224F94, D_88217BF0[i]));
+        temp_v0 = Font_MeasureTextExtent(0x10, 0, Text_GetString(NULL, 0, gFragment23CommonStringBank, gFragment23DescriptionStringIds[i]));
         if (var_s1 < temp_v0) {
             var_s1 = temp_v0;
         }
     }
     var_s1 += 0x10;
 
-    ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(arg0, sizeof(unk_func_88503298));
+    ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(arg0, sizeof(WidgetVisibilityGate));
     arg0->unk_00.unk_10.unk_00 = ((0x280 - var_s1) / 2) - arg1;
     arg0->unk_00.unk_10.unk_02 = arg2;
 
@@ -47,7 +47,7 @@ void LabPC_BuildMenuTitleLabel(unk_func_88503298* arg0, s32 arg1, s32 arg2, Memo
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_2C);
 
     temp_s0 = mem_pool_alloc(arg3, sizeof(unk_func_885012A4));
-    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(temp_s0, 0, 0, var_s1, 0x68, D_88217BF8);
+    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(temp_s0, 0, 0, var_s1, 0x68, gFragment23ButtonColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, temp_s0);
 
     arg0->unk_30 = mem_pool_alloc(arg3, sizeof(unk_func_8850878C));
@@ -56,7 +56,7 @@ void LabPC_BuildMenuTitleLabel(unk_func_88503298* arg0, s32 arg1, s32 arg2, Memo
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(temp_s0, arg0->unk_30);
 }
 
-void LabPC_MenuTitleLabel_SetText(unk_func_88503298* arg0, s8* arg1) {
+void LabPC_MenuTitleLabel_SetText(WidgetVisibilityGate* arg0, s8* arg1) {
     arg0->unk_30->unk_40 = arg1;
 }
 
@@ -67,9 +67,9 @@ void LabPC_BuildMenuGridWidget(unk_func_88200FA0_030* arg0, s32 arg1, s32 arg2, 
     s32 temp_v0;
     s32 var_s2;
     unk_func_885012A4* temp_s0_2;
-    unk_func_8850B254* sp6C;
+    DashedBorderFrame* sp6C;
     UNUSED s32 pad1[3];
-    unk_func_88503298* temp_s0_3;
+    WidgetVisibilityGate* temp_s0_3;
     unk_func_8850878C* temp_s1;
 
     if ((arg2 <= 0) || (arg2 >= 5)) {
@@ -78,10 +78,10 @@ void LabPC_BuildMenuGridWidget(unk_func_88200FA0_030* arg0, s32 arg1, s32 arg2, 
         arg2--;
     }
 
-    var_s2 = Font_MeasureTextExtent(0x10, 0, Text_GetString(NULL, 0, D_88224F94, 1));
+    var_s2 = Font_MeasureTextExtent(0x10, 0, Text_GetString(NULL, 0, gFragment23CommonStringBank, 1));
 
     for (j = 0; j < 4; j++) {
-        temp_v0 = Font_MeasureTextExtent(0x10, 0, Text_GetString(NULL, 0, D_88224F94, D_88217BFC[j]));
+        temp_v0 = Font_MeasureTextExtent(0x10, 0, Text_GetString(NULL, 0, gFragment23CommonStringBank, gFragment23OptionStringIds[j]));
         if (var_s2 < temp_v0) {
             var_s2 = temp_v0;
         }
@@ -100,12 +100,12 @@ void LabPC_BuildMenuGridWidget(unk_func_88200FA0_030* arg0, s32 arg1, s32 arg2, 
     arg0->unk_2C->unk_00.unk_28 &= ~1;
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_2C);
 
-    sp6C = mem_pool_alloc(arg4, sizeof(unk_func_8850B254));
-    ((func8850B254)Memmap_GetFragmentVaddr(WidgetTree_InitDashedBorderFrame))(sp6C, 0, 0, var_s2, 0x18, D_88217C04, D_88217C08);
+    sp6C = mem_pool_alloc(arg4, sizeof(DashedBorderFrame));
+    ((func8850B254)Memmap_GetFragmentVaddr(WidgetTree_InitDashedBorderFrame))(sp6C, 0, 0, var_s2, 0x18, gFragment23PanelGradientStart, gFragment23PanelGradientEnd);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, sp6C);
 
     temp_s1 = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
-    temp_s0 = Text_GetString(NULL, 0, D_88224F94, 1);
+    temp_s0 = Text_GetString(NULL, 0, gFragment23CommonStringBank, 1);
     ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(temp_s1, (var_s2 - Font_MeasureTextExtent(0x10, 0, temp_s0)) / 2, 0,
                                                            temp_s0, 0x10);
     temp_s1->unk_3C = 0x1C;
@@ -114,11 +114,11 @@ void LabPC_BuildMenuGridWidget(unk_func_88200FA0_030* arg0, s32 arg1, s32 arg2, 
     PointerList_Allocate(&arg0->unk_38, 4, arg4);
 
     for (i = 0; i < 4; i++) {
-        PointerList_Insert(&arg0->unk_38, Text_GetString(NULL, 0, D_88224F94, D_88217BFC[i]), i);
+        PointerList_Insert(&arg0->unk_38, Text_GetString(NULL, 0, gFragment23CommonStringBank, gFragment23OptionStringIds[i]), i);
     }
 
     temp_s0_2 = mem_pool_alloc(arg4, sizeof(unk_func_885012A4));
-    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(temp_s0_2, 0, 0x1C, var_s2, 0x88, D_88217C0C);
+    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(temp_s0_2, 0, 0x1C, var_s2, 0x88, gFragment23ButtonHighlightColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, temp_s0_2);
 
     arg0->unk_30 = mem_pool_alloc(arg4, sizeof(unk_func_88200FA0_030_030));
@@ -127,25 +127,25 @@ void LabPC_BuildMenuGridWidget(unk_func_88200FA0_030* arg0, s32 arg1, s32 arg2, 
     ((func88506BFC)Memmap_GetFragmentVaddr(WidgetTree_SetPagedGridSelection))(arg0->unk_30, arg2);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(temp_s0_2, arg0->unk_30);
 
-    arg0->unk_34 = mem_pool_alloc(arg4, sizeof(unk_func_88503298));
+    arg0->unk_34 = mem_pool_alloc(arg4, sizeof(WidgetVisibilityGate));
     LabPC_BuildMenuTitleLabel(arg0->unk_34, arg0->unk_00.unk_10.unk_00, 0xB4, arg4);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_34);
     LabPC_MenuGridWidget_RefreshTitle(arg0, arg2);
 
-    temp_s0_3 = mem_pool_alloc(arg4, sizeof(unk_func_88503298));
+    temp_s0_3 = mem_pool_alloc(arg4, sizeof(WidgetVisibilityGate));
     ((func88503298)Memmap_GetFragmentVaddr(WidgetTree_InitVisibilityGateBridge))(temp_s0_3, arg0->unk_2C, arg3);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, temp_s0_3);
 }
 
 void LabPC_MenuGridWidget_RefreshTitle(unk_func_88200FA0_030* arg0, s32 arg1) {
-    LabPC_MenuTitleLabel_SetText(arg0->unk_34, Text_GetString(NULL, 0, D_88224F94, arg1 + 6));
+    LabPC_MenuTitleLabel_SetText(arg0->unk_34, Text_GetString(NULL, 0, gFragment23CommonStringBank, arg1 + 6));
 }
 
 void LabPC_DrawMenuGridCell(s32 arg0, s32 arg1, char* arg2, s32 arg3) {
-    static Color_RGBA8 D_88217C10 = { 0xF0, 0xF0, 0xF0, 0xFF };
+    static Color_RGBA8 gFragment23TextColor = { 0xF0, 0xF0, 0xF0, 0xFF };
 
     Font_BeginTranslucentTextRendering();
-    Gfx_SetEnvColor(D_88217C10.r, D_88217C10.g, D_88217C10.b, D_88217C10.a);
+    Gfx_SetEnvColor(gFragment23TextColor.r, gFragment23TextColor.g, gFragment23TextColor.b, gFragment23TextColor.a);
     Font_SetActive(0x10, 0);
     Font_Printf(arg0 + 8, arg1 + 4, arg2);
     Font_EndTexturedTextRendering();
@@ -206,8 +206,8 @@ s32 LabPC_MenuHandleInput(unk_func_88200FA0_030* arg0, Controller* arg1) {
 }
 
 void LabPC_BuildMenuWidget(unk_func_88200FA0* arg0, s32 arg1, s32 arg2, s32 arg3, MemoryPool* arg4) {
-    static Color_RGBA8 D_88217C14 = { 0x1E, 0x50, 0x50, 0xFF };
-    static Color_RGBA8 D_88217C18 = { 0x00, 0x0A, 0x0A, 0xFF };
+    static Color_RGBA8 gFragment23BackgroundColorTop = { 0x1E, 0x50, 0x50, 0xFF };
+    static Color_RGBA8 gFragment23BackgroundColorBottom = { 0x00, 0x0A, 0x0A, 0xFF };
 
     WidgetNode* sp4C;
     unk_func_88500EE4* sp48;
@@ -223,8 +223,8 @@ void LabPC_BuildMenuWidget(unk_func_88200FA0* arg0, s32 arg1, s32 arg2, s32 arg3
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, sp4C);
 
     sp48 = mem_pool_alloc(arg4, sizeof(unk_func_88500EE4));
-    ((func88500EE4)Memmap_GetFragmentVaddr(WidgetTree_InitTintedTexture))(sp48, 0, 0, 0x280, 0x1E0, D_88223E48, D_88217C14,
-                                                           D_88217C18);
+    ((func88500EE4)Memmap_GetFragmentVaddr(WidgetTree_InitTintedTexture))(sp48, 0, 0, 0x280, 0x1E0, gPcBackdropTile, gFragment23BackgroundColorTop,
+                                                           gFragment23BackgroundColorBottom);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(sp4C, sp48);
 
     arg0->unk_2C = mem_pool_alloc(arg4, sizeof(unk_func_885088F4));
@@ -236,11 +236,11 @@ void LabPC_BuildMenuWidget(unk_func_88200FA0* arg0, s32 arg1, s32 arg2, s32 arg3
 
     sp44 = mem_pool_alloc(arg4, sizeof(unk_func_88509A2C));
     ((func88509A2C)Memmap_GetFragmentVaddr(WidgetTree_InitSaveSlotLabel))(sp44, 0x38, 0x22, GbSave_GetActivePort(),
-                                                           Text_GetString(NULL, 0, D_88224F90, 0));
+                                                           Text_GetString(NULL, 0, gLabPcMenuGbSaveIdLabelBank, 0));
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, sp44);
 
     sp40 = mem_pool_alloc(arg4, sizeof(unk_func_88509E34));
-    ((func88509E34)Memmap_GetFragmentVaddr(WidgetTree_InitTextMessage))(sp40, 0, 0, Text_GetString(NULL, 0, D_88224F94, 0));
+    ((func88509E34)Memmap_GetFragmentVaddr(WidgetTree_InitTextMessage))(sp40, 0, 0, Text_GetString(NULL, 0, gFragment23CommonStringBank, 0));
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, sp40);
 
     arg0->unk_30 = mem_pool_alloc(arg4, sizeof(unk_func_88200FA0_030));
@@ -302,8 +302,8 @@ s32 LabPC_ShowMenu(s32 arg0, UNUSED s32 arg1) {
     sp34 = mem_pool_try_init(0x8000, 0);
 
     Text_InitStringTables();
-    D_88224F90 = Text_GetStringTable(0x2A);
-    D_88224F94 = Text_GetStringTable(1);
+    gLabPcMenuGbSaveIdLabelBank = Text_GetStringTable(0x2A);
+    gFragment23CommonStringBank = Text_GetStringTable(1);
 
     sp30 = mem_pool_alloc(sp34, sizeof(unk_func_88200FA0));
     LabPC_BuildMenuWidget(sp30, 0, 0, arg0, sp34);

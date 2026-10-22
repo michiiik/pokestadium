@@ -9,15 +9,15 @@
 #include "src/cry.h"
 #include "src/audio_fade.h"
 
-typedef struct unk_D_80077970 {
+typedef struct SfxTableEntry {
     /* 0x00 */ u8 unk_00;
     /* 0x01 */ u8 unk_01;
     /* 0x02 */ u8 unk_02;
     /* 0x03 */ u8 unk_03;
     /* 0x04 */ u8 unk_04;
-} unk_D_80077970; // size = 0x5
+} SfxTableEntry; // size = 0x5
 
-static unk_D_80077970 D_80077970[151] = {
+static SfxTableEntry gSpeciesSfxTable[151] = {
     { 1, 1, 0, 0x52, 4 },    { 1, 1, 0, 0x58, 0x36 }, { 2, 2, 0, 0x1A, 0x3C }, { 1, 1, 0, 0, 0 },
     { 1, 1, 0, 0x54, 0x3C }, { 2, 2, 1, 0x2E, 0xA },  { 1, 1, 0, 0x5C, 0 },    { 1, 1, 0, 0x44, 0x52 },
     { 2, 2, 0, 0x22, 0x36 }, { 1, 1, 0, 0x98, 0 },    { 1, 1, 0, 0x32, 0xA4 }, { 1, 1, 0, 0, 0 },
@@ -58,50 +58,50 @@ static unk_D_80077970 D_80077970[151] = {
     { 2, 1, 0, 0x6C, 0 },    { 2, 1, 0, 0x64, 0xA },  { 0, 0, 0, 0x82, 0 },
 };
 
-static s32 D_80077C64 = 0;
-static s32 D_80077C68 = 0;
-static s32 D_80077C6C = 0;
-static s32 D_80077C70 = 0;
-static s32 D_80077C74 = 0;
-static s32 D_80077C78 = 0;
+static s32 gSfxHandle_MenuSelect = 0;
+static s32 gSfxHandle_MenuConfirm = 0;
+static s32 gSfxHandle_BackgroundMusic = 0;
+static s32 gSfxHandle_Unused = 0;
+static s32 gSfxHandle_MusicStartSound = 0;
+static s32 gSfxHandle_MusicMidwaySound = 0;
 
-u8 D_800B32A0[0x493E0];
-u32* D_800FC680;
-u8* D_800FC684;
-u8* D_800FC688;
-u8* D_800FC68C;
-u8* D_800FC690;
+u8 gAudioHeap[0x493E0];
+u32* gSfxWaveTableBuffer;
+u8* gSfxWaveTable;
+u8* gSfxTable;
+u8* gSfxBankStandard;
+u8* gSfxBankSecondary;
 u8 pad_D_800FC694[4];
-u8* D_800FC698[3];
-u8* D_800FC6A4;
-u8* D_800FC6A8;
-u8* D_800FC6AC;
-u8* D_800FC6B0[3];
-MoveSoundTable* D_800FC6C0[3];
-unk_D_800FC6CC* D_800FC6CC;
-u8* D_800FC6D0;
-unk_D_800FC6D4* D_800FC6D4;
-s16* D_800FC6D8;
-u8* D_800FC6DC;
+u8* gSfxBankScratch[3];
+u8* gAudioSfxBank;
+u8* gAudioSfxInstBank;
+u8* gMoveSoundBankBase;
+u8* gMoveSoundBankData[3];
+MoveSoundTable* gMoveSoundTables[3];
+unk_D_800FC6CC* gAudioSeqTOC;
+u8* gAudioSfxDataBuffer;
+GbTrackHeader* gAudioSfxBankExtra;
+s16* gMusicFadeBuffer;
+u8* gMoveSoundTempBuffer;
 u32* gAudioRegions;
-File1Header* D_800FC6E4;
-ALSeqFile* D_800FC6E8;
-File2SubHeader1* D_800FC6EC;
-File2SubHeader2* D_800FC6F0;
-ALSeqFile* D_800FC6F4;
-ALSeqFile* D_800FC6F8;
-File2SubHeader2* D_800FC6FC;
-ALSeqFile* D_800FC700;
-ALSeqFile* D_800FC704;
-ALSeqFile* D_800FC708;
+File1Header* gSfxArchiveHeader;
+ALSeqFile* gMoveSoundSeqInfo;
+File2SubHeader1* gSfxStandardSubHeader;
+File2SubHeader2* gSfxSecondarySubHeader;
+ALSeqFile* gAudioSfxBankSeqHeader;
+ALSeqFile* gAudioSeqHeaderNested;
+File2SubHeader2* gMoveSoundArchive;
+ALSeqFile* gMoveSoundSeqTable;
+ALSeqFile* gAudioSeqBank;
+ALSeqFile* gAudioSeqBuffer;
 s32 pad_D_800FC70C;
 s32 pad_D_800FC710;
-ALSeqFile* D_800FC714;
+ALSeqFile* gAudioSeqData;
 u8 pad_D_800FC718[0x80];
-u32* D_800FC798;
+u32* gAudioHeaderTemp;
 
 s32 Audio_PlayCommand(u32 command, s32 parameter, UNUSED s32 unused) {
-    static s32 D_80077C7C = 0;
+    static s32 gSfxHandle_MenuSfx = 0;
 
     UNUSED s32 pad;
     u32 bank_offset;
@@ -115,23 +115,23 @@ s32 Audio_PlayCommand(u32 command, s32 parameter, UNUSED s32 unused) {
     command_bank = command & 0xFFFF0000;
     effect_priority = 0x80;
 
-    if (command_bank != D_80079014) {
-        bank_offset = D_800FC6F4->seqArray[0].offset;
-        Rom_DmaRead(bank_offset, D_800FC798, 0xC);
-        Audio_RelocateOffsets(D_800FC798, bank_offset, 3);
-        Rom_DmaRead(D_800FC798[0], D_800FC6DC, D_800FC798[1] - D_800FC798[0]);
-        Audio_CopyDataWithCacheSync(D_800FC6DC, D_800FC6A8, 0xBB8);
-        Audio_RelocateSoundBankTable(D_800FC6A8);
-        Rom_DmaRead(D_800FC798[1], D_800FC6DC, D_800FC798[2] - D_800FC798[1]);
-        Audio_CopyDataWithCacheSync(D_800FC6DC, D_800FC6A4, 0x1388);
-        Audio_RelocateSoundBankWrapper(D_800FC6A4, D_800FC798[2]);
+    if (command_bank != gCurrentSfxBankId) {
+        bank_offset = gAudioSfxBankSeqHeader->seqArray[0].offset;
+        Rom_DmaRead(bank_offset, gAudioHeaderTemp, 0xC);
+        Audio_RelocateOffsets(gAudioHeaderTemp, bank_offset, 3);
+        Rom_DmaRead(gAudioHeaderTemp[0], gMoveSoundTempBuffer, gAudioHeaderTemp[1] - gAudioHeaderTemp[0]);
+        Audio_CopyDataWithCacheSync(gMoveSoundTempBuffer, gAudioSfxInstBank, 0xBB8);
+        Audio_RelocateSoundBankTable(gAudioSfxInstBank);
+        Rom_DmaRead(gAudioHeaderTemp[1], gMoveSoundTempBuffer, gAudioHeaderTemp[2] - gAudioHeaderTemp[1]);
+        Audio_CopyDataWithCacheSync(gMoveSoundTempBuffer, gAudioSfxBank, 0x1388);
+        Audio_RelocateSoundBankWrapper(gAudioSfxBank, gAudioHeaderTemp[2]);
     }
 
-    D_80079014 = command_bank;
+    gCurrentSfxBankId = command_bank;
 
     switch (command) {
         case 0x0:
-            if (Audio_IsSoundPlaying(D_80077C64) != 0) {
+            if (Audio_IsSoundPlaying(gSfxHandle_MenuSelect) != 0) {
                 return 0;
             }
 
@@ -148,8 +148,8 @@ s32 Audio_PlayCommand(u32 command, s32 parameter, UNUSED s32 unused) {
                     return 0;
             }
 
-            D_80077C64 = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, effect_id, 0x70, 0x80, -1);
-            sound_handle = D_80077C64;
+            gSfxHandle_MenuSelect = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, effect_id, 0x70, 0x80, -1);
+            sound_handle = gSfxHandle_MenuSelect;
             break;
 
         case 0x1:
@@ -166,20 +166,20 @@ s32 Audio_PlayCommand(u32 command, s32 parameter, UNUSED s32 unused) {
             if (sweep_amount > 0xFE) {
                 sweep_amount = 0xFE;
             }
-            sound_handle = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, 3, 0x80, sweep_amount, -1);
+            sound_handle = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, 3, 0x80, sweep_amount, -1);
             break;
 
         case 0x2:
-            if (Audio_IsSoundPlaying(D_80077C6C) != 0) {
-                Audio_QueueFadeSoundCommand(D_80077C6C, 0x14);
-                D_80077C6C = 0;
+            if (Audio_IsSoundPlaying(gSfxHandle_BackgroundMusic) != 0) {
+                Audio_QueueFadeSoundCommand(gSfxHandle_BackgroundMusic, 0x14);
+                gSfxHandle_BackgroundMusic = 0;
             }
-            sound_handle = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, 4, 0x80, 0x80, -1);
+            sound_handle = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, 4, 0x80, 0x80, -1);
             break;
 
         case 0x3:
-            D_80077C6C = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, 5, 0x80, 0x80, -1);
-            sound_handle = D_80077C6C;
+            gSfxHandle_BackgroundMusic = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, 5, 0x80, 0x80, -1);
+            sound_handle = gSfxHandle_BackgroundMusic;
             break;
 
         case 0x4:
@@ -194,16 +194,16 @@ s32 Audio_PlayCommand(u32 command, s32 parameter, UNUSED s32 unused) {
                 default:
                     return 0;
             }
-            D_80077C68 = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, effect_id, 0x80, 0x80, -1);
-            sound_handle = D_80077C68;
+            gSfxHandle_MenuConfirm = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, effect_id, 0x80, 0x80, -1);
+            sound_handle = gSfxHandle_MenuConfirm;
             break;
 
         case 0x6:
-            sound_handle = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, 6, 0x80, 0x80, -1);
+            sound_handle = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, 6, 0x80, 0x80, -1);
             break;
 
         case 0x7:
-            sound_handle = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, 7, 0x80, 0x80, -1);
+            sound_handle = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, 7, 0x80, 0x80, -1);
             break;
 
         case 0x8:
@@ -220,16 +220,16 @@ s32 Audio_PlayCommand(u32 command, s32 parameter, UNUSED s32 unused) {
                 parameter = 0;
             }
 
-            switch (D_80077970[parameter].unk_00) {
+            switch (gSpeciesSfxTable[parameter].unk_00) {
                 case 0:
                     return 0;
 
                 case 1:
-                    sound_handle = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, 7, 0x80, 0x80, -1);
+                    sound_handle = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, 7, 0x80, 0x80, -1);
                     break;
 
                 case 2:
-                    sound_handle = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, 6, 0x80, 0x80, -1);
+                    sound_handle = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, 6, 0x80, 0x80, -1);
                     break;
 
                 default:
@@ -239,7 +239,7 @@ s32 Audio_PlayCommand(u32 command, s32 parameter, UNUSED s32 unused) {
 
         case 0x32:
             if (parameter == 0xC8) {
-                return Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, 0x20, 0x80, 0x80, -1);
+                return Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, 0x20, 0x80, 0x80, -1);
             }
 
             if (parameter >= 0x98) {
@@ -252,35 +252,35 @@ s32 Audio_PlayCommand(u32 command, s32 parameter, UNUSED s32 unused) {
                 parameter = 0;
             }
 
-            switch (D_80077970[parameter].unk_01) {
+            switch (gSpeciesSfxTable[parameter].unk_01) {
                 case 0:
-                    sound_handle = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, 0xB, 0x80, 0x80, -1);
+                    sound_handle = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, 0xB, 0x80, 0x80, -1);
                     break;
 
                 case 1:
-                    sound_handle = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, 0xA, 0x80, 0x80, -1);
+                    sound_handle = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, 0xA, 0x80, 0x80, -1);
                     break;
 
                 case 2:
-                    sound_handle = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, 9, 0x80, 0x80, -1);
+                    sound_handle = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, 9, 0x80, 0x80, -1);
                     break;
             }
             break;
 
         case 0x12:
-            sound_handle = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, 0xC, 0x80, 0x80, -1);
+            sound_handle = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, 0xC, 0x80, 0x80, -1);
             break;
 
         case 0x13:
-            sound_handle = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, 0xD, 0x80, 0x80, -1);
+            sound_handle = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, 0xD, 0x80, 0x80, -1);
             break;
 
         case 0x14:
-            sound_handle = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, 0xE, 0x80, 0x80, -1);
+            sound_handle = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, 0xE, 0x80, 0x80, -1);
             break;
 
         case 0x28:
-            sound_handle = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, 0xF, 0x80, 0x80, -1);
+            sound_handle = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, 0xF, 0x80, 0x80, -1);
             break;
 
         case 0x5A:
@@ -297,7 +297,7 @@ s32 Audio_PlayCommand(u32 command, s32 parameter, UNUSED s32 unused) {
                     return 0;
             }
 
-            D_80077C74 = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, effect_id, 0x80, 0x80, -1);
+            gSfxHandle_MusicStartSound = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, effect_id, 0x80, 0x80, -1);
             break;
 
         case 0x5B:
@@ -311,7 +311,7 @@ s32 Audio_PlayCommand(u32 command, s32 parameter, UNUSED s32 unused) {
                 default:
                     return 0;
             }
-            D_80077C78 = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, 0x14, 0x80, 0x80, -1);
+            gSfxHandle_MusicMidwaySound = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, 0x14, 0x80, 0x80, -1);
             break;
 
         case 0x15:
@@ -327,7 +327,7 @@ s32 Audio_PlayCommand(u32 command, s32 parameter, UNUSED s32 unused) {
                 default:
                     return 0;
             }
-            sound_handle = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, effect_id, 0x80, 0x80, 0x80);
+            sound_handle = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, effect_id, 0x80, 0x80, 0x80);
             break;
 
         case 0x16:
@@ -344,17 +344,17 @@ s32 Audio_PlayCommand(u32 command, s32 parameter, UNUSED s32 unused) {
                     return 0;
             }
 
-            if (Audio_IsSoundPlaying(D_80077C7C) != 0) {
-                D_80077C7C = 0;
-                sound_handle = D_80077C7C;
+            if (Audio_IsSoundPlaying(gSfxHandle_MenuSfx) != 0) {
+                gSfxHandle_MenuSfx = 0;
+                sound_handle = gSfxHandle_MenuSfx;
             } else {
-                D_80077C7C = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, effect_id, 0x80, 0x80, 0x80);
-                sound_handle = D_80077C7C;
+                gSfxHandle_MenuSfx = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, effect_id, 0x80, 0x80, 0x80);
+                sound_handle = gSfxHandle_MenuSfx;
             }
             break;
 
         case 0x3C:
-            sound_handle = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, 0x18, 0x80, 0x80, -1);
+            sound_handle = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, 0x18, 0x80, 0x80, -1);
             break;
 
         case 0x3D:
@@ -379,7 +379,7 @@ s32 Audio_PlayCommand(u32 command, s32 parameter, UNUSED s32 unused) {
                 default:
                     return 0;
             }
-            sound_handle = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, effect_id, effect_priority, 0x80, -1);
+            sound_handle = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, effect_id, effect_priority, 0x80, -1);
             break;
 
         case 0x3E:
@@ -392,35 +392,35 @@ s32 Audio_PlayCommand(u32 command, s32 parameter, UNUSED s32 unused) {
             } else {
                 return 0;
             }
-            sound_handle = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, effect_id, 0xFF, 0x80, -1);
+            sound_handle = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, effect_id, 0xFF, 0x80, -1);
             break;
 
         case 0x3F:
-            sound_handle = Audio_PlaySoundEffect(D_800FC6A4, D_800FC6A8, 0x1F, 0x80, 0x80, -1);
+            sound_handle = Audio_PlaySoundEffect(gAudioSfxBank, gAudioSfxInstBank, 0x1F, 0x80, 0x80, -1);
             break;
 
         case 0x1E:
-            sound_handle = Effect_TriggerMoveVisual(0xA6, 1, 0);
+            sound_handle = Audio_PlayMoveSoundEffect(0xA6, 1, 0);
             break;
 
         case 0x1F:
-            sound_handle = Effect_TriggerMoveVisual(0xA6, 1, 1);
+            sound_handle = Audio_PlayMoveSoundEffect(0xA6, 1, 1);
             break;
 
         case 0x20:
-            sound_handle = Effect_TriggerMoveVisual(0xA6, 1, 2);
+            sound_handle = Audio_PlayMoveSoundEffect(0xA6, 1, 2);
             break;
 
         case 0x21:
-            sound_handle = Effect_TriggerMoveVisual(0xA6, 1, 3);
+            sound_handle = Audio_PlayMoveSoundEffect(0xA6, 1, 3);
             break;
 
         case 0x22:
-            sound_handle = Effect_TriggerMoveVisual(0xA6, 1, 4);
+            sound_handle = Audio_PlayMoveSoundEffect(0xA6, 1, 4);
             break;
 
         case 0x23:
-            sound_handle = Effect_TriggerMoveVisual(0xA6, 1, 5);
+            sound_handle = Audio_PlayMoveSoundEffect(0xA6, 1, 5);
             break;
 
         default:
@@ -436,35 +436,35 @@ s32 Audio_FadeCommand(s32 arg0, u32 arg1) {
             if (arg1 == 0) {
                 arg1 = 1;
             }
-            Audio_QueueFadeSoundCommand(D_80077C64, arg1);
-            D_80077C64 = 0;
+            Audio_QueueFadeSoundCommand(gSfxHandle_MenuSelect, arg1);
+            gSfxHandle_MenuSelect = 0;
             break;
 
         case 0x4:
             if (arg1 == 0) {
                 arg1 = 1;
             }
-            Audio_QueueFadeSoundCommand(D_80077C68, arg1);
+            Audio_QueueFadeSoundCommand(gSfxHandle_MenuConfirm, arg1);
             break;
 
         case 0x3:
-            Audio_QueueFadeSoundCommand(D_80077C6C, 0x3C);
-            D_80077C6C = 0;
+            Audio_QueueFadeSoundCommand(gSfxHandle_BackgroundMusic, 0x3C);
+            gSfxHandle_BackgroundMusic = 0;
             break;
 
         case 0xA1:
-            Audio_QueueFadeSoundCommand(D_80077C70, 0x78);
-            D_80077C70 = 0;
+            Audio_QueueFadeSoundCommand(gSfxHandle_Unused, 0x78);
+            gSfxHandle_Unused = 0;
             break;
 
         case 0x5A:
-            Audio_QueueFadeSoundCommand(D_80077C74, 0x5A);
-            D_80077C74 = 0;
+            Audio_QueueFadeSoundCommand(gSfxHandle_MusicStartSound, 0x5A);
+            gSfxHandle_MusicStartSound = 0;
             break;
 
         case 0x5B:
-            Audio_QueueFadeSoundCommand(D_80077C78, 0x5A);
-            D_80077C78 = 0;
+            Audio_QueueFadeSoundCommand(gSfxHandle_MusicMidwaySound, 0x5A);
+            gSfxHandle_MusicMidwaySound = 0;
             break;
 
         default:
@@ -474,7 +474,7 @@ s32 Audio_FadeCommand(s32 arg0, u32 arg1) {
     return 1;
 }
 
-void func_8003733C(void) {
+void Audio_NullTask(void) {
 }
 
 void Audio_CreateFrameTaskWrapper(void* arg0) {
@@ -501,7 +501,7 @@ s32 Audio_InitBanks(void) {
     config.channels = 0x18;
     config.vvoices = 0x34;
     config.pvoices = 0x18;
-    config.heap = D_800B32A0;
+    config.heap = gAudioHeap;
     config.heap_length = AUDIO_HEAP_SIZE;
     config.syn_updates = 0x100;
     config.syn_output_rate = 32000;
@@ -514,8 +514,8 @@ s32 Audio_InitBanks(void) {
     Audio_InitializeVoiceManager(&config);
     Rom_InitDevice(2);
 
-    D_800FC6DC = alHeapAlloc(audio_heap, 1, 0x61A8);
-    D_800FC798 = alHeapAlloc(audio_heap, 8, 4);
+    gMoveSoundTempBuffer = alHeapAlloc(audio_heap, 1, 0x61A8);
+    gAudioHeaderTemp = alHeapAlloc(audio_heap, 8, 4);
     gAudioRegions = alHeapAlloc(audio_heap, 7, 4);
 
     // Copy rom data from 0x15C0000 into gAudioRegions
@@ -523,176 +523,176 @@ s32 Audio_InitBanks(void) {
     // Add the address 0x15C0000 to every offset (besides the first which is the total size)
     // to make absolute offsets.
     Audio_RelocateOffsets(&gAudioRegions[1], &gAudioData, 6);
-    sp78 = D_800FC798;
+    sp78 = gAudioHeaderTemp;
     // Copy data from the offset at 0x15C0004 into sp78, a sub-header for this "archive,"
     // specifying the size of the header and number of files etc. Header at 0x15C0020
     Rom_DmaRead(gAudioRegions[1], sp78, 0xC);
     num_files = sp78->file1.num_files;
     // Allocate vram, copy rom bytes, and add address to make absolute,
     // for all of the first archive's files, including header.
-    D_800FC6E4 = alHeapAlloc(audio_heap, (0xC / sizeof(u32)) + num_files, sizeof(u32));
-    Rom_DmaRead(gAudioRegions[1], D_800FC6E4, 0xC + (num_files * 4));
+    gSfxArchiveHeader = alHeapAlloc(audio_heap, (0xC / sizeof(u32)) + num_files, sizeof(u32));
+    Rom_DmaRead(gAudioRegions[1], gSfxArchiveHeader, 0xC + (num_files * 4));
     // Update just the first 2 pointers from the header,
     // pointer to first file, and pointer to N64 wave tables.
-    Audio_RelocateOffsets(&D_800FC6E4->offset1, gAudioRegions[1], 2);
+    Audio_RelocateOffsets(&gSfxArchiveHeader->offset1, gAudioRegions[1], 2);
     // Make absolute all the offsets after the header, for the archive files at 0x15C002C
-    Audio_RelocateOffsets(D_800FC6E4->files, gAudioRegions[1], num_files);
-    // Copy the first file into D_800FC6DC. What is this?
+    Audio_RelocateOffsets(gSfxArchiveHeader->files, gAudioRegions[1], num_files);
+    // Copy the first file into gMoveSoundTempBuffer. What is this?
     // Yay0 compressed at 0x15C0160
-    Rom_DmaRead(D_800FC6E4->offset1, D_800FC6DC, D_800FC6E4->wave_tables_offset - D_800FC6E4->offset1);
+    Rom_DmaRead(gSfxArchiveHeader->offset1, gMoveSoundTempBuffer, gSfxArchiveHeader->wave_tables_offset - gSfxArchiveHeader->offset1);
 
     // Decompressed first file memory.
-    D_800FC684 = alHeapAlloc(audio_heap, 1, 0x4120);
+    gSfxWaveTable = alHeapAlloc(audio_heap, 1, 0x4120);
 
-    // Decompress first file Yay0 from D_800FC6DC, into D_800FC684
-    Audio_CopyDataWithCacheSync(D_800FC6DC, D_800FC684, 0x4120);
+    // Decompress first file Yay0 from gMoveSoundTempBuffer, into gSfxWaveTable
+    Audio_CopyDataWithCacheSync(gMoveSoundTempBuffer, gSfxWaveTable, 0x4120);
 
     // ??
-    Audio_RelocateSoundBankWrapper(D_800FC684, D_800FC6E4->wave_tables_offset);
+    Audio_RelocateSoundBankWrapper(gSfxWaveTable, gSfxArchiveHeader->wave_tables_offset);
 
-    D_800FC680 = alHeapAlloc(audio_heap, 1, 0x98D8);
+    gSfxWaveTableBuffer = alHeapAlloc(audio_heap, 1, 0x98D8);
 
     // Load second archive header at 0x16F27E0
     Rom_DmaRead(gAudioRegions[2], sp78, 4 + 4);
     num_files = sp78->seq.seqCount;
     // Memory to hold archive toc
-    D_800FC6E8 = alHeapAlloc(audio_heap, 1, 4 + (num_files * sizeof(ALSeqData)));
-    // Read the alSeqFile into D_800FC6E8
-    Rom_DmaRead(gAudioRegions[2], D_800FC6E8, 4 + (num_files * sizeof(ALSeqData)));
+    gMoveSoundSeqInfo = alHeapAlloc(audio_heap, 1, 4 + (num_files * sizeof(ALSeqData)));
+    // Read the alSeqFile into gMoveSoundSeqInfo
+    Rom_DmaRead(gAudioRegions[2], gMoveSoundSeqInfo, 4 + (num_files * sizeof(ALSeqData)));
     // Initialise the memory as an alSeqFile
-    alSeqFileNew(D_800FC6E8, gAudioRegions[2]);
+    alSeqFileNew(gMoveSoundSeqInfo, gAudioRegions[2]);
 
-    // Read the first archive sub header from 0x16F2804, into D_800FC6EC
-    D_800FC6EC = alHeapAlloc(audio_heap, 3, 4);
-    Rom_DmaRead(D_800FC6E8->seqArray[0].offset, D_800FC6EC, sizeof(File2SubHeader1));
-    Audio_RelocateOffsets(D_800FC6EC, D_800FC6E8->seqArray[0].offset, sizeof(File2SubHeader1) / sizeof(u32));
+    // Read the first archive sub header from 0x16F2804, into gSfxStandardSubHeader
+    gSfxStandardSubHeader = alHeapAlloc(audio_heap, 3, 4);
+    Rom_DmaRead(gMoveSoundSeqInfo->seqArray[0].offset, gSfxStandardSubHeader, sizeof(File2SubHeader1));
+    Audio_RelocateOffsets(gSfxStandardSubHeader, gMoveSoundSeqInfo->seqArray[0].offset, sizeof(File2SubHeader1) / sizeof(u32));
 
-    // Read the first file from the sub header into D_800FC6DC (0x16F2814)
-    Rom_DmaRead(D_800FC6EC->offset1, D_800FC6DC, D_800FC6EC->offset2 - D_800FC6EC->offset1);
-    // Decompress the yay0 file into D_800FC688
-    D_800FC688 = alHeapAlloc(audio_heap, 1, 0xBB8);
-    Audio_CopyDataWithCacheSync(D_800FC6DC, D_800FC688, 0xBB8);
+    // Read the first file from the sub header into gMoveSoundTempBuffer (0x16F2814)
+    Rom_DmaRead(gSfxStandardSubHeader->offset1, gMoveSoundTempBuffer, gSfxStandardSubHeader->offset2 - gSfxStandardSubHeader->offset1);
+    // Decompress the yay0 file into gSfxTable
+    gSfxTable = alHeapAlloc(audio_heap, 1, 0xBB8);
+    Audio_CopyDataWithCacheSync(gMoveSoundTempBuffer, gSfxTable, 0xBB8);
     // ???
-    Audio_RelocateSoundBankTable(D_800FC688);
+    Audio_RelocateSoundBankTable(gSfxTable);
 
-    // Read the second file from the sub header into D_800FC6DC (0x16F2BD0)
-    Rom_DmaRead(D_800FC6EC->offset2, D_800FC6DC, D_800FC6EC->wave_tables_offset - D_800FC6EC->offset2);
-    // Decompress the yay0 file into D_800FC68C
-    D_800FC68C = alHeapAlloc(audio_heap, 1, 0x157C);
-    Audio_CopyDataWithCacheSync(D_800FC6DC, D_800FC68C, 0x157C);
+    // Read the second file from the sub header into gMoveSoundTempBuffer (0x16F2BD0)
+    Rom_DmaRead(gSfxStandardSubHeader->offset2, gMoveSoundTempBuffer, gSfxStandardSubHeader->wave_tables_offset - gSfxStandardSubHeader->offset2);
+    // Decompress the yay0 file into gSfxBankStandard
+    gSfxBankStandard = alHeapAlloc(audio_heap, 1, 0x157C);
+    Audio_CopyDataWithCacheSync(gMoveSoundTempBuffer, gSfxBankStandard, 0x157C);
     // ???
-    Audio_RelocateSoundBankWrapper(D_800FC68C, D_800FC6EC->wave_tables_offset);
+    Audio_RelocateSoundBankWrapper(gSfxBankStandard, gSfxStandardSubHeader->wave_tables_offset);
 
     // Read archive 2 sub file 2 (0x1722F74)
-    Rom_DmaRead(D_800FC6E8->seqArray[1].offset, sp78, sizeof(File2SubHeader2));
+    Rom_DmaRead(gMoveSoundSeqInfo->seqArray[1].offset, sp78, sizeof(File2SubHeader2));
     num_files = sp78->file2sub2.num_files;
 
-    D_800FC6F0 = alHeapAlloc(audio_heap, 4, (sizeof(File2SubHeader2) / sizeof(u32)) + num_files);
-    Rom_DmaRead(D_800FC6E8->seqArray[1].offset, D_800FC6F0, sizeof(File2SubHeader2) + (num_files * sizeof(u32)));
-    Audio_RelocateOffsets(&D_800FC6F0->offset1, D_800FC6E8->seqArray[1].offset, num_files + 2);
-    Rom_DmaRead(D_800FC6F0->offset1, D_800FC6DC, D_800FC6F0->wave_tables_offset - D_800FC6F0->offset1);
-    // Decompress the yay0 file into D_800FC688
-    D_800FC690 = alHeapAlloc(audio_heap, 1, 0x2EE0);
-    Audio_CopyDataWithCacheSync(D_800FC6DC, D_800FC690, 0x2EE0);
+    gSfxSecondarySubHeader = alHeapAlloc(audio_heap, 4, (sizeof(File2SubHeader2) / sizeof(u32)) + num_files);
+    Rom_DmaRead(gMoveSoundSeqInfo->seqArray[1].offset, gSfxSecondarySubHeader, sizeof(File2SubHeader2) + (num_files * sizeof(u32)));
+    Audio_RelocateOffsets(&gSfxSecondarySubHeader->offset1, gMoveSoundSeqInfo->seqArray[1].offset, num_files + 2);
+    Rom_DmaRead(gSfxSecondarySubHeader->offset1, gMoveSoundTempBuffer, gSfxSecondarySubHeader->wave_tables_offset - gSfxSecondarySubHeader->offset1);
+    // Decompress the yay0 file into gSfxTable
+    gSfxBankSecondary = alHeapAlloc(audio_heap, 1, 0x2EE0);
+    Audio_CopyDataWithCacheSync(gMoveSoundTempBuffer, gSfxBankSecondary, 0x2EE0);
     // ???
-    Audio_RelocateSoundBankWrapper(D_800FC690, D_800FC6F0->wave_tables_offset);
+    Audio_RelocateSoundBankWrapper(gSfxBankSecondary, gSfxSecondarySubHeader->wave_tables_offset);
 
-    D_800FC698[0] = alHeapAlloc(audio_heap, 1, 0x258);
-    D_800FC698[1] = alHeapAlloc(audio_heap, 1, 0x258);
-    D_800FC698[2] = alHeapAlloc(audio_heap, 1, 0x258);
+    gSfxBankScratch[0] = alHeapAlloc(audio_heap, 1, 0x258);
+    gSfxBankScratch[1] = alHeapAlloc(audio_heap, 1, 0x258);
+    gSfxBankScratch[2] = alHeapAlloc(audio_heap, 1, 0x258);
 
     // Read the second seq array (0x17C9C24)
-    Rom_DmaRead(D_800FC6E8->seqArray[2].offset, sp78, sizeof(File2SubHeader2));
+    Rom_DmaRead(gMoveSoundSeqInfo->seqArray[2].offset, sp78, sizeof(File2SubHeader2));
     num_files = sp78->file2sub2.num_files;
 
-    D_800FC6FC = alHeapAlloc(audio_heap, 4, num_files + 3);
-    Rom_DmaRead(D_800FC6E8->seqArray[2].offset, D_800FC6FC, sizeof(File2SubHeader2) + (num_files * sizeof(u32)));
-    Audio_RelocateOffsets(&D_800FC6FC->offset1, D_800FC6E8->seqArray[2].offset, num_files + 2);
-    Rom_DmaRead(D_800FC6FC->offset1, D_800FC6DC, D_800FC6FC->wave_tables_offset - D_800FC6FC->offset1);
-    D_800FC6AC = alHeapAlloc(audio_heap, 1, 0x9C4);
+    gMoveSoundArchive = alHeapAlloc(audio_heap, 4, num_files + 3);
+    Rom_DmaRead(gMoveSoundSeqInfo->seqArray[2].offset, gMoveSoundArchive, sizeof(File2SubHeader2) + (num_files * sizeof(u32)));
+    Audio_RelocateOffsets(&gMoveSoundArchive->offset1, gMoveSoundSeqInfo->seqArray[2].offset, num_files + 2);
+    Rom_DmaRead(gMoveSoundArchive->offset1, gMoveSoundTempBuffer, gMoveSoundArchive->wave_tables_offset - gMoveSoundArchive->offset1);
+    gMoveSoundBankBase = alHeapAlloc(audio_heap, 1, 0x9C4);
     // Decompress
-    Audio_CopyDataWithCacheSync(D_800FC6DC, D_800FC6AC, 0x9C4);
-    Audio_RelocateSoundBankWrapper(D_800FC6AC, D_800FC6FC->wave_tables_offset);
+    Audio_CopyDataWithCacheSync(gMoveSoundTempBuffer, gMoveSoundBankBase, 0x9C4);
+    Audio_RelocateSoundBankWrapper(gMoveSoundBankBase, gMoveSoundArchive->wave_tables_offset);
 
-    D_800FC6B0[0] = alHeapAlloc(audio_heap, 1, 0x3E8);
-    D_800FC6B0[1] = alHeapAlloc(audio_heap, 1, 0x3E8);
-    D_800FC6B0[2] = alHeapAlloc(audio_heap, 1, 0x3E8);
+    gMoveSoundBankData[0] = alHeapAlloc(audio_heap, 1, 0x3E8);
+    gMoveSoundBankData[1] = alHeapAlloc(audio_heap, 1, 0x3E8);
+    gMoveSoundBankData[2] = alHeapAlloc(audio_heap, 1, 0x3E8);
 
     // Read seq header from 0x17DC304
-    Rom_DmaRead(D_800FC6E8->seqArray[3].offset, sp78, 4 + 4);
+    Rom_DmaRead(gMoveSoundSeqInfo->seqArray[3].offset, sp78, 4 + 4);
     num_files = sp78->seq.seqCount;
 
-    D_800FC6F4 = alHeapAlloc(audio_heap, 4, 4 + (num_files * sizeof(ALSeqData)));
-    Rom_DmaRead(D_800FC6E8->seqArray[3].offset, D_800FC6F4, 4 + (num_files * sizeof(ALSeqData)));
-    alSeqFileNew(D_800FC6F4, D_800FC6E8->seqArray[3].offset);
+    gAudioSfxBankSeqHeader = alHeapAlloc(audio_heap, 4, 4 + (num_files * sizeof(ALSeqData)));
+    Rom_DmaRead(gMoveSoundSeqInfo->seqArray[3].offset, gAudioSfxBankSeqHeader, 4 + (num_files * sizeof(ALSeqData)));
+    alSeqFileNew(gAudioSfxBankSeqHeader, gMoveSoundSeqInfo->seqArray[3].offset);
 
     // Load second seq header from 0x1850C20
-    Rom_DmaRead(D_800FC6F4->seqArray[1].offset, sp78, 4 + 4);
+    Rom_DmaRead(gAudioSfxBankSeqHeader->seqArray[1].offset, sp78, 4 + 4);
     num_files = sp78->seq.seqCount;
 
-    D_800FC6F8 = alHeapAlloc(audio_heap, 4, 4 + (num_files * sizeof(ALSeqData)));
-    Rom_DmaRead(D_800FC6F4->seqArray[1].offset, D_800FC6F8, 4 + (num_files * sizeof(ALSeqData)));
-    alSeqFileNew(D_800FC6F8, D_800FC6F4->seqArray[1].offset);
+    gAudioSeqHeaderNested = alHeapAlloc(audio_heap, 4, 4 + (num_files * sizeof(ALSeqData)));
+    Rom_DmaRead(gAudioSfxBankSeqHeader->seqArray[1].offset, gAudioSeqHeaderNested, 4 + (num_files * sizeof(ALSeqData)));
+    alSeqFileNew(gAudioSeqHeaderNested, gAudioSfxBankSeqHeader->seqArray[1].offset);
 
-    D_800FC6A4 = alHeapAlloc(audio_heap, 1, 0x1388);
-    D_800FC6A8 = alHeapAlloc(audio_heap, 1, 0xBB8);
+    gAudioSfxBank = alHeapAlloc(audio_heap, 1, 0x1388);
+    gAudioSfxInstBank = alHeapAlloc(audio_heap, 1, 0xBB8);
 
     // load third archive from the main list, archive is at 0x1978820
     Rom_DmaRead(gAudioRegions[3], sp78, 4 + 4);
     num_files = sp78->seq.seqCount;
 
-    D_800FC700 = alHeapAlloc(audio_heap, 1, 4 + (num_files * sizeof(ALSeqData)));
-    Rom_DmaRead(gAudioRegions[3], D_800FC700, 4 + (num_files * sizeof(ALSeqData)));
-    alSeqFileNew(D_800FC700, gAudioRegions[3]);
+    gMoveSoundSeqTable = alHeapAlloc(audio_heap, 1, 4 + (num_files * sizeof(ALSeqData)));
+    Rom_DmaRead(gAudioRegions[3], gMoveSoundSeqTable, 4 + (num_files * sizeof(ALSeqData)));
+    alSeqFileNew(gMoveSoundSeqTable, gAudioRegions[3]);
 
     // load fourth archive from the main list, archive is at 0x197C1E0
     Rom_DmaRead(gAudioRegions[4], sp78, 4 + 4);
     num_files = sp78->seq.seqCount;
 
-    D_800FC704 = alHeapAlloc(audio_heap, 1, 4 + (num_files * sizeof(ALSeqData)));
-    Rom_DmaRead(gAudioRegions[4], D_800FC704, 4 + (num_files * sizeof(ALSeqData)));
-    alSeqFileNew(D_800FC704, gAudioRegions[4]);
+    gAudioSeqBank = alHeapAlloc(audio_heap, 1, 4 + (num_files * sizeof(ALSeqData)));
+    Rom_DmaRead(gAudioRegions[4], gAudioSeqBank, 4 + (num_files * sizeof(ALSeqData)));
+    alSeqFileNew(gAudioSeqBank, gAudioRegions[4]);
 
-    D_800FC6C0[0] = alHeapAlloc(audio_heap, 1, 0x44C);
-    D_800FC6C0[1] = alHeapAlloc(audio_heap, 1, 0x44C);
-    D_800FC6C0[2] = alHeapAlloc(audio_heap, 1, 0x44C);
+    gMoveSoundTables[0] = alHeapAlloc(audio_heap, 1, 0x44C);
+    gMoveSoundTables[1] = alHeapAlloc(audio_heap, 1, 0x44C);
+    gMoveSoundTables[2] = alHeapAlloc(audio_heap, 1, 0x44C);
 
     // load the fourth archive's first seq, at 0x197C1FC
-    Rom_DmaRead(D_800FC704->seqArray[0].offset, sp78, 4 + 4);
+    Rom_DmaRead(gAudioSeqBank->seqArray[0].offset, sp78, 4 + 4);
     num_files = sp78->seq.seqCount;
-    D_800FC708 = alHeapAlloc(audio_heap, 1, 4 + (num_files * sizeof(ALSeqData)));
-    Rom_DmaRead(D_800FC704->seqArray[0].offset, D_800FC708, 4 + (num_files * sizeof(ALSeqData)));
-    alSeqFileNew(D_800FC708, D_800FC704->seqArray[0].offset);
+    gAudioSeqBuffer = alHeapAlloc(audio_heap, 1, 4 + (num_files * sizeof(ALSeqData)));
+    Rom_DmaRead(gAudioSeqBank->seqArray[0].offset, gAudioSeqBuffer, 4 + (num_files * sizeof(ALSeqData)));
+    alSeqFileNew(gAudioSeqBuffer, gAudioSeqBank->seqArray[0].offset);
 
-    D_80079364 = 0;
+    gAudioSeqLoadPending = 0;
 
     // load the fourth archive's third seq at 0x1A2AD20
-    Rom_DmaRead(D_800FC704->seqArray[2].offset, sp78, 4 + 4);
+    Rom_DmaRead(gAudioSeqBank->seqArray[2].offset, sp78, 4 + 4);
     num_files = sp78->seq.seqCount;
-    D_800FC714 = alHeapAlloc(audio_heap, 1, 4 + (num_files * sizeof(ALSeqData)));
-    Rom_DmaRead(D_800FC704->seqArray[2].offset, D_800FC714, 4 + (num_files * sizeof(ALSeqData)));
-    alSeqFileNew(D_800FC714, D_800FC704->seqArray[2].offset);
+    gAudioSeqData = alHeapAlloc(audio_heap, 1, 4 + (num_files * sizeof(ALSeqData)));
+    Rom_DmaRead(gAudioSeqBank->seqArray[2].offset, gAudioSeqData, 4 + (num_files * sizeof(ALSeqData)));
+    alSeqFileNew(gAudioSeqData, gAudioSeqBank->seqArray[2].offset);
 
-    D_800FC6D8 = alHeapAlloc(audio_heap, 0xB80, 2);
+    gMusicFadeBuffer = alHeapAlloc(audio_heap, 0xB80, 2);
 
     // load the 5th main archive at 0x1FBA260
-    D_800FC6D4 = alHeapAlloc(audio_heap, 0x1388, 1);
-    Rom_DmaRead(gAudioRegions[5], D_800FC6D4, gAudioRegions[6] - gAudioRegions[5]);
+    gAudioSfxBankExtra = alHeapAlloc(audio_heap, 0x1388, 1);
+    Rom_DmaRead(gAudioRegions[5], gAudioSfxBankExtra, gAudioRegions[6] - gAudioRegions[5]);
 
     // load the 6th main archive at 0x1FBB220
-    D_800FC6CC = alHeapAlloc(audio_heap, 0x100, 1);
-    Rom_DmaRead(gAudioRegions[6], D_800FC6CC, 0x100);
+    gAudioSeqTOC = alHeapAlloc(audio_heap, 0x100, 1);
+    Rom_DmaRead(gAudioRegions[6], gAudioSeqTOC, 0x100);
 
     for (i = 0; i < 32; i++) {
-        D_800FC6CC[i].unk_00 += gAudioRegions[6];
+        gAudioSeqTOC[i].unk_00 += gAudioRegions[6];
     }
 
-    D_800FC6D0 = alHeapAlloc(audio_heap, 0x2328, 1);
+    gAudioSfxDataBuffer = alHeapAlloc(audio_heap, 0x2328, 1);
 
     Audio_SetChannelVolume(2, 2);
     Audio_SetChannelVolume(1, 3);
 
-    D_800FC820 = 0;
+    gAudioDMAFlags = 0;
 
     return audio_heap->cur - audio_heap->base;
 }

@@ -3,16 +3,16 @@
 #include "src/gallery.h"
 #include "src/gfx_buffer.h"
 
-static Trail40 D_843A06A0;
+static Trail40 gWaterSurfaceAltData;
 
-static Lights2 D_84389560 = gdSPDefLights2(255, 255, 255, 255, 255, 255, 30, 30, 10, 255, 255, 255, 226, 30, 10);
+static Lights2 gWaterSurfaceAltLights = gdSPDefLights2(255, 255, 255, 255, 255, 255, 30, 30, 10, 255, 255, 255, 226, 30, 10);
 static Gfx D_84389588[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_2CYCLE),
     gsSPClearGeometryMode(G_ZBUFFER | G_SHADE | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN |
                           G_TEXTURE_GEN_LINEAR | G_LOD | G_SHADING_SMOOTH | G_CLIPPING | 0x0040F9FA),
     gsSPSetGeometryMode(G_ZBUFFER | G_SHADE | G_LIGHTING | G_TEXTURE_GEN | G_SHADING_SMOOTH),
-    gsSPSetLights2(D_84389560),
+    gsSPSetLights2(gWaterSurfaceAltLights),
     gsSPTexture(0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON),
     gsDPPipeSync(),
     gsDPSetCombineMode(G_CC_MODULATEIA, G_CC_MODULATEIA2),
@@ -22,7 +22,7 @@ static Gfx D_84389588[] = {
     gsDPSetRenderMode(G_RM_PASS, G_RM_XLU_SURF2),
     gsSPEndDisplayList(),
 };
-static Gfx D_84389608[] = {
+static Gfx gTrail40GridAltDL[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_1CYCLE),
     gsSPClearGeometryMode(G_ZBUFFER | G_SHADE | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN |
@@ -50,12 +50,12 @@ void Trail40GridAlt_Init(s16 arg0) {
     s16 tmp2;
     s16 tmp3;
 
-    D_843A06A0.unk_0000 = 0;
-    D_843A06A0.unk_0002 = arg0;
-    D_843A06A0.unk_0004 = 0;
-    D_843A06A0.unk_0008 = 0.0f;
+    gWaterSurfaceAltData.unk_0000 = 0;
+    gWaterSurfaceAltData.unk_0002 = arg0;
+    gWaterSurfaceAltData.unk_0004 = 0;
+    gWaterSurfaceAltData.unk_0008 = 0.0f;
 
-    var_v0 = &D_843A06A0.unk_0014[0][0];
+    var_v0 = &gWaterSurfaceAltData.unk_0014[0][0];
 
     for (i = 0; i < 16; i++) {
         for (j = 0; j < 16; j++) {
@@ -94,22 +94,22 @@ void Trail40GridAlt_Start(s32 arg0, s32 arg1) {
     UNUSED s32 pad;
     s16 sp46;
 
-    sp6C = D_843A06A0.unk_0014[arg0][arg1].unk_00;
-    sp68 = D_843A06A0.unk_0014[arg0][arg1].unk_04;
-    sp64 = D_843A06A0.unk_0014[arg0][arg1].unk_08;
+    sp6C = gWaterSurfaceAltData.unk_0014[arg0][arg1].unk_00;
+    sp68 = gWaterSurfaceAltData.unk_0014[arg0][arg1].unk_04;
+    sp64 = gWaterSurfaceAltData.unk_0014[arg0][arg1].unk_08;
     sp84 = 0.0f;
     sp80 = 0.0f;
     sp7C = 0.0f;
     sp46 = 0;
 
     if ((arg0 > 0) && (arg1 >= 1)) {
-        sp60 = D_843A06A0.unk_0014[arg0 - 1][arg1].unk_00 - sp6C;
-        sp5C = D_843A06A0.unk_0014[arg0 - 1][arg1].unk_04 - sp68;
-        sp58 = D_843A06A0.unk_0014[arg0 - 1][arg1].unk_08 - sp64;
+        sp60 = gWaterSurfaceAltData.unk_0014[arg0 - 1][arg1].unk_00 - sp6C;
+        sp5C = gWaterSurfaceAltData.unk_0014[arg0 - 1][arg1].unk_04 - sp68;
+        sp58 = gWaterSurfaceAltData.unk_0014[arg0 - 1][arg1].unk_08 - sp64;
         Vec3f_NormalizeComponents(&sp60, &sp5C, &sp58);
-        sp54 = D_843A06A0.unk_0014[arg0][arg1 - 1].unk_00 - sp6C;
-        sp50 = D_843A06A0.unk_0014[arg0][arg1 - 1].unk_04 - sp68;
-        sp4C = D_843A06A0.unk_0014[arg0][arg1 - 1].unk_08 - sp64;
+        sp54 = gWaterSurfaceAltData.unk_0014[arg0][arg1 - 1].unk_00 - sp6C;
+        sp50 = gWaterSurfaceAltData.unk_0014[arg0][arg1 - 1].unk_04 - sp68;
+        sp4C = gWaterSurfaceAltData.unk_0014[arg0][arg1 - 1].unk_08 - sp64;
         Vec3f_NormalizeComponents(&sp54, &sp50, &sp4C);
         Vec3f_CrossProductComponents(sp60, sp5C, sp58, sp54, sp50, sp4C, &sp78, &sp74, &sp70);
         Vec3f_NormalizeComponents(&sp78, &sp74, &sp70);
@@ -120,13 +120,13 @@ void Trail40GridAlt_Start(s32 arg0, s32 arg1) {
     }
 
     if ((0 < arg0) && (arg1 < 15)) {
-        sp60 = D_843A06A0.unk_0014[arg0 - 1][arg1].unk_00 - sp6C;
-        sp5C = D_843A06A0.unk_0014[arg0 - 1][arg1].unk_04 - sp68;
-        sp58 = D_843A06A0.unk_0014[arg0 - 1][arg1].unk_08 - sp64;
+        sp60 = gWaterSurfaceAltData.unk_0014[arg0 - 1][arg1].unk_00 - sp6C;
+        sp5C = gWaterSurfaceAltData.unk_0014[arg0 - 1][arg1].unk_04 - sp68;
+        sp58 = gWaterSurfaceAltData.unk_0014[arg0 - 1][arg1].unk_08 - sp64;
         Vec3f_NormalizeComponents(&sp60, &sp5C, &sp58);
-        sp54 = D_843A06A0.unk_0014[arg0][arg1 + 1].unk_00 - sp6C;
-        sp50 = D_843A06A0.unk_0014[arg0][arg1 + 1].unk_04 - sp68;
-        sp4C = D_843A06A0.unk_0014[arg0][arg1 + 1].unk_08 - sp64;
+        sp54 = gWaterSurfaceAltData.unk_0014[arg0][arg1 + 1].unk_00 - sp6C;
+        sp50 = gWaterSurfaceAltData.unk_0014[arg0][arg1 + 1].unk_04 - sp68;
+        sp4C = gWaterSurfaceAltData.unk_0014[arg0][arg1 + 1].unk_08 - sp64;
         Vec3f_NormalizeComponents(&sp54, &sp50, &sp4C);
         Vec3f_CrossProductComponents(sp60, sp5C, sp58, sp54, sp50, sp4C, &sp78, &sp74, &sp70);
         Vec3f_NormalizeComponents(&sp78, &sp74, &sp70);
@@ -137,13 +137,13 @@ void Trail40GridAlt_Start(s32 arg0, s32 arg1) {
     }
 
     if ((arg0 < 15) && (arg1 >= 1)) {
-        sp60 = D_843A06A0.unk_0014[arg0 + 1][arg1].unk_00 - sp6C;
-        sp5C = D_843A06A0.unk_0014[arg0 + 1][arg1].unk_04 - sp68;
-        sp58 = D_843A06A0.unk_0014[arg0 + 1][arg1].unk_08 - sp64;
+        sp60 = gWaterSurfaceAltData.unk_0014[arg0 + 1][arg1].unk_00 - sp6C;
+        sp5C = gWaterSurfaceAltData.unk_0014[arg0 + 1][arg1].unk_04 - sp68;
+        sp58 = gWaterSurfaceAltData.unk_0014[arg0 + 1][arg1].unk_08 - sp64;
         Vec3f_NormalizeComponents(&sp60, &sp5C, &sp58);
-        sp54 = D_843A06A0.unk_0014[arg0][arg1 - 1].unk_00 - sp6C;
-        sp50 = D_843A06A0.unk_0014[arg0][arg1 - 1].unk_04 - sp68;
-        sp4C = D_843A06A0.unk_0014[arg0][arg1 - 1].unk_08 - sp64;
+        sp54 = gWaterSurfaceAltData.unk_0014[arg0][arg1 - 1].unk_00 - sp6C;
+        sp50 = gWaterSurfaceAltData.unk_0014[arg0][arg1 - 1].unk_04 - sp68;
+        sp4C = gWaterSurfaceAltData.unk_0014[arg0][arg1 - 1].unk_08 - sp64;
         Vec3f_NormalizeComponents(&sp54, &sp50, &sp4C);
         Vec3f_CrossProductComponents(sp60, sp5C, sp58, sp54, sp50, sp4C, &sp78, &sp74, &sp70);
         Vec3f_NormalizeComponents(&sp78, &sp74, &sp70);
@@ -154,13 +154,13 @@ void Trail40GridAlt_Start(s32 arg0, s32 arg1) {
     }
 
     if ((arg0 < 15) && (arg1 < 15)) {
-        sp60 = D_843A06A0.unk_0014[arg0 + 1][arg1].unk_00 - sp6C;
-        sp5C = D_843A06A0.unk_0014[arg0 + 1][arg1].unk_04 - sp68;
-        sp58 = D_843A06A0.unk_0014[arg0 + 1][arg1].unk_08 - sp64;
+        sp60 = gWaterSurfaceAltData.unk_0014[arg0 + 1][arg1].unk_00 - sp6C;
+        sp5C = gWaterSurfaceAltData.unk_0014[arg0 + 1][arg1].unk_04 - sp68;
+        sp58 = gWaterSurfaceAltData.unk_0014[arg0 + 1][arg1].unk_08 - sp64;
         Vec3f_NormalizeComponents(&sp60, &sp5C, &sp58);
-        sp54 = D_843A06A0.unk_0014[arg0][arg1 + 1].unk_00 - sp6C;
-        sp50 = D_843A06A0.unk_0014[arg0][arg1 + 1].unk_04 - sp68;
-        sp4C = D_843A06A0.unk_0014[arg0][arg1 + 1].unk_08 - sp64;
+        sp54 = gWaterSurfaceAltData.unk_0014[arg0][arg1 + 1].unk_00 - sp6C;
+        sp50 = gWaterSurfaceAltData.unk_0014[arg0][arg1 + 1].unk_04 - sp68;
+        sp4C = gWaterSurfaceAltData.unk_0014[arg0][arg1 + 1].unk_08 - sp64;
         Vec3f_NormalizeComponents(&sp54, &sp50, &sp4C);
         Vec3f_CrossProductComponents(sp60, sp5C, sp58, sp54, sp50, sp4C, &sp78, &sp74, &sp70);
         Vec3f_NormalizeComponents(&sp78, &sp74, &sp70);
@@ -176,9 +176,9 @@ void Trail40GridAlt_Start(s32 arg0, s32 arg1) {
         } else {
             Vec3f_NormalizeComponents(&sp84, &sp80, &sp7C);
         }
-        D_843A06A0.unk_0014[arg0][arg1].unk_0C = sp84;
-        D_843A06A0.unk_0014[arg0][arg1].unk_10 = sp80;
-        D_843A06A0.unk_0014[arg0][arg1].unk_14 = sp7C;
+        gWaterSurfaceAltData.unk_0014[arg0][arg1].unk_0C = sp84;
+        gWaterSurfaceAltData.unk_0014[arg0][arg1].unk_10 = sp80;
+        gWaterSurfaceAltData.unk_0014[arg0][arg1].unk_14 = sp7C;
     }
 }
 
@@ -201,7 +201,7 @@ void Trail40GridAlt_FillVertex(Trail40Node* arg0, Vtx* arg1) {
     arg1->v.cn[0] = (s32)(r * 120.0);
     arg1->v.cn[1] = (s32)(g * 120.0);
     arg1->v.cn[2] = (s32)(b * 120.0);
-    arg1->v.cn[3] = D_843A06A0.unk_0004;
+    arg1->v.cn[3] = gWaterSurfaceAltData.unk_0004;
 }
 
 s32 Trail40GridAlt_IsComplete(void) {
@@ -211,32 +211,32 @@ s32 Trail40GridAlt_IsComplete(void) {
     f32 temp_fv1_2;
     f32 tmp;
 
-    D_843A06A0.unk_0000 = D_843A06A0.unk_0000 + 1;
-    if (D_843A06A0.unk_0002 < D_843A06A0.unk_0000) {
+    gWaterSurfaceAltData.unk_0000 = gWaterSurfaceAltData.unk_0000 + 1;
+    if (gWaterSurfaceAltData.unk_0002 < gWaterSurfaceAltData.unk_0000) {
         return -1;
     }
-    if (D_843A06A0.unk_0000 < 0x1E) {
-        D_843A06A0.unk_0004 += 0xA;
-        if (D_843A06A0.unk_0004 > 0x50) {
-            D_843A06A0.unk_0004 = 0x50;
+    if (gWaterSurfaceAltData.unk_0000 < 0x1E) {
+        gWaterSurfaceAltData.unk_0004 += 0xA;
+        if (gWaterSurfaceAltData.unk_0004 > 0x50) {
+            gWaterSurfaceAltData.unk_0004 = 0x50;
         }
-    } else if ((D_843A06A0.unk_0002 - 0x1E) < D_843A06A0.unk_0000) {
-        D_843A06A0.unk_0004 -= 0xA;
-        if (D_843A06A0.unk_0004 < 0) {
-            D_843A06A0.unk_0004 = 0;
+    } else if ((gWaterSurfaceAltData.unk_0002 - 0x1E) < gWaterSurfaceAltData.unk_0000) {
+        gWaterSurfaceAltData.unk_0004 -= 0xA;
+        if (gWaterSurfaceAltData.unk_0004 < 0) {
+            gWaterSurfaceAltData.unk_0004 = 0;
         }
     }
 
-    if (D_843A06A0.unk_0008 < 0.25) {
-        D_843A06A0.unk_0008 += 0.05;
+    if (gWaterSurfaceAltData.unk_0008 < 0.25) {
+        gWaterSurfaceAltData.unk_0008 += 0.05;
     }
 
-    var_s1 = &D_843A06A0.unk_0014[0][0];
+    var_s1 = &gWaterSurfaceAltData.unk_0014[0][0];
     for (i = 0; i < 16; i++) {
         for (j = 0; j < 16; j++) {
             temp_fv1_2 = 1.0 - (sqrtf(SQ(var_s1->unk_00) + SQ(var_s1->unk_08)) / 101.8224f);
-            tmp = __sinf((((f32)(D_843A06A0.unk_0000 % 20) / 20.0) + (3.0 * temp_fv1_2)) * 6.2831854820251465) *
-                  ((f64)D_843A06A0.unk_0008 * temp_fv1_2);
+            tmp = __sinf((((f32)(gWaterSurfaceAltData.unk_0000 % 20) / 20.0) + (3.0 * temp_fv1_2)) * 6.2831854820251465) *
+                  ((f64)gWaterSurfaceAltData.unk_0008 * temp_fv1_2);
             var_s1->unk_04 = tmp;
             var_s1++;
         }
@@ -268,7 +268,7 @@ void Trail40GridAlt_Reset(void) {
     f32 temp_fv0;
     f32 temp_fv1;
 
-    D_843A06A0.unk_0010 = Gfx_AllocDisplayList(sizeof(Mtx) * 1);
+    gWaterSurfaceAltData.unk_0010 = Gfx_AllocDisplayList(sizeof(Mtx) * 1);
     temp_v0 = BattleAnim_GetCameraContext();
 
     tmp4 = temp_v0->view.targetPosition.x;
@@ -299,7 +299,7 @@ void Trail40GridAlt_Reset(void) {
     tmp2 += temp_fa0;
     tmp3 += temp_fa1;
 
-    Mtx_BuildTranslatedDirectionRotation(D_843A06A0.unk_0010, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6);
+    Mtx_BuildTranslatedDirectionRotation(gWaterSurfaceAltData.unk_0010, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6);
 }
 
 Gfx* Trail40GridAlt_Draw(Gfx* arg0) {
@@ -311,10 +311,10 @@ Gfx* Trail40GridAlt_Draw(Gfx* arg0) {
     s32 idx;
 
     var_s4 = 0;
-    D_843A06A0.unk_000C = Gfx_AllocDisplayList(sizeof(Vtx) * 16 * 16);
+    gWaterSurfaceAltData.unk_000C = Gfx_AllocDisplayList(sizeof(Vtx) * 16 * 16);
 
-    vtx = D_843A06A0.unk_000C;
-    var_s2 = &D_843A06A0.unk_0014[0][0];
+    vtx = gWaterSurfaceAltData.unk_000C;
+    var_s2 = &gWaterSurfaceAltData.unk_0014[0][0];
     for (i = 0; i < 16; i++) {
         for (j = 0; j < 16; j++) {
             Trail40GridAlt_FillVertex(var_s2, vtx);
@@ -328,10 +328,10 @@ Gfx* Trail40GridAlt_Draw(Gfx* arg0) {
     gDPLoadTextureBlock(arg0++, sBattleAnimAssetPointers[0x48], G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
                         G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
     gSPDisplayList(arg0++, D_84389588);
-    gDPSetPrimColor(arg0++, 0, 0, 255, 255, 255, D_843A06A0.unk_0004);
-    gSPMatrix(arg0++, D_843A06A0.unk_0010, G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+    gDPSetPrimColor(arg0++, 0, 0, 255, 255, 255, gWaterSurfaceAltData.unk_0004);
+    gSPMatrix(arg0++, gWaterSurfaceAltData.unk_0010, G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
 
-    vtx = D_843A06A0.unk_000C;
+    vtx = gWaterSurfaceAltData.unk_000C;
     for (i = 0; i < 15; i++) {
         for (j = 0; j < 15; j++) {
             idx = (i + 0) * 16 + j;

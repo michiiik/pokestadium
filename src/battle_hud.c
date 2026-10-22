@@ -6,121 +6,121 @@
 #include "src/fragments/particle_data_library/particle_data_library.h"
 
 // .bss
-u8 D_800AF770[8];
-s16 D_800AF778[4];
-s16 D_800AF780[4];
-s16 D_800AF788[4];
-s16 D_800AF790[4];
-s16 D_800AF798[4];
-s16 D_800AF7A0[4];
-s32 D_800AF7A8;
-s16 D_800AF7AC;
-s16 D_800AF7AE;
-s16 D_800AF7B0[2];
-s16 D_800AF7B4[2];
+u8 gPillarGlowValues[8];
+s16 gHpWheelDigitOffsetOnes[4];
+s16 gHpWheelDigitOffsetTens[4];
+s16 gHpWheelDigitOffsetHundreds[4];
+s16 gHpWheelDigitOffsetOnesSmooth[4];
+s16 gHpWheelDigitOffsetTensSmooth[4];
+s16 gHpWheelDigitOffsetHundredsSmooth[4];
+s32 gPrevAnimationFrame;
+s16 gAnimationFrameUnchangedFlag;
+s16 gTextureOffsetScale;
+s16 gModelUpdateFlag[2];
+s16 gModelReadyFlag[2];
 
 void BattleHud_SetDigitRotationTargets(u8 arg0, s16 arg1) {
-    D_800AF778[arg0] = 0x167 - ((arg1 % 10) * 0x24);
-    D_800AF780[arg0] = 0x167 - (((arg1 / 10) % 10) * 0x24);
-    D_800AF788[arg0] = 0x167 - (((arg1 / 100) % 10) * 0x24);
+    gHpWheelDigitOffsetOnes[arg0] = 0x167 - ((arg1 % 10) * 0x24);
+    gHpWheelDigitOffsetTens[arg0] = 0x167 - (((arg1 / 10) % 10) * 0x24);
+    gHpWheelDigitOffsetHundreds[arg0] = 0x167 - (((arg1 / 100) % 10) * 0x24);
 }
 
 void BattleHud_ApproachDigitRotations(u8 arg0, s16 arg1) {
     s16 tmp;
     s16 tmp2;
 
-    D_800AF790[arg0] = 0x167 - ((arg1 % 10) * 0x24);
-    D_800AF798[arg0] = 0x167 - (((arg1 / 10) % 10) * 0x24);
-    D_800AF7A0[arg0] = 0x167 - (((arg1 / 100) % 10) * 0x24);
+    gHpWheelDigitOffsetOnesSmooth[arg0] = 0x167 - ((arg1 % 10) * 0x24);
+    gHpWheelDigitOffsetTensSmooth[arg0] = 0x167 - (((arg1 / 10) % 10) * 0x24);
+    gHpWheelDigitOffsetHundredsSmooth[arg0] = 0x167 - (((arg1 / 100) % 10) * 0x24);
 
-    tmp2 = D_800AF790[arg0];
-    tmp = D_800AF778[arg0];
+    tmp2 = gHpWheelDigitOffsetOnesSmooth[arg0];
+    tmp = gHpWheelDigitOffsetOnes[arg0];
     if (((tmp2 < 0x5A) && (tmp >= 0x10F)) || ((tmp < 0x5A) && (tmp2 >= 0x10F))) {
         if (tmp < tmp2) {
-            D_800AF778[arg0] -= 6;
+            gHpWheelDigitOffsetOnes[arg0] -= 6;
         }
 
         if (tmp2 < tmp) {
-            D_800AF778[arg0] += 6;
+            gHpWheelDigitOffsetOnes[arg0] += 6;
         }
     } else {
         if (tmp < tmp2) {
-            D_800AF778[arg0] += 6;
+            gHpWheelDigitOffsetOnes[arg0] += 6;
         }
 
         if (tmp2 < tmp) {
-            D_800AF778[arg0] -= 6;
+            gHpWheelDigitOffsetOnes[arg0] -= 6;
         }
     }
 
-    if (D_800AF778[arg0] < 0) {
-        D_800AF778[arg0] += 0x168;
+    if (gHpWheelDigitOffsetOnes[arg0] < 0) {
+        gHpWheelDigitOffsetOnes[arg0] += 0x168;
     }
 
-    if (D_800AF778[arg0] >= 0x168) {
-        D_800AF778[arg0] -= 0x168;
+    if (gHpWheelDigitOffsetOnes[arg0] >= 0x168) {
+        gHpWheelDigitOffsetOnes[arg0] -= 0x168;
     }
 
-    tmp2 = D_800AF798[arg0];
-    tmp = D_800AF780[arg0];
+    tmp2 = gHpWheelDigitOffsetTensSmooth[arg0];
+    tmp = gHpWheelDigitOffsetTens[arg0];
     if (((tmp2 < 0x5A) && (tmp >= 0x10F)) || ((tmp < 0x5A) && (tmp2 >= 0x10F))) {
         if (tmp < tmp2) {
-            D_800AF780[arg0] -= 6;
+            gHpWheelDigitOffsetTens[arg0] -= 6;
         }
 
         if (tmp2 < tmp) {
-            D_800AF780[arg0] += 6;
+            gHpWheelDigitOffsetTens[arg0] += 6;
         }
     } else {
         if (tmp < tmp2) {
-            D_800AF780[arg0] += 6;
+            gHpWheelDigitOffsetTens[arg0] += 6;
         }
 
         if (tmp2 < tmp) {
-            D_800AF780[arg0] -= 6;
+            gHpWheelDigitOffsetTens[arg0] -= 6;
         }
     }
 
-    if (D_800AF780[arg0] < 0) {
-        D_800AF780[arg0] += 0x168;
+    if (gHpWheelDigitOffsetTens[arg0] < 0) {
+        gHpWheelDigitOffsetTens[arg0] += 0x168;
     }
 
-    if (D_800AF780[arg0] >= 0x168) {
-        D_800AF780[arg0] -= 0x168;
+    if (gHpWheelDigitOffsetTens[arg0] >= 0x168) {
+        gHpWheelDigitOffsetTens[arg0] -= 0x168;
     }
 
-    tmp2 = D_800AF7A0[arg0];
-    tmp = D_800AF788[arg0];
+    tmp2 = gHpWheelDigitOffsetHundredsSmooth[arg0];
+    tmp = gHpWheelDigitOffsetHundreds[arg0];
     if (((tmp2 < 0x5A) && (tmp >= 0x10F)) || ((tmp < 0x5A) && (tmp2 >= 0x10F))) {
         if (tmp < tmp2) {
-            D_800AF788[arg0] -= 6;
+            gHpWheelDigitOffsetHundreds[arg0] -= 6;
         }
 
         if (tmp2 < tmp) {
-            D_800AF788[arg0] += 6;
+            gHpWheelDigitOffsetHundreds[arg0] += 6;
         }
     } else {
         if (tmp < tmp2) {
-            D_800AF788[arg0] += 6;
+            gHpWheelDigitOffsetHundreds[arg0] += 6;
         }
 
         if (tmp2 < tmp) {
-            D_800AF788[arg0] -= 6;
+            gHpWheelDigitOffsetHundreds[arg0] -= 6;
         }
     }
 
-    if (D_800AF788[arg0] < 0) {
-        D_800AF788[arg0] += 0x168;
+    if (gHpWheelDigitOffsetHundreds[arg0] < 0) {
+        gHpWheelDigitOffsetHundreds[arg0] += 0x168;
     }
 
-    if (D_800AF788[arg0] >= 0x168) {
-        D_800AF788[arg0] -= 0x168;
+    if (gHpWheelDigitOffsetHundreds[arg0] >= 0x168) {
+        gHpWheelDigitOffsetHundreds[arg0] -= 0x168;
     }
 }
 
 void ModelAnim_UpdateFrameChangeState(void) {
-    D_800AF7AC = (D_800AF7A8 == D_8006F084) ? 1 : 0;
-    D_800AF7A8 = D_8006F084;
+    gAnimationFrameUnchangedFlag = (gPrevAnimationFrame == gAnimationFrame) ? 1 : 0;
+    gPrevAnimationFrame = gAnimationFrame;
 }
 
 s32 ModelPhase_IsIdle(void) {
@@ -128,13 +128,13 @@ s32 ModelPhase_IsIdle(void) {
 }
 
 u8 ModelRenderer_GetActiveMode(void) {
-    u8 ret = *(u8*)Memmap_GetSegmentVaddr(&D_8006F09C->effectSlot);
+    u8 ret = *(u8*)Memmap_GetSegmentVaddr(&gDefaultGraphRoot->effectSlot);
     return ret;
 }
 
 #if !defined(VERSION_JP)
 s16 ModelRenderer_GetObjectType(void) {
-    s16 ret = *(s16*)Util_ConvertAddrToVirtAddr(&D_8006F09C->objectType);
+    s16 ret = *(s16*)Util_ConvertAddrToVirtAddr(&gDefaultGraphRoot->objectType);
     return ret;
 }
 #endif
@@ -147,10 +147,10 @@ s16 ModelRenderer_GetObjectType(void) {
 void ModelAnim_StartDisplayObjectAnimation(u32 arg0) {
     void (*func)(u32);
 
-    D_800AF7AE = 0;
+    gTextureOffsetScale = 0;
 
     if (arg0 != 0xFF) {
-        D_800AF7C0[arg0 & 1] = 0;
+        gModelPhase[arg0 & 1] = 0;
         if (arg0 < 2) {
             ModelRenderer_ClearSlotModels(arg0);
             func = Util_ConvertAddrToVirtAddr(Particle31_ResetAllSlots);
@@ -164,10 +164,10 @@ void ModelAnim_StartDisplayObjectAnimation(DisplayObject* arg0) {
     s32 unk1A = arg0->objectType;
     s32 idx = arg0->effectSlot;
 
-    D_800AF7AE = 0;
+    gTextureOffsetScale = 0;
 
     if (unk1A < 0x98) {
-        D_800AF7C0[idx & 1] = 0;
+        gModelPhase[idx & 1] = 0;
         ModelRenderer_ClearSlotModels(idx & 1);
         func = Util_ConvertAddrToVirtAddr(Particle31_ResetAllSlots);
         func(arg0);
@@ -178,23 +178,23 @@ void ModelAnim_StartDisplayObjectAnimation(DisplayObject* arg0) {
 void ModelAnim_UpdateDisplayObjectAnimation(u32 arg0, u32 arg1) {
     s32 (*func)(void);
 
-    D_800AF7B0[arg0 & 1] = 0;
+    gModelUpdateFlag[arg0 & 1] = 0;
     func = Util_ConvertAddrToVirtAddr(Particle31_ResetCounters);
     func();
 
     if ((arg0 < 2) && (arg1 != 0) && (arg1 < 0x98)) {
-        switch (D_800AF7C0[arg0]) {
+        switch (gModelPhase[arg0]) {
             default:
-                D_800AF7C0[arg0] = 1;
+                gModelPhase[arg0] = 1;
                 return;
             case 0:
-                D_800AF7C0[arg0] = 1;
+                gModelPhase[arg0] = 1;
                 return;
             case 1:
-                D_800AF7C0[arg0] = 2;
+                gModelPhase[arg0] = 2;
                 return;
             case 2:
-                D_800AF7C0[arg0] = 3;
+                gModelPhase[arg0] = 3;
                 break;
             case 3:
                 break;
@@ -204,14 +204,14 @@ void ModelAnim_UpdateDisplayObjectAnimation(u32 arg0, u32 arg1) {
 
 void ModelAnim_FinalizeDisplayObjectAnimation(u32 arg0, u32 arg1) {
     if (ModelPhase_IsIdle() == 0) {
-        D_800AF7AE++;
+        gTextureOffsetScale++;
     }
 
     if ((arg1 != 0) && (arg0 < 2)) {
-        if (D_800AF7B0[arg0 & 1] == 0) {
-            D_800AF7B4[arg0] = 0;
+        if (gModelUpdateFlag[arg0 & 1] == 0) {
+            gModelReadyFlag[arg0] = 0;
         } else {
-            D_800AF7B4[arg0] = 1;
+            gModelReadyFlag[arg0] = 1;
         }
     }
 }

@@ -3,7 +3,7 @@
 
 #include "global.h"
 
-extern s16 D_800AF7C0[4];
+extern s16 gModelPhase[4];
 
 void ModelRenderer_OnSlotReady(s32);
 s32 ModelRenderer_IsReady(s32);

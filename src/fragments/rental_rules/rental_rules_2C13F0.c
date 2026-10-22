@@ -222,7 +222,7 @@ void RentalRules_DrawScrollbar(s16 x, s16 y, QualifyingPokemonDisplay* display) 
 
     s16 y_offset;
 
-    gSPDisplayList(gDisplayListHead++, D_8006F558);
+    gSPDisplayList(gDisplayListHead++, gDL_XluBorder);
     gDPSetEnvColor(gDisplayListHead++, 130, 130, 220, 255);
     gDPSetPrimColor(gDisplayListHead++, 0, 0, 60, 60, 150, 255);
 

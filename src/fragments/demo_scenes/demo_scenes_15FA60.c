@@ -17,7 +17,7 @@
 #include "src/memory.h"
 #include "src/stage_loader.h"
 
-typedef struct unk_D_86B0E5D8 {
+typedef struct DioramaColorAnim {
     /* 0x00 */ s16 unk_00;
     /* 0x02 */ s16 unk_02;
     /* 0x04 */ u8 unk_04;
@@ -26,14 +26,14 @@ typedef struct unk_D_86B0E5D8 {
     /* 0x07 */ u8 unk_07;
     /* 0x08 */ s16 unk_08;
     /* 0x0A */ s16 unk_0A;
-} unk_D_86B0E5D8; // size = 0xC
+} DioramaColorAnim; // size = 0xC
 
-extern u32 D_86B0BD60[];
-extern unk_D_86B0C4C8* D_86B0C4C8[];
-extern unk_D_86B0C160 D_86B0C160[];
-extern unk_D_86B0C264 D_86B0C264[];
-extern u32 D_86B0CF9C[];
-extern u32 D_86B0DA9C[];
+extern u32 gFragment17TransitionGradientTex[];
+extern DioramaObjectDef* gFragment17ObjectDefs[];
+extern DioramaAnimData gFragment17AnimData[];
+extern DioramaPresetData gFragment17PresetData[];
+extern u32 gFragment17LandStageLayout[];
+extern u32 gFragment17SeaStageLayout[];
 
 s32 Diorama_LogoRotateColorCallback(s32, GraphNode*);
 s32 Diorama_ScaleRotateCallbackA(s32, GraphNode*);
@@ -43,48 +43,48 @@ s32 Diorama_GroupStateCallback(s32, GraphNode*);
 static s16 D_86B0BBF0 = -0x3C6E;
 static s16 D_86B0BBF4 = 0x38E;
 
-static u32 D_86B0BBF8[] = {
+static u32 gFragment17GeoLayoutCommands[] = {
     0x0C00FFFF, 0x05000000, 0x0B00001E, 0x00000000, 0x014000F0,  0x0000000F,    0x00000000,    0x00000000,
     0x05000000, 0x0D000000, 0x05000000, 0x1A050000, 0x08000000,  Diorama_GroupStateCallback, 0x00000000,    0x05000000,
     0x0F000002, 0x05000000, 0x06000000, 0x0F000002, 0x05000000,  0x06000000,    0x0F000002,    0x05000000,
     0x1F00FFFF, 0xC3920000, 0x00000000, 0xFC400000, 0x00640064,  0x00640000,    0x08000000,    Diorama_ScaleRotateCallbackA,
-    0x00000000, 0x05000000, 0x00000000, D_86B0CF9C, 0x06000000,  0x06000000,    0x0F000002,    0x05000000,
+    0x00000000, 0x05000000, 0x00000000, gFragment17LandStageLayout, 0x06000000,  0x06000000,    0x0F000002,    0x05000000,
     0x1F00FFFF, 0x00000000, 0x00000000, 0x0514F79A, 0x00640064,  0x00640000,    0x08000000,    Diorama_ScaleRotateCallbackB,
-    0x00000000, 0x05000000, 0x00000000, D_86B0DA9C, 0x06000000,  0x06000000,    0x0F000002,    0x05000000,
+    0x00000000, 0x05000000, 0x00000000, gFragment17SeaStageLayout, 0x06000000,  0x06000000,    0x0F000002,    0x05000000,
     0x06000000, 0x06000000, 0x14000000, 0xF8E40000, 0xFFC89BFF,  0x08000000,    Diorama_LogoRotateColorCallback, 0x00000000,
-    0x16FFFFFF, 0x0F000003, 0x05000000, 0x0A000000, &D_800AC840, 0x06000000,    0x06000000,    0x06000000,
+    0x16FFFFFF, 0x0F000003, 0x05000000, 0x0A000000, &gGraphRoot0, 0x06000000,    0x06000000,    0x06000000,
     0x06000000, 0x01000000,
 };
 
-static GraphNode* D_86B0E5D0;
-static unk_D_86B0E5D4* D_86B0E5D4;
-static unk_D_86B0E5D8* D_86B0E5D8;
-s32 D_86B0E5DC;
+static GraphNode* gFragment17RootNode;
+static DioramaState* gFragment17State;
+static DioramaColorAnim* gFragment17ColorAnim;
+s32 gDioramaEndScreenActive;
 #if !defined(VERSION_JP)
 // String table 0x14, read by Diorama_DrawEndCaption. The Japanese build has neither, and its .bss
-// places D_86B0E5E4 directly after D_86B0E5DC.
-char** D_86B0E5E0;
+// places D_86B0E5E4 directly after gDioramaEndScreenActive.
+char** gDemoScenesControllerWarningBank;
 #endif
 static BinArchive* D_86B0E5E4;
 static u8* D_86B0E5E8;
-static unk_D_86B0E5F0 D_86B0E5F0[4];
-static s32 D_86B0EBB0;
-static s32 D_86B0EBB4;
+static DioramaModelSlot gFragment17Objects[4];
+static s32 gFragment17WindowAlpha;
+static s32 gFragment17Result;
 static u16 D_86B0EBB8;
 
 s32 Diorama_LogoRotateColorCallback(s32 arg0, GraphNode* arg1) {
     if (arg0 == 2) {
         unk_D_86002F34_alt18* ptr = (unk_D_86002F34_alt18*)arg1;
 
-        D_86B0E5D8->unk_00 += D_86B0E5D8->unk_08;
-        D_86B0E5D8->unk_02 += D_86B0E5D8->unk_0A;
+        gFragment17ColorAnim->unk_00 += gFragment17ColorAnim->unk_08;
+        gFragment17ColorAnim->unk_02 += gFragment17ColorAnim->unk_0A;
 
-        ptr->unk_1C = D_86B0E5D8->unk_00;
-        ptr->unk_1E = D_86B0E5D8->unk_02;
-        ptr->r = D_86B0E5D8->unk_05;
-        ptr->g = D_86B0E5D8->unk_06;
-        ptr->b = D_86B0E5D8->unk_07;
-        ptr->a = D_86B0E5D8->unk_04;
+        ptr->unk_1C = gFragment17ColorAnim->unk_00;
+        ptr->unk_1E = gFragment17ColorAnim->unk_02;
+        ptr->r = gFragment17ColorAnim->unk_05;
+        ptr->g = gFragment17ColorAnim->unk_06;
+        ptr->b = gFragment17ColorAnim->unk_07;
+        ptr->a = gFragment17ColorAnim->unk_04;
     }
 
     return 0;
@@ -120,7 +120,7 @@ s32 Diorama_GroupStateCallback(s32 arg0, GraphNode* arg1) {
     if (arg0 == 2) {
         unk_D_86002F34_alt21* ptr = (unk_D_86002F34_alt21*)arg1;
 
-        ptr->unk_1A = D_86B0E5D4->unk_04.unk_44;
+        ptr->unk_1A = gFragment17State->unk_04.unk_44;
     }
     return 0;
 }
@@ -129,11 +129,11 @@ void Diorama_ClearModelSlots(void) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
-        D_86B0E5F0[i].unk_16C = 0;
+        gFragment17Objects[i].unk_16C = 0;
     }
 }
 
-void Diorama_FreeModelSlots(unk_D_86B0E5F0* arg0) {
+void Diorama_FreeModelSlots(DioramaModelSlot* arg0) {
     while (arg0->unk_16C != 1) {
         ModelRenderer_ClearDisplayObject(&arg0->unk_004);
         arg0++;
@@ -145,7 +145,7 @@ void Diorama_PushModelPool(void) {
     main_pool_push_state('MONS');
 }
 
-void Diorama_InitModelSlot(unk_D_86B0E5F0* arg0, unk_D_86B0C4C8* arg1) {
+void Diorama_InitModelSlot(DioramaModelSlot* arg0, DioramaObjectDef* arg1) {
     ModelRenderer_AttachDisplayObject(&arg0->unk_004);
 
     arg0->unk_000 = Model_LoadByArchiveIndex(arg1->unk_0C);
@@ -163,26 +163,26 @@ void Diorama_InitModelSlot(unk_D_86B0E5F0* arg0, unk_D_86B0C4C8* arg1) {
     arg0->unk_004.node.renderFlags &= ~0x40;
 }
 
-void Diorama_SetModelSlotPosition(unk_D_86B0E5F0* arg0, unk_D_86B0C4C8* arg1) {
+void Diorama_SetModelSlotPosition(DioramaModelSlot* arg0, DioramaObjectDef* arg1) {
     arg0->unk_004.position.x = arg1->unk_00.x;
     arg0->unk_004.position.y = arg1->unk_00.y;
     arg0->unk_004.position.z = arg1->unk_00.z;
 }
 
 void Diorama_SetGlowFromGroup(s32 arg0) {
-    D_86B0E5D8->unk_00 = D_86B0C264[arg0].unk_0C;
-    D_86B0E5D8->unk_02 = D_86B0C264[arg0].unk_0E;
-    D_86B0E5D8->unk_08 = D_86B0C264[arg0].unk_18;
-    D_86B0E5D8->unk_0A = D_86B0C264[arg0].unk_1A;
-    D_86B0E5D8->unk_05 = D_86B0C264[arg0].unk_10;
-    D_86B0E5D8->unk_06 = D_86B0C264[arg0].unk_12;
-    D_86B0E5D8->unk_07 = D_86B0C264[arg0].unk_14;
-    D_86B0E5D8->unk_04 = D_86B0C264[arg0].unk_16;
+    gFragment17ColorAnim->unk_00 = gFragment17PresetData[arg0].unk_0C;
+    gFragment17ColorAnim->unk_02 = gFragment17PresetData[arg0].unk_0E;
+    gFragment17ColorAnim->unk_08 = gFragment17PresetData[arg0].unk_18;
+    gFragment17ColorAnim->unk_0A = gFragment17PresetData[arg0].unk_1A;
+    gFragment17ColorAnim->unk_05 = gFragment17PresetData[arg0].unk_10;
+    gFragment17ColorAnim->unk_06 = gFragment17PresetData[arg0].unk_12;
+    gFragment17ColorAnim->unk_07 = gFragment17PresetData[arg0].unk_14;
+    gFragment17ColorAnim->unk_04 = gFragment17PresetData[arg0].unk_16;
 }
 
 void Diorama_LoadModelGroup(s32 arg0) {
-    unk_D_86B0C4C8* var_s0 = D_86B0C4C8[arg0];
-    unk_D_86B0E5F0* var_s1 = D_86B0E5F0;
+    DioramaObjectDef* var_s0 = gFragment17ObjectDefs[arg0];
+    DioramaModelSlot* var_s1 = gFragment17Objects;
 
     Diorama_ClearModelSlots();
     Diorama_PushModelPool();
@@ -200,10 +200,10 @@ void Diorama_LoadModelGroup(s32 arg0) {
 }
 
 void Diorama_SwitchModelGroup(s32 arg0) {
-    unk_D_86B0C4C8* sp2C = D_86B0C4C8[arg0];
-    unk_D_86B0E5F0* var_s1 = D_86B0E5F0;
+    DioramaObjectDef* sp2C = gFragment17ObjectDefs[arg0];
+    DioramaModelSlot* var_s1 = gFragment17Objects;
 
-    Diorama_FreeModelSlots(D_86B0E5F0);
+    Diorama_FreeModelSlots(gFragment17Objects);
     Diorama_ClearModelSlots();
     Diorama_PushModelPool();
 
@@ -219,26 +219,26 @@ void Diorama_SwitchModelGroup(s32 arg0) {
     Diorama_SetGlowFromGroup(arg0);
 
     if (arg0 == 4) {
-        ModelAnim_SetEventTrack(&D_86B0E5F0[0].unk_004, 0);
+        ModelAnim_SetEventTrack(&gFragment17Objects[0].unk_004, 0);
     }
 }
 
 void Diorama_SetGroupCamera(s32 arg0) {
     if (arg0 == 4) {
-        D_86B0E5D4->unk_00->view.targetPosition.x = -0.04f;
-        D_86B0E5D4->unk_00->view.targetPosition.y = 24.2f;
-        D_86B0E5D4->unk_00->view.targetPosition.z = -4.08f;
-        D_86B0E5D4->unk_00->view.eyePosition.x = 0.04f;
-        D_86B0E5D4->unk_00->view.eyePosition.y = 24.2f;
-        D_86B0E5D4->unk_00->view.eyePosition.z = 177.41f;
-        D_86B0E5D4->unk_00->perspective.verticalFieldOfView = 25.0f;
+        gFragment17State->unk_00->view.targetPosition.x = -0.04f;
+        gFragment17State->unk_00->view.targetPosition.y = 24.2f;
+        gFragment17State->unk_00->view.targetPosition.z = -4.08f;
+        gFragment17State->unk_00->view.eyePosition.x = 0.04f;
+        gFragment17State->unk_00->view.eyePosition.y = 24.2f;
+        gFragment17State->unk_00->view.eyePosition.z = 177.41f;
+        gFragment17State->unk_00->perspective.verticalFieldOfView = 25.0f;
     } else {
-        D_86B0E5D4->unk_04.unk_00.x = D_86B0C264[arg0].unk_00.x;
-        D_86B0E5D4->unk_04.unk_00.y = D_86B0C264[arg0].unk_00.y;
-        D_86B0E5D4->unk_04.unk_00.z = D_86B0C264[arg0].unk_00.z;
+        gFragment17State->unk_04.unk_00.x = gFragment17PresetData[arg0].unk_00.x;
+        gFragment17State->unk_04.unk_00.y = gFragment17PresetData[arg0].unk_00.y;
+        gFragment17State->unk_04.unk_00.z = gFragment17PresetData[arg0].unk_00.z;
 
-        Diorama_LoadCameraKeyframe(&D_86B0C160[arg0], D_86B0E5D4);
-        Diorama_SetCameraToKeyframeStart(&D_86B0E5D4->unk_04, D_86B0E5D4);
+        Diorama_LoadCameraKeyframe(&gFragment17AnimData[arg0], gFragment17State);
+        Diorama_SetCameraToKeyframeStart(&gFragment17State->unk_04, gFragment17State);
     }
 }
 
@@ -248,12 +248,12 @@ void func_86B00680(void) {
 void Diorama_LoopIdleAnimations(void) {
     s32 i = 0;
 
-    if ((D_86B0E5D4->unk_04.unk_4C != 5) && (D_86B0E5D4->unk_04.unk_4C != 6) && (D_86B0E5D4->unk_04.unk_4C != 7) &&
-        (D_86B0E5D4->unk_04.unk_4C != 8)) {
-        if (D_86B0E5D4->unk_04.unk_44 != 4) {
-            while (D_86B0C4C8[D_86B0E5D4->unk_04.unk_44][i].unk_0C != 0x98) {
-                if (ModelAnim_IsAnimationDone(&D_86B0E5F0[i].unk_004) != 0) {
-                    ModelAnim_SetFrame(&D_86B0E5F0[i].unk_004, 0);
+    if ((gFragment17State->unk_04.unk_4C != 5) && (gFragment17State->unk_04.unk_4C != 6) && (gFragment17State->unk_04.unk_4C != 7) &&
+        (gFragment17State->unk_04.unk_4C != 8)) {
+        if (gFragment17State->unk_04.unk_44 != 4) {
+            while (gFragment17ObjectDefs[gFragment17State->unk_04.unk_44][i].unk_0C != 0x98) {
+                if (ModelAnim_IsAnimationDone(&gFragment17Objects[i].unk_004) != 0) {
+                    ModelAnim_SetFrame(&gFragment17Objects[i].unk_004, 0);
                 }
                 i++;
             }
@@ -262,20 +262,20 @@ void Diorama_LoopIdleAnimations(void) {
 }
 
 void Diorama_DrawFadeOverlay(void) {
-    if (D_86B0E5D4->unk_04.unk_48 == 1) {
-        Gfx_FillRectWithDisplayState(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0, D_86B0EBB0);
+    if (gFragment17State->unk_04.unk_48 == 1) {
+        Gfx_FillRectWithDisplayState(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0, gFragment17WindowAlpha);
     }
 }
 
 void Diorama_DrawGroupTransitionOverlay(void) {
-    if (D_86B0E5D4->unk_04.unk_44 == 2) {
-        Diorama_DrawFullscreenTexture(&D_86B0BD60, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 4, 0x80);
+    if (gFragment17State->unk_04.unk_44 == 2) {
+        Diorama_DrawFullscreenTexture(&gFragment17TransitionGradientTex, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 4, 0x80);
     }
 }
 
 s32 Diorama_SlideModelsForward(s32 arg0) {
-    unk_D_86B0E5F0* var_v0 = D_86B0E5F0;
-    unk_D_86B0C4C8* var_v1 = D_86B0C4C8[arg0];
+    DioramaModelSlot* var_v0 = gFragment17Objects;
+    DioramaObjectDef* var_v1 = gFragment17ObjectDefs[arg0];
     s32 var_a1 = 1;
 
     while (var_v1->unk_0C != 0x98) {
@@ -292,20 +292,20 @@ s32 Diorama_SlideModelsForward(s32 arg0) {
 void Diorama_BeginGroupTransition(void) {
     StageContext_SetClearColor(1);
     StageFade_StartFromTransparent(0xC);
-    D_86B0E5D4->unk_04.unk_4C = 0;
-    D_86B0E5D4->unk_04.unk_50 = 0;
+    gFragment17State->unk_04.unk_4C = 0;
+    gFragment17State->unk_04.unk_50 = 0;
 }
 
 void Diorama_FinishSequence(void) {
-    D_86B0E5D4->unk_04.unk_4C = 9;
-    D_86B0E5D4->unk_04.unk_50 = 0;
-    D_86B0E5F0->unk_004.node.flags &= ~1;
-    D_86B0E5DC = 1;
+    gFragment17State->unk_04.unk_4C = 9;
+    gFragment17State->unk_04.unk_50 = 0;
+    gFragment17Objects->unk_004.node.flags &= ~1;
+    gDioramaEndScreenActive = 1;
 }
 
 void Diorama_UpdateProximityHighlight(s32 arg0) {
-    unk_D_86B0C4C8* ptr1 = D_86B0C4C8[arg0];
-    unk_D_86B0E5F0* ptr2 = &D_86B0E5F0[0];
+    DioramaObjectDef* ptr1 = gFragment17ObjectDefs[arg0];
+    DioramaModelSlot* ptr2 = &gFragment17Objects[0];
     s16 sp88[] = {
         // D_86B0BD20
         0x1554,
@@ -324,7 +324,7 @@ void Diorama_UpdateProximityHighlight(s32 arg0) {
     f32 sp60[] = { 1.0f, 1.0f, 100.0f, 50.0f };          // D_86B0BD40
 
     while (ptr1->unk_0C != 0x98) {
-        if (Diorama_IsModelInCameraCone(D_86B0E5D4->unk_00, &ptr2->unk_004, sp88[arg0], sp80[arg0], sp70[arg0], sp60[arg0]) != 0) {
+        if (Diorama_IsModelInCameraCone(gFragment17State->unk_00, &ptr2->unk_004, sp88[arg0], sp80[arg0], sp70[arg0], sp60[arg0]) != 0) {
             ptr2->unk_004.node.flags |= 1;
         } else {
             ptr2->unk_004.node.flags &= ~1;
@@ -341,26 +341,26 @@ void Diorama_ReadControllerInput(void) {
 }
 
 void Diorama_InitSceneState(void) {
-    D_86B0E5D4 = main_pool_alloc(sizeof(unk_D_86B0E5D4), 0);
-    bzero(D_86B0E5D4, sizeof(unk_D_86B0E5D4));
+    gFragment17State = main_pool_alloc(sizeof(DioramaState), 0);
+    bzero(gFragment17State, sizeof(DioramaState));
 
-    D_86B0E5D8 = main_pool_alloc(sizeof(unk_D_86B0E5D8), 0);
-    bzero(D_86B0E5D8, sizeof(unk_D_86B0E5D8));
+    gFragment17ColorAnim = main_pool_alloc(sizeof(DioramaColorAnim), 0);
+    bzero(gFragment17ColorAnim, sizeof(DioramaColorAnim));
 
-    D_86B0E5D4->unk_00 = D_86B0E5D0->children;
+    gFragment17State->unk_00 = gFragment17RootNode->children;
 
-    D_86B0E5D4->unk_00->perspective.nearPlane = 50.0f;
-    D_86B0E5D4->unk_00->perspective.farPlane = 8400.0f;
-    D_86B0E5D4->unk_00->perspective.verticalFieldOfView = 30.0f;
-    D_86B0E5D4->unk_00->view.targetPosition.x = 50.0f;
-    D_86B0E5D4->unk_00->view.targetPosition.y = 50.0f;
-    D_86B0E5D4->unk_00->view.targetPosition.z = 50.0f;
-    D_86B0E5D4->unk_00->view.eyePosition.x = 0.0f;
-    D_86B0E5D4->unk_00->view.eyePosition.y = 0.0f;
-    D_86B0E5D4->unk_00->view.eyePosition.z = 0.0f;
-    D_86B0E5D4->unk_04.unk_4C = 8;
-    D_86B0E5D4->unk_04.unk_50 = 0;
-    D_86B0E5D4->unk_04.unk_48 = 0;
+    gFragment17State->unk_00->perspective.nearPlane = 50.0f;
+    gFragment17State->unk_00->perspective.farPlane = 8400.0f;
+    gFragment17State->unk_00->perspective.verticalFieldOfView = 30.0f;
+    gFragment17State->unk_00->view.targetPosition.x = 50.0f;
+    gFragment17State->unk_00->view.targetPosition.y = 50.0f;
+    gFragment17State->unk_00->view.targetPosition.z = 50.0f;
+    gFragment17State->unk_00->view.eyePosition.x = 0.0f;
+    gFragment17State->unk_00->view.eyePosition.y = 0.0f;
+    gFragment17State->unk_00->view.eyePosition.z = 0.0f;
+    gFragment17State->unk_04.unk_4C = 8;
+    gFragment17State->unk_04.unk_50 = 0;
+    gFragment17State->unk_04.unk_48 = 0;
 }
 
 s32 Diorama_UpdateStateMachine(void) {
@@ -368,109 +368,109 @@ s32 Diorama_UpdateStateMachine(void) {
     // not tested (its code has no andi 0x1000 before the A/B tests).
 #if defined(VERSION_JP)
     if (((gPlayer1Controller->buttonPressed & 0x8000) || (gPlayer1Controller->buttonPressed & 0x4000)) &&
-        (D_86B0E5D4->unk_04.unk_48 == 0)) {
+        (gFragment17State->unk_04.unk_48 == 0)) {
 #else
     if (((gPlayer1Controller->buttonPressed & 0x1000) || (gPlayer1Controller->buttonPressed & 0x8000) ||
          (gPlayer1Controller->buttonPressed & 0x4000)) &&
-        (D_86B0E5D4->unk_04.unk_48 == 0)) {
+        (gFragment17State->unk_04.unk_48 == 0)) {
 #endif
-        if ((D_86B0E5D4->unk_04.unk_4C != 8) && (D_86B0E5D4->unk_04.unk_4C != 5)) {
-            D_86B0E5D4->unk_04.unk_48 = 1;
+        if ((gFragment17State->unk_04.unk_4C != 8) && (gFragment17State->unk_04.unk_4C != 5)) {
+            gFragment17State->unk_04.unk_48 = 1;
             Audio_FadeOutAll(0xA);
-            D_86B0EBB0 = 0;
-            D_86B0EBB4 = 2;
+            gFragment17WindowAlpha = 0;
+            gFragment17Result = 2;
         }
     }
 
-    if (D_86B0E5D4->unk_04.unk_48 == 1) {
-        D_86B0EBB0 = Math_StepToS32(D_86B0EBB0, 0xFF, 0x1E, 0x1E);
-        if (D_86B0EBB0 == 0xFF) {
+    if (gFragment17State->unk_04.unk_48 == 1) {
+        gFragment17WindowAlpha = Math_StepToS32(gFragment17WindowAlpha, 0xFF, 0x1E, 0x1E);
+        if (gFragment17WindowAlpha == 0xFF) {
             return 1;
         }
     }
 
-    switch (D_86B0E5D4->unk_04.unk_4C) {
+    switch (gFragment17State->unk_04.unk_4C) {
         case 5:
-            if (D_86B0E5D4->unk_04.unk_48 == 1) {
+            if (gFragment17State->unk_04.unk_48 == 1) {
                 return 1;
             }
 
-            if (D_86B0E5D4->unk_04.unk_44 == 4) {
-                D_86B0E5D4->unk_04.unk_50 = 0;
-                D_86B0EBB4 = 1;
+            if (gFragment17State->unk_04.unk_44 == 4) {
+                gFragment17State->unk_04.unk_50 = 0;
+                gFragment17Result = 1;
                 return 1;
             }
 
-            D_86B0E5D4->unk_04.unk_44++;
-            Diorama_SetGroupCamera(D_86B0E5D4->unk_04.unk_44);
-            Diorama_SwitchModelGroup(D_86B0E5D4->unk_04.unk_44);
-            D_86B0E5D4->unk_04.unk_4C = 6;
-            D_86B0E5D4->unk_04.unk_50 = 0;
+            gFragment17State->unk_04.unk_44++;
+            Diorama_SetGroupCamera(gFragment17State->unk_04.unk_44);
+            Diorama_SwitchModelGroup(gFragment17State->unk_04.unk_44);
+            gFragment17State->unk_04.unk_4C = 6;
+            gFragment17State->unk_04.unk_50 = 0;
             break;
 
         case 6:
-            if (D_86B0E5D4->unk_04.unk_50++ >= 4) {
+            if (gFragment17State->unk_04.unk_50++ >= 4) {
                 StageContext_SetClearColor(1);
                 StageFade_StartFromOpaque(0x20);
-                D_86B0E5D4->unk_04.unk_4C = 7;
-                if ((D_86B0E5D4->unk_04.unk_44 == 0) || (D_86B0E5D4->unk_04.unk_44 == 1)) {
-                    Diorama_UpdateCameraKeyframe(&D_86B0E5D4->unk_04, D_86B0E5D4);
+                gFragment17State->unk_04.unk_4C = 7;
+                if ((gFragment17State->unk_04.unk_44 == 0) || (gFragment17State->unk_04.unk_44 == 1)) {
+                    Diorama_UpdateCameraKeyframe(&gFragment17State->unk_04, gFragment17State);
                 }
             }
             break;
 
         case 7:
-            if (D_86B0E5D4->unk_04.unk_44 == 4) {
-                if (ModelAnim_IsAnimationDone(&D_86B0E5F0[0].unk_004) != 0) {
+            if (gFragment17State->unk_04.unk_44 == 4) {
+                if (ModelAnim_IsAnimationDone(&gFragment17Objects[0].unk_004) != 0) {
                     Diorama_FinishSequence();
                 }
             } else {
-                if (D_86B0E5D4->unk_04.unk_44 >= 2) {
-                    if (Diorama_SlideModelsForward(D_86B0E5D4->unk_04.unk_44) != 0) {
+                if (gFragment17State->unk_04.unk_44 >= 2) {
+                    if (Diorama_SlideModelsForward(gFragment17State->unk_04.unk_44) != 0) {
                         Diorama_BeginGroupTransition();
                     }
-                } else if (D_86B0E5D4->unk_04.unk_6C < D_86B0E5D4->unk_04.unk_30) {
+                } else if (gFragment17State->unk_04.unk_6C < gFragment17State->unk_04.unk_30) {
                     Diorama_BeginGroupTransition();
                 }
 
-                if ((D_86B0E5D4->unk_04.unk_44 == 0) || (D_86B0E5D4->unk_04.unk_44 == 1)) {
-                    Diorama_UpdateCameraKeyframe(&D_86B0E5D4->unk_04, D_86B0E5D4);
+                if ((gFragment17State->unk_04.unk_44 == 0) || (gFragment17State->unk_04.unk_44 == 1)) {
+                    Diorama_UpdateCameraKeyframe(&gFragment17State->unk_04, gFragment17State);
                 }
 
-                Diorama_UpdateProximityHighlight(D_86B0E5D4->unk_04.unk_44);
+                Diorama_UpdateProximityHighlight(gFragment17State->unk_04.unk_44);
             }
             break;
 
         case 8:
-            if (D_86B0E5D4->unk_04.unk_50++ >= 0xB) {
-                D_86B0E5D4->unk_04.unk_44 = 0;
-                Diorama_SetGroupCamera(D_86B0E5D4->unk_04.unk_44);
-                D_86B0E5D4->unk_04.unk_4C = 6;
-                D_86B0E5D4->unk_04.unk_50 = 0;
-                Diorama_LoadModelGroup(D_86B0E5D4->unk_04.unk_44);
+            if (gFragment17State->unk_04.unk_50++ >= 0xB) {
+                gFragment17State->unk_04.unk_44 = 0;
+                Diorama_SetGroupCamera(gFragment17State->unk_04.unk_44);
+                gFragment17State->unk_04.unk_4C = 6;
+                gFragment17State->unk_04.unk_50 = 0;
+                Diorama_LoadModelGroup(gFragment17State->unk_04.unk_44);
                 Audio_StartMusicTrack(0x29);
             }
             break;
 
         case 9:
-            if (D_86B0E5D4->unk_04.unk_50++ >= 3) {
-                D_86B0E5D4->unk_04.unk_4C = 5;
-                D_86B0E5D4->unk_04.unk_50 = 0;
+            if (gFragment17State->unk_04.unk_50++ >= 3) {
+                gFragment17State->unk_04.unk_4C = 5;
+                gFragment17State->unk_04.unk_50 = 0;
             }
             break;
 
         default:
-            if (D_86B0E5D4->unk_04.unk_44 != 4) {
-                if (D_86B0E5D4->unk_04.unk_44 >= 2) {
-                    Diorama_SlideModelsForward(D_86B0E5D4->unk_04.unk_44);
+            if (gFragment17State->unk_04.unk_44 != 4) {
+                if (gFragment17State->unk_04.unk_44 >= 2) {
+                    Diorama_SlideModelsForward(gFragment17State->unk_04.unk_44);
                 } else {
-                    Diorama_UpdateCameraKeyframe(&D_86B0E5D4->unk_04, D_86B0E5D4);
+                    Diorama_UpdateCameraKeyframe(&gFragment17State->unk_04, gFragment17State);
                 }
             }
 
-            if (D_86B0E5D4->unk_04.unk_50++ >= 0xE) {
-                D_86B0E5D4->unk_04.unk_4C = 5;
-                D_86B0E5D4->unk_04.unk_50 = 0;
+            if (gFragment17State->unk_04.unk_50++ >= 0xE) {
+                gFragment17State->unk_04.unk_4C = 5;
+                gFragment17State->unk_04.unk_50 = 0;
             }
             break;
     }
@@ -487,7 +487,7 @@ void Diorama_RenderFrame(void) {
     GeoRender_AdvanceFrameCounter();
     Diorama_DrawGroupTransitionOverlay();
     Diorama_DrawEndBackgroundTiles(D_86B0E5E8);
-    Geo_RenderRootNode(D_86B0E5D0);
+    Geo_RenderRootNode(gFragment17RootNode);
     Diorama_DrawFadeOverlay();
 #if !defined(VERSION_JP)
     // The Japanese build has no Diorama_DrawEndCaption.
@@ -527,15 +527,15 @@ void Diorama_InitScene(void) {
     MemoryBlock* sp1C;
 
     sp1C = MainPool_AllocState(main_pool_get_available(), 0);
-    D_86B0E5D0 = process_geo_layout(sp1C, &D_86B0BBF8);
+    gFragment17RootNode = process_geo_layout(sp1C, &gFragment17GeoLayoutCommands);
 
     MainPool_FinalizeAllocation(sp1C);
     ModelRenderer_InitDisplayRoots();
     PokeIcon_OpenModelArchives();
     Diorama_InitSceneState();
 
-    D_86B0EBB0 = 0;
-    D_86B0E5DC = 0;
+    gFragment17WindowAlpha = 0;
+    gDioramaEndScreenActive = 0;
 }
 
 s32 Stage_ShowBootDiorama(void) {
@@ -565,7 +565,7 @@ s32 Stage_ShowBootDiorama(void) {
 
 #if !defined(VERSION_JP)
     Text_InitStringTables();
-    D_86B0E5E0 = Text_GetStringTable(0x14);
+    gDemoScenesControllerWarningBank = Text_GetStringTable(0x14);
 #endif
     Diorama_InitScene();
     StageLoader_UpdateSegments();
@@ -576,5 +576,5 @@ s32 Stage_ShowBootDiorama(void) {
 
     main_pool_pop_state('MINI');
 
-    return D_86B0EBB4;
+    return gFragment17Result;
 }

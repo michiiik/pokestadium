@@ -47,7 +47,7 @@ extern u8 D_1003EF0[];
 extern u8 D_2004000[];
 extern u8 D_2004320[];
 
-Gfx D_8006F470[] = {
+Gfx gMenuDL_BackgroundFill[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_1CYCLE),
     gsDPSetRenderMode(G_RM_AA_OPA_SURF, G_RM_AA_OPA_SURF2),
@@ -63,14 +63,14 @@ Gfx gUiTranslucentFillDL[] = {
     gsSPEndDisplayList(),
 };
 
-Gfx D_8006F4C0[] = {
+Gfx gDL_FillCycle[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_FILL),
     gsDPSetRenderMode(G_RM_NOOP, G_RM_NOOP2),
     gsSPEndDisplayList(),
 };
 
-Gfx D_8006F4E0[] = {
+Gfx gDL_CopyDecal[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_COPY),
     gsDPSetTexturePersp(G_TP_NONE),
@@ -92,7 +92,7 @@ Gfx gUiEnvTintTextureDL[] = {
     gsSPEndDisplayList(),
 };
 
-Gfx D_8006F558[] = {
+Gfx gDL_XluBorder[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_1CYCLE),
     gsDPSetTexturePersp(G_TP_NONE),
@@ -105,7 +105,7 @@ Gfx D_8006F558[] = {
     gsSPEndDisplayList(),
 };
 
-Gfx D_8006F5A0[] = {
+Gfx gDL_PalettedIcon[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_2CYCLE),
     gsDPSetTexturePersp(G_TP_NONE),
@@ -115,7 +115,7 @@ Gfx D_8006F5A0[] = {
     gsSPEndDisplayList(),
 };
 
-Gfx D_8006F5D8[] = {
+Gfx gDL_UnusedPalCycle[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_2CYCLE),
     gsDPSetRenderMode(G_RM_PASS, G_RM_XLU_SURF2),
@@ -125,7 +125,7 @@ Gfx D_8006F5D8[] = {
     gsSPEndDisplayList(),
 };
 
-Gfx D_8006F608[] = {
+Gfx gFontCharTableExtended[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_1CYCLE),
     gsDPSetCombineLERP(TEXEL0, 0, ENVIRONMENT, 0, TEXEL0, 0, ENVIRONMENT, 0, TEXEL0, 0, ENVIRONMENT, 0, TEXEL0, 0,
@@ -142,12 +142,12 @@ Gfx gUiRestoreTextureDL[] = {
 };
 
 // Glyph indices by character code. Font_MapGlyphCode reads codes 0x20..0x7F as
-// D_8006F630[code], so this table starts at code 0x20 (D_8006F630 + 0x20).
+// gPrefDL_End[code], so this table starts at code 0x20 (gPrefDL_End + 0x20).
 // The Japanese table is 0x110 bytes and starts at code 0x21: that build's
-// Font_MapGlyphCode (asm/jp/graphics_textures.s) loads (D_8006F630 - 1)[code]
+// Font_MapGlyphCode (asm/jp/graphics_textures.s) loads (gPrefDL_End - 1)[code]
 // for codes 0x21..0x7E.
 //@src/graphics_textures.c
-static u8 D_8006F650[] = {
+static u8 gCharMapTable[] = {
 #if defined(VERSION_JP)
     0x34, 0x35, 0x00, 0x02, 0x06, 0x0D, 0x37, 0x03, 0x04, 0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x10, 0x11, 0x12,
     0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x3E, 0x05, 0x0B, 0x3F, 0x0C, 0x40, 0x41, 0x1A, 0x1B, 0x1C, 0x1D,
@@ -192,7 +192,7 @@ static u8 D_8006F650[] = {
 #endif
 };
 
-Gfx D_8006F710[] = {
+Gfx gDL_TextResetState[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_1CYCLE),
     gsSPClearGeometryMode(G_ZBUFFER),
@@ -204,13 +204,13 @@ Gfx D_8006F710[] = {
     gsSPEndDisplayList(),
 };
 
-Gfx D_8006F750[] = {
+Gfx gDL_TextSetup[] = {
     gsDPPipeSync(),
     gsDPSetTexturePersp(G_TP_PERSP),
     gsSPEndDisplayList(),
 };
 
-Gfx D_8006F768[] = {
+Gfx gDL_TextBegin[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_2CYCLE),
     gsDPSetRenderMode(G_RM_PASS, G_RM_XLU_SURF2),
@@ -220,7 +220,7 @@ Gfx D_8006F768[] = {
     gsSPEndDisplayList(),
 };
 
-Gfx D_8006F798[] = {
+Gfx gDL_TextEnd[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_1CYCLE),
     gsDPSetCombineLERP(TEXEL0, 0, ENVIRONMENT, 0, TEXEL0, 0, ENVIRONMENT, 0, TEXEL0, 0, ENVIRONMENT, 0, TEXEL0, 0,
@@ -297,7 +297,7 @@ void Ui_DrawBorderStyleC(s32 x1, s32 y1, s32 width, s32 height) {
 }
 
 void Ui_FillInsetRectangleA(s32 x1, s32 y1, s32 width, s32 height, u16 color) {
-    gSPDisplayList(gDisplayListHead++, D_8006F4C0);
+    gSPDisplayList(gDisplayListHead++, gDL_FillCycle);
     gDPSetFillColor(gDisplayListHead++, (color << 0x10) | color);
 
     if (StageContext_IsHighResolution() != 0) {
@@ -308,7 +308,7 @@ void Ui_FillInsetRectangleA(s32 x1, s32 y1, s32 width, s32 height, u16 color) {
 }
 
 void Ui_FillInsetRectangleB(s32 x1, s32 y1, s32 width, s32 height, u16 color) {
-    gSPDisplayList(gDisplayListHead++, D_8006F4C0);
+    gSPDisplayList(gDisplayListHead++, gDL_FillCycle);
     gDPSetFillColor(gDisplayListHead++, (color << 0x10) | color);
 
     if (StageContext_IsHighResolution() != 0) {
@@ -423,10 +423,10 @@ void Ui_DrawBorderedPanelNoFill(s32 x1, s32 y1, s32 width, s32 height) {
 
 void Ui_DrawTextureMarker(s32 x, s32 y) {
     if (StageContext_IsHighResolution() != 0) {
-        gSPDisplayList(gDisplayListHead++, D_8006F4E0);
+        gSPDisplayList(gDisplayListHead++, gDL_CopyDecal);
         Gfx_DrawTextureRgba16(x, y, 0x20, 0x16, D_10031D0, 0x20, 0x200000);
     } else {
-        gSPDisplayList(gDisplayListHead++, D_8006F5A0);
+        gSPDisplayList(gDisplayListHead++, gDL_PalettedIcon);
         Gfx_DrawTextureRgba16Ia8(x, y, 0xC, 0xA, D_1003750, D_1003890, 0x10, 0x100000);
     }
 
@@ -454,7 +454,7 @@ void Ui_Draw20x20Icon(s32 arg0, s32 arg1, s32 arg2) {
         var_t4 = D_2004000;
     }
 
-    gSPDisplayList(gDisplayListHead++, D_8006F4E0);
+    gSPDisplayList(gDisplayListHead++, gDL_CopyDecal);
     gDPLoadTextureBlock(gDisplayListHead++, var_t4, G_IM_FMT_RGBA, G_IM_SIZ_16b, 20, 20, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     gSPTextureRectangle(gDisplayListHead++, arg0 << 2, arg1 << 2, (arg0 + 0x13) << 2, (arg1 + 0x13) << 2,
@@ -476,7 +476,7 @@ void BattleHud_DrawHpBarTexture(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4
         spDC = D_1003B70;
     }
 
-    gSPDisplayList(gDisplayListHead++, D_8006F4E0);
+    gSPDisplayList(gDisplayListHead++, gDL_CopyDecal);
 
     gDPLoadTextureBlock(gDisplayListHead++, D_1003930, G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 12, 0,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
@@ -560,7 +560,7 @@ void Text_LoadNameTable(void) {
     s32 i;
 
     for (i = 0; i < 151; i++) {
-        HAL_Strcpy(D_8006FF00[i].name, Text_GetString(NULL, 0, temp_s2, i));
+        HAL_Strcpy(gSpeciesDisplayTable[i].name, Text_GetString(NULL, 0, temp_s2, i));
     }
 }
 #endif

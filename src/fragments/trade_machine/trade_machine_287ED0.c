@@ -16,7 +16,7 @@
 #include "src/memory.h"
 #include "src/stage_loader.h"
 
-typedef struct unk_D_82F14438 {
+typedef struct TextPrinterState {
     /* 0x00 */ s16 unk_00;
     /* 0x02 */ s16 unk_02;
     /* 0x04 */ s16 unk_04;
@@ -25,45 +25,45 @@ typedef struct unk_D_82F14438 {
     /* 0x0A */ s16 unk_0A;
     /* 0x0C */ u16 unk_0C;
     /* 0x10 */ s8* unk_10;
-} unk_D_82F14438; // size = 0x14
+} TextPrinterState; // size = 0x14
 
-typedef struct unk_D_82F144B0 {
+typedef struct FadeRectState {
     /* 0x00 */ s16 unk_00;
     /* 0x02 */ s16 unk_02;
     /* 0x04 */ s16 unk_04;
     /* 0x06 */ s16 unk_06;
     /* 0x08 */ s16 unk_08;
-} unk_D_82F144B0; // size = 0xA
+} FadeRectState; // size = 0xA
 
-static FontContext* D_82F14420;
-s32 D_82F14424;
-static s32 D_82F14428;
-static s16 D_82F1442C;
-static unk_D_82F13B78* D_82F14430;
+static FontContext* gFragment41TextObject;
+s32 gFragment41FrameCounter;
+static s32 gFragment41State;
+static s16 gMessageEntryIndex;
+static TextMenuListEntry* gCurrentMessageList;
 static s32 pad_D_82F14434;
-static unk_D_82F14438 D_82F14438;
-static unk_D_82F14438* D_82F1444C;
-unk_D_82F14450 D_82F14450[4];
-static s16 D_82F144A8;
-static s16 D_82F144AA;
+static TextPrinterState gTextBoxState;
+static TextPrinterState* gCurrentTextBox;
+PlayerTradeInfo gPlayerInfo[4];
+static s16 gActivePlayerIndex;
+static s16 gSelectedOptionId;
 static s32 pad_D_82F144AC;
-static unk_D_82F144B0 D_82F144B0;
-static s32 D_82F144BC;
-static s32 D_82F144C0;
-static char** D_82F144C4;
+static FadeRectState gTradeFadeRect;
+static s32 gPoolStatePushed;
+static s32 gPollControllerFlag;
+static char** gSpeciesNames;
 static char** D_82F144C8;
-static char** D_82F144CC;
+static char** gTypeNames;
 
 char** gTradeStrings = NULL;
-char** D_82F13B74 = NULL;
-static unk_D_82F13B78 D_82F13B78[2] = {
+char** gTradeMoveMenuStringsBank = NULL;
+static TextMenuListEntry gTradeMenuEntries[2] = {
     { 0x0140, 0x0168, NULL },
     { 0x0000, 0x0000, NULL },
 };
-static u16 D_82F13B88 = 0;
+static u16 gTextBlinkTimer = 0;
 
 char* Trade_GetSpeciesName(s32 arg0) {
-    return Text_GetString(NULL, 0, D_82F144C4, arg0 - 1);
+    return Text_GetString(NULL, 0, gSpeciesNames, arg0 - 1);
 }
 
 char* Trade_GetMoveName(s32 arg0) {
@@ -71,11 +71,11 @@ char* Trade_GetMoveName(s32 arg0) {
 }
 
 char* Trade_GetTypeName(s32 arg0) {
-    return Text_GetString(NULL, 0, D_82F144CC, PokemonType_ToDisplayIndex(arg0));
+    return Text_GetString(NULL, 0, gTypeNames, PokemonType_ToDisplayIndex(arg0));
 }
 
 void Trade_SetFadeRect(s16 arg0) {
-    unk_D_82F144B0* ptr = &D_82F144B0;
+    FadeRectState* ptr = &gTradeFadeRect;
 
     switch (arg0) {
         case 0:
@@ -95,19 +95,19 @@ void Trade_SetFadeRect(s16 arg0) {
 }
 
 void Trade_ResetFade(void) {
-    D_82F144B0.unk_00 = -1;
+    gTradeFadeRect.unk_00 = -1;
     Trade_SetFadeRect(0);
 }
 
 void Trade_DrawFadeRect(void) {
-    unk_D_82F144B0* ptr = &D_82F144B0;
+    FadeRectState* ptr = &gTradeFadeRect;
 
     if ((ptr->unk_00 != 0) && (TradeCable_IsSequenceActive() != 0)) {
         if (ptr->unk_00 > 0) {
             ptr->unk_00--;
         }
 
-        gSPDisplayList(gDisplayListHead++, D_8006F4C0);
+        gSPDisplayList(gDisplayListHead++, gDL_FillCycle);
         gDPSetFillColor(gDisplayListHead++, 0x00010001);
         gDPFillRectangle(gDisplayListHead++, ptr->unk_02, ptr->unk_04, (ptr->unk_02 + ptr->unk_06) - 1,
                          (ptr->unk_04 + ptr->unk_08) - 1);
@@ -115,65 +115,65 @@ void Trade_DrawFadeRect(void) {
 }
 
 void Trade_ResetTextPrinter(void) {
-    D_82F1444C = &D_82F14438;
-    D_82F14438.unk_00 = 0;
-    D_82F14438.unk_02 = 0;
-    D_82F14438.unk_08 = 0;
-    D_82F14438.unk_0A = 2;
-    D_82F14438.unk_04 = 0;
-    D_82F14438.unk_06 = 0;
-    D_82F14438.unk_0C = 0;
-    D_82F14438.unk_10 = NULL;
+    gCurrentTextBox = &gTextBoxState;
+    gTextBoxState.unk_00 = 0;
+    gTextBoxState.unk_02 = 0;
+    gTextBoxState.unk_08 = 0;
+    gTextBoxState.unk_0A = 2;
+    gTextBoxState.unk_04 = 0;
+    gTextBoxState.unk_06 = 0;
+    gTextBoxState.unk_0C = 0;
+    gTextBoxState.unk_10 = NULL;
 }
 
 void Trade_SetTextPrinter(s16 arg0, s16 arg1, s8* arg2, s32 arg3) {
     s8* ptr;
 
-    D_82F1444C->unk_00 = 0;
-    D_82F1444C->unk_02 = 0;
+    gCurrentTextBox->unk_00 = 0;
+    gCurrentTextBox->unk_02 = 0;
 
     ptr = arg2;
     if (ptr != NULL) {
         while (*ptr != '\x00') {
-            D_82F1444C->unk_02++;
+            gCurrentTextBox->unk_02++;
             ptr++;
         }
     }
 
-    D_82F1444C->unk_08 = 0;
-    D_82F1444C->unk_0A = 2;
-    D_82F1444C->unk_04 = arg0;
-    D_82F1444C->unk_06 = arg1;
-    D_82F1444C->unk_0C = 0;
+    gCurrentTextBox->unk_08 = 0;
+    gCurrentTextBox->unk_0A = 2;
+    gCurrentTextBox->unk_04 = arg0;
+    gCurrentTextBox->unk_06 = arg1;
+    gCurrentTextBox->unk_0C = 0;
 
     if (arg3 != 0) {
-        D_82F1444C->unk_0C |= 1;
+        gCurrentTextBox->unk_0C |= 1;
     }
 
-    D_82F1444C->unk_10 = arg2;
+    gCurrentTextBox->unk_10 = arg2;
 }
 
 void Trade_ResetTextMenu(void) {
-    D_82F14430 = NULL;
+    gCurrentMessageList = NULL;
 }
 
-void Trade_ShowTextMenu(unk_D_82F13B78* arg0, s32 arg1) {
-    if (arg0 != D_82F14430) {
-        D_82F1442C = 0;
+void Trade_ShowTextMenu(TextMenuListEntry* arg0, s32 arg1) {
+    if (arg0 != gCurrentMessageList) {
+        gMessageEntryIndex = 0;
     }
 
-    D_82F14430 = arg0;
+    gCurrentMessageList = arg0;
 
     if (NULL != arg0) {
-        unk_D_82F13B78* ptr = &arg0[D_82F1442C];
+        TextMenuListEntry* ptr = &arg0[gMessageEntryIndex];
 
         Trade_SetTextPrinter(ptr->unk_00, ptr->unk_02, ptr->unk_04, arg1);
-        D_82F1442C++;
+        gMessageEntryIndex++;
     }
 }
 
-s32 Trade_IsTextMenuAtEnd(unk_D_82F13B78* arg0) {
-    unk_D_82F13B78* ptr = &arg0[D_82F1442C];
+s32 Trade_IsTextMenuAtEnd(TextMenuListEntry* arg0) {
+    TextMenuListEntry* ptr = &arg0[gMessageEntryIndex];
     s32 var_v1 = 0;
 
     if (ptr->unk_04 == NULL) {
@@ -185,27 +185,27 @@ s32 Trade_IsTextMenuAtEnd(unk_D_82F13B78* arg0) {
 void Trade_UpdateTextPrinter(void) {
     u8 tmp;
 
-    if ((D_82F1444C->unk_10 != 0) && (D_82F1444C->unk_00 >= 0)) {
+    if ((gCurrentTextBox->unk_10 != 0) && (gCurrentTextBox->unk_00 >= 0)) {
         if (gPlayer1Controller->buttonPressed & 0x8000) {
-            D_82F1444C->unk_08 = 0;
-            D_82F1444C->unk_0A = 1;
+            gCurrentTextBox->unk_08 = 0;
+            gCurrentTextBox->unk_0A = 1;
         } else {
-            D_82F1444C->unk_08 -= 1;
+            gCurrentTextBox->unk_08 -= 1;
         }
 
-        if (D_82F1444C->unk_08 <= 0) {
+        if (gCurrentTextBox->unk_08 <= 0) {
             Audio_PlaySoundEffectById(SFX_TRADE_TEXT);
-            D_82F1444C->unk_08 = D_82F1444C->unk_0A;
+            gCurrentTextBox->unk_08 = gCurrentTextBox->unk_0A;
 
-            D_82F1444C->unk_00++;
+            gCurrentTextBox->unk_00++;
 
-            tmp = D_82F1444C->unk_10[D_82F1444C->unk_00 - 1];
+            tmp = gCurrentTextBox->unk_10[gCurrentTextBox->unk_00 - 1];
             if (tmp >= 0x80) {
-                D_82F1444C->unk_00++;
+                gCurrentTextBox->unk_00++;
             }
 
-            if (D_82F1444C->unk_00 >= D_82F1444C->unk_02) {
-                D_82F1444C->unk_00 = -1;
+            if (gCurrentTextBox->unk_00 >= gCurrentTextBox->unk_02) {
+                gCurrentTextBox->unk_00 = -1;
             }
         }
     }
@@ -214,10 +214,10 @@ void Trade_UpdateTextPrinter(void) {
 s32 Trade_GetTextPrinterState(void) {
     s32 var_v1 = 0;
 
-    if (D_82F1444C->unk_10 != NULL) {
-        if (D_82F1444C->unk_00 == -1) {
+    if (gCurrentTextBox->unk_10 != NULL) {
+        if (gCurrentTextBox->unk_00 == -1) {
             var_v1 = 2;
-        } else if (D_82F1444C->unk_00 >= 0) {
+        } else if (gCurrentTextBox->unk_00 >= 0) {
             var_v1 = 1;
         }
     }
@@ -230,12 +230,12 @@ void Trade_DrawTextPrinter(void) {
     s32 temp_t0;
     s8 sp38[0x100];
 
-    if (D_82F1444C->unk_10 != NULL) {
+    if (gCurrentTextBox->unk_10 != NULL) {
         Font_BeginTranslucentTextRendering();
         Font_SetActive(0x10, 0);
 
-        if (D_82F1444C->unk_0C & 1) {
-            s32 a = D_82F13B88;
+        if (gCurrentTextBox->unk_0C & 1) {
+            s32 a = gTextBlinkTimer;
             u8 arg = a & 0xF;
 
             arg = (arg * 0xFF) / 15;
@@ -248,22 +248,22 @@ void Trade_DrawTextPrinter(void) {
         }
 
         Font_SetLineHeight(0x1E);
-        temp_t0 = Font_MeasureTextExtent(0, 0, D_82F1444C->unk_10) / 2;
-        if (D_82F1444C->unk_00 == -1) {
-            Font_Printf(D_82F1444C->unk_04 - temp_t0, D_82F1444C->unk_06, D_82F1444C->unk_10);
+        temp_t0 = Font_MeasureTextExtent(0, 0, gCurrentTextBox->unk_10) / 2;
+        if (gCurrentTextBox->unk_00 == -1) {
+            Font_Printf(gCurrentTextBox->unk_04 - temp_t0, gCurrentTextBox->unk_06, gCurrentTextBox->unk_10);
         } else {
             s8* p_sp38 = sp38;
-            s8* other = D_82F1444C->unk_10;
+            s8* other = gCurrentTextBox->unk_10;
 
-            for (i = 0; i < D_82F1444C->unk_00; i++) {
+            for (i = 0; i < gCurrentTextBox->unk_00; i++) {
                 *p_sp38++ = *other++;
             }
 
             *p_sp38 = '\x00';
-            Font_Printf(D_82F1444C->unk_04 - temp_t0, D_82F1444C->unk_06, &sp38);
+            Font_Printf(gCurrentTextBox->unk_04 - temp_t0, gCurrentTextBox->unk_06, &sp38);
         }
         Font_EndTexturedTextRendering();
-        D_82F13B88++;
+        gTextBlinkTimer++;
     }
 }
 
@@ -275,14 +275,14 @@ void Trade_ReadInput(void) {
 
 void Trade_ScanPorts(void) {
     UNUSED s32 pad;
-    unk_D_82F14450* ptr;
+    PlayerTradeInfo* ptr;
     GbSavePlayerIdentity sp40;
     u8 temp_s2 = Cont_GetControllerBits();
     s32 i;
 
     main_pool_push_state('info');
 
-    for (i = 0, ptr = &D_82F14450[0]; i < 4; i++, ptr++) {
+    for (i = 0, ptr = &gPlayerInfo[0]; i < 4; i++, ptr++) {
         GbSave_CopyPlayerIdentity(i, &sp40);
         GbSave_EnsureMainDataLoaded(i);
         Text_UntranscodeNameWrapper(ptr->unk_08, sp40.unk_02);
@@ -314,23 +314,23 @@ void Trade_SwapSelections(void) {
     Trade_SwapPickBuffers();
 }
 
-void func_82F00960(void) {
+void Trade_NoOp(void) {
 }
 
 void Trade_Init(void) {
     ModelRenderer_InitDisplayRoots();
     Text_InitStringTables();
     gTradeStrings = Text_GetStringTable(0x21);
-    D_82F13B74 = Text_GetStringTable(6);
-    D_82F144C4 = Text_GetStringTable(0x24);
+    gTradeMoveMenuStringsBank = Text_GetStringTable(6);
+    gSpeciesNames = Text_GetStringTable(0x24);
     D_82F144C8 = Text_GetStringTable(0x25);
-    D_82F144CC = Text_GetStringTable(0x26);
-    D_82F13B78[0].unk_04 = Text_GetString(NULL, 0, gTradeStrings, 0);
-    D_82F14428 = 0;
+    gTypeNames = Text_GetStringTable(0x26);
+    gTradeMenuEntries[0].unk_04 = Text_GetString(NULL, 0, gTradeStrings, 0);
+    gFragment41State = 0;
     Trade_ResetTextMenu();
-    D_82F14424 = 0;
-    D_82F144A8 = 0;
-    D_82F144BC = 0;
+    gFragment41FrameCounter = 0;
+    gActivePlayerIndex = 0;
+    gPoolStatePushed = 0;
     Trade_ResetFade();
     Trade_ResetTextPrinter();
     TradeCable_InitSequence();
@@ -350,17 +350,17 @@ void Trade_Draw(void) {
     Trade_DrawBoxMachine();
     Trade_DrawPickScreens();
     Trade_DrawSaveSeq();
-    func_82F00960();
+    Trade_NoOp();
     BgStage_AdvanceFrame();
 }
 
 void Trade_SetState(s32 arg0) {
-    D_82F14428 = arg0;
+    gFragment41State = arg0;
 
-    switch (D_82F14428) {
+    switch (gFragment41State) {
         case 1:
             Trade_ResetTextMenu();
-            Trade_ShowTextMenu(D_82F13B78, 0);
+            Trade_ShowTextMenu(gTradeMenuEntries, 0);
             break;
 
         case 2:
@@ -369,15 +369,15 @@ void Trade_SetState(s32 arg0) {
             break;
 
         case 4:
-            if (D_82F144A8 == 1) {
-                if (D_82F144BC != 0) {
+            if (gActivePlayerIndex == 1) {
+                if (gPoolStatePushed != 0) {
                     main_pool_pop_state('pmex');
                 }
                 main_pool_push_state('pmex');
-                D_82F144BC = 1;
+                gPoolStatePushed = 1;
             }
-            GbSave_LoadPort(Trade_GetSelectedBox(D_82F144A8));
-            Trade_InitPickScreen(D_82F144A8, Trade_GetSelectedBox(D_82F144A8));
+            GbSave_LoadPort(Trade_GetSelectedBox(gActivePlayerIndex));
+            Trade_InitPickScreen(gActivePlayerIndex, Trade_GetSelectedBox(gActivePlayerIndex));
             break;
 
         case 5:
@@ -397,15 +397,15 @@ void Trade_SetState(s32 arg0) {
 }
 
 void Trade_ChangeTopic(s16 arg0) {
-    D_82F144AA = arg0;
+    gSelectedOptionId = arg0;
     Trade_SetState(3);
-    TradeCable_SetSequenceState(D_82F144AA);
+    TradeCable_SetSequenceState(gSelectedOptionId);
 }
 
 void Trade_UpdateMainMenu(void) {
     if (BTN_IS_PRESSED(gPlayer1Controller, BTN_A)) {
-        if (Trade_IsTextMenuAtEnd(D_82F13B78) == 0) {
-            Trade_ShowTextMenu(D_82F13B78, 0);
+        if (Trade_IsTextMenuAtEnd(gTradeMenuEntries) == 0) {
+            Trade_ShowTextMenu(gTradeMenuEntries, 0);
         } else {
             Trade_SetState(2);
         }
@@ -431,7 +431,7 @@ void Trade_UpdateWaitForBoxConfirm(void) {
 void Trade_UpdateWaitForCableCondition(void) {
     Trade_SetFadeRect(0);
 
-    switch (D_82F144AA) {
+    switch (gSelectedOptionId) {
         case 1:
             if (TradeCable_CheckSequenceCondition(1) != 0) {
                 Trade_SetState(4);
@@ -467,11 +467,11 @@ void Trade_UpdateWaitForCableCondition(void) {
 
         case 12:
             if (TradeCable_CheckSequenceCondition(0xC) != 0) {
-                if (D_82F144B0.unk_00 == -1) {
-                    D_82F144B0.unk_00 = 5;
+                if (gTradeFadeRect.unk_00 == -1) {
+                    gTradeFadeRect.unk_00 = 5;
                 }
             } else {
-                D_82F144B0.unk_00 = -1;
+                gTradeFadeRect.unk_00 = -1;
             }
 
             if (TradeCable_CheckSequenceCondition(0xA) != 0) {
@@ -485,23 +485,23 @@ void Trade_UpdateWaitForPickSelection(void) {
     unk_func_82F00838_sp30 sp20;
 
     if (Trade_IsPickScreenActive() == 0) {
-        Trade_GetPickScreenSnapshot(D_82F144A8, &sp20);
+        Trade_GetPickScreenSnapshot(gActivePlayerIndex, &sp20);
 
         if (sp20.unk_00 != 0) {
-            if (D_82F144A8 == 0) {
+            if (gActivePlayerIndex == 0) {
                 Trade_ChangeTopic(0x13);
             } else {
                 Trade_ChangeTopic(0x14);
             }
-            D_82F144A8 ^= 1;
+            gActivePlayerIndex ^= 1;
         } else {
-            if (D_82F144A8 == 0) {
+            if (gActivePlayerIndex == 0) {
                 Trade_SetTextPrinter(0, 0, NULL, 0);
                 Trade_ChangeTopic(4);
                 return;
             }
             Trade_ChangeTopic(8);
-            D_82F144A8 = 0;
+            gActivePlayerIndex = 0;
         }
     }
 }
@@ -510,11 +510,11 @@ void Trade_UpdateWaitForDepositSave(void) {
     Trade_SetFadeRect(1);
 
     if (Trade_GetSaveSeqState() == 2) {
-        if (D_82F144B0.unk_00 == -1) {
-            D_82F144B0.unk_00 = 3;
+        if (gTradeFadeRect.unk_00 == -1) {
+            gTradeFadeRect.unk_00 = 3;
         }
     } else {
-        D_82F144B0.unk_00 = -1;
+        gTradeFadeRect.unk_00 = -1;
     }
 
     if (Trade_GetSaveSeqState() == 0) {
@@ -530,17 +530,17 @@ void Trade_UpdateWaitForWithdrawSave(void) {
     Trade_SetFadeRect(1);
 
     if (Trade_GetSaveSeqState() == 2) {
-        if (D_82F144B0.unk_00 == -1) {
-            D_82F144B0.unk_00 = 3;
+        if (gTradeFadeRect.unk_00 == -1) {
+            gTradeFadeRect.unk_00 = 3;
         }
     } else {
-        D_82F144B0.unk_00 = -1;
+        gTradeFadeRect.unk_00 = -1;
     }
 
     if (Trade_GetSaveSeqState() == 7) {
-        D_82F144C0 = 0;
+        gPollControllerFlag = 0;
     } else {
-        D_82F144C0 = 1;
+        gPollControllerFlag = 1;
     }
 
     if (Trade_GetSaveSeqState() == 0) {
@@ -555,7 +555,7 @@ void Trade_UpdateWaitForWithdrawSave(void) {
 s32 Trade_Update(void) {
     s32 sp1C = 1;
 
-    switch (D_82F14428) {
+    switch (gFragment41State) {
         case 0:
             if (StageContext_GetFadeMode() == 0) {
                 Trade_SetState(1);
@@ -600,10 +600,10 @@ void Trade_Loop(void) {
     Audio_StartMusicTrack(0x10);
     Input_SetRepeatController(gPlayer1Controller);
 
-    D_82F144C0 = 1;
+    gPollControllerFlag = 1;
 
     do {
-        if (D_82F144C0 != 0) {
+        if (gPollControllerFlag != 0) {
             Trade_ReadInput();
         }
         Trade_UpdateTextPrinter();
@@ -612,7 +612,7 @@ void Trade_Loop(void) {
         Trade_UpdateSaveSeq();
         TradeCable_UpdateSequence();
         Trade_Draw();
-        D_82F14424++;
+        gFragment41FrameCounter++;
     } while (Trade_Update() != 0);
 }
 
@@ -623,7 +623,7 @@ s32 Trade_Main(s32 arg0, s32 arg1) {
 
     Gfx_InitDisplayListBuffers(0x14000, 0);
     sp24 = StageContext_Allocate(1, 0, 2, 0, 2, 1);
-    D_82F14420 = Font_Init(0x1E, 0);
+    gFragment41TextObject = Font_Init(0x1E, 0);
 
     ASSET_LOAD(D_1000000, common_menu1_ui, 0);
     ASSET_LOAD(D_3000000, trade_select_ui, 0);

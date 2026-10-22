@@ -12,9 +12,9 @@
 #include "src/memory.h"
 #include "src/stage_loader.h"
 
-static char** D_82C01660;
-static s16 D_82C01664;
-static u16 D_82C01666;
+static char** gPrefMessageBank;
+static s16 gPrefSelectedOption;
+static u16 gPrefToggleFlags;
 
 void Options_DrawBackground(void) {
     gDPPipeSync(gDisplayListHead++);
@@ -28,7 +28,7 @@ void Options_DrawBackground(void) {
     gDPSetPrimColor(gDisplayListHead++, 0, 0, 20, 100, 50, 255);
     gSPClearGeometryMode(gDisplayListHead++, G_ZBUFFER | G_LIGHTING);
 
-    gDPLoadTextureBlock_4b(gDisplayListHead++, D_300F780, G_IM_FMT_I, 128, 64, 0, G_TX_NOMIRROR | G_TX_WRAP,
+    gDPLoadTextureBlock_4b(gDisplayListHead++, gPrefBackgroundTexture, G_IM_FMT_I, 128, 64, 0, G_TX_NOMIRROR | G_TX_WRAP,
                            G_TX_NOMIRROR | G_TX_WRAP, 7, 6, G_TX_NOLOD, G_TX_NOLOD);
 
     Gfx_DrawTexturedRectClipped(0, 0, 0x280, 0x1E0, 0, 0, 0x400, 0x400, 0);
@@ -80,7 +80,7 @@ void Options_DrawMainPanel(s16 arg0, s32 arg1) {
             Options_DrawPanelBox(0x90, sp2C + 0x27, 0x160, 0x8C, 0x1E, 0x1E, 0x64, 0xFF);
 
             if (arg1 != 0) {
-                Ui_DrawAnimatedTextureMarker(0x95, sp2C + (D_82C01664 * 0x20) + 0x31);
+                Ui_DrawAnimatedTextureMarker(0x95, sp2C + (gPrefSelectedOption * 0x20) + 0x31);
             }
 
             gSPDisplayList(gDisplayListHead++, gUiEnvTintTextureDL);
@@ -92,48 +92,48 @@ void Options_DrawMainPanel(s16 arg0, s32 arg1) {
 
             Font_BeginTranslucentTextRendering();
             Font_SetActive(0x10, 0);
-            sp40 = Text_GetString(NULL, 0, D_82C01660, 4);
+            sp40 = Text_GetString(NULL, 0, gPrefMessageBank, 4);
             Font_Printf(0x140 - (Font_MeasureTextExtent(0x10, 0, sp40) / 2), sp2C + 0xA, sp40);
 
-            if (D_82C01664 == 0) {
+            if (gPrefSelectedOption == 0) {
                 var_a2 = 0;
             } else {
                 var_a2 = 0xFF;
             }
 
             Gfx_SetEnvColor(0xFF, 0xFF, var_a2, 0xFF);
-            Font_Printf(0xBB, sp2C + 0x31, Text_GetString(NULL, 0, D_82C01660, 5));
-            sp40 = Text_GetString(NULL, 0, D_82C01660, (D_82C01666 & 1) != 0);
+            Font_Printf(0xBB, sp2C + 0x31, Text_GetString(NULL, 0, gPrefMessageBank, 5));
+            sp40 = Text_GetString(NULL, 0, gPrefMessageBank, (gPrefToggleFlags & 1) != 0);
             Font_Printf(0x1A4 - (Font_MeasureTextExtent(0x10, 0, sp40) / 2), sp2C + 0x31, sp40);
 
-            if (D_82C01664 == 1) {
+            if (gPrefSelectedOption == 1) {
                 var_a2 = 0;
             } else {
                 var_a2 = 0xFF;
             }
 
             Gfx_SetEnvColor(0xFF, 0xFF, var_a2, 0xFF);
-            Font_Printf(0xBB, sp2C + 0x51, Text_GetString(NULL, 0, D_82C01660, 6));
-            sp40 = Text_GetString(NULL, 0, D_82C01660, ((D_82C01666 & 2) != 0) + 2);
+            Font_Printf(0xBB, sp2C + 0x51, Text_GetString(NULL, 0, gPrefMessageBank, 6));
+            sp40 = Text_GetString(NULL, 0, gPrefMessageBank, ((gPrefToggleFlags & 2) != 0) + 2);
             Font_Printf(0x1A4 - (Font_MeasureTextExtent(0x10, 0, sp40) / 2), sp2C + 0x51, sp40);
 
-            if (D_82C01664 == 2) {
+            if (gPrefSelectedOption == 2) {
                 var_a2 = 0;
             } else {
                 var_a2 = 0xFF;
             }
 
             Gfx_SetEnvColor(0xFF, 0xFF, var_a2, 0xFF);
-            Font_Printf(0xBB, sp2C + 0x71, Text_GetString(NULL, 0, D_82C01660, 7));
+            Font_Printf(0xBB, sp2C + 0x71, Text_GetString(NULL, 0, gPrefMessageBank, 7));
 
-            if (D_82C01664 == 3) {
+            if (gPrefSelectedOption == 3) {
                 var_a2 = 0;
             } else {
                 var_a2 = 0xFF;
             }
 
             Gfx_SetEnvColor(0xFF, 0xFF, var_a2, 0xFF);
-            Font_Printf(0xBB, sp2C + 0x91, Text_GetString(NULL, 0, D_82C01660, 8));
+            Font_Printf(0xBB, sp2C + 0x91, Text_GetString(NULL, 0, gPrefMessageBank, 8));
             Font_EndTexturedTextRendering();
         }
     }
@@ -155,16 +155,16 @@ void Options_DrawConfirmPrompt(s32 arg0, s32 arg1, s32 arg2) {
 
             if (arg0 == 0) {
                 Font_SetLineHeight(0x1C);
-                Font_Printf(0x63, sp24 + 0xC, Text_GetString(NULL, 0, D_82C01660, 9));
+                Font_Printf(0x63, sp24 + 0xC, Text_GetString(NULL, 0, gPrefMessageBank, 9));
             } else {
                 Font_SetLineHeight(0x1C);
-                Font_Printf(0x63, sp24 + 0xC, Text_GetString(NULL, 0, D_82C01660, 0xA));
+                Font_Printf(0x63, sp24 + 0xC, Text_GetString(NULL, 0, gPrefMessageBank, 0xA));
             }
 
             Gfx_SetEnvColor(0xFF, 0xFF, (arg1 == 0) ? 0 : 0xFF, 0xFF);
-            Font_Printf(0x141, sp24 + 0x48, Text_GetString(NULL, 0, D_82C01660, 0xB));
+            Font_Printf(0x141, sp24 + 0x48, Text_GetString(NULL, 0, gPrefMessageBank, 0xB));
             Gfx_SetEnvColor(0xFF, 0xFF, (arg1 == 1) ? 0 : 0xFF, 0xFF);
-            Font_Printf(0x141, sp24 + 0x64, Text_GetString(NULL, 0, D_82C01660, 0xC));
+            Font_Printf(0x141, sp24 + 0x64, Text_GetString(NULL, 0, gPrefMessageBank, 0xC));
             Font_EndTexturedTextRendering();
         }
     }
@@ -181,7 +181,7 @@ void Options_DrawEraseCompleteMessage(s32 arg0) {
             Font_BeginTranslucentTextRendering();
             Font_SetActive(0x10, 0);
             Gfx_SetEnvColor(0xFF, 0xFF, 0x64, 0xFF);
-            Font_Printf(0x9B, sp24 + 0x18, Text_GetString(NULL, 0, D_82C01660, 0xD));
+            Font_Printf(0x9B, sp24 + 0x18, Text_GetString(NULL, 0, gPrefMessageBank, 0xD));
             Font_EndTexturedTextRendering();
         }
     }
@@ -298,7 +298,7 @@ void Options_EraseSaveData(void) {
     gSessionContext.inRound2 = 0;
     Audio_SetMonoOutput(0);
     Audio_SetVoiceEnabled(1);
-    D_82C01666 = 0;
+    gPrefToggleFlags = 0;
 }
 
 void Options_ApplySoundSettings(u16 arg0) {
@@ -333,15 +333,15 @@ void Options_ApplySoundSettings(u16 arg0) {
 s16 Options_ApplySelection(void) {
     s16 sp1E = 0;
 
-    switch (D_82C01664) {
+    switch (gPrefSelectedOption) {
         case 0:
             Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
-            D_82C01666 ^= 1;
+            gPrefToggleFlags ^= 1;
             break;
 
         case 1:
             Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
-            D_82C01666 ^= 2;
+            gPrefToggleFlags ^= 2;
             break;
 
         case 2:
@@ -354,7 +354,7 @@ s16 Options_ApplySelection(void) {
 
         case 3:
             Audio_PlaySoundEffectById(0x1D);
-            Options_ApplySoundSettings(D_82C01666);
+            Options_ApplySoundSettings(gPrefToggleFlags);
             sp1E = 1;
             break;
     }
@@ -380,10 +380,10 @@ void Options_Loop(void) {
     while (var_s1 == 0) {
         Controller_PollInputs();
         if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DUP)) {
-            D_82C01664 = (D_82C01664 + 3) % 4;
+            gPrefSelectedOption = (gPrefSelectedOption + 3) % 4;
             Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
         } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_DDOWN)) {
-            D_82C01664 = (D_82C01664 + 1) % 4;
+            gPrefSelectedOption = (gPrefSelectedOption + 1) % 4;
             Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
         } else if (BTN_IS_PRESSED(gPlayer1Controller, BTN_A)) {
             var_s1 = Options_ApplySelection();
@@ -422,10 +422,10 @@ s32 Options_Main(UNUSED s32 arg0, UNUSED s32 arg1) {
     ASSET_LOAD(D_2000000, common_menu2_ui, 0);
 
     Text_InitStringTables();
-    D_82C01660 = Text_GetStringTable(0x15);
+    gPrefMessageBank = Text_GetStringTable(0x15);
     Save_EnsureAllBanksLoaded();
-    Save_GetOptionsField02(&D_82C01666);
-    D_82C01664 = 0;
+    Save_GetOptionsField02(&gPrefToggleFlags);
+    gPrefSelectedOption = 0;
     StageContext_Activate(sp24);
     Options_Loop();
     StageContext_Deactivate();

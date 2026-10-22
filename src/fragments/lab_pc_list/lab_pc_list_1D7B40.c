@@ -12,7 +12,7 @@
 #include "src/memory.h"
 #include "src/pokemon_stats.h"
 
-static u8 D_88317360[] = {
+static u8 gMoveIdToAlphabeticalRankMap[] = {
     0x5F, 0x45, 0x21, 0x12, 0x51, 0x58, 0x2A, 0x43, 0x96, 0x6F, 0x9C, 0x36, 0x66, 0x8D, 0x19, 0x37, 0xA1, 0xA0, 0x2F,
     9,    0x77, 0x9D, 0x83, 0x1E, 0x50, 0x44, 0x6D, 0x6E, 0x3A, 0x3C, 0x31, 0x3D, 0x8E, 0xC,  0xA3, 0x90, 0x92, 0x20,
     0x8F, 0x5D, 0x9B, 0x5B, 0x49, 0xA,  0x34, 0x6A, 0x74, 0x8A, 0x7F, 0x1C, 1,    0x27, 0x2D, 0x56, 0x9E, 0x3E, 0x8B,
@@ -26,7 +26,7 @@ static u8 D_88317360[] = {
 
 void BattleMoveListWidget_DrawMove(s32 arg0, s32 arg1, unk_func_88309160_arg2* arg2, s32 arg3, u32 arg4,
                    unk_func_88200FA0_030_030* arg5) {
-    static Color_RGBA8 D_88317404[] = {
+    static Color_RGBA8 gMoveInfoColors[] = {
         { 0xF0, 0xF0, 0xF0, 0xFF },
         { 0xF0, 0xF0, 0xF0, 0x4D },
     };
@@ -45,10 +45,10 @@ void BattleMoveListWidget_DrawMove(s32 arg0, s32 arg1, unk_func_88309160_arg2* a
         if (sp34 == NULL) {
             sp28 = "???????";
         } else {
-            sp28 = Text_GetString(NULL, 0, D_8831A4CC, arg2->unk_00 - 1);
+            sp28 = Text_GetString(NULL, 0, gMoveNamesTable, arg2->unk_00 - 1);
         }
 
-        sp3C = D_88317404[(arg4 & 4) ? 1 : 0];
+        sp3C = gMoveInfoColors[(arg4 & 4) ? 1 : 0];
 
         Font_BeginTranslucentTextRendering();
         Gfx_SetEnvColor(sp3C.r, sp3C.g, sp3C.b, sp3C.a);
@@ -71,7 +71,7 @@ void BattleMoveListWidget_DrawMove(s32 arg0, s32 arg1, unk_func_88309160_arg2* a
 }
 
 void BattleMoveListWidget_Initialize(unk_func_8830867C_04C_078* arg0, s32 arg1, s32 arg2, MemoryPool* arg3) {
-    static Color_RGBA8 D_8831740C = { 0xA0, 0x96, 0x64, 0xFF };
+    static Color_RGBA8 gMoveListBackgroundColor = { 0xA0, 0x96, 0x64, 0xFF };
 
     UNUSED s32 pad;
     s32 sp58;
@@ -97,7 +97,7 @@ void BattleMoveListWidget_Initialize(unk_func_8830867C_04C_078* arg0, s32 arg1, 
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_2C);
 
     sp44 = mem_pool_alloc(arg3, sizeof(unk_func_885012A4));
-    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(sp44, 0, 0, sp4C, 0x78, D_8831740C);
+    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(sp44, 0, 0, sp4C, 0x78, gMoveListBackgroundColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, sp44);
 
     arg0->unk_30 = mem_pool_alloc(arg3, sizeof(unk_func_88200FA0_030_030));
@@ -144,14 +144,14 @@ void BattleMoveListWidget_DisableUnavailableMoves(unk_func_8830867C_04C_078* arg
 }
 
 void BattleMoveListWidget_DisableRestrictedMoves(unk_func_8830867C_04C_078* arg0) {
-    static s32 D_88317410[] = { 0xF, 0x13, 0x39, 0x46, 0x94 };
+    static s32 gForbiddenMoveIds[] = { 0xF, 0x13, 0x39, 0x46, 0x94 };
 
     s32 j;
     s32 i;
 
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 5; j++) {
-            if (*(s32*)&arg0->unk_44[i].unk_00 == D_88317410[j]) {
+            if (*(s32*)&arg0->unk_44[i].unk_00 == gForbiddenMoveIds[j]) {
                 arg0->unk_30->unk_34[i] |= 4;
                 break;
             }
@@ -269,8 +269,8 @@ void BattleInfoWidget_DrawIndicator(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 void BattleInfoWidget_DrawEntry(s32 arg0, s32 arg1, unk_func_88309C38_arg2* arg2, s32 arg3, s32 arg4,
                    unk_func_8830867C_034_03C_038* arg5) {
-    static Color_RGBA8 D_88317424 = { 0xB2, 0xFF, 0xC3, 0xFF };
-    static Color_RGBA8 D_88317428 = { 0xF0, 0xF0, 0xF0, 0xFF };
+    static Color_RGBA8 gMoveEntryHighlightColor = { 0xB2, 0xFF, 0xC3, 0xFF };
+    static Color_RGBA8 gBoxEntryTextColor = { 0xF0, 0xF0, 0xF0, 0xFF };
 
     UNUSED s32 pad;
     char* sp38;
@@ -279,15 +279,15 @@ void BattleInfoWidget_DrawEntry(s32 arg0, s32 arg1, unk_func_88309C38_arg2* arg2
     s32 sp2C;
     s32 sp28;
 
-    sp38 = Text_GetString(NULL, 0, D_8831A4C4, 0x5F);
+    sp38 = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x5F);
     if (arg4 & 2) {
-        Gfx_DrawTiledTextureStrip(&D_800758E0, arg0 + 8, arg1 + 2);
+        Gfx_DrawTiledTextureStrip(&gMenuTextureInfo_Default, arg0 + 8, arg1 + 2);
     } else {
-        Gfx_DrawTiledTextureStrip(&D_800758F0, arg0 + 8, arg1 + 2);
+        Gfx_DrawTiledTextureStrip(&gMenuTextureInfo_Alternates, arg0 + 8, arg1 + 2);
     }
 
     Font_BeginTranslucentTextRendering();
-    Gfx_SetEnvColor(D_88317428.r, D_88317428.g, D_88317428.b, D_88317428.a);
+    Gfx_SetEnvColor(gBoxEntryTextColor.r, gBoxEntryTextColor.g, gBoxEntryTextColor.b, gBoxEntryTextColor.a);
     Font_SetActive(8, 0);
     Font_Printf(arg0 + 0x2C, arg1 + 2, sp38);
 
@@ -303,16 +303,16 @@ void BattleInfoWidget_DrawEntry(s32 arg0, s32 arg1, unk_func_88309C38_arg2* arg2
 
 s32 BattleInfoWidget_GetEntryWidth(void) {
     UNUSED s32 pad[2];
-    s32 sp1C = Font_MeasureTextExtent(8, 0, Text_GetString(NULL, 0, D_8831A4C4, 0x5F));
+    s32 sp1C = Font_MeasureTextExtent(8, 0, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x5F));
     s32 sp20 = Font_MeasureTextExtent(8, 0, " 00");
 
     return sp1C + sp20 + 0x3D;
 }
 
 void BattleInfoWidget_Initialize(unk_func_8830867C_034_03C* arg0, s32 arg1, s32 arg2, s32 arg3, MemoryPool* arg4) {
-    static Color_RGBA8 D_8831742C = { 0x64, 0x96, 0xB4, 0xFF };
-    static Color_RGBA8 D_88317430 = { 0x3C, 0x64, 0x78, 0xFF };
-    static Color_RGBA8 D_88317434 = { 0xA0, 0x96, 0x64, 0xFF };
+    static Color_RGBA8 gUIHeaderColor = { 0x64, 0x96, 0xB4, 0xFF };
+    static Color_RGBA8 gUIHeaderBorderColor = { 0x3C, 0x64, 0x78, 0xFF };
+    static Color_RGBA8 gBattleInfoWidgetBgColor = { 0xA0, 0x96, 0x64, 0xFF };
 
     s32 pad2;
     s32 pad3;
@@ -320,7 +320,7 @@ void BattleInfoWidget_Initialize(unk_func_8830867C_034_03C* arg0, s32 arg1, s32 
     s32 sp80;
     s32 temp_v0;
     s32 sp78;
-    unk_func_8850B254* sp74;
+    DashedBorderFrame* sp74;
     unk_func_8850878C* sp70;
     char* sp6C;
     unk_func_885012A4* sp68;
@@ -344,8 +344,8 @@ void BattleInfoWidget_Initialize(unk_func_8830867C_034_03C* arg0, s32 arg1, s32 
     arg0->unk_2C->unk_00.unk_28 &= ~1;
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_2C);
 
-    sp74 = mem_pool_alloc(arg4, sizeof(unk_func_8850B254));
-    ((func8850B254)Memmap_GetFragmentVaddr(WidgetTree_InitDashedBorderFrame))(sp74, 0, 0, sp78, 0x14, D_8831742C, D_88317430);
+    sp74 = mem_pool_alloc(arg4, sizeof(DashedBorderFrame));
+    ((func8850B254)Memmap_GetFragmentVaddr(WidgetTree_InitDashedBorderFrame))(sp74, 0, 0, sp78, 0x14, gUIHeaderColor, gUIHeaderBorderColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, sp74);
 
     arg0->unk_30 = mem_pool_alloc(arg4, sizeof(unk_func_88500994));
@@ -355,13 +355,13 @@ void BattleInfoWidget_Initialize(unk_func_8830867C_034_03C* arg0, s32 arg1, s32 
     sp70 = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
     ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(sp70, 0, 0, "", 8);
     ((func88500A3C)Memmap_GetFragmentVaddr(WidgetTree_AddPage))(arg0->unk_30, sp70);
-    sp6C = Text_GetString(NULL, 0, D_8831A4C4, 0x60);
+    sp6C = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x60);
 
     sp70 = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
     ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(
         sp70, (arg0->unk_2C->unk_00.unk_14.unk_00 - Font_MeasureTextExtent(8, 0, sp6C)) / 2, 0, sp6C, 8);
     ((func88500A3C)Memmap_GetFragmentVaddr(WidgetTree_AddPage))(arg0->unk_30, sp70);
-    sp6C = Text_GetString(NULL, 0, D_8831A4C4, 0x61);
+    sp6C = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x61);
 
     sp70 = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
     ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(
@@ -369,7 +369,7 @@ void BattleInfoWidget_Initialize(unk_func_8830867C_034_03C* arg0, s32 arg1, s32 
     ((func88500A3C)Memmap_GetFragmentVaddr(WidgetTree_AddPage))(arg0->unk_30, sp70);
 
     sp68 = mem_pool_alloc(arg4, sizeof(unk_func_885012A4));
-    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(sp68, 0, 0x18, sp78, tmp + 8, D_88317434);
+    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(sp68, 0, 0x18, sp78, tmp + 8, gBattleInfoWidgetBgColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, sp68);
 
     arg0->unk_34 = mem_pool_alloc(arg4, sizeof(unk_func_88500994));
@@ -449,7 +449,7 @@ s32 BattleInfoWidget_DrawEntryMarker(unk_func_8830867C_034_034* arg0, s32 arg1, 
     gDPSetRenderMode(gDisplayListHead++, G_RM_NOOP, G_RM_NOOP2);
     gDPSetAlphaCompare(gDisplayListHead++, G_AC_THRESHOLD);
     gDPSetTexturePersp(gDisplayListHead++, G_TP_NONE);
-    gDPLoadTextureBlock(gDisplayListHead++, (arg0->unk_30 != 0) ? D_883186E8 : D_88318530, G_IM_FMT_RGBA, G_IM_SIZ_16b,
+    gDPLoadTextureBlock(gDisplayListHead++, (arg0->unk_30 != 0) ? gCheckerboardPatternStatusEntry : gCheckerboardPattern, G_IM_FMT_RGBA, G_IM_SIZ_16b,
                         12, 18, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK,
                         G_TX_NOLOD, G_TX_NOLOD);
     gSPTextureRectangle(gDisplayListHead++, arg1 << 2, arg2 << 2, (arg1 + 0xA) << 2, (arg2 + 0x11) << 2,
@@ -503,8 +503,8 @@ void BattleInfoWidget_UpdateEntryFlags(unk_func_8830867C_034* arg0) {
 }
 
 void BattleInfoWidget_UpdateConfirmState(unk_func_8830867C_034* arg0) {
-    static Color_RGBA8 D_88317438 = { 0xF0, 0xF0, 0xF0, 0xFF };
-    static Color_RGBA8 D_8831743C = { 0xF0, 0xF0, 0xF0, 0x4D };
+    static Color_RGBA8 gItemActiveColor = { 0xF0, 0xF0, 0xF0, 0xFF };
+    static Color_RGBA8 gItemInactiveColor = { 0xF0, 0xF0, 0xF0, 0x4D };
 
     s32 i;
     s32 var_a1;
@@ -522,11 +522,11 @@ void BattleInfoWidget_UpdateConfirmState(unk_func_8830867C_034* arg0) {
 
     if (var_a1 != 0) {
         arg0->unk_40->unk_00.unk_28 |= 2;
-        arg0->unk_40->unk_30 = (0, D_8831743C);
+        arg0->unk_40->unk_30 = (0, gItemInactiveColor);
         arg0->unk_40->unk_44 = arg0->unk_40->unk_44;
     } else {
         arg0->unk_40->unk_00.unk_28 &= ~2;
-        arg0->unk_40->unk_30 = (0, D_88317438);
+        arg0->unk_40->unk_30 = (0, gItemActiveColor);
         arg0->unk_40->unk_44 = arg0->unk_40->unk_44;
     }
 }
@@ -540,22 +540,22 @@ void BattleInfoWidget_ApplyEntrySelection(unk_func_8830867C_034* arg0, s32 arg1)
 
 void BattleInfoWidget_DrawStatusEntry(s32 arg0, s32 arg1, unk_func_88309C38_arg2* arg2, s32 arg3, s32 arg4,
                    unk_func_88200FA0_030_030* arg5) {
-    static Color_RGBA8 D_88317440 = { 0xF0, 0xF0, 0xF0, 0xFF };
+    static Color_RGBA8 gItemInfoTextColor = { 0xF0, 0xF0, 0xF0, 0xFF };
 
     Color_RGBA8 sp34;
     UNUSED s32 pad[2];
 
     if (arg2 != NULL) {
         if (arg4 & 2) {
-            Gfx_DrawTiledTextureStrip(&D_800758E0, arg0 + 8, arg1 + 4);
+            Gfx_DrawTiledTextureStrip(&gMenuTextureInfo_Default, arg0 + 8, arg1 + 4);
         } else {
-            Gfx_DrawTiledTextureStrip(&D_800758F0, arg0 + 8, arg1 + 4);
+            Gfx_DrawTiledTextureStrip(&gMenuTextureInfo_Alternates, arg0 + 8, arg1 + 4);
         }
-        sp34 = D_88317440;
+        sp34 = gItemInfoTextColor;
         Font_BeginTranslucentTextRendering();
         Gfx_SetEnvColor(sp34.r, sp34.g, sp34.b, sp34.a);
         Font_SetActive(8, 0);
-        Font_Printf(arg0 + 0x2C, arg1 + 4, Text_GetString(NULL, 0, D_8831A4C4, arg3 + 0x3B));
+        Font_Printf(arg0 + 0x2C, arg1 + 4, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, arg3 + 0x3B));
         Font_EndTexturedTextRendering();
         if (arg2->unk_14 == 1) {
             BattleInfoWidget_DrawIndicator((arg5->unk_00.unk_14.unk_00 + arg0) - 0x35, arg1 + 0xC, arg2->unk_0C->unk_18,
@@ -570,7 +570,7 @@ s32 BattleInfoWidget_GetStatusEntryWidth(void) {
     s32 var_v1;
 
     for (i = 0; i < 3; i++) {
-        var_v1 = Font_MeasureTextExtent(8, 0, Text_GetString(NULL, 0, D_8831A4C4, i + 0x3B));
+        var_v1 = Font_MeasureTextExtent(8, 0, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, i + 0x3B));
 
         if (i == 0) {
             var_v1 += 0x3D;
@@ -585,16 +585,16 @@ s32 BattleInfoWidget_GetStatusEntryWidth(void) {
 }
 
 void BattleInfoWidget_Build(unk_func_8830867C_034* arg0, s32 arg1, s32 arg2, WidgetNode* arg3, MemoryPool* arg4) {
-    static Color_RGBA8 D_88317444 = { 0x64, 0x96, 0xB4, 0xFF };
-    static Color_RGBA8 D_88317448 = { 0x3C, 0x64, 0x78, 0xFF };
-    static Color_RGBA8 D_8831744C = { 0xA0, 0x96, 0x64, 0xFF };
-    static Color_RGBA8 D_88317450 = { 0xFF, 0xFF, 0x00, 0xFF };
+    static Color_RGBA8 gMenuHeaderColor = { 0x64, 0x96, 0xB4, 0xFF };
+    static Color_RGBA8 gMenuHeaderBorderColor = { 0x3C, 0x64, 0x78, 0xFF };
+    static Color_RGBA8 gBattleInfoWidgetPanelColor = { 0xA0, 0x96, 0x64, 0xFF };
+    static Color_RGBA8 gMenuHighlightColor = { 0xFF, 0xFF, 0x00, 0xFF };
 
     UNUSED s32 pad[3];
     char* sp88;
     s32 sp84;
     s32 sp80;
-    unk_func_8850B254* sp7C;
+    DashedBorderFrame* sp7C;
     unk_func_8850878C* sp78;
     unk_func_885012A4* sp74;
     unk_func_8850BD40* sp70;
@@ -605,7 +605,7 @@ void BattleInfoWidget_Build(unk_func_8830867C_034* arg0, s32 arg1, s32 arg2, Wid
     WidgetAnimatedFrame* sp5C;
     unk_func_8850BD40* sp58;
     unk_func_8850BD40* sp54;
-    unk_func_88503298* sp50;
+    WidgetVisibilityGate* sp50;
 
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(arg0, sizeof(unk_func_8830867C_034));
 
@@ -615,7 +615,7 @@ void BattleInfoWidget_Build(unk_func_8830867C_034* arg0, s32 arg1, s32 arg2, Wid
     arg0->unk_00.unk_10.unk_02 = arg2;
 
     sp80 = BattleInfoWidget_GetStatusEntryWidth() + 0x36;
-    sp88 = Text_GetString(NULL, 0, D_8831A4C4, 0x39);
+    sp88 = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x39);
     sp84 = Font_MeasureTextExtent(8, 0, sp88);
     if (sp84 < sp80) {
         sp84 = sp80;
@@ -632,8 +632,8 @@ void BattleInfoWidget_Build(unk_func_8830867C_034* arg0, s32 arg1, s32 arg2, Wid
     arg0->unk_2C->unk_00.unk_28 &= ~1;
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_2C);
 
-    sp7C = mem_pool_alloc(arg4, sizeof(unk_func_8850B254));
-    ((func8850B254)Memmap_GetFragmentVaddr(WidgetTree_InitDashedBorderFrame))(sp7C, 0, 0, sp84, 0x2C, D_88317444, D_88317448);
+    sp7C = mem_pool_alloc(arg4, sizeof(DashedBorderFrame));
+    ((func8850B254)Memmap_GetFragmentVaddr(WidgetTree_InitDashedBorderFrame))(sp7C, 0, 0, sp84, 0x2C, gMenuHeaderColor, gMenuHeaderBorderColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, sp7C);
 
     sp78 = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
@@ -642,7 +642,7 @@ void BattleInfoWidget_Build(unk_func_8830867C_034* arg0, s32 arg1, s32 arg2, Wid
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(sp7C, sp78);
 
     sp74 = mem_pool_alloc(arg4, sizeof(unk_func_885012A4));
-    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(sp74, 0, 0x30, sp84, 0x7C, D_8831744C);
+    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(sp74, 0, 0x30, sp84, 0x7C, gBattleInfoWidgetPanelColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, sp74);
 
     arg0->unk_30 = mem_pool_alloc(arg4, sizeof(unk_func_88200FA0_030_030));
@@ -660,7 +660,7 @@ void BattleInfoWidget_Build(unk_func_8830867C_034* arg0, s32 arg1, s32 arg2, Wid
     sp70 = mem_pool_alloc(arg4, sizeof(unk_func_8850BD40));
     ((func8850BD40)Memmap_GetFragmentVaddr(WidgetTree_InitScrollableGridInputProxy))(sp70, arg0->unk_30);
     ((func8850CC74)Memmap_GetFragmentVaddr(WidgetTree_AppendChildSelectionProxyItem))(arg0->unk_38, sp70);
-    sp68 = Text_GetString(NULL, 0, D_8831A4C4, 0x46);
+    sp68 = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x46);
     sp64 = Font_MeasureTextExtent(8, 0, sp68);
     sp60 = sp64 + 0x10;
     if (sp60 < 0x48) {
@@ -677,7 +677,7 @@ void BattleInfoWidget_Build(unk_func_8830867C_034* arg0, s32 arg1, s32 arg2, Wid
 
     sp5C = mem_pool_alloc(arg4, sizeof(WidgetAnimatedFrame));
     ((func88504570)Memmap_GetFragmentVaddr(WidgetTree_InitAnimatedFrameVariantC))(sp5C, -3, -3, sp6C->unk_14.unk_00 + 6,
-                                                           sp6C->unk_14.unk_02 + 6, D_88317450);
+                                                           sp6C->unk_14.unk_02 + 6, gMenuHighlightColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(sp6C, sp5C);
 
     sp58 = mem_pool_alloc(arg4, sizeof(unk_func_8850BD40));
@@ -692,7 +692,7 @@ void BattleInfoWidget_Build(unk_func_8830867C_034* arg0, s32 arg1, s32 arg2, Wid
     ((func8850BD40)Memmap_GetFragmentVaddr(WidgetTree_InitScrollableGridInputProxy))(sp54, arg0->unk_3C);
     ((func8850CC74)Memmap_GetFragmentVaddr(WidgetTree_AppendChildSelectionProxyItem))(arg0->unk_38, sp54);
 
-    sp50 = mem_pool_alloc(arg4, sizeof(unk_func_88503298));
+    sp50 = mem_pool_alloc(arg4, sizeof(WidgetVisibilityGate));
     ((func88503298)Memmap_GetFragmentVaddr(WidgetTree_InitVisibilityGateBridge))(sp50, arg0->unk_2C, arg3);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, sp50);
 }
@@ -870,15 +870,15 @@ s32 BattleInfoWidget_RunSelectionModal(unk_func_8830867C_034* arg0, Controller* 
 }
 
 void BattleInfoWidget_DrawLabel(s32 arg0, s32 arg1, char* arg2, s32 arg3, s32 arg4) {
-    static Color_RGBA8 D_88317454 = { 0xF0, 0xF0, 0xF0, 0xFF };
-    static Color_RGBA8 D_88317458 = { 0xF0, 0xF0, 0xF0, 0x4D };
+    static Color_RGBA8 gMenuItemTextColor = { 0xF0, 0xF0, 0xF0, 0xFF };
+    static Color_RGBA8 gMenuItemDisabledColor = { 0xF0, 0xF0, 0xF0, 0x4D };
 
     Color_RGBA8 sp1C;
 
     if (arg4 & 4) {
-        sp1C = (0, D_88317458);
+        sp1C = (0, gMenuItemDisabledColor);
     } else {
-        sp1C = (0, D_88317454);
+        sp1C = (0, gMenuItemTextColor);
     }
 
     Font_BeginTranslucentTextRendering();
@@ -889,9 +889,9 @@ void BattleInfoWidget_DrawLabel(s32 arg0, s32 arg1, char* arg2, s32 arg3, s32 ar
 }
 
 void BattleInfoWidget_InitDropdownMenu(unk_func_8830867C_030* arg0, WidgetNode* arg1, MemoryPool* arg2) {
-    static Color_RGBA8 D_8831745C = { 0xA0, 0x96, 0x64, 0xFF };
+    static Color_RGBA8 gSubMenuBackgroundColor = { 0xA0, 0x96, 0x64, 0xFF };
 
-    unk_func_88503298* sp44;
+    WidgetVisibilityGate* sp44;
 
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(arg0, sizeof(unk_func_8830867C_030));
 
@@ -908,7 +908,7 @@ void BattleInfoWidget_InitDropdownMenu(unk_func_8830867C_030* arg0, WidgetNode* 
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_2C);
 
     arg0->unk_38 = mem_pool_alloc(arg2, sizeof(unk_func_885012A4));
-    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(arg0->unk_38, 0, 0, 0x10, 0x10, D_8831745C);
+    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(arg0->unk_38, 0, 0, 0x10, 0x10, gSubMenuBackgroundColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, arg0->unk_38);
 
     arg0->unk_3C = mem_pool_alloc(arg2, sizeof(unk_func_88200FA0_030_030_1CEA00));
@@ -917,7 +917,7 @@ void BattleInfoWidget_InitDropdownMenu(unk_func_8830867C_030* arg0, WidgetNode* 
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, arg0->unk_3C);
 
     if (arg1 != NULL) {
-        sp44 = mem_pool_alloc(arg2, sizeof(unk_func_88503298));
+        sp44 = mem_pool_alloc(arg2, sizeof(WidgetVisibilityGate));
         ((func88503298)Memmap_GetFragmentVaddr(WidgetTree_InitVisibilityGateBridge))(sp44, arg0->unk_2C, arg1);
         ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, sp44);
     }
@@ -1054,19 +1054,19 @@ u32 BattleInfoWidget_RunEntryModal(unk_func_8830867C_030* arg0, Controller* arg1
 }
 
 void BattleInfoWidget_DrawStatusMenuLabel(s32 arg0, s32 arg1, char* arg2, s32 arg3, s32 arg4) {
-    static Color_RGBA8 D_88317460 = { 0xF0, 0xF0, 0xF0, 0xFF };
-    static Color_RGBA8 D_88317464 = { 0xF0, 0xF0, 0xF0, 0x4D };
-    static Color_RGBA8 D_88317468 = { 0xF0, 0xF0, 0x00, 0xFF };
+    static Color_RGBA8 gListItemTextColor = { 0xF0, 0xF0, 0xF0, 0xFF };
+    static Color_RGBA8 gListItemDisabledColor = { 0xF0, 0xF0, 0xF0, 0x4D };
+    static Color_RGBA8 gListItemHighlightColor = { 0xF0, 0xF0, 0x00, 0xFF };
 
     Color_RGBA8 sp24;
     UNUSED s32 pad[2];
 
     if (arg4 & 2) {
-        sp24 = (0, D_88317468);
+        sp24 = (0, gListItemHighlightColor);
     } else if (arg4 & 4) {
-        sp24 = (0, D_88317464);
+        sp24 = (0, gListItemDisabledColor);
     } else {
-        sp24 = (0, D_88317460);
+        sp24 = (0, gListItemTextColor);
     }
 
     Font_BeginTranslucentTextRendering();
@@ -1077,14 +1077,14 @@ void BattleInfoWidget_DrawStatusMenuLabel(s32 arg0, s32 arg1, char* arg2, s32 ar
 }
 
 void BattleInfoWidget_BuildStatusMenu(unk_func_8830867C_038* arg0, s32 arg1, s32 arg2, WidgetNode* arg3, MemoryPool* arg4) {
-    static Color_RGBA8 D_8831746C = { 0x64, 0x96, 0xB4, 0xFF };
-    static Color_RGBA8 D_88317470 = { 0x3C, 0x64, 0x78, 0xFF };
-    static Color_RGBA8 D_88317474 = { 0xA0, 0x96, 0x64, 0xFF };
-    static Color_RGBA8 D_88317478 = { 0x64, 0x96, 0xB4, 0xFF };
-    static Color_RGBA8 D_8831747C = { 0x3C, 0x64, 0x78, 0xFF };
-    static Color_RGBA8 D_88317480 = { 0xA0, 0x96, 0x64, 0xFF };
-    static Color_RGBA8 D_88317484 = { 0xB2, 0xFF, 0xC3, 0xFF };
-    static Color_RGBA8 D_88317488 = { 0xFF, 0xB2, 0xC3, 0xFF };
+    static Color_RGBA8 gCupMenuHeaderColor = { 0x64, 0x96, 0xB4, 0xFF };
+    static Color_RGBA8 gCupMenuHeaderBorderColor = { 0x3C, 0x64, 0x78, 0xFF };
+    static Color_RGBA8 gCupMenuBackgroundColor = { 0xA0, 0x96, 0x64, 0xFF };
+    static Color_RGBA8 gCupMenuSubHeaderColor = { 0x64, 0x96, 0xB4, 0xFF };
+    static Color_RGBA8 gCupMenuSubHeaderBorderColor = { 0x3C, 0x64, 0x78, 0xFF };
+    static Color_RGBA8 gCupMenuSubBackgroundColor = { 0xA0, 0x96, 0x64, 0xFF };
+    static Color_RGBA8 gCupMenuEligibleColor = { 0xB2, 0xFF, 0xC3, 0xFF };
+    static Color_RGBA8 gCupMenuAlertColor = { 0xFF, 0xB2, 0xC3, 0xFF };
 
     s32 i;
     UNUSED s32 pad;
@@ -1097,25 +1097,25 @@ void BattleInfoWidget_BuildStatusMenu(unk_func_8830867C_038* arg0, s32 arg1, s32
     s32 sp94;
     s32 tmp;
     s32 temp_v0;
-    unk_func_8850B254* sp88;
+    DashedBorderFrame* sp88;
     unk_func_8850878C* sp84;
     s32 temp_v0_6;
     s32 temp_v0_7;
     unk_func_885012A4* temp_s0_2;
-    unk_func_88503298* temp_s0_3;
-    unk_func_8850B254* sp70;
+    WidgetVisibilityGate* temp_s0_3;
+    DashedBorderFrame* sp70;
     char* sp6C;
     unk_func_8850878C* sp68;
     unk_func_885012A4* sp64;
     unk_func_8850878C* sp60;
     char* sp5C;
 
-    spAC = Font_MeasureTextExtent(8, 0, Text_GetString(NULL, 0, D_8831A4C4, 0x2A));
+    spAC = Font_MeasureTextExtent(8, 0, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x2A));
     PointerList_Allocate(&arg0->unk_34, 4, arg4);
-    PointerList_Insert(&arg0->unk_34, Text_GetString(NULL, 0, D_8831A4C4, 0x2C), 0);
-    PointerList_Insert(&arg0->unk_34, Text_GetString(NULL, 0, D_8831A4C4, 0x2D), 1);
-    PointerList_Insert(&arg0->unk_34, Text_GetString(NULL, 0, D_8831A4C4, 0x30), 2);
-    PointerList_Insert(&arg0->unk_34, Text_GetString(NULL, 0, D_8831A4C4, 0x31), 3);
+    PointerList_Insert(&arg0->unk_34, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x2C), 0);
+    PointerList_Insert(&arg0->unk_34, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x2D), 1);
+    PointerList_Insert(&arg0->unk_34, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x30), 2);
+    PointerList_Insert(&arg0->unk_34, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x31), 3);
 
     for (i = 0; i < 4; i++) {
         temp_v0 = Font_MeasureTextExtent(8, 0, arg0->unk_34.unk_00[i]);
@@ -1141,21 +1141,21 @@ void BattleInfoWidget_BuildStatusMenu(unk_func_8830867C_038* arg0, s32 arg1, s32
     arg0->unk_2C->unk_00.unk_28 &= ~1;
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_2C);
 
-    sp88 = mem_pool_alloc(arg4, sizeof(unk_func_8850B254));
-    ((func8850B254)Memmap_GetFragmentVaddr(WidgetTree_InitDashedBorderFrame))(sp88, 0, 0, tmp, 0x2C, D_8831746C, D_88317470);
+    sp88 = mem_pool_alloc(arg4, sizeof(DashedBorderFrame));
+    ((func8850B254)Memmap_GetFragmentVaddr(WidgetTree_InitDashedBorderFrame))(sp88, 0, 0, tmp, 0x2C, gCupMenuHeaderColor, gCupMenuHeaderBorderColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, sp88);
 
     sp84 = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
-    ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(sp84, 8, 0, Text_GetString(NULL, 0, D_8831A4C4, 0x2A), 8);
+    ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(sp84, 8, 0, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x2A), 8);
     sp84->unk_3C = 0x18;
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(sp88, sp84);
 
     temp_s0_2 = mem_pool_alloc(arg4, sizeof(unk_func_885012A4));
-    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(temp_s0_2, 0, 0x30, tmp, 0x78, D_88317474);
+    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(temp_s0_2, 0, 0x30, tmp, 0x78, gCupMenuBackgroundColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, temp_s0_2);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(temp_s0_2, arg0->unk_30);
 
-    temp_s0_3 = mem_pool_alloc(arg4, sizeof(unk_func_88503298));
+    temp_s0_3 = mem_pool_alloc(arg4, sizeof(WidgetVisibilityGate));
     ((func88503298)Memmap_GetFragmentVaddr(WidgetTree_InitVisibilityGateBridge))(temp_s0_3, arg0->unk_2C, arg3);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, temp_s0_3);
 
@@ -1163,7 +1163,7 @@ void BattleInfoWidget_BuildStatusMenu(unk_func_8830867C_038* arg0, s32 arg1, s32
 
     sp9C = 0;
     for (i = 0; i < 3; i++) {
-        temp_v0_6 = Font_MeasureTextExtent(8, 0, Text_GetString(NULL, 0, D_8831A4C4, i + 0x32));
+        temp_v0_6 = Font_MeasureTextExtent(8, 0, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, i + 0x32));
         if (sp9C < temp_v0_6) {
             sp9C = temp_v0_6;
         }
@@ -1171,14 +1171,14 @@ void BattleInfoWidget_BuildStatusMenu(unk_func_8830867C_038* arg0, s32 arg1, s32
 
     sp98 = 0;
     for (i = 0; i < 3; i++) {
-        temp_v0_7 = Font_MeasureTextExtent(8, 0, Text_GetString(NULL, 0, D_8831A4C4, i + 0x35));
+        temp_v0_7 = Font_MeasureTextExtent(8, 0, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, i + 0x35));
         if (sp98 < temp_v0_7) {
             sp98 = temp_v0_7;
         }
     }
 
     spA4 = sp9C + sp98 + 0x10;
-    sp94 = Font_MeasureTextExtent(8, 0, Text_GetString(NULL, 0, D_8831A4C4, 0x38));
+    sp94 = Font_MeasureTextExtent(8, 0, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x38));
     if (spA4 < sp94) {
         spA4 = sp94;
     }
@@ -1189,11 +1189,11 @@ void BattleInfoWidget_BuildStatusMenu(unk_func_8830867C_038* arg0, s32 arg1, s32
     arg0->unk_40->unk_00.unk_28 &= ~1;
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_40);
 
-    sp70 = mem_pool_alloc(arg4, sizeof(unk_func_8850B254));
+    sp70 = mem_pool_alloc(arg4, sizeof(DashedBorderFrame));
     ((func8850B254)Memmap_GetFragmentVaddr(WidgetTree_InitDashedBorderFrame))(sp70, 0, 0, arg0->unk_40->unk_00.unk_14.unk_00, 0x14,
-                                                           D_88317478, D_8831747C);
+                                                           gCupMenuSubHeaderColor, gCupMenuSubHeaderBorderColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_40, sp70);
-    sp6C = Text_GetString(NULL, 0, D_8831A4C4, 0x2B);
+    sp6C = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x2B);
 
     sp68 = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
     ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(
@@ -1202,52 +1202,52 @@ void BattleInfoWidget_BuildStatusMenu(unk_func_8830867C_038* arg0, s32 arg1, s32
 
     sp64 = mem_pool_alloc(arg4, sizeof(unk_func_885012A4));
     ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(sp64, 0, 0x18, arg0->unk_40->unk_00.unk_14.unk_00, 0x78,
-                                                           D_88317480);
+                                                           gCupMenuSubBackgroundColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_40, sp64);
 
     sp60 = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
-    sp5C = Text_GetString(NULL, 0, D_8831A4C4, 0x32);
+    sp5C = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x32);
     ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(sp60, ((sp9C - Font_MeasureTextExtent(8, 0, sp5C)) / 2) + 8, 8, sp5C,
                                                            8);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(sp64, sp60);
 
     sp60 = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
-    sp5C = Text_GetString(NULL, 0, D_8831A4C4, 0x33);
+    sp5C = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x33);
     ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(sp60, ((sp9C - Font_MeasureTextExtent(8, 0, sp5C)) / 2) + 8, 0x24,
                                                            sp5C, 8);
-    sp60->unk_30 = (0, D_88317484);
+    sp60->unk_30 = (0, gCupMenuEligibleColor);
     sp60->unk_44 = sp60->unk_44;
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(sp64, sp60);
 
     sp60 = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
-    sp5C = Text_GetString(NULL, 0, D_8831A4C4, 0x34);
+    sp5C = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x34);
     ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(sp60, ((sp9C - Font_MeasureTextExtent(8, 0, sp5C)) / 2) + 8, 0x40,
                                                            sp5C, 8);
-    sp60->unk_30 = (0, D_88317488);
+    sp60->unk_30 = (0, gCupMenuAlertColor);
     sp60->unk_44 = sp60->unk_44;
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(sp64, sp60);
 
     sp60 = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
     ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(sp60, sp9C + 0x18, 8,
-                                                           Text_GetString(NULL, 0, D_8831A4C4, 0x35), 8);
+                                                           Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x35), 8);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(sp64, sp60);
 
     sp60 = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
     ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(sp60, sp9C + 0x18, 0x24,
-                                                           Text_GetString(NULL, 0, D_8831A4C4, 0x36), 8);
-    sp60->unk_30 = (0, D_88317484);
+                                                           Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x36), 8);
+    sp60->unk_30 = (0, gCupMenuEligibleColor);
     sp60->unk_44 = sp60->unk_44;
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(sp64, sp60);
 
     sp60 = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
     ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(sp60, sp9C + 0x18, 0x40,
-                                                           Text_GetString(NULL, 0, D_8831A4C4, 0x37), 8);
-    sp60->unk_30 = (0, D_88317488);
+                                                           Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x37), 8);
+    sp60->unk_30 = (0, gCupMenuAlertColor);
     sp60->unk_44 = sp60->unk_44;
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(sp64, sp60);
 
     sp60 = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
-    sp5C = Text_GetString(NULL, 0, D_8831A4C4, 0x38);
+    sp5C = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x38);
     ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(sp60, (arg0->unk_40->unk_00.unk_14.unk_00 - sp94) / 2, 0x5C,
                                                            sp5C, 8);
     sp60->unk_3C = 0x18;
@@ -1386,11 +1386,11 @@ s32 BattleInfoWidget_HandleNumberSelectorInput(unk_func_8830867C_044_038* arg0, 
 }
 
 void BattleInfoWidget_BuildLevelRangeMenu(unk_func_8830867C_044* arg0, s32 arg1, s32 arg2, WidgetNode* arg3, MemoryPool* arg4) {
-    static Color_RGBA8 D_88317490 = { 0x64, 0x96, 0xB4, 0xFF };
-    static Color_RGBA8 D_88317494 = { 0x3C, 0x64, 0x78, 0xFF };
-    static Color_RGBA8 D_88317498 = { 0xA0, 0x96, 0x64, 0xFF };
-    static Color_RGBA8 D_8831749C = { 0xC8, 0xC8, 0xFF, 0xFF };
-    static Color_RGBA8 D_883174A0 = { 0xFF, 0xFF, 0x00, 0xFF };
+    static Color_RGBA8 gColor_MenuBackground = { 0x64, 0x96, 0xB4, 0xFF };
+    static Color_RGBA8 gColor_MenuBorder = { 0x3C, 0x64, 0x78, 0xFF };
+    static Color_RGBA8 gColor_MenuFill = { 0xA0, 0x96, 0x64, 0xFF };
+    static Color_RGBA8 gColor_Highlight = { 0xC8, 0xC8, 0xFF, 0xFF };
+    static Color_RGBA8 gColor_YellowAccent = { 0xFF, 0xFF, 0x00, 0xFF };
 
     s32 i;
     s32 temp_v0;
@@ -1399,7 +1399,7 @@ void BattleInfoWidget_BuildLevelRangeMenu(unk_func_8830867C_044* arg0, s32 arg1,
     s32 sp8C;
     unk_func_8850878C* temp_s0_5;
     WidgetAnimatedFrame* temp_s0_6;
-    unk_func_8850B254* sp80;
+    DashedBorderFrame* sp80;
     WidgetGridMenu* ptr;
     unk_func_885012A4* sp78;
     UNUSED s32 pad;
@@ -1411,14 +1411,14 @@ void BattleInfoWidget_BuildLevelRangeMenu(unk_func_8830867C_044* arg0, s32 arg1,
     unk_func_8850878C* temp_s0_4;
     s32 sp58;
     s32 tmp;
-    unk_func_88503298* temp_s0_7;
+    WidgetVisibilityGate* temp_s0_7;
 
-    sp94 = Font_MeasureTextExtent(4, 0, Text_GetString(NULL, 0, D_8831A4C4, 0x48));
+    sp94 = Font_MeasureTextExtent(4, 0, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x48));
     sp90 = (Font_MeasureTextExtent(8, 0, "0") * 3) + 6;
     sp8C = 0;
 
     for (i = 0; i < 2; i++) {
-        temp_v0 = Font_MeasureTextExtent(8, 0, Text_GetString(NULL, 0, D_8831A4C4, i + 0x49));
+        temp_v0 = Font_MeasureTextExtent(8, 0, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, i + 0x49));
         if (sp8C < temp_v0) {
             sp8C = temp_v0;
         }
@@ -1442,18 +1442,18 @@ void BattleInfoWidget_BuildLevelRangeMenu(unk_func_8830867C_044* arg0, s32 arg1,
     arg0->unk_2C->unk_00.unk_28 &= ~1;
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_2C);
 
-    sp80 = mem_pool_alloc(arg4, sizeof(unk_func_8850B254));
+    sp80 = mem_pool_alloc(arg4, sizeof(DashedBorderFrame));
     ((func8850B254)Memmap_GetFragmentVaddr(WidgetTree_InitDashedBorderFrame))(sp80, 0, 0, (sp90 + sp94) + sp90 + sp8C + 0x34, 0x14,
-                                                           D_88317490, D_88317494);
+                                                           gColor_MenuBackground, gColor_MenuBorder);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, sp80);
 
     temp_s0 = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
-    ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(temp_s0, 8, 0, Text_GetString(NULL, 0, D_8831A4C4, 0x47), 8);
+    ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(temp_s0, 8, 0, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x47), 8);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(sp80, temp_s0);
 
     sp78 = mem_pool_alloc(arg4, sizeof(unk_func_885012A4));
     ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(sp78, 0, 0x18, (sp90 + sp94) + sp90 + sp8C + 0x34, 0x44,
-                                                           D_88317498);
+                                                           gColor_MenuFill);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, sp78);
 
     arg0->unk_38 = mem_pool_alloc(arg4, sizeof(unk_func_8830867C_044_038));
@@ -1474,8 +1474,8 @@ void BattleInfoWidget_BuildLevelRangeMenu(unk_func_8830867C_044* arg0, s32 arg1,
 
     temp_s0_4 = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
     ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(temp_s0_4, sp90 + 0x10, 0xD,
-                                                           Text_GetString(NULL, 0, D_8831A4C4, 0x48), 4);
-    temp_s0_4->unk_30 = D_8831749C;
+                                                           Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x48), 4);
+    temp_s0_4->unk_30 = gColor_Highlight;
     temp_s0_4->unk_44 = temp_s0_4->unk_44;
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(sp78, temp_s0_4);
 
@@ -1490,7 +1490,7 @@ void BattleInfoWidget_BuildLevelRangeMenu(unk_func_8830867C_044* arg0, s32 arg1,
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(sp78, sp64);
     ptr = arg0->unk_44;
     ptr->unk_18[0] = sp64;
-    sp60 = Text_GetString(NULL, 0, D_8831A4C4, 0x49);
+    sp60 = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x49);
     sp58 = Font_MeasureTextExtent(8, 0, sp60);
 
     temp_s0_5 = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
@@ -1501,7 +1501,7 @@ void BattleInfoWidget_BuildLevelRangeMenu(unk_func_8830867C_044* arg0, s32 arg1,
     ((func8850A40C)Memmap_GetFragmentVaddr(WidgetTree_InitBorderFrame))(arg0->unk_34, tmp, 0x24, sp8C + 0xC, 0x18);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(sp78, arg0->unk_34);
     arg0->unk_44->unk_18[arg0->unk_44->unk_2C] = arg0->unk_34;
-    sp60 = Text_GetString(NULL, 0, D_8831A4C4, 0x4A);
+    sp60 = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x4A);
     sp58 = Font_MeasureTextExtent(8, 0, sp60);
 
     arg0->unk_30 = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
@@ -1510,19 +1510,19 @@ void BattleInfoWidget_BuildLevelRangeMenu(unk_func_8830867C_044* arg0, s32 arg1,
     ((func8850CAB4)Memmap_GetFragmentVaddr(WidgetTree_SelectFirstEnabledGridItem))(arg0->unk_44);
 
     temp_s0_6 = mem_pool_alloc(arg4, sizeof(WidgetAnimatedFrame));
-    ((func88504570)Memmap_GetFragmentVaddr(WidgetTree_InitAnimatedFrameVariantC))(temp_s0_6, 0, 0, 0x10, 0x10, D_883174A0);
+    ((func88504570)Memmap_GetFragmentVaddr(WidgetTree_InitAnimatedFrameVariantC))(temp_s0_6, 0, 0, 0x10, 0x10, gColor_YellowAccent);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(sp78, temp_s0_6);
     arg0->unk_44->unk_1C = temp_s0_6;
 
-    temp_s0_7 = mem_pool_alloc(arg4, sizeof(unk_func_88503298));
+    temp_s0_7 = mem_pool_alloc(arg4, sizeof(WidgetVisibilityGate));
     ((func88503298)Memmap_GetFragmentVaddr(WidgetTree_InitVisibilityGateBridge))(temp_s0_7, arg0->unk_2C, arg3);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, temp_s0_7);
 }
 
 void BattleInfoWidget_SetLevelRange(unk_func_8830867C_044* arg0, s32 arg1, s32 arg2, s32 arg3) {
-    static Color_RGBA8 D_883174A4 = { 0xF0, 0xF0, 0xF0, 0xFF };
-    static Color_RGBA8 D_883174A8 = { 0xF0, 0xF0, 0xF0, 0x4D };
-    static Color_RGBA8 D_883174AC = { 0x66, 0x5B, 0x47, 0xFF };
+    static Color_RGBA8 gColor_NumericEnabled = { 0xF0, 0xF0, 0xF0, 0xFF };
+    static Color_RGBA8 gColor_NumericDisabled = { 0xF0, 0xF0, 0xF0, 0x4D };
+    static Color_RGBA8 gColor_NumericTextDisabled = { 0x66, 0x5B, 0x47, 0xFF };
 
     WidgetNode* temp_v0;
     WidgetNode* temp_v0_2;
@@ -1547,11 +1547,11 @@ void BattleInfoWidget_SetLevelRange(unk_func_8830867C_044* arg0, s32 arg1, s32 a
 
     if (arg3 == 0) {
         arg0->unk_34->unk_28 |= 2;
-        arg0->unk_30->unk_30 = (0, D_883174A8);
+        arg0->unk_30->unk_30 = (0, gColor_NumericDisabled);
         arg0->unk_30->unk_44 = arg0->unk_30->unk_44;
     } else {
         arg0->unk_34->unk_28 &= ~2;
-        arg0->unk_30->unk_30 = (0, D_883174A4);
+        arg0->unk_30->unk_30 = (0, gColor_NumericEnabled);
         arg0->unk_30->unk_44 = arg0->unk_30->unk_44;
     }
 }
@@ -1699,8 +1699,8 @@ s32 BattleInfoWidget_LevelRangeSelectionInput(unk_func_8830867C_044_040* arg0, C
 
 void BattleInfoWidget_DrawStatusListEntry(s32 arg0, s32 arg1, unk_func_88309C38_arg2* arg2, s32 arg3, s32 arg4,
                    unk_func_8821421C_038_034* arg5) {
-    static Color_RGBA8 D_883174B0 = { 0x54, 0x4B, 0x3A, 0xFF };
-    static Color_RGBA8 D_883174B4 = { 0x99, 0x89, 0x6A, 0xFF };
+    static Color_RGBA8 gColor_EntryBackground = { 0x54, 0x4B, 0x3A, 0xFF };
+    static Color_RGBA8 gColor_EntryBorder = { 0x99, 0x89, 0x6A, 0xFF };
 
     Color_RGBA8 sp84;
     UNUSED s32 pad;
@@ -1715,9 +1715,9 @@ void BattleInfoWidget_DrawStatusListEntry(s32 arg0, s32 arg1, unk_func_88309C38_
     sp7C = Font_MeasureTextExtent(4, 0, "00");
     sp78 = (arg5->unk_00.unk_3C - sp7C) - 0x18;
     if (arg4 & 2) {
-        sp84 = Color_ScaleRgb(D_883174B0, 1.4f);
+        sp84 = Color_ScaleRgb(gColor_EntryBackground, 1.4f);
     } else {
-        sp84 = (0, D_883174B0);
+        sp84 = (0, gColor_EntryBackground);
     }
 
     gDPPipeSync(gDisplayListHead++);
@@ -1731,12 +1731,12 @@ void BattleInfoWidget_DrawStatusListEntry(s32 arg0, s32 arg1, unk_func_88309C38_
     gDPFillRectangle(gDisplayListHead++, arg0, arg1 + 1, (arg5->unk_00.unk_3C + arg0) - 1,
                      (arg1 + arg5->unk_00.unk_3E) - 2);
 
-    temp_a0 = ((D_883174B4.r << 8) & 0xF800) | ((D_883174B4.g << 3) & 0x7C0) | ((D_883174B4.b >> 2) & 0x3E) | 1;
+    temp_a0 = ((gColor_EntryBorder.r << 8) & 0xF800) | ((gColor_EntryBorder.g << 3) & 0x7C0) | ((gColor_EntryBorder.b >> 2) & 0x3E) | 1;
     gDPPipeSync(gDisplayListHead++);
     gDPSetFillColor(gDisplayListHead++, (temp_a0 << 0x10) | temp_a0);
     gDPFillRectangle(gDisplayListHead++, arg0, arg1, (arg5->unk_00.unk_3C + arg0) - 1, arg1);
 
-    temp_a0 = ((D_883174B4.r << 8) & 0xF800) | ((D_883174B4.g << 3) & 0x7C0) | ((D_883174B4.b >> 2) & 0x3E) | 1;
+    temp_a0 = ((gColor_EntryBorder.r << 8) & 0xF800) | ((gColor_EntryBorder.g << 3) & 0x7C0) | ((gColor_EntryBorder.b >> 2) & 0x3E) | 1;
     gDPPipeSync(gDisplayListHead++);
     gDPSetFillColor(gDisplayListHead++, (temp_a0 << 0x10) | temp_a0);
     gDPFillRectangle(gDisplayListHead++, arg0, (arg1 + arg5->unk_00.unk_3E) - 1, (arg5->unk_00.unk_3C + arg0) - 1,
@@ -1750,7 +1750,7 @@ void BattleInfoWidget_DrawStatusListEntry(s32 arg0, s32 arg1, unk_func_88309C38_
     Font_Printf(((arg0 + sp7C) - Font_MeasureTextExtent(0, 0, sp74)) + 8, arg1 + 8, sp74);
     Gfx_SetEnvColor(arg2->unk_04->unk_04.r, arg2->unk_04->unk_04.g, arg2->unk_04->unk_04.b, arg2->unk_04->unk_04.a);
     Font_SetActive(8, 0);
-    sp70 = Text_GetString(NULL, 0, D_8831A4D4, arg2->unk_04->unk_00);
+    sp70 = Text_GetString(NULL, 0, gTypeNamesTable, arg2->unk_04->unk_00);
     Font_Printf(((sp78 - Font_MeasureTextExtent(0, 0, sp70)) / 2) + arg0 + sp7C + 0x10, arg1 + 4, sp70);
     Font_EndTexturedTextRendering();
 }
@@ -1761,11 +1761,11 @@ void BattleInfoWidget_CenterLabel(unk_func_8830867C_03C* arg0, unk_func_8850878C
 }
 
 void BattleInfoWidget_BuildTypePanel(unk_func_8830867C_03C* arg0, s32 arg1, s32 arg2, WidgetNode* arg3, MemoryPool* arg4) {
-    static Color_RGBA8 D_883174B8 = { 0x64, 0x96, 0xB4, 0xFF };
-    static Color_RGBA8 D_883174BC = { 0x3C, 0x64, 0x78, 0xFF };
-    static Color_RGBA8 D_883174C0 = { 0xA0, 0x96, 0x64, 0xFF };
-    static Color_RGBA8 D_883174C4 = { 0xFF, 0xFF, 0x00, 0xFF };
-    static s32 D_883174C8[] = { 0, 1, 2, 3, 4, 5, 7, 8, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A };
+    static Color_RGBA8 gColor_ListBackground = { 0x64, 0x96, 0xB4, 0xFF };
+    static Color_RGBA8 gColor_ListBorder = { 0x3C, 0x64, 0x78, 0xFF };
+    static Color_RGBA8 gColor_ListHighlight = { 0xA0, 0x96, 0x64, 0xFF };
+    static Color_RGBA8 gColor_ListAccent = { 0xFF, 0xFF, 0x00, 0xFF };
+    static s32 gTypePanelIndices[] = { 0, 1, 2, 3, 4, 5, 7, 8, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A };
 
     s32 spCC;
     s32 i;
@@ -1785,8 +1785,8 @@ void BattleInfoWidget_BuildTypePanel(unk_func_8830867C_03C* arg0, s32 arg1, s32 
     unk_func_8850878C* temp_s0;
     WidgetAnimatedFrame* temp_s0_2;
     unk_func_8850BD40* temp_s0_3;
-    unk_func_88503298* temp_s0_4;
-    unk_func_8850B254* temp_s1;
+    WidgetVisibilityGate* temp_s0_4;
+    DashedBorderFrame* temp_s1;
     WidgetNode* temp_s1_4;
     WidgetGridMenu* ptr;
     unk_func_88507D4C* sp6C[2];
@@ -1797,7 +1797,7 @@ void BattleInfoWidget_BuildTypePanel(unk_func_8830867C_03C* arg0, s32 arg1, s32 
     spB0 = 0;
 
     for (i = 0; i < 2; i++) {
-        temp_v0_2 = Font_MeasureTextExtent(8, 0, Text_GetString(NULL, 0, D_8831A4C4, i + 0x49));
+        temp_v0_2 = Font_MeasureTextExtent(8, 0, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, i + 0x49));
         if (spB0 < temp_v0_2) {
             spB0 = temp_v0_2;
         }
@@ -1822,16 +1822,16 @@ void BattleInfoWidget_BuildTypePanel(unk_func_8830867C_03C* arg0, s32 arg1, s32 
     arg0->unk_2C->unk_00.unk_28 &= ~1;
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_2C);
 
-    temp_s1 = mem_pool_alloc(arg4, sizeof(unk_func_8850B254));
-    ((func8850B254)Memmap_GetFragmentVaddr(WidgetTree_InitDashedBorderFrame))(temp_s1, 0, 0, spCC, 0x14, D_883174B8, D_883174BC);
+    temp_s1 = mem_pool_alloc(arg4, sizeof(DashedBorderFrame));
+    ((func8850B254)Memmap_GetFragmentVaddr(WidgetTree_InitDashedBorderFrame))(temp_s1, 0, 0, spCC, 0x14, gColor_ListBackground, gColor_ListBorder);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, temp_s1);
 
     temp_s0 = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
-    ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(temp_s0, 8, 0, Text_GetString(NULL, 0, D_8831A4C4, 0x4B), 8);
+    ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(temp_s0, 8, 0, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x4B), 8);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(temp_s1, temp_s0);
 
     spA0 = mem_pool_alloc(arg4, sizeof(unk_func_885012A4));
-    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(spA0, 0, 0x18, spCC, 0x114, D_883174C0);
+    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(spA0, 0, 0x18, spCC, 0x114, gColor_ListHighlight);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, spA0);
 
     arg0->unk_50 = mem_pool_alloc(arg4, sizeof(WidgetGridMenu));
@@ -1856,7 +1856,7 @@ void BattleInfoWidget_BuildTypePanel(unk_func_8830867C_03C* arg0, s32 arg1, s32 
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(spA0, temp_s2_2);
     ptr = arg0->unk_50;
     ptr->unk_18[2] = temp_s2_2;
-    temp_v0_10 = Text_GetString(NULL, 0, D_8831A4C4, 0x49);
+    temp_v0_10 = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x49);
     temp_s1_3 = Font_MeasureTextExtent(8, 0, temp_v0_10);
 
     arg0->unk_44 = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
@@ -1868,7 +1868,7 @@ void BattleInfoWidget_BuildTypePanel(unk_func_8830867C_03C* arg0, s32 arg1, s32 
     ((func8850A40C)Memmap_GetFragmentVaddr(WidgetTree_InitBorderFrame))(arg0->unk_48, 0xC, 0xE0, spB0 + 0xC, 0x18);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(spA0, arg0->unk_48);
     arg0->unk_50->unk_18[arg0->unk_50->unk_2C + 2] = arg0->unk_48;
-    temp_v0_10 = Text_GetString(NULL, 0, D_8831A4C4, 0x4A);
+    temp_v0_10 = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x4A);
     temp_s1_3 = Font_MeasureTextExtent(8, 0, temp_v0_10);
 
     arg0->unk_40 = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
@@ -1878,15 +1878,15 @@ void BattleInfoWidget_BuildTypePanel(unk_func_8830867C_03C* arg0, s32 arg1, s32 
     ((func8850CAB4)Memmap_GetFragmentVaddr(WidgetTree_SelectFirstEnabledGridItem))(arg0->unk_50);
 
     temp_s0_2 = mem_pool_alloc(arg4, sizeof(WidgetAnimatedFrame));
-    ((func88504570)Memmap_GetFragmentVaddr(WidgetTree_InitAnimatedFrameVariantC))(temp_s0_2, 0, 0, 0x10, 0x10, D_883174C4);
+    ((func88504570)Memmap_GetFragmentVaddr(WidgetTree_InitAnimatedFrameVariantC))(temp_s0_2, 0, 0, 0x10, 0x10, gColor_ListAccent);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(spA0, temp_s0_2);
     arg0->unk_50->unk_1C = temp_s0_2;
 
     TableView_Initialize(&arg0->unk_D0, arg0->unk_58, 8, 0xF, 0xF);
 
     for (i = 0; i < 15; i++) {
-        arg0->unk_58[i].unk_00 = D_883174C8[i];
-        arg0->unk_58[i].unk_04 = ((func884000C4)Memmap_GetFragmentVaddr(LabPC_GetTypeColor))(D_883174C8[i]);
+        arg0->unk_58[i].unk_00 = gTypePanelIndices[i];
+        arg0->unk_58[i].unk_04 = ((func884000C4)Memmap_GetFragmentVaddr(LabPC_GetTypeColor))(gTypePanelIndices[i]);
     }
 
     var_v1_2 = ((arg0->unk_E0 < spB0) ? spB0 : arg0->unk_E0) + 0x24;
@@ -1913,15 +1913,15 @@ void BattleInfoWidget_BuildTypePanel(unk_func_8830867C_03C* arg0, s32 arg1, s32 
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(temp_s1_4, sp6C[1]);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(temp_s1_4, arg0->unk_54);
 
-    temp_s0_4 = mem_pool_alloc(arg4, sizeof(unk_func_88503298));
+    temp_s0_4 = mem_pool_alloc(arg4, sizeof(WidgetVisibilityGate));
     ((func88503298)Memmap_GetFragmentVaddr(WidgetTree_InitVisibilityGateBridge))(temp_s0_4, arg0->unk_2C, arg3);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, temp_s0_4);
 }
 
 void BattleInfoWidget_SetTypeEntries(unk_func_8830867C_03C* arg0, unk_func_8830867C_02C_C54_01C* arg1) {
-    static Color_RGBA8 D_88317504 = { 0xF0, 0xF0, 0xF0, 0xFF };
-    static Color_RGBA8 D_88317508 = { 0xF0, 0xF0, 0xF0, 0x4D };
-    static Color_RGBA8 D_8831750C = { 0x66, 0x5B, 0x47, 0xFF };
+    static Color_RGBA8 gColor_TextWhiteFull = { 0xF0, 0xF0, 0xF0, 0xFF };
+    static Color_RGBA8 gColor_TextWhiteSemi = { 0xF0, 0xF0, 0xF0, 0x4D };
+    static Color_RGBA8 gColor_TextBrown = { 0x66, 0x5B, 0x47, 0xFF };
 
     s32 i;
     char* var_s3;
@@ -1932,7 +1932,7 @@ void BattleInfoWidget_SetTypeEntries(unk_func_8830867C_03C* arg0, unk_func_88308
         if (i < arg1->unk_00) {
             arg0->unk_30[i].unk_04 = arg1->unk_04[i];
             var_s3 =
-                Text_GetString(NULL, 0, D_8831A4D4,
+                Text_GetString(NULL, 0, gTypeNamesTable,
                               ((func884000C4)Memmap_GetFragmentVaddr(LabPC_GetTypeColor))(arg0->unk_30[i].unk_04)->unk_00);
             arg0->unk_30[i].unk_00->unk_30 =
                 ((func884000C4)Memmap_GetFragmentVaddr(LabPC_GetTypeColor))(arg0->unk_30[i].unk_04)->unk_04;
@@ -1941,7 +1941,7 @@ void BattleInfoWidget_SetTypeEntries(unk_func_8830867C_03C* arg0, unk_func_88308
         } else {
             arg0->unk_30[i].unk_04 = -1;
             var_s3 = "----";
-            arg0->unk_30[i].unk_00->unk_30 = (0, D_88317504);
+            arg0->unk_30[i].unk_00->unk_30 = (0, gColor_TextWhiteFull);
             arg0->unk_30[i].unk_00->unk_44 = arg0->unk_30[i].unk_00->unk_44;
         }
         BattleInfoWidget_CenterLabel(arg0, arg0->unk_30[i].unk_00, var_s3);
@@ -1949,11 +1949,11 @@ void BattleInfoWidget_SetTypeEntries(unk_func_8830867C_03C* arg0, unk_func_88308
 
     if (arg1->unk_00 == 0) {
         arg0->unk_48->unk_28 |= 2;
-        arg0->unk_40->unk_30 = (0, D_88317508);
+        arg0->unk_40->unk_30 = (0, gColor_TextWhiteSemi);
         arg0->unk_40->unk_44 = arg0->unk_40->unk_44;
     } else {
         arg0->unk_48->unk_28 &= ~2;
-        arg0->unk_40->unk_30 = (0, D_88317504);
+        arg0->unk_40->unk_30 = (0, gColor_TextWhiteFull);
         arg0->unk_40->unk_44 = arg0->unk_40->unk_44;
     }
 }
@@ -2091,7 +2091,7 @@ s32 BattleInfoWidget_HandleTypeSelectionProxyInput(unk_func_8830867C_03C_04C* ar
                         arg0->unk_24->unk_58[arg0->unk_24->unk_54->unk_00.unk_38].unk_00;
                     BattleInfoWidget_CenterLabel(
                         arg0->unk_24, arg0->unk_24->unk_30[arg0->unk_24->unk_50->unk_24].unk_00,
-                        Text_GetString(NULL, 0, D_8831A4D4,
+                        Text_GetString(NULL, 0, gTypeNamesTable,
                                       arg0->unk_24->unk_58[arg0->unk_24->unk_54->unk_00.unk_38].unk_04->unk_00));
                     arg0->unk_24->unk_30[arg0->unk_24->unk_50->unk_24].unk_00->unk_30 =
                         arg0->unk_24->unk_58[arg0->unk_24->unk_54->unk_00.unk_38].unk_04->unk_04;
@@ -2109,8 +2109,8 @@ s32 BattleInfoWidget_HandleTypeSelectionProxyInput(unk_func_8830867C_03C_04C* ar
 
 void BattleInfoWidget_DrawTypeEntry(s32 arg0, s32 arg1, unk_func_88309C38_arg2* arg2, s32 arg3, s32 arg4,
                    unk_func_8821421C_038_034* arg5) {
-    static Color_RGBA8 D_88317510 = { 0x54, 0x4B, 0x3A, 0xFF };
-    static Color_RGBA8 D_88317514 = { 0x99, 0x89, 0x6A, 0xFF };
+    static Color_RGBA8 gColor_MoveEntryBackground = { 0x54, 0x4B, 0x3A, 0xFF };
+    static Color_RGBA8 gColor_MoveEntryBorder = { 0x99, 0x89, 0x6A, 0xFF };
 
     Color_RGBA8 sp84;
     UNUSED s32 pad;
@@ -2125,9 +2125,9 @@ void BattleInfoWidget_DrawTypeEntry(s32 arg0, s32 arg1, unk_func_88309C38_arg2* 
     sp7C = Font_MeasureTextExtent(4, 0, "000");
     sp78 = (arg5->unk_00.unk_3C - sp7C) - 0x18;
     if (arg4 & 2) {
-        sp84 = Color_ScaleRgb(D_88317510, 1.4f);
+        sp84 = Color_ScaleRgb(gColor_MoveEntryBackground, 1.4f);
     } else {
-        sp84 = (0, D_88317510);
+        sp84 = (0, gColor_MoveEntryBackground);
     }
 
     gDPPipeSync(gDisplayListHead++);
@@ -2141,12 +2141,12 @@ void BattleInfoWidget_DrawTypeEntry(s32 arg0, s32 arg1, unk_func_88309C38_arg2* 
     gDPFillRectangle(gDisplayListHead++, arg0, arg1 + 1, (arg5->unk_00.unk_3C + arg0) - 1,
                      (arg1 + arg5->unk_00.unk_3E) - 2);
 
-    temp_a0 = ((D_88317514.r << 8) & 0xF800) | ((D_88317514.g << 3) & 0x7C0) | ((D_88317514.b >> 2) & 0x3E) | 1;
+    temp_a0 = ((gColor_MoveEntryBorder.r << 8) & 0xF800) | ((gColor_MoveEntryBorder.g << 3) & 0x7C0) | ((gColor_MoveEntryBorder.b >> 2) & 0x3E) | 1;
     gDPPipeSync(gDisplayListHead++);
     gDPSetFillColor(gDisplayListHead++, (temp_a0 << 0x10) | temp_a0);
     gDPFillRectangle(gDisplayListHead++, arg0, arg1, (arg5->unk_00.unk_3C + arg0) - 1, arg1);
 
-    temp_a0 = ((D_88317514.r << 8) & 0xF800) | ((D_88317514.g << 3) & 0x7C0) | ((D_88317514.b >> 2) & 0x3E) | 1;
+    temp_a0 = ((gColor_MoveEntryBorder.r << 8) & 0xF800) | ((gColor_MoveEntryBorder.g << 3) & 0x7C0) | ((gColor_MoveEntryBorder.b >> 2) & 0x3E) | 1;
     gDPPipeSync(gDisplayListHead++);
     gDPSetFillColor(gDisplayListHead++, (temp_a0 << 0x10) | temp_a0);
     gDPFillRectangle(gDisplayListHead++, arg0, (arg1 + arg5->unk_00.unk_3E) - 1, (arg5->unk_00.unk_3C + arg0) - 1,
@@ -2162,12 +2162,12 @@ void BattleInfoWidget_DrawTypeEntry(s32 arg0, s32 arg1, unk_func_88309C38_arg2* 
     Gfx_SetEnvColor(sp84.r, sp84.g, sp84.b, sp84.a);
     Font_SetActive(8, 0);
 
-    sp70 = Text_GetString(NULL, 0, D_8831A4CC, arg2->unk_00 - 1);
+    sp70 = Text_GetString(NULL, 0, gMoveNamesTable, arg2->unk_00 - 1);
     Font_Printf(((sp78 - Font_MeasureTextExtent(0, 0, sp70)) / 2) + arg0 + sp7C + 0x10, arg1 + 4, sp70);
     Font_EndTexturedTextRendering();
 }
 
-void func_8830FA10(void) {
+void BattleInfoWidget_NoopStub1(void) {
 }
 
 void func_8830FA18(void) {
@@ -2179,10 +2179,10 @@ void BattleInfoWidget_CenterTypeLabel(unk_func_8830867C_040* arg0, unk_func_8850
 }
 
 void BattleInfoWidget_BuildMovePanel(unk_func_8830867C_040* arg0, s32 arg1, s32 arg2, WidgetNode* arg3, MemoryPool* arg4) {
-    static Color_RGBA8 D_88317518 = { 0x64, 0x96, 0xB4, 0xFF };
-    static Color_RGBA8 D_8831751C = { 0x3C, 0x64, 0x78, 0xFF };
-    static Color_RGBA8 D_88317520 = { 0xA0, 0x96, 0x64, 0xFF };
-    static Color_RGBA8 D_88317524 = { 0xFF, 0xFF, 0x00, 0xFF };
+    static Color_RGBA8 gColor_MovePanelBackground = { 0x64, 0x96, 0xB4, 0xFF };
+    static Color_RGBA8 gColor_MovePanelBorder = { 0x3C, 0x64, 0x78, 0xFF };
+    static Color_RGBA8 gColor_MovePanelHighlight = { 0xA0, 0x96, 0x64, 0xFF };
+    static Color_RGBA8 gColor_MovePanelAccent = { 0xFF, 0xFF, 0x00, 0xFF };
 
     s32 spCC;
     s32 i;
@@ -2190,7 +2190,7 @@ void BattleInfoWidget_BuildMovePanel(unk_func_8830867C_040* arg0, s32 arg1, s32 
     unk_func_8850878C* temp_s0;
     WidgetAnimatedFrame* temp_s0_2;
     unk_func_8850BD40* temp_s0_3;
-    unk_func_88503298* temp_s0_4;
+    WidgetVisibilityGate* temp_s0_4;
     s32 spB0;
     s32 temp_s1_2;
     s32 temp_s1_3;
@@ -2201,7 +2201,7 @@ void BattleInfoWidget_BuildMovePanel(unk_func_8830867C_040* arg0, s32 arg1, s32 
     s32 var_v1_2;
     char* temp_v0_10;
     UNUSED s32 pad[2];
-    unk_func_8850B254* temp_s1;
+    DashedBorderFrame* temp_s1;
     WidgetNode* temp_s1_4;
     WidgetNode* temp_s2_2;
     unk_func_88507D4C* sp68[2];
@@ -2212,7 +2212,7 @@ void BattleInfoWidget_BuildMovePanel(unk_func_8830867C_040* arg0, s32 arg1, s32 
     spB0 = 0;
 
     for (i = 0; i < 2; i++) {
-        temp_v0_2 = Font_MeasureTextExtent(8, 0, Text_GetString(NULL, 0, D_8831A4C4, i + 0x49));
+        temp_v0_2 = Font_MeasureTextExtent(8, 0, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, i + 0x49));
         if (spB0 < temp_v0_2) {
             spB0 = temp_v0_2;
         }
@@ -2237,16 +2237,16 @@ void BattleInfoWidget_BuildMovePanel(unk_func_8830867C_040* arg0, s32 arg1, s32 
     arg0->unk_2C->unk_00.unk_28 &= ~1;
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_2C);
 
-    temp_s1 = mem_pool_alloc(arg4, sizeof(unk_func_8850B254));
-    ((func8850B254)Memmap_GetFragmentVaddr(WidgetTree_InitDashedBorderFrame))(temp_s1, 0, 0, spCC, 0x14, D_88317518, D_8831751C);
+    temp_s1 = mem_pool_alloc(arg4, sizeof(DashedBorderFrame));
+    ((func8850B254)Memmap_GetFragmentVaddr(WidgetTree_InitDashedBorderFrame))(temp_s1, 0, 0, spCC, 0x14, gColor_MovePanelBackground, gColor_MovePanelBorder);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, temp_s1);
 
     temp_s0 = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
-    ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(temp_s0, 8, 0, Text_GetString(NULL, 0, D_8831A4C4, 0x4C), 8);
+    ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(temp_s0, 8, 0, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x4C), 8);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(temp_s1, temp_s0);
 
     spA0 = mem_pool_alloc(arg4, sizeof(unk_func_885012A4));
-    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(spA0, 0, 0x18, spCC, 0x114, D_88317520);
+    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(spA0, 0, 0x18, spCC, 0x114, gColor_MovePanelHighlight);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, spA0);
 
     arg0->unk_60 = mem_pool_alloc(arg4, sizeof(WidgetGridMenu));
@@ -2269,7 +2269,7 @@ void BattleInfoWidget_BuildMovePanel(unk_func_8830867C_040* arg0, s32 arg1, s32 
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(spA0, temp_s2_2);
     ptr = arg0->unk_60;
     ptr->unk_18[4] = temp_s2_2;
-    temp_v0_10 = Text_GetString(NULL, 0, D_8831A4C4, 0x49);
+    temp_v0_10 = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x49);
     temp_s1_3 = Font_MeasureTextExtent(8, 0, temp_v0_10);
 
     arg0->unk_54 = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
@@ -2281,7 +2281,7 @@ void BattleInfoWidget_BuildMovePanel(unk_func_8830867C_040* arg0, s32 arg1, s32 
     ((func8850A40C)Memmap_GetFragmentVaddr(WidgetTree_InitBorderFrame))(arg0->unk_58, 0xC, 0xE0, spB0 + 0xC, 0x18);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(spA0, arg0->unk_58);
     arg0->unk_60->unk_18[arg0->unk_60->unk_2C + 4] = arg0->unk_58;
-    temp_v0_10 = Text_GetString(NULL, 0, D_8831A4C4, 0x4A);
+    temp_v0_10 = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x4A);
     temp_s1_3 = Font_MeasureTextExtent(8, 0, temp_v0_10);
 
     arg0->unk_50 = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
@@ -2291,14 +2291,14 @@ void BattleInfoWidget_BuildMovePanel(unk_func_8830867C_040* arg0, s32 arg1, s32 
     ((func8850CAB4)Memmap_GetFragmentVaddr(WidgetTree_SelectFirstEnabledGridItem))(arg0->unk_60);
 
     temp_s0_2 = mem_pool_alloc(arg4, sizeof(WidgetAnimatedFrame));
-    ((func88504570)Memmap_GetFragmentVaddr(WidgetTree_InitAnimatedFrameVariantC))(temp_s0_2, 0, 0, 0x10, 0x10, D_88317524);
+    ((func88504570)Memmap_GetFragmentVaddr(WidgetTree_InitAnimatedFrameVariantC))(temp_s0_2, 0, 0, 0x10, 0x10, gColor_MovePanelAccent);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(spA0, temp_s0_2);
     arg0->unk_60->unk_1C = temp_s0_2;
 
     temp_s2_3 = mem_pool_alloc(arg4, sizeof(s32) * 0xA4);
 
     for (i = 0; i < 0xA4; i++) {
-        temp_s2_3[D_88317360[i]] = Move_GetDisplayInfo(i + 1);
+        temp_s2_3[gMoveIdToAlphabeticalRankMap[i]] = Move_GetDisplayInfo(i + 1);
     }
 
     PointerList_Initialize(&arg0->unk_68, temp_s2_3, 0xA4, 0xA4);
@@ -2327,14 +2327,14 @@ void BattleInfoWidget_BuildMovePanel(unk_func_8830867C_040* arg0, s32 arg1, s32 
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(temp_s1_4, sp68[1]);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(temp_s1_4, arg0->unk_64);
 
-    temp_s0_4 = mem_pool_alloc(arg4, sizeof(unk_func_88503298));
+    temp_s0_4 = mem_pool_alloc(arg4, sizeof(WidgetVisibilityGate));
     ((func88503298)Memmap_GetFragmentVaddr(WidgetTree_InitVisibilityGateBridge))(temp_s0_4, arg0->unk_2C, arg3);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, temp_s0_4);
 }
 
 void BattleInfoWidget_SetMoveSlots(unk_func_8830867C_040* arg0, unk_func_8830867C_02C_C54_024* arg1) {
-    static Color_RGBA8 D_88317528 = { 0xF0, 0xF0, 0xF0, 0xFF };
-    static Color_RGBA8 D_8831752C = { 0xF0, 0xF0, 0xF0, 0x4D };
+    static Color_RGBA8 gColor_TextWhiteFullAlt = { 0xF0, 0xF0, 0xF0, 0xFF };
+    static Color_RGBA8 gColor_TextWhiteSemiAlt = { 0xF0, 0xF0, 0xF0, 0x4D };
 
     s32 i;
     char* var_s1;
@@ -2346,15 +2346,15 @@ void BattleInfoWidget_SetMoveSlots(unk_func_8830867C_040* arg0, unk_func_8830867
         if (i < arg1->unk_04) {
             temp_v0 = Move_GetDisplayInfo(arg1->unk_00[i]);
             arg0->unk_30[i].unk_04 = temp_v0;
-            var_s1 = Text_GetString(NULL, 0, D_8831A4CC, temp_v0->unk_00[0] - 1);
+            var_s1 = Text_GetString(NULL, 0, gMoveNamesTable, temp_v0->unk_00[0] - 1);
             arg0->unk_30[i].unk_00->unk_30 =
                 (((func884000C4)Memmap_GetFragmentVaddr(LabPC_GetTypeColor))(arg0->unk_30[i].unk_04[1]))->unk_04;
             arg0->unk_30[i].unk_00->unk_44 = arg0->unk_30[i].unk_00->unk_44;
-            arg0->unk_64->unk_00.unk_34[D_88317360[arg0->unk_30[i].unk_04[0] - 1]] |= 2;
+            arg0->unk_64->unk_00.unk_34[gMoveIdToAlphabeticalRankMap[arg0->unk_30[i].unk_04[0] - 1]] |= 2;
         } else {
             arg0->unk_30[i].unk_04 = NULL;
             var_s1 = "-------";
-            arg0->unk_30[i].unk_00->unk_30 = (0, D_88317528);
+            arg0->unk_30[i].unk_00->unk_30 = (0, gColor_TextWhiteFullAlt);
             arg0->unk_30[i].unk_00->unk_44 = arg0->unk_30[i].unk_00->unk_44;
         }
         BattleInfoWidget_CenterTypeLabel(arg0, arg0->unk_30[i].unk_00, var_s1);
@@ -2362,11 +2362,11 @@ void BattleInfoWidget_SetMoveSlots(unk_func_8830867C_040* arg0, unk_func_8830867
 
     if (arg1->unk_04 == 0) {
         arg0->unk_58->unk_28 |= 2;
-        arg0->unk_50->unk_30 = (0, D_8831752C);
+        arg0->unk_50->unk_30 = (0, gColor_TextWhiteSemiAlt);
         arg0->unk_50->unk_44 = arg0->unk_50->unk_44;
     } else {
         arg0->unk_58->unk_28 &= ~2;
-        arg0->unk_50->unk_30 = (0, D_88317528);
+        arg0->unk_50->unk_30 = (0, gColor_TextWhiteFullAlt);
         arg0->unk_50->unk_44 = arg0->unk_50->unk_44;
     }
 }
@@ -2436,11 +2436,11 @@ s32 BattleInfoWidget_RunMovePanelModal(unk_func_8830867C_040* arg0, Controller* 
 
 void BattleInfoWidget_InitMoveSelectionProxy(unk_func_8830867C_040_05C* arg0, unk_func_8830867C_040* arg1) {
     ((func8850BDF0)Memmap_GetFragmentVaddr(WidgetTree_InitVerticalMenu))(arg0);
-    arg0->unk_00.unk_10 = func_88310854;
+    arg0->unk_00.unk_10 = MenuItem_ProcessInput;
     arg0->unk_24 = arg1;
 }
 
-s32 func_88310854(unk_func_8830867C_040_05C* arg0, Controller* arg1) {
+s32 MenuItem_ProcessInput(unk_func_8830867C_040_05C* arg0, Controller* arg1) {
     s32 var_t2;
     s32 i;
     unk_func_8830867C_040_05C* var_a0;
@@ -2499,7 +2499,7 @@ s32 func_88310854(unk_func_8830867C_040_05C* arg0, Controller* arg1) {
                 } else {
                     if (arg0->unk_24->unk_30[arg0->unk_24->unk_60->unk_24].unk_04 != NULL) {
                         arg0->unk_24->unk_64->unk_00
-                            .unk_34[D_88317360[arg0->unk_24->unk_30[arg0->unk_24->unk_60->unk_24].unk_04[0] - 1]] &= ~2;
+                            .unk_34[gMoveIdToAlphabeticalRankMap[arg0->unk_24->unk_30[arg0->unk_24->unk_60->unk_24].unk_04[0] - 1]] &= ~2;
                     }
                     arg0->unk_24->unk_64->unk_00.unk_34[arg0->unk_24->unk_64->unk_00.unk_38] |= 2;
 
@@ -2507,7 +2507,7 @@ s32 func_88310854(unk_func_8830867C_040_05C* arg0, Controller* arg1) {
                     arg0->unk_24->unk_30[arg0->unk_24->unk_60->unk_24].unk_04 = ptr2;
 
                     BattleInfoWidget_CenterTypeLabel(arg0->unk_24, arg0->unk_24->unk_30[arg0->unk_24->unk_60->unk_24].unk_00,
-                                  Text_GetString(NULL, 0, D_8831A4CC, ptr2[0] - 1));
+                                  Text_GetString(NULL, 0, gMoveNamesTable, ptr2[0] - 1));
 
                     arg0->unk_24->unk_30[arg0->unk_24->unk_60->unk_24].unk_00->unk_30 =
                         ((func884000C4)Memmap_GetFragmentVaddr(LabPC_GetTypeColor))(ptr2[1])->unk_04;
@@ -2541,19 +2541,19 @@ void BattleInfoWidget_InitGamePakSlotLabel(unk_func_88310B70* arg0, s32 arg1, s3
 
 s32 BattleInfoWidget_DrawGamePakSlotLabel(unk_func_88310B70* arg0) {
     arg0->unk_30->unk_40 =
-        Text_GetString(NULL, 0, D_8831A4C8, **(u8**)arg0->unk_2C->unk_2C->unk_00[arg0->unk_2C->unk_38].unk_00[0] - 1);
+        Text_GetString(NULL, 0, gLabPcListItemDescriptionsBank, **(u8**)arg0->unk_2C->unk_2C->unk_00[arg0->unk_2C->unk_38].unk_00[0] - 1);
     return 0;
 }
 
 void BattleInfoWidget_DrawItemGridCell(s32 arg0, s32 arg1, unk_func_88310CA4_arg2* a2, s32 arg3, s32 arg4,
                    unk_func_8830867C_04C_030* arg5) {
-    static Color_RGBA8 D_88317530[2] = {
+    static Color_RGBA8 gInfoBoxBorderColors[2] = {
         { 0x80, 0x79, 0x6C, 0xFF },
         { 0x67, 0x60, 0x53, 0xFF },
     };
-    static Color_RGBA8 D_88317538 = { 0x99, 0x91, 0x81, 0xFF };
-    static Color_RGBA8 D_8831753C = { 0xB4, 0x82, 0xDC, 0xFF };
-    static Color_RGBA8 D_88317540[] = {
+    static Color_RGBA8 gInfoBoxBackgroundColor = { 0x99, 0x91, 0x81, 0xFF };
+    static Color_RGBA8 gInfoBoxHighlightColor = { 0xB4, 0x82, 0xDC, 0xFF };
+    static Color_RGBA8 gInfoBoxFillColors[] = {
         { 0xF0, 0xF0, 0xF0, 0xFF },
         { 0xF0, 0xF0, 0xF0, 0x4D },
     };
@@ -2570,24 +2570,24 @@ void BattleInfoWidget_DrawItemGridCell(s32 arg0, s32 arg1, unk_func_88310CA4_arg
     gDPSetRenderMode(gDisplayListHead++, G_RM_NOOP, G_RM_NOOP2);
 
     // clang-format off
-    temp_t2 = ((D_88317530[0].r << 8) & 0xF800) | ((D_88317530[0].g << 3) & 0x7C0) | ((D_88317530[0].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
+    temp_t2 = ((gInfoBoxBorderColors[0].r << 8) & 0xF800) | ((gInfoBoxBorderColors[0].g << 3) & 0x7C0) | ((gInfoBoxBorderColors[0].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
     // clang-format on
     gDPSetFillColor(gDisplayListHead++, (temp_t2 << 0x10) | temp_t2);
     gDPFillRectangle(gDisplayListHead++, arg0, arg1 + 1, arg0 + 0x105, (arg1 + arg5->unk_00.unk_14.unk_02) - 4);
 
     temp_a0 =
-        ((D_88317530[1].r << 8) & 0xF800) | ((D_88317530[1].g << 3) & 0x7C0) | ((D_88317530[1].b >> 2) & 0x3E) | 1;
+        ((gInfoBoxBorderColors[1].r << 8) & 0xF800) | ((gInfoBoxBorderColors[1].g << 3) & 0x7C0) | ((gInfoBoxBorderColors[1].b >> 2) & 0x3E) | 1;
     gDPPipeSync(gDisplayListHead++);
     gDPSetFillColor(gDisplayListHead++, (temp_a0 << 0x10) | temp_a0);
     gDPFillRectangle(gDisplayListHead++, arg0 + 0x106, arg1 + 1, (arg0 + (u32)arg5->unk_00.unk_14.unk_00) - 1,
                      (arg1 + arg5->unk_00.unk_14.unk_02) - 2);
 
-    temp_a0 = ((D_88317538.r << 8) & 0xF800) | ((D_88317538.g << 3) & 0x7C0) | ((D_88317538.b >> 2) & 0x3E) | 1;
+    temp_a0 = ((gInfoBoxBackgroundColor.r << 8) & 0xF800) | ((gInfoBoxBackgroundColor.g << 3) & 0x7C0) | ((gInfoBoxBackgroundColor.b >> 2) & 0x3E) | 1;
     gDPPipeSync(gDisplayListHead++);
     gDPSetFillColor(gDisplayListHead++, (temp_a0 << 0x10) | temp_a0);
     gDPFillRectangle(gDisplayListHead++, arg0, arg1, (arg5->unk_00.unk_14.unk_00 + arg0) - 1, arg1);
 
-    temp_a0 = ((D_88317538.r << 8) & 0xF800) | ((D_88317538.g << 3) & 0x7C0) | ((D_88317538.b >> 2) & 0x3E) | 1;
+    temp_a0 = ((gInfoBoxBackgroundColor.r << 8) & 0xF800) | ((gInfoBoxBackgroundColor.g << 3) & 0x7C0) | ((gInfoBoxBackgroundColor.b >> 2) & 0x3E) | 1;
     gDPPipeSync(gDisplayListHead++);
     gDPSetFillColor(gDisplayListHead++, (temp_a0 << 0x10) | temp_a0);
     gDPFillRectangle(gDisplayListHead++, arg0, (arg1 + arg5->unk_00.unk_14.unk_02) - 1,
@@ -2596,25 +2596,25 @@ void BattleInfoWidget_DrawItemGridCell(s32 arg0, s32 arg1, unk_func_88310CA4_arg
     if (arg2 != NULL) {
         char sp30[0x10];
 
-        sp8C = D_88317540[(arg4 & 4) ? 1 : 0];
+        sp8C = gInfoBoxFillColors[(arg4 & 4) ? 1 : 0];
 
         Font_BeginTranslucentTextRendering();
         Gfx_SetEnvColor(sp8C.r, sp8C.g, sp8C.b, sp8C.a);
         Font_SetActive(8, 0);
-        Font_Printf(arg0 + 0x19, arg1 + 4, Text_GetString(NULL, 0, D_8831A4D8, arg2->unk_00[0] - 1));
+        Font_Printf(arg0 + 0x19, arg1 + 4, Text_GetString(NULL, 0, gLabPcListItemNamesBank, arg2->unk_00[0] - 1));
 
         if (arg2->unk_04[0] == 0x12) {
-            sp84 = Text_GetString(NULL, 0, D_8831A4C4, 0x51);
+            sp84 = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x51);
             Font_SetActive(8, 0);
             Font_Printf((((arg5->unk_00.unk_14.unk_00 - Font_MeasureTextExtent(0, 0, sp84)) - 0x106) / 2) + arg0 + 0x106,
                           arg1 + 4, sp84);
         } else if (arg2->unk_04[0] == 0x22) {
-            sp84 = Text_GetString(NULL, 0, D_8831A4C4, 0x50);
+            sp84 = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x50);
             Font_SetActive(8, 0);
             Font_Printf((((arg5->unk_00.unk_14.unk_00 - Font_MeasureTextExtent(0, 0, sp84)) - 0x106) / 2) + arg0 + 0x106,
                           arg1 + 4, sp84);
         } else {
-            sp84 = Text_GetString(NULL, 0, D_8831A4C4, 0x4F);
+            sp84 = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x4F);
             Font_SetActive(8, 0);
             Font_Printf((((arg5->unk_00.unk_14.unk_00 - Font_MeasureTextExtent(0, 0, sp84)) - 0x106) / 2) + arg0 + 0x106,
                           arg1 + 4, sp84);
@@ -2622,7 +2622,7 @@ void BattleInfoWidget_DrawItemGridCell(s32 arg0, s32 arg1, unk_func_88310CA4_arg
 
         if (LabItem_IsQuantitylessItemForOperation(arg2->unk_00[0]) == 0) {
             Font_SetActive(8, 0);
-            sprintf(sp30, "%s%02d", Text_GetString(NULL, 0, D_8831A4C4, 0x64), arg2->unk_00[1]);
+            sprintf(sp30, "%s%02d", Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x64), arg2->unk_00[1]);
             Font_Printf((arg0 - Font_MeasureTextExtent(0, 0, sp30)) + 0xED, arg1 + 4, sp30);
         }
         Font_EndTexturedTextRendering();
@@ -2630,22 +2630,22 @@ void BattleInfoWidget_DrawItemGridCell(s32 arg0, s32 arg1, unk_func_88310CA4_arg
 }
 
 void BattleInfoWidget_BuildItemMenu(unk_func_8830867C_04C* arg0, s32 arg1, s32 arg2, WidgetNode* arg3, MemoryPool* arg4) {
-    static Color_RGBA8 D_88317548 = { 0x64, 0x96, 0xB4, 0xFF };
-    static Color_RGBA8 D_8831754C = { 0x3C, 0x64, 0x78, 0xFF };
+    static Color_RGBA8 gMenuItemPrimaryColor = { 0x64, 0x96, 0xB4, 0xFF };
+    static Color_RGBA8 gMenuItemSecondaryColor = { 0x3C, 0x64, 0x78, 0xFF };
     static Color_RGBA8 D_88317550 = { 0x43, 0x35, 0x1C, 0xFF };
-    static Color_RGBA8 D_88317554 = { 0xFF, 0xFF, 0xFF, 0xFF };
-    static Color_RGBA8 D_88317558 = { 0x14, 0xF0, 0xB4, 0xFF };
-    static Color_RGBA8 D_8831755C = { 0x71, 0xE9, 0xF9, 0xFF };
-    static Color_RGBA8 D_88317560 = { 0x3C, 0x7B, 0x84, 0xFF };
-    static Color_RGBA8 D_88317564 = { 0x93, 0xFA, 0x71, 0xFF };
-    static Color_RGBA8 D_88317568 = { 0x51, 0x89, 0x3E, 0xFF };
-    static Color_RGBA8 D_8831756C = { 0xFE, 0x73, 0xFE, 0xFF };
-    static Color_RGBA8 D_88317570 = { 0x97, 0x44, 0x97, 0xFF };
-    static Color_RGBA8 D_88317574 = { 0xFF, 0x73, 0x73, 0xFF };
-    static Color_RGBA8 D_88317578 = { 0x83, 0x3B, 0x3B, 0xFF };
+    static Color_RGBA8 gMenuItemHighlightColor = { 0xFF, 0xFF, 0xFF, 0xFF };
+    static Color_RGBA8 gMenuItemAccentColorMint = { 0x14, 0xF0, 0xB4, 0xFF };
+    static Color_RGBA8 gMenuItemAccentColorLightCyan = { 0x71, 0xE9, 0xF9, 0xFF };
+    static Color_RGBA8 gMenuItemAccentColorDarkTeal = { 0x3C, 0x7B, 0x84, 0xFF };
+    static Color_RGBA8 gMenuItemAccentColorLightGreen = { 0x93, 0xFA, 0x71, 0xFF };
+    static Color_RGBA8 gMenuItemAccentColorDarkGreen = { 0x51, 0x89, 0x3E, 0xFF };
+    static Color_RGBA8 gMenuItemAccentColorPink = { 0xFE, 0x73, 0xFE, 0xFF };
+    static Color_RGBA8 gMenuItemAccentColorDarkMagenta = { 0x97, 0x44, 0x97, 0xFF };
+    static Color_RGBA8 gMenuItemAccentColorSalmon = { 0xFF, 0x73, 0x73, 0xFF };
+    static Color_RGBA8 gMenuItemAccentColorDarkRed = { 0x83, 0x3B, 0x3B, 0xFF };
 
     UNUSED s32 pad[3];
-    unk_func_8850B254* sp88;
+    DashedBorderFrame* sp88;
     unk_func_8850878C* sp84;
     unk_func_88507D4C* sp80;
     unk_func_88507D4C* sp7C;
@@ -2680,8 +2680,8 @@ void BattleInfoWidget_BuildItemMenu(unk_func_8830867C_04C* arg0, s32 arg1, s32 a
     arg0->unk_2C->unk_00.unk_28 &= ~1;
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_2C);
 
-    sp88 = mem_pool_alloc(arg4, sizeof(unk_func_8850B254));
-    ((func8850B254)Memmap_GetFragmentVaddr(WidgetTree_InitDashedBorderFrame))(sp88, 0, 0, 0x166, 0x14, D_88317548, D_8831754C);
+    sp88 = mem_pool_alloc(arg4, sizeof(DashedBorderFrame));
+    ((func8850B254)Memmap_GetFragmentVaddr(WidgetTree_InitDashedBorderFrame))(sp88, 0, 0, 0x166, 0x14, gMenuItemPrimaryColor, gMenuItemSecondaryColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, sp88);
     arg0->unk_38[0] = '\0';
 
@@ -2717,42 +2717,42 @@ void BattleInfoWidget_BuildItemMenu(unk_func_8830867C_04C* arg0, s32 arg1, s32 a
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(sp74, arg0->unk_34);
 
     sp70 = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
-    ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(sp70, 0x12, 8, Text_GetString(NULL, 0, D_8831A4C4, 0x52), 8);
-    sp70->unk_30 = (0, D_88317554);
+    ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(sp70, 0x12, 8, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x52), 8);
+    sp70->unk_30 = (0, gMenuItemHighlightColor);
     sp70->unk_44 = sp70->unk_44;
-    sp70->unk_34 = (0, D_88317558);
+    sp70->unk_34 = (0, gMenuItemAccentColorMint);
     sp70->unk_44 = 1;
     ((func88500A3C)Memmap_GetFragmentVaddr(WidgetTree_AddPage))(arg0->unk_34, sp70);
 
     sp6C = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
-    ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(sp6C, 0x17, 8, Text_GetString(NULL, 0, D_8831A4C4, 0x53), 8);
-    sp6C->unk_30 = (0, D_8831755C);
+    ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(sp6C, 0x17, 8, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x53), 8);
+    sp6C->unk_30 = (0, gMenuItemAccentColorLightCyan);
     sp6C->unk_44 = sp6C->unk_44;
-    sp6C->unk_34 = (0, D_88317560);
+    sp6C->unk_34 = (0, gMenuItemAccentColorDarkTeal);
     sp6C->unk_44 = 1;
     ((func88500A3C)Memmap_GetFragmentVaddr(WidgetTree_AddPage))(arg0->unk_34, sp6C);
 
     sp68 = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
-    ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(sp68, 0x1C, 8, Text_GetString(NULL, 0, D_8831A4C4, 0x54), 8);
-    sp68->unk_30 = (0, D_88317564);
+    ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(sp68, 0x1C, 8, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x54), 8);
+    sp68->unk_30 = (0, gMenuItemAccentColorLightGreen);
     sp68->unk_44 = sp68->unk_44;
-    sp68->unk_34 = (0, D_88317568);
+    sp68->unk_34 = (0, gMenuItemAccentColorDarkGreen);
     sp68->unk_44 = 1;
     ((func88500A3C)Memmap_GetFragmentVaddr(WidgetTree_AddPage))(arg0->unk_34, sp68);
 
     sp64 = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
-    ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(sp64, 0x21, 8, Text_GetString(NULL, 0, D_8831A4C4, 0x55), 8);
-    sp64->unk_30 = (0, D_8831756C);
+    ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(sp64, 0x21, 8, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x55), 8);
+    sp64->unk_30 = (0, gMenuItemAccentColorPink);
     sp64->unk_44 = sp64->unk_44;
-    sp64->unk_34 = (0, D_88317570);
+    sp64->unk_34 = (0, gMenuItemAccentColorDarkMagenta);
     sp64->unk_44 = 1;
     ((func88500A3C)Memmap_GetFragmentVaddr(WidgetTree_AddPage))(arg0->unk_34, sp64);
 
     sp60 = mem_pool_alloc(arg4, sizeof(unk_func_8850878C));
-    ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(sp60, 0x26, 8, Text_GetString(NULL, 0, D_8831A4C4, 0x56), 8);
-    sp60->unk_30 = (0, D_88317574);
+    ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(sp60, 0x26, 8, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x56), 8);
+    sp60->unk_30 = (0, gMenuItemAccentColorSalmon);
     sp60->unk_44 = sp60->unk_44;
-    sp60->unk_34 = (0, D_88317578);
+    sp60->unk_34 = (0, gMenuItemAccentColorDarkRed);
     sp60->unk_44 = 1;
     ((func88500A3C)Memmap_GetFragmentVaddr(WidgetTree_AddPage))(arg0->unk_34, sp60);
 
@@ -2773,8 +2773,8 @@ void BattleInfoWidget_BuildItemMenu(unk_func_8830867C_04C* arg0, s32 arg1, s32 a
     ((func8850BF80)Memmap_GetFragmentVaddr(WidgetTree_AppendVerticalMenuItem))(arg0->unk_80, sp54);
 
     sp50 = mem_pool_alloc(arg4, sizeof(char*) * 2);
-    sp50[0] = Text_GetString(NULL, 0, D_8831A4C4, 0x57);
-    sp50[1] = Text_GetString(NULL, 0, D_8831A4C4, 0x58);
+    sp50[0] = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x57);
+    sp50[1] = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x58);
 
     arg0->unk_7C = mem_pool_alloc(arg4, sizeof(unk_func_8830867C_030));
     BattleInfoWidget_InitDropdownMenu(arg0->unk_7C, NULL, arg4);
@@ -2792,13 +2792,13 @@ void BattleInfoWidget_BuildItemMenu(unk_func_8830867C_04C* arg0, s32 arg1, s32 a
     ((func8850BD40)Memmap_GetFragmentVaddr(WidgetTree_InitScrollableGridInputProxy))(sp4C, arg0->unk_7C);
     ((func8850BF80)Memmap_GetFragmentVaddr(WidgetTree_AppendVerticalMenuItem))(arg0->unk_80, sp4C);
 
-    arg0->unk_90 = mem_pool_alloc(arg4, sizeof(unk_func_88503298));
+    arg0->unk_90 = mem_pool_alloc(arg4, sizeof(WidgetVisibilityGate));
     ((func88503298)Memmap_GetFragmentVaddr(WidgetTree_InitVisibilityGateBridge))(arg0->unk_90, arg0->unk_2C, arg3);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_90);
 }
 
 s32 LabPCList_CanLearnMoveByLevelUp(s32 arg0, s32 arg1) {
-    static SpeciesData D_8831757C[] = {
+    static SpeciesData gYellowVersionSpeciesStats[] = {
         { 0x06, 0x4E, 0x54, 0x4E, 0x64, 0x55, 0x14, 0x02, 0x2D, 0xD1, {0x0A, 0x2D, 0x34, 0x2B}, 0x03, {0xB5, 0x43, 0x4F, 0xCE, 0xE3, 0x08, 0x2E}, 0x00 },
         { 0x0C, 0x3C, 0x2D, 0x32, 0x46, 0x50, 0x07, 0x02, 0x2D, 0xA0, {0x5D, 0x00, 0x00, 0x00}, 0x00, {0x2A, 0x43, 0x38, 0xF0, 0x43, 0x28, 0x42}, 0x00 },
         { 0x30, 0x3C, 0x37, 0x32, 0x2D, 0x28, 0x07, 0x03, 0xBE, 0x4B, {0x21, 0x32, 0x00, 0x00}, 0x00, {0x20, 0x03, 0x38, 0xD0, 0x03, 0x28, 0x42}, 0x00 },
@@ -2817,8 +2817,8 @@ s32 LabPCList_CanLearnMoveByLevelUp(s32 arg0, s32 arg1) {
 
     if (GbSave_GetPortGame(GbSave_GetActivePort()) == 7) {
         for (i = 0; i < 9; i++) {
-            if (arg0 == D_8831757C[i].speciesId) {
-                var_v1 = &D_8831757C[i];
+            if (arg0 == gYellowVersionSpeciesStats[i].speciesId) {
+                var_v1 = &gYellowVersionSpeciesStats[i];
             }
         }
     }
@@ -2956,11 +2956,11 @@ void BattleInfoWidget_UpdateItemMenuTitle(unk_func_8830867C_04C* arg0) {
 
     if (arg0->unk_88 != NULL) {
         sp1C = 0x4D;
-        Text_SetStringToken(0x19, Text_GetString(NULL, 0, D_8831A4D0, arg0->unk_88->unk_00.unk_00 - 1));
+        Text_SetStringToken(0x19, Text_GetString(NULL, 0, gLabPcListSpeciesNamesBank, arg0->unk_88->unk_00.unk_00 - 1));
     } else {
         sp1C = 0x4E;
     }
-    Text_GetString(arg0->unk_38, 0x40, D_8831A4C4, sp1C);
+    Text_GetString(arg0->unk_38, 0x40, gLabPcListColumnLabelsBank, sp1C);
 }
 
 void BattleInfoWidget_SetItemMenuMode(unk_func_8830867C_04C* arg0, s32 arg1) {
@@ -3226,8 +3226,8 @@ s32 BattleInfoWidget_RunItemMenuModal(unk_func_8830867C_04C* arg0, Controller* a
 
 void BattleInfoWidget_DrawSlotEntry(s32 arg0, s32 arg1, unk_func_88309160_arg2* arg2, s32 arg3, s32 arg4,
                    unk_func_88200FA0_030_030_1CEA00* arg5) {
-    static Color_RGBA8 D_8831764C = { 0xFF, 0xB2, 0xC3, 0xFF };
-    static Color_RGBA8 D_88317650[] = {
+    static Color_RGBA8 gSelectionBoxBorderColor = { 0xFF, 0xB2, 0xC3, 0xFF };
+    static Color_RGBA8 gSelectionBoxFillColors[] = {
         { 0xF0, 0xF0, 0xF0, 0xFF },
         { 0xF0, 0xF0, 0xF0, 0x4D },
         { 0xFF, 0xB2, 0xC3, 0xFF },
@@ -3238,14 +3238,14 @@ void BattleInfoWidget_DrawSlotEntry(s32 arg0, s32 arg1, unk_func_88309160_arg2* 
     char* sp2C;
     char sp28[4];
 
-    sp2C = Text_GetString(NULL, 0, D_8831A4C4, 0x5F);
+    sp2C = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x5F);
     if (arg4 & 4) {
         var_v0 = 1;
     } else {
         var_v0 = 0;
     }
 
-    sp34 = D_88317650[var_v0];
+    sp34 = gSelectionBoxFillColors[var_v0];
 
     Font_BeginTranslucentTextRendering();
     Gfx_SetEnvColor(sp34.r, sp34.g, sp34.b, sp34.a);
@@ -3262,7 +3262,7 @@ void BattleInfoWidget_DrawSlotEntry(s32 arg0, s32 arg1, unk_func_88309160_arg2* 
 
 void BattleInfoWidget_DrawLocationEntry(s32 arg0, s32 arg1, unk_func_88309160_arg2* arg2, s32 arg3, s32 arg4,
                    unk_func_88200FA0_030_030_1CEA00* arg5) {
-    static Color_RGBA8 D_8831765C[] = {
+    static Color_RGBA8 gLabelSelectionBoxColors[] = {
         { 0xF0, 0xF0, 0xF0, 0xFF },
         { 0xF0, 0xF0, 0xF0, 0x4D },
     };
@@ -3277,12 +3277,12 @@ void BattleInfoWidget_DrawLocationEntry(s32 arg0, s32 arg1, unk_func_88309160_ar
         var_v0 = 0;
     }
 
-    sp2C = D_8831765C[var_v0];
+    sp2C = gLabelSelectionBoxColors[var_v0];
 
     Font_BeginTranslucentTextRendering();
     Gfx_SetEnvColor(sp2C.r, sp2C.g, sp2C.b, sp2C.a);
     Font_SetActive(8, 0);
-    Font_Printf(arg0 + 8, arg1 + 4, Text_GetString(NULL, 0, D_8831A4C4, arg3 + 0x3B));
+    Font_Printf(arg0 + 8, arg1 + 4, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, arg3 + 0x3B));
     Font_EndTexturedTextRendering();
     if (arg2->unk_14 == 1) {
         BattleInfoWidget_DrawIndicator((arg5->unk_00.unk_14.unk_00 + arg0) - 0x35, arg1 + 0xC, arg2->unk_0C->unk_18,
@@ -3291,17 +3291,17 @@ void BattleInfoWidget_DrawLocationEntry(s32 arg0, s32 arg1, unk_func_88309160_ar
 }
 
 void BattleInfoWidget_BuildMoveDestinationMenu(unk_func_8830867C_048* arg0, s32 arg1, s32 arg2, WidgetNode* arg3, MemoryPool* arg4) {
-    static Color_RGBA8 D_88317664 = { 0x64, 0x96, 0xB4, 0xFF };
-    static Color_RGBA8 D_88317668 = { 0x3C, 0x64, 0x78, 0xFF };
-    static Color_RGBA8 D_8831766C = { 0xA0, 0x96, 0x64, 0xFF };
-    static Color_RGBA8 D_88317670 = { 0x64, 0x96, 0xB4, 0xFF };
-    static Color_RGBA8 D_88317674 = { 0x3C, 0x64, 0x78, 0xFF };
-    static Color_RGBA8 D_88317678 = { 0xA0, 0x96, 0x64, 0xFF };
+    static Color_RGBA8 gListUIPrimaryColor = { 0x64, 0x96, 0xB4, 0xFF };
+    static Color_RGBA8 gListUISecondaryColor = { 0x3C, 0x64, 0x78, 0xFF };
+    static Color_RGBA8 gListUIAccentColor = { 0xA0, 0x96, 0x64, 0xFF };
+    static Color_RGBA8 gListUIBackgroundColor = { 0x64, 0x96, 0xB4, 0xFF };
+    static Color_RGBA8 gListUIBorderColor = { 0x3C, 0x64, 0x78, 0xFF };
+    static Color_RGBA8 gListUIHighlightColor = { 0xA0, 0x96, 0x64, 0xFF };
 
     UNUSED s32 pad[2];
     s32 spBC;
     UNUSED s32 pad3;
-    unk_func_8850B254* spB4;
+    DashedBorderFrame* spB4;
     unk_func_8850878C* spB0;
     unk_func_885012A4* spAC;
     unk_func_8850BD40* spA8;
@@ -3314,13 +3314,13 @@ void BattleInfoWidget_BuildMoveDestinationMenu(unk_func_8830867C_048* arg0, s32 
     char* sp8C;
     s32 sp88;
     s32 sp84;
-    unk_func_8850B254* sp80;
+    DashedBorderFrame* sp80;
     unk_func_8850878C* sp7C;
     unk_func_885012A4* sp78;
     WidgetNode* sp74;
     unk_func_8850BD40* sp70;
     unk_func_8850BD40* sp6C;
-    unk_func_88503298* sp68;
+    WidgetVisibilityGate* sp68;
 
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(arg0, sizeof(unk_func_8830867C_048));
 
@@ -3360,8 +3360,8 @@ void BattleInfoWidget_BuildMoveDestinationMenu(unk_func_8830867C_048* arg0, s32 
     arg0->unk_2C->unk_00.unk_28 &= ~1;
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_2C);
 
-    spB4 = mem_pool_alloc(arg4, sizeof(unk_func_8850B254));
-    ((func8850B254)Memmap_GetFragmentVaddr(WidgetTree_InitDashedBorderFrame))(spB4, 0, 0, spBC, 0x2C, D_88317664, D_88317668);
+    spB4 = mem_pool_alloc(arg4, sizeof(DashedBorderFrame));
+    ((func8850B254)Memmap_GetFragmentVaddr(WidgetTree_InitDashedBorderFrame))(spB4, 0, 0, spBC, 0x2C, gListUIPrimaryColor, gListUISecondaryColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, spB4);
     arg0->unk_50[0] = '\0';
 
@@ -3371,7 +3371,7 @@ void BattleInfoWidget_BuildMoveDestinationMenu(unk_func_8830867C_048* arg0, s32 
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(spB4, spB0);
 
     spAC = mem_pool_alloc(arg4, sizeof(unk_func_885012A4));
-    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(spAC, 0, 0x30, spBC, 0x5C, D_8831766C);
+    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(spAC, 0, 0x30, spBC, 0x5C, gListUIAccentColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, spAC);
 
     arg0->unk_34 = mem_pool_alloc(arg4, sizeof(unk_func_88200FA0_030_030_1CEA00));
@@ -3388,8 +3388,8 @@ void BattleInfoWidget_BuildMoveDestinationMenu(unk_func_8830867C_048* arg0, s32 
     ((func8850BF80)Memmap_GetFragmentVaddr(WidgetTree_AppendVerticalMenuItem))(arg0->unk_48, arg0->unk_4C);
 
     spA0 = BattleInfoWidget_GetEntryWidth();
-    sp90 = Text_GetString(NULL, 0, D_8831A4C4, 0x60);
-    sp8C = Text_GetString(NULL, 0, D_8831A4C4, 0x61);
+    sp90 = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x60);
+    sp8C = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x61);
     sp88 = Font_MeasureTextExtent(8, 0, sp90);
     sp84 = Font_MeasureTextExtent(8, 0, sp8C);
 
@@ -3412,8 +3412,8 @@ void BattleInfoWidget_BuildMoveDestinationMenu(unk_func_8830867C_048* arg0, s32 
     arg0->unk_30->unk_00.unk_28 &= ~1;
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, arg0->unk_30);
 
-    sp80 = mem_pool_alloc(arg4, sizeof(unk_func_8850B254));
-    ((func8850B254)Memmap_GetFragmentVaddr(WidgetTree_InitDashedBorderFrame))(sp80, 0, 0, sp98, 0x14, D_88317670, D_88317674);
+    sp80 = mem_pool_alloc(arg4, sizeof(DashedBorderFrame));
+    ((func8850B254)Memmap_GetFragmentVaddr(WidgetTree_InitDashedBorderFrame))(sp80, 0, 0, sp98, 0x14, gListUIBackgroundColor, gListUIBorderColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_30, sp80);
 
     arg0->unk_40 = mem_pool_alloc(arg4, sizeof(unk_func_88500994));
@@ -3433,7 +3433,7 @@ void BattleInfoWidget_BuildMoveDestinationMenu(unk_func_8830867C_048* arg0, s32 
     ((func88500A3C)Memmap_GetFragmentVaddr(WidgetTree_AddPage))(arg0->unk_40, sp7C);
 
     sp78 = mem_pool_alloc(arg4, sizeof(unk_func_885012A4));
-    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(sp78, 0, 0x18, sp98, 0x128, D_88317678);
+    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(sp78, 0, 0x18, sp98, 0x128, gListUIHighlightColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_30, sp78);
 
     arg0->unk_44 = mem_pool_alloc(arg4, sizeof(unk_func_88500994));
@@ -3464,7 +3464,7 @@ void BattleInfoWidget_BuildMoveDestinationMenu(unk_func_8830867C_048* arg0, s32 
     ((func8850BD40)Memmap_GetFragmentVaddr(WidgetTree_InitScrollableGridInputProxy))(sp6C, arg0->unk_38[1]);
     ((func8850CC74)Memmap_GetFragmentVaddr(WidgetTree_AppendChildSelectionProxyItem))(arg0->unk_4C, sp6C);
 
-    sp68 = mem_pool_alloc(arg4, sizeof(unk_func_88503298));
+    sp68 = mem_pool_alloc(arg4, sizeof(WidgetVisibilityGate));
     ((func88503298)Memmap_GetFragmentVaddr(WidgetTree_InitVisibilityGateBridge))(sp68, arg0->unk_2C, arg3);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0, sp68);
 }
@@ -3524,9 +3524,9 @@ void BattleInfoWidget_MarkIneligibleDestinations(unk_func_8830867C_048* arg0, un
 }
 
 void BattleInfoWidget_FormatLocationName(char* arg0, s32 arg1, s32 arg2) {
-    static u16 D_8831767C[4] = { 0x3B, 0x62, 0x63, 0 };
+    static u16 gLocationMessageIds[4] = { 0x3B, 0x62, 0x63, 0 };
 
-    HAL_Strcpy(arg0, Text_GetString(NULL, 0, D_8831A4C4, D_8831767C[arg1]));
+    HAL_Strcpy(arg0, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, gLocationMessageIds[arg1]));
     if (arg1 != 0) {
         sprintf(&arg0[strlen(arg0)], " %d", arg2 + 1);
     }
@@ -3537,7 +3537,7 @@ void BattleInfoWidget_SetMoveDestinationTitle(unk_func_8830867C_048* arg0, s32 a
 
     BattleInfoWidget_FormatLocationName(sp18, arg1, arg2);
     Text_SetStringToken(0x25, sp18);
-    Text_GetString(arg0->unk_50, 0x80, D_8831A4C4, 0x3A);
+    Text_GetString(arg0->unk_50, 0x80, gLabPcListColumnLabelsBank, 0x3A);
 }
 
 void BattleInfoWidget_SyncDestinationPage(unk_func_8830867C_048* arg0) {
@@ -3676,39 +3676,39 @@ s32 BattleInfoWidget_RunMoveDestinationModal(unk_func_8830867C_048* arg0, Contro
 }
 
 void BattleInfoWidget_DrawSaveConfirmLabel(s32 arg0, s32 arg1, s8* arg2, s32 arg3) {
-    static Color_RGBA8 D_88317684 = { 0xF0, 0xF0, 0xF0, 0xFF };
+    static Color_RGBA8 gTextColor_Default = { 0xF0, 0xF0, 0xF0, 0xFF };
 
     Font_BeginTranslucentTextRendering();
-    Gfx_SetEnvColor(D_88317684.r, D_88317684.g, D_88317684.b, D_88317684.a);
+    Gfx_SetEnvColor(gTextColor_Default.r, gTextColor_Default.g, gTextColor_Default.b, gTextColor_Default.a);
     Font_SetActive(8, 0);
     Font_Printf(arg0 + 8, arg1 + 4, arg2);
     Font_EndTexturedTextRendering();
 }
 
 void BattleInfoWidget_BuildSaveConfirmDialog(unk_func_8830867C_02C_0B4* arg0, s32 arg1, s32 arg2, MemoryPool* arg3) {
-    static Color_RGBA8 D_88317688 = { 0x64, 0x96, 0xB4, 0xFF };
-    static Color_RGBA8 D_8831768C = { 0x3C, 0x64, 0x78, 0xFF };
-    static Color_RGBA8 D_88317690 = { 0xA0, 0x96, 0x64, 0xFF };
+    static Color_RGBA8 gSaveConfirmFramePrimaryColor = { 0x64, 0x96, 0xB4, 0xFF };
+    static Color_RGBA8 gSaveConfirmFrameSecondaryColor = { 0x3C, 0x64, 0x78, 0xFF };
+    static Color_RGBA8 gSaveConfirmBodyColor = { 0xA0, 0x96, 0x64, 0xFF };
 
     UNUSED s32 pad;
     s32 sp68;
     UNUSED s32 pad2[2];
     s32 sp5C;
     s32 temp_v1;
-    unk_func_8850B254* sp54;
+    DashedBorderFrame* sp54;
     char* sp50;
     unk_func_8850878C* sp4C;
     unk_func_885012A4* sp48;
 
-    sp54 = mem_pool_alloc(arg3, sizeof(unk_func_8850B254));
-    sp50 = Text_GetString(NULL, 0, D_8831A4C4, 0x59);
+    sp54 = mem_pool_alloc(arg3, sizeof(DashedBorderFrame));
+    sp50 = Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x59);
 
     sp4C = mem_pool_alloc(arg3, sizeof(unk_func_8850878C));
     ((func8850878C)Memmap_GetFragmentVaddr(WidgetTree_InitTextLabel))(sp4C, 8, 0, sp50, 8);
     temp_v1 = Font_MeasureTextExtent(8, 0, sp50) + 0x10;
     sp68 = temp_v1;
     sp5C = temp_v1;
-    ((func8850B254)Memmap_GetFragmentVaddr(WidgetTree_InitDashedBorderFrame))(sp54, 0, 0, sp5C, 0x14, D_88317688, D_8831768C);
+    ((func8850B254)Memmap_GetFragmentVaddr(WidgetTree_InitDashedBorderFrame))(sp54, 0, 0, sp5C, 0x14, gSaveConfirmFramePrimaryColor, gSaveConfirmFrameSecondaryColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(sp54, sp4C);
     ((func885007CC)Memmap_GetFragmentVaddr(WidgetTree_InitWidget))(arg0, 0x40);
 
@@ -3725,15 +3725,15 @@ void BattleInfoWidget_BuildSaveConfirmDialog(unk_func_8830867C_02C_0B4* arg0, s3
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, sp54);
 
     sp48 = mem_pool_alloc(arg3, sizeof(unk_func_885012A4));
-    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(sp48, 0, 0x18, sp5C, 0x40, D_88317690);
+    ((func885012A4)Memmap_GetFragmentVaddr(WidgetTree_InitSolidColor))(sp48, 0, 0x18, sp5C, 0x40, gSaveConfirmBodyColor);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(arg0->unk_2C, sp48);
 
     arg0->unk_30 = mem_pool_alloc(arg3, sizeof(unk_func_8830867C_02C_0B4_030));
     ((func885060BC)Memmap_GetFragmentVaddr(WidgetTree_InitPagedGrid))(arg0->unk_30, 0, 4, BattleInfoWidget_DrawSaveConfirmLabel, sp68, 0x1C, 2, 1, arg3);
 
     PointerList_Allocate(&arg0->unk_34, 2, arg3);
-    PointerList_Insert(&arg0->unk_34, Text_GetString(NULL, 0, D_8831A4C4, 0x5A), 0);
-    PointerList_Insert(&arg0->unk_34, Text_GetString(NULL, 0, D_8831A4C4, 0x5B), 1);
+    PointerList_Insert(&arg0->unk_34, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x5A), 0);
+    PointerList_Insert(&arg0->unk_34, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x5B), 1);
 
     ((func88506384)Memmap_GetFragmentVaddr(WidgetTree_BindPagedGridPage))(arg0->unk_30, &arg0->unk_34, arg3);
     ((func8850068C)Memmap_GetFragmentVaddr(WidgetTree_AppendChild))(sp48, arg0->unk_30);
@@ -3815,7 +3815,7 @@ s32 LabPCList_TextFadeWidget_Update(unk_func_882173EC* arg0) {
 }
 
 s32 LabPCList_DrawTextFadeWidget(unk_func_882173EC* arg0, s32 arg1, s32 arg2) {
-    static Color_RGBA8 D_88317694[] = {
+    static Color_RGBA8 gTextFadeWidgetBgColors[] = {
         { 0x00, 0x00, 0x00, 0xFF },
         { 0x32, 0x32, 0x32, 0xFF },
     };
@@ -3831,7 +3831,7 @@ s32 LabPCList_DrawTextFadeWidget(unk_func_882173EC* arg0, s32 arg1, s32 arg2) {
     gDPSetRenderMode(gDisplayListHead++, G_RM_NOOP, G_RM_NOOP2);
 
     // clang-format off
-    temp_t3 = ((D_88317694[(sp64 / 3) & 1].r << 8) & 0xF800) | ((D_88317694[(sp64 / 3) & 1].g << 3) & 0x7C0) | ((D_88317694[(sp64 / 3) & 1].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
+    temp_t3 = ((gTextFadeWidgetBgColors[(sp64 / 3) & 1].r << 8) & 0xF800) | ((gTextFadeWidgetBgColors[(sp64 / 3) & 1].g << 3) & 0x7C0) | ((gTextFadeWidgetBgColors[(sp64 / 3) & 1].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
     // clang-format on
     gDPSetFillColor(gDisplayListHead++, (temp_t3 << 0x10) | temp_t3);
     gDPFillRectangle(gDisplayListHead++, arg1, arg2, (arg0->unk_00.unk_14.unk_00 + arg1) - 1,
@@ -3844,7 +3844,7 @@ s32 LabPCList_DrawTextFadeWidget(unk_func_882173EC* arg0, s32 arg1, s32 arg2) {
 
             sp44 = Move_GetDisplayInfo(*(s32*)&arg0->unk_30);
             sp68 = ((func884000C4)Memmap_GetFragmentVaddr(LabPC_GetTypeColor))(sp44->unk_00[1])->unk_04;
-            sp6C = Text_GetString(NULL, 0, D_8831A4CC, *(s32*)&arg0->unk_30 - 1);
+            sp6C = Text_GetString(NULL, 0, gMoveNamesTable, *(s32*)&arg0->unk_30 - 1);
             sp68.a = 0xFF;
         }
     } else if (sp64 < 0x28) {
@@ -3853,14 +3853,14 @@ s32 LabPCList_DrawTextFadeWidget(unk_func_882173EC* arg0, s32 arg1, s32 arg2) {
 
         sp38 = Move_GetDisplayInfo(*(s32*)&arg0->unk_30);
         sp68 = ((func884000C4)Memmap_GetFragmentVaddr(LabPC_GetTypeColor))(sp38->unk_00[1])->unk_04;
-        sp6C = Text_GetString(NULL, 0, D_8831A4CC, *(s32*)&arg0->unk_30 - 1);
+        sp6C = Text_GetString(NULL, 0, gMoveNamesTable, *(s32*)&arg0->unk_30 - 1);
         sp68.a = ((-sp64 * 0xFF) + 0x26D9) / 20;
     } else {
         ret_func_8002ED08* sp2C;
 
         sp2C = Move_GetDisplayInfo(*(s32*)&arg0->unk_34);
         sp68 = ((func884000C4)Memmap_GetFragmentVaddr(LabPC_GetTypeColor))(sp2C->unk_00[1])->unk_04;
-        sp6C = Text_GetString(NULL, 0, D_8831A4CC, *(s32*)&arg0->unk_34 - 1);
+        sp6C = Text_GetString(NULL, 0, gMoveNamesTable, *(s32*)&arg0->unk_34 - 1);
         sp68.a = ((sp64 * 0xFF) - 0x27D8) / 20;
     }
 
@@ -3910,8 +3910,8 @@ s32 LabPCList_PpUpAnimWidget_Update(unk_func_8830867C_02C_0C0* arg0) {
 }
 
 s32 LabPCList_DrawPpUpAnimWidget(unk_func_8830867C_02C_0C0* arg0, s32 arg1, s32 arg2) {
-    static Color_RGBA8 D_8831769C = { 0xF0, 0xF0, 0xF0, 0xFF };
-    static Color_RGBA8 D_883176A0[] = {
+    static Color_RGBA8 gPpUpBannerTextColor = { 0xF0, 0xF0, 0xF0, 0xFF };
+    static Color_RGBA8 gProgressBarFillColors[] = {
         { 0x00, 0x00, 0x00, 0xFF },
         { 0x32, 0x32, 0x32, 0xFF },
     };
@@ -3935,7 +3935,7 @@ s32 LabPCList_DrawPpUpAnimWidget(unk_func_8830867C_02C_0C0* arg0, s32 arg1, s32 
     sp74 = (arg0->unk_00.unk_00.unk_14.unk_02 - 0x10) / 2;
     temp_s0 = Move_GetDisplayInfo(*(s32*)&arg0->unk_00.unk_30);
     sp8C = (((func884000C4)Memmap_GetFragmentVaddr(LabPC_GetTypeColor))(temp_s0->unk_00[1]))->unk_04;
-    sp88 = Text_GetString(NULL, 0, D_8831A4CC, *(s32*)&arg0->unk_00.unk_30 - 1);
+    sp88 = Text_GetString(NULL, 0, gMoveNamesTable, *(s32*)&arg0->unk_00.unk_30 - 1);
     sp70 = strlen(sp88);
 
     gDPPipeSync(gDisplayListHead++);
@@ -3943,8 +3943,8 @@ s32 LabPCList_DrawPpUpAnimWidget(unk_func_8830867C_02C_0C0* arg0, s32 arg1, s32 
     gDPSetCycleType(gDisplayListHead++, G_CYC_FILL);
     gDPSetRenderMode(gDisplayListHead++, G_RM_NOOP, G_RM_NOOP2);
 
-    temp_t0 = ((D_883176A0[(sp90 / 3) & 1].r << 8) & 0xF800) | ((D_883176A0[(sp90 / 3) & 1].g << 3) & 0x7C0) |
-              ((D_883176A0[(sp90 / 3) & 1].b >> 2) & 0x3E) | 1;
+    temp_t0 = ((gProgressBarFillColors[(sp90 / 3) & 1].r << 8) & 0xF800) | ((gProgressBarFillColors[(sp90 / 3) & 1].g << 3) & 0x7C0) |
+              ((gProgressBarFillColors[(sp90 / 3) & 1].b >> 2) & 0x3E) | 1;
     gDPPipeSync(gDisplayListHead++);
     gDPSetFillColor(gDisplayListHead++, (temp_t0 << 0x10) | temp_t0);
     gDPFillRectangle(gDisplayListHead++, arg1, arg2, (arg0->unk_00.unk_00.unk_14.unk_00 + arg1) - 1,
@@ -3991,7 +3991,7 @@ s32 LabPCList_DrawPpUpAnimWidget(unk_func_8830867C_02C_0C0* arg0, s32 arg1, s32 
     Gfx_SetEnvColor(sp8C.r, sp8C.g, sp8C.b, sp8C.a);
     Font_Printf(((sp78 - Font_MeasureTextExtent(4, sp98, sp88)) / 2) + arg1, arg2 + sp74, sp88);
     Font_SetActive(4, 0);
-    Gfx_SetEnvColor(D_8831769C.r, D_8831769C.g, D_8831769C.b, D_8831769C.a);
+    Gfx_SetEnvColor(gPpUpBannerTextColor.r, gPpUpBannerTextColor.g, gPpUpBannerTextColor.b, gPpUpBannerTextColor.a);
 
     sprintf(sp84, "%d", *(s32*)&arg0->unk_00.unk_34);
 
@@ -4043,8 +4043,8 @@ s32 LabPCList_VitaminAnimWidget_Update(unk_func_882173EC* arg0) {
 }
 
 s32 LabPCList_DrawVitaminAnimWidget(unk_func_882173EC* arg0, s32 arg1, s32 arg2) {
-    static Color_RGBA8 D_883176A8 = { 0xF0, 0xF0, 0xF0, 0xFF };
-    static Color_RGBA8 D_883176AC[] = {
+    static Color_RGBA8 gTextColor_Small = { 0xF0, 0xF0, 0xF0, 0xFF };
+    static Color_RGBA8 gSmallBarColors[] = {
         { 0x00, 0x00, 0x00, 0xFF },
         { 0x32, 0x32, 0x32, 0xFF },
     };
@@ -4065,8 +4065,8 @@ s32 LabPCList_DrawVitaminAnimWidget(unk_func_882173EC* arg0, s32 arg1, s32 arg2)
     gDPSetCycleType(gDisplayListHead++, G_CYC_FILL);
     gDPSetRenderMode(gDisplayListHead++, G_RM_NOOP, G_RM_NOOP2);
 
-    temp_t0 = ((D_883176AC[(temp_t3 / 3) & 1].r << 8) & 0xF800) | ((D_883176AC[(temp_t3 / 3) & 1].g << 3) & 0x7C0) |
-              ((D_883176AC[(temp_t3 / 3) & 1].b >> 2) & 0x3E) | 1;
+    temp_t0 = ((gSmallBarColors[(temp_t3 / 3) & 1].r << 8) & 0xF800) | ((gSmallBarColors[(temp_t3 / 3) & 1].g << 3) & 0x7C0) |
+              ((gSmallBarColors[(temp_t3 / 3) & 1].b >> 2) & 0x3E) | 1;
     gDPPipeSync(gDisplayListHead++);
     gDPSetFillColor(gDisplayListHead++, (temp_t0 << 0x10) | temp_t0);
     gDPFillRectangle(gDisplayListHead++, arg1, arg2, (arg0->unk_00.unk_14.unk_00 + arg1) - 1,
@@ -4084,7 +4084,7 @@ s32 LabPCList_DrawVitaminAnimWidget(unk_func_882173EC* arg0, s32 arg1, s32 arg2)
 
     Font_BeginTranslucentTextRendering();
     Font_SetActive(4, 0);
-    Gfx_SetEnvColor(D_883176A8.r, D_883176A8.g, D_883176A8.b, D_883176A8.a);
+    Gfx_SetEnvColor(gTextColor_Small.r, gTextColor_Small.g, gTextColor_Small.b, gTextColor_Small.a);
 
     sprintf(sp7C, "%d", *(s32*)&arg0->unk_30);
 
@@ -4135,7 +4135,7 @@ s32 LabPCList_LocationCrossfadeWidget_Update(unk_func_882173EC* arg0) {
 }
 
 void LabPCList_DrawLocationCaption(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
-    static Color_RGBA8 D_883176B4 = { 0xF0, 0xF0, 0xF0, 0xFF };
+    static Color_RGBA8 gLocationNumberTextColor = { 0xF0, 0xF0, 0xF0, 0xFF };
 
     Color_RGBA8 sp2C;
     char sp24[8];
@@ -4146,37 +4146,37 @@ void LabPCList_DrawLocationCaption(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 a
 
     switch (arg4) {
         case 32:
-            sp2C = (0, D_8831727C);
+            sp2C = (0, gPartyLabelColor);
             Gfx_SetEnvColor(sp2C.r, sp2C.g, sp2C.b, arg6);
-            Font_Printf(arg0 + 4, ((arg3 - 0x10) / 2) + arg1, Text_GetString(NULL, 0, D_8831A4C4, 0x14));
+            Font_Printf(arg0 + 4, ((arg3 - 0x10) / 2) + arg1, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x14));
             break;
 
         case 33:
-            Gfx_SetEnvColor(D_883176B4.r, D_883176B4.g, D_883176B4.b, arg6);
+            Gfx_SetEnvColor(gLocationNumberTextColor.r, gLocationNumberTextColor.g, gLocationNumberTextColor.b, arg6);
             sprintf(sp24, "%d", arg5 + 1);
             Font_Printf(((arg0 + arg2) - Font_MeasureTextExtent(0, 0, sp24)) - 4, ((arg3 - 0x10) / 2) + arg1, sp24);
 
-            sp2C = (0, D_88317280);
+            sp2C = (0, gGbLabelColor);
             Gfx_SetEnvColor(sp2C.r, sp2C.g, sp2C.b, arg6);
-            Font_Printf(arg0 + 4, ((arg3 - 0x10) / 2) + arg1, Text_GetString(NULL, 0, D_8831A4C4, 0x15));
+            Font_Printf(arg0 + 4, ((arg3 - 0x10) / 2) + arg1, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x15));
             break;
 
         case 17:
-            Gfx_SetEnvColor(D_883176B4.r, D_883176B4.g, D_883176B4.b, arg6);
+            Gfx_SetEnvColor(gLocationNumberTextColor.r, gLocationNumberTextColor.g, gLocationNumberTextColor.b, arg6);
             sprintf(sp24, "%d", arg5 + 1);
             Font_Printf(((arg0 + arg2) - Font_MeasureTextExtent(0, 0, sp24)) - 4, ((arg3 - 0x10) / 2) + arg1, sp24);
 
-            sp2C = (0, D_88317284);
+            sp2C = (0, gN64LabelColor);
             Gfx_SetEnvColor(sp2C.r, sp2C.g, sp2C.b, arg6);
-            Font_Printf(arg0 + 4, ((arg3 - 0x10) / 2) + arg1, Text_GetString(NULL, 0, D_8831A4C4, 0x16));
+            Font_Printf(arg0 + 4, ((arg3 - 0x10) / 2) + arg1, Text_GetString(NULL, 0, gLabPcListColumnLabelsBank, 0x16));
             break;
     }
     Font_EndTexturedTextRendering();
 }
 
 s32 LabPCList_DrawLocationCrossfadeWidget(unk_func_882173EC* arg0, s32 arg1, s32 arg2) {
-    static s32 D_883176B8[] = { 0x20, 0x21, 0x11 };
-    static Color_RGBA8 D_883176C4[] = {
+    static s32 gModeCodes[] = { 0x20, 0x21, 0x11 };
+    static Color_RGBA8 gBarFillColors[] = {
         { 0x00, 0x00, 0x00, 0xFF },
         { 0x32, 0x32, 0x32, 0xFF },
     };
@@ -4192,7 +4192,7 @@ s32 LabPCList_DrawLocationCrossfadeWidget(unk_func_882173EC* arg0, s32 arg1, s32
     gDPSetRenderMode(gDisplayListHead++, G_RM_NOOP, G_RM_NOOP2);
 
     // clang-format off
-    temp_t4 = ((D_883176C4[(temp_t0 / 3) & 1].r << 8) & 0xF800) | ((D_883176C4[(temp_t0 / 3) & 1].g << 3) & 0x7C0) | ((D_883176C4[(temp_t0 / 3) & 1].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
+    temp_t4 = ((gBarFillColors[(temp_t0 / 3) & 1].r << 8) & 0xF800) | ((gBarFillColors[(temp_t0 / 3) & 1].g << 3) & 0x7C0) | ((gBarFillColors[(temp_t0 / 3) & 1].b >> 2) & 0x3E) | 1; gDPPipeSync(gDisplayListHead++);
     // clang-format on
     gDPSetFillColor(gDisplayListHead++, (temp_t4 << 0x10) | temp_t4);
     gDPFillRectangle(gDisplayListHead++, arg1, arg2, (arg0->unk_00.unk_14.unk_00 + arg1) - 1,
@@ -4209,7 +4209,7 @@ s32 LabPCList_DrawLocationCrossfadeWidget(unk_func_882173EC* arg0, s32 arg1, s32
         var_v0 = *(s32*)&arg0->unk_34;
     }
 
-    LabPCList_DrawLocationCaption(arg1, arg2, arg0->unk_00.unk_14.unk_00, arg0->unk_00.unk_14.unk_02, D_883176B8[var_v0 >> 0x10],
+    LabPCList_DrawLocationCaption(arg1, arg2, arg0->unk_00.unk_14.unk_00, arg0->unk_00.unk_14.unk_02, gModeCodes[var_v0 >> 0x10],
                   var_v0 & 0xFFFF, var_v1);
     return 0;
 }

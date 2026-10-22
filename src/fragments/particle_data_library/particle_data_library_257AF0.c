@@ -21,20 +21,20 @@ typedef struct TextureState {
     /* 0x18 */ Gfx* gfx;
 } TextureState; // size = 0x1C
 
-void func_81002830(Gfx* gfx, unk_arg1_func_81002830* arg1) {
+void LoadTextureBlockWithTileSize(Gfx* gfx, unk_arg1_func_81002830* arg1) {
     s16 temp_v0;
     s32 var_a3;
     unk_arg1_func_81002830* p;
     p = arg1;
-    if (D_8006F09C->textureMode == 0) {
+    if (gDefaultGraphRoot->textureMode == 0) {
         temp_v0 = 0x4000;
         // FAKE
         if ((arg1 && arg1) && arg1) {}
-        var_a3 = D_800AF7AE;
+        var_a3 = gTextureOffsetScale;
         temp_v0 = temp_v0 - (arg1->unk_00 * var_a3);
         // FAKE
         arg1 = NULL;
-        var_a3 = D_800AF7AE;
+        var_a3 = gTextureOffsetScale;
         gDPLoadTextureBlock(gfx++, p->unk_04[var_a3 & 0x7], G_IM_FMT_RGBA, G_IM_SIZ_16b, 64, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
                     G_TX_NOMIRROR | G_TX_CLAMP, 6, 5, G_TX_NOLOD, G_TX_NOLOD);
         gDPSetTileSize(gfx++, 0, temp_v0, 0, ((temp_v0 + 63) << 2), 124);
@@ -50,7 +50,7 @@ void DisplayList_InitAnimatedFrameSegment(s32 arg0, unk_arg1_func_81002968* arg1
         sp18 = arg1->unk_14;
         temp_v0 = Gfx_AllocDisplayList(0x50);
         arg1->unk_18 = temp_v0;
-        func_81002830(temp_v0, sp18);
+        LoadTextureBlockWithTileSize(temp_v0, sp18);
     }
 }
 
@@ -67,8 +67,8 @@ void DisplayList_InitSelectedTextureSegment(s32 arg0, TextureState* state) {
     if (arg0 == 2) {
         textures = state->textures;
         state->gfx = (Gfx*)Gfx_AllocDisplayList(0x50);
-        if (D_8006F09C->objectType == 0x58) {
-            index = (s32) D_8006F09C->transformAnim.frameFixed >> 0x10;
+        if (gDefaultGraphRoot->objectType == 0x58) {
+            index = (s32) gDefaultGraphRoot->transformAnim.frameFixed >> 0x10;
             if (index >= 0x42) {
                 index = index - 0x42;
             } else {
@@ -77,11 +77,11 @@ void DisplayList_InitSelectedTextureSegment(s32 arg0, TextureState* state) {
             if (index >= 8) {
                 index = 0;
             }
-            if (D_8006F09C->transformAnim.animationId >= 2) {
+            if (gDefaultGraphRoot->transformAnim.animationId >= 2) {
                 index = 0;
             }
         } else {
-            index = D_8006F084 & 7;
+            index = gAnimationFrame & 7;
         }
         DisplayList_BuildSelectedTextureSegment(state->gfx, textures, index);
     }

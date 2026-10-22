@@ -4,7 +4,7 @@
 // Japanese tables: unk_00 points to the EUC-JP status or type name (the strings form the
 // .rodata at 0x88400200); US 1.0 stores a small integer there instead.
 #if defined(VERSION_JP)
-unk_D_88400100 D_88400100[] = {
+PaletteColor gUiColorPalette[] = {
     { "ふつう", { 0xFF, 0xFF, 0xFF, 0xFF } },
     { "ひんし", { 0x4D, 0x4D, 0x4D, 0xFF } },
     { "ねむり", { 0x9F, 0x91, 0xE8, 0xFF } },
@@ -14,7 +14,7 @@ unk_D_88400100 D_88400100[] = {
     { "まひ", { 0xFF, 0xFF, 0x00, 0xFF } },
 };
 
-unk_D_88400138 D_88400138[] = {
+MoveTypeColorGradient gMoveCategoryGradients[] = {
     { "ノーマル", { 0xF0, 0xF0, 0xF0, 0xFF }, { 0xF0, 0xF0, 0xF0, 0xFF } },
     { "かくとう", { 0xF0, 0x96, 0x32, 0xFF }, { 0xF0, 0x78, 0x32, 0xFF } },
     { "ひこう", { 0x50, 0x96, 0xF0, 0xFF }, { 0x3C, 0x64, 0xF0, 0xFF } },
@@ -32,7 +32,7 @@ unk_D_88400138 D_88400138[] = {
     { "ドラゴン", { 0x64, 0xDC, 0xC8, 0xFF }, { 0x32, 0xC8, 0xB4, 0xFF } },
 };
 #else
-unk_D_88400100 D_88400100[] = {
+PaletteColor gUiColorPalette[] = {
     { 0x00000000, { 0xFF, 0xFF, 0xFF, 0xFF } },
     { 0x00000001, { 0x4D, 0x4D, 0x4D, 0xFF } },
     { 0x00000002, { 0x9F, 0x91, 0xE8, 0xFF } },
@@ -42,7 +42,7 @@ unk_D_88400100 D_88400100[] = {
     { 0x00000006, { 0xFF, 0xFF, 0x00, 0xFF } },
 };
 
-unk_D_88400138 D_88400138[] = {
+MoveTypeColorGradient gMoveCategoryGradients[] = {
     { 0, { 0xF0, 0xF0, 0xF0, 0xFF }, { 0xF0, 0xF0, 0xF0, 0xFF } },
     { 1, { 0xF0, 0x96, 0x32, 0xFF }, { 0xF0, 0x78, 0x32, 0xFF } },
     { 2, { 0x50, 0x96, 0xF0, 0xFF }, { 0x3C, 0x64, 0xF0, 0xFF } },
@@ -61,7 +61,7 @@ unk_D_88400138 D_88400138[] = {
 };
 #endif
 
-static u32 D_884001EC[] = { 0, 0, 0, 0, 0 }; // bss pad
+static u32 gFragment25Pad[] = { 0, 0, 0, 0, 0 }; // bss pad
 
 s32 LabPC_StatusToIconIndex(s32 arg0) {
     s32 v1;
@@ -86,7 +86,7 @@ s32 LabPC_StatusToIconIndex(s32 arg0) {
     return v1;
 }
 
-unk_D_88400100* LabPC_GetMonStatusIcon(BattleMon* arg0) {
+PaletteColor* LabPC_GetMonStatusIcon(BattleMon* arg0) {
     s32 var_v1;
 
     if (arg0->unk_02 == 0) {
@@ -94,9 +94,9 @@ unk_D_88400100* LabPC_GetMonStatusIcon(BattleMon* arg0) {
     } else {
         var_v1 = LabPC_StatusToIconIndex(arg0->statusCondition);
     }
-    return &D_88400100[var_v1];
+    return &gUiColorPalette[var_v1];
 }
 
-unk_D_88400138* LabPC_GetTypeColor(s32 arg0) {
-    return &D_88400138[Move_NormalizeDisplayIndex(arg0)];
+MoveTypeColorGradient* LabPC_GetTypeColor(s32 arg0) {
+    return &gMoveCategoryGradients[Move_NormalizeDisplayIndex(arg0)];
 }
