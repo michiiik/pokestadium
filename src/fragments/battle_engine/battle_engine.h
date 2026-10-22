@@ -58,7 +58,7 @@ typedef struct ActivePokemonState {
     /* 0xBE */ s16 unk_BE;
     /* 0xC0 */ char unkC0[1];
     /* 0xC1 */ u8 moveSlotIllegality[4];
-    /* 0xC8 */ Controller* unk_C8;
+    /* 0xC8 */ Controller* controller;
 } ActivePokemonState; // size = 0xCC
 
 typedef struct ThumbnailState {
@@ -106,7 +106,7 @@ typedef struct SwayLayoutConfig {
 
 typedef struct SwayState {
     /* 0x00 */ Vec3f unk_00;
-    /* 0x0C */ Vec3f unk_0C;
+    /* 0x0C */ Vec3f rotation;
     /* 0x18 */ Vec3f unk_18;
     /* 0x24 */ SwayLayoutConfig layoutConfig;
     /* 0x44 */ s16 unk_44;

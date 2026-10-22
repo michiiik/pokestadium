@@ -2537,7 +2537,7 @@ void BattleScene_InitializePresentation(UNUSED BattleSessionTeams* session_teams
  */
 void BattleScene_ResetParticipantAuxTransform(UNUSED ActivePokemon* owner, ActivePokemon* active_pokemon, s32 facing_direction) {
     Vec3f_SetComponentsDuplicate(&active_pokemon->swayState, 0.0f, 0.0f, 0.0f);
-    Vec3f_SetComponentsDuplicate(&active_pokemon->swayState.unk_0C, 0.0f, 0.0f, 0.0f);
+    Vec3f_SetComponentsDuplicate(&active_pokemon->swayState.rotation, 0.0f, 0.0f, 0.0f);
     active_pokemon->cameraOffsetScaleFactor = facing_direction;
 }
 

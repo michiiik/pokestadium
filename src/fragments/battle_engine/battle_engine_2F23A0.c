@@ -377,7 +377,7 @@ void BattleScene_SetParticipantSelectedSide(ActivePokemon* active_pokemon, s32 t
 }
 
 void BattleScene_SetParticipantController(ActivePokemon* active_pokemon, Controller* controller) {
-    active_pokemon->state.unk_C8 = controller;
+    active_pokemon->state.controller = controller;
 }
 
 void BattleScene_RebindParticipantToSide(ActivePokemon* arg0, s32 arg1) {

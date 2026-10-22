@@ -1876,7 +1876,7 @@ void BeginBattleForEntity(ActivePokemon* arg0) {
 
     Battle_ResetEntityState(arg0);
     Vec3f_SetComponentsDuplicate(&arg0->swayState.unk_00, 0.0f, 0.0f, 0.0f);
-    Vec3f_SetComponentsDuplicate(&arg0->swayState.unk_0C, 0.0f, 0.0f, 0.0f);
+    Vec3f_SetComponentsDuplicate(&arg0->swayState.rotation, 0.0f, 0.0f, 0.0f);
     Battle_InitPokemonRuntimeState(arg0);
 
     if (arg0 == sActivePokemon[0]) {
