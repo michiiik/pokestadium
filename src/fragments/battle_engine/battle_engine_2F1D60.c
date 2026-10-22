@@ -8,7 +8,7 @@
     Handles movement and display of Pokemon's thumbnail
 */
 
-// seems to actually be idle state trigger after moves
+// seems to actually be to trigger the idle animation to freeze for the thumbnail
 void BattleScene_TriggerOwnerModelAnimation(ActivePokemon* active_pokemon) {
     ModelAnim_SetFrame(&active_pokemon->presentationState.displayObject, active_pokemon->presentationState.idleTimer);
     ModelAnim_SetAnimation(&active_pokemon->presentationState.displayObject, active_pokemon->presentationState.idleAnimation);
@@ -50,7 +50,7 @@ void BattleScene_LoadOwnerCameraFramingConstants(ActivePokemon* active_pokemon) 
     active_pokemon->presentationState.thumbnailCamera->viewport.x = D_843847BC[side].x;
     active_pokemon->presentationState.thumbnailCamera->viewport.y = D_843847BC[side].y;
 
-    active_pokemon->presentationState.side1ThumnailInPlace = D_843847BC[side].unk_14;
+    active_pokemon->presentationState.side = D_843847BC[side].unk_14;
 
     active_pokemon->presentationState.thumbnailCamera->perspective.nearPlane = D_843847BC[side].nearPlane;
     active_pokemon->presentationState.thumbnailCamera->perspective.farPlane = D_843847BC[side].farPlane;
@@ -81,8 +81,8 @@ void BattleScene_ApplyOwnerCameraFraming(ActivePokemon* active_pokemon) {
 
     active_pokemon->presentationState.rotationX = sSidePresentationTransform[side]->unk_0C;
     if (sSidePresentationTransform[side]->unk_10 == 0xFF) {
-        active_pokemon->presentationState.rotationY = sSidePresentationTransform[side]->unk_0E * active_pokemon->presentationState.side1ThumnailInPlace;
-        tmp_z = sSidePresentationTransform[side]->coordinates.z * active_pokemon->presentationState.side1ThumnailInPlace;
+        active_pokemon->presentationState.rotationY = sSidePresentationTransform[side]->unk_0E * active_pokemon->presentationState.side;
+        tmp_z = sSidePresentationTransform[side]->coordinates.z * active_pokemon->presentationState.side;
     } else {
         active_pokemon->presentationState.rotationY = sSidePresentationTransform[side]->unk_0E;
         tmp_z = sSidePresentationTransform[side]->coordinates.z;
@@ -110,47 +110,47 @@ void BattleScene_InitializeOwnerCameraFraming(CameraNode* side1_camera_node, Act
     BattleScene_TickOwnerCameraFraming(side2_pokemon);
 }
 
-void BattleScene_TickOwnerSlideIn(ActivePokemon* arg0, s32 arg1) {
+void BattleScene_TickOwnerSlideIn(ActivePokemon* active_pokemon, s32 arg1) {
     s16 var_a0;
     CameraNode* temp_v0;
 
-    arg0->presentationState.thumbnailCamera->node.flags |= 1;
-    arg0->presentationState.displayObject.node.flags |= 1;
+    active_pokemon->presentationState.thumbnailCamera->node.flags |= 1;
+    active_pokemon->presentationState.displayObject.node.flags |= 1;
 
-    if (arg0->presentationState.side1ThumnailInPlace == 1) {
-        if ((arg0->presentationState.thumbnailCamera->viewport.x == -0x48) && !(arg0->state.flags & 0x800)) {
-            BattleScene_TriggerOwnerModelAnimation(arg0);
+    if (active_pokemon->presentationState.side == 1) {
+        if ((active_pokemon->presentationState.thumbnailCamera->viewport.x == -72) && !(active_pokemon->state.flags & 0x800)) {
+            BattleScene_TriggerOwnerModelAnimation(active_pokemon);
         }
 
-        if ((ModelRenderer_IsReady(0) != 0) && (arg0->presentationState.side2ThumbnailInPlace == 0)) {
-            arg0->presentationState.side2ThumbnailInPlace = 2;
+        if ((ModelRenderer_IsReady(0) != 0) && (active_pokemon->presentationState.thumbnailStatus == 0)) {
+            active_pokemon->presentationState.thumbnailStatus = 2;
             ModelRenderer_OnSlotReady(0);
         }
-        arg0->presentationState.thumbnailCamera->viewport.x = Math_StepToS32(arg0->presentationState.thumbnailCamera->viewport.x, 0x17, arg1, arg1);
+        active_pokemon->presentationState.thumbnailCamera->viewport.x = Math_StepToS32(active_pokemon->presentationState.thumbnailCamera->viewport.x, 0x17, arg1, arg1);
     } else {
-        if ((arg0->presentationState.thumbnailCamera->viewport.x == 0x15F) && !(arg0->state.flags & 0x800)) {
-            BattleScene_TriggerOwnerModelAnimation(arg0);
+        if ((active_pokemon->presentationState.thumbnailCamera->viewport.x == 351) && !(active_pokemon->state.flags & 0x800)) {
+            BattleScene_TriggerOwnerModelAnimation(active_pokemon);
         }
 
-        arg0->presentationState.thumbnailCamera->viewport.x = Math_StepToS32(arg0->presentationState.thumbnailCamera->viewport.x, 0x103, arg1, arg1);
+        active_pokemon->presentationState.thumbnailCamera->viewport.x = Math_StepToS32(active_pokemon->presentationState.thumbnailCamera->viewport.x, 0x103, arg1, arg1);
 
-        if ((ModelRenderer_IsReady(1) != 0) && (arg0->presentationState.side2ThumbnailInPlace == 0)) {
-            arg0->presentationState.side2ThumbnailInPlace = 2;
+        if ((ModelRenderer_IsReady(1) != 0) && (active_pokemon->presentationState.thumbnailStatus == 0)) {
+            active_pokemon->presentationState.thumbnailStatus = 2;
             ModelRenderer_OnSlotReady(1);
         }
     }
 }
 
 void BattleScene_TickOwnerSlideOut(ActivePokemon* active_pokemon, s32 delta) {
-    if (active_pokemon->presentationState.side1ThumnailInPlace == 1) {
-        active_pokemon->presentationState.side2ThumbnailInPlace = 0;
+    if (active_pokemon->presentationState.side == 1) {
+        active_pokemon->presentationState.thumbnailStatus = 0;
         active_pokemon->presentationState.thumbnailCamera->viewport.x = Math_StepToS32(active_pokemon->presentationState.thumbnailCamera->viewport.x, -72, delta, delta);
         if (active_pokemon->presentationState.thumbnailCamera->viewport.x == -72) {
             active_pokemon->presentationState.thumbnailCamera->node.flags &= ~1;
             active_pokemon->presentationState.displayObject.node.flags &= ~1;
         }
     } else {
-        active_pokemon->presentationState.side2ThumbnailInPlace = 0;
+        active_pokemon->presentationState.thumbnailStatus = 0;
         active_pokemon->presentationState.thumbnailCamera->viewport.x = Math_StepToS32(active_pokemon->presentationState.thumbnailCamera->viewport.x, 351, delta, delta);
         if (active_pokemon->presentationState.thumbnailCamera->viewport.x == 351) {
             active_pokemon->presentationState.thumbnailCamera->node.flags &= ~1;

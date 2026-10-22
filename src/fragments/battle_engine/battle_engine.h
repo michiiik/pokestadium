@@ -67,13 +67,13 @@ typedef struct PresentationState {
     /* 0x16C */ s32 unk_16C;
     /* 0x170 */ s32 isIdle;
     /* 0x174 */ char unk174[0x4];
-    /* 0x178 */ s32 side1ThumnailInPlace;
+    /* 0x178 */ s32 side;
     /* 0x17C */ s32 idleAnimation;
     /* 0x180 */ s32 idleTimer;
     /* 0x184 */ s16 rotationX;
     /* 0x186 */ s16 rotationY;
     /* 0x188 */ f32 x;
-    /* 0x18C */ s32 side2ThumbnailInPlace;
+    /* 0x18C */ s32 thumbnailStatus;
     /* 0x190 */ f32 z;
     /* 0x194 */ f32 y;
     /* 0x198 */ char unk198[0x4];
