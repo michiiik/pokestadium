@@ -189,7 +189,7 @@ Generic fields are named unk/pad/field/filler with an optional hex suffix; neste
 | `src/fragments/battle_engine/battle_engine_3438B0.c` | 4 | 4 | 0 | 24 | 0 | 2 | 0 |
 | `src/leo.c` | 16 | 16 | 1 | 7 | 2 | 4 | 0 |
 | `src/DDC0.c` | 14 | 14 | 4 | 7 | 0 | 4 | 0 |
-| `src/fragments/battle_engine/battle_engine_2F1D60.c` | 17 | 17 | 0 | 2 | 3 | 7 | 0 |
+| `src/fragments/battle_engine/battle_engine_thumbnail.c` | 17 | 17 | 0 | 2 | 3 | 7 | 0 |
 | `src/fragments/battle_engine/battle_engine_32A640.c` | 14 | 14 | 5 | 0 | 0 | 10 | 0 |
 | `src/fragments/battle_engine/battle_engine_3591E0.c` | 9 | 9 | 3 | 8 | 4 | 5 | 0 |
 | `src/fragments/options/options.c` | 14 | 14 | 0 | 3 | 3 | 9 | 0 |
