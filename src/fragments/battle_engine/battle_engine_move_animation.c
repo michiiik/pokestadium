@@ -2432,7 +2432,7 @@ void BattleScene_InitializeParticipantSecondaryModels(ActivePokemon* active_poke
     model_id = Battle_GetDisplayModelId(active_pokemon, 0);
 
     for (i = 0; i < 2; i++) {
-        secondary_model = &active_pokemon->unk_168[i];
+        secondary_model = &active_pokemon->afterimages[i];
 
         ModelRenderer_AttachDisplayObject(secondary_model);
 
@@ -2493,8 +2493,8 @@ void BattleScene_InitializePresentation(UNUSED BattleSessionTeams* session_teams
     BattleScene_InitializeParticipantModel(sActivePokemon[1]);
     BattleScene_InitializeParticipantOwnerModel(sActivePokemon[0]);
     BattleScene_InitializeParticipantOwnerModel(sActivePokemon[1]);
-    BattleScene_InitializeParticipantSecondaryModels(sActivePokemon[0], &sActivePokemon[0]->unk_168);
-    BattleScene_InitializeParticipantSecondaryModels(sActivePokemon[1], &sActivePokemon[1]->unk_168);
+    BattleScene_InitializeParticipantSecondaryModels(sActivePokemon[0], &sActivePokemon[0]->afterimages);
+    BattleScene_InitializeParticipantSecondaryModels(sActivePokemon[1], &sActivePokemon[1]->afterimages);
     BattleScene_InitializeParticipantAuxiliaryModel(sActivePokemon[0]);
     BattleScene_InitializeParticipantAuxiliaryModel(sActivePokemon[1]);
 

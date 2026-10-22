@@ -23,7 +23,7 @@ typedef struct unk_D_84390010_654_0AC {
 typedef struct unk_D_84390010_168 {
     /* 0x000 */ DisplayObject displayObject;
     /* 0x168 */ char unk168[0x1];
-    /* 0x169 */ u8 unk_169;
+    /* 0x169 */ u8 minimized;
     /* 0x16A */ s16 unk_16A;
     /* 0x16C */ s16 unk_16C;
     /* 0x16E */ char unk16E[0x2];
@@ -117,7 +117,7 @@ typedef struct SwayState {
 
 typedef struct ActivePokemon {
     /* 0x000 */ DisplayObject displayObject;
-    /* 0x168 */ unk_D_84390010_168 unk_168[2];
+    /* 0x168 */ unk_D_84390010_168 afterimages[2];
     /* 0x448 */ SwayState modelTransform;
     /* 0x498 */ f32 y;
     /* 0x49C */ f32 rotationZ;

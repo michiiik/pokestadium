@@ -522,7 +522,7 @@ void BattleScene_ReinitParticipantSecondaryModels(ActivePokemon* arg0, s16 arg1)
     sp58 = Battle_GetMoveEffectListEntry(arg0, 0);
 
     for (i = 0; i < 2; i++) {
-        var_s0 = &arg0->unk_168[i];
+        var_s0 = &arg0->afterimages[i];
 
         ModelRenderer_ClearDisplayObject(&var_s0->displayObject);
         if (arg0 == sActivePokemon[0]) {

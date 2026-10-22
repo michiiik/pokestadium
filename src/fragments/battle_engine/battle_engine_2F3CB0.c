@@ -132,48 +132,48 @@ void BattleScene_HideParticipantSecondaryModels(ActivePokemon* active_pokemon) {
     s32 i;
 
     for (i = 0; i < 2; i++) {
-        Vec3f_SetComponentsDuplicate(&active_pokemon->unk_168[i].displayObject.scale, 1.0f, 1.0f, 1.0f);
-        active_pokemon->unk_168[i].displayObject.node.flags &= ~1;
-        active_pokemon->unk_168[i].unk_169 = 0;
+        Vec3f_SetComponentsDuplicate(&active_pokemon->afterimages[i].displayObject.scale, 1.0f, 1.0f, 1.0f);
+        active_pokemon->afterimages[i].displayObject.node.flags &= ~1;
+        active_pokemon->afterimages[i].minimized = 0;
     }
 }
 
-void BattleScene_ShowSecondaryModelsAtMainTransform(ActivePokemon* arg0) {
+void BattleScene_ShowSecondaryModelsAtMainTransform(ActivePokemon* pokemon) {
     s32 i;
     s16 sp64[] = { 0x0, 0xE38, 0xF1C8 }; // D_84384608
 
     for (i = 0; i < 2; i++) {
-        arg0->unk_168[i].unk_16C = 0;
-        arg0->unk_168[i].unk_16A = sp64[i];
-        arg0->unk_168[i].displayObject.lodFraction = 0;
-        arg0->unk_168[i].displayObject.node.flags |= 1;
-        BattleAnim_Vec3fCopy(&arg0->unk_168[i].displayObject.position, &arg0->displayObject.position);
-        BattleAnim_Vec3sCopy(&arg0->unk_168[i].displayObject.rotation, &arg0->displayObject.rotation);
-        BattleAnim_Vec3fCopy(&arg0->unk_168[i].displayObject.scale, &arg0->displayObject.scale);
+        pokemon->afterimages[i].unk_16C = 0;
+        pokemon->afterimages[i].unk_16A = sp64[i];
+        pokemon->afterimages[i].displayObject.lodFraction = 0;
+        pokemon->afterimages[i].displayObject.node.flags |= 1;
+        BattleAnim_Vec3fCopy(&pokemon->afterimages[i].displayObject.position, &pokemon->displayObject.position);
+        BattleAnim_Vec3sCopy(&pokemon->afterimages[i].displayObject.rotation, &pokemon->displayObject.rotation);
+        BattleAnim_Vec3fCopy(&pokemon->afterimages[i].displayObject.scale, &pokemon->displayObject.scale);
     }
 }
 
-void BattleScene_UpdateSecondaryModelOrbit(ActivePokemon* arg0) {
+void BattleScene_UpdateSecondaryModelOrbit(ActivePokemon* pokemon) {
     s32 i;
     f32 tmp;
     Vec3f sp5C = { 0.0f, 0.0f, 0.0f };         // D_84384610
     f32 sp4C[] = { 0.3f, -0.4f, -0.2f, 0.4f }; // D_8438461C
 
     for (i = 0; i < 2; i++) {
-        arg0->unk_168[i].displayObject.lodFraction = Math_StepToS32(arg0->unk_168[i].displayObject.lodFraction, 0x3C, 5, 5);
-        arg0->unk_168[i].unk_16C = Math_StepToS32(arg0->unk_168[i].unk_16C, 0x38E, 0x64, 0x64);
-        arg0->unk_168[i].unk_16C = Math_StepToS32(arg0->unk_168[i].unk_16C, 0x38E, 0x64, 0x64);
-        arg0->unk_168[i].unk_16A += arg0->unk_168[i].unk_16C;
+        pokemon->afterimages[i].displayObject.lodFraction = Math_StepToS32(pokemon->afterimages[i].displayObject.lodFraction, 0x3C, 5, 5);
+        pokemon->afterimages[i].unk_16C = Math_StepToS32(pokemon->afterimages[i].unk_16C, 0x38E, 0x64, 0x64);
+        pokemon->afterimages[i].unk_16C = Math_StepToS32(pokemon->afterimages[i].unk_16C, 0x38E, 0x64, 0x64);
+        pokemon->afterimages[i].unk_16A += pokemon->afterimages[i].unk_16C;
 
-        tmp = SINS(arg0->unk_168[i].unk_16A) * (BattleScene_GetParticipantModelRadiusScaled(arg0) * sp4C[i]);
-        BattleAnim_Vec3fSetPolarXZ(&sp5C, tmp, arg0->displayObject.rotation.y);
+        tmp = SINS(pokemon->afterimages[i].unk_16A) * (BattleScene_GetParticipantModelRadiusScaled(pokemon) * sp4C[i]);
+        BattleAnim_Vec3fSetPolarXZ(&sp5C, tmp, pokemon->displayObject.rotation.y);
 
-        arg0->unk_168[i].displayObject.position.x = arg0->displayObject.position.x + sp5C.x;
-        arg0->unk_168[i].displayObject.position.y = arg0->displayObject.position.y + sp5C.y;
-        arg0->unk_168[i].displayObject.position.z = arg0->displayObject.position.z + sp5C.z;
+        pokemon->afterimages[i].displayObject.position.x = pokemon->displayObject.position.x + sp5C.x;
+        pokemon->afterimages[i].displayObject.position.y = pokemon->displayObject.position.y + sp5C.y;
+        pokemon->afterimages[i].displayObject.position.z = pokemon->displayObject.position.z + sp5C.z;
 
-        ModelAnim_SetFrame(&arg0->unk_168[i].displayObject, arg0->displayObject.transformAnim.frameFixed >> 0x10);
-        ModelAnim_SetAnimation(&arg0->unk_168[i].displayObject, arg0->displayObject.transformAnim.animationId);
+        ModelAnim_SetFrame(&pokemon->afterimages[i].displayObject, pokemon->displayObject.transformAnim.frameFixed >> 0x10);
+        ModelAnim_SetAnimation(&pokemon->afterimages[i].displayObject, pokemon->displayObject.transformAnim.animationId);
     }
 }
 
@@ -181,33 +181,33 @@ void BattleScene_ShowSecondaryModelsAtMainPose(ActivePokemon* active_pokemon) {
     s32 i;
 
     for (i = 0; i < 2; i++) {
-        active_pokemon->unk_168[i].unk_169 = 0;
-        active_pokemon->unk_168[i].displayObject.lodFraction = 0x3C;
-        active_pokemon->unk_168[i].displayObject.node.flags |= 1;
-        Vec3f_SetComponentsDuplicate(&active_pokemon->unk_168[i].displayObject.scale, 1.0f, 1.0f, 1.0f);
-        BattleAnim_Vec3fCopy(&active_pokemon->unk_168[i].displayObject.position, &active_pokemon->displayObject.position);
-        BattleAnim_Vec3sCopy(&active_pokemon->unk_168[i].displayObject.rotation, &active_pokemon->displayObject.rotation);
+        active_pokemon->afterimages[i].minimized = 0;
+        active_pokemon->afterimages[i].displayObject.lodFraction = 0x3C;
+        active_pokemon->afterimages[i].displayObject.node.flags |= 1;
+        Vec3f_SetComponentsDuplicate(&active_pokemon->afterimages[i].displayObject.scale, 1.0f, 1.0f, 1.0f);
+        BattleAnim_Vec3fCopy(&active_pokemon->afterimages[i].displayObject.position, &active_pokemon->displayObject.position);
+        BattleAnim_Vec3sCopy(&active_pokemon->afterimages[i].displayObject.rotation, &active_pokemon->displayObject.rotation);
     }
 }
 
 s32 BattleScene_ShrinkSecondaryModelsToScale(ActivePokemon* active_pokemon) {
     s32 i;
-    f32 temp_fv0_2;
-    f32 sp5C[] = { 0.007f, 0.005f, 0.039f }; // D_8438462C
+    f32 minimize_scale;
+    f32 deltas[] = { 0.007f, 0.005f, 0.039f }; // D_8438462C
 
     for (i = 0; i < 2; i++) {
-        BattleAnim_Vec3fCopy(&active_pokemon->unk_168[i].displayObject.position, &active_pokemon->displayObject.position);
+        BattleAnim_Vec3fCopy(&active_pokemon->afterimages[i].displayObject.position, &active_pokemon->displayObject.position);
 
-        temp_fv0_2 = Math_StepToF(active_pokemon->unk_168[i].displayObject.scale.x, 0.8f, sp5C[i], sp5C[i]);
-        active_pokemon->unk_168[i].displayObject.scale.x = temp_fv0_2;
-        active_pokemon->unk_168[i].displayObject.scale.y = temp_fv0_2;
-        active_pokemon->unk_168[i].displayObject.scale.z = temp_fv0_2;
+        minimize_scale = Math_StepToF(active_pokemon->afterimages[i].displayObject.scale.x, 0.8f, deltas[i], deltas[i]);
+        active_pokemon->afterimages[i].displayObject.scale.x = minimize_scale;
+        active_pokemon->afterimages[i].displayObject.scale.y = minimize_scale;
+        active_pokemon->afterimages[i].displayObject.scale.z = minimize_scale;
 
-        ModelAnim_SetFrame(&active_pokemon->unk_168[i].displayObject, active_pokemon->displayObject.transformAnim.frameFixed >> 0x10);
-        ModelAnim_SetAnimation(&active_pokemon->unk_168[i].displayObject, active_pokemon->displayObject.transformAnim.animationId);
+        ModelAnim_SetFrame(&active_pokemon->afterimages[i].displayObject, active_pokemon->displayObject.transformAnim.frameFixed >> 0x10);
+        ModelAnim_SetAnimation(&active_pokemon->afterimages[i].displayObject, active_pokemon->displayObject.transformAnim.animationId);
 
-        if (active_pokemon->unk_168[i].displayObject.scale.y < 0.8) {
-            active_pokemon->unk_168[i].unk_169 = 1;
+        if (active_pokemon->afterimages[i].displayObject.scale.y < 0.8) {
+            active_pokemon->afterimages[i].minimized = 1;
         }
     }
 
@@ -218,16 +218,16 @@ void BattleScene_ShowSecondaryModelsStaggeredFrame(ActivePokemon* active_pokemon
     s32 i;
 
     for (i = 0; i < 2; i++) {
-        active_pokemon->unk_168[i].unk_169 = 0;
-        active_pokemon->unk_168[i].displayObject.lodFraction = 0x41 - i * 4;
-        active_pokemon->unk_168[i].displayObject.node.flags |= 1;
+        active_pokemon->afterimages[i].minimized = 0;
+        active_pokemon->afterimages[i].displayObject.lodFraction = 0x41 - i * 4;
+        active_pokemon->afterimages[i].displayObject.node.flags |= 1;
 
-        ModelAnim_SetFrame(&active_pokemon->unk_168[i].displayObject, active_pokemon->displayObject.transformAnim.frameFixed >> 0x10);
-        ModelAnim_SetAnimation(&active_pokemon->unk_168[i].displayObject, active_pokemon->displayObject.transformAnim.animationId);
-        Vec3f_SetComponentsDuplicate(&active_pokemon->unk_168[i].displayObject.scale, 1.0f, 1.0f, 1.0f);
-        BattleAnim_Vec3fCopy(&active_pokemon->unk_168[i].displayObject.position, &active_pokemon->displayObject.position);
-        BattleAnim_Vec3sCopy(&active_pokemon->unk_168[i].displayObject.rotation, &active_pokemon->displayObject.rotation);
-        BattleAnim_Vec3fCopy(&active_pokemon->unk_168[i].displayObject.scale, &active_pokemon->displayObject.scale);
+        ModelAnim_SetFrame(&active_pokemon->afterimages[i].displayObject, active_pokemon->displayObject.transformAnim.frameFixed >> 0x10);
+        ModelAnim_SetAnimation(&active_pokemon->afterimages[i].displayObject, active_pokemon->displayObject.transformAnim.animationId);
+        Vec3f_SetComponentsDuplicate(&active_pokemon->afterimages[i].displayObject.scale, 1.0f, 1.0f, 1.0f);
+        BattleAnim_Vec3fCopy(&active_pokemon->afterimages[i].displayObject.position, &active_pokemon->displayObject.position);
+        BattleAnim_Vec3sCopy(&active_pokemon->afterimages[i].displayObject.rotation, &active_pokemon->displayObject.rotation);
+        BattleAnim_Vec3fCopy(&active_pokemon->afterimages[i].displayObject.scale, &active_pokemon->displayObject.scale);
     }
 }
 
@@ -241,11 +241,11 @@ void BattleScene_UpdateSecondaryModelTrailPosition(ActivePokemon* arg0, s16 arg1
     f32 sp70[3] = { 0.98f, 0.96f, 0.95f }; // D_84384644
 
     for (i = 0; i < 2; i++) {
-        ModelAnim_SetFrame(&arg0->unk_168[i].displayObject, arg0->displayObject.transformAnim.frameFixed >> 0x10);
-        ModelAnim_SetAnimation(&arg0->unk_168[i].displayObject, arg0->displayObject.transformAnim.animationId);
-        Vec3f_CalculateDistanceAngles(&arg0->displayObject.position, &arg0->unk_168[i].displayObject.position, &sp90, &sp8E, &sp8C);
-        Camera_ComputeEyeFromAngles(&arg0->displayObject.position, &arg0->unk_168[i].displayObject.position, sp7C[i] * sp90, sp8E, sp8C);
-        BattleAnim_StepToS16(&arg0->unk_168[i].displayObject.rotation.y, arg0->displayObject.rotation.y, sp70[i] * arg1);
+        ModelAnim_SetFrame(&arg0->afterimages[i].displayObject, arg0->displayObject.transformAnim.frameFixed >> 0x10);
+        ModelAnim_SetAnimation(&arg0->afterimages[i].displayObject, arg0->displayObject.transformAnim.animationId);
+        Vec3f_CalculateDistanceAngles(&arg0->displayObject.position, &arg0->afterimages[i].displayObject.position, &sp90, &sp8E, &sp8C);
+        Camera_ComputeEyeFromAngles(&arg0->displayObject.position, &arg0->afterimages[i].displayObject.position, sp7C[i] * sp90, sp8E, sp8C);
+        BattleAnim_StepToS16(&arg0->afterimages[i].displayObject.rotation.y, arg0->displayObject.rotation.y, sp70[i] * arg1);
     }
 }
 
