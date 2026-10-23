@@ -1205,7 +1205,7 @@ void BattleThumbnail_TickOwnerSlideAnimation(ActivePokemon* active_pokemon);
 void BattleThumbnail_TickBothOwnerSlideAnimations(ActivePokemon* side1_pokemon, ActivePokemon* side2_pokemon);
 s32 BattleThumbnail_DispatchOwnerCameraLifecycle(s32 state, CameraNode* side1_camera_node, CameraNode* side2_camera_node);
 
-//@src/fragments/battle_engine/battle_engine_2F23A0.c
+//@src/fragments/battle_engine/battle_engine_move_model_transforms.c
 s32 BattleScene_ByteArrayContains(u8 lookup, u8* array, s32 array_length);
 BattleMon* BattleScene_GetParticipantSessionMon(ActivePokemon* active_pokemon);
 s32 BattleScene_IsPartnerPikachu(ActivePokemon* active_pokemon);

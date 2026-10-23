@@ -118,7 +118,7 @@ Generic fields are named unk/pad/field/filler with an optional hex suffix; neste
 | `src/fragments/battle_engine/battle_engine_35DF70.c` | 38 | 38 | 0 | 24 | 12 | 1 | 0 |
 | `src/fragments/gallery_rental_viewer/gallery_rental_viewer_2AE1F0.c` | 25 | 25 | 0 | 32 | 11 | 7 | 0 |
 | `src/graphics_textures.c` | 46 | 46 | 1 | 5 | 9 | 14 | 0 |
-| `src/fragments/battle_engine/battle_engine_2F23A0.c` | 59 | 59 | 0 | 0 | 4 | 11 | 0 |
+| `src/fragments/battle_engine/battle_engine_move_model_transforms.c` | 59 | 59 | 0 | 0 | 4 | 11 | 0 |
 | `src/fragments/battle_engine/battle_engine_31AA30.c` | 31 | 31 | 0 | 11 | 0 | 31 | 0 |
 | `src/fragments/gallery_camera/gallery_camera_150AC0.c` | 20 | 20 | 3 | 32 | 5 | 13 | 0 |
 | `src/display_object_textures.c` | 31 | 31 | 1 | 1 | 11 | 28 | 0 |
