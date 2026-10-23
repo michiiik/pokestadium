@@ -213,7 +213,7 @@ void BattleScene_UpdateSecondaryModelTrailPosition(ActivePokemon* pokemon, s16 n
 }
 
 void BattleScene_ResetParticipantModelFlags(ActivePokemon* active_pokemon) {
-    BattleScene_SetParticipantModelFlags(active_pokemon, 0, 0);
+    BattleScene_SetParticipantModelTransform(active_pokemon, 0, 0);
 }
 
 void BattleAnim_PokeBallThrowStart(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon) {
@@ -263,7 +263,7 @@ void BattleAnim_PokeBallThrow(ActivePokemon* owner, ActivePokemon* animated_poke
 }
 
 void BattleAnim_PokeBallLandStart(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon) {
-    Vec3f_SetComponentsDuplicate(&animated_pokemon->pokeBall.position, animated_pokemon->cameraOffsetScaleFactor * -150.0f, 100.0f, 0.0f);
+    Vec3f_SetComponentsDuplicate(&animated_pokemon->pokeBall.position, animated_pokemon->facingDirection * -150.0f, 100.0f, 0.0f);
     animated_pokemon->modelTransformTimer++;
     BattleAnim_InitSwayOffset(animated_pokemon, 0.0f, 16380);
     animated_pokemon->pokeBall.node.flags |= 1;
@@ -355,7 +355,7 @@ void BattleAnim_WaterfallStart(UNUSED ActivePokemon* owner, ActivePokemon* anima
 // waterfall continue
 void BattleAnim_WaterfallContinue(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     BattleAnim_UpdateTransform(owner, animated_pokemon, 2.0f, 0.002f, NINETY_DEGREES);
-    if ((owner->displayObject.position.y - BattleScene_GetParticipantModelHeight(animated_pokemon)) >= 90.0f) {
+    if ((owner->displayObject.position.y - BattleScene_GetParticipantModelRestingHeight(animated_pokemon)) >= 90.0f) {
         animated_pokemon->modelTransformTimer++;
         animated_pokemon->modelTransform.rotation.y = 0.0f;
     }
@@ -408,7 +408,7 @@ void BattleAnim_SubmissionStart(UNUSED ActivePokemon* owner, ActivePokemon* anim
 void BattleAnim_SubmissionContinue(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     animated_pokemon->oscillationPhase = Math_StepToS32(animated_pokemon->oscillationPhase, 13104, 364, 364);
     
-    if (BattleAnim_ApproachAngleAndCheckThreshold(owner, animated_pokemon->oscillationPhase, animated_pokemon->cameraOffsetScaleFactor << 14) != 0) {
+    if (BattleAnim_ApproachAngleAndCheckThreshold(owner, animated_pokemon->oscillationPhase, animated_pokemon->facingDirection << 14) != 0) {
         animated_pokemon->animationState += 1;
     }
     
@@ -434,11 +434,11 @@ void BattleAnim_SubmissionEnd(ActivePokemon* owner, ActivePokemon* animated_poke
     if (new_phase < 3640) {
         new_phase = 3640;
     }
-    done = BattleAnim_ApproachAngleAndCheckThreshold(owner, new_phase, animated_pokemon->cameraOffsetScaleFactor << 14);
+    done = BattleAnim_ApproachAngleAndCheckThreshold(owner, new_phase, animated_pokemon->facingDirection << 14);
     BattleScene_UpdateSecondaryModelTrailPosition(animated_pokemon, new_phase);
 
     if (done != 0) {
-        owner->displayObject.rotation.y = animated_pokemon->cameraOffsetScaleFactor << 14;
+        owner->displayObject.rotation.y = animated_pokemon->facingDirection << 14;
         BattleScene_ResetParticipantModelFlags(animated_pokemon);
         BattleScene_HideParticipantSecondaryModels(animated_pokemon);
     }
@@ -473,7 +473,7 @@ void BattleAnim_DigStart(UNUSED ActivePokemon* owner, ActivePokemon* animated_po
 void BattleAnim_DigContinue(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     animated_pokemon->oscillationPhase = Math_StepToS32(animated_pokemon->oscillationPhase, 16380, 364, 364);
 
-    if (BattleAnim_ApproachAngleAndCheckThreshold(owner, animated_pokemon->oscillationPhase, animated_pokemon->cameraOffsetScaleFactor << 14) != 0) {
+    if (BattleAnim_ApproachAngleAndCheckThreshold(owner, animated_pokemon->oscillationPhase, animated_pokemon->facingDirection << 14) != 0) {
         animated_pokemon->animationState += 1;
     }
 
@@ -491,7 +491,7 @@ void BattleAnim_DigEnd(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     // Note: Moltres cannot naturally learn Dig
     u8 modified_dig_pokemon[] = { ONIX, MOLTRES }; // D_84384650
 
-    BattleAnim_ApproachAngleAndCheckThreshold(owner, animated_pokemon->oscillationPhase, animated_pokemon->cameraOffsetScaleFactor << 14);
+    BattleAnim_ApproachAngleAndCheckThreshold(owner, animated_pokemon->oscillationPhase, animated_pokemon->facingDirection << 14);
 
     if (BattleScene_ByteArrayContains(animated_pokemon->displayObject.objectType, modified_dig_pokemon, sizeof(modified_dig_pokemon)) != 0) {
         hole_y = 10.3f;
@@ -507,7 +507,7 @@ void BattleAnim_DigEnd(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     BattleAnim_ApproachF(&owner->displayObject.position.y, -(BattleAnim_GetOwnerModelHeight(animated_pokemon) * hole_y), digging_speed);
 
     if (owner->displayObject.position.y <= -(BattleAnim_GetOwnerModelHeight(animated_pokemon) * disappear_y)) {
-        Vec3s_SetComponents(&owner->displayObject.rotation, 0, animated_pokemon->cameraOffsetScaleFactor << 14, 0);
+        Vec3s_SetComponents(&owner->displayObject.rotation, 0, animated_pokemon->facingDirection << 14, 0);
         BattleScene_ResetParticipantModelFlags(animated_pokemon);
         BattleScene_HideParticipantSecondaryModels(animated_pokemon);
     }
@@ -538,7 +538,7 @@ void BattleAnim_AgilityStart(ActivePokemon* owner, ActivePokemon* animated_pokem
     animated_pokemon->animationState = 0;
     animated_pokemon->oscillationAmplitude = 0.0f;
     BattleScene_PositionParticipantModel(animated_pokemon);
-    Vec3s_SetComponents(&owner->displayObject.rotation, 0, animated_pokemon->cameraOffsetScaleFactor << 0xE, 0);
+    Vec3s_SetComponents(&owner->displayObject.rotation, 0, animated_pokemon->facingDirection << 0xE, 0);
     BattleScene_ShowSecondaryModelsStaggeredFrame(animated_pokemon);
     animated_pokemon->modelTransformTimer++;
 }
@@ -576,7 +576,7 @@ void BattleAnim_AgilityEnd(ActivePokemon* owner, ActivePokemon* animated_pokemon
 
     if (animated_pokemon->oscillationAmplitude <= 0.5f) {
         BattleScene_PositionParticipantModel(animated_pokemon);
-        Vec3s_SetComponents(&owner->displayObject.rotation, 0, animated_pokemon->cameraOffsetScaleFactor << 0xE, 0);
+        Vec3s_SetComponents(&owner->displayObject.rotation, 0, animated_pokemon->facingDirection << 0xE, 0);
         BattleScene_ResetParticipantModelFlags(animated_pokemon);
         BattleScene_HideParticipantSecondaryModels(animated_pokemon);
     }
@@ -605,7 +605,7 @@ void BattleAnim_DoubleTeamStart(ActivePokemon* owner, ActivePokemon* animated_po
     BattleScene_ShowSecondaryModelsAtMainTransform(animated_pokemon);
     animated_pokemon->doubleTeamTimer = 0;
     BattleScene_PositionParticipantModel(animated_pokemon);
-    Vec3s_SetComponents(&owner->displayObject.rotation, 0, animated_pokemon->cameraOffsetScaleFactor << 14, 0);
+    Vec3s_SetComponents(&owner->displayObject.rotation, 0, animated_pokemon->facingDirection << 14, 0);
     animated_pokemon->modelTransformTimer++;
 }
 
@@ -638,7 +638,7 @@ void BattleAnim_ResetOwnerFacingAndExitStatusIdle(ActivePokemon* arg0) {
     CameraNode* sp18 = sBattleScene.scene->camera;
 
     BattleScene_PositionParticipantModel(arg0);
-    Vec3s_SetComponents(&arg0->displayObject.rotation, 0, arg0->cameraOffsetScaleFactor << 0xE, 0);
+    Vec3s_SetComponents(&arg0->displayObject.rotation, 0, arg0->facingDirection << 0xE, 0);
     Vec3f_SetComponentsDuplicate(&sp18->view.upDirection, 0.0f, 1.0f, 0.0f);
     BattleScene_ResetParticipantModelFlags(arg0);
 }
@@ -650,7 +650,7 @@ void BattleAnim_SeismicTossStart(ActivePokemon* owner, ActivePokemon* animated_p
     animated_pokemon->animationState = 0;
     animated_pokemon->oscillationAmplitude = 0.0f;
     BattleScene_PositionParticipantModel(animated_pokemon);
-    Vec3s_SetComponents(&owner->displayObject.rotation, 0, animated_pokemon->cameraOffsetScaleFactor << 0xE, 0);
+    Vec3s_SetComponents(&owner->displayObject.rotation, 0, animated_pokemon->facingDirection << 0xE, 0);
     animated_pokemon->modelTransformTimer++;
 }
 
@@ -975,11 +975,11 @@ void BattleAnim_SurfContinue(ActivePokemon* owner, ActivePokemon* animated_pokem
 
     animated_pokemon->animationState++;
     water_height = TerrainGrid_SampleHeightAndSlope(owner->displayObject.position.x, owner->displayObject.position.z, &rotation_x);
-    owner->displayObject.position.y = BattleScene_GetParticipantModelHeight(animated_pokemon) + water_height;
+    owner->displayObject.position.y = BattleScene_GetParticipantModelRestingHeight(animated_pokemon) + water_height;
     owner->displayObject.rotation.x = (s16)rotation_x * 182;
 
     if (animated_pokemon->animationState == 300) {
-        owner->displayObject.position.y = BattleScene_GetParticipantModelHeight(animated_pokemon);
+        owner->displayObject.position.y = BattleScene_GetParticipantModelRestingHeight(animated_pokemon);
         owner->displayObject.rotation.x = 0;
         BattleScene_ResetParticipantModelFlags(animated_pokemon);
     }
@@ -1008,7 +1008,7 @@ void BattleAnim_PlayTransformInducingAnimation(s32 side_index) {
     ActivePokemon* owner = sActivePokemon[side_index];
     ActivePokemon* animated_pokemon = sActivePokemon[side_index];
 
-    switch (sActivePokemon[side_index]->animationFlags1) {
+    switch (sActivePokemon[side_index]->modelTransformId) {
         case 0:
             BattleAnim_TransformNop(owner, animated_pokemon);
             break;
@@ -1142,9 +1142,9 @@ void BattleAnim_SecondaryStatusCaseBSub0(UNUSED ActivePokemon* arg0, ActivePokem
 */
 void BattleAnim_SecondaryStatusCaseBSub1(ActivePokemon* arg0, ActivePokemon* arg1) {
     BattleAnim_UpdateSecondarySwayPhysics(arg0, arg1, 0, 0, 0x2E36);
-    if (arg1->displayObject.position.y < BattleScene_GetParticipantModelHeight(arg1)) {
+    if (arg1->displayObject.position.y < BattleScene_GetParticipantModelRestingHeight(arg1)) {
         arg1->unk_4D8.y = 0.0f;
-        arg1->displayObject.position.y = BattleScene_GetParticipantModelHeight(arg1);
+        arg1->displayObject.position.y = BattleScene_GetParticipantModelRestingHeight(arg1);
         BattleAnim_ClearOwnerSecondaryStatusFlags(arg1);
     }
 }

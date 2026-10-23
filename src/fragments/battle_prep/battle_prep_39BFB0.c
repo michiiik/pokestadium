@@ -521,7 +521,7 @@ void BattlePrepTeamIcons_DrawHpBarsSingle(unk_D_84B25A58* arg0, s32 arg1) {
 
         for (j = 0; j < temp_s5->numberOfPokemonBrought; j++) {
             temp_lo = temp_s5->pokemonPicked[j].unk_26 * arg1;
-            var_s0 = temp_s5->pokemonPicked[j].unk_02 * 0x64;
+            var_s0 = temp_s5->pokemonPicked[j].hp * 0x64;
             if (var_s0 < temp_lo) {
                 var_s0 = temp_lo;
             }
@@ -546,7 +546,7 @@ void BattlePrepTeamIcons_DrawHpBarsDouble(unk_D_84B25A58* arg0, s32 arg1) {
             if (temp_s5 != NULL) {
                 for (x = 0; x < temp_s5->numberOfPokemonBrought; x++) {
                     temp_lo = temp_s5->pokemonPicked[x].unk_26 * arg1;
-                    var_s0 = temp_s5->pokemonPicked[x].unk_02 * 0x64;
+                    var_s0 = temp_s5->pokemonPicked[x].hp * 0x64;
                     if (var_s0 < temp_lo) {
                         var_s0 = temp_lo;
                     }
@@ -856,11 +856,11 @@ void BattlePrepTeamIcons_FinalRevealDouble(unk_D_84B25A58* arg0, s16 arg1) {
     BattleMon* temp_t1 = &gSessionContext.battleSides[1].teamMember[0]->pokemonPicked[0];
     BattleMon* var_t0 = NULL;
 
-    if (gSessionContext.battleSides[0].unk_01 == 2) {
+    if (gSessionContext.battleSides[0].tagTeamSize == 2) {
         var_a3 = &gSessionContext.battleSides[0].teamMember[1]->pokemonPicked[0];
     }
 
-    if (gSessionContext.battleSides[1].unk_01 == 2) {
+    if (gSessionContext.battleSides[1].tagTeamSize == 2) {
         var_t0 = &gSessionContext.battleSides[1].teamMember[1]->pokemonPicked[0];
     }
 
@@ -1180,7 +1180,7 @@ void BattlePrepTeamIcons_Init(unk_D_84B25A58* arg0) {
     }
 
     if (gSessionContext.ruleCategory == 0) {
-        if ((gSessionContext.battleSides[0].unk_01 == 2) || (gSessionContext.battleSides[1].unk_01 == 2)) {
+        if ((gSessionContext.battleSides[0].tagTeamSize == 2) || (gSessionContext.battleSides[1].tagTeamSize == 2)) {
             arg0->unk_02 = 1;
         } else {
             if (gSessionContext.battleSides[0].teamMember[0]->numberOfPokemonBrought >= 4) {

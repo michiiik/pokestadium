@@ -14,10 +14,10 @@ static s16 D_80075684 = 0;
 
 void Team_ClearTrainerSlot(BattleSessionTeams* arg0) {
     arg0->uniqueStatusFlags = 0;
-    arg0->unk_01 = 0;
+    arg0->tagTeamSize = 0;
     arg0->displayModel = 0;
     arg0->unk_04 = 0;
-    arg0->unk_14 = 0;
+    arg0->loadedModel = 0;
     arg0->teamMember[0] = 0;
     arg0->teamMember[1] = 0;
     arg0->assetIsBusy = 0;
@@ -89,11 +89,11 @@ TeamRoster* Trainer_Create(s32 arg0, s16 arg1, char* arg2, char* arg3) {
     if (sp1C != NULL) {
         if (arg0 == -1) {
             sp1C->unk_000 = 3;
-            sp1C->unk_001 = 1;
+            sp1C->controllerPort = 1;
             sp1C->controller = &gControllers[0];
         } else {
             sp1C->unk_000 = 1;
-            sp1C->unk_001 = arg0;
+            sp1C->controllerPort = arg0;
             sp1C->controller = &gControllers[arg0];
         }
 
@@ -114,11 +114,11 @@ TeamRoster* Trainer_Create(s32 arg0, s16 arg1, char* arg2, char* arg3) {
 
 void Team_AddTrainer(s32 arg0, TeamRoster* arg1) {
     BattleSessionTeams* temp_v0 = &gSessionContext.battleSides[arg0];
-    u8 idx = temp_v0->unk_01;
+    u8 idx = temp_v0->tagTeamSize;
 
     if (idx < 2) {
         temp_v0->teamMember[idx] = arg1;
-        temp_v0->unk_01++;
+        temp_v0->tagTeamSize++;
     }
 }
 
@@ -170,7 +170,7 @@ BattleMon* Pokemon_CreateDefault(BattleMon* arg0, u8 arg1, s16 arg2) {
 
     Pokemon_RecalcStats(arg0);
 
-    arg0->unk_02 = arg0->unk_26;
+    arg0->hp = arg0->unk_26;
 
     Text_CopySpeciesName(arg0->unk_30, arg1);
     HAL_Strcpy(arg0->unk_3B, Text_GetPlayerLabel(0));
@@ -354,7 +354,7 @@ void Team_ScaleOpponentToLevel(s16 arg0) {
         var_s0->unk_24 = arg0;
         var_s0->unk_10 = Pokemon_ExpForLevel(var_s0->unk_00.unk_00, arg0);
         Pokemon_RecalcStats(var_s0);
-        var_s0->unk_02 = var_s0->unk_26;
+        var_s0->hp = var_s0->unk_26;
 
         *var_s1 = *var_s0;
     }

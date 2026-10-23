@@ -27,7 +27,7 @@ typedef struct unk_D_84390010_168 {
     /* 0x16A */ s16 unk_16A;
     /* 0x16C */ s16 unk_16C;
     /* 0x16E */ char unk16E[0x2];
-} unk_D_84390010_168; // size = 0x170
+} PokemonAfterimage; // size = 0x170
 
 typedef struct ActivePokemonState {
     /* 0x00 */ char unk00[0x4];
@@ -42,10 +42,10 @@ typedef struct ActivePokemonState {
     /* 0x20 */ char unk20[0x8];
     /* 0x28 */ u16 unk_28;
     /* 0x2A */ u8 unk_2A;
-    /* 0x2B */ u8 unk_2B;
-    /* 0x2C */ u8 unk_2C;
+    /* 0x2B */ u8 teamMemberIndex;
+    /* 0x2C */ u8 ownerTeamMemberIndex;
     /* 0x2D */ u8 unk_2D;
-    /* 0x2E */ u8 unk_2E;
+    /* 0x2E */ u8 alpha;
     /* 0x2F */ u8 unk_2F;
     /* 0x30 */ u16 unk_30;
     /* 0x32 */ char unk32[0x2];
@@ -64,7 +64,7 @@ typedef struct ActivePokemonState {
 typedef struct ThumbnailState {
     /* 0x000 */ DisplayObject displayObject;
     /* 0x168 */ CameraNode* camera;
-    /* 0x16C */ s32 unk_16C;
+    /* 0x16C */ s32 tagTeam;
     /* 0x170 */ s32 showing;
     /* 0x174 */ char unk174[0x4];
     /* 0x178 */ s32 side;
@@ -117,7 +117,7 @@ typedef struct SwayState {
 
 typedef struct ActivePokemon {
     /* 0x000 */ DisplayObject displayObject;
-    /* 0x168 */ unk_D_84390010_168 afterimages[2];
+    /* 0x168 */ PokemonAfterimage afterimages[2];
     /* 0x448 */ SwayState modelTransform;
     /* 0x498 */ f32 y;
     /* 0x49C */ f32 rotationZ;
@@ -126,8 +126,8 @@ typedef struct ActivePokemon {
     /* 0x4A6 */ s16 oscillationPhase;
     /* 0x4A8 */ s16 oscillationAngularVelocity;
     /* 0x4AC */ s32 doubleTeamTimer;
-    /* 0x4B0 */ s32 cameraOffsetScaleFactor;
-    /* 0x4B4 */ s32 animationFlags1;
+    /* 0x4B0 */ s32 facingDirection;
+    /* 0x4B4 */ s32 modelTransformId;
     /* 0x4B8 */ s32 modelTransformTimer;
     /* 0x4BC */ char unk4BC[0x4];
     /* 0x4C0 */ s32 animationState;
@@ -151,8 +151,8 @@ typedef struct ActivePokemon {
 typedef struct MovePresentationCue {
     /* 0x00 */ u8 id;
     /* 0x01 */ u8 unk_01;
-    /* 0x02 */ u8 unk_02;
-    /* 0x03 */ u8 unk_03;
+    /* 0x02 */ u8 defaultAnchor;
+    /* 0x03 */ u8 alternateAnchor;
     /* 0x04 */ u8 animationDuration;
     /* 0x05 */ u8 flags1;
     /* 0x06 */ u8 unk_06;
@@ -175,7 +175,7 @@ typedef struct unk_D_8438E7B0 {
     /* 0xA80 */ MovePresentationCue hitCue;
     /* 0xA90 */ char chargeCues[0x60];
     /* 0xAF0 */ MovePresentationCue sleepIdleCue;
-    /* 0xB00 */ MovePresentationCue unk_B00;
+    /* 0xB00 */ MovePresentationCue flyingIdleCue;
     /* 0xB10 */ MovePresentationCue unk_B10;
     /* 0xB20 */ MovePresentationCue hitReactionOverride;
     /* 0xB30 */ char unkB30[0x51];
@@ -299,11 +299,11 @@ typedef struct SpeciesModelTransform {
 } SpeciesModelTransform; // size = 0x20
 
 typedef struct unk_D_84390028 {
-    /* 0x00 */ f32 unk_00;
-    /* 0x04 */ f32 unk_04;
-    /* 0x08 */ f32 unk_08;
-    /* 0x0C */ f32 unk_0C;
-} unk_D_84390028; // size = 0x10
+    /* 0x00 */ f32 width;
+    /* 0x04 */ f32 height;
+    /* 0x08 */ f32 restingHeight;
+    /* 0x0C */ f32 cameraTargetOffsetY;
+} ModelDimensions; // size = 0x10
 
 typedef struct unk_D_84384608 {
     /* 0x00 */ s32 unk_00;
@@ -972,7 +972,7 @@ extern BattleMonRuntime* sBattleTarget;
 extern ActivePokemon* sActivePokemon[2];
 extern ActivePokemon* sSide1ActivePokemon;
 extern ActivePokemon* sSide2ActivePokemon;
-extern unk_D_84390028 gPokemonModelDimensions[2];
+extern ModelDimensions sPokemonModelDimensions[2];
 extern f32 D_843900A8[];
 extern char** sBattleMessagesTable;
 extern char** sPokemonNameTable;
@@ -1209,23 +1209,23 @@ s32 BattleThumbnail_DispatchOwnerCameraLifecycle(s32 state, CameraNode* side1_ca
 s32 BattleScene_ByteArrayContains(u8 lookup, u8* array, s32 array_length);
 BattleMon* BattleScene_GetParticipantSessionMon(ActivePokemon* active_pokemon);
 s32 BattleScene_IsPartnerPikachu(ActivePokemon* active_pokemon);
-f32 BattleScene_GetParticipantModelHeight(ActivePokemon* active_pokemon);
-f32 BattleScene_GetParticipantModelRadius(ActivePokemon* active_pokemon);
+f32 BattleScene_GetParticipantModelRestingHeight(ActivePokemon* active_pokemon);
 f32 BattleScene_GetParticipantModelWidth(ActivePokemon* active_pokemon);
-f32 BattleScene_GetParticipantEyeHeight(ActivePokemon* active_pokemon);
+f32 BattleScene_GetParticipantModelHeight(ActivePokemon* active_pokemon);
+f32 BattleScene_GetParticipantCameraTargetOffsetY(ActivePokemon* active_pokemon);
 void BattleScene_PositionParticipantModel(ActivePokemon* active_pokemon);
 f32 BattleScene_GetParticipantModelXOffset(ActivePokemon* active_pokemon);
 void BattleScene_SetParticipantModelScale(ActivePokemon* arg0, f32 arg1);
-s32 BattleScene_GetSelectedSideTeamSize(ActivePokemon* active_pokemon);
-s32 BattleScene_GetOpposingSelectedSideTeamSize(ActivePokemon* active_pokemon);
+s32 BattleScene_GetTeamMemberTeamSize(ActivePokemon* active_pokemon);
+s32 BattleScene_GetPartnerTeamSize(ActivePokemon* active_pokemon);
 s32 BattleScene_GetParticipantSideIndex(ActivePokemon* active_pokemon);
-u8 Battle_GetCameraShotFieldB(ActivePokemon* active_pokemon);
-u8 Battle_GetCameraShotFieldC(ActivePokemon* active_pokemon);
-s16 Battle_GetSideAnimTableFieldB(ActivePokemon* active_pokemon);
-s32 Battle_GetSideAnimTableFieldC(ActivePokemon* active_pokemon);
-f32 Battle_GetScaledHeightY(ActivePokemon* active_pokemon);
-f32 Battle_GetScaleRatio(ActivePokemon* active_pokemon);
-s16 BattleScene_GetActiveAnimRowId(ActivePokemon* active_pokemon);
+u8 BattleScene_GetMoveCueDefaultAnchor(ActivePokemon* active_pokemon);
+u8 BattleScene_GetMoveCueAlternateAnchor(ActivePokemon* active_pokemon);
+s16 BattleScene_GetHitCueDefaultAnchor(ActivePokemon* active_pokemon);
+s32 BattleScene_GetHitCueAlternateAnchor(ActivePokemon* active_pokemon);
+f32 BattleScene_GetParticipantModelBoundsHeight(ActivePokemon* active_pokemon);
+f32 BattleScene_GetParticipantUnscaledBoundsHeight(ActivePokemon* active_pokemon);
+s16 BattleScene_GetParticipantUsedMove(ActivePokemon* active_pokemon);
 void BattleScene_GetParticipantModelBoundsScaled(ActivePokemon* arg0, Vec3f* arg1);
 void BattleScene_GetParticipantModelRotation(ActivePokemon* arg0, Vec3s* arg1);
 u16 Battle_GetActiveMonHp(ActivePokemon* active_pokemon);
@@ -1235,36 +1235,36 @@ s32 BattleAnim_GetOwnerSpecies(ActivePokemon* active_pokemon);
 u8 BattleScene_IsParticipantModelVisible(ActivePokemon* active_pokemon);
 void BattleScene_GetParticipantModelPosition(ActivePokemon* arg0, Vec3f* arg1);
 void BattleAnim_GetOwnerDefaultAnchorPosition(ActivePokemon* arg0, Vec3f* arg1);
-void BattleScene_ComputeParticipantModelOffset(ActivePokemon* arg0, Vec3f* arg1);
-void BattleScene_GetParticipantAuxiliaryModelPosition(ActivePokemon* arg0, Vec3f* arg1);
+void BattleScene_GetParticipantRestingPosition(ActivePokemon* arg0, Vec3f* arg1);
+void BattleScene_GetParticipantPokeBallPosition(ActivePokemon* arg0, Vec3f* arg1);
 f32 BattleAnim_GetOwnerModelHeight(ActivePokemon* active_pokemon);
 f32 BattleScene_GetParticipantModelRadiusScaled(ActivePokemon* active_pokemon);
-ModelNodeView* Battle_GetMoveEffectListEntry(ActivePokemon* active_pokemon, s32 entry_index);
+ModelNodeView* Battle_GetLoadedModelNode(ActivePokemon* active_pokemon, s32 node_index);
 s32 Battle_GetDisplayModelId(ActivePokemon* active_pokemon, UNUSED s32 unused);
 char* Battle_GetActiveMoveName(ActivePokemon* active_pokemon);
 u8* Battle_GetActiveMonNickname(ActivePokemon* active_pokemon);
-void BattleScene_SetParticipantModelFlags(ActivePokemon* active_pokemon, s32 animation_flags1, s32 animation_flags2);
-void Battle_AdvanceSecondaryModelAnimIfFinished(ActivePokemon* active_pokemon, ActivePokemon* animated_pokemon);
+void BattleScene_SetParticipantModelTransform(ActivePokemon* active_pokemon, s32 transform_id, s32 transform_timer);
+void Battle_ReturnToIdleAnimIfFinished(ActivePokemon* active_pokemon, ActivePokemon* animated_pokemon);
 void Battle_ResetModelToIdleAnim(ActivePokemon* active_pokemon);
-void Battle_SetModelToStatusAnim(ActivePokemon* active_pokemon);
-void BattleScene_BindParticipantRosterForSide(ActivePokemon* active_pokemon, s32 team_member_index);
-void BattleScene_SetParticipantSelectedSide(ActivePokemon* active_pokemon, s32 team_member_index);
+void Battle_SetModelToHitAnim(ActivePokemon* active_pokemon);
+void BattleScene_BindParticipantTeamRoster(ActivePokemon* active_pokemon, s32 team_member_index);
+void BattleScene_SetParticipantTeamMember(ActivePokemon* active_pokemon, s32 team_member_index);
 void BattleScene_SetParticipantController(ActivePokemon* active_pokemon, Controller* controller);
-void BattleScene_RebindParticipantToSide(ActivePokemon* arg0, s32 arg1);
-s32 Battle_HasUsableSleepStatusTarget(ActivePokemon* active_pokemon);
-s32 Battle_HasUsableMajorStatusTarget(ActivePokemon* active_pokemon);
+void BattleScene_RebindParticipantTeamMember(ActivePokemon* arg0, s32 arg1);
+s32 Battle_FreezeClauseInEffect(ActivePokemon* active_pokemon);
+s32 Battle_SleepClauseInEffect(ActivePokemon* active_pokemon);
 s32 BattleScene_GetCombinedTeamSize(ActivePokemon* active_pokemon);
 u8 BattleScene_GetRosterTeamSize(TeamRoster* arg0);
 s32 BattleScene_GetParticipantDisplayPlayerNumber(ActivePokemon* active_pokemon);
 void BattleScene_ReinitParticipantBodyModel(ActivePokemon* arg0, ActivePokemon* arg1, s32 arg2, s32 arg3);
-void BattleScene_ReinitParticipantOwnerModel(ActivePokemon* arg0, ThumbnailState* arg1, s16 arg2);
-void BattleScene_ReinitParticipantSecondaryModels(ActivePokemon* arg0, s16 arg1);
+void BattleScene_ReinitParticipantThumbnailModel(ActivePokemon* arg0, ThumbnailState* arg1, s16 arg2);
+void BattleScene_ReinitParticipantAfterimages(ActivePokemon* arg0, s16 arg1);
 void Battle_ResetEventTrack(ActivePokemon* active_pokemon);
 void Battle_LoadOwnerModelForSpecies(ActivePokemon* active_pokemon);
 void Battle_LoadOwnerModelForSwitchIn(ActivePokemon* active_pokemon);
-void Battle_ResetOwnerModelToNeutralPlaceholder(ActivePokemon* active_pokemon);
-void Battle_ReloadNeutralPlaceholderModel(ActivePokemon* active_pokemon);
-void Battle_ReloadModelForActiveMove(ActivePokemon* active_pokemon);
+void Battle_ResetOwnerModelToSubstituteDoll(ActivePokemon* active_pokemon);
+void Battle_ReloadSubstituteDoll(ActivePokemon* active_pokemon);
+void Battle_ReloadDisplayModel(ActivePokemon* active_pokemon);
 
 
 //@src/fragments/battle_engine/battle_engine_2F3CB0.c

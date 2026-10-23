@@ -89,7 +89,7 @@ s32 LabPC_StatusToIconIndex(s32 arg0) {
 unk_D_88400100* LabPC_GetMonStatusIcon(BattleMon* arg0) {
     s32 var_v1;
 
-    if (arg0->unk_02 == 0) {
+    if (arg0->hp == 0) {
         var_v1 = 1;
     } else {
         var_v1 = LabPC_StatusToIconIndex(arg0->statusCondition);

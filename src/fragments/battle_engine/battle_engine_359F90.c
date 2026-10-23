@@ -195,7 +195,7 @@ void ShowDamageMessage(s32 arg0, s32 arg1) {
 
     temp_v1 = &sActivePokemon[arg0]->state;
     temp_a2_2 = &sActivePokemon[arg1]->state.runtime;
-    temp_a3 = sActivePokemon[arg0]->sessionTeams->teamMember[temp_v1->unk_2C];
+    temp_a3 = sActivePokemon[arg0]->sessionTeams->teamMember[temp_v1->ownerTeamMemberIndex];
 
     if (temp_a2_2->unk_0C == 0) {
         Text_SetStringToken(0x19, temp_a3->pokemonPicked[temp_v1->unk_18].unk_30);
@@ -722,15 +722,15 @@ void Battle_InitPokemonRuntimeState(ActivePokemon* arg0) {
 
     sp28 = &arg0->state;
     sp24 = &arg0->state.runtime;
-    sp34 = &arg0->sessionTeams->teamMember[sp28->unk_2C]->pokemonPicked[sp28->unk_18];
+    sp34 = &arg0->sessionTeams->teamMember[sp28->ownerTeamMemberIndex]->pokemonPicked[sp28->unk_18];
 
     sp24->unk_14 = sp28->rosterIndex;
     sp24->id = sp34->unk_00.unk_00;
-    sp24->unk_0C = sp34->unk_02;
+    sp24->unk_0C = sp34->hp;
     sp24->unk_15 = sp34->statusCondition;
-    sp24->unk_16[6] = sp34->unk_06;
-    sp24->unk_16[7] = sp34->unk_07;
-    sp24->unk_16[8] = sp34->unk_08;
+    sp24->roster[6] = sp34->unk_06;
+    sp24->roster[7] = sp34->unk_07;
+    sp24->roster[8] = sp34->unk_08;
 
     sp24->moves[0] = sp34->unk_09[0];
     sp24->moves[1] = sp34->unk_09[1];
@@ -791,7 +791,7 @@ void Battle_InitPokemonRuntimeState(ActivePokemon* arg0) {
 }
 
 s32 Battle_IsPartyMemberAlive(ActivePokemon* arg0) {
-    if (arg0->teamRoster->pokemonPicked[arg0->state.unk_18 - 1].unk_02 != 0) {
+    if (arg0->teamRoster->pokemonPicked[arg0->state.unk_18 - 1].hp != 0) {
         return 1;
     }
     return 0;
@@ -1110,11 +1110,11 @@ void Battle_ApplyTypeEffectAndSTAB(void) {
 
     var_v0 = 3;
 
-    temp_a1 = sBattleUser->unk_16[6];
-    temp_a3 = sBattleUser->unk_16[7];
+    temp_a1 = sBattleUser->roster[6];
+    temp_a3 = sBattleUser->roster[7];
 
-    var_v1 = sBattleTarget->unk_16[6];
-    temp_a0 = sBattleTarget->unk_16[7];
+    var_v1 = sBattleTarget->roster[6];
+    temp_a0 = sBattleTarget->roster[7];
 
     temp_t1 = sBattleUser->moveCache.unk_03;
 
@@ -1270,8 +1270,8 @@ s32 Battle_CheckMonCanAct(void) {
 
     if (sBattleUser->unk_15 & 7) {
         sBattleUser->unk_15 = (sBattleUser->unk_15 & 7) - 1;
-        if (temp_v1->unk_16[temp_v0->rosterIndex + temp_v0->unk_2B * 3] != 0) {
-            temp_v1->unk_16[temp_v0->rosterIndex + temp_v0->unk_2B * 3]--;
+        if (temp_v1->roster[temp_v0->rosterIndex + temp_v0->teamMemberIndex * 3] != 0) {
+            temp_v1->roster[temp_v0->rosterIndex + temp_v0->teamMemberIndex * 3]--;
         }
 
         if (sBattleUser->unk_15 != 0) {
@@ -1642,19 +1642,19 @@ void Battle_CheckAllBroughtFainted_HP(ActivePokemon* arg0) {
     s32 i;
     s32 var_s2 = 0;
 
-    for (i = 0; i < BattleScene_GetSelectedSideTeamSize(arg0); i++) {
+    for (i = 0; i < BattleScene_GetTeamMemberTeamSize(arg0); i++) {
         if (i == ptr1->rosterIndex) {
             var_s2 += arg0->state.runtime.unk_0E;
         } else {
             temp_v0 = &arg0->teamRoster->pokemonPicked[i];
-            var_s2 += temp_v0->unk_02;
+            var_s2 += temp_v0->hp;
         }
     }
 
-    if (arg0->sessionTeams->unk_01 == 2) {
-        for (i = 0; i < BattleScene_GetOpposingSelectedSideTeamSize(arg0); i++) {
-            temp_v0 = &arg0->sessionTeams->teamMember[!ptr1->unk_2B]->pokemonPicked[i];
-            var_s2 += temp_v0->unk_02;
+    if (arg0->sessionTeams->tagTeamSize == 2) {
+        for (i = 0; i < BattleScene_GetPartnerTeamSize(arg0); i++) {
+            temp_v0 = &arg0->sessionTeams->teamMember[!ptr1->teamMemberIndex]->pokemonPicked[i];
+            var_s2 += temp_v0->hp;
         }
     }
 
@@ -1672,19 +1672,19 @@ void Battle_CheckAllBroughtFainted_Status(ActivePokemon* arg0) {
     s32 i;
     s32 var_s2 = 0;
 
-    for (i = 0; i < BattleScene_GetSelectedSideTeamSize(arg0); i++) {
+    for (i = 0; i < BattleScene_GetTeamMemberTeamSize(arg0); i++) {
         if (i == ptr1->rosterIndex) {
             var_s2 += arg0->state.runtime.unk_10;
         } else {
             temp_v0 = &arg0->teamRoster->pokemonPicked[i];
-            var_s2 += temp_v0->unk_02;
+            var_s2 += temp_v0->hp;
         }
     }
 
-    if (arg0->sessionTeams->unk_01 == 2) {
-        for (i = 0; i < BattleScene_GetOpposingSelectedSideTeamSize(arg0); i++) {
-            temp_v0 = &arg0->sessionTeams->teamMember[!ptr1->unk_2B]->pokemonPicked[i];
-            var_s2 += temp_v0->unk_02;
+    if (arg0->sessionTeams->tagTeamSize == 2) {
+        for (i = 0; i < BattleScene_GetPartnerTeamSize(arg0); i++) {
+            temp_v0 = &arg0->sessionTeams->teamMember[!ptr1->teamMemberIndex]->pokemonPicked[i];
+            var_s2 += temp_v0->hp;
         }
     }
 
@@ -1702,19 +1702,19 @@ void Battle_CheckAllBroughtFainted_PP(ActivePokemon* arg0) {
     s32 i;
     s32 var_s2 = 0;
 
-    for (i = 0; i < BattleScene_GetSelectedSideTeamSize(arg0); i++) {
+    for (i = 0; i < BattleScene_GetTeamMemberTeamSize(arg0); i++) {
         if (i == ptr1->rosterIndex) {
             var_s2 += arg0->state.runtime.unk_12;
         } else {
             temp_v0 = &arg0->teamRoster->pokemonPicked[i];
-            var_s2 += temp_v0->unk_02;
+            var_s2 += temp_v0->hp;
         }
     }
 
-    if (arg0->sessionTeams->unk_01 == 2) {
-        for (i = 0; i < BattleScene_GetOpposingSelectedSideTeamSize(arg0); i++) {
-            temp_v0 = &arg0->sessionTeams->teamMember[!ptr1->unk_2B]->pokemonPicked[i];
-            var_s2 += temp_v0->unk_02;
+    if (arg0->sessionTeams->tagTeamSize == 2) {
+        for (i = 0; i < BattleScene_GetPartnerTeamSize(arg0); i++) {
+            temp_v0 = &arg0->sessionTeams->teamMember[!ptr1->teamMemberIndex]->pokemonPicked[i];
+            var_s2 += temp_v0->hp;
         }
     }
 
@@ -1732,19 +1732,19 @@ void Battle_CheckAllBroughtFainted_Level(ActivePokemon* arg0) {
     s32 i;
     s32 var_s2 = 0;
 
-    for (i = 0; i < BattleScene_GetSelectedSideTeamSize(arg0); i++) {
+    for (i = 0; i < BattleScene_GetTeamMemberTeamSize(arg0); i++) {
         if (i == ptr1->rosterIndex) {
             var_s2 += arg0->state.runtime.unk_0C;
         } else {
             temp_v0 = &arg0->teamRoster->pokemonPicked[i];
-            var_s2 += temp_v0->unk_02;
+            var_s2 += temp_v0->hp;
         }
     }
 
-    if (arg0->sessionTeams->unk_01 == 2) {
-        for (i = 0; i < BattleScene_GetOpposingSelectedSideTeamSize(arg0); i++) {
-            temp_v0 = &arg0->sessionTeams->teamMember[!ptr1->unk_2B]->pokemonPicked[i];
-            var_s2 += temp_v0->unk_02;
+    if (arg0->sessionTeams->tagTeamSize == 2) {
+        for (i = 0; i < BattleScene_GetPartnerTeamSize(arg0); i++) {
+            temp_v0 = &arg0->sessionTeams->teamMember[!ptr1->teamMemberIndex]->pokemonPicked[i];
+            var_s2 += temp_v0->hp;
         }
     }
 
@@ -1765,15 +1765,15 @@ s32 Battle_CheckSideDefeatAfterResidualStatus(ActivePokemon* arg0) {
     if (arg0->state.runtime.unk_15 & 0x18) {
         var_s2 = 0;
         if (arg0->state.runtime.unk_0E == 0) {
-            for (i = 0; i < BattleScene_GetSelectedSideTeamSize(arg0); i++) {
+            for (i = 0; i < BattleScene_GetTeamMemberTeamSize(arg0); i++) {
                 temp_v0 = &arg0->teamRoster->pokemonPicked[i];
-                var_s2 += temp_v0->unk_02;
+                var_s2 += temp_v0->hp;
             }
 
-            if (arg0->sessionTeams->unk_01 == 2) {
-                for (i = 0; i < BattleScene_GetOpposingSelectedSideTeamSize(arg0); i++) {
-                    temp_v0 = &arg0->sessionTeams->teamMember[!ptr1->unk_2B]->pokemonPicked[i];
-                    var_s2 += temp_v0->unk_02;
+            if (arg0->sessionTeams->tagTeamSize == 2) {
+                for (i = 0; i < BattleScene_GetPartnerTeamSize(arg0); i++) {
+                    temp_v0 = &arg0->sessionTeams->teamMember[!ptr1->teamMemberIndex]->pokemonPicked[i];
+                    var_s2 += temp_v0->hp;
                 }
             }
 

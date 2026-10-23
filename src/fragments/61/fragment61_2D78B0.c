@@ -615,13 +615,13 @@ void TeamSelection_InitializeSlots(void) {
     for (i = 0; i < 4; i++, var_v0++) {
         if (var_v0->unk_000 & 1) {
             if (!(var_v0->unk_000 & 2)) {
-                D_8423D3D8[var_v0->unk_001].unk_00 = 1;
-                D_8423D3D8[var_v0->unk_001].unk_04 = var_v0;
+                D_8423D3D8[var_v0->controllerPort].unk_00 = 1;
+                D_8423D3D8[var_v0->controllerPort].unk_04 = var_v0;
             } else if (gSessionContext.mode == 0) {
-                D_8423D3D8[var_v0->unk_001].unk_00 = 1;
-                D_8423D3D8[var_v0->unk_001].unk_04 = var_v0;
-                D_8423D3D8[var_v0->unk_001].unk_01 = 4;
-                D_8423D3D8[var_v0->unk_001].unk_02 = 0;
+                D_8423D3D8[var_v0->controllerPort].unk_00 = 1;
+                D_8423D3D8[var_v0->controllerPort].unk_04 = var_v0;
+                D_8423D3D8[var_v0->controllerPort].unk_01 = 4;
+                D_8423D3D8[var_v0->controllerPort].unk_02 = 0;
             }
         }
     }

@@ -28,7 +28,7 @@ typedef struct BattleMonSpecies {
 
 typedef struct BattleMon {
     /* 0x00 */ BattleMonSpecies unk_00;
-    /* 0x02 */ u16 unk_02;
+    /* 0x02 */ u16 hp;
     /* 0x04 */ u8 unk_04;
     /* 0x05 */ u8 statusCondition;
     /* 0x06 */ u8 unk_06;
@@ -98,7 +98,7 @@ typedef struct ExtendedRosterInfo {
 
 typedef struct TeamRoster {
     /* 0x000 */ u8 unk_000;
-    /* 0x001 */ u8 unk_001;
+    /* 0x001 */ u8 controllerPort;
     /* 0x002 */ u8 numberOfPokemonBrought;
     /* 0x004 */ Controller* controller;
     /* 0x008 */ char unk_008[4];
@@ -117,12 +117,12 @@ typedef struct TeamRoster {
 
 typedef struct BattleSessionTeams {
     /* 0x00 */ u8 uniqueStatusFlags;
-    /* 0x01 */ u8 unk_01;
+    /* 0x01 */ u8 tagTeamSize;
     /* 0x02 */ s16 displayModel;
     /* 0x04 */ TeamRoster* unk_04;
     /* 0x08 */ TeamRoster* teamMember[2];
     /* 0x10 */ ModelLoadContext* unk_10;
-    /* 0x14 */ ModelNodeView* unk_14;
+    /* 0x14 */ ModelNodeView* loadedModel;
     /* 0x18 */ ModelNodeView* unk_18;
     /* 0x1C */ u8 unk_1C;
     /* 0x1D */ u8 assetIsBusy;

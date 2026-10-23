@@ -82,16 +82,16 @@ s32 BattleScene_DetermineWinner(void) {
     s32 var_s5 = 0;
     s32 var_s6 = 0;
 
-    for (i = 0; i < BattleScene_GetSelectedSideTeamSize(sActivePokemon[0]); i++) {
+    for (i = 0; i < BattleScene_GetTeamMemberTeamSize(sActivePokemon[0]); i++) {
         ptr = &sActivePokemon[0]->teamRoster->pokemonPicked[i];
-        if (ptr->unk_02 != 0) {
+        if (ptr->hp != 0) {
             var_s3++;
         }
     }
 
-    for (i = 0; i < BattleScene_GetSelectedSideTeamSize(sActivePokemon[1]); i++) {
+    for (i = 0; i < BattleScene_GetTeamMemberTeamSize(sActivePokemon[1]); i++) {
         ptr = &sActivePokemon[1]->teamRoster->pokemonPicked[i];
-        if (ptr->unk_02 != 0) {
+        if (ptr->hp != 0) {
             var_s4++;
         }
     }
@@ -103,14 +103,14 @@ s32 BattleScene_DetermineWinner(void) {
         return 2;
     }
 
-    for (i = 0; i < BattleScene_GetSelectedSideTeamSize(sActivePokemon[0]); i++) {
+    for (i = 0; i < BattleScene_GetTeamMemberTeamSize(sActivePokemon[0]); i++) {
         ptr = &sActivePokemon[0]->teamRoster->pokemonPicked[i];
-        var_s5 += Battle_ClassifyHpTier(ptr->unk_02, ptr->unk_26);
+        var_s5 += Battle_ClassifyHpTier(ptr->hp, ptr->unk_26);
     }
 
-    for (i = 0; i < BattleScene_GetSelectedSideTeamSize(sActivePokemon[1]); i++) {
+    for (i = 0; i < BattleScene_GetTeamMemberTeamSize(sActivePokemon[1]); i++) {
         ptr = &sActivePokemon[1]->teamRoster->pokemonPicked[i];
-        var_s6 += Battle_ClassifyHpTier(ptr->unk_02, ptr->unk_26);
+        var_s6 += Battle_ClassifyHpTier(ptr->hp, ptr->unk_26);
     }
 
     if (var_s5 == var_s6) {
@@ -247,8 +247,8 @@ void BattleScene_SyncActiveHpToPartyState(void) {
         D_843900A8[0] = temp_a2->unk_0C = temp_a2->unk_28;
         D_843900A8[1] = temp_a3->unk_0C = temp_a3->unk_28;
 
-        ptr3->unk_02 = temp_a2->unk_28;
-        ptr4->unk_02 = temp_a3->unk_28;
+        ptr3->hp = temp_a2->unk_28;
+        ptr4->hp = temp_a3->unk_28;
     }
 }
 
@@ -321,7 +321,7 @@ void BattleScene_AutoSelectReplacementMon(ActivePokemon* arg0) {
     ActivePokemonState* sp1C = &arg0->state;
 
     for (i = 0; i < arg0->sessionTeams->teamMember[0]->numberOfPokemonBrought; i++) {
-        if ((arg0->sessionTeams->teamMember[0]->pokemonPicked[i].unk_02 != 0) && (i != sp1C->rosterIndex)) {
+        if ((arg0->sessionTeams->teamMember[0]->pokemonPicked[i].hp != 0) && (i != sp1C->rosterIndex)) {
             BattleAnim_PlaySoundEffect2();
             sp1C->unk_1C = 0;
             sp1C->unk_1E = 0;
@@ -337,8 +337,8 @@ void BattleScene_AutoSelectReplacementMon(ActivePokemon* arg0) {
 void BattleScene_SelectActiveController(ActivePokemon* arg0) {
     ActivePokemonState* ptr = &arg0->state;
 
-    ptr->unk_2C = ptr->unk_2B;
-    ptr->controller = &gControllers[arg0->sessionTeams->teamMember[ptr->unk_2C]->unk_001];
+    ptr->ownerTeamMemberIndex = ptr->teamMemberIndex;
+    ptr->controller = &gControllers[arg0->sessionTeams->teamMember[ptr->ownerTeamMemberIndex]->controllerPort];
 }
 
 void BattleScene_HandleActionSelectionCancel(s32 arg0) {
@@ -631,12 +631,12 @@ void BattleScene_ForfeitPrompt(ActivePokemon* arg0) {
     ActivePokemonState* sp18 = &arg0->state;
     ActivePokemonState* temp_a0 = &sActivePokemon[BattleScene_GetParticipantSideIndex(arg0) == 0]->state;
 
-    if (arg0->sessionTeams->unk_01 == 1) {
-        D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->unk_001];
-        D_8439014C = &gControllers[arg0->sessionTeams->teamMember[0]->unk_001];
+    if (arg0->sessionTeams->tagTeamSize == 1) {
+        D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->controllerPort];
+        D_8439014C = &gControllers[arg0->sessionTeams->teamMember[0]->controllerPort];
     } else {
-        D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->unk_001];
-        D_8439014C = &gControllers[arg0->sessionTeams->teamMember[1]->unk_001];
+        D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->controllerPort];
+        D_8439014C = &gControllers[arg0->sessionTeams->teamMember[1]->controllerPort];
     }
 
     if (temp_a0->unk_10 == 4) {
@@ -692,7 +692,7 @@ void BattleScene_CommitPlayerSwitchAction(ActivePokemon* arg0) {
 }
 
 s32 BattleScene_ValidateSelectedPartyMember(ActivePokemon* arg0) {
-    if (arg0->sessionTeams->teamMember[arg0->state.unk_2C]->pokemonPicked[arg0->state.unk_18].unk_02 != 0) {
+    if (arg0->sessionTeams->teamMember[arg0->state.ownerTeamMemberIndex]->pokemonPicked[arg0->state.unk_18].hp != 0) {
         return 1;
     }
 
@@ -709,27 +709,27 @@ void BattleScene_QueuePartySelectionConfirmMessage(ActivePokemon* arg0) {
 
 void BattleScene_AssignActiveCoopController(ActivePokemon* arg0, s32 arg1) {
     if (arg1 == 1) {
-        D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->unk_001];
-        D_8439014C = &gControllers[arg0->sessionTeams->teamMember[0]->unk_001];
+        D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->controllerPort];
+        D_8439014C = &gControllers[arg0->sessionTeams->teamMember[0]->controllerPort];
     } else {
-        D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->unk_001];
-        D_8439014C = &gControllers[arg0->sessionTeams->teamMember[1]->unk_001];
+        D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->controllerPort];
+        D_8439014C = &gControllers[arg0->sessionTeams->teamMember[1]->controllerPort];
     }
 
     if (arg1 == 1) {
         if (BTN_IS_PRESSED(D_84390148, BTN_A | BTN_B | BTN_CUP | BTN_CDOWN | BTN_CLEFT | BTN_CRIGHT)) {
-            arg0->state.unk_2C = 0;
+            arg0->state.ownerTeamMemberIndex = 0;
             BattleScene_SetParticipantController(arg0, D_84390148);
         } else if (BTN_IS_PRESSED(D_8439014C, BTN_A | BTN_B | BTN_CUP | BTN_CDOWN | BTN_CLEFT | BTN_CRIGHT)) {
             BattleScene_SetParticipantController(arg0, D_8439014C);
-            arg0->state.unk_2C = 0;
+            arg0->state.ownerTeamMemberIndex = 0;
         }
     } else if (BTN_IS_PRESSED(D_84390148, BTN_A | BTN_B | BTN_CUP | BTN_CDOWN | BTN_CLEFT | BTN_CRIGHT)) {
         BattleScene_SetParticipantController(arg0, D_84390148);
-        arg0->state.unk_2C = 0;
+        arg0->state.ownerTeamMemberIndex = 0;
     } else if (BTN_IS_PRESSED(D_8439014C, BTN_A | BTN_B | BTN_CUP | BTN_CDOWN | BTN_CLEFT | BTN_CRIGHT)) {
         BattleScene_SetParticipantController(arg0, D_8439014C);
-        arg0->state.unk_2C = 1;
+        arg0->state.ownerTeamMemberIndex = 1;
     }
 }
 
@@ -739,8 +739,8 @@ void BattleScene_HandlePartySlotCursorInput(ActivePokemon* arg0, Controller* arg
 
     sp1C = &arg0->state;
 
-    BattleScene_AssignActiveCoopController(arg0, arg0->sessionTeams->unk_01);
-    temp_a1 = arg0->sessionTeams->teamMember[sp1C->unk_2C];
+    BattleScene_AssignActiveCoopController(arg0, arg0->sessionTeams->tagTeamSize);
+    temp_a1 = arg0->sessionTeams->teamMember[sp1C->ownerTeamMemberIndex];
     arg1 = sp1C->controller;
 
     if (temp_a1->numberOfPokemonBrought < 4) {
@@ -780,7 +780,7 @@ void BattleScene_HandlePartySlotCursorInput(ActivePokemon* arg0, Controller* arg
     }
 
     if (BTN_IS_PRESSED(arg1, BTN_A | BTN_B | BTN_CUP | BTN_CDOWN | BTN_CLEFT | BTN_CRIGHT)) {
-        if ((sp1C->rosterIndex == sp1C->unk_18) && (sp1C->unk_2C == sp1C->unk_2B)) {
+        if ((sp1C->rosterIndex == sp1C->unk_18) && (sp1C->ownerTeamMemberIndex == sp1C->teamMemberIndex)) {
             if (BattleScene_ValidateSelectedPartyMember(arg0) != 0) {
                 BattleAnim_PlaySoundEffect8();
                 BattleScene_QueuePartySelectionConfirmMessage(arg0);
@@ -799,14 +799,14 @@ void BattleScene_HandlePlayerPartySelection(ActivePokemon* arg0) {
     s32 idx;
     ActivePokemonState* sp18 = &arg0->state;
 
-    if (arg0->sessionTeams->unk_01 == 1) {
-        D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->unk_001];
-        D_8439014C = &gControllers[arg0->sessionTeams->teamMember[0]->unk_001];
+    if (arg0->sessionTeams->tagTeamSize == 1) {
+        D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->controllerPort];
+        D_8439014C = &gControllers[arg0->sessionTeams->teamMember[0]->controllerPort];
     } else {
 
-        D_84390148 = &gControllers[arg0->sessionTeams->teamMember[sp18->unk_2C]->unk_001];
-        idx = sp18->unk_2C == 0;
-        D_8439014C = &gControllers[arg0->sessionTeams->teamMember[idx]->unk_001];
+        D_84390148 = &gControllers[arg0->sessionTeams->teamMember[sp18->ownerTeamMemberIndex]->controllerPort];
+        idx = sp18->ownerTeamMemberIndex == 0;
+        D_8439014C = &gControllers[arg0->sessionTeams->teamMember[idx]->controllerPort];
     }
 
     if (arg0->captionState.unk_00 != 0) {
@@ -1026,12 +1026,12 @@ void BattleScene_PollActionMenuRequestButtons(ActivePokemon* arg0) {
     ActivePokemonState* temp_t0 = &sActivePokemon[BattleScene_GetParticipantSideIndex(arg0) == 0]->state;
 
     if (temp_v1->unk_10 == 0) {
-        if (arg0->sessionTeams->unk_01 == 1) {
-            D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->unk_001];
-            D_8439014C = &gControllers[arg0->sessionTeams->teamMember[0]->unk_001];
+        if (arg0->sessionTeams->tagTeamSize == 1) {
+            D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->controllerPort];
+            D_8439014C = &gControllers[arg0->sessionTeams->teamMember[0]->controllerPort];
         } else {
-            D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->unk_001];
-            D_8439014C = &gControllers[arg0->sessionTeams->teamMember[1]->unk_001];
+            D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->controllerPort];
+            D_8439014C = &gControllers[arg0->sessionTeams->teamMember[1]->controllerPort];
         }
 
         if (temp_v1->controller->buttonPressed & 0x8000) {

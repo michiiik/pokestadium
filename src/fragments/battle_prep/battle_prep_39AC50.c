@@ -973,7 +973,7 @@ void BattlePrepRoster_Init(unk_D_84B25A28* arg0, CameraNode* arg1) {
     arg0->unk_24 = GfxImage_Allocate(0, 2, 0x40, 0x60, 0);
     arg0->unk_28 = GfxImage_Allocate(0, 2, 0x40, 0x60, 0);
 
-    if ((gSessionContext.ruleCategory == 0) && ((gSessionContext.battleSides[0].unk_01 == 2) || (gSessionContext.battleSides[1].unk_01 == 2))) {
+    if ((gSessionContext.ruleCategory == 0) && ((gSessionContext.battleSides[0].tagTeamSize == 2) || (gSessionContext.battleSides[1].tagTeamSize == 2))) {
         arg0->unk_02 = 1;
     }
     if (arg0->unk_02 == 1) {

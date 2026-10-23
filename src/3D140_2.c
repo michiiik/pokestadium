@@ -931,10 +931,10 @@ block_53:
                 }
             }
 
-            if (D_800FCB18[0]->unk_16[6] != D_800FCB18[1]->unk_16[6]) {
-                if (D_800FCB18[0]->unk_16[6] != D_800FCB18[1]->unk_16[7]) {
-                    if ((D_800FCB18[0]->unk_16[7] != D_800FCB18[1]->unk_16[6]) &&
-                        (D_800FCB18[0]->unk_16[7] != D_800FCB18[1]->unk_16[7])) {
+            if (D_800FCB18[0]->roster[6] != D_800FCB18[1]->roster[6]) {
+                if (D_800FCB18[0]->roster[6] != D_800FCB18[1]->roster[7]) {
+                    if ((D_800FCB18[0]->roster[7] != D_800FCB18[1]->roster[6]) &&
+                        (D_800FCB18[0]->roster[7] != D_800FCB18[1]->roster[7])) {
                         D_800FCCB0 = 0;
                         Audio_QueueSoundAvoidingRecent(D_80077E18);
                         return;
@@ -1705,7 +1705,7 @@ void ProcessAudioCommandQueue(s32 arg0) {
             return;
         case 0x19:
         case 0x1B:
-            if ((D_800780B3[D_800FCCAC * 3] == 0) && ((D_800FCB18[temp_s0]->unk_16[6] == 8) || (D_800FCB18[temp_s0]->unk_16[7] == 8))) {
+            if ((D_800780B3[D_800FCCAC * 3] == 0) && ((D_800FCB18[temp_s0]->roster[6] == 8) || (D_800FCB18[temp_s0]->roster[7] == 8))) {
                 Audio_QueueSoundAvoidingRecent(&D_80077F24);
             } else {
                 Audio_QueueSoundAvoidingRecent(&D_80077F14);
@@ -2679,8 +2679,8 @@ u32 Battle_EstimateMoveDamage(u32 moveId, BattleMonRuntime* attacker, BattleMonR
 
     baseDamage = ((((f32)(((attacker->unk_26 * 2) / 5) + 2) * (f32)power) * var_f2) / var_f0) / 50.0f;
 
-    defType0Idx = Battle_MapCategoryIdToCompactIndex(defender->unk_16[6]);
-    defType1Idx = Battle_MapCategoryIdToCompactIndex(defender->unk_16[7]);
+    defType0Idx = Battle_MapCategoryIdToCompactIndex(defender->roster[6]);
+    defType1Idx = Battle_MapCategoryIdToCompactIndex(defender->roster[7]);
 
     effectiveness = D_800782A4[(moveTypeIdx * 0xF) + defType0Idx];
     switch (effectiveness) {
@@ -2712,7 +2712,7 @@ u32 Battle_EstimateMoveDamage(u32 moveId, BattleMonRuntime* attacker, BattleMonR
             defType1Mult = 1.0f;
     }
 
-    if ((attacker->unk_16[6] == moveEntry[2]) || (attacker->unk_16[7] == moveEntry[2])) {
+    if ((attacker->roster[6] == moveEntry[2]) || (attacker->roster[7] == moveEntry[2])) {
         var_f0 = 1.5f;
     } else {
         var_f0 = 1.0f;

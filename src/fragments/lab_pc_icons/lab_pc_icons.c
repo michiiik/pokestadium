@@ -565,7 +565,7 @@ s32 LabPC_DrawStatWidget(unk_func_88205880_0098_008_04C* arg0, s32 arg1, s32 arg
     }
 
     if ((arg0->unk_2C->unk_00.unk_00 > 0) && (arg0->unk_2C->unk_00.unk_00 < 0x98)) {
-        BattleHud_DrawHpBarTexture(sp54, arg2 + 0x18, 0x90, arg0->unk_2C->unk_02, arg0->unk_2C->unk_26);
+        BattleHud_DrawHpBarTexture(sp54, arg2 + 0x18, 0x90, arg0->unk_2C->hp, arg0->unk_2C->unk_26);
     }
 
     Font_BeginTranslucentTextRendering();
@@ -586,7 +586,7 @@ s32 LabPC_DrawStatWidget(unk_func_88205880_0098_008_04C* arg0, s32 arg1, s32 arg
         Font_Printf((sp54 - sp50) + 0x8C, arg2 + 0x56, D_88605AFC);
         Font_Printf((sp54 - sp50) + 0x8C, arg2 + 0x6C, D_88605AFC);
     } else {
-        sprintf(sp4C, "%d", arg0->unk_2C->unk_02);
+        sprintf(sp4C, "%d", arg0->unk_2C->hp);
         Font_Printf(((sp54 - Font_MeasureTextExtent(0, 0, "/000")) - Font_MeasureTextExtent(0, 0, sp4C)) + 0x8C, arg2 + 4, "%s/", sp4C);
         sprintf(sp4C, "%d", arg0->unk_2C->unk_26);
         Font_Printf((sp54 - Font_MeasureTextExtent(0, 0, sp4C)) + 0x8C, arg2 + 4, sp4C);

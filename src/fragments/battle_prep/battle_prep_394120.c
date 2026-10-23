@@ -243,21 +243,21 @@ void BattlePrep_DrawTrainerStatusIcon(DepthBuffer* arg0, s16 arg1, u8* arg2, u8*
     if (gSessionContext.mode == 0 || gSessionContext.mode == 9) {
         if (temp_v1->teamMember[0]->unk_000 & 2) {
             Gfx_DrawTextureRgba16(8, 4, 0x30, 0x10, &D_3016900, 0x30, 0x200000);
-        } else if (temp_v1->unk_01 == 1) {
-            Gfx_DrawTextureRgba16(8, 4, 0x30, 0x10, D_84B0FB10[temp_v1->teamMember[0]->unk_001], 0x30, 0x200000);
+        } else if (temp_v1->tagTeamSize == 1) {
+            Gfx_DrawTextureRgba16(8, 4, 0x30, 0x10, D_84B0FB10[temp_v1->teamMember[0]->controllerPort], 0x30, 0x200000);
         } else {
-            if (temp_v1->teamMember[0]->unk_001 < temp_v1->teamMember[1]->unk_001) {
-                Gfx_DrawTextureRgba16(8, 4, 0x30, 0x10, D_84B0FB10[temp_v1->teamMember[0]->unk_001], 0x30, 0x200000);
-                Gfx_DrawTextureRgba16(8, 0x14, 0x30, 0x10, D_84B0FB10[temp_v1->teamMember[1]->unk_001], 0x30, 0x200000);
+            if (temp_v1->teamMember[0]->controllerPort < temp_v1->teamMember[1]->controllerPort) {
+                Gfx_DrawTextureRgba16(8, 4, 0x30, 0x10, D_84B0FB10[temp_v1->teamMember[0]->controllerPort], 0x30, 0x200000);
+                Gfx_DrawTextureRgba16(8, 0x14, 0x30, 0x10, D_84B0FB10[temp_v1->teamMember[1]->controllerPort], 0x30, 0x200000);
             } else {
-                Gfx_DrawTextureRgba16(8, 4, 0x30, 0x10, D_84B0FB10[temp_v1->teamMember[1]->unk_001], 0x30, 0x200000);
-                Gfx_DrawTextureRgba16(8, 0x14, 0x30, 0x10, D_84B0FB10[temp_v1->teamMember[0]->unk_001], 0x30, 0x200000);
+                Gfx_DrawTextureRgba16(8, 4, 0x30, 0x10, D_84B0FB10[temp_v1->teamMember[1]->controllerPort], 0x30, 0x200000);
+                Gfx_DrawTextureRgba16(8, 0x14, 0x30, 0x10, D_84B0FB10[temp_v1->teamMember[0]->controllerPort], 0x30, 0x200000);
             }
         }
 
         gSPDisplayList(gDisplayListHead++, gUiRestoreTextureDL);
     } else if ((arg1 == 0) || (gSessionContext.mode == 0xA)) {
-        Gfx_DrawTextureRgba16(8, 4, 0x30, 0x10, D_84B0FB10[temp_v1->teamMember[0]->unk_001], 0x30, 0x200000);
+        Gfx_DrawTextureRgba16(8, 4, 0x30, 0x10, D_84B0FB10[temp_v1->teamMember[0]->controllerPort], 0x30, 0x200000);
 
         gSPDisplayList(gDisplayListHead++, gUiRestoreTextureDL);
 
@@ -1079,7 +1079,7 @@ u8 BattlePrep_CheckTeamChosen(void) {
         if (gSessionContext.battleSides[0].unk_1C == 1) {
             var_v1 = 1;
             for (i = 0; i < 3; i++) {
-                if (gSessionContext.battleSides[0].teamMember[0]->pokemonPicked[i].unk_02 == 0) {
+                if (gSessionContext.battleSides[0].teamMember[0]->pokemonPicked[i].hp == 0) {
                     var_v1 = 0;
                 }
             }
