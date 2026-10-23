@@ -1315,9 +1315,9 @@ void BattleAnim_SeismicToss(ActivePokemon* owner, ActivePokemon* animated_pokemo
 void BattleAnim_MinimizeStart(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_MinimizeContinue(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_Minimize(ActivePokemon* owner, ActivePokemon* animated_pokemon);
-void BattleAnim_StatusIdleCase12Sub0(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon);
-void BattleAnim_StatusIdleCase12Sub1(ActivePokemon* owner, UNUSED ActivePokemon* animated_pokemon);
-void BattleAnim_StatusIdleCase12(ActivePokemon* owner, ActivePokemon* animated_pokemon);
+void BattleAnim_WithdrawStart(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon);
+void BattleAnim_WithdrawContinue(ActivePokemon* owner, UNUSED ActivePokemon* animated_pokemon);
+void BattleAnim_Withdraw(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_MeditateStart(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_MeditateContinue(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_MeditateEnd(ActivePokemon* owner, ActivePokemon* animated_pokemon);

@@ -746,11 +746,11 @@ void BattleAnim_Minimize(ActivePokemon* owner, ActivePokemon* animated_pokemon) 
     }
 }
 
-void BattleAnim_StatusIdleCase12Sub0(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+void BattleAnim_WithdrawStart(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     animated_pokemon->modelTransformTimer++;
 }
 
-void BattleAnim_StatusIdleCase12Sub1(ActivePokemon* owner, UNUSED ActivePokemon* animated_pokemon) {
+void BattleAnim_WithdrawContinue(ActivePokemon* owner, UNUSED ActivePokemon* animated_pokemon) {
     owner->displayObject.scale.x = Math_StepToF(owner->displayObject.scale.x, 0.0f, 0.05f, 0.05f);
     owner->displayObject.scale.y = Math_StepToF(owner->displayObject.scale.y, 0.0f, 0.05f, 0.05f);
     owner->displayObject.scale.z = Math_StepToF(owner->displayObject.scale.z, 0.0f, 0.05f, 0.05f);
@@ -760,13 +760,13 @@ void BattleAnim_StatusIdleCase12Sub1(ActivePokemon* owner, UNUSED ActivePokemon*
     }
 }
 
-void BattleAnim_StatusIdleCase12(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+void BattleAnim_Withdraw(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     switch (animated_pokemon->modelTransformTimer) {
         case 0:
-            BattleAnim_StatusIdleCase12Sub0(owner, animated_pokemon);
+            BattleAnim_WithdrawStart(owner, animated_pokemon);
 
         case 1:
-            BattleAnim_StatusIdleCase12Sub1(owner, animated_pokemon);
+            BattleAnim_WithdrawContinue(owner, animated_pokemon);
             break;
     }
 }
@@ -1038,7 +1038,7 @@ void BattleAnim_UpdateOwnerStatusIdleAnimation(s32 side_index) {
             break;
 
         case 12:
-            BattleAnim_StatusIdleCase12(owner, animated_pokemon);
+            BattleAnim_Withdraw(owner, animated_pokemon);
             break;
 
         case 13:
