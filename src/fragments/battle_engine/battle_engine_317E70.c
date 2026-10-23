@@ -236,7 +236,7 @@ void BattleAnim_InitializeParticleAnchor(Particle* arg0) {
             break;
 
         case 30:
-            BattleScene_GetParticipantAuxiliaryModelPosition(arg0->unk_10, &arg0->unk_68);
+            BattleScene_GetParticipantPokeBallPosition(arg0->unk_10, &arg0->unk_68);
             break;
     }
 }
@@ -305,7 +305,7 @@ void BattleAnim_UpdateParticleAnchor(Particle* arg0) {
             break;
 
         case 29:
-            BattleScene_GetParticipantAuxiliaryModelPosition(arg0->unk_10, &arg0->unk_68);
+            BattleScene_GetParticipantPokeBallPosition(arg0->unk_10, &arg0->unk_68);
             break;
     }
 }

@@ -206,7 +206,7 @@ void Trainer_RequestPokeIcon(BattleSessionTeams* arg0) {
 
         if (arg0->uniqueStatusFlags & 0x20) {
             PokeIcon_WaitFrameLoad(arg0->unk_10);
-            arg0->unk_14 = arg0->unk_10->loadedModel;
+            arg0->loadedModel = arg0->unk_10->loadedModel;
             arg0->uniqueStatusFlags &= ~0xE0;
         }
     }

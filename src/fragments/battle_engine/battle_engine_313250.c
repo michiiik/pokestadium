@@ -31,7 +31,7 @@ void BattleScene_IntroSendOutFirstMon(UNUSED CameraNode* arg0) {
     if ((BattleScene_AdvanceCameraFrameCounterUntil(0xA) != 0) && (BattleAnim_TryRegisterAssetTables(sActivePokemon[0]) != 0)) {
         sActivePokemon[0]->displayObject.node.flags &= ~1;
         sActivePokemon[1]->displayObject.node.flags &= ~1;
-        BattleScene_SetParticipantModelFlags(sActivePokemon[0], 1, 0);
+        BattleScene_SetParticipantModelTransform(sActivePokemon[0], 1, 0);
         Audio_PlayCommand(1, 0xFE, 0);
         BattleAnim_QueueEffectList3(8, sActivePokemon[0], sActivePokemon[0], 0xFF, 0xFF);
         sBattleScene.scene->unk_20 += 1;
@@ -44,7 +44,7 @@ void BattleScene_IntroSendOutSecondMon(UNUSED CameraNode* arg0) {
     if (sActivePokemon[0]->pokeBall.position.y == 0.0f) {
         BattleScene_SelectBattleMusic();
         Audio_PlayCommand(1, 1, 0);
-        BattleScene_SetParticipantModelFlags(sActivePokemon[1], 1, 0);
+        BattleScene_SetParticipantModelTransform(sActivePokemon[1], 1, 0);
         BattleAnim_QueueEffectList3(0xA, sActivePokemon[1], sActivePokemon[1], 0xFF, 0xFF);
         sBattleScene.scene->unk_20 += 1;
     }
@@ -58,7 +58,7 @@ void BattleScene_IntroNarrowFov(CameraNode* arg0) {
 
     if (sActivePokemon[1]->pokeBall.position.y == 0.0f) {
         arg0->perspective.verticalFieldOfView = 30.0f;
-        BattleScene_SetParticipantModelFlags(sActivePokemon[0], 2, 0);
+        BattleScene_SetParticipantModelTransform(sActivePokemon[0], 2, 0);
         BattleAnim_QueueEffectList3(0xB, sActivePokemon[0], sActivePokemon[0], 0xFF, 0xFF);
         Vec3f_SetComponentsDuplicate(&sp3C, -150.0f, 5.0f, 0.0f);
         BattleScene_SetCameraAtFromAnchor(sActivePokemon[0], arg0, sp3C, 0, 0, 0.0f, 0.0f);

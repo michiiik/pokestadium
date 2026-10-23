@@ -116,7 +116,7 @@ void Battle_QueueStatusText(char* arg0, s32 arg1) {
     UNUSED s32 pad2[2];
 
     Battle_ClearMessageCursor();
-    gBattleMessageQueues->unk_000 = sActivePokemon[arg1]->sessionTeams->teamMember[sp28->side]->controllerPort;
+    gBattleMessageQueues->unk_000 = sActivePokemon[arg1]->sessionTeams->teamMember[sp28->teamMemberIndex]->controllerPort;
     Battle_SimpleStringFormat(gBattleMessageQueues->unk_048, arg0 + 1);
     *arg0 = 0;
 }
