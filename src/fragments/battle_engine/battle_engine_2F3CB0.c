@@ -913,36 +913,38 @@ void BattleAnim_SquishHitReaction(ActivePokemon* owner, ActivePokemon* animated_
     }
 }
 
-void BattleAnim_StatusIdleCase16Sub0(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+void BattleAnim_LassoMoveHitReactionStart(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     animated_pokemon->doubleTeamTimer = 0;
     animated_pokemon->modelTransformTimer++;
 }
 
-void BattleAnim_StatusIdleCase16Sub1(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
-    BattleMonRuntime* ptr = &animated_pokemon->state.runtime;
+void BattleAnim_LassoMoveHitReactionContinue(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+    BattleMonRuntime* runtime = &animated_pokemon->state.runtime;
     UNUSED s32 pad;
-    f32 temp_fs0;
+    f32 scale_delta;
 
-    if (ptr->scaleResize == 0) {
-        temp_fs0 = (1.0f - Strip400_GetTailFadeRatio()) * 0.6f;
-        BattleAnim_ApproachF(&owner->displayObject.scale.x, 1.0f - temp_fs0, 0.5f);
-        BattleAnim_ApproachF(&owner->displayObject.scale.y, 1.0f + temp_fs0, 0.5f);
-        BattleAnim_ApproachF(&owner->displayObject.scale.z, 1.0f - temp_fs0, 0.5f);
+    if (runtime->scaleResize == 0) {
+        scale_delta = (1.0f - Strip400_GetTailFadeRatio()) * 0.6f;
+        BattleAnim_ApproachF(&owner->displayObject.scale.x, 1.0f - scale_delta, 0.5f);
+        BattleAnim_ApproachF(&owner->displayObject.scale.y, 1.0f + scale_delta, 0.5f);
+        BattleAnim_ApproachF(&owner->displayObject.scale.z, 1.0f - scale_delta, 0.5f);
     } else {
-        temp_fs0 = (1.0f - Strip400_GetTailFadeRatio()) * 0.3f;
-        BattleAnim_ApproachF(&owner->displayObject.scale.x, 0.8 - temp_fs0, 0.5f);
-        BattleAnim_ApproachF(&owner->displayObject.scale.y, temp_fs0 + 0.8, 0.5f);
-        BattleAnim_ApproachF(&owner->displayObject.scale.z, 0.8 - temp_fs0, 0.5f);
+        scale_delta = (1.0f - Strip400_GetTailFadeRatio()) * 0.3f;
+        BattleAnim_ApproachF(&owner->displayObject.scale.x, 0.8 - scale_delta, 0.5f);
+        BattleAnim_ApproachF(&owner->displayObject.scale.y, scale_delta + 0.8, 0.5f);
+        BattleAnim_ApproachF(&owner->displayObject.scale.z, 0.8 - scale_delta, 0.5f);
     }
 }
 
-void BattleAnim_StatusIdleCase16(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+// Lasso move hit reaction
+// Lasso moves: Bind, string shot, constrict, disable
+void BattleAnim_LassoMoveHitReaction(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     switch (animated_pokemon->modelTransformTimer) {
         case 0:
-            BattleAnim_StatusIdleCase16Sub0(owner, animated_pokemon);
+            BattleAnim_LassoMoveHitReactionStart(owner, animated_pokemon);
 
         case 1:
-            BattleAnim_StatusIdleCase16Sub1(owner, animated_pokemon);
+            BattleAnim_LassoMoveHitReactionContinue(owner, animated_pokemon);
             break;
     }
 }
@@ -1052,7 +1054,7 @@ void BattleAnim_UpdateOwnerStatusIdleAnimation(s32 side_index) {
             break;
 
         case 16:
-            BattleAnim_StatusIdleCase16(owner, animated_pokemon);
+            BattleAnim_LassoMoveHitReaction(owner, animated_pokemon);
             break;
 
         default:
