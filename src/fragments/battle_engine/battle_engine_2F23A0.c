@@ -248,9 +248,9 @@ void BattleScene_ComputeParticipantModelOffset(ActivePokemon* arg0, Vec3f* arg1)
 }
 
 void BattleScene_GetParticipantAuxiliaryModelPosition(ActivePokemon* arg0, Vec3f* arg1) {
-    arg1->x = arg0->unk_4EC.position.x;
-    arg1->y = arg0->unk_4EC.position.y + 2.5f;
-    arg1->z = arg0->unk_4EC.position.z;
+    arg1->x = arg0->pokeBall.position.x;
+    arg1->y = arg0->pokeBall.position.y + 2.5f;
+    arg1->z = arg0->pokeBall.position.z;
 }
 
 f32 BattleAnim_GetOwnerModelHeight(ActivePokemon* active_pokemon) {
@@ -282,7 +282,7 @@ u8* Battle_GetActiveMonNickname(ActivePokemon* active_pokemon) {
 
 void BattleScene_SetParticipantModelFlags(ActivePokemon* active_pokemon, s32 animation_flags1, s32 animation_flags2) {
     active_pokemon->animationFlags1 = animation_flags1;
-    active_pokemon->animationFlags2 = animation_flags2;
+    active_pokemon->modelTransformTimer = animation_flags2;
 }
 
 void Battle_AdvanceSecondaryModelAnimIfFinished(ActivePokemon* active_pokemon, ActivePokemon* animated_pokemon) {
@@ -377,7 +377,7 @@ void BattleScene_SetParticipantSelectedSide(ActivePokemon* active_pokemon, s32 t
 }
 
 void BattleScene_SetParticipantController(ActivePokemon* active_pokemon, Controller* controller) {
-    active_pokemon->state.unk_C8 = controller;
+    active_pokemon->state.controller = controller;
 }
 
 void BattleScene_RebindParticipantToSide(ActivePokemon* arg0, s32 arg1) {
@@ -522,7 +522,7 @@ void BattleScene_ReinitParticipantSecondaryModels(ActivePokemon* arg0, s16 arg1)
     sp58 = Battle_GetMoveEffectListEntry(arg0, 0);
 
     for (i = 0; i < 2; i++) {
-        var_s0 = &arg0->unk_168[i];
+        var_s0 = &arg0->afterimages[i];
 
         ModelRenderer_ClearDisplayObject(&var_s0->displayObject);
         if (arg0 == sActivePokemon[0]) {

@@ -128,7 +128,7 @@ void Battle_DrawCompactStatusBoxesIfVisible(void) {
     ActivePokemon* ptr1 = sActivePokemon[0];
     ActivePokemon* ptr2 = sActivePokemon[1];
 
-    if ((gSessionContext.mode != 0x10) && (sBattleScene.unk_00->unk_30 == 0)) {
+    if ((gSessionContext.mode != 0x10) && (sBattleScene.scene->unk_30 == 0)) {
         BattleHud_DrawCompactMonStatusBox(ptr1, 0x15, 0xF, ptr1->sessionTeams->teamMember[ptr1->thumbnail.unk_16C]->unk_001);
         BattleHud_DrawCompactMonStatusBox(ptr2, 0xE1, 0xF, ptr2->sessionTeams->teamMember[ptr2->thumbnail.unk_16C]->unk_001);
     }
@@ -136,7 +136,7 @@ void Battle_DrawCompactStatusBoxesIfVisible(void) {
 
 void Battle_QueueMoveCategoryUsedMessage(void) {
     u32 sp1C;
-    BattleMonRuntime* sp18 = &sActivePokemon[sBattleScene.unk_00->unk_2C]->state.runtime;
+    BattleMonRuntime* sp18 = &sActivePokemon[sBattleScene.scene->unk_2C]->state.runtime;
 
     sp18->unk_58 = sp18->moveCache.lastMove;
 
@@ -153,8 +153,8 @@ void Battle_QueueMoveCategoryUsedMessage(void) {
     }
 
     if ((sp18->moveCache.lastMove == 0x76) || (sp18->moveCache.lastMove == 0x77)) {
-        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(sActivePokemon[sBattleScene.unk_00->unk_2C]));
-        Text_SetStringToken(0x1D, Battle_GetActiveMoveName(sActivePokemon[sBattleScene.unk_00->unk_2C]));
+        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(sActivePokemon[sBattleScene.scene->unk_2C]));
+        Text_SetStringToken(0x1D, Battle_GetActiveMoveName(sActivePokemon[sBattleScene.scene->unk_2C]));
 
         switch (sp1C) {
             case 0:
@@ -178,8 +178,8 @@ void Battle_QueueMoveCategoryUsedMessage(void) {
                 break;
         }
     } else {
-        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(sActivePokemon[sBattleScene.unk_00->unk_2C]));
-        Text_SetStringToken(0x1D, Battle_GetActiveMoveName(sActivePokemon[sBattleScene.unk_00->unk_2C]));
+        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(sActivePokemon[sBattleScene.scene->unk_2C]));
+        Text_SetStringToken(0x1D, Battle_GetActiveMoveName(sActivePokemon[sBattleScene.scene->unk_2C]));
 
         switch (sp1C) {
             case 0:
@@ -208,7 +208,7 @@ void Battle_QueueMoveCategoryUsedMessage(void) {
 void Battle_QueueMoveCategoryMessage(void) {
     u32 sp24;
     UNUSED s32 pad;
-    BattleMonRuntime* sp1C = &sActivePokemon[sBattleScene.unk_00->unk_2C]->state.runtime;
+    BattleMonRuntime* sp1C = &sActivePokemon[sBattleScene.scene->unk_2C]->state.runtime;
 
     if (BattleScene_ByteArrayContains(sp1C->usedMove, D_84385990, 2) != 0) {
         sp24 = 0;
@@ -222,8 +222,8 @@ void Battle_QueueMoveCategoryMessage(void) {
         sp24 = 4;
     }
 
-    Text_SetStringToken(0x19, Battle_GetActiveMonNickname(sActivePokemon[sBattleScene.unk_00->unk_2C]));
-    Text_SetStringToken(0x1D, Battle_GetActiveMoveName(sActivePokemon[sBattleScene.unk_00->unk_2C]));
+    Text_SetStringToken(0x19, Battle_GetActiveMonNickname(sActivePokemon[sBattleScene.scene->unk_2C]));
+    Text_SetStringToken(0x1D, Battle_GetActiveMoveName(sActivePokemon[sBattleScene.scene->unk_2C]));
 
     switch (sp24) {
         case 0:
@@ -253,7 +253,7 @@ void Battle_QueueMetronomeMoveMessage(void) {
     s32 tmp;
     BattleMonRuntime* sp24;
 
-    sp24 = &sActivePokemon[sBattleScene.unk_00->unk_2C]->state.runtime;
+    sp24 = &sActivePokemon[sBattleScene.scene->unk_2C]->state.runtime;
 
     if (BattleScene_ByteArrayContains(sp24->usedMove, D_84385990, 2) != 0) {
         sp2C = 0;
@@ -274,8 +274,8 @@ void Battle_QueueMetronomeMoveMessage(void) {
 
         sp24->usedMove = tmp;
 
-        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(sActivePokemon[sBattleScene.unk_00->unk_2C]));
-        Text_SetStringToken(0x1D, Battle_GetActiveMoveName(sActivePokemon[sBattleScene.unk_00->unk_2C]));
+        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(sActivePokemon[sBattleScene.scene->unk_2C]));
+        Text_SetStringToken(0x1D, Battle_GetActiveMoveName(sActivePokemon[sBattleScene.scene->unk_2C]));
 
         switch (sp2C) {
             case 0:
@@ -301,8 +301,8 @@ void Battle_QueueMetronomeMoveMessage(void) {
 
         sp24->usedMove = METRONOME;
 
-        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(sActivePokemon[sBattleScene.unk_00->unk_2C]));
-        Text_SetStringToken(0x1D, Battle_GetActiveMoveName(sActivePokemon[sBattleScene.unk_00->unk_2C]));
+        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(sActivePokemon[sBattleScene.scene->unk_2C]));
+        Text_SetStringToken(0x1D, Battle_GetActiveMoveName(sActivePokemon[sBattleScene.scene->unk_2C]));
 
         switch (sp2C) {
             case 0:
@@ -326,8 +326,8 @@ void Battle_QueueMetronomeMoveMessage(void) {
                 break;
         }
     } else {
-        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(sActivePokemon[sBattleScene.unk_00->unk_2C]));
-        Text_SetStringToken(0x1D, Battle_GetActiveMoveName(sActivePokemon[sBattleScene.unk_00->unk_2C]));
+        Text_SetStringToken(0x19, Battle_GetActiveMonNickname(sActivePokemon[sBattleScene.scene->unk_2C]));
+        Text_SetStringToken(0x1D, Battle_GetActiveMoveName(sActivePokemon[sBattleScene.scene->unk_2C]));
 
         switch (sp2C) {
             case 0:
@@ -530,7 +530,7 @@ s32 BattleBox_SelectMessage(unk_D_843901A0_4C8* arg0) {
                 return 1;
             }
 
-            arg0->unk_0C = sBattleScene.unk_00->unk_2C;
+            arg0->unk_0C = sBattleScene.scene->unk_2C;
             if (gBattleMessageQueues->unk_0C8[1] != 0) {
                 BattleBox_PlayTextBlip(gBattleMessageQueues->unk_0C8);
             }
@@ -547,7 +547,7 @@ s32 BattleBox_SelectMessage(unk_D_843901A0_4C8* arg0) {
 
         case 1:
         case 3:
-            arg0->unk_0C = sBattleScene.unk_00->unk_2C;
+            arg0->unk_0C = sBattleScene.scene->unk_2C;
             BattleBox_PlayTextBlip(gBattleMessageQueues->unk_088);
             BattleBox_PlayTextBlip(gBattleMessageQueues->unk_148);
             BattleBox_PlayTextBlip(gBattleMessageQueues->unk_208);
@@ -562,7 +562,7 @@ s32 BattleBox_SelectMessage(unk_D_843901A0_4C8* arg0) {
             break;
 
         case 2:
-            arg0->unk_0C = sBattleScene.unk_00->unk_2C;
+            arg0->unk_0C = sBattleScene.scene->unk_2C;
             BattleBox_PlayTextBlip(gBattleMessageQueues->unk_088);
             BattleBox_PlayTextBlip(gBattleMessageQueues->unk_148);
             BattleBox_PlayTextBlip(gBattleMessageQueues->unk_208);
@@ -574,7 +574,7 @@ s32 BattleBox_SelectMessage(unk_D_843901A0_4C8* arg0) {
             break;
 
         case 15:
-            arg0->unk_0C = sBattleScene.unk_00->unk_2C;
+            arg0->unk_0C = sBattleScene.scene->unk_2C;
             BattleBox_PlayTextBlip(gBattleMessageQueues->unk_088);
             if (gBattleMessageQueues->unk_088[1] == 0) {
                 arg0->unk_00 = 0xFF;
@@ -588,13 +588,13 @@ s32 BattleBox_SelectMessage(unk_D_843901A0_4C8* arg0) {
                 arg0->unk_00 = 0xFF;
                 return 1;
             }
-            tmp = sBattleScene.unk_00->unk_2C == 0;
+            tmp = sBattleScene.scene->unk_2C == 0;
             arg0->unk_00 += 1;
             arg0->unk_0C = tmp;
             break;
 
         case 9:
-            tmp = sBattleScene.unk_00->unk_2C == 0;
+            tmp = sBattleScene.scene->unk_2C == 0;
             arg0->unk_00 += 1;
             arg0->unk_0C = tmp;
             break;
@@ -612,12 +612,12 @@ s32 BattleBox_SelectMessage(unk_D_843901A0_4C8* arg0) {
             D_84390190.z = 0.0f;
             D_84390190.x = 321.0f;
             D_84390190.y = 160.0f;
-            arg0->unk_0C = sBattleScene.unk_00->unk_2C;
+            arg0->unk_0C = sBattleScene.scene->unk_2C;
             arg0->unk_00 += 1;
             break;
 
         default:
-            arg0->unk_0C = sBattleScene.unk_00->unk_2C;
+            arg0->unk_0C = sBattleScene.scene->unk_2C;
             arg0->unk_00 += 1;
             break;
     }
@@ -770,7 +770,7 @@ void Battle_RenderHud(void) {
         Battle_DrawSpectatorModeBackgroundPanel();
     }
 
-    switch (sBattleScene.unk_00->unk_1C) {
+    switch (sBattleScene.scene->unk_1C) {
         case 1:
             BattleHud_DrawOwnSideStatus(sActivePokemon[0], side1_state);
             BattleHud_DrawOpponentSideStatus(sActivePokemon[1], side2_state);
