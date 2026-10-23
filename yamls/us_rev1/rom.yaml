@@ -2190,7 +2190,7 @@
     - [0x2EC460, c,      fragments/battle_engine/battle_engine_move_animation]
     - [0x2F1E00, c,      fragments/battle_engine/battle_engine_thumbnail]
     - [0x2F2440, c,      fragments/battle_engine/battle_engine_2F23A0]
-    - [0x2F3D50, c,      fragments/battle_engine/battle_engine_2F3CB0]
+    - [0x2F3D50, c,      fragments/battle_engine/battle_engine_move_model_transforms]
     - [0x2F69D0, c,      fragments/battle_engine/battle_engine_2F6930]
     - [0x2F7580, c,      fragments/battle_engine/battle_engine_2F74E0]
     - [0x2FA570, c,      fragments/battle_engine/battle_engine_2FA4D0]
@@ -2238,7 +2238,7 @@
 
     - [0x36ECB0, .data,   fragments/battle_engine/battle_engine_main]
     - [0x36EED0, .data,   fragments/battle_engine/battle_engine_move_animation]
-    - [0x36EF60, .data,   fragments/battle_engine/battle_engine_2F3CB0]
+    - [0x36EF60, .data,   fragments/battle_engine/battle_engine_move_model_transforms]
     - [0x3700B0, .data,   fragments/battle_engine/battle_engine_2F74E0]
     - [0x3700F0, .data,   fragments/battle_engine/battle_engine_2FA4D0]
     - [0x3702F0, .data,   fragments/battle_engine/battle_engine_3020D0]
@@ -2269,7 +2269,7 @@
     - [0x375910, .data,   fragments/battle_engine/battle_engine_361050]
 
     - [0x375A60, .rodata, fragments/battle_engine/battle_engine_move_animation]
-    - [0x375B00, .rodata, fragments/battle_engine/battle_engine_2F3CB0]
+    - [0x375B00, .rodata, fragments/battle_engine/battle_engine_move_model_transforms]
     - [0x375C00, .rodata, fragments/battle_engine/battle_engine_2F6930]
     - [0x375C40, .rodata, fragments/battle_engine/battle_engine_2F74E0]
     - [0x375C50, .rodata, fragments/battle_engine/battle_engine_2FA4D0]
