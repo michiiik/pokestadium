@@ -750,7 +750,7 @@ void Battle_HandleStatBoostingMoveAnimation(ActivePokemon* active_pokemon) {
             if (((move == GROWTH) || (move == MEDITATE) || (move == AGILITY) || (move == HARDEN) || (move == WITHDRAW) ||
                  (move == SWORDS_DANCE) || (move == DOUBLE_TEAM) || (move == MINIMIZE) || (move == DEFENSE_CURL) || (move == BARRIER) ||
                  (move == AMNESIA) || (move == ACID_ARMOR) || (move == SHARPEN)) &&
-                (sStatCanBeLoweredFurther == 1)) {
+                (sStatCanBeChangedFurther == 1)) {
                 BattleAnim_QueueEffectList6(3, active_pokemon);
                 Audio_PlayCommand(35, 0, 0);
             }
@@ -1004,7 +1004,7 @@ void BattleScene_HandleLassoMoves(ActivePokemon* active_pokemon) {
         if (BattleAnim_IsAssetLoadBusy(active_pokemon) == 0) {
             BattleAnim_CleanupEffects(1);
             if (runtime->moveCache.lastMove == STRING_SHOT) {
-                if ((sStatCanBeLoweredFurther != 0) && (sConfused != 0)) {
+                if ((sStatCanBeChangedFurther != 0) && (sConfused != 0)) {
                     BattleAnim_PlayMoveEffectEnd(sActivePokemon[side == 0], runtime->usedMove);
                     BattleScene_SetParticipantModelFlags(sActivePokemon[side == 0], 16, 0);
                 }
@@ -1622,7 +1622,7 @@ s32 BattleScene_GetOpponentEffectCheckpoint(ActivePokemon* active_pokemon) {
     target_side = BattleScene_GetParticipantSideIndex(active_pokemon) == 0;
     sCurrentAnimation = &sSideBattleCues[target_side]->moveCues[runtime->usedMove - 1];
 
-    if (sStatCanBeLoweredFurther != 1) {
+    if (sStatCanBeChangedFurther != 1) {
         return 2;
     }
 
@@ -1645,7 +1645,7 @@ void BattleScene_TickRow11QueueEffectList6(ActivePokemon* active_pokemon) {
     sCurrentAnimation = &sSideBattleCues[BattleScene_GetParticipantSideIndex(active_pokemon) == 0]->moveCues[runtime->usedMove - 1];
     if (sActivePokemon[target_side]->animationTimer == (sCurrentAnimation->unk_08 + 1)) {
         if (BattleAnim_IsAssetLoadBusy(active_pokemon) == 0) {
-            if (sStatCanBeLoweredFurther == 1) {
+            if (sStatCanBeChangedFurther == 1) {
                 BattleAnim_QueueEffectList6(1, sActivePokemon[target_side]);
                 BattleAnim_PlayBattleSequenceById(active_pokemon, 32);
             }

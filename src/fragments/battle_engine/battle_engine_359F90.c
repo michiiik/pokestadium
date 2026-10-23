@@ -77,7 +77,7 @@ static s32 pad_D_843C4DE8;
 s32 sTypeEffectiveness;
 static s32 pad_D_843C4DF0[21];
 u8 sConfused;
-u8 sStatCanBeLoweredFurther;
+u8 sStatCanBeChangedFurther;
 static s32 pad_D_843C4E48[252];
 BattleMonRuntime* sBattleUser;
 BattleMonRuntime* sBattleTarget;
@@ -1821,7 +1821,7 @@ void Battle_ResolveMonAction(void) {
     ptr2->unk_2A = 0;
 
     sConfused = 1;
-    sStatCanBeLoweredFurther = 1;
+    sStatCanBeChangedFurther = 1;
 
     sBattleScene.scene->unk_1A = 0;
 
@@ -1866,7 +1866,7 @@ void BeginBattleForEntity(ActivePokemon* arg0) {
     ptr2->unk_12 = 0xFFFF;
 
     sConfused = 1;
-    sStatCanBeLoweredFurther = 1;
+    sStatCanBeChangedFurther = 1;
 
     sBattleScene.scene->unk_48 = 0;
     sBattleScene.scene->unk_4C = 0;
