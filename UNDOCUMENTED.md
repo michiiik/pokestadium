@@ -3,13 +3,13 @@
 # Undocumented code
 
 <!-- AUTO_UNDOCUMENTED:START -->
-- Functions defined in `src/` with a `/* ... */` comment: **249 / 7,484 (3.3%)**
-- Functions with a real name: **7,320 / 7,794 (93.9%)** (474 still `func_XXXXXXXX`)
-- Variables with a real name: **1,573 / 6,453 (24.4%)** (4,880 still `D_XXXXXXXX` / `jtbl_XXXXXXXX`)
-- Functions still using m2c `temp_*` / `var_*` locals: **1,822**
-- Functions with generic `arg0`, `arg1`, ... parameters: **4,690 / 7,484 (62.7%)**
+- Functions defined in `src/` with a `/* ... */` comment: **274 / 7,484 (3.7%)**
+- Functions with a real name: **7,321 / 7,794 (93.9%)** (473 still `func_XXXXXXXX`)
+- Variables with a real name: **1,573 / 6,452 (24.4%)** (4,879 still `D_XXXXXXXX` / `jtbl_XXXXXXXX`)
+- Functions still using m2c `temp_*` / `var_*` locals: **1,812**
+- Functions with generic `arg0`, `arg1`, ... parameters: **4,626 / 7,484 (61.8%)**
 - Structs with generic fields (`unk_XX`, `pad`, `field_XX`): **832 / 1,041**
-- Struct fields with a real name: **1,537 / 6,703 (22.9%)**
+- Struct fields with a real name: **1,553 / 6,703 (23.2%)**
 - Raw `*(T *)(base + 0xNN)` offset accesses that bypass a struct field: **0**
 <!-- AUTO_UNDOCUMENTED:END -->
 
@@ -49,7 +49,6 @@ Generic fields are named unk/pad/field/filler with an optional hex suffix; neste
 | `src/fragments/lab_pc/lab_pc_1A9780.c` | 55 | 55 | 5 | 45 | 24 | 55 | 0 |
 | `src/fragments/battle_engine/battle_engine_317E70.c` | 98 | 98 | 0 | 3 | 11 | 70 | 0 |
 | `src/fragments/particle_math/particle_math_264380.c` | 100 | 100 | 1 | 36 | 9 | 32 | 0 |
-| `src/fragments/battle_engine/battle_engine_2F3CB0.c` | 74 | 74 | 1 | 19 | 12 | 68 | 0 |
 | `src/fragments/ekans_game/ekans_game.c` | 68 | 68 | 6 | 74 | 12 | 11 | 0 |
 | `src/fragments/battle_engine/battle_engine_3055E0.c` | 81 | 81 | 0 | 6 | 11 | 71 | 0 |
 | `src/fragments/battle_prep/battle_prep_397B10.c` | 44 | 44 | 0 | 53 | 24 | 44 | 0 |
@@ -102,6 +101,7 @@ Generic fields are named unk/pad/field/filler with an optional hex suffix; neste
 | `src/fragments/battle_prep/battle_prep_394120.c` | 41 | 41 | 0 | 18 | 16 | 10 | 0 |
 | `src/fragments/transfer_pak_select/transfer_pak_select.c` | 24 | 24 | 2 | 37 | 10 | 11 | 0 |
 | `src/poke_icon.c` | 31 | 31 | 3 | 7 | 12 | 30 | 0 |
+| `src/fragments/battle_engine/battle_engine_move_model_transforms.c` | 74 | 50 | 0 | 18 | 4 | 10 | 0 |
 | `src/fragments/battle_prep/battle_prep_39AC50.c` | 18 | 18 | 1 | 38 | 7 | 18 | 0 |
 | `src/fragments/trade_machine/trade_machine_289240.c` | 29 | 29 | 1 | 16 | 11 | 24 | 0 |
 | `src/fragments/sushi_game/sushi_game_144300.c` | 14 | 14 | 2 | 51 | 8 | 5 | 0 |
@@ -131,9 +131,9 @@ Generic fields are named unk/pad/field/filler with an optional hex suffix; neste
 | `src/matrix.c` | 50 | 50 | 0 | 5 | 8 | 5 | 0 |
 | `src/fragments/sushi_game/sushi_game_14A030.c` | 17 | 17 | 1 | 29 | 9 | 11 | 0 |
 | `src/fragments/trade_machine/trade_machine_287ED0.c` | 31 | 31 | 1 | 20 | 4 | 10 | 0 |
-| `src/fragments/battle_engine/battle_engine_2F6930.c` | 22 | 22 | 0 | 19 | 3 | 20 | 0 |
 | `src/table_view.c` | 25 | 25 | 0 | 2 | 14 | 22 | 0 |
 | `src/fragments/trade_machine/trade_machine_291D60.c` | 24 | 24 | 1 | 8 | 8 | 18 | 0 |
+| `src/fragments/battle_engine/battle_engine_2F6930.c` | 22 | 22 | 0 | 19 | 2 | 15 | 0 |
 | `src/fragments/minigame_actor_framework/minigame_actor_framework_1189B0.c` | 23 | 23 | 3 | 19 | 2 | 11 | 0 |
 | `src/fragments/battle_engine/battle_engine_304060.c` | 23 | 23 | 0 | 8 | 4 | 22 | 0 |
 | `src/fragments/battle_prep/battle_prep_39ED60.c` | 14 | 14 | 1 | 21 | 8 | 13 | 0 |
@@ -154,12 +154,12 @@ Generic fields are named unk/pad/field/filler with an optional hex suffix; neste
 | `src/fragments/battle_engine/battle_engine_3020D0.c` | 23 | 23 | 1 | 7 | 5 | 10 | 0 |
 | `src/fragments/battle_engine/battle_engine_313D60.c` | 23 | 23 | 1 | 4 | 1 | 17 | 0 |
 | `src/fragments/demo_scenes/demo_scenes_16A0E0.c` | 19 | 19 | 2 | 20 | 3 | 2 | 0 |
-| `src/fragments/battle_engine/battle_engine_347330.c` | 14 | 14 | 0 | 12 | 9 | 10 | 0 |
 | `src/fragments/battle_engine/battle_engine_359F80.c` | 1 | 1 | 1 | 42 | 0 | 0 | 0 |
 | `src/fragments/particle_data_library/particle_data_library_2558B0.c` | 10 | 10 | 2 | 16 | 7 | 9 | 0 |
 | `src/fragments/trade_machine/trade_machine_28D1A0.c` | 14 | 14 | 0 | 15 | 5 | 10 | 0 |
 | `src/session.c` | 19 | 19 | 0 | 3 | 8 | 14 | 0 |
 | `src/audio_loop_point.c` | 6 | 6 | 0 | 31 | 1 | 4 | 0 |
+| `src/fragments/battle_engine/battle_engine_347330.c` | 14 | 13 | 0 | 12 | 8 | 9 | 0 |
 | `src/geo_layout.c` | 41 | 38 | 0 | 1 | 2 | 1 | 0 |
 | `src/fragments/credits/credits_15A2B0.c` | 5 | 5 | 1 | 30 | 2 | 3 | 0 |
 | `src/fragments/lab_pc/lab_pc_1A8800.c` | 13 | 13 | 0 | 12 | 3 | 13 | 0 |
@@ -371,10 +371,10 @@ Generic fields are named unk/pad/field/filler with an optional hex suffix; neste
 | --- | --- | ---: | ---: |
 | `unk_D_8122B2C0` | `include/global.h` | 80 | 74 |
 | `unk_func_8830867C_02C` | `src/fragments/lab_pc_list/lab_pc_list.h` | 63 | 63 |
-| `BattleScene` | `src/fragments/battle_engine/battle_engine.h` | 46 | 46 |
-| `BattleMonRuntime` | `src/3D140.h` | 50 | 45 |
+| `BattleScene` | `src/fragments/battle_engine/battle_engine.h` | 46 | 45 |
 | `MiniActor` | `src/fragments/minigame_actor_framework/minigame_actor_framework.h` | 102 | 45 |
 | `Particle` | `src/fragments/particle_math/particle_math.h` | 54 | 45 |
+| `BattleMonRuntime` | `src/3D140.h` | 50 | 44 |
 | `unk_D_86807558` | `src/fragments/sushi_game/sushi_game.h` | 41 | 41 |
 | `GbApuChannelState` | `src/fragments/gb_tower_emulator/gb_tower_emulator_86CB0.c` | 34 | 34 |
 | `GbSaveMainData` | `src/gb_data.h` | 31 | 31 |
@@ -386,7 +386,7 @@ Generic fields are named unk/pad/field/filler with an optional hex suffix; neste
 | `unk_D_86B0E5D4_04` | `src/fragments/demo_scenes/demo_scenes.h` | 28 | 28 |
 | `RentalCarouselState` | `src/fragments/rental_team_selection/rental_team_selection.h` | 27 | 27 |
 | `unk_func_88205880_0098_008` | `src/fragments/widget_tree/widget_tree.h` | 26 | 26 |
-| `ActivePokemonState` | `src/fragments/battle_engine/battle_engine.h` | 29 | 24 |
+| `ActivePokemonState` | `src/fragments/battle_engine/battle_engine.h` | 29 | 23 |
 | `BattleAiScoredMove` | `src/fragments/battle_engine/battle_engine.h` | 23 | 23 |
 | `RentalTeamTray` | `src/fragments/rental_team_selection/rental_team_selection.h` | 23 | 23 |
 | `RibbonMesh` | `src/fragments/battle_engine/battle_engine.h` | 23 | 23 |

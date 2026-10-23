@@ -46,10 +46,10 @@ Shared C files the US build compiles that `de` still builds from its own disasse
 | `src/dp_intro.c` | 20 |
 | `src/fragments/1/fragment1_89010.c` | 1 |
 | `src/fragments/61/fragment61_2D78B0.c` | 1 |
-| `src/fragments/battle_engine/battle_engine_2F3CB0.c` | 74 |
 | `src/fragments/battle_engine/battle_engine_2F74E0.c` | 54 |
 | `src/fragments/battle_engine/battle_engine_2FA4D0.c` | 56 |
 | `src/fragments/battle_engine/battle_engine_32A640.c` | 14 |
+| `src/fragments/battle_engine/battle_engine_move_model_transforms.c` | 74 |
 | `src/fragments/battle_order_select/battle_order_select.c` | 1 |
 | `src/fragments/battle_prep/battle_prep_394120.c` | 41 |
 | `src/fragments/battle_prep/battle_prep_3A1C30.c` | 2 |
@@ -152,7 +152,6 @@ Shared C files the US build compiles that `es` still builds from its own disasse
 | `src/dp_intro.c` | 20 |
 | `src/fragments/1/fragment1_89010.c` | 1 |
 | `src/fragments/61/fragment61_2D78B0.c` | 1 |
-| `src/fragments/battle_engine/battle_engine_2F3CB0.c` | 74 |
 | `src/fragments/battle_engine/battle_engine_2F74E0.c` | 54 |
 | `src/fragments/battle_engine/battle_engine_2FA4D0.c` | 56 |
 | `src/fragments/battle_engine/battle_engine_32A640.c` | 14 |
@@ -160,6 +159,7 @@ Shared C files the US build compiles that `es` still builds from its own disasse
 | `src/fragments/battle_engine/battle_engine_359F90.c` | 54 |
 | `src/fragments/battle_engine/battle_engine_361050.c` | 1 |
 | `src/fragments/battle_engine/battle_engine_move_animation.c` | 121 |
+| `src/fragments/battle_engine/battle_engine_move_model_transforms.c` | 74 |
 | `src/fragments/battle_order_select/battle_order_select.c` | 1 |
 | `src/fragments/battle_prep/battle_prep_394120.c` | 41 |
 | `src/fragments/battle_prep/battle_prep_3A1C30.c` | 2 |
@@ -260,10 +260,10 @@ Shared C files the US build compiles that `eu` still builds from its own disasse
 | `src/cry.c` | 2 |
 | `src/dp_intro.c` | 20 |
 | `src/fragments/1/fragment1_89010.c` | 1 |
-| `src/fragments/battle_engine/battle_engine_2F3CB0.c` | 74 |
 | `src/fragments/battle_engine/battle_engine_2F74E0.c` | 54 |
 | `src/fragments/battle_engine/battle_engine_2FA4D0.c` | 56 |
 | `src/fragments/battle_engine/battle_engine_32A640.c` | 14 |
+| `src/fragments/battle_engine/battle_engine_move_model_transforms.c` | 74 |
 | `src/fragments/clefairy_game/clefairy_game.c` | 58 |
 | `src/fragments/credits/credits_158A00.c` | 18 |
 | `src/fragments/credits/credits_15A2A0.c` | 1 |
@@ -334,7 +334,6 @@ Shared C files the US build compiles that `eu_rev1` still builds from its own di
 | `src/dp_intro.c` | 20 |
 | `src/fragments/1/fragment1_89010.c` | 1 |
 | `src/fragments/61/fragment61_2D78B0.c` | 1 |
-| `src/fragments/battle_engine/battle_engine_2F3CB0.c` | 74 |
 | `src/fragments/battle_engine/battle_engine_2F74E0.c` | 54 |
 | `src/fragments/battle_engine/battle_engine_2FA4D0.c` | 56 |
 | `src/fragments/battle_engine/battle_engine_32A640.c` | 14 |
@@ -342,6 +341,7 @@ Shared C files the US build compiles that `eu_rev1` still builds from its own di
 | `src/fragments/battle_engine/battle_engine_359F90.c` | 54 |
 | `src/fragments/battle_engine/battle_engine_361050.c` | 1 |
 | `src/fragments/battle_engine/battle_engine_move_animation.c` | 121 |
+| `src/fragments/battle_engine/battle_engine_move_model_transforms.c` | 74 |
 | `src/fragments/battle_order_select/battle_order_select.c` | 1 |
 | `src/fragments/battle_prep/battle_prep_394120.c` | 41 |
 | `src/fragments/battle_prep/battle_prep_3A1C30.c` | 2 |
@@ -437,7 +437,6 @@ Shared C files the US build compiles that `fr` still builds from its own disasse
 | `src/dp_intro.c` | 20 |
 | `src/fragments/1/fragment1_89010.c` | 1 |
 | `src/fragments/61/fragment61_2D78B0.c` | 1 |
-| `src/fragments/battle_engine/battle_engine_2F3CB0.c` | 74 |
 | `src/fragments/battle_engine/battle_engine_2F74E0.c` | 54 |
 | `src/fragments/battle_engine/battle_engine_2FA4D0.c` | 56 |
 | `src/fragments/battle_engine/battle_engine_32A640.c` | 14 |
@@ -445,6 +444,7 @@ Shared C files the US build compiles that `fr` still builds from its own disasse
 | `src/fragments/battle_engine/battle_engine_359F90.c` | 54 |
 | `src/fragments/battle_engine/battle_engine_361050.c` | 1 |
 | `src/fragments/battle_engine/battle_engine_move_animation.c` | 121 |
+| `src/fragments/battle_engine/battle_engine_move_model_transforms.c` | 74 |
 | `src/fragments/battle_order_select/battle_order_select.c` | 1 |
 | `src/fragments/battle_prep/battle_prep_394120.c` | 41 |
 | `src/fragments/battle_prep/battle_prep_3A1C30.c` | 2 |
@@ -547,7 +547,6 @@ Shared C files the US build compiles that `it` still builds from its own disasse
 | `src/dp_intro.c` | 20 |
 | `src/fragments/1/fragment1_89010.c` | 1 |
 | `src/fragments/61/fragment61_2D78B0.c` | 1 |
-| `src/fragments/battle_engine/battle_engine_2F3CB0.c` | 74 |
 | `src/fragments/battle_engine/battle_engine_2F74E0.c` | 54 |
 | `src/fragments/battle_engine/battle_engine_2FA4D0.c` | 56 |
 | `src/fragments/battle_engine/battle_engine_32A640.c` | 14 |
@@ -555,6 +554,7 @@ Shared C files the US build compiles that `it` still builds from its own disasse
 | `src/fragments/battle_engine/battle_engine_359F90.c` | 54 |
 | `src/fragments/battle_engine/battle_engine_361050.c` | 1 |
 | `src/fragments/battle_engine/battle_engine_move_animation.c` | 121 |
+| `src/fragments/battle_engine/battle_engine_move_model_transforms.c` | 74 |
 | `src/fragments/battle_order_select/battle_order_select.c` | 1 |
 | `src/fragments/battle_prep/battle_prep_394120.c` | 41 |
 | `src/fragments/battle_prep/battle_prep_3A1C30.c` | 2 |
