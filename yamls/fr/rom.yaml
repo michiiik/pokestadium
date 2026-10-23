@@ -1889,7 +1889,7 @@
     - [0x2DD430, c,      fragments/battle_engine/battle_engine_main]
     - [0x2DEF10, asm, fragments/battle_engine/battle_engine_move_animation]
     - [0x2E48B0, c,      fragments/battle_engine/battle_engine_thumbnail]
-    - [0x2E4EF0, c,      fragments/battle_engine/battle_engine_move_model_transforms]
+    - [0x2E4EF0, c,      fragments/battle_engine/battle_engine_2F23A0]
     - [0x2E6800, asm, fragments/battle_engine/battle_engine_2F3CB0]
     - [0x2E9480, c,      fragments/battle_engine/battle_engine_2F6930]
     - [0x2EA030, asm, fragment62_2EA030]
