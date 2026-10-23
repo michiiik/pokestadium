@@ -82,14 +82,14 @@ s32 BattleScene_DetermineWinner(void) {
     s32 var_s5 = 0;
     s32 var_s6 = 0;
 
-    for (i = 0; i < BattleScene_GetSelectedSideTeamSize(sActivePokemon[0]); i++) {
+    for (i = 0; i < BattleScene_GetTeamMemberTeamSize(sActivePokemon[0]); i++) {
         ptr = &sActivePokemon[0]->teamRoster->pokemonPicked[i];
         if (ptr->hp != 0) {
             var_s3++;
         }
     }
 
-    for (i = 0; i < BattleScene_GetSelectedSideTeamSize(sActivePokemon[1]); i++) {
+    for (i = 0; i < BattleScene_GetTeamMemberTeamSize(sActivePokemon[1]); i++) {
         ptr = &sActivePokemon[1]->teamRoster->pokemonPicked[i];
         if (ptr->hp != 0) {
             var_s4++;
@@ -103,12 +103,12 @@ s32 BattleScene_DetermineWinner(void) {
         return 2;
     }
 
-    for (i = 0; i < BattleScene_GetSelectedSideTeamSize(sActivePokemon[0]); i++) {
+    for (i = 0; i < BattleScene_GetTeamMemberTeamSize(sActivePokemon[0]); i++) {
         ptr = &sActivePokemon[0]->teamRoster->pokemonPicked[i];
         var_s5 += Battle_ClassifyHpTier(ptr->hp, ptr->unk_26);
     }
 
-    for (i = 0; i < BattleScene_GetSelectedSideTeamSize(sActivePokemon[1]); i++) {
+    for (i = 0; i < BattleScene_GetTeamMemberTeamSize(sActivePokemon[1]); i++) {
         ptr = &sActivePokemon[1]->teamRoster->pokemonPicked[i];
         var_s6 += Battle_ClassifyHpTier(ptr->hp, ptr->unk_26);
     }
@@ -337,7 +337,7 @@ void BattleScene_AutoSelectReplacementMon(ActivePokemon* arg0) {
 void BattleScene_SelectActiveController(ActivePokemon* arg0) {
     ActivePokemonState* ptr = &arg0->state;
 
-    ptr->ownerTeamMemberIndex = ptr->side;
+    ptr->ownerTeamMemberIndex = ptr->teamMemberIndex;
     ptr->controller = &gControllers[arg0->sessionTeams->teamMember[ptr->ownerTeamMemberIndex]->controllerPort];
 }
 
@@ -780,7 +780,7 @@ void BattleScene_HandlePartySlotCursorInput(ActivePokemon* arg0, Controller* arg
     }
 
     if (BTN_IS_PRESSED(arg1, BTN_A | BTN_B | BTN_CUP | BTN_CDOWN | BTN_CLEFT | BTN_CRIGHT)) {
-        if ((sp1C->rosterIndex == sp1C->unk_18) && (sp1C->ownerTeamMemberIndex == sp1C->side)) {
+        if ((sp1C->rosterIndex == sp1C->unk_18) && (sp1C->ownerTeamMemberIndex == sp1C->teamMemberIndex)) {
             if (BattleScene_ValidateSelectedPartyMember(arg0) != 0) {
                 BattleAnim_PlaySoundEffect8();
                 BattleScene_QueuePartySelectionConfirmMessage(arg0);

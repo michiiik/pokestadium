@@ -89,7 +89,7 @@ s32 BattleScene_AdvanceOwnerAnimation(ActivePokemon* arg0) {
             sp1C = 1;
             if (arg0->sessionTeams->uniqueStatusFlags & 0x10) {
                 arg0->sessionTeams->uniqueStatusFlags &= ~0x90;
-                Battle_ReloadModelForActiveMove(arg0);
+                Battle_ReloadDisplayModel(arg0);
                 BattleScene_ApplyModelAnimationSlot5A(arg0);
                 sBattleScene.scene->unk_24++;
             }
@@ -153,7 +153,7 @@ s32 BattleScene_AdvanceOwnerAnimationAndClearFlags(ActivePokemon* arg0) {
             var_s0 = 1;
             if (arg0->sessionTeams->uniqueStatusFlags & 0x10) {
                 arg0->sessionTeams->uniqueStatusFlags &= ~0x90;
-                Battle_ReloadModelForActiveMove(arg0);
+                Battle_ReloadDisplayModel(arg0);
                 Battle_ClearRuntimeFlags(arg0, 0x1800);
                 var_s0 = 0;
                 BattleScene_ResetAnimationStep();
@@ -197,7 +197,7 @@ s32 BattleScene_AdvanceDoublesOwnerAnimation(ActivePokemon* arg0) {
             sp1C = 1;
             if (arg0->sessionTeams->uniqueStatusFlags & 0x10) {
                 arg0->sessionTeams->uniqueStatusFlags &= ~0x90;
-                Battle_ReloadModelForActiveMove(arg0);
+                Battle_ReloadDisplayModel(arg0);
                 BattleScene_ApplyModelAnimationSlot5A(arg0);
                 sBattleScene.scene->unk_24 += 1;
             }
@@ -814,23 +814,23 @@ void BattleScene_SendOutPresentationFinalize(CameraNode* arg0) {
     if (temp_t1->flags & 0x4008) {
         sp24->displayObject.lodFraction = 0xFF;
         BattleAnim_StopOwnerCategoryParticles(4, sp24);
-        sp24->displayObject.position.y = sPokemonModelDimensions[sBattleScene.scene->unk_2C].depth;
+        sp24->displayObject.position.y = sPokemonModelDimensions[sBattleScene.scene->unk_2C].restingHeight;
         sp24->displayObject.node.renderFlags &= ~0x2;
         sp24->displayObject.node.renderFlags |= 0x20;
         sp24->displayObject.node.flags |= 1;
         Battle_ClearRuntimeFlags(sp24, 0x4608);
     }
 
-    if (sActivePokemon[sBattleScene.scene->unk_2C]->animationFlags1 == 0xA) {
-        BattleScene_SetParticipantModelFlags(sActivePokemon[sBattleScene.scene->unk_2C], 0, 0);
+    if (sActivePokemon[sBattleScene.scene->unk_2C]->modelTransformId == 0xA) {
+        BattleScene_SetParticipantModelTransform(sActivePokemon[sBattleScene.scene->unk_2C], 0, 0);
     }
 
-    if (sActivePokemon[sBattleScene.scene->unk_2C]->animationFlags1 == 0xD) {
-        BattleScene_SetParticipantModelFlags(sActivePokemon[sBattleScene.scene->unk_2C], 0, 0);
+    if (sActivePokemon[sBattleScene.scene->unk_2C]->modelTransformId == 0xD) {
+        BattleScene_SetParticipantModelTransform(sActivePokemon[sBattleScene.scene->unk_2C], 0, 0);
     }
 
-    if (sActivePokemon[sBattleScene.scene->unk_2C]->animationFlags1 == 0x10) {
-        BattleScene_SetParticipantModelFlags(sActivePokemon[sBattleScene.scene->unk_2C], 0, 0);
+    if (sActivePokemon[sBattleScene.scene->unk_2C]->modelTransformId == 0x10) {
+        BattleScene_SetParticipantModelTransform(sActivePokemon[sBattleScene.scene->unk_2C], 0, 0);
     }
 
     sActivePokemon[sBattleScene.scene->unk_2C]->displayObject.rotation.x = 0;
@@ -842,7 +842,7 @@ void BattleScene_SendOutPresentationFinalize(CameraNode* arg0) {
 
     Battle_ResetModelToIdleAnim(sActivePokemon[sBattleScene.scene->unk_2C]);
     Vec3f_SetComponentsDuplicate(&sActivePokemon[sBattleScene.scene->unk_2C]->displayObject.scale, 1.0f, 1.0f, 1.0f);
-    sActivePokemon[sBattleScene.scene->unk_2C]->displayObject.position.y = BattleScene_GetParticipantModelDepthScale(sActivePokemon[sBattleScene.scene->unk_2C]);
+    sActivePokemon[sBattleScene.scene->unk_2C]->displayObject.position.y = BattleScene_GetParticipantModelRestingHeight(sActivePokemon[sBattleScene.scene->unk_2C]);
     BattleAnim_GetOwnerDefaultAnchorPosition(sActivePokemon[sBattleScene.scene->unk_2C], &gCameraPreset.unk_00);
     BattleScene_LoadCameraPreset(&D_84384AF8, arg0, sActivePokemon[sBattleScene.scene->unk_2C]);
     BattleScene_ApplyCameraPreset(arg0, sActivePokemon[sBattleScene.scene->unk_2C], 1);
@@ -865,7 +865,7 @@ s32 BattleScene_ResetOwnerStatusPresentation(ActivePokemon* arg0) {
     if (sp28->flags & 0x4008) {
         arg0->displayObject.lodFraction = 0xFF;
         BattleAnim_StopOwnerCategoryParticles(4, arg0);
-        arg0->displayObject.position.y = sPokemonModelDimensions[BattleScene_GetParticipantSideIndex(arg0)].depth;
+        arg0->displayObject.position.y = sPokemonModelDimensions[BattleScene_GetParticipantSideIndex(arg0)].restingHeight;
         arg0->displayObject.node.renderFlags &= ~0x2;
         arg0->displayObject.node.renderFlags |= 0x20;
         arg0->displayObject.node.flags |= 1;
@@ -873,8 +873,8 @@ s32 BattleScene_ResetOwnerStatusPresentation(ActivePokemon* arg0) {
     }
 
     BattleAnim_EndSleepStatusAnimation(arg0);
-    sp28->hue = 0xFF;
-    Model_SetMaterialColor(&arg0->displayObject, 0xFF, 0xFF, 0xFF, sp28->hue);
+    sp28->alpha = 0xFF;
+    Model_SetMaterialColor(&arg0->displayObject, 0xFF, 0xFF, 0xFF, sp28->alpha);
     BattleScene_CleanupParticipantEffectMode(arg0);
     arg0->displayObject.rotation.x = 0;
     return 0;
@@ -1029,14 +1029,14 @@ void BattleScene_SetupSendOutOwnerShot(CameraNode* arg0) {
         }
 
         sp44 = (D_84384580[sBattleScene.scene->unk_2C]->coordinates.y + temp_s0->displayObject.position.y) + D_84384C30[sp3B].z;
-        sp40 = ((D_84384580[sBattleScene.scene->unk_2C]->coordinates.z + D_84384C30[sp3B].y) * temp_s0->cameraOffsetScaleFactor) +
+        sp40 = ((D_84384580[sBattleScene.scene->unk_2C]->coordinates.z + D_84384C30[sp3B].y) * temp_s0->facingDirection) +
                temp_s0->displayObject.position.x;
 
         Vec3f_SetComponentsDuplicate(&arg0->view.targetPosition, sp40, sp44, temp_s0->displayObject.position.z);
 
         sp40 = D_84384580[sBattleScene.scene->unk_2C]->coordinates.x * D_84384C30[sp3B].x;
         sp3E = D_84384580[sBattleScene.scene->unk_2C]->unk_0C;
-        tmp1 = (temp_s0->cameraOffsetScaleFactor * D_84384580[sBattleScene.scene->unk_2C]->unk_0E) + BattleScene_GetParticipantFacingAngle(temp_s0);
+        tmp1 = (temp_s0->facingDirection * D_84384580[sBattleScene.scene->unk_2C]->unk_0E) + BattleScene_GetParticipantFacingAngle(temp_s0);
         Camera_ComputeEyeFromAngles(&arg0->view.targetPosition, &arg0->view.eyePosition, sp40, sp3E, tmp1);
         sBattleScene.scene->unk_20++;
     }
@@ -1186,12 +1186,12 @@ void BattleScene_ResetOwnerPresentationFlags(ActivePokemon* arg0) {
     ActivePokemonState* ptr = &arg0->state;
 
     if (ptr->flags & 0x200) {
-        arg0->displayObject.position.y = sPokemonModelDimensions[BattleScene_GetParticipantSideIndex(arg0)].depth;
+        arg0->displayObject.position.y = sPokemonModelDimensions[BattleScene_GetParticipantSideIndex(arg0)].restingHeight;
         Battle_ClearRuntimeFlags(arg0, 0x608);
     } else if (ptr->flags & 0x4008) {
         arg0->displayObject.lodFraction = 0xFF;
         BattleAnim_StopOwnerCategoryParticles(4, arg0);
-        arg0->displayObject.position.y = sPokemonModelDimensions[BattleScene_GetParticipantSideIndex(arg0)].depth;
+        arg0->displayObject.position.y = sPokemonModelDimensions[BattleScene_GetParticipantSideIndex(arg0)].restingHeight;
         arg0->displayObject.node.renderFlags &= ~0x2;
         arg0->displayObject.node.renderFlags |= 0x20;
         arg0->displayObject.node.flags |= 1;
@@ -1567,7 +1567,7 @@ s32 BattleScene_ApplyActionCameraMode(CameraNode* arg0, s32 arg1) {
             break;
 
         default:
-            if ((D_84390204->animationFlags1 != 6) && (D_84390204->animationFlags1 != 4) && (arg1 != 0)) {
+            if ((D_84390204->modelTransformId != 6) && (D_84390204->modelTransformId != 4) && (arg1 != 0)) {
                 BattleScene_ReframeAndRecomputeDistance(arg0, D_84390204);
             }
             break;
@@ -1676,7 +1676,7 @@ void BattleScene_ActionSetupAnimationVariantC(CameraNode* arg0) {
         case 0:
             BattleScene_ResetCameraFrameCounter();
             BattleScene_SetPhaseFlag();
-            Vec3f_SetComponentsDuplicate(&gCameraPreset.unk_00, D_84390204->cameraOffsetScaleFactor * -175.0f, 25.0f, 0.0f);
+            Vec3f_SetComponentsDuplicate(&gCameraPreset.unk_00, D_84390204->facingDirection * -175.0f, 25.0f, 0.0f);
             BattleScene_LoadCameraPreset(&D_84384958, arg0, D_84390204);
             if ((D_84390204->displayObject.objectType != 0x33) && (D_84390204->displayObject.objectType != 0x32)) {
                 BattleAnim_PlayMoveEffectScript(D_84390204, sp18->usedMove);
@@ -1852,9 +1852,9 @@ void BattleScene_RunMoveEffectEndHpTransition(CameraNode* arg0) {
                 BattleScene_SetPhaseFlag();
                 BattleScene_CleanupOpponentSpecialAnimFlag(D_84390200);
                 BattleBox_Open(1);
-                sp2C = Battle_GetSideAnimTableFieldB(D_84390200);
-                BattleAnim_QueueMoveEffectEnd(sp34->usedMove, D_84390204, D_84390200, sp2C, Battle_GetSideAnimTableFieldC(D_84390200));
-                BattleScene_SetParticipantModelFlags(D_84390200, 0x10, 0);
+                sp2C = BattleScene_GetHitCueDefaultAnchor(D_84390200);
+                BattleAnim_QueueMoveEffectEnd(sp34->usedMove, D_84390204, D_84390200, sp2C, BattleScene_GetHitCueAlternateAnchor(D_84390200));
+                BattleScene_SetParticipantModelTransform(D_84390200, 0x10, 0);
             }
             break;
 
@@ -2610,7 +2610,7 @@ void BattleScene_Phase12(CameraNode* arg0) {
                 BattleAnim_GetOwnerDefaultAnchorPosition(D_84390204, &sp3C);
                 sp3C.y += BattleAnim_GetOwnerModelHeight(D_84390204);
                 D_84390208 = BattleScene_ScaleCameraDistance(D_84390204, 3.0f, 500.0f);
-                BattleScene_SetCameraEyeFromPosition(arg0, sp3C, 0x11C6, BattleScene_GetParticipantFacingAngle(D_84390204) - (D_84390204->cameraOffsetScaleFactor * 0x754E),
+                BattleScene_SetCameraEyeFromPosition(arg0, sp3C, 0x11C6, BattleScene_GetParticipantFacingAngle(D_84390204) - (D_84390204->facingDirection * 0x754E),
                               D_84390208, BattleAnim_GetOwnerModelHeight(D_84390204));
                 Vec3f_SetComponentsDuplicate(&sp3C, 0.0f, 200.0f, 0.0f);
                 BattleAnim_Vec3fCopy(&arg0->view.targetPosition, &sp3C);
@@ -3286,10 +3286,10 @@ void BattleScene_PhaseWithdrawFainted(CameraNode* arg0) {
         case 2:
             BattleScene_ApproachCameraZoom(arg0, temp_s0);
             if (BattleScene_AdvanceCameraFrameCounter(0x69) != 0) {
-                Vec3f_SetComponentsDuplicate(&arg0->view.targetPosition, temp_s0->cameraOffsetScaleFactor * -150.0f, 0.0, 0.0f);
+                Vec3f_SetComponentsDuplicate(&arg0->view.targetPosition, temp_s0->facingDirection * -150.0f, 0.0, 0.0f);
                 if (sBattleScene.scene && sBattleScene.scene) {}
-                Vec3f_SetComponentsDuplicate(&arg0->view.eyePosition, temp_s0->cameraOffsetScaleFactor * -50.0f, 5.0f, 0.0f);
-                BattleScene_SetParticipantModelFlags(temp_s0, 2, 0);
+                Vec3f_SetComponentsDuplicate(&arg0->view.eyePosition, temp_s0->facingDirection * -50.0f, 5.0f, 0.0f);
+                BattleScene_SetParticipantModelTransform(temp_s0, 2, 0);
                 BattleAnim_QueueEffectList3(0xD, temp_s0, temp_s0, 0xFF, 0xFF);
                 sBattleScene.scene->unk_20 += 1;
             }
@@ -3320,7 +3320,7 @@ void BattleScene_PhaseWithdrawFainted(CameraNode* arg0) {
                 D_843900A8[sBattleScene.scene->unk_2C] = temp_s0->state.runtime.unk_0C;
                 BattleAnim_QueueEffectList3(3, temp_s0, temp_s0, 0xFF, 0xFF);
                 Audio_PlayCommand(2, 0, 0);
-                BattleScene_RebindParticipantToSide(temp_s0, sp34->ownerTeamMemberIndex);
+                BattleScene_RebindParticipantTeamMember(temp_s0, sp34->ownerTeamMemberIndex);
                 arg0->perspective.verticalFieldOfView = 40.0f;
                 BattleBox_Open(0xC);
                 Battle_TriggerTrainerPresentationCue(temp_s0);
@@ -3369,9 +3369,9 @@ void BattleScene_PhaseWithdrawSwitch(CameraNode* arg0) {
                 BattleScene_ResetCameraFrameCounter();
                 BattleBox_Open(0xB);
                 BattleAnim_LoadModeResourceList(temp_s0->sessionTeams, 3);
-                Vec3f_SetComponentsDuplicate(&arg0->view.targetPosition, temp_s0->cameraOffsetScaleFactor * -150.0f, 0.0, 0.0f);
-                Vec3f_SetComponentsDuplicate(&arg0->view.eyePosition, temp_s0->cameraOffsetScaleFactor * -50.0f, 5.0f, 0.0f);
-                Vec3f_SetComponentsDuplicate(&temp_s0->displayObject.position, temp_s0->cameraOffsetScaleFactor * -150.0f, 25.0f, 0.0f);
+                Vec3f_SetComponentsDuplicate(&arg0->view.targetPosition, temp_s0->facingDirection * -150.0f, 0.0, 0.0f);
+                Vec3f_SetComponentsDuplicate(&arg0->view.eyePosition, temp_s0->facingDirection * -50.0f, 5.0f, 0.0f);
+                Vec3f_SetComponentsDuplicate(&temp_s0->displayObject.position, temp_s0->facingDirection * -150.0f, 25.0f, 0.0f);
                 sBattleScene.scene->unk_20 += 1;
             } else {
                 BattleAnim_ApproachF(&arg0->perspective.verticalFieldOfView, 30.0f, 0.05f);
@@ -3388,7 +3388,7 @@ void BattleScene_PhaseWithdrawSwitch(CameraNode* arg0) {
         case 1:
             if (BattleAnim_TryRegisterAssetTables(temp_s0) != 0) {
                 temp_s0->sessionTeams->displayModel = sp2C->id;
-                BattleScene_SetParticipantModelFlags(temp_s0, 2, 0);
+                BattleScene_SetParticipantModelTransform(temp_s0, 2, 0);
                 BattleAnim_QueueEffectList3(0xD, temp_s0, temp_s0, 0xFF, 0xFF);
                 sBattleScene.scene->unk_20 += 1;
             }
@@ -3418,7 +3418,7 @@ void BattleScene_PhaseWithdrawSwitch(CameraNode* arg0) {
                 BattleThumbnail_TickOwnerCameraFraming(temp_s0);
                 D_843900A8[BattleScene_GetParticipantSideIndex(temp_s0)] = temp_s0->state.runtime.unk_0C;
                 Audio_PlayCommand(2, 0, 0);
-                BattleScene_RebindParticipantToSide(temp_s0, sp3C->ownerTeamMemberIndex);
+                BattleScene_RebindParticipantTeamMember(temp_s0, sp3C->ownerTeamMemberIndex);
                 BattleScene_ResetCameraFrameCounter();
                 BattleAnim_QueueEffectList3(3, temp_s0, temp_s0, 0xFF, 0xFF);
                 arg0->perspective.verticalFieldOfView = 40.0f;

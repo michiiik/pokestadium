@@ -154,8 +154,8 @@ static unk_D_843859E0 D_843859E0[] = {
 };
 
 s32 BattleScene_AreBothParticipantModelsCompact(void) {
-    if (((BattleScene_GetParticipantModelHeightScale(sActivePokemon[0]) + BattleScene_GetParticipantModelHeightScale(sActivePokemon[1])) <= 85.0f) &&
-        (BattleScene_GetParticipantModelDepthScale(sActivePokemon[0]) == 0.0f) && (BattleScene_GetParticipantModelDepthScale(sActivePokemon[1]) == 0.0f) &&
+    if (((BattleScene_GetParticipantModelHeight(sActivePokemon[0]) + BattleScene_GetParticipantModelHeight(sActivePokemon[1])) <= 85.0f) &&
+        (BattleScene_GetParticipantModelRestingHeight(sActivePokemon[0]) == 0.0f) && (BattleScene_GetParticipantModelRestingHeight(sActivePokemon[1]) == 0.0f) &&
         (sActivePokemon[0]->displayObject.position.y == 0.0f) && (sActivePokemon[1]->displayObject.position.y == 0.0f)) {
         return 1;
     }
@@ -233,7 +233,7 @@ void BattleScene_IntroCameraStep4Or6(CameraNode* arg0, s32 arg1) {
 
         sp50 = BattleScene_GetParticipantModelRadiusScaled(temp_s0) * 3.5f;
         sp3E = BattleAnim_RandomRange(3);
-        sp50 *= ((Battle_GetScaledHeightY(temp_s0) * 0.5f * sp3E) + 1.0f);
+        sp50 *= ((BattleScene_GetParticipantModelBoundsHeight(temp_s0) * 0.5f * sp3E) + 1.0f);
 
         if (sp50 > 325.0f) {
             sp50 = 325.0f;
@@ -370,13 +370,13 @@ void BattleScene_IntroCameraStep22Or24(CameraNode* arg0, s32 arg1) {
         }
 
         tmp2 = (D_84384580[arg1]->coordinates.y + temp_s0->displayObject.position.y) + D_84384C30[var_v1].z;
-        tmp1 = ((D_84384580[arg1]->coordinates.z + D_84384C30[var_v1].y) * temp_s0->cameraOffsetScaleFactor) + temp_s0->displayObject.position.x;
+        tmp1 = ((D_84384580[arg1]->coordinates.z + D_84384C30[var_v1].y) * temp_s0->facingDirection) + temp_s0->displayObject.position.x;
 
         Vec3f_SetComponentsDuplicate(&arg0->view.targetPosition, tmp1, tmp2, temp_s0->displayObject.position.z);
 
         tmp1 = D_84384580[sBattleScene.scene->unk_2C]->coordinates.x * D_84384C30[var_v1].x;
         tmp4 = D_84384580[sBattleScene.scene->unk_2C]->unk_0C;
-        tmp3 = (temp_s0->cameraOffsetScaleFactor * D_84384580[sBattleScene.scene->unk_2C]->unk_0E) + BattleScene_GetParticipantFacingAngle(temp_s0);
+        tmp3 = (temp_s0->facingDirection * D_84384580[sBattleScene.scene->unk_2C]->unk_0E) + BattleScene_GetParticipantFacingAngle(temp_s0);
 
         Camera_ComputeEyeFromAngles(&arg0->view.targetPosition, &arg0->view.eyePosition, tmp1, tmp4, tmp3);
         sBattleScene.scene->unk_20++;

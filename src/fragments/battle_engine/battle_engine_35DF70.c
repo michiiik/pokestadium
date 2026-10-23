@@ -1006,7 +1006,7 @@ void Battle_Effect_Heal(void) {
             temp_v0 = sBattleUser->unk_15;
 
             sBattleUser->unk_15 = 2;
-            temp_a2->roster[temp_a1->rosterIndex + temp_a1->side * 3] = 2;
+            temp_a2->roster[temp_a1->rosterIndex + temp_a1->teamMemberIndex * 3] = 2;
 
             if (temp_v0 != 0) {
                 if (D_8438AC60[0] == 1) {

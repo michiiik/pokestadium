@@ -122,7 +122,7 @@ typedef struct BattleSessionTeams {
     /* 0x04 */ TeamRoster* unk_04;
     /* 0x08 */ TeamRoster* teamMember[2];
     /* 0x10 */ ModelLoadContext* unk_10;
-    /* 0x14 */ ModelNodeView* unk_14;
+    /* 0x14 */ ModelNodeView* loadedModel;
     /* 0x18 */ ModelNodeView* unk_18;
     /* 0x1C */ u8 unk_1C;
     /* 0x1D */ u8 assetIsBusy;

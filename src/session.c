@@ -17,7 +17,7 @@ void Team_ClearTrainerSlot(BattleSessionTeams* arg0) {
     arg0->tagTeamSize = 0;
     arg0->displayModel = 0;
     arg0->unk_04 = 0;
-    arg0->unk_14 = 0;
+    arg0->loadedModel = 0;
     arg0->teamMember[0] = 0;
     arg0->teamMember[1] = 0;
     arg0->assetIsBusy = 0;
