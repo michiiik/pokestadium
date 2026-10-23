@@ -121,7 +121,7 @@ s32 BattleScene_AdvanceOwnerAnimation98(ActivePokemon* arg0) {
             sp1C = 1;
             if (arg0->sessionTeams->uniqueStatusFlags & 0x10) {
                 arg0->sessionTeams->uniqueStatusFlags &= ~0x90;
-                Battle_ReloadNeutralPlaceholderModel(arg0);
+                Battle_ReloadSubstituteDoll(arg0);
                 sBattleScene.scene->unk_24++;
             }
             break;
@@ -238,7 +238,7 @@ s32 BattleScene_AdvanceBothOwnerAnimations(void) {
             if (temp_a1->flags & 0x800) {
                 if (sActivePokemon[0]->sessionTeams->uniqueStatusFlags & 0x10) {
                     sActivePokemon[0]->sessionTeams->uniqueStatusFlags &= ~0x90;
-                    Battle_ReloadNeutralPlaceholderModel(sActivePokemon[0]);
+                    Battle_ReloadSubstituteDoll(sActivePokemon[0]);
                     sBattleScene.scene->unk_24 += 1;
                 }
             } else {
@@ -259,7 +259,7 @@ s32 BattleScene_AdvanceBothOwnerAnimations(void) {
             if (temp_a2->flags & 0x800) {
                 if (sActivePokemon[1]->sessionTeams->uniqueStatusFlags & 0x10) {
                     sActivePokemon[1]->sessionTeams->uniqueStatusFlags &= ~0x90;
-                    Battle_ReloadNeutralPlaceholderModel(sActivePokemon[1]);
+                    Battle_ReloadSubstituteDoll(sActivePokemon[1]);
                     sBattleScene.scene->unk_24 += 1;
                 }
             } else {

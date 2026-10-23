@@ -27,7 +27,7 @@ typedef struct unk_D_84390010_168 {
     /* 0x16A */ s16 unk_16A;
     /* 0x16C */ s16 unk_16C;
     /* 0x16E */ char unk16E[0x2];
-} unk_D_84390010_168; // size = 0x170
+} PokemonAfterimage; // size = 0x170
 
 typedef struct ActivePokemonState {
     /* 0x00 */ char unk00[0x4];
@@ -64,7 +64,7 @@ typedef struct ActivePokemonState {
 typedef struct ThumbnailState {
     /* 0x000 */ DisplayObject displayObject;
     /* 0x168 */ CameraNode* camera;
-    /* 0x16C */ s32 unk_16C; //Side
+    /* 0x16C */ s32 tagTeam;
     /* 0x170 */ s32 showing;
     /* 0x174 */ char unk174[0x4];
     /* 0x178 */ s32 side;
@@ -117,7 +117,7 @@ typedef struct SwayState {
 
 typedef struct ActivePokemon {
     /* 0x000 */ DisplayObject displayObject;
-    /* 0x168 */ unk_D_84390010_168 afterimages[2];
+    /* 0x168 */ PokemonAfterimage afterimages[2];
     /* 0x448 */ SwayState modelTransform;
     /* 0x498 */ f32 y;
     /* 0x49C */ f32 rotationZ;
@@ -1262,8 +1262,8 @@ void BattleScene_ReinitParticipantSecondaryModels(ActivePokemon* arg0, s16 arg1)
 void Battle_ResetEventTrack(ActivePokemon* active_pokemon);
 void Battle_LoadOwnerModelForSpecies(ActivePokemon* active_pokemon);
 void Battle_LoadOwnerModelForSwitchIn(ActivePokemon* active_pokemon);
-void Battle_ResetOwnerModelToNeutralPlaceholder(ActivePokemon* active_pokemon);
-void Battle_ReloadNeutralPlaceholderModel(ActivePokemon* active_pokemon);
+void Battle_ResetOwnerModelToSubstituteDoll(ActivePokemon* active_pokemon);
+void Battle_ReloadSubstituteDoll(ActivePokemon* active_pokemon);
 void Battle_ReloadModelForActiveMove(ActivePokemon* active_pokemon);
 
 

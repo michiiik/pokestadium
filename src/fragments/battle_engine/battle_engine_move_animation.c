@@ -1312,7 +1312,7 @@ void BattleScene_TickRow20CleanupAndEnterState18(ActivePokemon* active_pokemon) 
 void BattleScene_ResetOwnerModelIfLoaded(ActivePokemon* active_pokemon) {
     if (active_pokemon->sessionTeams->uniqueStatusFlags & 0x10) {
         active_pokemon->sessionTeams->uniqueStatusFlags &= ~0x90;
-        Battle_ResetOwnerModelToNeutralPlaceholder(active_pokemon);
+        Battle_ResetOwnerModelToSubstituteDoll(active_pokemon);
     }
 }
 
@@ -2343,12 +2343,12 @@ void BattleScene_AllocateParticipants(BattleSessionTeams* battle_teams) {
  * Binds the first team member, side and controller to the participant.
  */
 void BattleScene_InitializeParticipantController(ActivePokemon* active_pokemon) {
-    Controller* controller = &gControllers[active_pokemon->sessionTeams->teamMember[0]->unk_001];
+    Controller* controller = &gControllers[active_pokemon->sessionTeams->teamMember[0]->controllerPort];
 
     BattleScene_BindParticipantRosterForSide(active_pokemon, 0);
     BattleScene_SetParticipantSelectedSide(active_pokemon, 0);
     BattleScene_SetParticipantController(active_pokemon, controller);
-    active_pokemon->thumbnail.unk_16C = 0;
+    active_pokemon->thumbnail.tagTeam = 0;
 }
 
 /**
@@ -2426,7 +2426,7 @@ void BattleScene_InitializeParticipantSecondaryModels(ActivePokemon* active_poke
     ModelNodeView* model_view;
     s16 model_id;
     s32 i;
-    unk_D_84390010_168* secondary_model;
+    PokemonAfterimage* secondary_model;
 
     model_view = Battle_GetMoveEffectListEntry(active_pokemon, 0);
     model_id = Battle_GetDisplayModelId(active_pokemon, 0);

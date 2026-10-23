@@ -116,7 +116,7 @@ void Battle_QueueStatusText(char* arg0, s32 arg1) {
     UNUSED s32 pad2[2];
 
     Battle_ClearMessageCursor();
-    gBattleMessageQueues->unk_000 = sActivePokemon[arg1]->sessionTeams->teamMember[sp28->side]->unk_001;
+    gBattleMessageQueues->unk_000 = sActivePokemon[arg1]->sessionTeams->teamMember[sp28->side]->controllerPort;
     Battle_SimpleStringFormat(gBattleMessageQueues->unk_048, arg0 + 1);
     *arg0 = 0;
 }
@@ -129,8 +129,8 @@ void Battle_DrawCompactStatusBoxesIfVisible(void) {
     ActivePokemon* ptr2 = sActivePokemon[1];
 
     if ((gSessionContext.mode != 0x10) && (sBattleScene.scene->unk_30 == 0)) {
-        BattleHud_DrawCompactMonStatusBox(ptr1, 0x15, 0xF, ptr1->sessionTeams->teamMember[ptr1->thumbnail.unk_16C]->unk_001);
-        BattleHud_DrawCompactMonStatusBox(ptr2, 0xE1, 0xF, ptr2->sessionTeams->teamMember[ptr2->thumbnail.unk_16C]->unk_001);
+        BattleHud_DrawCompactMonStatusBox(ptr1, 0x15, 0xF, ptr1->sessionTeams->teamMember[ptr1->thumbnail.tagTeam]->controllerPort);
+        BattleHud_DrawCompactMonStatusBox(ptr2, 0xE1, 0xF, ptr2->sessionTeams->teamMember[ptr2->thumbnail.tagTeam]->controllerPort);
     }
 }
 
@@ -697,7 +697,7 @@ void BattleScene_ClearParticipantMessageBuffer(ActivePokemon* active_pokemon) {
 }
 
 void BattleScene_BuildParticipantMessage(ActivePokemon* arg0, s32 arg1) {
-    gBattleMessageQueues->unk_000 = arg0->sessionTeams->teamMember[arg0->state.ownerTeamMemberIndex]->unk_001;
+    gBattleMessageQueues->unk_000 = arg0->sessionTeams->teamMember[arg0->state.ownerTeamMemberIndex]->controllerPort;
     arg0->captionState.unk_00 = 1;
     Text_SetStringToken(0x19, arg0->teamRoster->pokemonPicked[arg0->state.rosterIndex].unk_30);
     Text_GetString(arg0->captionState.unk_48, 0x40, sBattleMessagesTable, arg1);
@@ -720,9 +720,9 @@ void BattleScene_RevealParticipantMessageChars(ActivePokemon* arg0) {
 
     if (arg0->captionState.unk_48[0] != 0) {
         if (arg0 == sSide1ActivePokemon) {
-            BattleHud_DrawTextBox(temp_t0->unk_001, 0x5F, 0xE, &arg0->captionState.unk_08);
+            BattleHud_DrawTextBox(temp_t0->controllerPort, 0x5F, 0xE, &arg0->captionState.unk_08);
         } else {
-            BattleHud_DrawTextBox(temp_t0->unk_001, 0x17, 0xBB, &arg0->captionState.unk_08);
+            BattleHud_DrawTextBox(temp_t0->controllerPort, 0x17, 0xBB, &arg0->captionState.unk_08);
         }
     }
 }

@@ -764,9 +764,9 @@ void FreeBattle_ApplyRuleSelection(void) {
         temp_v0 = Trainer_Create(-1, 0, "COM", Text_GetPlayerLabel(3));
         Team_AddTrainer(1, temp_v0);
         if (D_84002D18.unk_00 == 3) {
-            temp_v0->unk_001 = 2;
+            temp_v0->controllerPort = 2;
         } else {
-            temp_v0->unk_001 = 3;
+            temp_v0->controllerPort = 3;
         }
     } else {
         for (i = 0; i < 4; i++) {

@@ -89,11 +89,11 @@ TeamRoster* Trainer_Create(s32 arg0, s16 arg1, char* arg2, char* arg3) {
     if (sp1C != NULL) {
         if (arg0 == -1) {
             sp1C->unk_000 = 3;
-            sp1C->unk_001 = 1;
+            sp1C->controllerPort = 1;
             sp1C->controller = &gControllers[0];
         } else {
             sp1C->unk_000 = 1;
-            sp1C->unk_001 = arg0;
+            sp1C->controllerPort = arg0;
             sp1C->controller = &gControllers[arg0];
         }
 

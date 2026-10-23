@@ -338,7 +338,7 @@ void BattleScene_SelectActiveController(ActivePokemon* arg0) {
     ActivePokemonState* ptr = &arg0->state;
 
     ptr->ownerTeamMemberIndex = ptr->side;
-    ptr->controller = &gControllers[arg0->sessionTeams->teamMember[ptr->ownerTeamMemberIndex]->unk_001];
+    ptr->controller = &gControllers[arg0->sessionTeams->teamMember[ptr->ownerTeamMemberIndex]->controllerPort];
 }
 
 void BattleScene_HandleActionSelectionCancel(s32 arg0) {
@@ -632,11 +632,11 @@ void BattleScene_ForfeitPrompt(ActivePokemon* arg0) {
     ActivePokemonState* temp_a0 = &sActivePokemon[BattleScene_GetParticipantSideIndex(arg0) == 0]->state;
 
     if (arg0->sessionTeams->tagTeamSize == 1) {
-        D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->unk_001];
-        D_8439014C = &gControllers[arg0->sessionTeams->teamMember[0]->unk_001];
+        D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->controllerPort];
+        D_8439014C = &gControllers[arg0->sessionTeams->teamMember[0]->controllerPort];
     } else {
-        D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->unk_001];
-        D_8439014C = &gControllers[arg0->sessionTeams->teamMember[1]->unk_001];
+        D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->controllerPort];
+        D_8439014C = &gControllers[arg0->sessionTeams->teamMember[1]->controllerPort];
     }
 
     if (temp_a0->unk_10 == 4) {
@@ -709,11 +709,11 @@ void BattleScene_QueuePartySelectionConfirmMessage(ActivePokemon* arg0) {
 
 void BattleScene_AssignActiveCoopController(ActivePokemon* arg0, s32 arg1) {
     if (arg1 == 1) {
-        D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->unk_001];
-        D_8439014C = &gControllers[arg0->sessionTeams->teamMember[0]->unk_001];
+        D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->controllerPort];
+        D_8439014C = &gControllers[arg0->sessionTeams->teamMember[0]->controllerPort];
     } else {
-        D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->unk_001];
-        D_8439014C = &gControllers[arg0->sessionTeams->teamMember[1]->unk_001];
+        D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->controllerPort];
+        D_8439014C = &gControllers[arg0->sessionTeams->teamMember[1]->controllerPort];
     }
 
     if (arg1 == 1) {
@@ -800,13 +800,13 @@ void BattleScene_HandlePlayerPartySelection(ActivePokemon* arg0) {
     ActivePokemonState* sp18 = &arg0->state;
 
     if (arg0->sessionTeams->tagTeamSize == 1) {
-        D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->unk_001];
-        D_8439014C = &gControllers[arg0->sessionTeams->teamMember[0]->unk_001];
+        D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->controllerPort];
+        D_8439014C = &gControllers[arg0->sessionTeams->teamMember[0]->controllerPort];
     } else {
 
-        D_84390148 = &gControllers[arg0->sessionTeams->teamMember[sp18->ownerTeamMemberIndex]->unk_001];
+        D_84390148 = &gControllers[arg0->sessionTeams->teamMember[sp18->ownerTeamMemberIndex]->controllerPort];
         idx = sp18->ownerTeamMemberIndex == 0;
-        D_8439014C = &gControllers[arg0->sessionTeams->teamMember[idx]->unk_001];
+        D_8439014C = &gControllers[arg0->sessionTeams->teamMember[idx]->controllerPort];
     }
 
     if (arg0->captionState.unk_00 != 0) {
@@ -1027,11 +1027,11 @@ void BattleScene_PollActionMenuRequestButtons(ActivePokemon* arg0) {
 
     if (temp_v1->unk_10 == 0) {
         if (arg0->sessionTeams->tagTeamSize == 1) {
-            D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->unk_001];
-            D_8439014C = &gControllers[arg0->sessionTeams->teamMember[0]->unk_001];
+            D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->controllerPort];
+            D_8439014C = &gControllers[arg0->sessionTeams->teamMember[0]->controllerPort];
         } else {
-            D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->unk_001];
-            D_8439014C = &gControllers[arg0->sessionTeams->teamMember[1]->unk_001];
+            D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->controllerPort];
+            D_8439014C = &gControllers[arg0->sessionTeams->teamMember[1]->controllerPort];
         }
 
         if (temp_v1->controller->buttonPressed & 0x8000) {
