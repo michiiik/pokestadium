@@ -777,12 +777,12 @@ void FreeBattle_ApplyRuleSelection(void) {
         }
     }
 
-    if (gSessionContext.battleSides[0].unk_01 == 2) {
+    if (gSessionContext.battleSides[0].tagTeamSize == 2) {
         gSessionContext.battleSides[0].teamMember[0]->rosterInfo->unk_003 = 0x35;
         gSessionContext.battleSides[0].teamMember[1]->rosterInfo->unk_003 = 0x35;
     }
 
-    if (gSessionContext.battleSides[1].unk_01 == 2) {
+    if (gSessionContext.battleSides[1].tagTeamSize == 2) {
         gSessionContext.battleSides[1].teamMember[0]->rosterInfo->unk_003 = 0x35;
         gSessionContext.battleSides[1].teamMember[1]->rosterInfo->unk_003 = 0x35;
     }

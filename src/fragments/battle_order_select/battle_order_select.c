@@ -188,7 +188,7 @@ void BattleMenu_InitTeamOrderState(unk_D_84803760* arg0, BattleSessionTeams* arg
         }
     }
 
-    if (arg1->unk_01 == 1) {
+    if (arg1->tagTeamSize == 1) {
         arg0->unk_0E = arg1->teamMember[0]->unk_001;
         arg0->unk_0F = -1;
         arg0->unk_01 = (arg1->teamMember[0]->unk_000 & 2) != 0;
@@ -1124,7 +1124,7 @@ void BattleMenu_RearrangeLeadPokemon(BattleSessionTeams* arg0, unk_D_84803760* a
     TeamRoster* temp_v0;
     s32 tmp;
 
-    if (arg0->unk_01 == 2) {
+    if (arg0->tagTeamSize == 2) {
         tmp = ((arg1->unk_02[0] >> 4) & 0xF) - 1;
         if (tmp == arg0->teamMember[1]->unk_001) {
             temp_v0 = arg0->teamMember[0];
@@ -1228,7 +1228,7 @@ void BattleMenu_InitOrderSelectPanels(SessionContext* arg0) {
     BattleMenu_InitTeamOrderState(&D_84803760[0], &D_84816420->battleSides[0], D_84816420->ruleCategory);
     BattleMenu_InitTeamOrderState(&D_84803760[1], &D_84816420->battleSides[1], D_84816420->ruleCategory);
 
-    if (temp_s0->unk_01 == 1) {
+    if (temp_s0->tagTeamSize == 1) {
         BattleMenu_AddOrderSelectPanel(0x50, 0x21, temp_s0->teamMember[0], 0, -1);
     } else if (temp_s0->teamMember[0]->unk_001 < temp_s0->teamMember[1]->unk_001) {
         BattleMenu_AddOrderSelectPanel(0x50, 0x21, temp_s0->teamMember[0], 0, D_8480379C + 1);
@@ -1239,7 +1239,7 @@ void BattleMenu_InitOrderSelectPanels(SessionContext* arg0) {
     }
 
     temp_s0++;
-    if (temp_s0->unk_01 == 1) {
+    if (temp_s0->tagTeamSize == 1) {
         BattleMenu_AddOrderSelectPanel(0x50, 0x146, temp_s0->teamMember[0], 1, -1);
     } else if (temp_s0->teamMember[0]->unk_001 < temp_s0->teamMember[1]->unk_001) {
         BattleMenu_AddOrderSelectPanel(0x50, 0xE6, temp_s0->teamMember[0], 1, D_8480379C + 1);

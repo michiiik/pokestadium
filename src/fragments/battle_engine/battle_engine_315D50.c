@@ -4238,11 +4238,11 @@ void BattleScene_ConfigureAudioChannelGroupsByTeam(void) {
     port_groups[3] = 0xA;
 
     port_groups[side1_pokemon->sessionTeams->teamMember[0]->unk_001] = 1;
-    if (side1_pokemon->sessionTeams->unk_01 == 2) {
+    if (side1_pokemon->sessionTeams->tagTeamSize == 2) {
         port_groups[side1_pokemon->sessionTeams->teamMember[1]->unk_001] = 1;
     }
     port_groups[side2_pokemon->sessionTeams->teamMember[0]->unk_001] = 2;
-    if (side2_pokemon->sessionTeams->unk_01 == 2) {
+    if (side2_pokemon->sessionTeams->tagTeamSize == 2) {
         port_groups[side2_pokemon->sessionTeams->teamMember[1]->unk_001] = 2;
     }
 
@@ -4266,12 +4266,12 @@ void BattleScene_ConfigureAudioChannelGroupCounts(void) {
     port_team_sizes[3] = 0;
 
     port_team_sizes[side1_pokemon->sessionTeams->teamMember[0]->unk_001] = BattleScene_GetRosterTeamSize(side1_pokemon->sessionTeams->teamMember[0]);
-    if (side1_pokemon->sessionTeams->unk_01 == 2) {
+    if (side1_pokemon->sessionTeams->tagTeamSize == 2) {
         port_team_sizes[side1_pokemon->sessionTeams->teamMember[1]->unk_001] = BattleScene_GetRosterTeamSize(side1_pokemon->sessionTeams->teamMember[1]);
     }
 
     port_team_sizes[side2_pokemon->sessionTeams->teamMember[0]->unk_001] = BattleScene_GetRosterTeamSize(side2_pokemon->sessionTeams->teamMember[0]);
-    if (side2_pokemon->sessionTeams->unk_01 == 2) {
+    if (side2_pokemon->sessionTeams->tagTeamSize == 2) {
         port_team_sizes[side2_pokemon->sessionTeams->teamMember[1]->unk_001] = BattleScene_GetRosterTeamSize(side2_pokemon->sessionTeams->teamMember[1]);
     }
     Audio_SetChannelGroupCounts(port_team_sizes[0], port_team_sizes[1], port_team_sizes[2], port_team_sizes[3]);

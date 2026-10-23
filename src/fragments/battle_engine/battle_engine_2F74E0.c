@@ -631,7 +631,7 @@ void BattleScene_ForfeitPrompt(ActivePokemon* arg0) {
     ActivePokemonState* sp18 = &arg0->state;
     ActivePokemonState* temp_a0 = &sActivePokemon[BattleScene_GetParticipantSideIndex(arg0) == 0]->state;
 
-    if (arg0->sessionTeams->unk_01 == 1) {
+    if (arg0->sessionTeams->tagTeamSize == 1) {
         D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->unk_001];
         D_8439014C = &gControllers[arg0->sessionTeams->teamMember[0]->unk_001];
     } else {
@@ -739,7 +739,7 @@ void BattleScene_HandlePartySlotCursorInput(ActivePokemon* arg0, Controller* arg
 
     sp1C = &arg0->state;
 
-    BattleScene_AssignActiveCoopController(arg0, arg0->sessionTeams->unk_01);
+    BattleScene_AssignActiveCoopController(arg0, arg0->sessionTeams->tagTeamSize);
     temp_a1 = arg0->sessionTeams->teamMember[sp1C->ownerTeamMemberIndex];
     arg1 = sp1C->controller;
 
@@ -799,7 +799,7 @@ void BattleScene_HandlePlayerPartySelection(ActivePokemon* arg0) {
     s32 idx;
     ActivePokemonState* sp18 = &arg0->state;
 
-    if (arg0->sessionTeams->unk_01 == 1) {
+    if (arg0->sessionTeams->tagTeamSize == 1) {
         D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->unk_001];
         D_8439014C = &gControllers[arg0->sessionTeams->teamMember[0]->unk_001];
     } else {
@@ -1026,7 +1026,7 @@ void BattleScene_PollActionMenuRequestButtons(ActivePokemon* arg0) {
     ActivePokemonState* temp_t0 = &sActivePokemon[BattleScene_GetParticipantSideIndex(arg0) == 0]->state;
 
     if (temp_v1->unk_10 == 0) {
-        if (arg0->sessionTeams->unk_01 == 1) {
+        if (arg0->sessionTeams->tagTeamSize == 1) {
             D_84390148 = &gControllers[arg0->sessionTeams->teamMember[0]->unk_001];
             D_8439014C = &gControllers[arg0->sessionTeams->teamMember[0]->unk_001];
         } else {

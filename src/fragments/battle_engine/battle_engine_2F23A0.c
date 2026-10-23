@@ -389,25 +389,25 @@ void BattleScene_RebindParticipantToSide(ActivePokemon* pokemon, s32 team_member
     pokemon->thumbnail.unk_16C = state->side;
 }
 
-s32 Battle_HasUsableSleepStatusTarget(ActivePokemon* active_pokemon) {
+s32 Battle_FreezeClauseInEffect(ActivePokemon* active_pokemon) {
     s32 i;
-    ActivePokemonState* temp_s0;
-    BattleMon* ptr;
+    ActivePokemonState* state;
+    BattleMon* pokemon;
 
-    temp_s0 = &active_pokemon->state;
+    state = &active_pokemon->state;
 
     for (i = 0; i < BattleScene_GetSelectedSideTeamSize(active_pokemon); i++) {
-        ptr = &active_pokemon->teamRoster->pokemonPicked[i];
-        if ((ptr->statusCondition & 0x20) && (active_pokemon->state.runtime.unk_16[temp_s0->rosterIndex + temp_s0->side * 3] == 0)) {
+        pokemon = &active_pokemon->teamRoster->pokemonPicked[i];
+        if ((pokemon->statusCondition & STATUS_FREEZE) && (active_pokemon->state.runtime.roster[state->rosterIndex + state->side * 3] == 0)) {
             return 1;
         }
     }
 
-    if (active_pokemon->sessionTeams->unk_01 == 2) {
+    if (active_pokemon->sessionTeams->tagTeamSize == 2) {
         for (i = 0; i < BattleScene_GetOpposingSelectedSideTeamSize(active_pokemon); i++) {
-            ptr = &active_pokemon->sessionTeams->teamMember[temp_s0->side == 0]->pokemonPicked[i];
-            if ((ptr->statusCondition & 0x20) &&
-                (active_pokemon->state.runtime.unk_16[temp_s0->rosterIndex + (temp_s0->side == 0) * 3] == 0)) {
+            pokemon = &active_pokemon->sessionTeams->teamMember[state->side == 0]->pokemonPicked[i];
+            if ((pokemon->statusCondition & STATUS_FREEZE) &&
+                (active_pokemon->state.runtime.roster[state->rosterIndex + (state->side == 0) * 3] == 0)) {
                 return 1;
             }
         }
@@ -416,24 +416,24 @@ s32 Battle_HasUsableSleepStatusTarget(ActivePokemon* active_pokemon) {
     return 0;
 }
 
-s32 Battle_HasUsableMajorStatusTarget(ActivePokemon* active_pokemon) {
+s32 Battle_SleepClauseInEffect(ActivePokemon* active_pokemon) {
     s32 i;
-    ActivePokemonState* temp_s0;
-    BattleMon* ptr;
+    ActivePokemonState* state;
+    BattleMon* pokemon;
 
-    temp_s0 = &active_pokemon->state;
+    state = &active_pokemon->state;
 
     for (i = 0; i < BattleScene_GetSelectedSideTeamSize(active_pokemon); i++) {
-        ptr = &active_pokemon->teamRoster->pokemonPicked[i];
-        if ((ptr->statusCondition & 7) && (active_pokemon->state.runtime.unk_16[temp_s0->rosterIndex + temp_s0->side * 3] == 0)) {
+        pokemon = &active_pokemon->teamRoster->pokemonPicked[i];
+        if ((pokemon->statusCondition & STATUS_SLEEP_MASK) && (active_pokemon->state.runtime.roster[state->rosterIndex + state->side * 3] == 0)) {
             return 1;
         }
     }
 
-    if (active_pokemon->sessionTeams->unk_01 == 2) {
+    if (active_pokemon->sessionTeams->tagTeamSize == 2) {
         for (i = 0; i < BattleScene_GetOpposingSelectedSideTeamSize(active_pokemon); i++) {
-            ptr = &active_pokemon->sessionTeams->teamMember[temp_s0->side == 0]->pokemonPicked[i];
-            if ((ptr->statusCondition & 7) && (active_pokemon->state.runtime.unk_16[temp_s0->rosterIndex + (temp_s0->side == 0) * 3] == 0)) {
+            pokemon = &active_pokemon->sessionTeams->teamMember[state->side == 0]->pokemonPicked[i];
+            if ((pokemon->statusCondition & STATUS_SLEEP_MASK) && (active_pokemon->state.runtime.roster[state->rosterIndex + (state->side == 0) * 3] == 0)) {
                 return 1;
             }
         }
@@ -442,14 +442,14 @@ s32 Battle_HasUsableMajorStatusTarget(ActivePokemon* active_pokemon) {
 }
 
 s32 BattleScene_GetCombinedTeamSize(ActivePokemon* active_pokemon) {
-    if (active_pokemon->sessionTeams->unk_01 != 2) {
+    if (active_pokemon->sessionTeams->tagTeamSize != 2) {
         return active_pokemon->sessionTeams->teamMember[0]->numberOfPokemonBrought;
     }
     return active_pokemon->sessionTeams->teamMember[1]->numberOfPokemonBrought + active_pokemon->sessionTeams->teamMember[0]->numberOfPokemonBrought;
 }
 
-u8 BattleScene_GetRosterTeamSize(TeamRoster* arg0) {
-    return arg0->numberOfPokemonBrought;
+u8 BattleScene_GetRosterTeamSize(TeamRoster* roster) {
+    return roster->numberOfPokemonBrought;
 }
 
 s32 BattleScene_GetParticipantDisplayPlayerNumber(ActivePokemon* active_pokemon) {

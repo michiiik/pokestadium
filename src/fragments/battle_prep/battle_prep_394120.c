@@ -243,7 +243,7 @@ void BattlePrep_DrawTrainerStatusIcon(DepthBuffer* arg0, s16 arg1, u8* arg2, u8*
     if (gSessionContext.mode == 0 || gSessionContext.mode == 9) {
         if (temp_v1->teamMember[0]->unk_000 & 2) {
             Gfx_DrawTextureRgba16(8, 4, 0x30, 0x10, &D_3016900, 0x30, 0x200000);
-        } else if (temp_v1->unk_01 == 1) {
+        } else if (temp_v1->tagTeamSize == 1) {
             Gfx_DrawTextureRgba16(8, 4, 0x30, 0x10, D_84B0FB10[temp_v1->teamMember[0]->unk_001], 0x30, 0x200000);
         } else {
             if (temp_v1->teamMember[0]->unk_001 < temp_v1->teamMember[1]->unk_001) {

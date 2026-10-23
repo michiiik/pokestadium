@@ -1251,8 +1251,8 @@ void BattleScene_BindParticipantRosterForSide(ActivePokemon* active_pokemon, s32
 void BattleScene_SetParticipantSelectedSide(ActivePokemon* active_pokemon, s32 team_member_index);
 void BattleScene_SetParticipantController(ActivePokemon* active_pokemon, Controller* controller);
 void BattleScene_RebindParticipantToSide(ActivePokemon* arg0, s32 arg1);
-s32 Battle_HasUsableSleepStatusTarget(ActivePokemon* active_pokemon);
-s32 Battle_HasUsableMajorStatusTarget(ActivePokemon* active_pokemon);
+s32 Battle_FreezeClauseInEffect(ActivePokemon* active_pokemon);
+s32 Battle_SleepClauseInEffect(ActivePokemon* active_pokemon);
 s32 BattleScene_GetCombinedTeamSize(ActivePokemon* active_pokemon);
 u8 BattleScene_GetRosterTeamSize(TeamRoster* arg0);
 s32 BattleScene_GetParticipantDisplayPlayerNumber(ActivePokemon* active_pokemon);

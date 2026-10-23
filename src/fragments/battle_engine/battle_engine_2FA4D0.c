@@ -587,7 +587,7 @@ void BattleHud_DrawPartyBallRow(ActivePokemon* arg0, s16 arg1, s16 arg2) {
     gSPDisplayList(gDisplayListHead++, gUiEnvTintTextureDL);
 
     if (arg0 == sActivePokemon[0]) {
-        if (arg0->sessionTeams->unk_01 == 1) {
+        if (arg0->sessionTeams->tagTeamSize == 1) {
             for (i = 0; i < arg0->sessionTeams->teamMember[0]->numberOfPokemonBrought; i++) {
                 if (arg0->sessionTeams->teamMember[0]->pokemonPicked[i].hp == 0) {
                     var_v0_2 = 2;
@@ -624,7 +624,7 @@ void BattleHud_DrawPartyBallRow(ActivePokemon* arg0, s16 arg1, s16 arg2) {
     }
 
     if (arg0 == sActivePokemon[1]) {
-        if (arg0->sessionTeams->unk_01 == 1) {
+        if (arg0->sessionTeams->tagTeamSize == 1) {
             for (i = 0; i < arg0->sessionTeams->teamMember[0]->numberOfPokemonBrought; i++) {
                 if (arg0->sessionTeams->teamMember[0]->pokemonPicked[i].hp == 0) {
                     var_v0_2 = 2;
@@ -1792,7 +1792,7 @@ void BattleHud_DrawOwnSideStatus(ActivePokemon* arg0, ActivePokemonState* arg1) 
             switch (arg1->unk_10) {
                 case 2:
                     if (arg1->unk_1C == 1) {
-                        if (arg0->sessionTeams->unk_01 == 2) {
+                        if (arg0->sessionTeams->tagTeamSize == 2) {
                             if (arg0->sessionTeams->teamMember[1]->unk_001 < arg0->sessionTeams->teamMember[0]->unk_001) {
                                 var_v1 = 0;
                             } else {
@@ -1851,7 +1851,7 @@ void BattleHud_DrawOpponentSideStatus(ActivePokemon* arg0, ActivePokemonState* a
             switch (arg1->unk_10) {
                 case 2:
                     if (arg1->unk_1C == 1) {
-                        if (arg0->sessionTeams->unk_01 == 2) {
+                        if (arg0->sessionTeams->tagTeamSize == 2) {
                             if (arg0->sessionTeams->teamMember[1]->unk_001 < arg0->sessionTeams->teamMember[0]->unk_001) {
                                 sp20 = 0;
                             } else {

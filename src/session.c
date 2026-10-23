@@ -14,7 +14,7 @@ static s16 D_80075684 = 0;
 
 void Team_ClearTrainerSlot(BattleSessionTeams* arg0) {
     arg0->uniqueStatusFlags = 0;
-    arg0->unk_01 = 0;
+    arg0->tagTeamSize = 0;
     arg0->displayModel = 0;
     arg0->unk_04 = 0;
     arg0->unk_14 = 0;
@@ -114,11 +114,11 @@ TeamRoster* Trainer_Create(s32 arg0, s16 arg1, char* arg2, char* arg3) {
 
 void Team_AddTrainer(s32 arg0, TeamRoster* arg1) {
     BattleSessionTeams* temp_v0 = &gSessionContext.battleSides[arg0];
-    u8 idx = temp_v0->unk_01;
+    u8 idx = temp_v0->tagTeamSize;
 
     if (idx < 2) {
         temp_v0->teamMember[idx] = arg1;
-        temp_v0->unk_01++;
+        temp_v0->tagTeamSize++;
     }
 }
 
