@@ -170,7 +170,7 @@ BattleMon* Pokemon_CreateDefault(BattleMon* arg0, u8 arg1, s16 arg2) {
 
     Pokemon_RecalcStats(arg0);
 
-    arg0->unk_02 = arg0->unk_26;
+    arg0->hp = arg0->unk_26;
 
     Text_CopySpeciesName(arg0->unk_30, arg1);
     HAL_Strcpy(arg0->unk_3B, Text_GetPlayerLabel(0));
@@ -354,7 +354,7 @@ void Team_ScaleOpponentToLevel(s16 arg0) {
         var_s0->unk_24 = arg0;
         var_s0->unk_10 = Pokemon_ExpForLevel(var_s0->unk_00.unk_00, arg0);
         Pokemon_RecalcStats(var_s0);
-        var_s0->unk_02 = var_s0->unk_26;
+        var_s0->hp = var_s0->unk_26;
 
         *var_s1 = *var_s0;
     }

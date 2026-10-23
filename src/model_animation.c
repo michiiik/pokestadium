@@ -336,18 +336,18 @@ void ModelAnim_ClearTransformChannel(DisplayObject* display_object) {
     display_object->transformAnim.data = NULL;
 }
 
-s32 ModelAnim_BindTransformCurve(DisplayObject* display_object, s16 animation_id, void* arg2, s32 arg3) {
-    TransformAnimData* temp_v0 = Util_ConvertAddrToVirtAddr(arg2);
-    TransformAnimState* ptr = &display_object->transformAnim;
+s32 ModelAnim_BindTransformCurve(DisplayObject* display_object, s16 animation_id, void* address, s32 speed) {
+    TransformAnimData* transform_addr = Util_ConvertAddrToVirtAddr(address);
+    TransformAnimState* transform_anim = &display_object->transformAnim;
 
-    if ((temp_v0 != ptr->data) || (animation_id != ptr->animationId)) {
-        ptr->animationId = animation_id;
-        ptr->data = temp_v0;
-        ptr->frameFixed = (temp_v0->startFrame << 0x10) - arg3;
+    if ((transform_addr != transform_anim->data) || (animation_id != transform_anim->animationId)) {
+        transform_anim->animationId = animation_id;
+        transform_anim->data = transform_addr;
+        transform_anim->frameFixed = (transform_addr->startFrame << 16) - speed;
     }
 
-    ptr->speedFixed = arg3;
-    return ptr->frameFixed >> 0x10;
+    transform_anim->speedFixed = speed;
+    return transform_anim->frameFixed >> 16;
 }
 
 s32 ModelAnim_SetSpeed(DisplayObject* display_object, s32 speed) {

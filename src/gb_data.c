@@ -842,7 +842,7 @@ char* Text_GetTmHmName(s32 arg0, char* arg1) {
 void Pokemon_FromGbRecord(BattleMon* arg0, GbPokemonRecord* arg1) {
     arg0->unk_00.unk_00 = Species_FromInternalIndex(arg1->unk_00);
     arg0->unk_00.unk_01 = arg1->unk_00;
-    arg0->unk_02 = GbData_ReadU16BE(arg1->unk_01);
+    arg0->hp = GbData_ReadU16BE(arg1->unk_01);
 
     arg0->unk_04 = arg1->unk_03;
     arg0->statusCondition = arg1->unk_04;
@@ -880,7 +880,7 @@ void Pokemon_ToGbRecord(BattleMon* arg0, GbPokemonRecord* arg1) {
         arg1->unk_00 = arg0->unk_00.unk_01;
     }
 
-    GbData_WriteU16BE(arg1->unk_01, (u16)arg0->unk_02);
+    GbData_WriteU16BE(arg1->unk_01, (u16)arg0->hp);
 
     arg1->unk_03 = arg0->unk_04;
     arg1->unk_04 = arg0->statusCondition;

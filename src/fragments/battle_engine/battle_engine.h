@@ -42,7 +42,7 @@ typedef struct ActivePokemonState {
     /* 0x20 */ char unk20[0x8];
     /* 0x28 */ u16 unk_28;
     /* 0x2A */ u8 unk_2A;
-    /* 0x2B */ u8 unk_2B;
+    /* 0x2B */ u8 side;
     /* 0x2C */ u8 ownerTeamMemberIndex;
     /* 0x2D */ u8 unk_2D;
     /* 0x2E */ u8 unk_2E;
@@ -64,7 +64,7 @@ typedef struct ActivePokemonState {
 typedef struct ThumbnailState {
     /* 0x000 */ DisplayObject displayObject;
     /* 0x168 */ CameraNode* camera;
-    /* 0x16C */ s32 unk_16C;
+    /* 0x16C */ s32 unk_16C; //Side
     /* 0x170 */ s32 showing;
     /* 0x174 */ char unk174[0x4];
     /* 0x178 */ s32 side;
@@ -175,7 +175,7 @@ typedef struct unk_D_8438E7B0 {
     /* 0xA80 */ MovePresentationCue hitCue;
     /* 0xA90 */ char chargeCues[0x60];
     /* 0xAF0 */ MovePresentationCue sleepIdleCue;
-    /* 0xB00 */ MovePresentationCue unk_B00;
+    /* 0xB00 */ MovePresentationCue flyingIdleCue;
     /* 0xB10 */ MovePresentationCue unk_B10;
     /* 0xB20 */ MovePresentationCue hitReactionOverride;
     /* 0xB30 */ char unkB30[0x51];
@@ -299,11 +299,11 @@ typedef struct SpeciesModelTransform {
 } SpeciesModelTransform; // size = 0x20
 
 typedef struct unk_D_84390028 {
-    /* 0x00 */ f32 unk_00;
-    /* 0x04 */ f32 unk_04;
-    /* 0x08 */ f32 unk_08;
-    /* 0x0C */ f32 unk_0C;
-} unk_D_84390028; // size = 0x10
+    /* 0x00 */ f32 width;
+    /* 0x04 */ f32 height;
+    /* 0x08 */ f32 depth;
+    /* 0x0C */ f32 hue;
+} ModelScale; // size = 0x10
 
 typedef struct unk_D_84384608 {
     /* 0x00 */ s32 unk_00;
@@ -972,7 +972,7 @@ extern BattleMonRuntime* sBattleTarget;
 extern ActivePokemon* sActivePokemon[2];
 extern ActivePokemon* sSide1ActivePokemon;
 extern ActivePokemon* sSide2ActivePokemon;
-extern unk_D_84390028 sPokemonModelDimensions[2];
+extern ModelScale sPokemonModelDimensions[2];
 extern f32 D_843900A8[];
 extern char** sBattleMessagesTable;
 extern char** sPokemonNameTable;

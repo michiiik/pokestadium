@@ -302,16 +302,16 @@ s32 BattleScene_AnimateDisplayedHpToRuntime(ActivePokemon* arg0) {
         return 1;
     }
 
-    if (temp_s2->unk_02 == temp_s1->unk_0C) {
+    if (temp_s2->hp == temp_s1->unk_0C) {
         return 1;
     }
 
     temp_fs0 = temp_s1->unk_28 / 90.0f;
     sp30 = BattleScene_GetParticipantSideIndex(arg0);
     D_843900A8[sp30] = Math_StepToF(D_843900A8[BattleScene_GetParticipantSideIndex(arg0)], temp_s1->unk_0C, temp_fs0, temp_fs0);
-    temp_s2->unk_02 = D_843900A8[BattleScene_GetParticipantSideIndex(arg0)];
-    if (temp_s2->unk_02 == temp_s1->unk_0C) {
-        temp_fs0 = D_843900A8[BattleScene_GetParticipantSideIndex(arg0)] - temp_s2->unk_02;
+    temp_s2->hp = D_843900A8[BattleScene_GetParticipantSideIndex(arg0)];
+    if (temp_s2->hp == temp_s1->unk_0C) {
+        temp_fs0 = D_843900A8[BattleScene_GetParticipantSideIndex(arg0)] - temp_s2->hp;
         D_843900A8[BattleScene_GetParticipantSideIndex(arg0)] -= temp_fs0;
         if (arg0->displayObject.objectType == 0x98) {
             return 1;
@@ -814,7 +814,7 @@ void BattleScene_SendOutPresentationFinalize(CameraNode* arg0) {
     if (temp_t1->flags & 0x4008) {
         sp24->displayObject.lodFraction = 0xFF;
         BattleAnim_StopOwnerCategoryParticles(4, sp24);
-        sp24->displayObject.position.y = sPokemonModelDimensions[sBattleScene.scene->unk_2C].unk_08;
+        sp24->displayObject.position.y = sPokemonModelDimensions[sBattleScene.scene->unk_2C].depth;
         sp24->displayObject.node.renderFlags &= ~0x2;
         sp24->displayObject.node.renderFlags |= 0x20;
         sp24->displayObject.node.flags |= 1;
@@ -865,7 +865,7 @@ s32 BattleScene_ResetOwnerStatusPresentation(ActivePokemon* arg0) {
     if (sp28->flags & 0x4008) {
         arg0->displayObject.lodFraction = 0xFF;
         BattleAnim_StopOwnerCategoryParticles(4, arg0);
-        arg0->displayObject.position.y = sPokemonModelDimensions[BattleScene_GetParticipantSideIndex(arg0)].unk_08;
+        arg0->displayObject.position.y = sPokemonModelDimensions[BattleScene_GetParticipantSideIndex(arg0)].depth;
         arg0->displayObject.node.renderFlags &= ~0x2;
         arg0->displayObject.node.renderFlags |= 0x20;
         arg0->displayObject.node.flags |= 1;
@@ -1186,12 +1186,12 @@ void BattleScene_ResetOwnerPresentationFlags(ActivePokemon* arg0) {
     ActivePokemonState* ptr = &arg0->state;
 
     if (ptr->flags & 0x200) {
-        arg0->displayObject.position.y = sPokemonModelDimensions[BattleScene_GetParticipantSideIndex(arg0)].unk_08;
+        arg0->displayObject.position.y = sPokemonModelDimensions[BattleScene_GetParticipantSideIndex(arg0)].depth;
         Battle_ClearRuntimeFlags(arg0, 0x608);
     } else if (ptr->flags & 0x4008) {
         arg0->displayObject.lodFraction = 0xFF;
         BattleAnim_StopOwnerCategoryParticles(4, arg0);
-        arg0->displayObject.position.y = sPokemonModelDimensions[BattleScene_GetParticipantSideIndex(arg0)].unk_08;
+        arg0->displayObject.position.y = sPokemonModelDimensions[BattleScene_GetParticipantSideIndex(arg0)].depth;
         arg0->displayObject.node.renderFlags &= ~0x2;
         arg0->displayObject.node.renderFlags |= 0x20;
         arg0->displayObject.node.flags |= 1;
@@ -2591,7 +2591,7 @@ void BattleScene_Phase29(CameraNode* arg0) {
 }
 
 void BattleScene_Phase12(CameraNode* arg0) {
-    MovePresentationCue* sp4C = &sSideBattleCues[sBattleScene.scene->unk_2C]->unk_B00;
+    MovePresentationCue* sp4C = &sSideBattleCues[sBattleScene.scene->unk_2C]->flyingIdleCue;
     UNUSED s32 pad;
     Vec3f sp3C;
 

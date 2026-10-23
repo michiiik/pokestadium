@@ -84,14 +84,14 @@ s32 BattleScene_DetermineWinner(void) {
 
     for (i = 0; i < BattleScene_GetSelectedSideTeamSize(sActivePokemon[0]); i++) {
         ptr = &sActivePokemon[0]->teamRoster->pokemonPicked[i];
-        if (ptr->unk_02 != 0) {
+        if (ptr->hp != 0) {
             var_s3++;
         }
     }
 
     for (i = 0; i < BattleScene_GetSelectedSideTeamSize(sActivePokemon[1]); i++) {
         ptr = &sActivePokemon[1]->teamRoster->pokemonPicked[i];
-        if (ptr->unk_02 != 0) {
+        if (ptr->hp != 0) {
             var_s4++;
         }
     }
@@ -105,12 +105,12 @@ s32 BattleScene_DetermineWinner(void) {
 
     for (i = 0; i < BattleScene_GetSelectedSideTeamSize(sActivePokemon[0]); i++) {
         ptr = &sActivePokemon[0]->teamRoster->pokemonPicked[i];
-        var_s5 += Battle_ClassifyHpTier(ptr->unk_02, ptr->unk_26);
+        var_s5 += Battle_ClassifyHpTier(ptr->hp, ptr->unk_26);
     }
 
     for (i = 0; i < BattleScene_GetSelectedSideTeamSize(sActivePokemon[1]); i++) {
         ptr = &sActivePokemon[1]->teamRoster->pokemonPicked[i];
-        var_s6 += Battle_ClassifyHpTier(ptr->unk_02, ptr->unk_26);
+        var_s6 += Battle_ClassifyHpTier(ptr->hp, ptr->unk_26);
     }
 
     if (var_s5 == var_s6) {
@@ -247,8 +247,8 @@ void BattleScene_SyncActiveHpToPartyState(void) {
         D_843900A8[0] = temp_a2->unk_0C = temp_a2->unk_28;
         D_843900A8[1] = temp_a3->unk_0C = temp_a3->unk_28;
 
-        ptr3->unk_02 = temp_a2->unk_28;
-        ptr4->unk_02 = temp_a3->unk_28;
+        ptr3->hp = temp_a2->unk_28;
+        ptr4->hp = temp_a3->unk_28;
     }
 }
 
@@ -321,7 +321,7 @@ void BattleScene_AutoSelectReplacementMon(ActivePokemon* arg0) {
     ActivePokemonState* sp1C = &arg0->state;
 
     for (i = 0; i < arg0->sessionTeams->teamMember[0]->numberOfPokemonBrought; i++) {
-        if ((arg0->sessionTeams->teamMember[0]->pokemonPicked[i].unk_02 != 0) && (i != sp1C->rosterIndex)) {
+        if ((arg0->sessionTeams->teamMember[0]->pokemonPicked[i].hp != 0) && (i != sp1C->rosterIndex)) {
             BattleAnim_PlaySoundEffect2();
             sp1C->unk_1C = 0;
             sp1C->unk_1E = 0;
@@ -337,7 +337,7 @@ void BattleScene_AutoSelectReplacementMon(ActivePokemon* arg0) {
 void BattleScene_SelectActiveController(ActivePokemon* arg0) {
     ActivePokemonState* ptr = &arg0->state;
 
-    ptr->ownerTeamMemberIndex = ptr->unk_2B;
+    ptr->ownerTeamMemberIndex = ptr->side;
     ptr->controller = &gControllers[arg0->sessionTeams->teamMember[ptr->ownerTeamMemberIndex]->unk_001];
 }
 
@@ -692,7 +692,7 @@ void BattleScene_CommitPlayerSwitchAction(ActivePokemon* arg0) {
 }
 
 s32 BattleScene_ValidateSelectedPartyMember(ActivePokemon* arg0) {
-    if (arg0->sessionTeams->teamMember[arg0->state.ownerTeamMemberIndex]->pokemonPicked[arg0->state.unk_18].unk_02 != 0) {
+    if (arg0->sessionTeams->teamMember[arg0->state.ownerTeamMemberIndex]->pokemonPicked[arg0->state.unk_18].hp != 0) {
         return 1;
     }
 
@@ -780,7 +780,7 @@ void BattleScene_HandlePartySlotCursorInput(ActivePokemon* arg0, Controller* arg
     }
 
     if (BTN_IS_PRESSED(arg1, BTN_A | BTN_B | BTN_CUP | BTN_CDOWN | BTN_CLEFT | BTN_CRIGHT)) {
-        if ((sp1C->rosterIndex == sp1C->unk_18) && (sp1C->ownerTeamMemberIndex == sp1C->unk_2B)) {
+        if ((sp1C->rosterIndex == sp1C->unk_18) && (sp1C->ownerTeamMemberIndex == sp1C->side)) {
             if (BattleScene_ValidateSelectedPartyMember(arg0) != 0) {
                 BattleAnim_PlaySoundEffect8();
                 BattleScene_QueuePartySelectionConfirmMessage(arg0);

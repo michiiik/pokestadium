@@ -1079,7 +1079,7 @@ u8 BattlePrep_CheckTeamChosen(void) {
         if (gSessionContext.battleSides[0].unk_1C == 1) {
             var_v1 = 1;
             for (i = 0; i < 3; i++) {
-                if (gSessionContext.battleSides[0].teamMember[0]->pokemonPicked[i].unk_02 == 0) {
+                if (gSessionContext.battleSides[0].teamMember[0]->pokemonPicked[i].hp == 0) {
                     var_v1 = 0;
                 }
             }

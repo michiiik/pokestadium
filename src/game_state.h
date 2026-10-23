@@ -28,7 +28,7 @@ typedef struct BattleMonSpecies {
 
 typedef struct BattleMon {
     /* 0x00 */ BattleMonSpecies unk_00;
-    /* 0x02 */ u16 unk_02;
+    /* 0x02 */ u16 hp;
     /* 0x04 */ u8 unk_04;
     /* 0x05 */ u8 statusCondition;
     /* 0x06 */ u8 unk_06;
