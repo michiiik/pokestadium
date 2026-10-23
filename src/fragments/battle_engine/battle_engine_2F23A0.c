@@ -550,7 +550,7 @@ void BattleScene_ReinitParticipantSecondaryModels(ActivePokemon* pokemon, s16 ob
 }
 
 void Battle_ResetEventTrack(ActivePokemon* active_pokemon) {
-    if (active_pokemon->state.flags & 1) {
+    if (active_pokemon->state.flags & ACTIVE_SLEEP) {
         BattleAnim_TrySetModelEventTrackFromRow(active_pokemon, 0xAF, 2);
     } else {
         active_pokemon->state.unk_36 = 0;
@@ -591,7 +591,7 @@ void Battle_LoadOwnerModelForSwitchIn(ActivePokemon* active_pokemon) {
 }
 
 void Battle_ResetOwnerModelToSubstituteDoll(ActivePokemon* active_pokemon) {
-    Model_SetMaterialColor(&active_pokemon->displayObject, 0xFF, 0xFF, 0xFF, active_pokemon->state.unk_2E = 0xFF);
+    Model_SetMaterialColor(&active_pokemon->displayObject, 0xFF, 0xFF, 0xFF, active_pokemon->state.alpha = 0xFF);
     active_pokemon->state.model = active_pokemon->displayObject.objectType;
     BattleScene_ReinitParticipantBodyModel(active_pokemon, active_pokemon, SUBSTITUTE_DOLL, 0);
     BattleScene_ReinitParticipantSecondaryModels(active_pokemon, SUBSTITUTE_DOLL);
@@ -606,12 +606,12 @@ void Battle_ReloadSubstituteDoll(ActivePokemon* active_pokemon) {
 
 void Battle_ReloadModelForActiveMove(ActivePokemon* active_pokemon) {
     UNUSED s32 pad[3];
-    ActivePokemonState* ptr = &active_pokemon->state;
-    s16 sp2E = Battle_GetDisplayModelId(active_pokemon, 0);
+    ActivePokemonState* state = &active_pokemon->state;
+    s16 object_type = Battle_GetDisplayModelId(active_pokemon, 0);
 
-    ptr->unk_2E = 0xFF;
-    Model_SetMaterialColor(&active_pokemon->displayObject, 0xFF, 0xFF, 0xFF, ptr->unk_2E);
-    BattleScene_ReinitParticipantBodyModel(active_pokemon, active_pokemon, sp2E, 0);
-    BattleScene_ReinitParticipantSecondaryModels(active_pokemon, sp2E);
+    state->alpha = 0xFF;
+    Model_SetMaterialColor(&active_pokemon->displayObject, 0xFF, 0xFF, 0xFF, state->alpha);
+    BattleScene_ReinitParticipantBodyModel(active_pokemon, active_pokemon, object_type, 0);
+    BattleScene_ReinitParticipantSecondaryModels(active_pokemon, object_type);
     Battle_ResetEventTrack(active_pokemon);
 }

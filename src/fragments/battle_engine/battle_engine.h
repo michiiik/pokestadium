@@ -45,7 +45,7 @@ typedef struct ActivePokemonState {
     /* 0x2B */ u8 side;
     /* 0x2C */ u8 ownerTeamMemberIndex;
     /* 0x2D */ u8 unk_2D;
-    /* 0x2E */ u8 unk_2E;
+    /* 0x2E */ u8 alpha;
     /* 0x2F */ u8 unk_2F;
     /* 0x30 */ u16 unk_30;
     /* 0x32 */ char unk32[0x2];

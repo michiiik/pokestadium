@@ -2264,9 +2264,9 @@ void BattleAnim_TickParticipantStatusAnimation(ActivePokemon* active_pokemon) {
         Battle_ClearRuntimeFlags(active_pokemon, 0x100);
     }
 
-    state->unk_2E = Math_StepToS32(state->unk_2E, 0, 30, 30);
-    if (state->unk_2E != 0) {
-        Model_SetMaterialColor(&active_pokemon->displayObject, 0xFF, 0xFF, 0xFF, state->unk_2E);
+    state->alpha = Math_StepToS32(state->alpha, 0, 30, 30);
+    if (state->alpha != 0) {
+        Model_SetMaterialColor(&active_pokemon->displayObject, 0xFF, 0xFF, 0xFF, state->alpha);
     }
 
     switch (state->unk_36) {

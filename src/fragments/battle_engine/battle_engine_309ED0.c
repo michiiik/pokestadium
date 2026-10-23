@@ -873,8 +873,8 @@ s32 BattleScene_ResetOwnerStatusPresentation(ActivePokemon* arg0) {
     }
 
     BattleAnim_EndSleepStatusAnimation(arg0);
-    sp28->unk_2E = 0xFF;
-    Model_SetMaterialColor(&arg0->displayObject, 0xFF, 0xFF, 0xFF, sp28->unk_2E);
+    sp28->hue = 0xFF;
+    Model_SetMaterialColor(&arg0->displayObject, 0xFF, 0xFF, 0xFF, sp28->hue);
     BattleScene_CleanupParticipantEffectMode(arg0);
     arg0->displayObject.rotation.x = 0;
     return 0;
