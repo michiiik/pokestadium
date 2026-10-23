@@ -174,19 +174,19 @@ s32 BattleAnim_StepToS16VariableRate(s16* arg0, s16 arg1, f32 arg2) {
     return 1;
 }
 
-void BattleAnim_ApproachF(f32* arg0, f32 arg1, f32 arg2) {
-    *arg0 = *arg0 + ((arg1 - *arg0) * arg2);
-    if ((*arg0 < 0.001) && (*arg0 > -0.001)) {
-        *arg0 = 0.0f;
+void BattleAnim_ApproachF(f32* dest, f32 value, f32 speed) {
+    *dest = *dest + ((value - *dest) * speed);
+    if ((*dest < 0.001) && (*dest > -0.001)) {
+        *dest = 0.0f;
     }
 }
 
-void BattleAnim_ApproachS16(s16* arg0, s16 arg1, s16 arg2) {
-    *arg0 = *arg0 + ((arg1 - *arg0) * arg2);
+void BattleAnim_ApproachS16(s16* dest, s16 value, s16 speed) {
+    *dest = *dest + ((value - *dest) * speed);
 }
 
-void BattleAnim_ApproachU16(u16* arg0, u16 arg1, s16 arg2) {
-    *arg0 = *arg0 + ((arg1 - *arg0) * arg2);
+void BattleAnim_ApproachU16(u16* dest, u16 value, s16 speed) {
+    *dest = *dest + ((value - *dest) * speed);
 }
 
 void Battle_ComputeSplineWeightsVariantA(f32* arg0, f32 arg1) {

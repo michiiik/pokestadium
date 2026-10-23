@@ -501,29 +501,30 @@ void BattleAnim_DigContinue(ActivePokemon* owner, ActivePokemon* animated_pokemo
 }
 
 void BattleAnim_DigEnd(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
-    f32 sp34;
-    f32 sp30;
-    f32 sp2C;
+    f32 disappear_y;
+    f32 hole_y;
+    f32 digging_speed;
     UNUSED s16 pad;
-    u8 sp28[] = { ONIX, MOLTRES }; // D_84384650
+    // Note: Moltres cannot naturally learn Dig
+    u8 modified_dig_pokemon[] = { ONIX, MOLTRES }; // D_84384650
 
-    BattleAnim_ApproachAngleAndCheckThreshold(owner, animated_pokemon->oscillationPhase, animated_pokemon->cameraOffsetScaleFactor << 0xE);
+    BattleAnim_ApproachAngleAndCheckThreshold(owner, animated_pokemon->oscillationPhase, animated_pokemon->cameraOffsetScaleFactor << 14);
 
-    if (BattleScene_ByteArrayContains(animated_pokemon->displayObject.objectType, sp28, sizeof(sp28)) != 0) {
-        sp30 = 10.3f;
-        sp34 = 10.0f;
-        sp2C = 0.035f;
+    if (BattleScene_ByteArrayContains(animated_pokemon->displayObject.objectType, modified_dig_pokemon, sizeof(modified_dig_pokemon)) != 0) {
+        hole_y = 10.3f;
+        disappear_y = 10.0f;
+        digging_speed = 0.035f;
     } else {
-        sp30 = 3.8f;
-        sp34 = 3.5f;
-        sp2C = 0.045f;
+        hole_y = 3.8f;
+        disappear_y = 3.5f;
+        digging_speed = 0.045f;
     }
 
     BattleScene_UpdateSecondaryModelTrailPosition(animated_pokemon, animated_pokemon->oscillationPhase);
-    BattleAnim_ApproachF(&owner->displayObject.position.y, -(BattleAnim_GetOwnerModelHeight(animated_pokemon) * sp30), sp2C);
+    BattleAnim_ApproachF(&owner->displayObject.position.y, -(BattleAnim_GetOwnerModelHeight(animated_pokemon) * hole_y), digging_speed);
 
-    if (owner->displayObject.position.y <= -(BattleAnim_GetOwnerModelHeight(animated_pokemon) * sp34)) {
-        Vec3s_SetComponents(&owner->displayObject.rotation, 0, animated_pokemon->cameraOffsetScaleFactor << 0xE, 0);
+    if (owner->displayObject.position.y <= -(BattleAnim_GetOwnerModelHeight(animated_pokemon) * disappear_y)) {
+        Vec3s_SetComponents(&owner->displayObject.rotation, 0, animated_pokemon->cameraOffsetScaleFactor << 14, 0);
         BattleScene_ResetParticipantModelFlags(animated_pokemon);
         BattleScene_HideParticipantSecondaryModels(animated_pokemon);
     }
@@ -610,30 +611,31 @@ void BattleAnim_StatusIdleCase6(ActivePokemon* owner, ActivePokemon* animated_po
     }
 }
 
-void BattleAnim_StatusIdleCase7Sub0(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+void BattleAnim_DoubleTeamStart(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     BattleScene_ShowSecondaryModelsAtMainTransform(animated_pokemon);
-    animated_pokemon->unk_4AC = 0;
+    animated_pokemon->doubleTeamTimer = 0;
     BattleScene_PositionParticipantModel(animated_pokemon);
-    Vec3s_SetComponents(&owner->displayObject.rotation, 0, animated_pokemon->cameraOffsetScaleFactor << 0xE, 0);
+    Vec3s_SetComponents(&owner->displayObject.rotation, 0, animated_pokemon->cameraOffsetScaleFactor << 14, 0);
     animated_pokemon->modelTransformTimer++;
 }
 
-void BattleAnim_StatusIdleCase7Sub1(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+void BattleAnim_DoubleTeamContinue(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     BattleScene_UpdateSecondaryModelOrbit(animated_pokemon);
-    animated_pokemon->unk_4AC++;
-    if (animated_pokemon->unk_4AC == 0x3C) {
+    animated_pokemon->doubleTeamTimer++;
+    if (animated_pokemon->doubleTeamTimer == 60) {
         BattleScene_ResetParticipantModelFlags(animated_pokemon);
         BattleScene_HideParticipantSecondaryModels(animated_pokemon);
     }
 }
 
-void BattleAnim_StatusIdleCase7(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+// Double Team
+void BattleAnim_DoubleTeam(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     switch (animated_pokemon->modelTransformTimer) {
         case 0:
-            BattleAnim_StatusIdleCase7Sub0(owner, animated_pokemon);
+            BattleAnim_DoubleTeamStart(owner, animated_pokemon);
 
         case 1:
-            BattleAnim_StatusIdleCase7Sub1(owner, animated_pokemon);
+            BattleAnim_DoubleTeamContinue(owner, animated_pokemon);
             break;
     }
 }
@@ -908,7 +910,7 @@ void BattleAnim_StatusIdleCase15(ActivePokemon* owner, ActivePokemon* animated_p
 }
 
 void BattleAnim_StatusIdleCase16Sub0(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon) {
-    animated_pokemon->unk_4AC = 0;
+    animated_pokemon->doubleTeamTimer = 0;
     animated_pokemon->modelTransformTimer++;
 }
 
@@ -1014,7 +1016,7 @@ void BattleAnim_UpdateOwnerStatusIdleAnimation(s32 side_index) {
             break;
 
         case 7:
-            BattleAnim_StatusIdleCase7(owner, animated_pokemon);
+            BattleAnim_DoubleTeam(owner, animated_pokemon);
             break;
 
         case 8:
