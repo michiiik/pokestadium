@@ -643,7 +643,7 @@ void BattleAnim_DoubleTeam(ActivePokemon* owner, ActivePokemon* animated_pokemon
 
 void BattleAnim_ResetOwnerFacingAndExitStatusIdle(ActivePokemon* arg0) {
     UNUSED s32 pad;
-    CameraNode* sp18 = sBattleScene.unk_00->camera;
+    CameraNode* sp18 = sBattleScene.scene->camera;
 
     BattleScene_PositionParticipantModel(arg0);
     Vec3s_SetComponents(&arg0->displayObject.rotation, 0, arg0->cameraOffsetScaleFactor << 0xE, 0);
@@ -651,7 +651,7 @@ void BattleAnim_ResetOwnerFacingAndExitStatusIdle(ActivePokemon* arg0) {
     BattleScene_ResetParticipantModelFlags(arg0);
 }
 
-void BattleAnim_StatusIdleCase8Sub0(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+void BattleAnim_SeismicTossStart(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     animated_pokemon->oscillationPhase = 0;
     animated_pokemon->oscillationAngularVelocity = 0;
     animated_pokemon->oscillationVelocityEasePhase = 0;
@@ -662,35 +662,35 @@ void BattleAnim_StatusIdleCase8Sub0(ActivePokemon* owner, ActivePokemon* animate
     animated_pokemon->modelTransformTimer++;
 }
 
-void BattleAnim_StatusIdleCase8Sub1(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon) {
-    CameraNode* camera = sBattleScene.unk_00->camera;
-    f32 temp_fa0;
-    f32 temp_fa1_2;
-    f32 temp_ft4;
-    f32 sp2C;
-    f32 sp28;
-    f32 sp24;
-    f32 temp_fv0_2;
-    f32 temp_fv1_2;
+void BattleAnim_SeismicTossContinue(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+    CameraNode* camera = sBattleScene.scene->camera;
+    f32 normal_x;
+    f32 normal_z;
+    f32 flip_angle;
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 norm;
+    f32 normal_y;
 
-    BattleAnim_StepToS16(&animated_pokemon->oscillationVelocityEasePhase, 0x5B0, 0x3C);
-    BattleAnim_StepToS16(&animated_pokemon->oscillationAngularVelocity, -0x8000, animated_pokemon->oscillationVelocityEasePhase);
+    BattleAnim_StepToS16(&animated_pokemon->oscillationVelocityEasePhase, 1456, 60);
+    BattleAnim_StepToS16(&animated_pokemon->oscillationAngularVelocity, -32768, animated_pokemon->oscillationVelocityEasePhase);
 
-    sp2C = camera->view.targetPosition.x - camera->view.eyePosition.x;
-    sp28 = camera->view.targetPosition.y - camera->view.eyePosition.y;
-    sp24 = camera->view.targetPosition.z - camera->view.eyePosition.z;
+    x = camera->view.targetPosition.x - camera->view.eyePosition.x;
+    y = camera->view.targetPosition.y - camera->view.eyePosition.y;
+    z = camera->view.targetPosition.z - camera->view.eyePosition.z;
 
-    temp_fv0_2 = sqrtf(SQ(sp2C) + SQ(sp28) + SQ(sp24));
+    norm = sqrtf(SQ(x) + SQ(y) + SQ(z));
 
-    temp_fa0 = sp2C / temp_fv0_2;
-    temp_fv1_2 = sp28 / temp_fv0_2;
-    temp_fa1_2 = sp24 / temp_fv0_2;
+    normal_x = x / norm;
+    normal_y = y / norm;
+    normal_z = z / norm;
 
-    temp_ft4 = 1.0 - COSS(animated_pokemon->oscillationAngularVelocity);
+    flip_angle = 1.0 - COSS(animated_pokemon->oscillationAngularVelocity);
 
-    camera->view.upDirection.x = (temp_ft4 * temp_fa0 * temp_fv1_2) - (SINS(animated_pokemon->oscillationAngularVelocity) * temp_fa1_2);
-    camera->view.upDirection.y = COSS(animated_pokemon->oscillationAngularVelocity) + ((temp_ft4 * temp_fv1_2) * temp_fv1_2);
-    camera->view.upDirection.z = (SINS(animated_pokemon->oscillationAngularVelocity) * temp_fa0) + ((temp_ft4 * temp_fv1_2) * temp_fa1_2);
+    camera->view.upDirection.x = (flip_angle * normal_x * normal_y) - (SINS(animated_pokemon->oscillationAngularVelocity) * normal_z);
+    camera->view.upDirection.y = COSS(animated_pokemon->oscillationAngularVelocity) + ((flip_angle * normal_y) * normal_y);
+    camera->view.upDirection.z = (SINS(animated_pokemon->oscillationAngularVelocity) * normal_x) + ((flip_angle * normal_y) * normal_z);
 
     if (animated_pokemon->displayObject.position.y < 0.0f) {
         animated_pokemon->displayObject.position.y = 0.0f;
@@ -698,13 +698,13 @@ void BattleAnim_StatusIdleCase8Sub1(UNUSED ActivePokemon* owner, ActivePokemon* 
 }
 
 // Seismic Toss
-void BattleAnim_StatusIdleCase8(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+void BattleAnim_SeismicToss(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     switch (animated_pokemon->modelTransformTimer) {
         case 0:
-            BattleAnim_StatusIdleCase8Sub0(owner, animated_pokemon);
+            BattleAnim_SeismicTossStart(owner, animated_pokemon);
 
         case 1:
-            BattleAnim_StatusIdleCase8Sub1(owner, animated_pokemon);
+            BattleAnim_SeismicTossContinue(owner, animated_pokemon);
             break;
     }
 }
@@ -1022,7 +1022,7 @@ void BattleAnim_UpdateOwnerStatusIdleAnimation(s32 side_index) {
             break;
 
         case 8:
-            BattleAnim_StatusIdleCase8(owner, animated_pokemon);
+            BattleAnim_SeismicToss(owner, animated_pokemon);
             break;
 
         case 9:

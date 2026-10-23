@@ -248,7 +248,7 @@ typedef struct BattleScene {
 } BattleScene; // size = 0xE0
 
 typedef struct unk_D_84390240 {
-    /* 0x00 */ BattleScene* unk_00;
+    /* 0x00 */ BattleScene* scene;
     /* 0x04 */ char unk04[0x3C];
 } unk_D_84390240; // size = 0x40
 
@@ -1309,9 +1309,9 @@ void BattleAnim_DoubleTeamStart(ActivePokemon* owner, ActivePokemon* animated_po
 void BattleAnim_DoubleTeamContinue(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_DoubleTeam(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_ResetOwnerFacingAndExitStatusIdle(ActivePokemon* arg0);
-void BattleAnim_StatusIdleCase8Sub0(ActivePokemon* owner, ActivePokemon* animated_pokemon);
-void BattleAnim_StatusIdleCase8Sub1(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon);
-void BattleAnim_StatusIdleCase8(ActivePokemon* owner, ActivePokemon* animated_pokemon);
+void BattleAnim_SeismicTossStart(ActivePokemon* owner, ActivePokemon* animated_pokemon);
+void BattleAnim_SeismicTossContinue(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon);
+void BattleAnim_SeismicToss(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_MinimizeStart(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_MinimizeContinue(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_Minimize(ActivePokemon* owner, ActivePokemon* animated_pokemon);
