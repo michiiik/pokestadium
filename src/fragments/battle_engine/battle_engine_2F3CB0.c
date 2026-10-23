@@ -1079,22 +1079,35 @@ void BattleAnim_PlayTransformInducingAnimation(s32 side_index) {
     }
 }
 
+
+/*
+    This function and its related structs seem to be dead code
+*/
 void BattleAnim_SetOwnerSecondaryStatusFlags(ActivePokemon* arg0, u8 arg1, u8 arg2) {
     arg0->unk_4E8 = arg1;
     arg0->unk_4E9 = arg2;
 }
 
+/*
+    This function and its related structs seem to be dead code
+*/
 void BattleAnim_ClearOwnerSecondaryStatusFlags(ActivePokemon* arg0) {
     arg0->unk_4E8 = 0;
     arg0->unk_4E9 = 0;
 }
 
+/*
+    This function and its related structs seem to be dead code
+*/
 void BattleAnim_InitSecondarySwayOffset(ActivePokemon* arg0, f32 arg1, s16 arg2) {
     arg0->unk_4E4 = arg1;
     arg0->unk_4D8.z = COSS(arg2) * arg1;
     arg0->unk_4D8.y = SINS(arg2) * arg1;
 }
 
+/*
+    This function and its related structs seem to be dead code
+*/
 void BattleAnim_UpdateSecondarySwayPhysics(ActivePokemon* arg0, ActivePokemon* arg1, UNUSED f32 arg2, UNUSED f32 arg3, UNUSED s32 arg4) {
     f32 tmp1 = 0.01f;
     f32 tmp2 = 18.0f;
@@ -1114,6 +1127,9 @@ void BattleAnim_UpdateSecondarySwayPhysics(ActivePokemon* arg0, ActivePokemon* a
     Vec3f_AddInPlace(&arg0->displayObject.position, &sp2C);
 }
 
+/*
+    This function and its related structs seem to be dead code
+*/
 void BattleAnim_SecondaryStatusCaseBSub0(UNUSED ActivePokemon* arg0, ActivePokemon* arg1) {
     Vec3f_SetComponentsDuplicate(&arg1->unk_4CC, 0.0f, 0.0f, 0.0f);
     Vec3f_SetComponentsDuplicate(&arg1->unk_4D8, 0.0f, 0.0f, 0.0f);
@@ -1121,6 +1137,9 @@ void BattleAnim_SecondaryStatusCaseBSub0(UNUSED ActivePokemon* arg0, ActivePokem
     arg1->unk_4E9++;
 }
 
+/*
+    This function and its related structs seem to be dead code
+*/
 void BattleAnim_SecondaryStatusCaseBSub1(ActivePokemon* arg0, ActivePokemon* arg1) {
     BattleAnim_UpdateSecondarySwayPhysics(arg0, arg1, 0, 0, 0x2E36);
     if (arg1->displayObject.position.y < BattleScene_GetParticipantModelHeight(arg1)) {
@@ -1130,6 +1149,9 @@ void BattleAnim_SecondaryStatusCaseBSub1(ActivePokemon* arg0, ActivePokemon* arg
     }
 }
 
+/*
+    This function and its related structs seem to be dead code
+*/
 void BattleAnim_SecondaryStatusCaseB(ActivePokemon* arg0, ActivePokemon* arg1) {
     switch (arg1->unk_4E9) {
         case 0:
@@ -1141,9 +1163,15 @@ void BattleAnim_SecondaryStatusCaseB(ActivePokemon* arg0, ActivePokemon* arg1) {
     }
 }
 
+/*
+    This function and its related structs seem to be dead code
+*/
 void BattleAnim_SecondaryStatusDefault(UNUSED ActivePokemon* arg0, UNUSED ActivePokemon* arg1) {
 }
 
+/*
+    This function and its related structs seem to be dead code
+*/
 void BattleAnim_UpdateOwnerSecondaryStatusAnimation(s32 arg0) {
     ActivePokemon* temp_v0 = sActivePokemon[arg0];
     ActivePokemon* temp_v1 = sActivePokemon[arg0];
