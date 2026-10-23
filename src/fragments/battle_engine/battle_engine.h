@@ -1301,10 +1301,10 @@ void BattleAnim_DigStart(UNUSED ActivePokemon* owner, ActivePokemon* animated_po
 void BattleAnim_DigContinue(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_DigEnd(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_Dig(ActivePokemon* owner, ActivePokemon* animated_pokemon);
-void BattleAnim_StatusIdleCase6Sub0(ActivePokemon* owner, ActivePokemon* animated_pokemon);
-void BattleAnim_StatusIdleCase6Sub1(ActivePokemon* owner, ActivePokemon* animated_pokemon);
-void BattleAnim_StatusIdleCase6Sub2(ActivePokemon* owner, ActivePokemon* animated_pokemon);
-void BattleAnim_StatusIdleCase6(ActivePokemon* owner, ActivePokemon* animated_pokemon);
+void BattleAnim_AgilityStart(ActivePokemon* owner, ActivePokemon* animated_pokemon);
+void BattleAnim_AgilityContinue(ActivePokemon* owner, ActivePokemon* animated_pokemon);
+void BattleAnim_AgilityEnd(ActivePokemon* owner, ActivePokemon* animated_pokemon);
+void BattleAnim_Agility(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_DoubleTeamStart(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_DoubleTeamContinue(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_DoubleTeam(ActivePokemon* owner, ActivePokemon* animated_pokemon);

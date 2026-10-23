@@ -547,7 +547,7 @@ void BattleAnim_Dig(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     }
 }
 
-void BattleAnim_StatusIdleCase6Sub0(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+void BattleAnim_AgilityStart(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     animated_pokemon->oscillationPhase = 0;
     animated_pokemon->oscillationVelocityEasePhase = 0;
     animated_pokemon->animationState = 0;
@@ -558,16 +558,16 @@ void BattleAnim_StatusIdleCase6Sub0(ActivePokemon* owner, ActivePokemon* animate
     animated_pokemon->modelTransformTimer++;
 }
 
-void BattleAnim_StatusIdleCase6Sub1(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
-    f32 tmp;
-    Vec3f sp20 = { 0.0f, 0.0f, 0.0f }; // D_84384654
+void BattleAnim_AgilityContinue(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+    f32 magnitude;
+    Vec3f zero_vector = { 0.0f, 0.0f, 0.0f }; // D_84384654
 
     BattleAnim_ApproachF(&animated_pokemon->oscillationAmplitude, 50.0f, 0.1f);
     animated_pokemon->oscillationPhase += 0xE38;
-    tmp = SINS(animated_pokemon->oscillationPhase) * animated_pokemon->oscillationAmplitude;
-    BattleAnim_Vec3fSetPolarXZ(&sp20, tmp, owner->displayObject.rotation.y);
+    magnitude = SINS(animated_pokemon->oscillationPhase) * animated_pokemon->oscillationAmplitude;
+    BattleAnim_Vec3fSetPolarXZ(&zero_vector, magnitude, owner->displayObject.rotation.y);
     BattleScene_PositionParticipantModel(animated_pokemon);
-    Vec3f_AddInPlace(&owner->displayObject.position, &sp20);
+    Vec3f_AddInPlace(&owner->displayObject.position, &zero_vector);
     BattleScene_UpdateSecondaryModelTrailPosition(animated_pokemon, 0);
 
     if (animated_pokemon->oscillationAmplitude > 49.0f) {
@@ -575,18 +575,18 @@ void BattleAnim_StatusIdleCase6Sub1(ActivePokemon* owner, ActivePokemon* animate
     }
 }
 
-void BattleAnim_StatusIdleCase6Sub2(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
-    f32 tmp;
-    Vec3f sp20 = { 0.0f, 0.0f, 0.0f };
+void BattleAnim_AgilityEnd(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+    f32 magnitude;
+    Vec3f zero_vector = { 0.0f, 0.0f, 0.0f };
 
     BattleAnim_ApproachF(&animated_pokemon->oscillationAmplitude, 0.0f, 0.1f);
-    animated_pokemon->oscillationPhase += 0xE38;
+    animated_pokemon->oscillationPhase += 3640;
 
-    tmp = SINS(animated_pokemon->oscillationPhase) * animated_pokemon->oscillationAmplitude;
-    BattleAnim_Vec3fSetPolarXZ(&sp20, tmp, owner->displayObject.rotation.y);
+    magnitude = SINS(animated_pokemon->oscillationPhase) * animated_pokemon->oscillationAmplitude;
+    BattleAnim_Vec3fSetPolarXZ(&zero_vector, magnitude, owner->displayObject.rotation.y);
 
     BattleScene_PositionParticipantModel(animated_pokemon);
-    Vec3f_AddInPlace(&owner->displayObject.position, &sp20);
+    Vec3f_AddInPlace(&owner->displayObject.position, &zero_vector);
     BattleScene_UpdateSecondaryModelTrailPosition(animated_pokemon, 0);
 
     if (animated_pokemon->oscillationAmplitude <= 0.5f) {
@@ -597,17 +597,17 @@ void BattleAnim_StatusIdleCase6Sub2(ActivePokemon* owner, ActivePokemon* animate
     }
 }
 
-void BattleAnim_StatusIdleCase6(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+void BattleAnim_Agility(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     switch (animated_pokemon->modelTransformTimer) {
         case 0:
-            BattleAnim_StatusIdleCase6Sub0(owner, animated_pokemon);
+            BattleAnim_AgilityStart(owner, animated_pokemon);
 
         case 1:
-            BattleAnim_StatusIdleCase6Sub1(owner, animated_pokemon);
+            BattleAnim_AgilityContinue(owner, animated_pokemon);
             break;
 
         case 2:
-            BattleAnim_StatusIdleCase6Sub2(owner, animated_pokemon);
+            BattleAnim_AgilityEnd(owner, animated_pokemon);
             break;
     }
 }
@@ -1018,7 +1018,7 @@ void BattleAnim_UpdateOwnerStatusIdleAnimation(s32 side_index) {
             break;
 
         case 6:
-            BattleAnim_StatusIdleCase6(owner, animated_pokemon);
+            BattleAnim_Agility(owner, animated_pokemon);
             break;
 
         case 7:
