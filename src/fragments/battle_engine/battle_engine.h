@@ -1322,9 +1322,9 @@ void BattleAnim_MeditateStart(ActivePokemon* owner, ActivePokemon* animated_poke
 void BattleAnim_MeditateContinue(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_MeditateEnd(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_Meditate(ActivePokemon* owner, ActivePokemon* animated_pokemon);
-void BattleAnim_StatusIdleCase15Sub0(ActivePokemon* owner, ActivePokemon* animated_pokemon);
-void BattleAnim_StatusIdleCase15Sub1(ActivePokemon* owner, ActivePokemon* animated_pokemon);
-void BattleAnim_StatusIdleCase15(ActivePokemon* owner, ActivePokemon* animated_pokemon);
+void BattleAnim_SquishHitReactionStart(ActivePokemon* owner, ActivePokemon* animated_pokemon);
+void BattleAnim_SquishHitReactionContinue(ActivePokemon* owner, ActivePokemon* animated_pokemon);
+void BattleAnim_SquishHitReaction(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_StatusIdleCase16Sub0(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_StatusIdleCase16Sub1(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_StatusIdleCase16(ActivePokemon* owner, ActivePokemon* animated_pokemon);

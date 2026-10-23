@@ -858,8 +858,8 @@ void BattleAnim_Meditate(ActivePokemon* owner, ActivePokemon* animated_pokemon) 
     }
 }
 
-void BattleAnim_StatusIdleCase15Sub0(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
-    animated_pokemon->oscillationAngularVelocity = 0x71C;
+void BattleAnim_SquishHitReactionStart(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+    animated_pokemon->oscillationAngularVelocity = 1820;
     animated_pokemon->oscillationAmplitude = 0.4f;
     animated_pokemon->modelTransform.rotation.x = owner->displayObject.scale.x;
     animated_pokemon->modelTransform.rotation.y = owner->displayObject.scale.y;
@@ -867,31 +867,31 @@ void BattleAnim_StatusIdleCase15Sub0(ActivePokemon* owner, ActivePokemon* animat
     animated_pokemon->modelTransformTimer++;
 }
 
-void BattleAnim_StatusIdleCase15Sub1(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
-    BattleMonRuntime* temp_a0 = &animated_pokemon->state.runtime;
-    s16 sp22;
+void BattleAnim_SquishHitReactionContinue(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+    BattleMonRuntime* runtime = &animated_pokemon->state.runtime;
+    s16 angular_velocity;
 
     animated_pokemon->oscillationAngularVelocity += 0xCCC;
-    sp22 = animated_pokemon->oscillationAngularVelocity;
+    angular_velocity = animated_pokemon->oscillationAngularVelocity;
 
     animated_pokemon->oscillationAmplitude = Math_StepToF(animated_pokemon->oscillationAmplitude, 0.0f, 0.02f, 0.02f);
 
-    if (sp22 > 0) {
-        sp22 *= -1;
+    if (angular_velocity > 0) {
+        angular_velocity *= -1;
     }
 
-    if (temp_a0->scaleResize == 0) {
-        owner->displayObject.scale.x = 1.0f - (SINS(sp22) * animated_pokemon->oscillationAmplitude);
-        owner->displayObject.scale.y = (SINS(sp22) * animated_pokemon->oscillationAmplitude) + 1.0f;
-        owner->displayObject.scale.z = 1.0f - (SINS(sp22) * animated_pokemon->oscillationAmplitude);
+    if (runtime->scaleResize == 0) {
+        owner->displayObject.scale.x = 1.0f - (SINS(angular_velocity) * animated_pokemon->oscillationAmplitude);
+        owner->displayObject.scale.y = (SINS(angular_velocity) * animated_pokemon->oscillationAmplitude) + 1.0f;
+        owner->displayObject.scale.z = 1.0f - (SINS(angular_velocity) * animated_pokemon->oscillationAmplitude);
     } else {
-        owner->displayObject.scale.x = 0.8 - (SINS(sp22) * animated_pokemon->oscillationAmplitude);
-        owner->displayObject.scale.y = (SINS(sp22) * animated_pokemon->oscillationAmplitude) + 0.8;
-        owner->displayObject.scale.z = 0.8 - (SINS(sp22) * animated_pokemon->oscillationAmplitude);
+        owner->displayObject.scale.x = 0.8 - (SINS(angular_velocity) * animated_pokemon->oscillationAmplitude);
+        owner->displayObject.scale.y = (SINS(angular_velocity) * animated_pokemon->oscillationAmplitude) + 0.8;
+        owner->displayObject.scale.z = 0.8 - (SINS(angular_velocity) * animated_pokemon->oscillationAmplitude);
     }
 
     if (animated_pokemon->oscillationAmplitude <= 0.01f) {
-        if (temp_a0->scaleResize == 0) {
+        if (runtime->scaleResize == 0) {
             Vec3f_SetComponentsDuplicate(&owner->displayObject.scale, 1.0f, 1.0f, 1.0f);
         } else {
             Vec3f_SetComponentsDuplicate(&owner->displayObject.scale, 0.8f, 0.8f, 0.8f);
@@ -900,13 +900,15 @@ void BattleAnim_StatusIdleCase15Sub1(ActivePokemon* owner, ActivePokemon* animat
     }
 }
 
-void BattleAnim_StatusIdleCase15(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+//squish hit reaction from seismic toss, stomp, or body slam
+//see BattleScene_StartHitReactionAnim @battle_engine_move_nation
+void BattleAnim_SquishHitReaction(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     switch (animated_pokemon->modelTransformTimer) {
         case 0:
-            BattleAnim_StatusIdleCase15Sub0(owner, animated_pokemon);
+            BattleAnim_SquishHitReactionStart(owner, animated_pokemon);
 
         case 1:
-            BattleAnim_StatusIdleCase15Sub1(owner, animated_pokemon);
+            BattleAnim_SquishHitReactionContinue(owner, animated_pokemon);
             break;
     }
 }
@@ -1046,7 +1048,7 @@ void BattleAnim_UpdateOwnerStatusIdleAnimation(s32 side_index) {
             break;
 
         case 15:
-            BattleAnim_StatusIdleCase15(owner, animated_pokemon);
+            BattleAnim_SquishHitReaction(owner, animated_pokemon);
             break;
 
         case 16:
