@@ -2181,7 +2181,7 @@
     - [0x2EA8E0, c,      fragments/battle_engine/battle_engine_main]
     - [0x2EC3C0, c,      fragments/battle_engine/battle_engine_move_animation]
     - [0x2F1D60, c,      fragments/battle_engine/battle_engine_thumbnail]
-    - [0x2F23A0, c,      fragments/battle_engine/battle_engine_2F23A0]
+    - [0x2F23A0, c,      fragments/battle_engine/battle_engine_move_model_transforms]
     - [0x2F3CB0, c,      fragments/battle_engine/battle_engine_2F3CB0]
     - [0x2F6930, c,      fragments/battle_engine/battle_engine_2F6930]
     - [0x2F74E0, c,      fragments/battle_engine/battle_engine_2F74E0]
