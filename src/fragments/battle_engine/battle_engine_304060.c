@@ -154,8 +154,8 @@ static unk_D_843859E0 D_843859E0[] = {
 };
 
 s32 BattleScene_AreBothParticipantModelsCompact(void) {
-    if (((BattleScene_GetParticipantModelWidth(sActivePokemon[0]) + BattleScene_GetParticipantModelWidth(sActivePokemon[1])) <= 85.0f) &&
-        (BattleScene_GetParticipantModelHeight(sActivePokemon[0]) == 0.0f) && (BattleScene_GetParticipantModelHeight(sActivePokemon[1]) == 0.0f) &&
+    if (((BattleScene_GetParticipantModelHeightScale(sActivePokemon[0]) + BattleScene_GetParticipantModelHeightScale(sActivePokemon[1])) <= 85.0f) &&
+        (BattleScene_GetParticipantModelDepthScale(sActivePokemon[0]) == 0.0f) && (BattleScene_GetParticipantModelDepthScale(sActivePokemon[1]) == 0.0f) &&
         (sActivePokemon[0]->displayObject.position.y == 0.0f) && (sActivePokemon[1]->displayObject.position.y == 0.0f)) {
         return 1;
     }

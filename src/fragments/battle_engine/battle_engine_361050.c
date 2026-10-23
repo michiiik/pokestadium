@@ -5236,7 +5236,7 @@ void BattleAI_SyncTeamStateFromRuntime(void) {
 
     for (i = 0; i < 2; i++) {
         temp_s2 = &sActivePokemon[i]->state.runtime;
-        if (sActivePokemon[i]->state.unk_2C != 0) {
+        if (sActivePokemon[i]->state.ownerTeamMemberIndex != 0) {
             var_s3 = &gBattleAI_ActivePokemon[i];
             var_v1 = var_s3->unk_003;
         } else {
@@ -5582,7 +5582,7 @@ s32 BattleAI_ChooseAction(UNUSED s32 arg0) {
     }
 
     if (D_843C60BC != 0) {
-        if (sActivePokemon[0]->state.unk_2C != 0) {
+        if (sActivePokemon[0]->state.ownerTeamMemberIndex != 0) {
             var_v1 = gBattleAI_ActivePokemon[0].unk_003;
         } else {
             var_v1 = 0;

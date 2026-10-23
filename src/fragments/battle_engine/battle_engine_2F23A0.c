@@ -19,9 +19,9 @@ s32 BattleScene_ByteArrayContains(u8 lookup, u8* array, s32 array_length) {
 }
 
 BattleMon* BattleScene_GetParticipantSessionMon(ActivePokemon* active_pokemon) {
-    BattleMon* ptr = &active_pokemon->sessionTeams->teamMember[active_pokemon->state.unk_2C]->pokemonPicked[active_pokemon->state.rosterIndex];
+    BattleMon* pokemon = &active_pokemon->sessionTeams->teamMember[active_pokemon->state.ownerTeamMemberIndex]->pokemonPicked[active_pokemon->state.rosterIndex];
 
-    return ptr;
+    return pokemon;
 }
 
 s32 BattleScene_IsPartnerPikachu(ActivePokemon* active_pokemon) {
@@ -33,39 +33,39 @@ s32 BattleScene_IsPartnerPikachu(ActivePokemon* active_pokemon) {
     return 0;
 }
 
-f32 BattleScene_GetParticipantModelHeight(ActivePokemon* active_pokemon) {
-    return gPokemonModelDimensions[BattleScene_GetParticipantSideIndex(active_pokemon)].unk_08;
+f32 BattleScene_GetParticipantModelDepthScale(ActivePokemon* active_pokemon) {
+    return sPokemonModelDimensions[BattleScene_GetParticipantSideIndex(active_pokemon)].unk_08;
 }
 
-f32 BattleScene_GetParticipantModelRadius(ActivePokemon* active_pokemon) {
-    return gPokemonModelDimensions[BattleScene_GetParticipantSideIndex(active_pokemon)].unk_00;
+f32 BattleScene_GetParticipantModelWidthScale(ActivePokemon* active_pokemon) {
+    return sPokemonModelDimensions[BattleScene_GetParticipantSideIndex(active_pokemon)].unk_00;
 }
 
-f32 BattleScene_GetParticipantModelWidth(ActivePokemon* active_pokemon) {
-    return gPokemonModelDimensions[BattleScene_GetParticipantSideIndex(active_pokemon)].unk_04;
+f32 BattleScene_GetParticipantModelHeightScale(ActivePokemon* active_pokemon) {
+    return sPokemonModelDimensions[BattleScene_GetParticipantSideIndex(active_pokemon)].unk_04;
 }
 
-f32 BattleScene_GetParticipantEyeHeight(ActivePokemon* active_pokemon) {
-    return gPokemonModelDimensions[BattleScene_GetParticipantSideIndex(active_pokemon)].unk_0C;
+f32 BattleScene_GetParticipantModelHue(ActivePokemon* active_pokemon) {
+    return sPokemonModelDimensions[BattleScene_GetParticipantSideIndex(active_pokemon)].unk_0C;
 }
 
 void BattleScene_PositionParticipantModel(ActivePokemon* active_pokemon) {
     if (BattleScene_GetParticipantSideIndex(active_pokemon) == 0) {
         if (active_pokemon->displayObject.objectType == GYARADOS) {
-            Vec3f_SetComponentsDuplicate(&active_pokemon->displayObject.position, -225.0f, BattleScene_GetParticipantModelHeight(active_pokemon), 0.0f);
+            Vec3f_SetComponentsDuplicate(&active_pokemon->displayObject.position, -225.0f, BattleScene_GetParticipantModelDepthScale(active_pokemon), 0.0f);
         } else if ((active_pokemon->displayObject.objectType == VENUSAUR) || (active_pokemon->displayObject.objectType == LAPRAS)) {
-            Vec3f_SetComponentsDuplicate(&active_pokemon->displayObject.position, -175.0f, BattleScene_GetParticipantModelHeight(active_pokemon), 0.0f);
+            Vec3f_SetComponentsDuplicate(&active_pokemon->displayObject.position, -175.0f, BattleScene_GetParticipantModelDepthScale(active_pokemon), 0.0f);
         } else if (active_pokemon->displayObject.objectType == ONIX) {
-            Vec3f_SetComponentsDuplicate(&active_pokemon->displayObject.position, -225.0f, BattleScene_GetParticipantModelHeight(active_pokemon), 7.5000005f);
+            Vec3f_SetComponentsDuplicate(&active_pokemon->displayObject.position, -225.0f, BattleScene_GetParticipantModelDepthScale(active_pokemon), 7.5000005f);
         } else {
-            Vec3f_SetComponentsDuplicate(&active_pokemon->displayObject.position, -150.0f, BattleScene_GetParticipantModelHeight(active_pokemon), 0.0f);
+            Vec3f_SetComponentsDuplicate(&active_pokemon->displayObject.position, -150.0f, BattleScene_GetParticipantModelDepthScale(active_pokemon), 0.0f);
         }
     } else if ((active_pokemon->displayObject.objectType == GYARADOS) || (active_pokemon->displayObject.objectType == ONIX)) {
-        Vec3f_SetComponentsDuplicate(&active_pokemon->displayObject.position, 225.0f, BattleScene_GetParticipantModelHeight(active_pokemon), 0.0f);
+        Vec3f_SetComponentsDuplicate(&active_pokemon->displayObject.position, 225.0f, BattleScene_GetParticipantModelDepthScale(active_pokemon), 0.0f);
     } else if ((active_pokemon->displayObject.objectType == VENUSAUR) || (active_pokemon->displayObject.objectType == LAPRAS)) {
-        Vec3f_SetComponentsDuplicate(&active_pokemon->displayObject.position, 175.0f, BattleScene_GetParticipantModelHeight(active_pokemon), 0.0f);
+        Vec3f_SetComponentsDuplicate(&active_pokemon->displayObject.position, 175.0f, BattleScene_GetParticipantModelDepthScale(active_pokemon), 0.0f);
     } else {
-        Vec3f_SetComponentsDuplicate(&active_pokemon->displayObject.position, 150.0f, BattleScene_GetParticipantModelHeight(active_pokemon), 0.0f);
+        Vec3f_SetComponentsDuplicate(&active_pokemon->displayObject.position, 150.0f, BattleScene_GetParticipantModelDepthScale(active_pokemon), 0.0f);
     }
 }
 
@@ -146,11 +146,11 @@ s32 Battle_GetSideAnimTableFieldC(ActivePokemon* active_pokemon) {
 }
 
 f32 Battle_GetScaledHeightY(ActivePokemon* active_pokemon) {
-    return ((BattleScene_GetParticipantModelWidth(active_pokemon) * 2) / 50.0f) * active_pokemon->displayObject.scale.y;
+    return ((BattleScene_GetParticipantModelHeightScale(active_pokemon) * 2) / 50.0f) * active_pokemon->displayObject.scale.y;
 }
 
 f32 Battle_GetScaleRatio(ActivePokemon* active_pokemon) {
-    return (BattleScene_GetParticipantModelWidth(active_pokemon) * 2) / 50.0f;
+    return (BattleScene_GetParticipantModelHeightScale(active_pokemon) * 2) / 50.0f;
 }
 
 s16 BattleScene_GetActiveAnimRowId(ActivePokemon* active_pokemon) {
@@ -158,9 +158,9 @@ s16 BattleScene_GetActiveAnimRowId(ActivePokemon* active_pokemon) {
 }
 
 void BattleScene_GetParticipantModelBoundsScaled(ActivePokemon* arg0, Vec3f* arg1) {
-    arg1->x = ((BattleScene_GetParticipantModelRadius(arg0) * 2) / 50.0f) * arg0->displayObject.scale.x;
-    arg1->y = ((BattleScene_GetParticipantModelWidth(arg0) * 2) / 50.0f) * arg0->displayObject.scale.y;
-    arg1->z = ((BattleScene_GetParticipantModelRadius(arg0) * 2) / 50.0f) * arg0->displayObject.scale.x;
+    arg1->x = ((BattleScene_GetParticipantModelWidthScale(arg0) * 2) / 50.0f) * arg0->displayObject.scale.x;
+    arg1->y = ((BattleScene_GetParticipantModelHeightScale(arg0) * 2) / 50.0f) * arg0->displayObject.scale.y;
+    arg1->z = ((BattleScene_GetParticipantModelWidthScale(arg0) * 2) / 50.0f) * arg0->displayObject.scale.x;
 }
 
 void BattleScene_GetParticipantModelRotation(ActivePokemon* arg0, Vec3s* arg1) {
@@ -212,7 +212,7 @@ void BattleAnim_GetOwnerDefaultAnchorPosition(ActivePokemon* pokemon, Vec3f* anc
         y_offset = BattleAnim_GetOwnerModelHeight(pokemon) * 1.5f;
     }
 
-    if (BattleScene_GetParticipantModelHeight(pokemon) != 0.0f) {
+    if (BattleScene_GetParticipantModelDepthScale(pokemon) != 0.0f) {
         anchor_position->x = pokemon->displayObject.position.x;
         anchor_position->y = pokemon->displayObject.position.y + y_offset;
         anchor_position->z = pokemon->displayObject.position.z;
@@ -230,20 +230,20 @@ void BattleAnim_GetOwnerDefaultAnchorPosition(ActivePokemon* pokemon, Vec3f* anc
 void BattleScene_ComputeParticipantModelOffset(ActivePokemon* arg0, Vec3f* arg1) {
     if (BattleScene_GetParticipantSideIndex(arg0) == 0) {
         if (arg0->displayObject.objectType == GYARADOS) {
-            Vec3f_SetComponentsDuplicate(arg1, -225.0f, BattleScene_GetParticipantModelHeight(arg0), 0.0f);
+            Vec3f_SetComponentsDuplicate(arg1, -225.0f, BattleScene_GetParticipantModelDepthScale(arg0), 0.0f);
         } else if ((arg0->displayObject.objectType == VENUSAUR) || (arg0->displayObject.objectType == LAPRAS)) {
-            Vec3f_SetComponentsDuplicate(arg1, -175.0f, BattleScene_GetParticipantModelHeight(arg0), 0.0f);
+            Vec3f_SetComponentsDuplicate(arg1, -175.0f, BattleScene_GetParticipantModelDepthScale(arg0), 0.0f);
         } else if (arg0->displayObject.objectType == ONIX) {
-            Vec3f_SetComponentsDuplicate(arg1, -225.0f, BattleScene_GetParticipantModelHeight(arg0), 7.5000005f);
+            Vec3f_SetComponentsDuplicate(arg1, -225.0f, BattleScene_GetParticipantModelDepthScale(arg0), 7.5000005f);
         } else {
-            Vec3f_SetComponentsDuplicate(arg1, -150.0f, BattleScene_GetParticipantModelHeight(arg0), 0.0f);
+            Vec3f_SetComponentsDuplicate(arg1, -150.0f, BattleScene_GetParticipantModelDepthScale(arg0), 0.0f);
         }
     } else if ((arg0->displayObject.objectType == GYARADOS) || (arg0->displayObject.objectType == 0x5F)) {
-        Vec3f_SetComponentsDuplicate(arg1, 225.0f, BattleScene_GetParticipantModelHeight(arg0), 0.0f);
+        Vec3f_SetComponentsDuplicate(arg1, 225.0f, BattleScene_GetParticipantModelDepthScale(arg0), 0.0f);
     } else if ((arg0->displayObject.objectType == VENUSAUR) || (arg0->displayObject.objectType == LAPRAS)) {
-        Vec3f_SetComponentsDuplicate(arg1, 175.0f, BattleScene_GetParticipantModelHeight(arg0), 0.0f);
+        Vec3f_SetComponentsDuplicate(arg1, 175.0f, BattleScene_GetParticipantModelDepthScale(arg0), 0.0f);
     } else {
-        Vec3f_SetComponentsDuplicate(arg1, 150.0f, BattleScene_GetParticipantModelHeight(arg0), 0.0f);
+        Vec3f_SetComponentsDuplicate(arg1, 150.0f, BattleScene_GetParticipantModelDepthScale(arg0), 0.0f);
     }
 }
 
@@ -255,13 +255,13 @@ void BattleScene_GetParticipantAuxiliaryModelPosition(ActivePokemon* arg0, Vec3f
 
 f32 BattleAnim_GetOwnerModelHeight(ActivePokemon* active_pokemon) {
     if (active_pokemon->animationFlags1 == 0x10) {
-        return BattleScene_GetParticipantModelWidth(active_pokemon);
+        return BattleScene_GetParticipantModelHeightScale(active_pokemon);
     }
-    return BattleScene_GetParticipantModelWidth(active_pokemon) * active_pokemon->displayObject.scale.y;
+    return BattleScene_GetParticipantModelHeightScale(active_pokemon) * active_pokemon->displayObject.scale.y;
 }
 
 f32 BattleScene_GetParticipantModelRadiusScaled(ActivePokemon* active_pokemon) {
-    return BattleScene_GetParticipantModelRadius(active_pokemon) * active_pokemon->displayObject.scale.y;
+    return BattleScene_GetParticipantModelWidthScale(active_pokemon) * active_pokemon->displayObject.scale.y;
 }
 
 ModelNodeView* Battle_GetMoveEffectListEntry(ActivePokemon* active_pokemon, s32 entry_index) {

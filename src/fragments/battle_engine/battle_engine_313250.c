@@ -94,7 +94,7 @@ void BattleScene_IntroWaitFirstMonAnim(UNUSED CameraNode* arg0) {
 
 void BattleScene_IntroRevealFirstMon(CameraNode* arg0) {
     ActivePokemonState* sp2C = &sActivePokemon[0]->state;
-    TeamRoster* sp28 = sActivePokemon[0]->sessionTeams->teamMember[sp2C->unk_2C];
+    TeamRoster* sp28 = sActivePokemon[0]->sessionTeams->teamMember[sp2C->ownerTeamMemberIndex];
 
     sActivePokemon[0]->thumbnail.camera->node.flags |= 1;
     sActivePokemon[0]->thumbnail.displayObject.node.flags |= 1;
@@ -137,7 +137,7 @@ void BattleScene_IntroFirstMonSettle(CameraNode* arg0) {
 
 void BattleScene_IntroRevealSecondMon(CameraNode* arg0) {
     ActivePokemonState* sp2C = &sActivePokemon[1]->state;
-    TeamRoster* sp28 = sActivePokemon[1]->sessionTeams->teamMember[sp2C->unk_2C];
+    TeamRoster* sp28 = sActivePokemon[1]->sessionTeams->teamMember[sp2C->ownerTeamMemberIndex];
 
     sActivePokemon[1]->thumbnail.camera->node.flags |= 1;
     sActivePokemon[1]->thumbnail.displayObject.node.flags |= 1;

@@ -29,7 +29,7 @@ ActivePokemon* sActivePokemon[2];
 ActivePokemon* sSide1ActivePokemon;
 ActivePokemon* sSide2ActivePokemon;
 static MovePresentationCue* sCurrentAnimation;
-unk_D_84390028 gPokemonModelDimensions[2];
+unk_D_84390028 sPokemonModelDimensions[2];
 static SwayLayoutConfig sDefaultSwayLayout;
 static BattleSceneStateTickSlot sBattleSceneStateTickSlots[7];
 static s32 sBattleSceneStateTickSlotIndex;
@@ -213,7 +213,7 @@ void BattleScene_TickQueueRowEffectList3AtAnimEnd(ActivePokemon* active_pokemon)
     s32 cue_index = sBattleSceneStateRowTable[row_index].unk_20;
 
     sCurrentAnimation = &sSideBattleCues[BattleScene_GetParticipantSideIndex(active_pokemon)]->moveCues[cue_index];
-    if (BattleScene_GetParticipantModelHeight(active_pokemon) != 0.0f) {
+    if (BattleScene_GetParticipantModelDepthScale(active_pokemon) != 0.0f) {
         sBattleSceneStateTickSlots[sBattleSceneStateTickSlotIndex].callback = sBattleSceneStateTickSentinel;
     } else if ((active_pokemon->animationTimer == (sCurrentAnimation->animationDuration + 1)) && (BattleAnim_IsAssetLoadBusy(active_pokemon) == 0)) {
         BattleScene_QueueRowEffectList3(active_pokemon, sBattleSceneStateRowTable[row_index].mode);
@@ -496,7 +496,7 @@ void Battle_LoadAnimationAndMarkMoveIllegality(ActivePokemon* pokemon, s32 mark_
     side_index = BattleScene_GetParticipantSideIndex(pokemon);
     species = pokemon->displayObject.objectType - 1;
 
-    battle_mon = &pokemon->sessionTeams->teamMember[pokemon->state.unk_2C]->pokemonPicked[pokemon->state.unk_18];
+    battle_mon = &pokemon->sessionTeams->teamMember[pokemon->state.ownerTeamMemberIndex]->pokemonPicked[pokemon->state.unk_18];
 
     rom_address = (u32)_70D3A0_ROM_START + ((u32)D_80075BD0[species] & 0xFFFFFF);
     if ((pokemon->displayObject.objectType == PIKACHU) && (battle_mon->unk_52 & 0x80)) {
@@ -542,7 +542,7 @@ void Battle_LoadAnimationAndMarkMoveIllegality(ActivePokemon* pokemon, s32 mark_
     pokemon->modelTransform.layoutConfig.backCameraShotOffset.x *= pokemon->cameraOffsetScaleFactor;
 
     rom_address = (u32)_70D3A0_ROM_START + ((u32)(D_70110 + (species << 4)) & 0xFFFFFF);
-    Dma_WriteChunks(&gPokemonModelDimensions[side_index], rom_address, rom_address + 0x10, 0);
+    Dma_WriteChunks(&sPokemonModelDimensions[side_index], rom_address, rom_address + 0x10, 0);
 
     rom_address = (u32)_70D3A0_ROM_START + ((u32)(D_71E10 + (species * 0x10)) & 0xFFFFFF);
     Dma_WriteChunks(sPlayerTagTeam[side_index], rom_address, rom_address + 0x10, 0);
@@ -1451,7 +1451,7 @@ void BattleScene_TickPlaySpeciesSequence33(ActivePokemon* active_pokemon) {
     u16 species = active_pokemon->displayObject.objectType;
 
     sCurrentAnimation = &sSideBattleCues[BattleScene_GetParticipantSideIndex(active_pokemon)]->faintCue;
-    if ((BattleScene_GetParticipantModelHeight(active_pokemon) != 0.0f) && (species != FEAROW) && (species != MAGNETON) && (species != AERODACTYL)) {
+    if ((BattleScene_GetParticipantModelDepthScale(active_pokemon) != 0.0f) && (species != FEAROW) && (species != MAGNETON) && (species != AERODACTYL)) {
         sBattleSceneStateTickSlots[sBattleSceneStateTickSlotIndex].callback = sBattleSceneStateTickSentinel;
     } else if ((active_pokemon->animationTimer == (sCurrentAnimation->animationDuration + 1)) && (BattleAnim_IsAssetLoadBusy(active_pokemon) == 0)) {
         BattleAnim_PlaySpeciesSequence33(active_pokemon);
@@ -1474,7 +1474,7 @@ void BattleScene_TickQueueList3Selector2OrC(ActivePokemon* active_pokemon) {
     }
 
     if (BattleAnim_IsAssetLoadBusy(active_pokemon) == 0) {
-        if (BattleScene_GetParticipantModelHeight(active_pokemon) != 0.0f) {
+        if (BattleScene_GetParticipantModelDepthScale(active_pokemon) != 0.0f) {
             if ((first_effect_frame <= 0) || (first_effect_frame == active_pokemon->animationTimer)) {
                 if (sCurrentAnimation->unk_09 == 1) {
                     BattleAnim_QueueEffectList3(2, active_pokemon, active_pokemon, 0xFF, 0xFF);
@@ -2050,14 +2050,14 @@ void BattleScene_ResetParticipantAnimationFlags(ActivePokemon* active_pokemon) {
 
     if (active_pokemon->unk_4C8 != 0) {
         if (pokemon_state->flags & ACTIVE_AIRBORNE) {
-            active_pokemon->displayObject.position.y = gPokemonModelDimensions[BattleScene_GetParticipantSideIndex(active_pokemon)].unk_08;
+            active_pokemon->displayObject.position.y = sPokemonModelDimensions[BattleScene_GetParticipantSideIndex(active_pokemon)].unk_08;
             Battle_ClearRuntimeFlags(active_pokemon, 0x608);
         }
 
         if (pokemon_state->flags & 0x4008) {
             active_pokemon->displayObject.lodFraction = 0xFF;
             BattleAnim_StopOwnerCategoryParticles(4, active_pokemon);
-            active_pokemon->displayObject.position.y = gPokemonModelDimensions[BattleScene_GetParticipantSideIndex(active_pokemon)].unk_08;
+            active_pokemon->displayObject.position.y = sPokemonModelDimensions[BattleScene_GetParticipantSideIndex(active_pokemon)].unk_08;
             active_pokemon->displayObject.node.renderFlags &= ~2;
             active_pokemon->displayObject.node.renderFlags |= 0x20;
             active_pokemon->displayObject.node.flags |= 1;
@@ -2141,7 +2141,7 @@ void Battle_ClearOpponentHopFlagAndSyncMove(ActivePokemon* active_pokemon) {
  */
 void BattleScene_CleanupParticipantHideFlag(ActivePokemon* active_pokemon) {
     if (active_pokemon->state.flags & 8) {
-        active_pokemon->displayObject.position.y = BattleScene_GetParticipantModelHeight(active_pokemon);
+        active_pokemon->displayObject.position.y = BattleScene_GetParticipantModelDepthScale(active_pokemon);
         Battle_ClearRuntimeFlags(active_pokemon, 0x608);
     }
 }
@@ -2178,7 +2178,7 @@ void BattleScene_CleanupOpponentAnimationFlags(ActivePokemon* active_pokemon) {
     }
 
     if (target_state->flags & ACTIVE_RETURN_RESET) {
-        target->displayObject.position.y = BattleScene_GetParticipantModelHeight(active_pokemon);
+        target->displayObject.position.y = BattleScene_GetParticipantModelDepthScale(active_pokemon);
         Battle_ClearRuntimeFlags(target, 0x608);
     }
 }
@@ -2216,7 +2216,7 @@ void BattleScene_CleanupParticipantEffectMode(ActivePokemon* active_pokemon) {
 
         case 10:
             BattleScene_SetParticipantModelFlags(active_pokemon, 0, 0);
-            active_pokemon->displayObject.position.y = BattleScene_GetParticipantModelHeight(active_pokemon);
+            active_pokemon->displayObject.position.y = BattleScene_GetParticipantModelDepthScale(active_pokemon);
             active_pokemon->displayObject.rotation.x = 0;
             break;
 

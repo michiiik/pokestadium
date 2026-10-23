@@ -195,7 +195,7 @@ void ShowDamageMessage(s32 arg0, s32 arg1) {
 
     temp_v1 = &sActivePokemon[arg0]->state;
     temp_a2_2 = &sActivePokemon[arg1]->state.runtime;
-    temp_a3 = sActivePokemon[arg0]->sessionTeams->teamMember[temp_v1->unk_2C];
+    temp_a3 = sActivePokemon[arg0]->sessionTeams->teamMember[temp_v1->ownerTeamMemberIndex];
 
     if (temp_a2_2->unk_0C == 0) {
         Text_SetStringToken(0x19, temp_a3->pokemonPicked[temp_v1->unk_18].unk_30);
@@ -722,7 +722,7 @@ void Battle_InitPokemonRuntimeState(ActivePokemon* arg0) {
 
     sp28 = &arg0->state;
     sp24 = &arg0->state.runtime;
-    sp34 = &arg0->sessionTeams->teamMember[sp28->unk_2C]->pokemonPicked[sp28->unk_18];
+    sp34 = &arg0->sessionTeams->teamMember[sp28->ownerTeamMemberIndex]->pokemonPicked[sp28->unk_18];
 
     sp24->unk_14 = sp28->rosterIndex;
     sp24->id = sp34->unk_00.unk_00;

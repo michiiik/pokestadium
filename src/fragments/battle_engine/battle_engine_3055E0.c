@@ -272,7 +272,7 @@ void BattleScene_SetCameraSendOutShot(CameraNode* arg0, s32 arg1) {
         BattleAnim_GetOwnerDefaultAnchorPosition(temp_s0, &sp58);
     } else {
         BattleAnim_Vec3fCopy(&sp58, &temp_s0->modelTransform.layoutConfig.backCameraShotOffset);
-        sp58.y += temp_s0->displayObject.position.y - BattleScene_GetParticipantModelHeight(temp_s0);
+        sp58.y += temp_s0->displayObject.position.y - BattleScene_GetParticipantModelDepthScale(temp_s0);
     }
 
     sp54 = BattleScene_ScaleCameraDistance(temp_s0, 3.0f, 300.0f);
@@ -308,7 +308,7 @@ void BattleScene_UpdateCameraModelOffset(ActivePokemon* arg0, CameraNode* arg1) 
 
     Vec3f_SetComponentsDuplicate(&arg0->modelTransform.unk_18, arg0->modelTransform.layoutConfig.frontCameraShotOffset.x, arg0->modelTransform.layoutConfig.frontCameraShotOffset.y,
                   arg0->modelTransform.layoutConfig.frontCameraShotOffset.z);
-    arg0->modelTransform.unk_18.y = (arg0->displayObject.position.y - BattleScene_GetParticipantModelHeight(arg0)) + arg0->modelTransform.unk_18.y + sp3C;
+    arg0->modelTransform.unk_18.y = (arg0->displayObject.position.y - BattleScene_GetParticipantModelDepthScale(arg0)) + arg0->modelTransform.unk_18.y + sp3C;
     BattleAnim_Vec3fCopy(&sBattleScene.scene->unk_B8, &arg1->view.targetPosition);
     BattleAnim_Vec3fCopy(&sBattleScene.scene->unk_C4, &arg1->view.eyePosition);
     Vec3f_CalculateDistanceAngles(&sBattleScene.scene->unk_B8, &sBattleScene.scene->unk_C4, &sBattleScene.scene->unk_70, &sp38->unk_44,
@@ -326,7 +326,7 @@ void BattleScene_ClearCameraOffsetVectors(void) {
 void BattleScene_SetCameraAtFromAnchor(ActivePokemon* arg0, CameraNode* arg1, Vec3f arg2, s16 arg3, s16 arg4, f32 arg5, f32 arg6) {
     Camera_ComputeEyeFromAngles(&arg2, &arg1->view.targetPosition, arg5, arg3, arg4);
     arg1->view.targetPosition.y += arg6;
-    arg1->view.targetPosition.y += BattleScene_GetParticipantEyeHeight(arg0);
+    arg1->view.targetPosition.y += BattleScene_GetParticipantModelHue(arg0);
 }
 
 void BattleScene_SetCameraAtFromPosition(CameraNode* arg0, Vec3f arg1, s16 arg2, s16 arg3, f32 arg4, f32 arg5) {
@@ -401,7 +401,7 @@ void BattleScene_ApplyOwnerFramingAdjustments(CameraNode* arg0, ActivePokemon* a
 
         case 0x82:
             arg0->perspective.verticalFieldOfView = 50.0f;
-            if (sp3C < (BattleScene_GetParticipantModelRadius(arg1) * 0.5f)) {
+            if (sp3C < (BattleScene_GetParticipantModelWidthScale(arg1) * 0.5f)) {
                 BattleAnim_Vec3fCopy(&sp64, &arg1->modelTransform.unk_18);
             }
             break;
@@ -411,13 +411,13 @@ void BattleScene_ApplyOwnerFramingAdjustments(CameraNode* arg0, ActivePokemon* a
         case 0x32:
         case 0x33:
         case 0x5B:
-            if (sp3C < (BattleScene_GetParticipantModelRadius(arg1) * 5.0f)) {
+            if (sp3C < (BattleScene_GetParticipantModelWidthScale(arg1) * 5.0f)) {
                 BattleAnim_Vec3fCopy(&sp64, &arg1->modelTransform.unk_18);
             }
             break;
 
         case 0x12:
-            if (sp3C < (BattleScene_GetParticipantModelRadius(arg1) * 1.5f)) {
+            if (sp3C < (BattleScene_GetParticipantModelWidthScale(arg1) * 1.5f)) {
                 BattleAnim_Vec3fCopy(&sp64, &arg1->modelTransform.unk_18);
             }
             break;
@@ -426,7 +426,7 @@ void BattleScene_ApplyOwnerFramingAdjustments(CameraNode* arg0, ActivePokemon* a
         case 0x58:
         case 0x59:
         case 0x96:
-            if (sp3C < BattleScene_GetParticipantModelRadius(arg1)) {
+            if (sp3C < BattleScene_GetParticipantModelWidthScale(arg1)) {
                 BattleAnim_Vec3fCopy(&sp64, &arg1->modelTransform.unk_18);
             }
             break;
@@ -434,7 +434,7 @@ void BattleScene_ApplyOwnerFramingAdjustments(CameraNode* arg0, ActivePokemon* a
         case 0x4A:
         case 0x65:
         case 0x67:
-            if (sp3C < (BattleScene_GetParticipantModelRadius(arg1) / 1.2f)) {
+            if (sp3C < (BattleScene_GetParticipantModelWidthScale(arg1) / 1.2f)) {
                 BattleAnim_Vec3fCopy(&sp64, &arg1->modelTransform.unk_18);
             }
             break;
@@ -445,13 +445,13 @@ void BattleScene_ApplyOwnerFramingAdjustments(CameraNode* arg0, ActivePokemon* a
         case 0x4C:
         case 0x5C:
         case 0x83:
-            if (sp3C < (BattleScene_GetParticipantModelRadius(arg1) / 3.0f)) {
+            if (sp3C < (BattleScene_GetParticipantModelWidthScale(arg1) / 3.0f)) {
                 BattleAnim_Vec3fCopy(&sp64, &arg1->modelTransform.unk_18);
             }
             break;
 
         default:
-            if (sp3C < (BattleScene_GetParticipantModelRadius(arg1) * 0.5f)) {
+            if (sp3C < (BattleScene_GetParticipantModelWidthScale(arg1) * 0.5f)) {
                 BattleAnim_Vec3fCopy(&sp64, &arg1->modelTransform.unk_18);
             }
             break;
@@ -466,29 +466,29 @@ void BattleScene_ApplyOwnerFramingAdjustments(CameraNode* arg0, ActivePokemon* a
         case GRIMER:
         case MUK:
         case JOLTEON:
-            var_fv1 = sp3C / (BattleScene_GetParticipantModelRadius(arg1) * 50.0f);
+            var_fv1 = sp3C / (BattleScene_GetParticipantModelWidthScale(arg1) * 50.0f);
             break;
 
         case FEAROW:
         case GOLEM:
         case MEWTWO:
-            var_fv1 = sp3C / (BattleScene_GetParticipantModelRadius(arg1) * 1.5f);
+            var_fv1 = sp3C / (BattleScene_GetParticipantModelWidthScale(arg1) * 1.5f);
             break;
 
         default:
-            temp_fv1 = sp3C / BattleScene_GetParticipantModelRadius(arg1);
+            temp_fv1 = sp3C / BattleScene_GetParticipantModelWidthScale(arg1);
             if (temp_fv1 <= 0.1f) {
-                var_fv1 = sp3C / (BattleScene_GetParticipantModelRadius(arg1) * 15.0f);
+                var_fv1 = sp3C / (BattleScene_GetParticipantModelWidthScale(arg1) * 15.0f);
             } else if (temp_fv1 <= 0.2f) {
-                var_fv1 = sp3C / (BattleScene_GetParticipantModelRadius(arg1) * 7.0f);
+                var_fv1 = sp3C / (BattleScene_GetParticipantModelWidthScale(arg1) * 7.0f);
             } else if (temp_fv1 <= 0.3f) {
-                var_fv1 = sp3C / (BattleScene_GetParticipantModelRadius(arg1) * 5.0f);
+                var_fv1 = sp3C / (BattleScene_GetParticipantModelWidthScale(arg1) * 5.0f);
             } else if (temp_fv1 <= 0.4f) {
-                var_fv1 = sp3C / (BattleScene_GetParticipantModelRadius(arg1) * 3.0f);
+                var_fv1 = sp3C / (BattleScene_GetParticipantModelWidthScale(arg1) * 3.0f);
             } else if (temp_fv1 <= 0.5f) {
-                var_fv1 = sp3C / (BattleScene_GetParticipantModelRadius(arg1) * 1.5f);
+                var_fv1 = sp3C / (BattleScene_GetParticipantModelWidthScale(arg1) * 1.5f);
             } else {
-                var_fv1 = sp3C / BattleScene_GetParticipantModelRadius(arg1);
+                var_fv1 = sp3C / BattleScene_GetParticipantModelWidthScale(arg1);
             }
             break;
     }
@@ -509,30 +509,30 @@ void BattleScene_ApplyOwnerFramingAdjustments(CameraNode* arg0, ActivePokemon* a
     if (arg1->animationFlags1 == 0xD) {
         var_fv1 = 0;
     } else if ((arg1->displayObject.objectType == GRIMER) || (arg1->displayObject.objectType == MUK)) {
-        temp_fv1 = sp3C / BattleScene_GetParticipantModelRadius(arg1);
+        temp_fv1 = sp3C / BattleScene_GetParticipantModelWidthScale(arg1);
         if (temp_fv1 <= 0.05f) {
-            var_fv1 = sp3C / (BattleScene_GetParticipantModelRadius(arg1) * 90.0f);
+            var_fv1 = sp3C / (BattleScene_GetParticipantModelWidthScale(arg1) * 90.0f);
         } else if (temp_fv1 <= 0.1f) {
-            var_fv1 = sp3C / (BattleScene_GetParticipantModelRadius(arg1) * 70.0f);
+            var_fv1 = sp3C / (BattleScene_GetParticipantModelWidthScale(arg1) * 70.0f);
         } else if (temp_fv1 <= 0.2f) {
-            var_fv1 = sp3C / (BattleScene_GetParticipantModelRadius(arg1) * 65.0f);
+            var_fv1 = sp3C / (BattleScene_GetParticipantModelWidthScale(arg1) * 65.0f);
         } else if (temp_fv1 <= 0.3f) {
-            var_fv1 = sp3C / (BattleScene_GetParticipantModelRadius(arg1) * 63.0f);
+            var_fv1 = sp3C / (BattleScene_GetParticipantModelWidthScale(arg1) * 63.0f);
         } else {
-            var_fv1 = sp3C / (BattleScene_GetParticipantModelRadius(arg1) * 45.0f);
+            var_fv1 = sp3C / (BattleScene_GetParticipantModelWidthScale(arg1) * 45.0f);
         }
     } else {
-        temp_fv1 = sp3C / BattleScene_GetParticipantModelRadius(arg1);
+        temp_fv1 = sp3C / BattleScene_GetParticipantModelWidthScale(arg1);
         if (temp_fv1 <= 0.05f) {
-            var_fv1 = sp3C / (BattleScene_GetParticipantModelRadius(arg1) * 50.0f);
+            var_fv1 = sp3C / (BattleScene_GetParticipantModelWidthScale(arg1) * 50.0f);
         } else if (temp_fv1 <= 0.1f) {
-            var_fv1 = sp3C / (BattleScene_GetParticipantModelRadius(arg1) * 30.0f);
+            var_fv1 = sp3C / (BattleScene_GetParticipantModelWidthScale(arg1) * 30.0f);
         } else if (temp_fv1 <= 0.2f) {
-            var_fv1 = sp3C / (BattleScene_GetParticipantModelRadius(arg1) * 25.0f);
+            var_fv1 = sp3C / (BattleScene_GetParticipantModelWidthScale(arg1) * 25.0f);
         } else if (temp_fv1 <= 0.3f) {
-            var_fv1 = sp3C / (BattleScene_GetParticipantModelRadius(arg1) * 23.0f);
+            var_fv1 = sp3C / (BattleScene_GetParticipantModelWidthScale(arg1) * 23.0f);
         } else {
-            var_fv1 = sp3C / (BattleScene_GetParticipantModelRadius(arg1) * 15.0f);
+            var_fv1 = sp3C / (BattleScene_GetParticipantModelWidthScale(arg1) * 15.0f);
         }
     }
 
@@ -611,14 +611,14 @@ void BattleScene_UpdateCameraTargetFromOwner(CameraNode* arg0, ActivePokemon* ar
     BattleScene_GetOwnerCameraAnchor(arg1, &sp54);
     Vec3f_CalculateDistanceAngles(&sp54, &arg1->modelTransform.unk_18, &sp38, &sp32, &sp30);
 
-    if (sp38 < (BattleScene_GetParticipantModelRadius(arg1) * 1.1f)) {
+    if (sp38 < (BattleScene_GetParticipantModelWidthScale(arg1) * 1.1f)) {
         BattleAnim_Vec3fCopy(&sp54, &arg1->modelTransform.unk_18);
     }
 
     Camera_ComputeEyeFromAngles(&sp54, &sp48, ptr->unk_4C, ptr->unk_44, ptr->unk_46);
     Vec3f_CalculateDistanceAngles(&sp3C, &sp48, &sp38, &sp32, &sp30);
 
-    var_fa0 = (sp38 / (BattleScene_GetParticipantModelRadius(arg1) * 80.0f)) * 3.0f;
+    var_fa0 = (sp38 / (BattleScene_GetParticipantModelWidthScale(arg1) * 80.0f)) * 3.0f;
     if (var_fa0 >= 1.0f) {
         var_fa0 = 1.0f;
     }
@@ -819,7 +819,7 @@ s32 BattleScene_AnimateCameraPreset(CameraNode* arg0, ActivePokemon* arg1, s32 a
     Camera_ComputeEyeFromAngles(&gCameraPreset.unk_00, &sp3C, gCameraPreset.unk_2C, gCameraPreset.unk_20, gCameraPreset.unk_22);
 
     if (arg2 == 1) {
-        sp3C.y += BattleScene_GetParticipantEyeHeight(arg1);
+        sp3C.y += BattleScene_GetParticipantModelHue(arg1);
     }
 
     BattleAnim_Vec3fCopy(&sp60, &arg0->view.targetPosition);
@@ -854,7 +854,7 @@ s32 BattleScene_AnimateCameraPresetToOwner(CameraNode* arg0, ActivePokemon* arg1
     BattleScene_GetOwnerCameraAnchor(arg1, &sp6C);
     Vec3f_CalculateDistanceAngles(&gCameraPreset.unk_00, &sp6C, &sp44, &sp36, &sp34);
 
-    var_fa1 = sp44 / (BattleScene_GetParticipantModelRadius(arg1) * 40.0f);
+    var_fa1 = sp44 / (BattleScene_GetParticipantModelWidthScale(arg1) * 40.0f);
     if (var_fa1 >= 0.6f) {
         var_fa1 = 1.0f;
     }
@@ -869,7 +869,7 @@ s32 BattleScene_AnimateCameraPresetToOwner(CameraNode* arg0, ActivePokemon* arg1
     BattleScene_GetOwnerCameraAnchor(arg1, &sp6C);
     Vec3f_CalculateDistanceAngles(&gCameraPreset.unk_00, &sp6C, &sp44, &sp36, &sp34);
 
-    var_fa1 = sp44 / (BattleScene_GetParticipantModelRadius(arg1) * 40.0f);
+    var_fa1 = sp44 / (BattleScene_GetParticipantModelWidthScale(arg1) * 40.0f);
     if (var_fa1 >= 0.6f) {
         var_fa1 = 1;
     }
@@ -877,7 +877,7 @@ s32 BattleScene_AnimateCameraPresetToOwner(CameraNode* arg0, ActivePokemon* arg1
     sp44 += gCameraPreset.unk_2C;
 
     Camera_ComputeEyeFromAngles(&gCameraPreset.unk_00, &sp48, sp44, gCameraPreset.unk_20, gCameraPreset.unk_22);
-    sp48.y += BattleScene_GetParticipantEyeHeight(arg1);
+    sp48.y += BattleScene_GetParticipantModelHue(arg1);
     BattleAnim_Vec3fCopy(&sp6C, &arg0->view.targetPosition);
     BattleAnim_CalculateDistanceAngles(&sp6C, &sp48, &sp3C, &sp36, &sp34);
     Camera_ComputeEyeFromAngles(&sp6C, &arg0->view.targetPosition, sBattleScene.scene->unk_94.z * sp3C, sp36, sp34);
@@ -895,7 +895,7 @@ void BattleScene_CameraPresetNop(UNUSED CameraNode* arg0) {
 void BattleScene_ApplyCameraPreset(CameraNode* arg0, ActivePokemon* arg1, s32 arg2) {
     BattleScene_SetCameraAtFromPosition(arg0, gCameraPreset.unk_00, gCameraPreset.unk_0C, gCameraPreset.unk_0E, gCameraPreset.unk_18, 0.0f);
     if (arg2 == 1) {
-        arg0->view.targetPosition.y += BattleScene_GetParticipantEyeHeight(arg1);
+        arg0->view.targetPosition.y += BattleScene_GetParticipantModelHue(arg1);
         BattleScene_SetCameraEyeFromPosition(arg0, arg0->view.targetPosition, gCameraPreset.unk_12, gCameraPreset.unk_14, gCameraPreset.unk_1C, 0.0f);
     } else {
         BattleScene_SetCameraEyeFromPosition(arg0, gCameraPreset.unk_00, gCameraPreset.unk_12, gCameraPreset.unk_14, gCameraPreset.unk_1C, 0.0f);

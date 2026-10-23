@@ -697,14 +697,14 @@ void BattleScene_ClearParticipantMessageBuffer(ActivePokemon* active_pokemon) {
 }
 
 void BattleScene_BuildParticipantMessage(ActivePokemon* arg0, s32 arg1) {
-    gBattleMessageQueues->unk_000 = arg0->sessionTeams->teamMember[arg0->state.unk_2C]->unk_001;
+    gBattleMessageQueues->unk_000 = arg0->sessionTeams->teamMember[arg0->state.ownerTeamMemberIndex]->unk_001;
     arg0->captionState.unk_00 = 1;
     Text_SetStringToken(0x19, arg0->teamRoster->pokemonPicked[arg0->state.rosterIndex].unk_30);
     Text_GetString(arg0->captionState.unk_48, 0x40, sBattleMessagesTable, arg1);
 }
 
 void BattleScene_RevealParticipantMessageChars(ActivePokemon* arg0) {
-    TeamRoster* temp_t0 = arg0->sessionTeams->teamMember[arg0->state.unk_2C];
+    TeamRoster* temp_t0 = arg0->sessionTeams->teamMember[arg0->state.ownerTeamMemberIndex];
 
     if (arg0->captionState.unk_48[arg0->captionState.unk_04] != '\x00') {
         arg0->captionState.unk_08[arg0->captionState.unk_04] = arg0->captionState.unk_48[arg0->captionState.unk_04];

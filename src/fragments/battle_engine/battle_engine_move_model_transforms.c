@@ -355,7 +355,7 @@ void BattleAnim_WaterfallStart(UNUSED ActivePokemon* owner, ActivePokemon* anima
 // waterfall continue
 void BattleAnim_WaterfallContinue(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     BattleAnim_UpdateTransform(owner, animated_pokemon, 2.0f, 0.002f, NINETY_DEGREES);
-    if ((owner->displayObject.position.y - BattleScene_GetParticipantModelHeight(animated_pokemon)) >= 90.0f) {
+    if ((owner->displayObject.position.y - BattleScene_GetParticipantModelDepthScale(animated_pokemon)) >= 90.0f) {
         animated_pokemon->modelTransformTimer++;
         animated_pokemon->modelTransform.rotation.y = 0.0f;
     }
@@ -975,11 +975,11 @@ void BattleAnim_SurfContinue(ActivePokemon* owner, ActivePokemon* animated_pokem
 
     animated_pokemon->animationState++;
     water_height = TerrainGrid_SampleHeightAndSlope(owner->displayObject.position.x, owner->displayObject.position.z, &rotation_x);
-    owner->displayObject.position.y = BattleScene_GetParticipantModelHeight(animated_pokemon) + water_height;
+    owner->displayObject.position.y = BattleScene_GetParticipantModelDepthScale(animated_pokemon) + water_height;
     owner->displayObject.rotation.x = (s16)rotation_x * 182;
 
     if (animated_pokemon->animationState == 300) {
-        owner->displayObject.position.y = BattleScene_GetParticipantModelHeight(animated_pokemon);
+        owner->displayObject.position.y = BattleScene_GetParticipantModelDepthScale(animated_pokemon);
         owner->displayObject.rotation.x = 0;
         BattleScene_ResetParticipantModelFlags(animated_pokemon);
     }
@@ -1142,9 +1142,9 @@ void BattleAnim_SecondaryStatusCaseBSub0(UNUSED ActivePokemon* arg0, ActivePokem
 */
 void BattleAnim_SecondaryStatusCaseBSub1(ActivePokemon* arg0, ActivePokemon* arg1) {
     BattleAnim_UpdateSecondarySwayPhysics(arg0, arg1, 0, 0, 0x2E36);
-    if (arg1->displayObject.position.y < BattleScene_GetParticipantModelHeight(arg1)) {
+    if (arg1->displayObject.position.y < BattleScene_GetParticipantModelDepthScale(arg1)) {
         arg1->unk_4D8.y = 0.0f;
-        arg1->displayObject.position.y = BattleScene_GetParticipantModelHeight(arg1);
+        arg1->displayObject.position.y = BattleScene_GetParticipantModelDepthScale(arg1);
         BattleAnim_ClearOwnerSecondaryStatusFlags(arg1);
     }
 }

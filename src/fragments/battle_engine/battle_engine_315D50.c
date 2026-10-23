@@ -4213,7 +4213,7 @@ void BattleAnim_PlayOwnerCry(ActivePokemon* active_pokemon, s16 species) {
 void BattleAnim_PlaySpeciesSequence33(ActivePokemon* active_pokemon) {
     s16 species = active_pokemon->displayObject.objectType;
 
-    BattleScene_GetParticipantModelWidth(active_pokemon);
+    BattleScene_GetParticipantModelHeightScale(active_pokemon);
     Audio_PlayCommand(0x33, species, 0);
 }
 
