@@ -2575,8 +2575,8 @@ void BattleScene_InitializeRuntime(BattleSessionTeams* session_teams) {
 void BattleScene_UpdateParticipantsAndQueueEffects(UNUSED ActivePokemon* side1_pokemon, UNUSED ActivePokemon* side2_pokemon) {
     Battle_AdvanceSecondaryModelAnimIfFinished(sActivePokemon[0], sActivePokemon[0]);
     Battle_AdvanceSecondaryModelAnimIfFinished(sActivePokemon[1], sActivePokemon[1]);
-    BattleAnim_UpdateOwnerStatusIdleAnimation(0);
-    BattleAnim_UpdateOwnerStatusIdleAnimation(1);
+    BattleAnim_PlayTransformInducingAnimation(0);
+    BattleAnim_PlayTransformInducingAnimation(1);
     BattleScene_TryQueueIdleCueEffect(sActivePokemon[0]);
     BattleScene_TryQueueIdleCueEffect(sActivePokemon[1]);
 }

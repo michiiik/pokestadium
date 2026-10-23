@@ -8,43 +8,6 @@ static f32 sModelTransformConstants[] = { 1.0f, 2.0f };
 
 #define NINETY_DEGREES 0x4000
 
-/*
-    These Functions have to do with moves that alter the position, size, or rotation of the pokemon 
-    moves that trigger functions in this file:
-    - Waterfall (vertical displacement)
-    - Minimize (shrinking
-    - Submission (rotation)
-    - Fly (vertical displacement)
-    - double team (after image)
-    - dig (rotation)
-    - bind (springy animation)
-    - seismic toss (screen rotation)
-    - meditate (body scale manipulation)
-    - surf (vertical displacement )
-    - agility (horizontal displacement)
-    - stomp (displacement on attack)
-    - body slam (displacement on attack)
-    - string shot (springy animation)
-    - wrap (springy animation)
-    - disable (springy animation)
-
-    unconfirmed:
-    - constrict
-    - roar
-    - whirlwind
-    - earthquake
-    - fissure
-    - growl
-
-confirmed to not be in this function:
-    - quick attack
-
-also seems to handle pokeball animations
-
-not confirmed to be involved in any pokemon animations and tested with pokemon with odd properties
-Kangaskhan, onix, porygon 
-*/
-
 void BattleAnim_InitSwayOffset(ActivePokemon* pokemon, f32 y, s16 theta) {
     pokemon->y = y;
     pokemon->modelTransform.rotation.z = COSS(theta) * y;
@@ -284,6 +247,10 @@ void BattleAnim_PokeBallThrowContinue(ActivePokemon* owner, ActivePokemon* anima
     }
 }
 
+/*
+    Plays the animation where poke balls are thrown in the air at the stat of the battle
+    Animation doesn't change model depending on what poke ball a pokemon was caught in
+*/
 void BattleAnim_PokeBallThrow(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     switch (animated_pokemon->modelTransformTimer) {
         case 0:
@@ -324,7 +291,13 @@ void BattleAnim_PokeBallLandContinue(ActivePokemon* owner, ActivePokemon* animat
     }
 }
 
-// Poke ball shadow/landing on the ground
+/*
+    Plays the second part of the intro animation: poke balls landing on the ground after camera cuts 
+    from the ceiling to the ground.
+    
+    When the second side's first pokemon is revealed, this animation does not play again.
+    It does play on switch out.
+*/
 void BattleAnim_PokeBallLand(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     switch (animated_pokemon->modelTransformTimer) {
         case 0:
@@ -356,7 +329,10 @@ void BattleAnim_FlyContinue(ActivePokemon* owner, ActivePokemon* animated_pokemo
     }
 }
 
-// fly
+/*
+    Fly's animation: fly into the sky
+    https://youtu.be/Dn5oyCQ3wUs?t=448
+*/
 void BattleAnim_Fly(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     switch (animated_pokemon->modelTransformTimer) {
         case 0:
@@ -388,7 +364,10 @@ void BattleAnim_WaterfallContinue(ActivePokemon* owner, ActivePokemon* animated_
 void BattleAnim_WaterfallEnd(UNUSED ActivePokemon* owner, UNUSED ActivePokemon* animated_pokemon) {
 }
 
-// Waterfall
+/*
+    Waterfall's animation: climb a waterfall
+    https://youtu.be/Dn5oyCQ3wUs?t=1360
+*/
 void BattleAnim_Waterfall(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     switch (animated_pokemon->modelTransformTimer) {
         case 0:
@@ -428,13 +407,13 @@ void BattleAnim_SubmissionStart(UNUSED ActivePokemon* owner, ActivePokemon* anim
 
 void BattleAnim_SubmissionContinue(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     animated_pokemon->oscillationPhase = Math_StepToS32(animated_pokemon->oscillationPhase, 13104, 364, 364);
-
+    
     if (BattleAnim_ApproachAngleAndCheckThreshold(owner, animated_pokemon->oscillationPhase, animated_pokemon->cameraOffsetScaleFactor << 14) != 0) {
         animated_pokemon->animationState += 1;
     }
-
+    
     BattleScene_UpdateSecondaryModelTrailPosition(animated_pokemon, animated_pokemon->oscillationPhase);
-
+    
     if (animated_pokemon->animationState == 3) {
         animated_pokemon->modelTransformTimer += 1;
     }
@@ -445,17 +424,17 @@ void BattleAnim_SubmissionEnd(ActivePokemon* owner, ActivePokemon* animated_poke
     f32 angle_offset_fractional;
     s16 new_phase;
     s32 done;
-
+    
     angle_offset_fractional = (131072.0 - angle_offset) / 131072.0;
     if (angle_offset_fractional >= 1.0f) {
         angle_offset_fractional -= 1.0f;
     }
-
+    
     new_phase = (animated_pokemon->oscillationPhase * angle_offset_fractional) * 0.8;
     if (new_phase < 3640) {
         new_phase = 3640;
     }
-    done = BattleAnim_ApproachAngleAndCheckThreshold(owner, new_phase, animated_pokemon->cameraOffsetScaleFactor << 0xE);
+    done = BattleAnim_ApproachAngleAndCheckThreshold(owner, new_phase, animated_pokemon->cameraOffsetScaleFactor << 14);
     BattleScene_UpdateSecondaryModelTrailPosition(animated_pokemon, new_phase);
 
     if (done != 0) {
@@ -465,14 +444,17 @@ void BattleAnim_SubmissionEnd(ActivePokemon* owner, ActivePokemon* animated_poke
     }
 }
 
-// Submission
+/*
+    Submission's Animation: rotate in place
+    https://youtu.be/Dn5oyCQ3wUs?t=1173
+*/
 void BattleAnim_Submission(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     switch (animated_pokemon->modelTransformTimer) {
         case 0:
-            BattleAnim_SubmissionStart(owner, animated_pokemon);
-
+        BattleAnim_SubmissionStart(owner, animated_pokemon);
+        
         case 1:
-            BattleAnim_SubmissionContinue(owner, animated_pokemon);
+        BattleAnim_SubmissionContinue(owner, animated_pokemon);
             break;
 
         case 2:
@@ -531,7 +513,10 @@ void BattleAnim_DigEnd(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     }
 }
 
-// Dig
+/*
+    Dig's animation: rotate in place and go downwards 
+    https://www.youtube.com/watch?v=Dn5oyCQ3wUs&t=244s
+*/
 void BattleAnim_Dig(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     switch (animated_pokemon->modelTransformTimer) {
         case 0:
@@ -597,6 +582,10 @@ void BattleAnim_AgilityEnd(ActivePokemon* owner, ActivePokemon* animated_pokemon
     }
 }
 
+/*
+    Agility's animation: pase back and forth
+    https://www.youtube.com/watch?v=Dn5oyCQ3wUs&t=19s
+*/
 void BattleAnim_Agility(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     switch (animated_pokemon->modelTransformTimer) {
         case 0:
@@ -629,7 +618,10 @@ void BattleAnim_DoubleTeamContinue(UNUSED ActivePokemon* owner, ActivePokemon* a
     }
 }
 
-// Double Team
+/*
+    Double Team's animation: spawn shadow clones that sway side to side
+    https://www.youtube.com/watch?v=Dn5oyCQ3wUs&t=285s
+*/
 void BattleAnim_DoubleTeam(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     switch (animated_pokemon->modelTransformTimer) {
         case 0:
@@ -697,7 +689,10 @@ void BattleAnim_SeismicTossContinue(UNUSED ActivePokemon* owner, ActivePokemon* 
     }
 }
 
-// Seismic Toss
+/*
+    Seismic Toss' Animation: Flip the screen upside down
+    https://www.youtube.com/watch?v=Dn5oyCQ3wUs&t=954s
+*/
 void BattleAnim_SeismicToss(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     switch (animated_pokemon->modelTransformTimer) {
         case 0:
@@ -734,7 +729,10 @@ void BattleAnim_MinimizeContinue(ActivePokemon* owner, ActivePokemon* animated_p
     }
 }
 
-//Minimize
+/*
+    Minimize's Animation: make model smaller
+    https://youtu.be/Dn5oyCQ3wUs?t=729
+*/
 void BattleAnim_Minimize(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     switch (animated_pokemon->modelTransformTimer) {
         case 0:
@@ -760,6 +758,11 @@ void BattleAnim_WithdrawContinue(ActivePokemon* owner, UNUSED ActivePokemon* ani
     }
 }
 
+/*
+    Withdraw's animation for Pokemon other than Squirtle, Wartortle, Blastoise and Cloyster
+    Make the model very small so that it looks like only a clam model appears
+    TODO: Get video of it
+*/
 void BattleAnim_Withdraw(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     switch (animated_pokemon->modelTransformTimer) {
         case 0:
@@ -842,7 +845,10 @@ void BattleAnim_MeditateEnd(ActivePokemon* owner, ActivePokemon* animated_pokemo
     }
 }
 
-// meditate
+/*
+    Meditate's animation: Orientalist mystic stretchy thing idk
+    https://www.youtube.com/watch?v=Dn5oyCQ3wUs&t=690s
+*/
 void BattleAnim_Meditate(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     switch (animated_pokemon->modelTransformTimer) {
         case 0:
@@ -902,6 +908,10 @@ void BattleAnim_SquishHitReactionContinue(ActivePokemon* owner, ActivePokemon* a
 
 //squish hit reaction from seismic toss, stomp, or body slam
 //see BattleScene_StartHitReactionAnim @battle_engine_move_nation
+/*
+    Squish effect when pokemon is hit my Seismic Toss, Stomp, or Body Slam
+    https://youtu.be/Dn5oyCQ3wUs?t=1133
+*/
 void BattleAnim_SquishHitReaction(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     switch (animated_pokemon->modelTransformTimer) {
         case 0:
@@ -936,8 +946,11 @@ void BattleAnim_LassoMoveHitReactionContinue(ActivePokemon* owner, ActivePokemon
     }
 }
 
-// Lasso move hit reaction
-// Lasso moves: Bind, string shot, constrict, disable
+/*
+    Tightening animation that happens when being hit by Lasso moves
+    Lasso moves: String Shot, Constrict, Bind, Wrap, and Disable
+    https://youtu.be/Dn5oyCQ3wUs?t=268
+*/
 void BattleAnim_LassoMoveHitReaction(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     switch (animated_pokemon->modelTransformTimer) {
         case 0:
@@ -972,7 +985,10 @@ void BattleAnim_SurfContinue(ActivePokemon* owner, ActivePokemon* animated_pokem
     }
 }
 
-// Surf
+/*
+    Surf's animation: have the pokemon ride a tidal wave
+    https://youtu.be/Dn5oyCQ3wUs?t=1203
+*/
 void BattleAnim_Surf(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     switch (animated_pokemon->modelTransformTimer) {
         case 0:
@@ -984,17 +1000,17 @@ void BattleAnim_Surf(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     }
 }
 
-void BattleAnim_StatusIdleCase0(UNUSED ActivePokemon* owner, UNUSED ActivePokemon* animated_pokemon) {
+void BattleAnim_TransformNop(UNUSED ActivePokemon* owner, UNUSED ActivePokemon* animated_pokemon) {
 }
 
 
-void BattleAnim_UpdateOwnerStatusIdleAnimation(s32 side_index) {
+void BattleAnim_PlayTransformInducingAnimation(s32 side_index) {
     ActivePokemon* owner = sActivePokemon[side_index];
     ActivePokemon* animated_pokemon = sActivePokemon[side_index];
 
     switch (sActivePokemon[side_index]->animationFlags1) {
         case 0:
-            BattleAnim_StatusIdleCase0(owner, animated_pokemon);
+            BattleAnim_TransformNop(owner, animated_pokemon);
             break;
 
         case 1:

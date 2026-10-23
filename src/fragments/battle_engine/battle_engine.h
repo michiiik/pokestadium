@@ -1269,15 +1269,15 @@ void Battle_ReloadModelForActiveMove(ActivePokemon* active_pokemon);
 
 //@src/fragments/battle_engine/battle_engine_2F3CB0.c
 void BattleAnim_InitSwayOffset(ActivePokemon* pokemon, f32 y, s16 theta);
-void BattleAnim_UpdateTransform(ActivePokemon* defender, ActivePokemon* attacker, f32 height, f32 delta_y, s32 delta_theta);
-void BattleAnim_UpdateSwayPhysicsToTarget(UNUSED ActivePokemon* arg0, ActivePokemon* arg1, f32 arg2, f32 arg3, s32 arg4, s32 arg5);
+void BattleAnim_UpdateTransform(ActivePokemon* owner, ActivePokemon* animated_pokemon, f32 height, f32 delta_y, s32 delta_theta);
+void BattleAnim_UpdateSwayPhysicsToTarget(UNUSED ActivePokemon* owner, ActivePokemon* animated_object, f32 target, f32 delta, s32 theta0, s32 theta1);
 void BattleScene_HideParticipantSecondaryModels(ActivePokemon* active_pokemon);
-void BattleScene_ShowSecondaryModelsAtMainTransform(ActivePokemon* arg0);
-void BattleScene_UpdateSecondaryModelOrbit(ActivePokemon* arg0);
+void BattleScene_ShowSecondaryModelsAtMainTransform(ActivePokemon* pokemon);
+void BattleScene_UpdateSecondaryModelOrbit(ActivePokemon* pokemon);
 void BattleScene_ShowSecondaryModelsAtMainPose(ActivePokemon* active_pokemon);
 s32 BattleScene_ShrinkSecondaryModelsToScale(ActivePokemon* active_pokemon);
 void BattleScene_ShowSecondaryModelsStaggeredFrame(ActivePokemon* active_pokemon);
-void BattleScene_UpdateSecondaryModelTrailPosition(ActivePokemon* arg0, s16 arg1);
+void BattleScene_UpdateSecondaryModelTrailPosition(ActivePokemon* pokemon, s16 new_position);
 void BattleScene_ResetParticipantModelFlags(ActivePokemon* active_pokemon);
 void BattleAnim_PokeBallThrowStart(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_PokeBallThrowContinue(ActivePokemon* owner, ActivePokemon* animated_pokemon);
@@ -1292,7 +1292,7 @@ void BattleAnim_WaterfallStart(UNUSED ActivePokemon* owner, ActivePokemon* anima
 void BattleAnim_WaterfallContinue(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_WaterfallEnd(UNUSED ActivePokemon* owner, UNUSED ActivePokemon* animated_pokemon);
 void BattleAnim_Waterfall(ActivePokemon* owner, ActivePokemon* animated_pokemon);
-s32 BattleAnim_ApproachAngleAndCheckThreshold(ActivePokemon* arg0, s16 arg1, s16 arg2);
+s32 BattleAnim_ApproachAngleAndCheckThreshold(ActivePokemon* pokemon, s16 phase, s16 camera_offset_scale);
 void BattleAnim_SubmissionStart(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_SubmissionContinue(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_SubmissionEnd(ActivePokemon* owner, ActivePokemon* animated_pokemon);
@@ -1331,8 +1331,8 @@ void BattleAnim_LassoMoveHitReaction(ActivePokemon* owner, ActivePokemon* animat
 void BattleAnim_SurfStart(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_SurfContinue(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_Surf(ActivePokemon* owner, ActivePokemon* animated_pokemon);
-void BattleAnim_StatusIdleCase0(UNUSED ActivePokemon* owner, UNUSED ActivePokemon* animated_pokemon);
-void BattleAnim_UpdateOwnerStatusIdleAnimation(s32 side_index);
+void BattleAnim_TransformNop(UNUSED ActivePokemon* owner, UNUSED ActivePokemon* animated_pokemon);
+void BattleAnim_PlayTransformInducingAnimation(s32 side_index);
 void BattleAnim_SetOwnerSecondaryStatusFlags(ActivePokemon* arg0, u8 arg1, u8 arg2);
 void BattleAnim_ClearOwnerSecondaryStatusFlags(ActivePokemon* arg0);
 void BattleAnim_InitSecondarySwayOffset(ActivePokemon* arg0, f32 arg1, s16 arg2);
