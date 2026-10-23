@@ -231,21 +231,21 @@ void BattleScene_ShowSecondaryModelsStaggeredFrame(ActivePokemon* active_pokemon
     }
 }
 
-void BattleScene_UpdateSecondaryModelTrailPosition(ActivePokemon* arg0, s16 arg1) {
+void BattleScene_UpdateSecondaryModelTrailPosition(ActivePokemon* pokemon, s16 new_position) {
     s32 i;
-    f32 sp90;
-    s16 sp8E;
-    s16 sp8C;
+    f32 distance;
+    s16 angle_x;
+    s16 angle_y;
     UNUSED s32 pad;
-    f32 sp7C[3] = { 0.2f, 0.25f, 0.3f };   // D_84384638
-    f32 sp70[3] = { 0.98f, 0.96f, 0.95f }; // D_84384644
+    f32 eye[3] = { 0.2f, 0.25f, 0.3f };   // D_84384638
+    f32 rate[3] = { 0.98f, 0.96f, 0.95f }; // D_84384644
 
     for (i = 0; i < 2; i++) {
-        ModelAnim_SetFrame(&arg0->afterimages[i].displayObject, arg0->displayObject.transformAnim.frameFixed >> 0x10);
-        ModelAnim_SetAnimation(&arg0->afterimages[i].displayObject, arg0->displayObject.transformAnim.animationId);
-        Vec3f_CalculateDistanceAngles(&arg0->displayObject.position, &arg0->afterimages[i].displayObject.position, &sp90, &sp8E, &sp8C);
-        Camera_ComputeEyeFromAngles(&arg0->displayObject.position, &arg0->afterimages[i].displayObject.position, sp7C[i] * sp90, sp8E, sp8C);
-        BattleAnim_StepToS16(&arg0->afterimages[i].displayObject.rotation.y, arg0->displayObject.rotation.y, sp70[i] * arg1);
+        ModelAnim_SetFrame(&pokemon->afterimages[i].displayObject, pokemon->displayObject.transformAnim.frameFixed >> 0x10);
+        ModelAnim_SetAnimation(&pokemon->afterimages[i].displayObject, pokemon->displayObject.transformAnim.animationId);
+        Vec3f_CalculateDistanceAngles(&pokemon->displayObject.position, &pokemon->afterimages[i].displayObject.position, &distance, &angle_x, &angle_y);
+        Camera_ComputeEyeFromAngles(&pokemon->displayObject.position, &pokemon->afterimages[i].displayObject.position, eye[i] * distance, angle_x, angle_y);
+        BattleAnim_StepToS16(&pokemon->afterimages[i].displayObject.rotation.y, pokemon->displayObject.rotation.y, rate[i] * new_position);
     }
 }
 
@@ -418,7 +418,7 @@ s32 BattleAnim_ApproachAngleAndCheckThreshold(ActivePokemon* pokemon, s16 phase,
     return 0;
 }
 
-void BattleAnim_StatusIdleCase4Sub0(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+void BattleAnim_SubmissionStart(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     BattleScene_ShowSecondaryModelsStaggeredFrame(animated_pokemon);
     animated_pokemon->oscillationPhase = 0;
     animated_pokemon->oscillationVelocityEasePhase = 0;
@@ -426,7 +426,7 @@ void BattleAnim_StatusIdleCase4Sub0(UNUSED ActivePokemon* owner, ActivePokemon* 
     animated_pokemon->modelTransformTimer++;
 }
 
-void BattleAnim_StatusIdleCase4Sub1(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+void BattleAnim_SubmissionContinue(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     animated_pokemon->oscillationPhase = Math_StepToS32(animated_pokemon->oscillationPhase, 13104, 364, 364);
 
     if (BattleAnim_ApproachAngleAndCheckThreshold(owner, animated_pokemon->oscillationPhase, animated_pokemon->cameraOffsetScaleFactor << 14) != 0) {
@@ -440,7 +440,7 @@ void BattleAnim_StatusIdleCase4Sub1(ActivePokemon* owner, ActivePokemon* animate
     }
 }
 
-void BattleAnim_StatusIdleCase4Sub2(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+void BattleAnim_SubmissionEnd(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     f32 angle_offset = NINETY_DEGREES - owner->displayObject.rotation.y;
     f32 angle_offset_fractional;
     s16 new_phase;
@@ -465,17 +465,18 @@ void BattleAnim_StatusIdleCase4Sub2(ActivePokemon* owner, ActivePokemon* animate
     }
 }
 
-void BattleAnim_StatusIdleCase4(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
+// Submission
+void BattleAnim_Submission(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     switch (animated_pokemon->modelTransformTimer) {
         case 0:
-            BattleAnim_StatusIdleCase4Sub0(owner, animated_pokemon);
+            BattleAnim_SubmissionStart(owner, animated_pokemon);
 
         case 1:
-            BattleAnim_StatusIdleCase4Sub1(owner, animated_pokemon);
+            BattleAnim_SubmissionContinue(owner, animated_pokemon);
             break;
 
         case 2:
-            BattleAnim_StatusIdleCase4Sub2(owner, animated_pokemon);
+            BattleAnim_SubmissionEnd(owner, animated_pokemon);
             break;
     }
 }
@@ -642,7 +643,7 @@ void BattleAnim_DoubleTeam(ActivePokemon* owner, ActivePokemon* animated_pokemon
 
 void BattleAnim_ResetOwnerFacingAndExitStatusIdle(ActivePokemon* arg0) {
     UNUSED s32 pad;
-    CameraNode* sp18 = sBattleScene.unk_00->unk_DC;
+    CameraNode* sp18 = sBattleScene.unk_00->camera;
 
     BattleScene_PositionParticipantModel(arg0);
     Vec3s_SetComponents(&arg0->displayObject.rotation, 0, arg0->cameraOffsetScaleFactor << 0xE, 0);
@@ -662,7 +663,7 @@ void BattleAnim_StatusIdleCase8Sub0(ActivePokemon* owner, ActivePokemon* animate
 }
 
 void BattleAnim_StatusIdleCase8Sub1(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon) {
-    CameraNode* temp_s0 = sBattleScene.unk_00->unk_DC;
+    CameraNode* camera = sBattleScene.unk_00->camera;
     f32 temp_fa0;
     f32 temp_fa1_2;
     f32 temp_ft4;
@@ -675,9 +676,9 @@ void BattleAnim_StatusIdleCase8Sub1(UNUSED ActivePokemon* owner, ActivePokemon* 
     BattleAnim_StepToS16(&animated_pokemon->oscillationVelocityEasePhase, 0x5B0, 0x3C);
     BattleAnim_StepToS16(&animated_pokemon->oscillationAngularVelocity, -0x8000, animated_pokemon->oscillationVelocityEasePhase);
 
-    sp2C = temp_s0->view.targetPosition.x - temp_s0->view.eyePosition.x;
-    sp28 = temp_s0->view.targetPosition.y - temp_s0->view.eyePosition.y;
-    sp24 = temp_s0->view.targetPosition.z - temp_s0->view.eyePosition.z;
+    sp2C = camera->view.targetPosition.x - camera->view.eyePosition.x;
+    sp28 = camera->view.targetPosition.y - camera->view.eyePosition.y;
+    sp24 = camera->view.targetPosition.z - camera->view.eyePosition.z;
 
     temp_fv0_2 = sqrtf(SQ(sp2C) + SQ(sp28) + SQ(sp24));
 
@@ -687,15 +688,16 @@ void BattleAnim_StatusIdleCase8Sub1(UNUSED ActivePokemon* owner, ActivePokemon* 
 
     temp_ft4 = 1.0 - COSS(animated_pokemon->oscillationAngularVelocity);
 
-    temp_s0->view.upDirection.x = (temp_ft4 * temp_fa0 * temp_fv1_2) - (SINS(animated_pokemon->oscillationAngularVelocity) * temp_fa1_2);
-    temp_s0->view.upDirection.y = COSS(animated_pokemon->oscillationAngularVelocity) + ((temp_ft4 * temp_fv1_2) * temp_fv1_2);
-    temp_s0->view.upDirection.z = (SINS(animated_pokemon->oscillationAngularVelocity) * temp_fa0) + ((temp_ft4 * temp_fv1_2) * temp_fa1_2);
+    camera->view.upDirection.x = (temp_ft4 * temp_fa0 * temp_fv1_2) - (SINS(animated_pokemon->oscillationAngularVelocity) * temp_fa1_2);
+    camera->view.upDirection.y = COSS(animated_pokemon->oscillationAngularVelocity) + ((temp_ft4 * temp_fv1_2) * temp_fv1_2);
+    camera->view.upDirection.z = (SINS(animated_pokemon->oscillationAngularVelocity) * temp_fa0) + ((temp_ft4 * temp_fv1_2) * temp_fa1_2);
 
     if (animated_pokemon->displayObject.position.y < 0.0f) {
         animated_pokemon->displayObject.position.y = 0.0f;
     }
 }
 
+// Seismic Toss
 void BattleAnim_StatusIdleCase8(ActivePokemon* owner, ActivePokemon* animated_pokemon) {
     switch (animated_pokemon->modelTransformTimer) {
         case 0:
@@ -1004,7 +1006,7 @@ void BattleAnim_UpdateOwnerStatusIdleAnimation(s32 side_index) {
             break;
 
         case 4:
-            BattleAnim_StatusIdleCase4(owner, animated_pokemon);
+            BattleAnim_Submission(owner, animated_pokemon);
             break;
 
         case 5:

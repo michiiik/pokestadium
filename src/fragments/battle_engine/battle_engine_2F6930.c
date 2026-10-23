@@ -95,30 +95,30 @@ u16 BattleAnim_RandomRange(s32 range) {
     return (random_value / 65535.0) * range;
 }
 
-s32 BattleAnim_StepToS16(s16* arg0, s16 arg1, s16 arg2) {
-    s16 temp_v0 = arg1 - *arg0;
+s32 BattleAnim_StepToS16(s16* dest, s16 finish, s16 rate) {
+    s16 delta_to_finish = finish - *dest;
 
-    if (arg2 < 0) {
-        arg2 *= -1;
+    if (rate < 0) {
+        rate *= -1;
     }
 
-    if (temp_v0 > 0) {
-        temp_v0 -= arg2;
-        if (temp_v0 >= 0) {
-            *arg0 = arg1 - temp_v0;
+    if (delta_to_finish > 0) {
+        delta_to_finish -= rate;
+        if (delta_to_finish >= 0) {
+            *dest = finish - delta_to_finish;
         } else {
-            *arg0 = arg1;
+            *dest = finish;
         }
     } else {
-        temp_v0 += arg2;
-        if (temp_v0 <= 0) {
-            *arg0 = arg1 - temp_v0;
+        delta_to_finish += rate;
+        if (delta_to_finish <= 0) {
+            *dest = finish - delta_to_finish;
         } else {
-            *arg0 = arg1;
+            *dest = finish;
         }
     }
 
-    if (arg1 == *arg0) {
+    if (finish == *dest) {
         return 0;
     }
 

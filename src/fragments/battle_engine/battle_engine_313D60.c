@@ -68,7 +68,7 @@ void BattleScene_RunFinalPresentation(CameraNode* arg0, UNUSED ActivePokemon* ar
             BattleScene_IntroSetupCamera(arg0);
             break;
     }
-    sBattleScene.unk_00->unk_DC = arg0;
+    sBattleScene.unk_00->camera = arg0;
 }
 
 void BattleScene_AllocateMemory(void) {

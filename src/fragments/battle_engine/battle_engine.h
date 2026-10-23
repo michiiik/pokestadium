@@ -244,7 +244,7 @@ typedef struct BattleScene {
     /* 0xB8 */ Vec3f unk_B8;
     /* 0xC4 */ Vec3f unk_C4;
     /* 0xD0 */ Vec3f unk_D0;
-    /* 0xDC */ CameraNode* unk_DC;
+    /* 0xDC */ CameraNode* camera;
 } BattleScene; // size = 0xE0
 
 typedef struct unk_D_84390240 {
@@ -1293,10 +1293,10 @@ void BattleAnim_WaterfallContinue(ActivePokemon* owner, ActivePokemon* animated_
 void BattleAnim_WaterfallEnd(UNUSED ActivePokemon* owner, UNUSED ActivePokemon* animated_pokemon);
 void BattleAnim_Waterfall(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 s32 BattleAnim_ApproachAngleAndCheckThreshold(ActivePokemon* arg0, s16 arg1, s16 arg2);
-void BattleAnim_StatusIdleCase4Sub0(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon);
-void BattleAnim_StatusIdleCase4Sub1(ActivePokemon* owner, ActivePokemon* animated_pokemon);
-void BattleAnim_StatusIdleCase4Sub2(ActivePokemon* owner, ActivePokemon* animated_pokemon);
-void BattleAnim_StatusIdleCase4(ActivePokemon* owner, ActivePokemon* animated_pokemon);
+void BattleAnim_SubmissionStart(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon);
+void BattleAnim_SubmissionContinue(ActivePokemon* owner, ActivePokemon* animated_pokemon);
+void BattleAnim_SubmissionEnd(ActivePokemon* owner, ActivePokemon* animated_pokemon);
+void BattleAnim_Submission(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_DigStart(UNUSED ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_DigContinue(ActivePokemon* owner, ActivePokemon* animated_pokemon);
 void BattleAnim_DigEnd(ActivePokemon* owner, ActivePokemon* animated_pokemon);
@@ -1357,7 +1357,7 @@ f32 BattleAnim_Vec3fDistance(Vec3f arg0, Vec3f arg1);
 f32 BattleAnim_Distance2D(f32 arg0, f32 arg1, f32 arg2, f32 arg3);
 s32 BattleAnim_RandomIntWithWarmup(f32 arg0);
 u16 BattleAnim_RandomRange(s32 range);
-s32 BattleAnim_StepToS16(s16* arg0, s16 arg1, s16 arg2);
+s32 BattleAnim_StepToS16(s16* dest, s16 finish, s16 rate);
 s32 BattleAnim_StepToS16VariableRate(s16* arg0, s16 arg1, f32 arg2);
 void BattleAnim_ApproachF(f32* dest, f32 value, f32 speed);
 void BattleAnim_ApproachS16(s16* dest, s16 value, s16 speed);

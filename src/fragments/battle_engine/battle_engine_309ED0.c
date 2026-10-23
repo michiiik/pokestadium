@@ -164,7 +164,7 @@ s32 BattleScene_AdvanceOwnerAnimationAndClearFlags(ActivePokemon* arg0) {
         case 2:
             BattleScene_ResetAnimationStep();
             BattleAnim_GetOwnerDefaultAnchorPosition(arg0, &sp34);
-            BattleAnim_Vec3fCopy(&sBattleScene.unk_00->unk_DC->view.targetPosition, &sp34);
+            BattleAnim_Vec3fCopy(&sBattleScene.unk_00->camera->view.targetPosition, &sp34);
             break;
     }
     return var_s0;
@@ -471,7 +471,7 @@ s32 BattleScene_PrepareReplacementTransition(void) {
             sBattleScene.unk_00->unk_38 = 0x12;
         } else {
             BattleAnim_GetOwnerDefaultAnchorPosition(sActivePokemon[sBattleScene.unk_00->unk_2C], &gCameraPreset.unk_00);
-            BattleScene_LoadCameraPreset(&D_843848F0, sBattleScene.unk_00->unk_DC, sActivePokemon[sBattleScene.unk_00->unk_2C]);
+            BattleScene_LoadCameraPreset(&D_843848F0, sBattleScene.unk_00->camera, sActivePokemon[sBattleScene.unk_00->unk_2C]);
             sBattleScene.unk_00->unk_38 = 0xB;
         }
         return 1;
@@ -552,7 +552,7 @@ void Battle_ActSecondAttacker(u8 arg0) {
 
     sBattleScene.unk_00->unk_34 = 1;
     sBattleScene.unk_00->unk_A0.z = 0.0f;
-    BattleScene_SetPhase(sBattleScene.unk_00->unk_DC, 0x24);
+    BattleScene_SetPhase(sBattleScene.unk_00->camera, 0x24);
     sBattleScene.unk_00->unk_78 = arg0;
 }
 
@@ -2137,7 +2137,7 @@ void BattleScene_Phase3(CameraNode* arg0) {
 }
 
 s32 BattleScene_PhaseSelectMoveAnim(void) {
-    BattleScene_ApplyActionCameraMode(sBattleScene.unk_00->unk_DC, 0);
+    BattleScene_ApplyActionCameraMode(sBattleScene.unk_00->camera, 0);
 
     if (BattleScene_AdvanceCameraFrameCounter(BattleScene_GetCameraShotDuration(D_84390204)) == 0) {
         return 0;
