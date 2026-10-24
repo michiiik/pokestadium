@@ -5,10 +5,10 @@
 #include "src/audio_loop_point.h"
 
 static f32 D_84390120;
-f32 D_84390124;
-f32 D_84390128;
-static f32 D_8439012C;
-static f32 D_84390130;
+f32 sOrderTimer;
+f32 sBattleTimer;
+static f32 sInitialOrderTimer;
+static f32 sInitalBattleTimer;
 u8 D_84390134;
 static s32 D_84390138;
 static s32 D_8439013C;
@@ -25,23 +25,23 @@ static u8 D_84385750[] = {
 };
 
 void BattleScene_InitializePresentationTimers(void) {
-    D_8439012C = gSessionContext.moveLimitSeconds * 0x1E;
-    D_84390130 = gSessionContext.battleLimitMinutes * 0x708;
-    D_84390128 = gSessionContext.battleLimitMinutes * 0x708;
+    sInitialOrderTimer = gSessionContext.orderLimitSeconds * 30;
+    sInitalBattleTimer = gSessionContext.battleLimitMinutes * 1800;
+    sBattleTimer = gSessionContext.battleLimitMinutes * 1800;
 }
 
 void BattleScene_QuantizePresentationTimer(void) {
-    s32 tmp = (s32)(D_84390128 / 30.0f) * 0x1E;
+    s32 tmp = (s32)(sBattleTimer / 30.0f) * 30;
 
-    D_84390128 = tmp;
+    sBattleTimer = tmp;
 }
 
 s32 BattleScene_TickPresentationTimer(void) {
-    if (D_84390128 == 0.0f) {
+    if (sBattleTimer == 0.0f) {
         return 1;
     }
 
-    D_84390128 -= 1.0f;
+    sBattleTimer -= 1.0f;
     return 0;
 }
 
@@ -50,24 +50,24 @@ s32 BattleScene_IsPresentationCountdownComplete(void) {
         return 0;
     }
 
-    if ((((s32)D_84390128 % 30) == 0) && (D_84390128 != 0.0f)) {
+    if ((((s32)sBattleTimer % 30) == 0) && (sBattleTimer != 0.0f)) {
         Audio_PlayCommand(0x3E, 0, 0);
     }
 
-    if (D_84390128 == 0.0f) {
+    if (sBattleTimer == 0.0f) {
         return 1;
     }
     return 0;
 }
 
-s32 Battle_ClassifyHpTier(s32 arg0, s32 arg1) {
-    s32 temp_v0 = arg0 * 0x30;
+s32 Battle_ClassifyHpTier(s32 current_hp, s32 max_hp) {
+    s32 current_hp_units = current_hp * 48;
 
-    if (temp_v0 < (arg1 * 0xA)) {
+    if (current_hp_units < (max_hp * 10)) {
         return 1;
     }
 
-    if (temp_v0 < (arg1 * 0x1B)) {
+    if (current_hp_units < (max_hp * 27)) {
         return 2;
     }
 
@@ -75,53 +75,53 @@ s32 Battle_ClassifyHpTier(s32 arg0, s32 arg1) {
 }
 
 s32 BattleScene_DetermineWinner(void) {
-    BattleMon* ptr;
-    s32 i;
-    s32 var_s3 = 0;
-    s32 var_s4 = 0;
-    s32 var_s5 = 0;
-    s32 var_s6 = 0;
+    BattleMon* pokemon;
+    s32 pokemon_index;
+    s32 side1_pokemon_left = 0;
+    s32 side2_pokemon_left = 0;
+    s32 side1_hp_tier_sum = 0;
+    s32 side2_hp_tier_sum = 0;
 
-    for (i = 0; i < BattleScene_GetTeamMemberTeamSize(sActivePokemon[0]); i++) {
-        ptr = &sActivePokemon[0]->teamRoster->pokemonPicked[i];
-        if (ptr->hp != 0) {
-            var_s3++;
+    for (pokemon_index = 0; pokemon_index < BattleScene_GetTeamMemberTeamSize(sActivePokemon[0]); pokemon_index++) {
+        pokemon = &sActivePokemon[0]->teamRoster->pokemonPicked[pokemon_index];
+        if (pokemon->hp != 0) {
+            side1_pokemon_left++;
         }
     }
 
-    for (i = 0; i < BattleScene_GetTeamMemberTeamSize(sActivePokemon[1]); i++) {
-        ptr = &sActivePokemon[1]->teamRoster->pokemonPicked[i];
-        if (ptr->hp != 0) {
-            var_s4++;
+    for (pokemon_index = 0; pokemon_index < BattleScene_GetTeamMemberTeamSize(sActivePokemon[1]); pokemon_index++) {
+        pokemon = &sActivePokemon[1]->teamRoster->pokemonPicked[pokemon_index];
+        if (pokemon->hp != 0) {
+            side2_pokemon_left++;
         }
     }
 
-    if (var_s3 != var_s4) {
-        if (var_s4 < var_s3) {
+    if (side1_pokemon_left != side2_pokemon_left) {
+        if (side2_pokemon_left < side1_pokemon_left) {
             return 1;
         }
         return 2;
     }
 
-    for (i = 0; i < BattleScene_GetTeamMemberTeamSize(sActivePokemon[0]); i++) {
-        ptr = &sActivePokemon[0]->teamRoster->pokemonPicked[i];
-        var_s5 += Battle_ClassifyHpTier(ptr->hp, ptr->unk_26);
+    for (pokemon_index = 0; pokemon_index < BattleScene_GetTeamMemberTeamSize(sActivePokemon[0]); pokemon_index++) {
+        pokemon = &sActivePokemon[0]->teamRoster->pokemonPicked[pokemon_index];
+        side1_hp_tier_sum += Battle_ClassifyHpTier(pokemon->hp, pokemon->maxHp);
     }
 
-    for (i = 0; i < BattleScene_GetTeamMemberTeamSize(sActivePokemon[1]); i++) {
-        ptr = &sActivePokemon[1]->teamRoster->pokemonPicked[i];
-        var_s6 += Battle_ClassifyHpTier(ptr->hp, ptr->unk_26);
+    for (pokemon_index = 0; pokemon_index < BattleScene_GetTeamMemberTeamSize(sActivePokemon[1]); pokemon_index++) {
+        pokemon = &sActivePokemon[1]->teamRoster->pokemonPicked[pokemon_index];
+        side2_hp_tier_sum += Battle_ClassifyHpTier(pokemon->hp, pokemon->maxHp);
     }
 
-    if (var_s5 == var_s6) {
+    if (side1_hp_tier_sum == side2_hp_tier_sum) {
         return 3;
     }
 
-    if (var_s6 < var_s5) {
+    if (side2_hp_tier_sum < side1_hp_tier_sum) {
         return 1;
     }
 
-    if (var_s5 < var_s6) {
+    if (side1_hp_tier_sum < side2_hp_tier_sum) {
         return 2;
     }
 }
@@ -155,7 +155,7 @@ s32 BattleScene_UpdateResultPresentation(void) {
                 D_84390120 += 1.0f;
 
                 if (var_v0 != 0) {
-                    sBattleScene.scene->unk_40 = BattleScene_DetermineWinner();
+                    sBattleScene.scene->winner = BattleScene_DetermineWinner();
                     Audio_FadeOutAll(0x14);
                 }
                 break;
@@ -169,39 +169,39 @@ s32 BattleScene_IsActionSelectionTimerExpired(void) {
         return 0;
     }
 
-    if (D_84390124 == 329.0f) {
+    if (sOrderTimer == 329.0f) {
         Audio_PlayCommand(0x3C, 0, 0);
     }
 
-    if (D_84390124 == 91.0f) {
+    if (sOrderTimer == 91.0f) {
         Audio_PlayCommand(0x3D, 3, 0);
     }
 
-    if (D_84390124 == 61.0f) {
+    if (sOrderTimer == 61.0f) {
         Audio_PlayCommand(0x3D, 2, 0);
     }
 
-    if (D_84390124 == 31.0f) {
+    if (sOrderTimer == 31.0f) {
         Audio_PlayCommand(0x3D, 1, 0);
     }
 
-    if (D_84390124 == 1.0f) {
+    if (sOrderTimer == 1.0f) {
         Audio_PlayCommand(0x3D, 0, 0);
     }
 
-    if (D_84390124 == 0.0f) {
+    if (sOrderTimer == 0.0f) {
         return 1;
     }
     return 0;
 }
 
 void BattleScene_ResetActionSelectionTimer(void) {
-    D_84390124 = gSessionContext.moveLimitSeconds * 0x1E;
+    sOrderTimer = gSessionContext.orderLimitSeconds * 30;
 }
 
 s32 BattleScene_TickActionSelectionTimers(void) {
-    if (D_84390124 > 0.0f) {
-        D_84390124 -= 1.0f;
+    if (sOrderTimer > 0.0f) {
+        sOrderTimer -= 1.0f;
     }
 
     if (D_84390120 >= 150.0f) {
@@ -651,22 +651,22 @@ void BattleScene_ForfeitPrompt(ActivePokemon* arg0) {
 
     sp18->unk_10 = 4;
 
-    if ((sBattleScene.scene->unk_40 == 0) &&
+    if ((sBattleScene.scene->winner == 0) &&
         (BTN_IS_PRESSED(D_84390148, BTN_DLEFT) || BTN_IS_PRESSED(D_8439014C, BTN_DLEFT))) {
         sp18->unk_2F = 0;
         Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
     }
 
-    if ((sBattleScene.scene->unk_40 == 0) &&
+    if ((sBattleScene.scene->winner == 0) &&
         (BTN_IS_PRESSED(D_84390148, BTN_DRIGHT) || BTN_IS_PRESSED(D_8439014C, BTN_DRIGHT))) {
         sp18->unk_2F = 1;
         Audio_PlaySoundEffectById(SFX_MENU_SCROLL);
     }
 
     if ((sp18->unk_2F == 1) && (BTN_IS_PRESSED(D_84390148, BTN_A) || BTN_IS_PRESSED(D_8439014C, BTN_A)) &&
-        (sBattleScene.scene->unk_40 == 0)) {
+        (sBattleScene.scene->winner == 0)) {
         Audio_PlaySoundEffectById(SFX_MENU_CONFIRM);
-        sBattleScene.scene->unk_40 = (BattleScene_GetParticipantSideIndex(arg0) == 0) + 1;
+        sBattleScene.scene->winner = (BattleScene_GetParticipantSideIndex(arg0) == 0) + 1;
         Audio_FadeOutAll(0x14);
     } else if ((sp18->unk_2F == 0) && (BTN_IS_PRESSED(D_84390148, BTN_A) || BTN_IS_PRESSED(D_8439014C, BTN_A))) {
         sp18->unk_10 = 0;
@@ -1222,7 +1222,7 @@ void BattleScene_TickAttractModeInput(void) {
     }
 
     if (cont->buttonPressed & 0x8000) {
-        sBattleScene.scene->unk_40 = 3;
+        sBattleScene.scene->winner = 3;
     }
 }
 

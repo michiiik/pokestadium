@@ -417,7 +417,7 @@ void ComputePokemonStat(s32 arg0, BattleMon* arg1) {
 
     switch (arg0) {
         case 1:
-            arg1->unk_26 = temp_a0;
+            arg1->maxHp = temp_a0;
             break;
 
         case 2:
@@ -770,7 +770,7 @@ void Battle_InitPokemonRuntimeState(ActivePokemon* arg0) {
     }
 
     sp24->unk_26 = sp34->unk_24;
-    sp24->unk_28 = sp34->unk_26;
+    sp24->unk_28 = sp34->maxHp;
     sp24->unk_2A = sp34->unk_28;
     sp24->unk_2C = sp34->unk_2A;
     sp24->speed = sp34->unk_2C;

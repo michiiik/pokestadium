@@ -3591,7 +3591,7 @@ void BattleAI_InitTeamContext(TeamRoster* arg0, TeamRoster* arg1, BattleAiTeamSt
             if (arg3) {
                 arg2->unk_14[j + var_v1].unk_12.unk_28 = BattleAI_ComputeDifficultyThreshold(sp6C->baseHitPoints, sp73) + sp73 + 5;
             } else {
-                arg2->unk_14[j + var_v1].unk_12.unk_28 = temp_s7[j].unk_26;
+                arg2->unk_14[j + var_v1].unk_12.unk_28 = temp_s7[j].maxHp;
             }
 
             if (arg3) {

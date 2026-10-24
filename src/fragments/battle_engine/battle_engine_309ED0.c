@@ -1044,7 +1044,7 @@ void BattleScene_SetupSendOutOwnerShot(CameraNode* arg0) {
 
 void BattleScene_CompleteSendOutCameraFade(UNUSED CameraNode* arg0) {
     if (BattleScene_AdvanceCameraFrameCounter(0x50) != 0) {
-        sBattleScene.scene->unk_40 = sBattleScene.scene->unk_2C + 1;
+        sBattleScene.scene->winner = sBattleScene.scene->unk_2C + 1;
         BattleBox_Close();
         Audio_FadeOutAll(0x14);
     }
@@ -1052,7 +1052,7 @@ void BattleScene_CompleteSendOutCameraFade(UNUSED CameraNode* arg0) {
 
 void BattleScene_CompleteSendOutExtendedFade(UNUSED CameraNode* arg0) {
     if (BattleScene_AdvanceCameraFrameCounter(0x7D) != 0) {
-        sBattleScene.scene->unk_40 = sBattleScene.scene->unk_2C + 1;
+        sBattleScene.scene->winner = sBattleScene.scene->unk_2C + 1;
         Audio_FadeOutAll(0x14);
     }
 }
@@ -1144,7 +1144,7 @@ void BattleScene_CompleteSendOutFollowup(UNUSED CameraNode* arg0) {
             sBattleScene.scene->unk_20 = 0;
             sBattleScene.scene->unk_38 = 4;
         } else {
-            sBattleScene.scene->unk_40 = sBattleScene.scene->unk_2C + 1;
+            sBattleScene.scene->winner = sBattleScene.scene->unk_2C + 1;
         }
         Audio_FadeAndClearStoredSounds();
     }

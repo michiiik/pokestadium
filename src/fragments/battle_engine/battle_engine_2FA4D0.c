@@ -441,8 +441,8 @@ void BattleHud_DrawMonInfoPanel(ActivePokemon* arg0, BattleMon* arg1, unk_D_8438
     }
 
     BattleHud_DrawLevelNumber(arg3 + 3, arg4 + 0x10, arg1->unk_24);
-    BattleHud_DrawHpBar(arg3 + 2, arg4 + 0x19, D_843900A8[BattleScene_GetParticipantSideIndex(arg0)], arg1->unk_26);
-    BattleHud_DrawHpFractionText(arg3 + 0xC, arg4 + 0x1F, arg1->hp, arg1->unk_26);
+    BattleHud_DrawHpBar(arg3 + 2, arg4 + 0x19, D_843900A8[BattleScene_GetParticipantSideIndex(arg0)], arg1->maxHp);
+    BattleHud_DrawHpFractionText(arg3 + 0xC, arg4 + 0x1F, arg1->hp, arg1->maxHp);
     Font_BeginTranslucentTextRendering();
     Font_SetActive(2, 0);
 
@@ -534,7 +534,7 @@ void BattleHud_DrawParticipantTimer(s16 arg0, s16 arg1) {
     s32 var_v1;
     s32 temp_t0;
 
-    temp_t0 = ((s32)((D_84390124 / 30.0f) / 60.0f) * 0x3C) + ((s32)(D_84390124 / 30.0f) % 60);
+    temp_t0 = ((s32)((sOrderTimer / 30.0f) / 60.0f) * 0x3C) + ((s32)(sOrderTimer / 30.0f) % 60);
     if (temp_t0 >= 0xB) {
         var_v1 = 2;
     } else if (temp_t0 >= 4) {
@@ -558,7 +558,7 @@ void BattleHud_DrawParticipantTimer(s16 arg0, s16 arg1) {
 
 void BattleHud_DrawBattleTimer(s16 arg0, s16 arg1) {
     char sp40[16];
-    f32 sp3C = D_84390128 / 30.0f;
+    f32 sp3C = sBattleTimer / 30.0f;
     UNUSED s32 pad[2];
 
     Gfx_FillRectWithDisplayState(arg0, arg1, 0x27, 0xC, 0, 0, 0, 0x5A);
@@ -1250,8 +1250,8 @@ void BattleHud_DrawDoublesRosterRow(ActivePokemon* arg0, TeamRoster* arg1, Battl
     s32 var_t0;
 
     BattleHud_DrawLevelNumber(arg3 + 3, arg4 + 4, arg2->unk_24);
-    BattleHud_DrawHpBar(arg3 + 0x1E, arg4 + 0xE, arg2->hp, arg2->unk_26);
-    BattleHud_DrawHpFractionText(arg3 + 0x26, arg4 + 0x14, arg2->hp, arg2->unk_26);
+    BattleHud_DrawHpBar(arg3 + 0x1E, arg4 + 0xE, arg2->hp, arg2->maxHp);
+    BattleHud_DrawHpFractionText(arg3 + 0x26, arg4 + 0x14, arg2->hp, arg2->maxHp);
 
     gSPDisplayList(gDisplayListHead++, D_8006F5A0);
 
@@ -1305,8 +1305,8 @@ void BattleHud_DrawPartyRosterRow(ActivePokemon* arg0, TeamRoster* arg1, BattleM
     s32 var_t0;
 
     BattleHud_DrawLevelNumber(arg3 + 3, arg4 + 4, arg2->unk_24);
-    BattleHud_DrawHpBar(arg3 + 0x1E, arg4 + 0xE, arg2->hp, arg2->unk_26);
-    BattleHud_DrawHpFractionText(arg3 + 0x26, arg4 + 0x14, arg2->hp, arg2->unk_26);
+    BattleHud_DrawHpBar(arg3 + 0x1E, arg4 + 0xE, arg2->hp, arg2->maxHp);
+    BattleHud_DrawHpFractionText(arg3 + 0x26, arg4 + 0x14, arg2->hp, arg2->maxHp);
 
     gSPDisplayList(gDisplayListHead++, D_8006F5A0);
 
