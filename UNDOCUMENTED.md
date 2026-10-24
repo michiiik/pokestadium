@@ -6,10 +6,10 @@
 - Functions defined in `src/` with a `/* ... */` comment: **274 / 7,484 (3.7%)**
 - Functions with a real name: **7,321 / 7,794 (93.9%)** (473 still `func_XXXXXXXX`)
 - Variables with a real name: **1,573 / 6,452 (24.4%)** (4,879 still `D_XXXXXXXX` / `jtbl_XXXXXXXX`)
-- Functions still using m2c `temp_*` / `var_*` locals: **1,812**
-- Functions with generic `arg0`, `arg1`, ... parameters: **4,626 / 7,484 (61.8%)**
-- Structs with generic fields (`unk_XX`, `pad`, `field_XX`): **832 / 1,041**
-- Struct fields with a real name: **1,553 / 6,703 (23.2%)**
+- Functions still using m2c `temp_*` / `var_*` locals: **1,807**
+- Functions with generic `arg0`, `arg1`, ... parameters: **4,614 / 7,484 (61.7%)**
+- Structs with generic fields (`unk_XX`, `pad`, `field_XX`): **831 / 1,041**
+- Struct fields with a real name: **1,569 / 6,703 (23.4%)**
 - Raw `*(T *)(base + 0xNN)` offset accesses that bypass a struct field: **0**
 <!-- AUTO_UNDOCUMENTED:END -->
 
@@ -118,7 +118,6 @@ Generic fields are named unk/pad/field/filler with an optional hex suffix; neste
 | `src/fragments/battle_engine/battle_engine_35DF70.c` | 38 | 38 | 0 | 24 | 12 | 1 | 0 |
 | `src/fragments/gallery_rental_viewer/gallery_rental_viewer_2AE1F0.c` | 25 | 25 | 0 | 32 | 11 | 7 | 0 |
 | `src/graphics_textures.c` | 46 | 46 | 1 | 5 | 9 | 14 | 0 |
-| `src/fragments/battle_engine/battle_engine_2F23A0.c` | 59 | 59 | 0 | 0 | 4 | 11 | 0 |
 | `src/fragments/battle_engine/battle_engine_31AA30.c` | 31 | 31 | 0 | 11 | 0 | 31 | 0 |
 | `src/fragments/gallery_camera/gallery_camera_150AC0.c` | 20 | 20 | 3 | 32 | 5 | 13 | 0 |
 | `src/display_object_textures.c` | 31 | 31 | 1 | 1 | 11 | 28 | 0 |
@@ -132,6 +131,7 @@ Generic fields are named unk/pad/field/filler with an optional hex suffix; neste
 | `src/fragments/sushi_game/sushi_game_14A030.c` | 17 | 17 | 1 | 29 | 9 | 11 | 0 |
 | `src/fragments/trade_machine/trade_machine_287ED0.c` | 31 | 31 | 1 | 20 | 4 | 10 | 0 |
 | `src/table_view.c` | 25 | 25 | 0 | 2 | 14 | 22 | 0 |
+| `src/fragments/battle_engine/battle_engine_helper.c` | 59 | 59 | 0 | 0 | 0 | 0 | 0 |
 | `src/fragments/trade_machine/trade_machine_291D60.c` | 24 | 24 | 1 | 8 | 8 | 18 | 0 |
 | `src/fragments/battle_engine/battle_engine_2F6930.c` | 22 | 22 | 0 | 19 | 2 | 15 | 0 |
 | `src/fragments/minigame_actor_framework/minigame_actor_framework_1189B0.c` | 23 | 23 | 3 | 19 | 2 | 11 | 0 |
@@ -146,11 +146,11 @@ Generic fields are named unk/pad/field/filler with an optional hex suffix; neste
 | `src/fragments/battle_engine/battle_engine_3274D0.c` | 28 | 28 | 0 | 0 | 0 | 21 | 0 |
 | `src/fragments/gallery_camera/gallery_camera_14EC80.c` | 17 | 17 | 1 | 18 | 3 | 10 | 0 |
 | `src/fragments/particle_data_library/particle_data_library_258080.c` | 15 | 15 | 1 | 16 | 4 | 13 | 0 |
-| `src/model_animation.c` | 20 | 20 | 0 | 2 | 13 | 14 | 0 |
 | `src/fragments/battle_prep/battle_prep_3A1C30.c` | 21 | 21 | 0 | 3 | 3 | 21 | 0 |
 | `src/scheduler.c` | 24 | 24 | 1 | 1 | 7 | 15 | 0 |
 | `src/fragments/battle_engine/battle_engine_34A420.c` | 14 | 14 | 0 | 12 | 11 | 10 | 0 |
 | `src/fragments/rental_team_selection/rental_team_selection_2E4040.c` | 22 | 22 | 0 | 6 | 1 | 18 | 0 |
+| `src/model_animation.c` | 20 | 20 | 0 | 2 | 12 | 13 | 0 |
 | `src/fragments/battle_engine/battle_engine_3020D0.c` | 23 | 23 | 1 | 7 | 5 | 10 | 0 |
 | `src/fragments/battle_engine/battle_engine_313D60.c` | 23 | 23 | 1 | 4 | 1 | 17 | 0 |
 | `src/fragments/demo_scenes/demo_scenes_16A0E0.c` | 19 | 19 | 2 | 20 | 3 | 2 | 0 |
@@ -374,19 +374,18 @@ Generic fields are named unk/pad/field/filler with an optional hex suffix; neste
 | `BattleScene` | `src/fragments/battle_engine/battle_engine.h` | 46 | 45 |
 | `MiniActor` | `src/fragments/minigame_actor_framework/minigame_actor_framework.h` | 102 | 45 |
 | `Particle` | `src/fragments/particle_math/particle_math.h` | 54 | 45 |
-| `BattleMonRuntime` | `src/3D140.h` | 50 | 44 |
+| `BattleMonRuntime` | `src/3D140.h` | 50 | 43 |
 | `unk_D_86807558` | `src/fragments/sushi_game/sushi_game.h` | 41 | 41 |
 | `GbApuChannelState` | `src/fragments/gb_tower_emulator/gb_tower_emulator_86CB0.c` | 34 | 34 |
 | `GbSaveMainData` | `src/gb_data.h` | 31 | 31 |
 | `GbSaveMainData` | `src/gb_data.h` | 31 | 31 |
-| `BattleMon` | `src/game_state.h` | 31 | 30 |
 | `RattataRacer` | `src/fragments/rattata_game/rattata_game.h` | 30 | 30 |
+| `BattleMon` | `src/game_state.h` | 31 | 29 |
 | `unk_D_84229EB0` | `src/fragments/rental_team_selection/rental_team_selection.h` | 29 | 29 |
 | `unk_func_80026268_arg0_raw` | `src/gallery.c` | 29 | 29 |
 | `unk_D_86B0E5D4_04` | `src/fragments/demo_scenes/demo_scenes.h` | 28 | 28 |
 | `RentalCarouselState` | `src/fragments/rental_team_selection/rental_team_selection.h` | 27 | 27 |
 | `unk_func_88205880_0098_008` | `src/fragments/widget_tree/widget_tree.h` | 26 | 26 |
-| `ActivePokemonState` | `src/fragments/battle_engine/battle_engine.h` | 29 | 23 |
 | `BattleAiScoredMove` | `src/fragments/battle_engine/battle_engine.h` | 23 | 23 |
 | `RentalTeamTray` | `src/fragments/rental_team_selection/rental_team_selection.h` | 23 | 23 |
 | `RibbonMesh` | `src/fragments/battle_engine/battle_engine.h` | 23 | 23 |
@@ -402,6 +401,7 @@ Generic fields are named unk/pad/field/filler with an optional hex suffix; neste
 | `unk_D_848037A0` | `src/fragments/battle_order_select/battle_order_select.h` | 21 | 21 |
 | `unk_D_86B0FA7C` | `src/fragments/demo_scenes/demo_scenes.h` | 21 | 21 |
 | `unk_func_8821421C_02C` | `src/fragments/lab_pc/lab_pc.h` | 21 | 21 |
+| `ActivePokemonState` | `src/fragments/battle_engine/battle_engine.h` | 29 | 20 |
 | `UnkStruct80083CA0_2` | `src/scheduler.h` | 21 | 20 |
 | `unk_D_838067F0` | `src/fragments/gallery_rental_viewer/gallery_rental_viewer.h` | 20 | 20 |
 | `unk_D_843C3508` | `src/fragments/battle_engine/battle_engine.h` | 20 | 20 |
